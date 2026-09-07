@@ -1,0 +1,12 @@
+{
+  "request_id": "b40-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Adversarial Security, Privacy and Supply-Chain Assurance",
+  "upstream_certificate_refs": [
+    "batch-39-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

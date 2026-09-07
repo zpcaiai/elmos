@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-development-v1",
+  "status": "passed",
+  "source_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "dataset_digest": "sha256:18d6364f543dbe38954a2ea8d15a619cccf4b2450e7f0fde2b04195423b13464",
+  "evidence_refs": [
+    "certification/local-runtime-test-result.json",
+    "certification/local-installation-validation.json",
+    "certification/raw/runtime-tests.txt",
+    "certification/raw/importer-integration-tests.txt"
+  ],
+  "separation": "repository-owned deterministic development cases",
+  "limitations": [
+    "LOCAL_EXECUTED_SELF_ATTESTED: focused repository-owned tests only; no independent holdout, representative workload, or external runtime."
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 594: vertical solution pack registry"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $vertical-solution-pack-registry to evaluate this capability with evidence."

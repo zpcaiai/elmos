@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Review Trust And Abuse Manager"
+  short_description: "Authoritative Batch 14 Skill 442 workflow"
+  default_prompt: "Use $marketplace-review-trust-and-abuse-manager to execute its evidence-bound Batch 14 workflow."
+

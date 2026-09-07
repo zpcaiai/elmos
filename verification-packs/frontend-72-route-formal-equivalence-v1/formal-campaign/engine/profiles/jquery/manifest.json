@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "jquery",
+  "framework_version": "4.0.0",
+  "platforms": [
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:a5432c7df1ffa8f7d1ede783c8848215ad5d423c7dae8f5a824d0bd19a274709",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 22,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:45ed317f23d2be2de2ca77a48a0bd15430503377e5fde9af93d9a163964b6e98",
+      "byte_count": 522
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "sha256:89d6abc7cbd516992af9a131693cc021827f6c3bac49e8b06878e258f6cec99c",
+      "byte_count": 75
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "sha256:e8e8584c09cc1d8fbb12fbf9c0f6f84053223ab8a236a5230c3c9b20ff1a017a",
+      "byte_count": 7
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:c9e6bd7d16f32f6f3c05d91e2f0e0b38a66753a2967d2a01a7ce38dfc5e0ebe1",
+      "byte_count": 1970
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:f4ccc50cade97ee9804c3284643ea5e8814fe069aefa69a573fb6623788bd70e",
+      "byte_count": 1174
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:bd32b99be770f7c5377edf044c6438d75d6d7f5b526f41839b93692b112ec392",
+      "byte_count": 313
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:20d8c2cefa8ef19ec68ff9f04c5dca255064c8acfde6848954b82e562e4bedc7",
+      "byte_count": 2385
+    },
+    {
+      "path": "index.html",
+      "sha256": "sha256:a067e1f176bb38cabc7bd3555adbcab2d16b68d57aa634e2191680bd2b70b721",
+      "byte_count": 299
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:6e5f46db7067fcfead72c93694d33f83a75a423daabdcd7273e15992d2a4de45",
+      "byte_count": 444
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:2c5d289b9b9bcc60dd0828885aa6cdd6080ad139d01ea37dab89f787126f4205",
+      "byte_count": 151
+    },
+    {
+      "path": "src/elmos-bounded-navigation.ts",
+      "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
+      "byte_count": 1934
+    },
+    {
+      "path": "src/main.ts",
+      "sha256": "sha256:8003329dcf951bf967d140c3c049312a4568630fa6dc1a83f48cff15698e419d",
+      "byte_count": 1527
+    },
+    {
+      "path": "src/routes.test.ts",
+      "sha256": "sha256:f647681b29c641f1efb24b00ba607a429af8cc950427f1fba0a34027cca3e020",
+      "byte_count": 328
+    },
+    {
+      "path": "src/routes.ts",
+      "sha256": "sha256:fa008e2f739c9600c999106c5e1cf6bde8c5c98725948fa9cc459e6cdf6b8ef5",
+      "byte_count": 95
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "sha256:a80d8095fbf09c981e539bce5d3d6f5e5dc9dfa623faa0f4c185bf8d351957d9",
+      "byte_count": 1085
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:e7c2bb9ffe72554d9f49e3b86a814e6913cccf7fe9f20807b2ed798c6f848ecb",
+      "byte_count": 746
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "sha256:aa62002db7608d9b51ae221321715e07748f7fc6bee35c6a26bc4bf376926f9c",
+      "byte_count": 494
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:fc9e15a83d67e57ed4adc21b2ea6370297c907e7eb6912bcb49f0a665fa56ff9",
+      "byte_count": 7149
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "sha256:d080d6facdee145b3147a983f07b327b4f70a87c2b94ea5109ef572790b4d5d4",
+      "byte_count": 70
+    }
+  ],
+  "manifest_digest": "sha256:6773a9c84483b8e9b52bdb5bfef6925db63f94e14f63629814c539dcf1229674"
+}

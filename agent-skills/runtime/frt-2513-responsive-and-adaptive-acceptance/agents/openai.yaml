@@ -1,0 +1,4 @@
+interface:
+  display_name: "Responsive and Adaptive Acceptance"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2513-responsive-and-adaptive-acceptance to run FRT-2513 through the governed FRT runtime with exact scope and fail-closed evidence."

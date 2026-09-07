@@ -1,0 +1,69 @@
+schema_version: 1.0.0
+ordinal: 37
+name: elmos-project-memory-and-retrieval
+title: 项目长期记忆与检索
+objective: 建立可版本化、可遗忘、可授权、可追溯的项目记忆层，把模型窗口与项目知识总量解耦。
+dependencies:
+- elmos-storage-index-and-retrieval
+- elmos-source-anchor-and-provenance
+- elmos-data-retention-and-governance
+inputs:
+- 多模态内容块
+- 需求/决策/任务/测试事实
+- 项目版本与ACL
+- 检索请求
+outputs:
+- 版本化项目记忆
+- 证据检索结果
+- 删除传播记录
+- 检索评估指标
+responsibilities:
+- 区分原始资产、派生内容、事实、决策、偏好、任务状态和短期缓存，分别定义生命周期。
+- 建立全文、向量、符号、图关系、时间与元数据索引，并使用混合检索与重排。
+- 以项目/租户/分支/版本/环境为强制过滤边界，防止跨租户或跨版本污染。
+- 对已批准决策、已否决方案、有效需求、过期需求和冲突事实显式建模。
+- 在写入记忆前执行来源、重复、敏感信息、可信度和保留策略检查。
+- 支持删除传播、索引重建、派生数据清理、法律保留和记忆过期。
+- 提供检索证据包，而不是无来源的最终答案。
+- 持续评估召回、精度、新鲜度、权限泄露和记忆污染。
+deliverables:
+- ProjectMemoryItem schema 与多索引实现
+- 记忆写入/检索/删除/重建 API
+- 决策、需求、事实和任务状态的版本模型
+- 检索评测和隔离安全测试
+acceptance:
+- 项目语料总量不受单次模型窗口限制，只受明确租户配额与治理策略限制
+- 所有检索结果携带来源、版本、可信度和权限上下文
+- 删除原始资产后派生索引按策略同步清除
+- 跨租户、跨项目和错误分支检索泄露为零
+- 过期和冲突事实不会无标记地覆盖当前事实
+- 关键查询的召回率、精度和新鲜度达到门槛
+data_entities:
+- project_memory_items
+- memory_relations
+- memory_index_versions
+- memory_deletion_jobs
+events:
+- memory.item.created
+- memory.index.updated
+- memory.item.expired
+- memory.deletion.completed
+metrics:
+- retrieval_recall_at_k
+- retrieval_precision_at_k
+- stale_memory_rate
+- cross_tenant_leak_count
+failure_modes:
+- memory poisoning
+- stale decision returned
+- deletion not propagated
+- tenant filter omitted
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

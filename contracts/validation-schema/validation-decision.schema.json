@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/validation-decision.schema.json",
+  "title": "ValidationDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "policyVersion",
+    "baselineEnvironmentId",
+    "migratedEnvironmentId",
+    "status",
+    "domainResults",
+    "blockingReasons",
+    "confidence",
+    "decidedAt",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "decisionId": {
+      "type": "string"
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "baselineEnvironmentId": {
+      "type": "string"
+    },
+    "migratedEnvironmentId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_WARNINGS",
+        "FAIL",
+        "MISSING",
+        "INCONCLUSIVE"
+      ]
+    },
+    "domainResults": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "decidedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {"id": 1, "name": "legacy-multi-project-solution", "assertions": ["complete-project-graph", "all-configurations", "outside-solution-project-reference-visible"]},
+    {"id": 2, "name": "host-msbuild-contamination", "assertions": ["isolated-workspace-root", "actual-import-graph", "no-host-parent-import"]},
+    {"id": 3, "name": "sdk-style-first", "assertions": ["legacy-to-sdk", "net48-retained-first", "baseline-gate-before-net10"]},
+    {"id": 4, "name": "windows-only-target", "assertions": ["modern-windows", "no-false-linux", "windows-inventory"]},
+    {"id": 5, "name": "webforms", "assertions": ["ui-rewrite-required", "business-library-extraction", "incremental-proxy"]},
+    {"id": 6, "name": "system-web-shared-library", "assertions": ["system-web-adapter-transition", "exit-or-long-term-decision"]},
+    {"id": 7, "name": "wcf-nettcp", "assertions": ["corewcf-evaluated", "wsdl-preserved", "legacy-client-regression"]},
+    {"id": 8, "name": "wcf-custom-binding", "assertions": ["partial-or-redesign", "architecture-approval"]},
+    {"id": 9, "name": "ef6-staged", "assertions": ["modern-runtime-with-ef6-first", "per-context-efcore", "side-by-side"]},
+    {"id": 10, "name": "edmx", "assertions": ["no-edmx-format-conversion", "test-database-scaffold", "schema-query-validation"]},
+    {"id": 11, "name": "test-disappearance", "assertions": ["800-to-240-fails"]},
+    {"id": 12, "name": "cross-platform-failure", "assertions": ["linux-platform-gate-fails", "windows-pass-not-substitute"]},
+    {"id": 13, "name": "upgrade-assistant-deprecation", "assertions": ["deprecated-adapter-only", "roslyn-core", "no-provider-required"]},
+    {"id": 14, "name": "unified-portfolio", "assertions": ["java-dotnet-shared-portfolio", "shared-api-risk-wave-acceptance", "same-tenant"]}
+  ]
+}

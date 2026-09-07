@@ -1,0 +1,18 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterDeploymentProfile
+metadata:
+  adapter: fips-203-ml-kem
+  version: 4.0.0
+spec:
+  execution: ephemeral non-root sandbox or customer VPC runner
+  filesystem: read-only base; scoped writable workspace
+  network: deny by default; destination allowlist
+  secrets: brokered short-lived and redacted
+  resources:
+    cpuMemory: declared per run
+    timeout: declared per conformance case
+  health:
+  - adapter self-test
+  - upstream reachability when authorized
+  - version fingerprint
+  rollback: previous signed adapter and generated artifact retained

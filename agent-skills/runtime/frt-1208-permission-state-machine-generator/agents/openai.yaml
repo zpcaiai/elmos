@@ -1,0 +1,4 @@
+interface:
+  display_name: "Permission State Machine Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1208-permission-state-machine-generator to run FRT-1208 through the governed FRT runtime with exact scope and fail-closed evidence."

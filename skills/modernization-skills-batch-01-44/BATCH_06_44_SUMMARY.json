@@ -1,0 +1,401 @@
+{
+  "generated_at": "2026-07-31T00:00:00Z",
+  "batch_range": [
+    6,
+    44
+  ],
+  "batch_count": 39,
+  "skill_count": 624,
+  "packages": [
+    {
+      "batch": 6,
+      "title": "Standard Library, Dependency Mapping and Compatibility Runtime",
+      "slug": "standard-library-dependency-compatibility",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_06_standard-library-dependency-compatibility_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_06_standard-library-dependency-compatibility_complete_skill_pack.zip",
+      "sha256": "379455a40a48cedb9af4f00baecd64c40a8f6e74099f97a6a5b6ee4432084436",
+      "skills": 16,
+      "size": 68192
+    },
+    {
+      "batch": 7,
+      "title": "Framework Contract Model and Framework Migration Recipe Packs",
+      "slug": "framework-contract-recipe-packs",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_07_framework-contract-recipe-packs_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_07_framework-contract-recipe-packs_complete_skill_pack.zip",
+      "sha256": "ea50eeb8454ba5d0a756813a1b92be5a839b5b9fd109f94f49399d9bb830a337",
+      "skills": 16,
+      "size": 66810
+    },
+    {
+      "batch": 8,
+      "title": "Repository-Aware Multi-Agent, Context and RAG System",
+      "slug": "repository-aware-multi-agent",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_08_repository-aware-multi-agent_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_08_repository-aware-multi-agent_complete_skill_pack.zip",
+      "sha256": "3856fecefc78e4257991555a4cbcca4c0146fa6c9d5904548486cb07bef1ae24",
+      "skills": 16,
+      "size": 65707
+    },
+    {
+      "batch": 9,
+      "title": "Build, Compile, Test Repair and Bounded Fix Loop",
+      "slug": "build-compile-test-repair",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_09_build-compile-test-repair_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_09_build-compile-test-repair_complete_skill_pack.zip",
+      "sha256": "9be6f352496237dfffc206ffdca1e0b1ef46d2e058b93540cb51d37e55cb15b4",
+      "skills": 16,
+      "size": 64853
+    },
+    {
+      "batch": 10,
+      "title": "Behavioral Equivalence, Golden Master and Differential Validation",
+      "slug": "behavioral-equivalence-differential",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_10_behavioral-equivalence-differential_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_10_behavioral-equivalence-differential_complete_skill_pack.zip",
+      "sha256": "8be57aabda4048f89ce6d2c6ec555c4d55943c947df4bd7680b7d26745c4f38a",
+      "skills": 16,
+      "size": 65848
+    },
+    {
+      "batch": 11,
+      "title": "Performance, Security and Production Semantics Validation",
+      "slug": "performance-security-production-semantics",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_11_performance-security-production-semantics_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_11_performance-security-production-semantics_complete_skill_pack.zip",
+      "sha256": "8d2de71981a54996635773c499d08d9c4eb871bad1662bc1de3b6da66f466bec",
+      "skills": 16,
+      "size": 67407
+    },
+    {
+      "batch": 12,
+      "title": "Benchmark, Quality Scoring and Migration Economics",
+      "slug": "benchmark-quality-economics",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_12_benchmark-quality-economics_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_12_benchmark-quality-economics_complete_skill_pack.zip",
+      "sha256": "c7205805d898fa3a383266dd0a1490fd55229f4667d010abde7d2854518303f7",
+      "skills": 16,
+      "size": 64874
+    },
+    {
+      "batch": 13,
+      "title": "Evidence Graph, Independent Oracle and Continuous Certification",
+      "slug": "evidence-graph-continuous-certification",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_13_evidence-graph-continuous-certification_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_13_evidence-graph-continuous-certification_complete_skill_pack.zip",
+      "sha256": "a5a48619f620b0ac30ad6ab6b0391f08f4eb58e7be01c9b1e8ab60f0361ab04c",
+      "skills": 16,
+      "size": 67128
+    },
+    {
+      "batch": 14,
+      "title": "Formal Verification and Proof-Carrying Migration",
+      "slug": "formal-verification-proof-carrying",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_14_formal-verification-proof-carrying_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_14_formal-verification-proof-carrying_complete_skill_pack.zip",
+      "sha256": "94ef62f3b9e164d0e6e0f9742358508843913c4425f8e67fc98c4763bfa3b046",
+      "skills": 16,
+      "size": 65908
+    },
+    {
+      "batch": 15,
+      "title": "Counterexample-Guided Repair and Self-Evolving Validation",
+      "slug": "counterexample-guided-repair",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_15_counterexample-guided-repair_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_15_counterexample-guided-repair_complete_skill_pack.zip",
+      "sha256": "50943ceb2fe940d9df251e944dede8db697ab99b6db8071978dff5d0920e3836",
+      "skills": 16,
+      "size": 65131
+    },
+    {
+      "batch": 16,
+      "title": "Target Architecture Search and Migration Planning",
+      "slug": "target-architecture-search",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_16_target-architecture-search_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_16_target-architecture-search_complete_skill_pack.zip",
+      "sha256": "ccac7a2b489c5eb9ce643abe9150664758776693948871b10aea45db1dc030e3",
+      "skills": 16,
+      "size": 65672
+    },
+    {
+      "batch": 17,
+      "title": "Migration Execution Operating System",
+      "slug": "migration-execution-os",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_17_migration-execution-os_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_17_migration-execution-os_complete_skill_pack.zip",
+      "sha256": "6c832beca1847f19085a257ba1df672ac3e0f759b7b0d907469a208137eb7b09",
+      "skills": 16,
+      "size": 64519
+    },
+    {
+      "batch": 18,
+      "title": "Complete Project Generation Standard",
+      "slug": "complete-project-generation",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_18_complete-project-generation_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_18_complete-project-generation_complete_skill_pack.zip",
+      "sha256": "016c40429a085bc744f9f97284e156d283737268f1b093068c1d06e32dfceddc",
+      "skills": 16,
+      "size": 65314
+    },
+    {
+      "batch": 19,
+      "title": "72 Directional Executable Generator Packs",
+      "slug": "seventy-two-directional-route-packs",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_19_seventy-two-directional-route-packs_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_19_seventy-two-directional-route-packs_complete_skill_pack.zip",
+      "sha256": "c89679d8abca13931bad7a0ee1f7e7d5bdea45006b3e109a4ae1eb3bf3d73ea2",
+      "skills": 16,
+      "size": 68225
+    },
+    {
+      "batch": 20,
+      "title": "Skill SDK, Runtime, Registry and Marketplace Productization",
+      "slug": "skill-sdk-runtime-registry",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_20_skill-sdk-runtime-registry_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_20_skill-sdk-runtime-registry_complete_skill_pack.zip",
+      "sha256": "dd8e1ce0c86751434172958035360d5f0d9a1c767c425ac2d24b739c807fce87",
+      "skills": 16,
+      "size": 65380
+    },
+    {
+      "batch": 21,
+      "title": "Real Repository Slice and Golden Workload Factory",
+      "slug": "real-repository-golden-workload",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_21_real-repository-golden-workload_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_21_real-repository-golden-workload_complete_skill_pack.zip",
+      "sha256": "b487e78929e93b973c50ce55b818211effa6034e8d4296b8c97dd30f51ab6f2e",
+      "skills": 16,
+      "size": 65321
+    },
+    {
+      "batch": 22,
+      "title": "Semantic Recovery Hardening and Runtime-Enriched CSIR",
+      "slug": "semantic-recovery-hardening",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_22_semantic-recovery-hardening_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_22_semantic-recovery-hardening_complete_skill_pack.zip",
+      "sha256": "98c57dde3611c961be71359552ca7cf6adb9044a70a4139eeb37809fe67f3dd0",
+      "skills": 16,
+      "size": 65208
+    },
+    {
+      "batch": 23,
+      "title": "Framework Modernization Execution Packs",
+      "slug": "framework-modernization-execution",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_23_framework-modernization-execution_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_23_framework-modernization-execution_complete_skill_pack.zip",
+      "sha256": "281d4ef49071c09322b2444b876fdda2e0997e109b9960106eaab99413a86680",
+      "skills": 16,
+      "size": 65023
+    },
+    {
+      "batch": 24,
+      "title": "Real Build, Test, Package and Artifact Execution Lab",
+      "slug": "real-build-test-artifact-lab",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_24_real-build-test-artifact-lab_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_24_real-build-test-artifact-lab_complete_skill_pack.zip",
+      "sha256": "cb41e780e335d7f4089bb9f14e825a3c62fe30484b95031d026361cee4411dd0",
+      "skills": 16,
+      "size": 65038
+    },
+    {
+      "batch": 25,
+      "title": "Behavioral Equivalence Gate and Independent Oracle System",
+      "slug": "behavioral-equivalence-gate",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_25_behavioral-equivalence-gate_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_25_behavioral-equivalence-gate_complete_skill_pack.zip",
+      "sha256": "bd72178b29c225ddd403488b35dc284c702da19ba83365902fdfe35f8e4fcee2",
+      "skills": 16,
+      "size": 65301
+    },
+    {
+      "batch": 26,
+      "title": "Dual Run, Shadow Execution and State Reconciliation",
+      "slug": "dual-run-shadow-reconciliation",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_26_dual-run-shadow-reconciliation_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_26_dual-run-shadow-reconciliation_complete_skill_pack.zip",
+      "sha256": "5e30da0464b8b3f3eb328ef5c817af3753ffe4f985c087e8576bbc928e3137d8",
+      "skills": 16,
+      "size": 64493
+    },
+    {
+      "batch": 27,
+      "title": "Canonical Database IR, Data Migration and Cutover Foundation",
+      "slug": "canonical-database-ir-foundation",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_27_canonical-database-ir-foundation_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_27_canonical-database-ir-foundation_complete_skill_pack.zip",
+      "sha256": "389d623716a9aaca8429e527a75b2b7507f86a691ed3083288d46bb74a2a740e",
+      "skills": 16,
+      "size": 64901
+    },
+    {
+      "batch": 28,
+      "title": "Oracle, SQL Server, MySQL and PostgreSQL 12 Directional Route Packs",
+      "slug": "relational-database-12-routes",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_28_relational-database-12-routes_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_28_relational-database-12-routes_complete_skill_pack.zip",
+      "sha256": "2bb7912bc7171fb39366f45092b5608c33e8d36f16e780643a0dcf4da4fadb5d",
+      "skills": 16,
+      "size": 63757
+    },
+    {
+      "batch": 29,
+      "title": "Multi-Language Route Certification Factory",
+      "slug": "multi-language-route-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_29_multi-language-route-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_29_multi-language-route-factory_complete_skill_pack.zip",
+      "sha256": "70506aa5fa935339a57907c93703ec8d54bc2f348df54640f50b2a81cc0a48a9",
+      "skills": 16,
+      "size": 64422
+    },
+    {
+      "batch": 30,
+      "title": "Multi-Framework and Version Migration Factory",
+      "slug": "multi-framework-version-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_30_multi-framework-version-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_30_multi-framework-version-factory_complete_skill_pack.zip",
+      "sha256": "b96a5fe01e3801daaf87bca4e4e180a2f1fffdbe28f99e4214ea867963c1a157",
+      "skills": 16,
+      "size": 65322
+    },
+    {
+      "batch": 31,
+      "title": "Database and Data-Platform Modernization Factory",
+      "slug": "database-data-platform-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_31_database-data-platform-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_31_database-data-platform-factory_complete_skill_pack.zip",
+      "sha256": "ce161ff38b74f26927a644f64c9895662c9a833ca47dca3abcd5836406c4be1f",
+      "skills": 16,
+      "size": 65150
+    },
+    {
+      "batch": 32,
+      "title": "Client, UI, Desktop and Mobile Modernization Factory",
+      "slug": "client-ui-modernization-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_32_client-ui-modernization-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_32_client-ui-modernization-factory_complete_skill_pack.zip",
+      "sha256": "b1aaaf8136505bf2540f67dbe70f393e50b542666fd7da683ca604bd0bd85f1e",
+      "skills": 16,
+      "size": 66348
+    },
+    {
+      "batch": 33,
+      "title": "Cloud, IaC, Container and Platform Modernization Factory",
+      "slug": "cloud-iac-platform-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_33_cloud-iac-platform-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_33_cloud-iac-platform-factory_complete_skill_pack.zip",
+      "sha256": "c353bde9fd8a5545e897a27b26c294808d90360adc615ffc3f360ff2ae0c1aa3",
+      "skills": 16,
+      "size": 64749
+    },
+    {
+      "batch": 34,
+      "title": "Portfolio-Scale Multi-Repository Migration Factory",
+      "slug": "portfolio-scale-migration-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_34_portfolio-scale-migration-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_34_portfolio-scale-migration-factory_complete_skill_pack.zip",
+      "sha256": "c47cd689315a3896fda5b42ed5bd431ee8e472ac86157c178072b4a51c46ec8f",
+      "skills": 16,
+      "size": 65687
+    },
+    {
+      "batch": 35,
+      "title": "Advanced Verification, Fuzzing, Mutation and Formal Assurance Factory",
+      "slug": "advanced-verification-factory",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_35_advanced-verification-factory_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_35_advanced-verification-factory_complete_skill_pack.zip",
+      "sha256": "96e523c721756d5b8d3743a1ad3c940e369bb6b74a716be86eb053bc1fc0630b",
+      "skills": 16,
+      "size": 64877
+    },
+    {
+      "batch": 36,
+      "title": "Developer Experience, CLI, IDE and SCM Integration",
+      "slug": "developer-experience-integration",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_36_developer-experience-integration_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_36_developer-experience-integration_complete_skill_pack.zip",
+      "sha256": "51d0d33fc136b55fb46024d5689ca745f17061abc3cb1c0b550b6338e26e0141",
+      "skills": 16,
+      "size": 65396
+    },
+    {
+      "batch": 37,
+      "title": "Extension SDK, Marketplace and Supply-Chain Governance",
+      "slug": "extension-marketplace-governance",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_37_extension-marketplace-governance_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_37_extension-marketplace-governance_complete_skill_pack.zip",
+      "sha256": "11e0a8cf263acf7d40abe42e154e3a45c3063e5c1c05a3d410788c16a3035c7b",
+      "skills": 16,
+      "size": 65803
+    },
+    {
+      "batch": 38,
+      "title": "Canonical CapabilityPackage, Dependency Graph and Platform Convergence",
+      "slug": "platform-convergence",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_38_platform-convergence_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_38_platform-convergence_complete_skill_pack.zip",
+      "sha256": "70484e3039d578c964af87788ba706edc7b2451dd93eaa03a167bea1252911ad",
+      "skills": 16,
+      "size": 63824
+    },
+    {
+      "batch": 39,
+      "title": "Durable Workflow, Runner Fleet and Provider Reliability",
+      "slug": "durable-workflow-runner-reliability",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_39_durable-workflow-runner-reliability_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_39_durable-workflow-runner-reliability_complete_skill_pack.zip",
+      "sha256": "a9be84b0f1d70a5aace690a9c405cea895a125e0597c8def73dfb190cfb3f102",
+      "skills": 16,
+      "size": 66430
+    },
+    {
+      "batch": 40,
+      "title": "Adversarial Security, Privacy and Supply-Chain Assurance",
+      "slug": "adversarial-security-privacy",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_40_adversarial-security-privacy_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_40_adversarial-security-privacy_complete_skill_pack.zip",
+      "sha256": "af059eee601e1907cd57aab4e7fb261d458f3a4b60afa5c8cbf28413e562e3ac",
+      "skills": 16,
+      "size": 66201
+    },
+    {
+      "batch": 41,
+      "title": "Release Engineering, Progressive Delivery and Automated Rollback",
+      "slug": "release-progressive-delivery",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_41_release-progressive-delivery_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_41_release-progressive-delivery_complete_skill_pack.zip",
+      "sha256": "578e8983ef8baf7740fcc71e8ae0c111731da4693f715ecb4b3f00e6b2254ebd",
+      "skills": 16,
+      "size": 65140
+    },
+    {
+      "batch": 42,
+      "title": "Production Observability, SLO, Incident, HA/DR and Operations Readiness",
+      "slug": "production-operations-readiness",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_42_production-operations-readiness_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_42_production-operations-readiness_complete_skill_pack.zip",
+      "sha256": "22dbf7f0c684f651e4de6f8a2c5491d1f1add40d096944e02ac735fa87212c59",
+      "skills": 16,
+      "size": 65327
+    },
+    {
+      "batch": 43,
+      "title": "Legacy Coexistence, Cutover, Hypercare and Continuous Modernization",
+      "slug": "legacy-coexistence-retirement",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_43_legacy-coexistence-retirement_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_43_legacy-coexistence-retirement_complete_skill_pack.zip",
+      "sha256": "bcbb1d74c5639ee585efca24dcd0d7309d520f5ba548cc352d9f97f01b0ec5e8",
+      "skills": 16,
+      "size": 65519
+    },
+    {
+      "batch": 44,
+      "title": "Unified Production Release Gate and Continuous Recertification",
+      "slug": "unified-production-release-gate",
+      "dir": "/mnt/data/batch_06_44_generated/packages/batch_44_unified-production-release-gate_complete_skill_pack",
+      "archive": "/mnt/data/batch_06_44_generated/individual_archives/batch_44_unified-production-release-gate_complete_skill_pack.zip",
+      "sha256": "991c1b6f41c612c7d17587cc8f59f6745c86920624c946fde09d67eefc7d6517",
+      "skills": 16,
+      "size": 65755
+    }
+  ]
+}

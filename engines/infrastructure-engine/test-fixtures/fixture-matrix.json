@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "fixtures": [
+    {
+      "schema": "contracts/infrastructure-estate-schema/infrastructure-estate.schema.json",
+      "instance": "infrastructure-estate.json"
+    },
+    {
+      "schema": "contracts/workload-placement-schema/workload-placement-decision.schema.json",
+      "instance": "workload-placement-decision.json"
+    },
+    {
+      "schema": "contracts/container-schema/container-image-manifest.schema.json",
+      "instance": "container-image-manifest.json"
+    },
+    {
+      "schema": "contracts/kubernetes-schema/kubernetes-platform.schema.json",
+      "instance": "kubernetes-platform.json"
+    },
+    {
+      "schema": "contracts/iac-plan-schema/infrastructure-plan-result.schema.json",
+      "instance": "infrastructure-plan-result.json"
+    },
+    {
+      "schema": "contracts/observability-schema/service-level-objective.schema.json",
+      "instance": "service-level-objective.json"
+    },
+    {
+      "schema": "contracts/finops-schema/infrastructure-cost-allocation.schema.json",
+      "instance": "infrastructure-cost-allocation.json"
+    },
+    {
+      "schema": "contracts/resilience-schema/resilience-test-result.schema.json",
+      "instance": "resilience-test-result.json"
+    },
+    {
+      "schema": "contracts/multicloud-schema/portability-profile.schema.json",
+      "instance": "portability-profile.json"
+    }
+  ],
+  "categories": {
+    "legacy-infrastructure": [
+      "bare-metal-java",
+      "windows-service",
+      "vm-monolith",
+      "shared-host",
+      "local-disk-state",
+      "nfs-dependency",
+      "static-ip",
+      "undocumented-cron"
+    ],
+    "middleware": [
+      "weblogic",
+      "websphere",
+      "jboss",
+      "iis",
+      "ibm-mq",
+      "active-mq",
+      "esb",
+      "enterprise-scheduler"
+    ],
+    "container": [
+      "root-process",
+      "graceful-shutdown",
+      "child-process",
+      "local-state",
+      "windows-container",
+      "native-library",
+      "privileged",
+      "multi-architecture"
+    ],
+    "kubernetes": [
+      "deployment",
+      "statefulset",
+      "daemonset",
+      "job",
+      "cronjob",
+      "hpa",
+      "network-policy",
+      "pod-security",
+      "topology-spread",
+      "disruption-budget"
+    ],
+    "serverless": [
+      "scale-to-zero",
+      "cold-start",
+      "long-running",
+      "retry",
+      "idempotency",
+      "dlq",
+      "event-contract"
+    ],
+    "iac": [
+      "import-existing",
+      "no-change-plan",
+      "drift",
+      "provider-upgrade",
+      "state-lock",
+      "destroy-plan",
+      "cross-tenant-state"
+    ],
+    "resilience": [
+      "pod-crash",
+      "node-failure",
+      "zone-failure",
+      "network-partition",
+      "database-failure",
+      "dns-failure",
+      "restore",
+      "region-dr"
+    ],
+    "multicloud": [
+      "image-portability",
+      "iac-portability",
+      "data-gravity",
+      "vendor-binding",
+      "cloud-exit",
+      "multi-region"
+    ]
+  },
+  "externalStatus": "NOT_RUN"
+}
+

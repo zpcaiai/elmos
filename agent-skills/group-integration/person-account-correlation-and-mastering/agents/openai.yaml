@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 692: person account correlation and mastering"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $person-account-correlation-and-mastering to evaluate this capability with evidence."

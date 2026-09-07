@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "temporal-knowledge-conflict-example",
+  "status": "READY",
+  "content_hash": "a0605284680ef9f936622d274f9c815720dd7073e04e4089fa6fd24ca1ff5f86",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

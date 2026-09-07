@@ -1,0 +1,61 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-003
+  name: elmos-lossless-permission-replay
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: Canonical PermissionProfile 是唯一持久权限语义；Provider sandbox enum 只允许精确映射，Lossy/Unsupported 默认拒绝。
+  ownerKernels:
+  - K7
+  - K8
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-certification-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-certification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-environment-attachment-authority
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-harness-transport-version-negotiation
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - CanonicalPermissionStore
+  - PermissionProjectionAdapter
+  - ReplayPermissionVerifier
+  - WorkingDirectoryCompatibilityGuard
+  invariants:
+  - canonical PermissionProfile is provider-neutral and versioned
+  - adapter projection result is one of EXACT, LOSSY, UNSUPPORTED
+  - LOSSY and UNSUPPORTED cannot start execution without an explicit, narrower replacement profile
+  - resume cannot derive security authority from display-oriented legacy fields
+  upstreamEvidence:
+  - openai/codex#41192
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

@@ -1,0 +1,8 @@
+interface:
+  display_name: Elmos · 在线代码阅读器
+  short_description: 实现以阅读和证据导航为核心的浏览器代码工作台。用于文件树、代码查看、Diff、书签、评论和跨视图联动；不等同于完整通用在线
+    IDE。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-online-code-reader 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

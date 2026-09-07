@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "discovery_mode": "flyway-v49-static-analysis",
+  "coverage": 1.0,
+  "snapshot_digest": "sha256:72b6feffafb61e94ce343bafc9c709b8f6121dd975cb816be511d7ac30282899"
+}

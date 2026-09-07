@@ -1,0 +1,4 @@
+interface:
+  display_name: "Connection Pool and Resource Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2714-connection-pool-and-resource-validator to run FRT-2714 through the governed FRT runtime with exact scope and fail-closed evidence."

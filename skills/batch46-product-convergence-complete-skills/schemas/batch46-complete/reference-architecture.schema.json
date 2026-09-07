@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "customer_experience",
+    "control_plane_kernel",
+    "execution_plane",
+    "extension_layer",
+    "trust_boundaries",
+    "data_flows"
+  ],
+  "properties": {
+    "customer_experience": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "control_plane_kernel": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "execution_plane": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "extension_layer": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "trust_boundaries": {
+      "type": [
+        "array",
+        "object"
+      ]
+    },
+    "data_flows": {
+      "type": [
+        "array",
+        "object"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

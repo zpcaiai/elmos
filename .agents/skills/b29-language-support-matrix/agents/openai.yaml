@@ -1,0 +1,4 @@
+interface:
+  display_name: "B29 Language Support Matrix"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b29-language-support-matrix to execute this ELMOS Runtime Skill with fail-closed evidence."

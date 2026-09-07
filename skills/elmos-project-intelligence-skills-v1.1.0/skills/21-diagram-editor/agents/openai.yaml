@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 在线图表编辑与人工锁定
+  short_description: 实现基于 Diagram Spec 的在线图表画布、节点编辑、布局调整、评论、版本比较和人工锁定。用于自动生成后的审阅与维护。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-diagram-editor 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

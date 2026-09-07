@@ -1,0 +1,491 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:repository-autonomy:external-qualification-manifest:2.0.0",
+  "title": "Repository Autonomy External Qualification Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scope",
+    "command_bindings",
+    "resources",
+    "providers",
+    "independent_verifier"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "command_bindings": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/command_binding"
+      }
+    },
+    "resources": {
+      "$ref": "#/$defs/resources"
+    },
+    "providers": {
+      "$ref": "#/$defs/providers"
+    },
+    "independent_verifier": {
+      "$ref": "#/$defs/independent_verifier"
+    }
+  },
+  "$defs": {
+    "nonempty": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^(?:[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64})$"
+    },
+    "binding_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenant_id",
+        "account_id",
+        "project_id",
+        "actor_id",
+        "environment_authority_id",
+        "idempotency_key",
+        "revision_digest",
+        "candidate_digest",
+        "workload_digest",
+        "authorization_receipt"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "account_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "project_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "actor_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "environment_authority_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "idempotency_key": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "revision_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "candidate_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "workload_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "authorization_receipt": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "command_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "executable",
+        "executable_sha256",
+        "protocols",
+        "environment_refs"
+      ],
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        },
+        "executable": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "executable_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "protocols": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^elmos\\.[a-z0-9][a-z0-9.-]*\\.v2$"
+          }
+        },
+        "args": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "default": []
+        },
+        "environment_refs": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+          }
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600,
+          "default": 30
+        },
+        "max_input_bytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 16777216,
+          "default": 1048576
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 16777216,
+          "default": 1048576
+        }
+      }
+    },
+    "postgresql_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_ref",
+        "engine_version",
+        "operator_role_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "service_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "engine_version": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "operator_role_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "scm_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_instance",
+        "native_repository_id",
+        "exact_commit",
+        "credential_lease_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "provider_instance": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "native_repository_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "exact_commit": {
+          "$ref": "#/$defs/commit"
+        },
+        "credential_lease_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "object_store_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_id",
+        "region",
+        "bucket",
+        "credential_lease_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "account_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "region": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "bucket": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "credential_lease_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "event_bus_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_instance",
+        "region",
+        "topic",
+        "credential_lease_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "provider_instance": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "region": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "topic": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "credential_lease_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "secrets_broker_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "broker_id",
+        "role_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "broker_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "role_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "kubernetes_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "namespace",
+        "image_digest",
+        "service_account",
+        "binding_id"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "namespace": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "image_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "service_account": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "customer_repository_resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_instance",
+        "native_repository_id",
+        "exact_commit",
+        "credential_lease_ref",
+        "customer_authorization_receipt",
+        "binding_id"
+      ],
+      "properties": {
+        "provider_instance": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "native_repository_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "exact_commit": {
+          "$ref": "#/$defs/commit"
+        },
+        "credential_lease_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "customer_authorization_receipt": {
+          "$ref": "#/$defs/digest"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "postgresql",
+        "scm",
+        "object-store",
+        "event-bus",
+        "secrets-broker",
+        "kubernetes",
+        "customer-repository"
+      ],
+      "properties": {
+        "postgresql": {
+          "$ref": "#/$defs/postgresql_resource"
+        },
+        "scm": {
+          "$ref": "#/$defs/scm_resource"
+        },
+        "object-store": {
+          "$ref": "#/$defs/object_store_resource"
+        },
+        "event-bus": {
+          "$ref": "#/$defs/event_bus_resource"
+        },
+        "secrets-broker": {
+          "$ref": "#/$defs/secrets_broker_resource"
+        },
+        "kubernetes": {
+          "$ref": "#/$defs/kubernetes_resource"
+        },
+        "customer-repository": {
+          "$ref": "#/$defs/customer_repository_resource"
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "provider_instance",
+        "credential_lease_ref",
+        "binding_id"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "provider_instance": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "credential_lease_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anthropic-agent-sdk",
+        "claude-code",
+        "generic-mcp-a2a",
+        "openai-codex",
+        "opencode",
+        "openharness",
+        "openrouter"
+      ],
+      "properties": {
+        "anthropic-agent-sdk": {
+          "$ref": "#/$defs/provider"
+        },
+        "claude-code": {
+          "$ref": "#/$defs/provider"
+        },
+        "generic-mcp-a2a": {
+          "$ref": "#/$defs/provider"
+        },
+        "openai-codex": {
+          "$ref": "#/$defs/provider"
+        },
+        "opencode": {
+          "$ref": "#/$defs/provider"
+        },
+        "openharness": {
+          "$ref": "#/$defs/provider"
+        },
+        "openrouter": {
+          "$ref": "#/$defs/provider"
+        }
+      }
+    },
+    "independent_verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verifier_id",
+        "trust_store_ref",
+        "public_key_digest",
+        "authorization_receipt",
+        "binding_id"
+      ],
+      "properties": {
+        "verifier_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "trust_store_ref": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "public_key_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "authorization_receipt": {
+          "$ref": "#/$defs/digest"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/binding_id"
+        }
+      }
+    }
+  }
+}

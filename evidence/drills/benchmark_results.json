@@ -1,0 +1,56 @@
+[
+  {
+    "operation": "Complex SQL Split (15KB x 50)",
+    "native_time_ms": 14.55,
+    "python_time_ms": 53.35,
+    "native_ops_sec": 3435.6,
+    "python_ops_sec": 937.2,
+    "speedup_factor": "3.7x",
+    "detail": "Native statements: 70, Python statements: 100"
+  },
+  {
+    "operation": "PubGrub Dep Solver (100 solves)",
+    "native_time_ms": 1.49,
+    "python_time_ms": 0.05,
+    "native_ops_sec": 66915.8,
+    "python_ops_sec": 2083333.9,
+    "speedup_factor": "0.0x",
+    "detail": "Avg native solve latency: 0.015 ms"
+  },
+  {
+    "operation": "COMP-3 Decode (2000 ops)",
+    "native_time_ms": 16.47,
+    "python_time_ms": 16.14,
+    "native_ops_sec": 121404.7,
+    "python_ops_sec": 123935.3,
+    "speedup_factor": "1.0x",
+    "detail": "Zero-allocation COMP-3 parser"
+  },
+  {
+    "operation": "EBCDIC Transcode (9KB x 50)",
+    "native_time_ms": 20.99,
+    "python_time_ms": 8.66,
+    "native_throughput_mb_s": 22.71,
+    "python_throughput_mb_s": 55.08,
+    "speedup_factor": "0.4x",
+    "detail": "CP037 standard transcoding"
+  },
+  {
+    "operation": "Modbus 32-bit Swap (10000 ops)",
+    "native_time_ms": 221.33,
+    "python_time_ms": 13.26,
+    "native_ops_sec": 45181.8,
+    "python_ops_sec": 753989.1,
+    "speedup_factor": "0.1x",
+    "detail": "Mid-Little / Word-Swap"
+  },
+  {
+    "operation": "Graph Blast Radius (50 traversals)",
+    "native_time_ms": 39.04,
+    "python_time_ms": 1.19,
+    "native_ops_sec": 1280.7,
+    "python_ops_sec": 42071.3,
+    "speedup_factor": "0.0x",
+    "detail": "200-node graph with cycles"
+  }
+]

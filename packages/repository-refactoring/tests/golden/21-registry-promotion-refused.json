@@ -1,0 +1,21 @@
+{
+  "caseId": "21-registry-promotion-refused",
+  "description": "One evaluation on one repository does not promote; every unmet condition is reported.",
+  "evidence": {
+    "registryDigest": "sha256:b9b4862e8c34b60aac57a3a49a56068a52f2d1cb9277cbb79efa299f6970ff38"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:7ed8a8fee1f82d7258b090f82cb14926b7564b2f0681ed6230af23c252c8dce2",
+  "outputDigest": "sha256:c531f64f7c3f41c1ed0883f8fefa1c48e9da103590fba656130c617a370e7df8",
+  "projections": {
+    "output.promotionDecisions": [],
+    "output.recipes": [],
+    "output.revocationList": [],
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "recipe-learning-registry",
+  "status": "succeeded"
+}

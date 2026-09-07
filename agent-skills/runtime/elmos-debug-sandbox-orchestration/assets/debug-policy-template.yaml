@@ -1,0 +1,26 @@
+schema_version: 1
+policy_id: debug-default-deny
+environment:
+  allowed: [ephemeral, local-controlled, ci-preview]
+  denied: [production]
+sandbox:
+  run_as_non_root: true
+  read_only_rootfs: true
+  docker_socket: denied
+  privileged: false
+  egress: deny_by_default
+  max_duration_minutes: 60
+  cpu_limit: '2'
+  memory_limit_mb: 4096
+  disk_limit_mb: 8192
+  pids_limit: 256
+expressions:
+  default_mode: read_only
+  side_effectful_evaluate: explicit_approval_ephemeral_only
+secrets:
+  broker_required: true
+  max_ttl_minutes: 60
+  redact_in_ui: true
+cleanup:
+  terminate_on_permission_revoke: true
+  attestation_required: true

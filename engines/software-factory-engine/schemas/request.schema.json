@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/software-factory/request-1.0.json",
+  "title": "ELMOS software-factory execution request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version", "tenant_id", "project_id", "correlation_id", "policy_revision",
+    "source_revision", "payload", "policy", "dependencies", "observations"
+  ],
+  "properties": {
+    "contract_version": {"const": "1.0"},
+    "tenant_id": {"$ref": "#/$defs/token"},
+    "project_id": {"$ref": "#/$defs/token"},
+    "correlation_id": {"$ref": "#/$defs/token"},
+    "idempotency_key": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/token"}]
+    },
+    "policy_revision": {"$ref": "#/$defs/token"},
+    "source_revision": {"$ref": "#/$defs/token"},
+    "payload": {"type": "object"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowed_skills": {"$ref": "#/$defs/uniqueTokens"},
+        "allowed_actions": {"$ref": "#/$defs/uniqueTokens"},
+        "allowed_permissions": {"$ref": "#/$defs/uniqueTokens"},
+        "approval_required_actions": {"$ref": "#/$defs/uniqueTokens"},
+        "approved_actions": {"$ref": "#/$defs/uniqueTokens"},
+        "allowed_sandbox_modes": {"$ref": "#/$defs/uniqueTokens"},
+        "allowed_providers": {"$ref": "#/$defs/uniqueTokens"},
+        "allowed_data_classes": {"$ref": "#/$defs/uniqueTokens"},
+        "max_nodes": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "max_parallelism": {"type": "integer", "minimum": 1, "maximum": 64},
+        "max_retries": {"type": "integer", "minimum": 0, "maximum": 10},
+        "max_cost_micros": {"type": "integer", "minimum": 0, "maximum": 1000000000000000},
+        "min_quality_basis_points": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "allow_global_knowledge": {"type": "boolean"}
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "dependency-receipt.schema.json"}
+    },
+    "observations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "external-observation.schema.json"}
+    }
+  },
+  "$defs": {
+    "uniqueTokens": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/token"}
+    },
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"
+    }
+  }
+}

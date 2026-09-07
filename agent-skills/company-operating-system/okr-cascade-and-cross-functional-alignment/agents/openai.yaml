@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 471: okr cascade and cross functional alignment"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $okr-cascade-and-cross-functional-alignment to evaluate this capability with evidence."

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/gate-decision.schema.json",
+  "title": "ETGB Release Gate Decision",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "decision", "run_complete", "evaluated_at", "gate_results", "summary"],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "decision": {"enum": ["PROMOTE", "REJECT", "BLOCKED", "PROMOTE_WITH_WAIVER"]},
+    "run_complete": {"type": "boolean"},
+    "evaluated_at": {"type": "string"},
+    "gate_results": {"type": "array", "items": {"type": "object"}},
+    "summary": {"type": "object"}
+  }
+}

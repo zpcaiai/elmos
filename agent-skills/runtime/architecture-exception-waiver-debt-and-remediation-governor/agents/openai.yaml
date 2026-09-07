@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 010"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $architecture-exception-waiver-debt-and-remediation-governor to apply its fail-closed ELMOS runtime contract."

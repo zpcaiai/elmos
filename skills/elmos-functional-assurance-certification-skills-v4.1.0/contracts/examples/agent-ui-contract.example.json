@@ -1,0 +1,22 @@
+{
+  "protocol": "a2ui",
+  "surfaceId": "contract-review",
+  "components": [
+    {
+      "type": "form",
+      "id": "approval"
+    }
+  ],
+  "actions": [
+    {
+      "id": "approve",
+      "tool": "approve_contract"
+    }
+  ],
+  "accessibility": {
+    "keyboard": true
+  },
+  "recovery": {
+    "checkpoint": true
+  }
+}

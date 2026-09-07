@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.semantic-obligation/v1",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "status",
+    "criticality",
+    "sourceScope",
+    "verificationStrategy"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "not-run",
+        "unknown",
+        "unsupported",
+        "blocked",
+        "fail",
+        "waived",
+        "pass",
+        "not-applicable"
+      ]
+    },
+    "criticality": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "sourceScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verificationStrategy": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "waiver": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  }
+}

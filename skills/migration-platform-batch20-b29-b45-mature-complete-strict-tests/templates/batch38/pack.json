@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "example-deployment-lifecycle",
+  "pack_key": "example-deployment-lifecycle",
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "experimental",
+  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "required_batches": [
+    26,
+    27,
+    37
+  ],
+  "support_matrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification/certification.json"
+}

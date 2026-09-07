@@ -1,0 +1,4 @@
+interface:
+  display_name: "automatic stop and convergence controller"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $automatic-stop-and-convergence-controller to perform this Batch 8 repair step."

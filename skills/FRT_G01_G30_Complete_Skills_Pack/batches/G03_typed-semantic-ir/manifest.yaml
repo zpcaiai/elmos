@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G03",
+    "slug": "typed-semantic-ir",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Typed Semantic IR与Universal Semantic Type System",
+    "transitionFrom": "框架特定AST、模板和运行结构",
+    "transitionTo": "统一为保留类型、状态、效果、身份、路由、数据和UI语义的Typed Semantic IR",
+    "certificateFamily": "IR",
+    "skills": [
+      {
+        "id": "FRT-0300",
+        "name": "Semantic IR Orchestrator",
+        "path": "skills/frt-0300-semantic-ir-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0301",
+        "name": "Universal Semantic Type System",
+        "path": "skills/frt-0301-universal-semantic-type-system/SKILL.md"
+      },
+      {
+        "id": "FRT-0302",
+        "name": "Symbol Scope and Reference Graph",
+        "path": "skills/frt-0302-symbol-scope-and-reference-graph/SKILL.md"
+      },
+      {
+        "id": "FRT-0303",
+        "name": "Component Semantic IR",
+        "path": "skills/frt-0303-component-semantic-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0304",
+        "name": "State Effect and Lifecycle IR",
+        "path": "skills/frt-0304-state-effect-and-lifecycle-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0305",
+        "name": "Navigation Semantic IR",
+        "path": "skills/frt-0305-navigation-semantic-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0306",
+        "name": "Data Network and Storage IR",
+        "path": "skills/frt-0306-data-network-and-storage-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0307",
+        "name": "UI Layout and Style IR",
+        "path": "skills/frt-0307-ui-layout-and-style-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0308",
+        "name": "Platform Capability IR",
+        "path": "skills/frt-0308-platform-capability-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0309",
+        "name": "Source Location and Provenance IR",
+        "path": "skills/frt-0309-source-location-and-provenance-ir/SKILL.md"
+      },
+      {
+        "id": "FRT-0310",
+        "name": "Semantic Invariant Registry",
+        "path": "skills/frt-0310-semantic-invariant-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-0311",
+        "name": "IR Versioning and Migration",
+        "path": "skills/frt-0311-ir-versioning-and-migration/SKILL.md"
+      },
+      {
+        "id": "FRT-0312",
+        "name": "Semantic IR Validator",
+        "path": "skills/frt-0312-semantic-ir-validator/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键源符号均映射到IR或Gap",
+      "未知类型不得静默降级为Any/Dynamic",
+      "Effect、Lifecycle和Identity语义显式",
+      "IR Schema和版本可迁移",
+      "IR Round-trip与Invariant测试通过"
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "approvals": [],
+  "conflicts": [],
+  "oracles": [
+    {
+      "evidence_refs": [
+        "formal-route-campaign.json"
+      ],
+      "independence": "dependent",
+      "oracle_id": "oracle.canonical-ir",
+      "owner": "elmos-polyglot-verification-engineering",
+      "scope": [
+        "claim.route-equivalence",
+        "claim.fail-closed-governance"
+      ],
+      "trust_level": "strong",
+      "type": "formal-spec",
+      "version": "typed-pure-function-v1"
+    },
+    {
+      "evidence_refs": [
+        "evidence/route-set.json"
+      ],
+      "independence": "partially-independent",
+      "oracle_id": "oracle.source-runtime",
+      "owner": "elmos-polyglot-verification-engineering",
+      "scope": [
+        "claim.route-equivalence"
+      ],
+      "trust_level": "supporting",
+      "type": "source-behavior",
+      "version": "local-pinned-toolchains"
+    },
+    {
+      "evidence_refs": [
+        "evidence/route-set.json"
+      ],
+      "independence": "partially-independent",
+      "oracle_id": "oracle.target-runtime",
+      "owner": "elmos-polyglot-verification-engineering",
+      "scope": [
+        "claim.route-equivalence"
+      ],
+      "trust_level": "supporting",
+      "type": "reference-implementation",
+      "version": "local-pinned-toolchains"
+    },
+    {
+      "evidence_refs": [
+        "formal-route-campaign.json"
+      ],
+      "independence": "dependent",
+      "oracle_id": "oracle.route-gate",
+      "owner": "elmos-polyglot-verification-engineering",
+      "scope": [
+        "claim.fail-closed-governance"
+      ],
+      "trust_level": "supporting",
+      "type": "contract",
+      "version": "batch29-evidence-format-2"
+    }
+  ],
+  "pack_key": "polyglot-30-route-formal-equivalence-v1",
+  "precedence_rules": [
+    {
+      "claim_type": "route-equivalence",
+      "ordered_oracles": [
+        "oracle.canonical-ir",
+        "oracle.source-runtime",
+        "oracle.target-runtime",
+        "oracle.route-gate"
+      ]
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,30 @@
+{
+  "id": "vue3",
+  "label": "Vue 3",
+  "frameworkVersion": "3.5.40",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "WEB"
+  ],
+  "language": "TypeScript",
+  "languageVersion": "6.0.3",
+  "runtime": "Node.js",
+  "runtimeVersion": "26.0.0",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Vite",
+  "buildToolVersion": "8.1.5",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "vue-router 4.6.4",
+  "state": "Pinia 4.0.2",
+  "rendering": "CSR",
+  "testTool": "Vitest 4.1.10",
+  "runnerProfile": "MODERN_WEB",
+  "requiredProjectFiles": [
+    "package.json",
+    "vite.config.ts",
+    "src/main.ts",
+    "src/App.vue"
+  ]
+}

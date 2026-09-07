@@ -1,0 +1,33 @@
+{
+  "id": "waiver-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "obligationId": "obl-demo-003",
+  "reason": "External proprietary API has no executable formal contract during migration window",
+  "risk": "HIGH",
+  "owner": "migration-lead",
+  "compensatingControls": [
+    "shadow traffic comparison",
+    "runtime invariant monitor",
+    "daily manual review"
+  ],
+  "approvals": [
+    {
+      "approver": "security-owner",
+      "role": "security",
+      "approvedAt": "2026-08-27T00:00:00Z"
+    },
+    {
+      "approver": "business-owner",
+      "role": "business",
+      "approvedAt": "2026-08-27T00:00:00Z"
+    }
+  ],
+  "createdAt": "2026-08-27T00:00:00Z",
+  "expiresAt": "2026-09-27T00:00:00Z",
+  "status": "APPROVED"
+}

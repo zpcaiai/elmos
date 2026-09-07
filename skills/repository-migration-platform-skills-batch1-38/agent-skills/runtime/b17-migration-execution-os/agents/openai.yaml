@@ -1,0 +1,4 @@
+interface:
+  display_name: "B17 Migration Execution Os"
+  short_description: "Help with B17 Migration Execution Os tasks"
+  default_prompt: "Use $b17-migration-execution-os to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

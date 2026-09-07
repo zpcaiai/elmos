@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-provider-adapters-versioning-compati-c890bce6 to implement its fail-closed ELMOS Product B55 contract."

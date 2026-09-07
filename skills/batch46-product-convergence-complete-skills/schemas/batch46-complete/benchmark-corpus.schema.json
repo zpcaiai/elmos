@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "corpora",
+    "contamination_rules"
+  ],
+  "properties": {
+    "corpora": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "tenant_scope",
+          "allowed_uses",
+          "digest"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "synthetic",
+              "open-source-representative",
+              "internal-holdout",
+              "customer-private"
+            ]
+          },
+          "tenant_scope": {
+            "type": "string"
+          },
+          "allowed_uses": {
+            "type": "array"
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "contamination_rules": {
+      "type": "array",
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false
+}

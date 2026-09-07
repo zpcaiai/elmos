@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 735: group integration governance and decision rights"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-integration-governance-and-decision-rights to evaluate this capability with evidence."

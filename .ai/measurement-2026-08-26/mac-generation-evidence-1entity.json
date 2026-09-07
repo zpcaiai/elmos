@@ -1,0 +1,1133 @@
+{
+  "kind": "elmos.generated-workspace-execution-verification",
+  "schema_version": "1.0.0",
+  "instrument": "verify_generated_workspaces.py",
+  "method": "generate_workspace() then the engine's own verify_workspace() (build -> startup -> CRUD -> RLS). NOT_RUN is reported as an absent measurement, never as a pass or a failure.",
+  "entity_count": 1,
+  "outcome_summary": {
+    "REFUSED_BY_INTAKE": 24,
+    "PASSED": 13,
+    "FAILED": 7,
+    "NOT_RUN_UNREACHABLE_DEPENDENCIES": 3,
+    "VERIFICATION_ERROR": 1
+  },
+  "stage_summary": {
+    "build-analysis": {
+      "PASSED": 50,
+      "FAILED": 7
+    },
+    "startup-probe": {
+      "PASSED": 13,
+      "FAILED": 3
+    },
+    "toolchain": {
+      "PASSED": 53
+    }
+  },
+  "comparison_with_stored_evidence": null,
+  "cells": [
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 52,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "java": true
+      },
+      "failures": [],
+      "seconds": 135.7,
+      "key": "in-memory|none|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 50,
+      "outcome": "VERIFICATION_ERROR",
+      "detail": "OSError:[Errno 8] Exec format error: '/private/tmp/elmos-ws-1e/python-in-memory-none-1e0r/python/.venv/bin/ruff'",
+      "traceback_tail": [
+        "    self._execute_child(args, executable, preexec_fn, close_fds,",
+        "  File \"/Users/stephen/Downloads/ENTER/lib/python3.12/subprocess.py\", line 1955, in _execute_child",
+        "    raise child_exception_type(errno_num, err_msg, err_filename)",
+        "OSError: [Errno 8] Exec format error: '/private/tmp/elmos-ws-1e/python-in-memory-none-1e0r/python/.venv/bin/ruff'"
+      ],
+      "seconds": 20.5,
+      "key": "in-memory|none|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 54,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 3
+        },
+        "startup-probe": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": true
+      },
+      "failures": [
+        {
+          "kind": "startup-probe",
+          "command": [
+            "/opt/homebrew/bin/dotnet",
+            "run",
+            "--no-build",
+            "-c",
+            "Release",
+            "--no-launch-profile",
+            "--project",
+            "/private/tmp/elmos-ws-1e/csharp-in-memory-none-1e0r/dotnet/src/VerifyCsharpInMemoryNone1.Api/VerifyCsharpInMemoryNone1.Api.csproj"
+          ],
+          "exit_code": 1,
+          "output_tail": []
+        }
+      ],
+      "seconds": 392.8,
+      "key": "in-memory|none|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 51,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 5
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": true
+      },
+      "failures": [],
+      "seconds": 255.2,
+      "key": "in-memory|none|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 47,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 3
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "go": true
+      },
+      "failures": [],
+      "seconds": 285.6,
+      "key": "in-memory|none|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 50,
+      "environment_marker": "could not resolve all files for configuration",
+      "outcome": "NOT_RUN_UNREACHABLE_DEPENDENCIES",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/Users/stephen/.local/share/elmos/toolchains/gradle/8.14.3/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "         > Could not get resource 'https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json/3.2.3/ktor-serialization-kotlinx-json-3.2.3.pom'.",
+            "            > Could not GET 'https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json/3.2.3/ktor-serialization-kotlinx-json-3.2.3.pom'.",
+            "               > The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3). You may need to configure the client to allow other protocols to be used. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/build_environment.html#sec:gradle_system_properties in the Gradle documentation.",
+            "                  > Remote host terminated the handshake",
+            "",
+            "* Try:",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 8m 56s"
+          ]
+        }
+      ],
+      "seconds": 606.0,
+      "key": "in-memory|none|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 48,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 2
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "php": true
+      },
+      "failures": [],
+      "seconds": 1.9,
+      "key": "in-memory|none|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 49,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 4
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": true
+      },
+      "failures": [],
+      "seconds": 230.9,
+      "key": "in-memory|none|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 63,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1
+        },
+        "startup-probe": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "java": true
+      },
+      "failures": [
+        {
+          "kind": "startup-probe",
+          "command": [
+            "/Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine/.venv/bin/python3",
+            "scripts/local_runtime.py"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "[ERROR] ",
+            "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+            "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+            "[ERROR] ",
+            "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+            "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException",
+            "2026-09-01 22:49:23.212 CST [14208] LOG:  received smart shutdown request",
+            "2026-09-01 22:49:23.215 CST [14208] LOG:  background worker \"logical replication launcher\" (PID 14215) exited with exit code 1",
+            "2026-09-01 22:49:23.219 CST [14210] LOG:  shutting down",
+            "2026-09-01 22:49:23.220 CST [14210] LOG:  checkpoint starting: shutdown immediate",
+            "2026-09-01 22:49:23.455 CST [14210] LOG:  checkpoint complete: wrote 960 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.181 s, sync=0.052 s, total=0.236 s; sync files=317, longest=0.007 s, average=0.001 s; distance=4384 kB, estimate=4384 kB; lsn=0/195C790, redo lsn=0/195C790",
+            "2026-09-01 22:49:23.468 CST [14208] LOG:  database system is shut down"
+          ]
+        }
+      ],
+      "seconds": 61.0,
+      "key": "postgresql|jwt|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 59,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1,
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "python": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/opt/homebrew/bin/uv",
+            "sync",
+            "--locked",
+            "--python",
+            "3.12"
+          ],
+          "exit_code": null,
+          "output_tail": [
+            "COMMAND_TIMEOUT:300s",
+            "warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.",
+            "Using CPython 3.12.12 interpreter at: /Users/stephen/Downloads/ENTER/bin/python3",
+            "Creating virtual environment at: .venv",
+            "Resolved 34 packages in 20ms",
+            "   Building verify-python-postgresql-jwt-1 @ file:///private/tmp/elmos-ws-1e/python-postgresql-jwt-1e0r/python",
+            "Downloading cryptography (3.8MiB)",
+            "Downloading psycopg-binary (3.9MiB)",
+            "      Built verify-python-postgresql-jwt-1 @ file:///private/tmp/elmos-ws-1e/python-postgresql-jwt-1e0r/python"
+          ]
+        }
+      ],
+      "seconds": 307.5,
+      "key": "postgresql|jwt|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 62,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 3
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": true
+      },
+      "failures": [],
+      "seconds": 100.7,
+      "key": "postgresql|jwt|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 57,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 5
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": true
+      },
+      "failures": [],
+      "seconds": 230.2,
+      "key": "postgresql|jwt|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 55,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "go": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/Users/stephen/.local/bin/go",
+            "vet",
+            "./..."
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "go: downloading github.com/lib/pq v1.10.9",
+            "main.go:12:4: github.com/lib/pq@v1.10.9: Get \"https://proxy.golang.org/github.com/lib/pq/@v/v1.10.9.zip\": EOF"
+          ]
+        }
+      ],
+      "seconds": 12.7,
+      "key": "postgresql|jwt|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 58,
+      "environment_marker": "could not resolve all files for configuration",
+      "outcome": "NOT_RUN_UNREACHABLE_DEPENDENCIES",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/Users/stephen/.local/share/elmos/toolchains/gradle/8.14.3/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "      > Could not get resource 'https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json-jvm/3.2.3/ktor-serialization-kotlinx-json-jvm-3.2.3.jar'.",
+            "         > Could not GET 'https://repo.maven.apache.org/maven2/io/ktor/ktor-serialization-kotlinx-json-jvm/3.2.3/ktor-serialization-kotlinx-json-jvm-3.2.3.jar'.",
+            "            > The server may not support the client's requested TLS protocol versions: (TLSv1.2, TLSv1.3). You may need to configure the client to allow other protocols to be used. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/build_environment.html#sec:gradle_system_properties in the Gradle documentation.",
+            "               > Remote host terminated the handshake",
+            "",
+            "* Try:",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 1m 4s"
+          ]
+        }
+      ],
+      "seconds": 85.7,
+      "key": "postgresql|jwt|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 55,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 2
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "php": true
+      },
+      "failures": [],
+      "seconds": 10.4,
+      "key": "postgresql|jwt|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 59,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 4
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": true
+      },
+      "failures": [],
+      "seconds": 374.7,
+      "key": "postgresql|jwt|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 63,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1
+        },
+        "startup-probe": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "java": true
+      },
+      "failures": [
+        {
+          "kind": "startup-probe",
+          "command": [
+            "/Users/stephen/DevProjects/AIProjects/elmos/engines/project-synthesis-engine/.venv/bin/python3",
+            "scripts/local_runtime.py"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "[ERROR] ",
+            "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+            "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+            "[ERROR] ",
+            "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+            "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException",
+            "2026-09-01 23:09:12.265 CST [21800] LOG:  received smart shutdown request",
+            "2026-09-01 23:09:12.271 CST [21800] LOG:  background worker \"logical replication launcher\" (PID 21807) exited with exit code 1",
+            "2026-09-01 23:09:12.273 CST [21802] LOG:  shutting down",
+            "2026-09-01 23:09:12.274 CST [21802] LOG:  checkpoint starting: shutdown immediate",
+            "2026-09-01 23:09:12.417 CST [21802] LOG:  checkpoint complete: wrote 960 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.102 s, sync=0.039 s, total=0.145 s; sync files=317, longest=0.007 s, average=0.001 s; distance=4384 kB, estimate=4384 kB; lsn=0/195C790, redo lsn=0/195C790",
+            "2026-09-01 23:09:12.423 CST [21800] LOG:  database system is shut down"
+          ]
+        }
+      ],
+      "seconds": 67.0,
+      "key": "postgresql|oidc|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 59,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1,
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "python": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/opt/homebrew/bin/uv",
+            "sync",
+            "--locked",
+            "--python",
+            "3.12"
+          ],
+          "exit_code": null,
+          "output_tail": [
+            "COMMAND_TIMEOUT:300s",
+            "warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.",
+            "Resolved 34 packages in 28ms",
+            "Downloading cryptography (3.8MiB)",
+            "Downloading psycopg-binary (3.9MiB)"
+          ]
+        }
+      ],
+      "seconds": 456.7,
+      "key": "postgresql|oidc|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 62,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 3
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": true
+      },
+      "failures": [],
+      "seconds": 91.4,
+      "key": "postgresql|oidc|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 57,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 5
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": true
+      },
+      "failures": [],
+      "seconds": 83.0,
+      "key": "postgresql|oidc|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 55,
+      "outcome": "FAILED",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "go": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/Users/stephen/.local/bin/go",
+            "vet",
+            "./..."
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "go: downloading github.com/lib/pq v1.10.9",
+            "main.go:12:4: github.com/lib/pq@v1.10.9: Get \"https://proxy.golang.org/github.com/lib/pq/@v/v1.10.9.zip\": EOF"
+          ]
+        }
+      ],
+      "seconds": 6.7,
+      "key": "postgresql|oidc|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 58,
+      "environment_marker": "could not resolve all files for configuration",
+      "outcome": "NOT_RUN_UNREACHABLE_DEPENDENCIES",
+      "engine_status": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/Users/stephen/.local/share/elmos/toolchains/gradle/8.14.3/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "               > Could not GET 'https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.2.20/kotlin-compiler-embeddable-2.2.20.jar'.",
+            "                  > Read timed out",
+            "",
+            "* Try:",
+            "> Run the 'artifactTransforms' report task to view details about registered transforms.",
+            "> Review the documentation on Artifact Transforms at https://docs.gradle.org/8.14.3/userguide/artifact_transforms.html.",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 3m 52s"
+          ]
+        }
+      ],
+      "seconds": 261.6,
+      "key": "postgresql|oidc|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 55,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 2
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "php": true
+      },
+      "failures": [],
+      "seconds": 10.7,
+      "key": "postgresql|oidc|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 59,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 4
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 3
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": true
+      },
+      "failures": [],
+      "seconds": 339.9,
+      "key": "postgresql|oidc|rust"
+    }
+  ]
+}

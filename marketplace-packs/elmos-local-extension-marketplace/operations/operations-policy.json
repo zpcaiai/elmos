@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "owner": "marketplace-sre",
+  "slos": [
+    {
+      "name": "catalog-availability",
+      "target": 0.999
+    }
+  ],
+  "on_call": true,
+  "runbooks": [
+    "catalog-outage",
+    "revocation-outage",
+    "registry-corruption"
+  ],
+  "backup_restore_tested": false,
+  "dr_tested": false,
+  "rto_minutes": 60,
+  "rpo_minutes": 5,
+  "state_reconciled": false,
+  "open_critical_incidents": 0,
+  "evidence_refs": [
+    "operations/evidence.txt"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "No authorized external execution was performed."
+  ]
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Community Event Hackathon And Challenge Manager"
+  short_description: "Authoritative Batch 14 Skill 434 workflow"
+  default_prompt: "Use $community-event-hackathon-and-challenge-manager to execute its evidence-bound Batch 14 workflow."
+

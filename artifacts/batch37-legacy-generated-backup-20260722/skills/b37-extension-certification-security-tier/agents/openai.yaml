@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Certification Security Tier"
+  short_description: "Run evidence-bound Batch 37 extension certification security tie"
+  default_prompt: "Use $b37-extension-certification-security-tier to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Slsa Source Build Provenance Vsa Generation And Verification"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $slsa-source-build-provenance-vsa-generation-and-verification to implement its fail-closed ELMOS Product B37 contract."

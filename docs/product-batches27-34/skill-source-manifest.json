@@ -1,0 +1,2363 @@
+{
+  "namespace_policy": {
+    "migration_package": "M29-M34",
+    "product_roadmap": "Batch 27-34"
+  },
+  "generated_by": "tooling/sync_batch27_34_skills.py",
+  "external_execution_evidence": "NOT_RUN",
+  "records": [
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-adapter-emitter-conformance",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-adapter-emitter-conformance/SKILL.md",
+      "sha256": "d720a085fe094739416b572783597053dfec2c90f5cefd25a82d4a505bb769eb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-csharp-to-java",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-csharp-to-java/SKILL.md",
+      "sha256": "4601bde09e801cae9fd0bacd9c11a873ba2a8894e3ec57ba6e63d9670a55fa33"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-csharp-to-python",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-csharp-to-python/SKILL.md",
+      "sha256": "2668ae86695450d8eb60d8134afe55ee447e4f6cf3ab1b05b8971266a8ea429a"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-csharp-to-typescript",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-csharp-to-typescript/SKILL.md",
+      "sha256": "e1071c0c11db51d217abf794495732e8b7aa36759490e601005003fa138a47ad"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-java-to-csharp",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-java-to-csharp/SKILL.md",
+      "sha256": "e51cd43c32a6963274579ea02f6ee45f681070178571c6de625b71739dd0dbf2"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-java-to-python",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-java-to-python/SKILL.md",
+      "sha256": "6ccc5f6a31c8471b41f08a4ce110a73bd9328f3aecdfe4890810c868c366d67e"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-java-to-typescript",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-java-to-typescript/SKILL.md",
+      "sha256": "6ca974b8f03daa479e7f1fe67a6e28b445fc86507e8af990c6fde52a04fca1b6"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-python-to-csharp",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-python-to-csharp/SKILL.md",
+      "sha256": "f96bbabea20443375e5130560153428dbe80217a5ffb9b4fc4c41ffe99e6df90"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-python-to-java",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-python-to-java/SKILL.md",
+      "sha256": "2b8a26d4a2dd2b5c31bb0e0788863851dbc9e688288d60de14e629ece272d95b"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-python-to-typescript",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-python-to-typescript/SKILL.md",
+      "sha256": "2623970c0e719866838a4eda4f9606f015694ab63070ce64e3dd3684d9ab5580"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-typescript-to-csharp",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-typescript-to-csharp/SKILL.md",
+      "sha256": "3b3d056291c21241dbd2fe2345e3c76f9ed7b6972c3f6f9616fbd101b1df5973"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-typescript-to-java",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-typescript-to-java/SKILL.md",
+      "sha256": "939fd97c210c979238ddd1cd669a780cd6a695314c59e04cc8e223984946190f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-certify-typescript-to-python",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-certify-typescript-to-python/SKILL.md",
+      "sha256": "ee3492d95a98ca24485aa931c93bfa771efb9fef813dbb158333cea82aff9942"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-compatibility-runtime-governor",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-compatibility-runtime-governor/SKILL.md",
+      "sha256": "bc3e3c54e826ceb7bdb0124dfe0a6bb2e7bbed4fc65be9629be56232810600f6"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-language-support-matrix",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-language-support-matrix/SKILL.md",
+      "sha256": "954d8ce138aa2f536f972a6a381a14a9c6b193d3f37cb8435c3063117b4505da"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-route-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-route-certification-gate/SKILL.md",
+      "sha256": "33dd7d441919641adce3e3e7316e37bbe9ffb0474224fae92f1200dfc0ef0778"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-route-corpus-certifier",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-route-corpus-certifier/SKILL.md",
+      "sha256": "6ae8676d19a1aec65f0ec0e8f7feed19e18dd42f7d169aa053bcc9a7570f44fb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-route-economics-certifier",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-route-economics-certifier/SKILL.md",
+      "sha256": "69b6516facce8700989681e0fd701d496c3450ba8bb79123ff17a6e5af210cfe"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-route-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-route-factory/SKILL.md",
+      "sha256": "5e20b628e60faf2fa103599c6e6f06ce55ce756191381ebf1b628429d222b021"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M29",
+      "name": "b29-route-prioritizer",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b29-route-prioritizer/SKILL.md",
+      "sha256": "d440f7790c46713087a93a2638bbe9527afd17c9c75d969597d68183e68f0396"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-aspnet-to-spring",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-aspnet-to-spring/SKILL.md",
+      "sha256": "786e4d3394d4536821cfe33d9378bd458c379d93629653254b0a18ca3155ffb6"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-django-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-django-migration/SKILL.md",
+      "sha256": "037db4d52fb3f742c23a348d4548ae5eb82190565414e41b17daa42b40a73fa3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-dotnet-framework-modernization",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-dotnet-framework-modernization/SKILL.md",
+      "sha256": "09f5258dfad683b21c31a65174ac5793e9a98a7015e297b743c3cd24cb90d65f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-express-node-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-express-node-migration/SKILL.md",
+      "sha256": "f326a2a184036953b26c13a759b4b3f571c7b4ac68bca5e922ce7e0929704388"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-fastapi-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-fastapi-migration/SKILL.md",
+      "sha256": "0ecae77d22cc233dc47c070220433f50868dbd33f9fed1fe4729851fd47038ac"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-flask-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-flask-migration/SKILL.md",
+      "sha256": "db8ec5ce8343a1f40c7c7083fb1d938835ed504c1a4d0c8799fdc9bd11f2e453"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-framework-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-framework-certification-gate/SKILL.md",
+      "sha256": "8aacf70d9b587a4a18a626f3352c669a5cb6f4d484c71000084992730a13ccdd"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-framework-coexistence-strangler",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-framework-coexistence-strangler/SKILL.md",
+      "sha256": "e0ce3e65c530aac2ad5b9a04738f3ab4f0d4a4d2bf781658ee28fcd1da54d2cb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-framework-contract-meta-model",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-framework-contract-meta-model/SKILL.md",
+      "sha256": "c754dc931305d6a7be39fac5a5e0ce74f0a0f35c5b11a5722f43cbc266bc2c1f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-framework-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-framework-factory/SKILL.md",
+      "sha256": "f8a323bead802046a99457a42e8a3c82c5f7a252eb90f2093214a64db1830be3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-framework-version-lifecycle",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-framework-version-lifecycle/SKILL.md",
+      "sha256": "f0f85eb9f2e85ea783b656d5a160b189951e02c993dc7fb9e1f8247686bbcf75"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-jakarta-ee-modernization",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-jakarta-ee-modernization/SKILL.md",
+      "sha256": "980ba2f2465d8cb504e8163c54c181837c2c1005e66b1af5257487645ff82f71"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-micronaut-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-micronaut-migration/SKILL.md",
+      "sha256": "49a8e30d191736db9d1f8e4199c5918d2503297e4a9f162d69fb188d9bf074e0"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-nestjs-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-nestjs-migration/SKILL.md",
+      "sha256": "e09ad4087bc29f67f880682244fbb6ff1010384a8ae53f387a1035e2183f4e6c"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-python-background-jobs",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-python-background-jobs/SKILL.md",
+      "sha256": "e8197ff70c69de2e4fe39ae32f6bdaf8cbc6e8325049c653011361053dd9218c"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-quarkus-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-quarkus-migration/SKILL.md",
+      "sha256": "0ca916736bb0809723ef45c605ac500319a09a63e0fc3bd0eaf6aff8fe9cf7e8"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-source-framework-fingerprint",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-source-framework-fingerprint/SKILL.md",
+      "sha256": "f403c2dc78815b63d2f3dc5129d3d15bddc56d35eb114494c416214e7b5b28ca"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-spring-boot-upgrade",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-spring-boot-upgrade/SKILL.md",
+      "sha256": "c8d1d2b10d6a0f53054534747e1ef9ebc943f5ce3f1074f8cba2727cd27b0939"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-sqlalchemy-persistence",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-sqlalchemy-persistence/SKILL.md",
+      "sha256": "d91e05eb17d9d87a6881fe757b51cee1091dafdbe2183da7c6312ee58286ed2a"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M30",
+      "name": "b30-target-framework-profile",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b30-target-framework-profile/SKILL.md",
+      "sha256": "eaa5d8fc34bcfa4664b1aee5dce2c05dcd8f72a880ff97065a86519c91db7839"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-canonical-database-ir",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-canonical-database-ir/SKILL.md",
+      "sha256": "4e608cb328965aa887ebde925d348b9b43dcc679bcd5489dedaec1800425cfb3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-constraint-index-partition-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-constraint-index-partition-migration/SKILL.md",
+      "sha256": "82e57a3b34dba5f78191ea57b3851f4d1ca6c75549cc327e976366f0bb0f4a11"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-data-contract-catalog-lineage",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-data-contract-catalog-lineage/SKILL.md",
+      "sha256": "9d4e4fdd576bc335ebd8f9a96c0d153ad1b6c52a37dc0e63a0d957be3b9ced20"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-data-correctness-performance-cutover",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-data-correctness-performance-cutover/SKILL.md",
+      "sha256": "842f749fa15f7b099771b4c3c97002f312eb3acb6edff3b06066c4fc6e95b8e3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-data-pipeline-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-data-pipeline-migration/SKILL.md",
+      "sha256": "e0eb1b443abe75a83cee3e94752c66f0b3d42f4f9c21765570ef7b4f9c6d9613"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-data-quality-repair",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-data-quality-repair/SKILL.md",
+      "sha256": "6446336bd8f0546fb18ea217e570eafcfaff69dc6069cae1f4b74b815a143c50"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-database-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-database-certification-gate/SKILL.md",
+      "sha256": "04d9838f0a4fe5358296de3b32f8c0d4b5466a07ab48a6323395beeaeefe93a7"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-database-estate-discovery",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-database-estate-discovery/SKILL.md",
+      "sha256": "c25ca0300ae67ca852bf20984cb057c61f37f9bbadc7f72d6d0511fb6a7aeedb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-database-modernization-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-database-modernization-factory/SKILL.md",
+      "sha256": "2469a5866b59dfb4546add7a4717a791d7f2386fb755f768f89d1b4706ee246b"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-dialect-provider-capability-matrix",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-dialect-provider-capability-matrix/SKILL.md",
+      "sha256": "af40b69c487aa34ed1dc8d912aa95462202b2f7fcecd209a1b348adf0d4a5358"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-etl-elt-discovery",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-etl-elt-discovery/SKILL.md",
+      "sha256": "e034d1adc8da379a275cad4d7673a325ce6d7312fed82bb4c0d651980dc84a60"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-orm-database-contract",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-orm-database-contract/SKILL.md",
+      "sha256": "82e3ad9d6f1d92f89955c69919546cd01826beaa8685af478d47d955983807a3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-query-plan-performance",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-query-plan-performance/SKILL.md",
+      "sha256": "5dd2a500297ba220578791f11c8baabf609c52a63514c7d890b24de44763c8ef"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-query-semantic-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-query-semantic-migration/SKILL.md",
+      "sha256": "8372613f17b359f817152fe20d0c1bc2b970d11a2b326f0e783cf80f37022787"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-relational-route-pack-certifier",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-relational-route-pack-certifier/SKILL.md",
+      "sha256": "28b7e4c947c625a1cdab74d52363d40c0b5f8004b45d455136bf04ce2c7235c4"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-routine-trigger-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-routine-trigger-migration/SKILL.md",
+      "sha256": "3b9fd968aa9123202ea325b0ec05f4fd38e40bd4c3e5f4e4c523fdaf0f95ef72"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-schema-table-column-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-schema-table-column-migration/SKILL.md",
+      "sha256": "e96bc8b27c18828179e98559a8e3c929fc07e36b49cd95899ef29ced24810141"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-sequence-identity-generated-columns",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-sequence-identity-generated-columns/SKILL.md",
+      "sha256": "170bc61f5c07649db8041333638b53651d423e128640c686437dbccbafd371cb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-transaction-isolation-locking",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-transaction-isolation-locking/SKILL.md",
+      "sha256": "0bfc3ec2134d400fdd79f0d49feb80c6acd50d09f9604def9943a7a9908984c9"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-type-precision-null-collation",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-type-precision-null-collation/SKILL.md",
+      "sha256": "0af5ab09ce7dd8eca7c9e07712d2085bcc4c3ed356796a8e6886edfb0086146f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-view-materialized-view-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-view-materialized-view-migration/SKILL.md",
+      "sha256": "3c0b7549a45025e597178c7ec8092660da4e942e462744e7ccd8b0705d8da2cf"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M31",
+      "name": "b31-warehouse-lakehouse-analytics",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b31-warehouse-lakehouse-analytics/SKILL.md",
+      "sha256": "a411edbe287420d6a9d4086ddb6603b114665e420a74f6b1544357c3b3b53e3b"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-accessibility-i18n-seo-visual-e2e",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-accessibility-i18n-seo-visual-e2e/SKILL.md",
+      "sha256": "61352a1998a8a59657cc3069afd588e481f7141912ff75273049c84757be9c91"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-angularjs-modernization",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-angularjs-modernization/SKILL.md",
+      "sha256": "d63a9d80c819ac0d82d6f351761fad14fba219fa15676ab146b61e5881cf0759"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-api-client-data-cache",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-api-client-data-cache/SKILL.md",
+      "sha256": "c66d8cc6bf05bfb3252d7d9b79f28644231b25ce34914d65df1311b0a4c86b3d"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-client-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-client-certification-gate/SKILL.md",
+      "sha256": "115c72a9e7a71285ff8818c6f89b4205f7e1d1c0c40f3eb858f5c32c629a9b53"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-client-estate-discovery",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-client-estate-discovery/SKILL.md",
+      "sha256": "1e4d8884f0a0c996c010384e02608f6f5a6a110030d0fb49a267b4d3139e5513"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-client-identity-permission-flags",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-client-identity-permission-flags/SKILL.md",
+      "sha256": "9ff88bc798b1b2f641d4dd7bc60a8f0ddfbc28c1861763660dc8eadd81c1c5f6"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-client-modernization-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-client-modernization-factory/SKILL.md",
+      "sha256": "75133dbeca2737c9242928cb44b15909cba782932b0dd53e337e471c15ff71d4"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-component-template-view-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-component-template-view-migration/SKILL.md",
+      "sha256": "6c0f428c562d3c4147962ab6d70816e248d68bfa501227f86106363563b0a898"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-design-token-theme-extraction",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-design-token-theme-extraction/SKILL.md",
+      "sha256": "8310cbf8cd5663124f983d18bb74b57a451e80b4053d0816943e61f6cc3dc44c"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-desktop-web-crossplatform",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-desktop-web-crossplatform/SKILL.md",
+      "sha256": "1eccd90d2146f3d66db5d706e50a6c1e806ac3fef51d52354ab9720e24cc86b2"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-dotnet-ui-modernization",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-dotnet-ui-modernization/SKILL.md",
+      "sha256": "919f90fe9a795850555896f453e1969a78046518beb618ba67e8c716663803d5"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-form-binding-validation",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-form-binding-validation/SKILL.md",
+      "sha256": "9eb392679071a6aceae800e40a01e0a17efd10b6b521594f8d9ae0edcd011b83"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-java-server-ui-modernization",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-java-server-ui-modernization/SKILL.md",
+      "sha256": "d13d4129403a8b318970c3f5483caa2c0034fde3ba29ba1cf82a7029270ca583"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-javascript-typescript-strengthening",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-javascript-typescript-strengthening/SKILL.md",
+      "sha256": "18a5f72788d7747c4b53354d1c697d91d5fe8aceabb64f9465bab6e0fb7f5eaf"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-mobile-crossplatform",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-mobile-crossplatform/SKILL.md",
+      "sha256": "f163ce7bc9fd666f918b194916356faad9ddf3a4d8151a15d0e8802660ef1495"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-react-angular-vue-target-profile",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-react-angular-vue-target-profile/SKILL.md",
+      "sha256": "f256036e06161f2d02221bcc2e65abbc804bd6edd57c55056e60999471f9b78f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-rendering-ssr-csr-hydration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-rendering-ssr-csr-hydration/SKILL.md",
+      "sha256": "5c8fcaca26907eccc2a07dc0e5c8d34e81de8fc0728409708fc8d1ed729632cd"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-route-navigation-deeplink",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-route-navigation-deeplink/SKILL.md",
+      "sha256": "5bf5e585f5b939e374670b9768446f04d7f70d369073e714797d4b7024bc8a4a"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-state-management-lifecycle",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-state-management-lifecycle/SKILL.md",
+      "sha256": "ef5db23212cbe0e9d84bccb6fe5b8a2be20ce062076d9f5c8190ae97bea759df"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M32",
+      "name": "b32-ui-interaction-ir",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b32-ui-interaction-ir/SKILL.md",
+      "sha256": "d2e181d0404914f94e3af2fb36b3719dda838c5107e1b6d0a41c9b503d14cbc5"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-api-gateway-ingress-traffic",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-api-gateway-ingress-traffic/SKILL.md",
+      "sha256": "f7b812ecb990d6e70ce8bfa1164a61cc57212d9c652257113d103d58928ee630"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cicd-pipeline-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cicd-pipeline-migration/SKILL.md",
+      "sha256": "8ba45e7579cc0c46e847cff81b5985f1255a4b0923dd763743e86afdc658bee5"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-certification-gate/SKILL.md",
+      "sha256": "07a8e95b0e147ac87809070ea7b91a7576ecea328ad05a73a9374e41a0561175"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-cost-capacity-optimizer",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-cost-capacity-optimizer/SKILL.md",
+      "sha256": "946e4229f4cfdcae43795c043281be788d11220ebfca08f2ba28ac0a4707c9a5"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-iac-devops-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-iac-devops-factory/SKILL.md",
+      "sha256": "b3df1b2b0b33e7f2db1552337ee1d152053d83b346d2bab2169e731cce088a64"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-native-iac-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-native-iac-migration/SKILL.md",
+      "sha256": "da766af2f62ef6d2509cdc36fc45ca8fceb82bf8970de8a1a5c57cc4c0d4ddf2"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-security-guardrails",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-security-guardrails/SKILL.md",
+      "sha256": "156762fac2a95bb1225c140c59d9078fd3ebbe99edfa97a02bf8b8efc6e91bdb"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-cloud-service-capability-map",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-cloud-service-capability-map/SKILL.md",
+      "sha256": "97ffcf550e7062485a5b5b42860a9d247132e83fdde50f90f3eff1a8e276c6af"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-container-build-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-container-build-migration/SKILL.md",
+      "sha256": "8fbd6ac4e95398c8b12cec3c0de4b2f1b8a4bde4ad29b3827b3f8d1d0653fea8"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-helm-chart-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-helm-chart-migration/SKILL.md",
+      "sha256": "e6e8c111018a5bfacaff52047cff1faa1e6aa0e3441cf4f4972db46bc365482e"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-identity-network-dns-mesh",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-identity-network-dns-mesh/SKILL.md",
+      "sha256": "3fe500178def7025692d6a9f9fc0a90f465a41dec3379b9b137bb868fa378648"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-infrastructure-drift-validator",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-infrastructure-drift-validator/SKILL.md",
+      "sha256": "5348c398b2f2df579768ddb7de6bf15cd26fd969fa5cd779f33464d8769b687d"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-kubernetes-manifest-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-kubernetes-manifest-migration/SKILL.md",
+      "sha256": "29880135059c1f634b9b0b96d0dd5b0aca80b34db29417ac5faa58b3a6adcd75"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-managed-service-mapping",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-managed-service-mapping/SKILL.md",
+      "sha256": "e51d700760937de31f45509503421257e9d1c9f31b37efee6163c33ea79b1b20"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-observability-alert-dashboard",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-observability-alert-dashboard/SKILL.md",
+      "sha256": "b169a45f37cd4c0d45de0ff943a94aa40f70f895bc40e7fce012f4d15f4b6344"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-provider-neutral-iac-ir",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-provider-neutral-iac-ir/SKILL.md",
+      "sha256": "93033535f5276f48bafce2c7fcf4041000a715f56f47f5217cfa1d1f86fd5844"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-runtime-architecture-contract",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-runtime-architecture-contract/SKILL.md",
+      "sha256": "6b2212e4d46651b10b6f90648dccdbcb8c015836aed156a9307a923963275713"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-secret-config-environment",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-secret-config-environment/SKILL.md",
+      "sha256": "97d3420be37184035d500d382ea770913f4bef49f3f01e7cf5658c566baaa071"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-serverless-event-runtime",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-serverless-event-runtime/SKILL.md",
+      "sha256": "bdc6272e2867fbfb8ff1ccb10fdcdd321bc06332046b8a39f3cb1d77d744b0da"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M33",
+      "name": "b33-terraform-module-migration",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b33-terraform-module-migration/SKILL.md",
+      "sha256": "48d3f7a7ae5caa0d13943bccb1c9015ae58390f2379c56d1aeda81c0a99686bc"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-content-addressed-cache-artifact-reuse",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-content-addressed-cache-artifact-reuse/SKILL.md",
+      "sha256": "b5c5aa6b8550da487d66b23a6247081f3bcbedd0390b9439149afa5f70aac076"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-cross-repo-dependency-graph",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-cross-repo-dependency-graph/SKILL.md",
+      "sha256": "9a413a08589c24347b94c6f922b10454f54758c94c084a39e3515ebf454eb5af"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-distributed-semantic-index",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-distributed-semantic-index/SKILL.md",
+      "sha256": "7e647ba7e08885b47de1180a8e69dbd37b62c3b34d4760fcc3c1baf202847c12"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-distributed-workflow-sharding",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-distributed-workflow-sharding/SKILL.md",
+      "sha256": "26318c54596ec059b6247ba3f9ccc1ae4dd2cfba20a16e2e25eee6acee1cafdf"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-failure-isolation-checkpoint-recovery",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-failure-isolation-checkpoint-recovery/SKILL.md",
+      "sha256": "f3e2f8bc90f1b9a9262840c9b6a214dd5ef8d63ef4c776a3b9f17e9fe693698b"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-fair-scheduling-priority-noisy-neighbor",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-fair-scheduling-priority-noisy-neighbor/SKILL.md",
+      "sha256": "61f2d248ceaa39358a69e320e0c7eea7c58a42f7ada344d2afd68217d19e1b68"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-incremental-graph-impact",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-incremental-graph-impact/SKILL.md",
+      "sha256": "4cec06359203961686c197f6cb076d08ba23c85d45027d65cb3a5c83d98b24b8"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-large-artifact-regional-transfer",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-large-artifact-regional-transfer/SKILL.md",
+      "sha256": "04f351e15ea94e365bf28ef001b7b82ec2e415a75aac006a4a6443cc3b14407a"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-monorepo-partition-work-units",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-monorepo-partition-work-units/SKILL.md",
+      "sha256": "9011553f12b61cae7c142357078a5861fa5e4764523359dad9f43e6f3871651f"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-multilanguage-workspace-build-graph",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-multilanguage-workspace-build-graph/SKILL.md",
+      "sha256": "e5668d8e830d829c7257f46fa06fa7470a75ede5b21a22b4e4375b68fceb5e40"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-multirepo-pr-merge-order",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-multirepo-pr-merge-order/SKILL.md",
+      "sha256": "4798370d6e836c4360c0bea05aa01338785bf1f9e6ea24135191c5ec31f7380d"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-budget-cost-guardrails",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-budget-cost-guardrails/SKILL.md",
+      "sha256": "741a3acd5931dce3e48f2a163f27ba66af2e02eda87b79f9e4b780116cf38bd2"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-capacity-duration-forecast",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-capacity-duration-forecast/SKILL.md",
+      "sha256": "1bab9b438ee4bff91f6c6f29bd796f36c3ba187cd531ff08befcb3f358ef4296"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-control-tower",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-control-tower/SKILL.md",
+      "sha256": "0b74220bf923a427ace15a19937c77114c3d67e035c008f7da40cdfca52a5ee3"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-dr-replay",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-dr-replay/SKILL.md",
+      "sha256": "6067e888afa8060600784e13a3ae698fe34cd510f701ef6c6b66df16cc5d6d71"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-scale-certification-gate",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-scale-certification-gate/SKILL.md",
+      "sha256": "dde3a35501362dc201bc1b5ba9f08f3896b1212cc6d951d036d0f251c7cf5a10"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-portfolio-scale-factory",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-portfolio-scale-factory/SKILL.md",
+      "sha256": "c349249f81fef1fc116835ade14bc66c1a9827dbd5da504858df4d81947b0bad"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-recipe-campaign-orchestrator",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-recipe-campaign-orchestrator/SKILL.md",
+      "sha256": "f91834e949614b53ca4924ebb88e50b4b053cd47264075d9218cbe69b402c111"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-repository-portfolio-discovery",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-repository-portfolio-discovery/SKILL.md",
+      "sha256": "e7d732df43255b3f21e6a7f1ed18b3902f503816b9305799284ab97dbeedd7fd"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-runner-fleet-scale-scheduler",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-runner-fleet-scale-scheduler/SKILL.md",
+      "sha256": "98a202d4c41f3e09620c1d15404546e48499e89e99f8964f3416d8160b232bea"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-scale-benchmark-suite",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-scale-benchmark-suite/SKILL.md",
+      "sha256": "d8255889f9e6871b25dc69869167ee4b54feba52c2122e4668c33e9692c61d2b"
+    },
+    {
+      "family": "migration-pack-certification",
+      "batch": "M34",
+      "name": "b34-shared-library-bom-platform-dependency",
+      "source": "/Users/stephen/Downloads/migration-platform-batch20-b29-b30-b31-b32-b33-b34/.agents/skills/b34-shared-library-bom-platform-dependency/SKILL.md",
+      "sha256": "1ed6e2340953ae6fa816c670d10f9ef45fe6e6bf417597a43a1fea9a5f0342d6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "tbm-investment-engine-contract-and-worker",
+      "source_name": "tbm-investment-engine-contract-and-worker",
+      "source_line": 24539,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2454323a35fc284c4888ba6d74ad49293e5f2ba501f13f5aa0e5cbf57e607bf6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "technology-financial-cost-usage-and-labor-ingestion",
+      "source_name": "technology-financial-cost-usage-and-labor-ingestion",
+      "source_line": 24631,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4b908fe52e48f2fb5691490d8297fc685537b95fb65f86f0c019738e9872275d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "tbm-taxonomy-model-allocation-and-cost-flow-engine",
+      "source_name": "tbm-taxonomy-model-allocation-and-cost-flow-engine",
+      "source_line": 24771,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "89ac505520e420599015d77b297825a8a4e7e9a931addb42dca4f4301e93ddc4"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "digital-product-service-platform-and-ownership-model",
+      "source_name": "digital-product-service-platform-and-ownership-model",
+      "source_line": 24894,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "221884ee0382346b6b6ad20bbee33736ce0c551945782260a0cf07ddcbd5a0b8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "project-to-product-funding-team-and-operating-model",
+      "source_name": "project-to-product-funding-team-and-operating-model",
+      "source_line": 25014,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e7ed02ef73d51e872b978b7a38d464181f662aff8ebfa23de4afc81038a989e3"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "product-tco-cost-to-serve-and-unit-economics-engine",
+      "source_name": "product-tco-cost-to-serve-and-unit-economics-engine",
+      "source_line": 25118,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "78780c7c76fb9c42ef2dd52324a967c014d9c8a79a97937e80367d94d13c01e4"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "budget-forecast-scenario-and-funding-envelope-manager",
+      "source_name": "budget-forecast-scenario-and-funding-envelope-manager",
+      "source_line": 25247,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "a38a67b739901c943b2d610d258fd6d5050bd3b43dd6339419a87a779022eaf6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "showback-chargeback-shared-cost-and-transfer-governor",
+      "source_name": "showback-chargeback-shared-cost-and-transfer-governor",
+      "source_line": 25358,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "923d07283d08ef403bf61929236d2f61290ab280767d2e9ea63193cec6d18d2f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "vendor-saas-license-contract-and-commitment-optimizer",
+      "source_name": "vendor-saas-license-contract-and-commitment-optimizer",
+      "source_line": 25455,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3ff10fff93789c284076f655d440071117b5cef784a2e377385e0ea4c741ff2e"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "software-capitalization-cost-classification-and-evidence",
+      "source_name": "software-capitalization-cost-classification-and-evidence",
+      "source_line": 25581,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "afdfb001195a465cf821bc705c5da2baa70ab986f223c26e0f429d3ff97ec584"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "benefit-hypothesis-outcome-attribution-and-realization",
+      "source_name": "benefit-hypothesis-outcome-attribution-and-realization",
+      "source_line": 25723,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fc5b975d28c180e746cee446a6a2a0f992714924f34784407ec78f5c66ee3688"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "technical-debt-exposure-remediation-and-economic-impact",
+      "source_name": "technical-debt-exposure-remediation-and-economic-impact",
+      "source_line": 25843,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "7e75fc52020585efe032c86383d57058aff8364e544ca9a7f71fad8de76e5a64"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "investment-portfolio-option-prioritization-and-funding",
+      "source_name": "investment-portfolio-option-prioritization-and-funding",
+      "source_line": 25955,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e1ca8217a4b00a5f1647d0c633d050b012da280d8f5c46214412a02d885365e5"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "continuous-funding-stage-gate-reallocation-and-exit-governor",
+      "source_name": "continuous-funding-stage-gate-reallocation-and-exit-governor",
+      "source_line": 26068,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "237aec0409b30cd204f8aaa36a0d7c625ab77792948afadf080a7c1fe7fd577f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "financial-model-data-quality-reconciliation-and-control",
+      "source_name": "financial-model-data-quality-reconciliation-and-control",
+      "source_line": 26171,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "20aa05d244e63d7f443bab81799a06cf368d716772610c01b6291432e2dc7f93"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "executive-product-economics-and-technology-value-cockpit",
+      "source_name": "executive-product-economics-and-technology-value-cockpit",
+      "source_line": 26279,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "26b5b5c4c929e050ebab85cffe331d394b018a3af7f9a6f2d4f875aef74bfa5a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "tbm-operating-model-adoption-capability-and-improvement",
+      "source_name": "tbm-operating-model-adoption-capability-and-improvement",
+      "source_line": 26394,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "18926aa719f8052bff48be90a853d81748d98a7a5f88d3c5f9f1553f90a30fb8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 27,
+      "name": "tbm-investment-elmos-unified-evidence-integration",
+      "source_name": "tbm-investment-elmos-unified-evidence-integration",
+      "source_line": 26507,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "159b73a06a230327f5d4e984c1ba2f5df8fe452ef4a1ed8ed66d73a5a8e7b202"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "organization-workforce-engine-contract-and-worker",
+      "source_name": "organization-workforce-engine-contract-and-worker",
+      "source_line": 30012,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4307b0352be59f290e9ee8975262fb6c37be02a420eb588c89098a90a2e1ff18"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "organization-team-role-capability-and-work-discovery",
+      "source_name": "organization-team-role-capability-and-work-discovery",
+      "source_line": 30107,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4664be652f6a1f061a4175d886a9bf3bd8a7d9e103e218df8ca500f163202242"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "product-operating-model-value-stream-and-team-designer",
+      "source_name": "product-operating-model-value-stream-and-team-designer",
+      "source_line": 30229,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fbaeda28ae3bde8f22034c0409d01a44b66dd91087fa222ae5e8c38dab67fabd"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "team-topology-cognitive-load-and-interaction-modernizer",
+      "source_name": "team-topology-cognitive-load-and-interaction-modernizer",
+      "source_line": 30325,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "b19359004487e64208c0d935958a2e97267505b04a1b09b02cbca4161600d752"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "enterprise-skill-ontology-graph-and-evidence-engine",
+      "source_name": "enterprise-skill-ontology-graph-and-evidence-engine",
+      "source_line": 30439,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3e736b0157b6a4ee4f88a084c2a951ab7f94b99d8df956a0ec49ecaec8ab06fe"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "job-role-task-competency-and-work-architecture-engine",
+      "source_name": "job-role-task-competency-and-work-architecture-engine",
+      "source_line": 30559,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "df8afdea23c25d0da89c16e86583cd3721c861c294eaff6f05049a832ca23fb8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "engineering-career-framework-leveling-and-mobility-manager",
+      "source_name": "engineering-career-framework-leveling-and-mobility-manager",
+      "source_line": 30668,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "03c62d990b7c12610961c82b7957aceb87aebf63b8ca1a2f5c73b6083a1a71e9"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "workforce-demand-supply-capacity-and-scenario-planner",
+      "source_name": "workforce-demand-supply-capacity-and-scenario-planner",
+      "source_line": 30780,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "bd7b4ab0eac13bcb76d0835b6e1df39c702bbc0df63eb0739874644f57e9d6a0"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "ai-augmented-job-task-redesign-and-human-oversight",
+      "source_name": "ai-augmented-job-task-redesign-and-human-oversight",
+      "source_line": 30914,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "18322cf9e7a363f23bca583d10896f92ed6b62573ca80478fc367f2dfc8c599b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "learning-path-practice-assessment-and-capability-development",
+      "source_name": "learning-path-practice-assessment-and-capability-development",
+      "source_line": 31043,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "db749066688a5765956fa8396278d2ba93dec92e7774e1b6d304d3153a1328fe"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "certification-open-badge-and-verifiable-credential-manager",
+      "source_name": "certification-open-badge-and-verifiable-credential-manager",
+      "source_line": 31168,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1643de9962cbbbefa93e5a9114796775cb6140e4c74f7a19cfd243c4800340a6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "talent-market-hiring-internal-mobility-and-succession",
+      "source_name": "talent-market-hiring-internal-mobility-and-succession",
+      "source_line": 31298,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e550c7e7d30170e5978a1b6ecffd7fcef0e473c0ac2b63340fa9ed7f13364acc"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "key-person-knowledge-concentration-and-continuity-risk",
+      "source_name": "key-person-knowledge-concentration-and-continuity-risk",
+      "source_line": 31428,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3adcd56b3d5efcfa5cc421dc93052ca82a4fbb499d6e3e67e221293a59482c97"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "vendor-contractor-partner-workforce-and-knowledge-governance",
+      "source_name": "vendor-contractor-partner-workforce-and-knowledge-governance",
+      "source_line": 31546,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "70ad3e9414e915ce4546246b5c9cc35f31df7425c9248d6346f465bb489d8946"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "team-health-leadership-culture-and-change-readiness",
+      "source_name": "team-health-leadership-culture-and-change-readiness",
+      "source_line": 31669,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e4511db1e1727c17b6d7dc9635978605355b9d660477081ce1c74e2ed1db2aa5"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "workforce-transition-redeployment-fairness-and-change-o-c8ad8133",
+      "source_name": "workforce-transition-redeployment-fairness-and-change-orchestrator",
+      "source_line": 31782,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "a8742c76ea3277a53f04dadfdd8e6088ae65ae22fb6409d829902c2d8d11e38c"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "organization-outcome-productivity-and-change-effectiveness",
+      "source_name": "organization-outcome-productivity-and-change-effectiveness",
+      "source_line": 31912,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e1440ad41cd62066a806b59626edde25d909d0af25151946d1c0483d2d77e7c7"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 28,
+      "name": "organization-workforce-elmos-unified-evidence-integration",
+      "source_name": "organization-workforce-elmos-unified-evidence-integration",
+      "source_line": 32042,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2f477c01057dcb5d1972679ce6cbe5886b314e118b517394ae96373f40dbbe5b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-execution-engine-contract-and-worker",
+      "source_name": "transformation-execution-engine-contract-and-worker",
+      "source_line": 35561,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2c8ef31fa6bf6f389e1595c3b73d9da254ac8292b0fb903766123d928639cc0f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "strategy-outcome-portfolio-and-transformation-discovery",
+      "source_name": "strategy-outcome-portfolio-and-transformation-discovery",
+      "source_line": 35652,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "f44cb07338c5d31f53c35c2b79cda5a4359a466bacddef6a1208efbc2a8d90b8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-office-operating-model-governance-and-cadence",
+      "source_name": "transformation-office-operating-model-governance-and-cadence",
+      "source_line": 35782,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "53c66c1f814f47fe68d19fcb7bc487817d6eca8e6ebb53350c0cc83b84c407b6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "strategic-objective-outcome-okr-and-initiative-alignment",
+      "source_name": "strategic-objective-outcome-okr-and-initiative-alignment",
+      "source_line": 35894,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "7febd00e747f087ce32acdcfe16a02f2e09ed1a869997d03bfd612b865b87a92"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "cross-portfolio-dependency-critical-path-and-integration-planner",
+      "source_name": "cross-portfolio-dependency-critical-path-and-integration-planner",
+      "source_line": 36000,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "117da44c8330e90c4057063f80a4932f4451a564f08a83476ca5d2b68631ed3e"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "change-portfolio-saturation-capacity-and-collision-manager",
+      "source_name": "change-portfolio-saturation-capacity-and-collision-manager",
+      "source_line": 36112,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fc1ec4eb33209d3e0d9d5c7a06fd0d92ded7b175efcceda800a9a69a012b55a8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "stakeholder-influence-impact-and-engagement-graph",
+      "source_name": "stakeholder-influence-impact-and-engagement-graph",
+      "source_line": 36223,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "78309a06187b96b03e4c1f8aff02a6475bfac314a37df4077bf6c909b63eb050"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "change-impact-role-process-system-and-location-assessment",
+      "source_name": "change-impact-role-process-system-and-location-assessment",
+      "source_line": 36331,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "39709b45d25fb61a1daf3691ddb0ca16cf5e110687de1e53eb0c063742b9c8af"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "communication-narrative-channel-feedback-and-listening-f485268a",
+      "source_name": "communication-narrative-channel-feedback-and-listening-orchestrator",
+      "source_line": 36440,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "bfeb861ff56118f9257970f13e1359e3219ec81a0c7fa5d6f28b07f9f79524c5"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "adoption-readiness-behavior-utilization-and-proficiency-engine",
+      "source_name": "adoption-readiness-behavior-utilization-and-proficiency-engine",
+      "source_line": 36559,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "166347244f00a06aa5850220f645e4b88cb44e561e07fdbbac529c3cee81084f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "resistance-concern-barrier-and-resolution-manager",
+      "source_name": "resistance-concern-barrier-and-resolution-manager",
+      "source_line": 36688,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e0b570d87c05869e57d51c57133c700911a3f29769855799d3881e6ff3550bea"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "sponsor-coalition-change-network-and-leadership-activation",
+      "source_name": "sponsor-coalition-change-network-and-leadership-activation",
+      "source_line": 36801,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "d7b32f525ec933e8f31b066ad0afeddde8925a8dbdb856c71ed4f53dfeba8176"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "decision-rights-escalation-issue-risk-and-impediment-governor",
+      "source_name": "decision-rights-escalation-issue-risk-and-impediment-governor",
+      "source_line": 36909,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "ed0e1e263243bf15210008b033d51642038f99ae5996708e6ae5513cd03911ba"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-wave-business-readiness-cutover-and-hypercare",
+      "source_name": "transformation-wave-business-readiness-cutover-and-hypercare",
+      "source_line": 37023,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "be883f0ed68567a179d434dbc36e040fa8faff5b178bcab5aa0ee210aa0c46f4"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-benefit-outcome-and-value-realization",
+      "source_name": "transformation-benefit-outcome-and-value-realization",
+      "source_line": 37145,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e367cf25e34faa2ee0563bcb5bd9f61fcf36d6cf17303133cc7c56a54c69907b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-health-leading-indicator-and-executive-cockpit",
+      "source_name": "transformation-health-leading-indicator-and-executive-cockpit",
+      "source_line": 37248,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1b7ce7bdce25cef9dead8f85d60696d9a3f67fd3b45e1b56bcdfe9c0300ecebe"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-learning-adaptation-closure-and-capabili-20141b0e",
+      "source_name": "transformation-learning-adaptation-closure-and-capability-transfer",
+      "source_line": 37371,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5f88af5181e9fcdcf02a47cef1c22dfa9e0537d33ae82d4b42acc55fee37b9ee"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 29,
+      "name": "transformation-elmos-unified-evidence-integration",
+      "source_name": "transformation-elmos-unified-evidence-integration",
+      "source_line": 37501,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "f953b15bab8a44de09e4e4266f7644c993de15cde14d31f4e83303c443cd3754"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "control-tower-engine-contract-and-worker",
+      "source_name": "control-tower-engine-contract-and-worker",
+      "source_line": 40845,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "8b37451ffcdc7f391ce95f1f01b63557f7337a0ffc532efe8a54a667999d12b0"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "unified-enterprise-knowledge-graph-and-identity-resolution",
+      "source_name": "unified-enterprise-knowledge-graph-and-identity-resolution",
+      "source_line": 40938,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "d14ed9a51a39d1744f6e5dc61d2f24d3d696b90433f3a7c1a0afe199f5ca8673"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "evidence-provenance-lineage-and-temporal-truth-engine",
+      "source_name": "evidence-provenance-lineage-and-temporal-truth-engine",
+      "source_line": 41053,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "53c4353e68a8c410de7e491d1d321dd2a0f63a6e3ca92504557303d34dce0a1d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "enterprise-digital-twin-state-and-drift-reconciliation",
+      "source_name": "enterprise-digital-twin-state-and-drift-reconciliation",
+      "source_line": 41163,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c7427de052f21a4b54d0f1e6ebac3889cfb4318644303ee63dbb25e0ff9944f0"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "cross-engine-durable-workflow-saga-and-orchestration",
+      "source_name": "cross-engine-durable-workflow-saga-and-orchestration",
+      "source_line": 41262,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c10e761328a57ef60b9d38ecd8dc3b6aba919f207b79b84c6ccdd087124314f6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "agent-mesh-registry-discovery-routing-and-interoperability",
+      "source_name": "agent-mesh-registry-discovery-routing-and-interoperability",
+      "source_line": 41365,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "ae820641b0a840ce2676cffaf5ae5f25fc12143897c1d9ec7f1d9e66f1db35ec"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "agent-identity-delegation-permission-budget-and-kill-switch",
+      "source_name": "agent-identity-delegation-permission-budget-and-kill-switch",
+      "source_line": 41477,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c86253b5b1a69287e87944cc442cd242a398c1d87900f8e7801e4d36fc24f80b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "policy-decision-enforcement-exception-and-risk-engine",
+      "source_name": "policy-decision-enforcement-exception-and-risk-engine",
+      "source_line": 41588,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "e9f41d2298175710aff9b423763cb5c5d3bfacc4c8369f3a9b1f968cd4015984"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "autonomous-goal-constraint-planning-and-plan-compiler",
+      "source_name": "autonomous-goal-constraint-planning-and-plan-compiler",
+      "source_line": 41699,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "7820841160a8af4281336779ee3893500260aad140908257e2ee0441bbced57a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "scenario-simulation-digital-shadow-counterfactual-and-o-145cc2dd",
+      "source_name": "scenario-simulation-digital-shadow-counterfactual-and-optimization",
+      "source_line": 41818,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5a6783a7025162e2f34e67ab2395733018d13d67eac56de7e9888c3f4a9edcde"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "human-decision-approval-escalation-and-collaboration-cockpit",
+      "source_name": "human-decision-approval-escalation-and-collaboration-cockpit",
+      "source_line": 41925,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "64eef99fa24240f3524dae64be1f224cdc3bcffe294d937295b17bee709f5caa"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "execution-transaction-idempotency-compensation-and-recovery",
+      "source_name": "execution-transaction-idempotency-compensation-and-recovery",
+      "source_line": 42029,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "6540aa073533c3bd1ef77f1990e5e6a716ac4a789126e2f6e51a92cd2bf5dbdd"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "enterprise-value-outcome-benefit-cost-and-risk-feedback",
+      "source_name": "enterprise-value-outcome-benefit-cost-and-risk-feedback",
+      "source_line": 42139,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "bafdcb73bfa428a92aac0747396e60cc869ed7ca61f7af93e481af3b30cf537c"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "enterprise-modernization-control-tower-and-command-cockpit",
+      "source_name": "enterprise-modernization-control-tower-and-command-cockpit",
+      "source_line": 42244,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c552fd17813e4e8836ffa082895f5d7d9a7f5c2832995ac1ee6dc59ad117f859"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "platform-observability-explainability-audit-and-replay",
+      "source_name": "platform-observability-explainability-audit-and-replay",
+      "source_line": 42345,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "598a0ed131eaac3ace007ae41b660e8592cf37c691b0819b148c8e692d989d13"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "platform-zero-trust-privacy-supply-chain-and-tenant-isolation",
+      "source_name": "platform-zero-trust-privacy-supply-chain-and-tenant-isolation",
+      "source_line": 42456,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "436e384d8c0834ce9b67e2423f7525c24400f5aa55e828e9572e69465f610582"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "platform-resilience-multi-region-dr-chaos-and-productio-8c71e865",
+      "source_name": "platform-resilience-multi-region-dr-chaos-and-production-hardening",
+      "source_line": 42579,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "79ab3fdb20277f21bf0682e7068930b662d2870fdebf6d65ef1a55d5fbe3069b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 30,
+      "name": "control-tower-elmos-unified-lifecycle-and-evidence-integration",
+      "source_name": "control-tower-elmos-unified-lifecycle-and-evidence-integration",
+      "source_line": 42681,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c19f51a53e63abffef40ff52f70dda9f9a801982b5f12d062204271376fa3ea0"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "monorepo-toolchain-contract-and-developer-environment",
+      "source_name": "monorepo-toolchain-contract-and-developer-environment",
+      "source_line": 46234,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "9f68f7a0fa741103c8918e34f850cd89f9cca0b3edc563eb1629d8322c756521"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "spring-boot-modular-control-plane",
+      "source_name": "spring-boot-modular-control-plane",
+      "source_line": 46284,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "05676490e84f2f5b4d5c6154bb9cbbd6e877ec6ce7fecf9b601360a8ab530710"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "nextjs-modernization-cockpit",
+      "source_name": "nextjs-modernization-cockpit",
+      "source_line": 46337,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "9084f3364ce0c0fca08ad761aa3dde3c47da432fa4c6beb4244ba344984552de"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "tenant-identity-rbac-and-security-foundation",
+      "source_name": "tenant-identity-rbac-and-security-foundation",
+      "source_line": 46402,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "b63bd8c7b8282cbd1f03abe6f46400eb50b213b4ebbce6e9ad00923be42a8eb4"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "github-app-repository-and-webhook-integration",
+      "source_name": "github-app-repository-and-webhook-integration",
+      "source_line": 46463,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "ac9c3ddf7153d109c250b0d1a90c0906e87c54f0b5bb10e4054fef4c96e46545"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "repository-snapshot-artifact-and-evidence-store",
+      "source_name": "repository-snapshot-artifact-and-evidence-store",
+      "source_line": 46505,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1d062c0fc7d559f9fdea0c460085f0195cdf4cf901bd553ce1093bdb95fc8604"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "private-runner-registration-lease-and-execution",
+      "source_name": "private-runner-registration-lease-and-execution",
+      "source_line": 46563,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "6ad610e66bf96474ce7c78267736acef06153d6d5d6a941660a055f3948ec48e"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "java-jdk-sandbox-image-and-network-policy",
+      "source_name": "java-jdk-sandbox-image-and-network-policy",
+      "source_line": 46613,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "534af7b1eeb32e6a1bb3856999f4d3380a57e2e067865fbb5d9c54ca08a41aa7"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "temporal-java-migration-workflow",
+      "source_name": "temporal-java-migration-workflow",
+      "source_line": 46661,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "f7a27b43afaf735897a80d93147c87a23cd29a3268df202a7ead4a82aeb265e5"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "agent-gateway-routing-budget-and-repair-loop",
+      "source_name": "agent-gateway-routing-budget-and-repair-loop",
+      "source_line": 46720,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "436d8e4756796efb412eea6854a960ea7230a1ce9b1231e694f9c342557468ef"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "postgresql-domain-model-outbox-and-audit",
+      "source_name": "postgresql-domain-model-outbox-and-audit",
+      "source_line": 46774,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3f9b8733da0fe4b454b5370278fcca340982191203d01f79e58a85cb1f207731"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "knowledge-graph-projection-and-query",
+      "source_name": "knowledge-graph-projection-and-query",
+      "source_line": 46839,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "7d05683507c7ee9b00adeabb5a64be92b1dc012de138f589a8f5f7f4dfee8222"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "java-legacy-health-check-engine",
+      "source_name": "java-legacy-health-check-engine",
+      "source_line": 46898,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "0e8a00ced1d56b349e69fa8a23f1b7460b4af2fbd424d694493d111713c00670"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "java-target-profile-migration-dag-and-wave-planner",
+      "source_name": "java-target-profile-migration-dag-and-wave-planner",
+      "source_line": 46965,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "7664371064c41a9ddf8b1e6f40db6b5ff68cd6c11b5e4364177509a89f742a28"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "openrewrite-catalog-execution-and-idempotency",
+      "source_name": "openrewrite-catalog-execution-and-idempotency",
+      "source_line": 47026,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "9a0ff60558bc0022affab1ea00e74dcd70c6f85f2be569ee0509e45c0f1c5d93"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "build-test-compatibility-and-bounded-agent-verification",
+      "source_name": "build-test-compatibility-and-bounded-agent-verification",
+      "source_line": 47090,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fba4bcf17bda83527074379728e3b37d2e386870e6772204ef3e8566787235bc"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "github-pr-checks-report-and-evidence-delivery",
+      "source_name": "github-pr-checks-report-and-evidence-delivery",
+      "source_line": 47160,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1c61510eceb0a45ba32e7169f7eec30f38512105df78d1ad121017c987a6858b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 31,
+      "name": "deployment-production-hardening-and-twelve-month-roadmap",
+      "source_name": "deployment-production-hardening-and-twelve-month-roadmap",
+      "source_line": 47228,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "94744ee943798c4647dc4f7d680941310e97efb8ff66c5418c150a6c947e4979"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "secure-java-modernization-vertical-slice-orchestrator",
+      "source_name": "secure-java-modernization-vertical-slice-orchestrator",
+      "source_line": 50361,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "eab64416a1f75866e37aa180b362f44b263612983f9e6a11d8774a564c601530"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "oidc-authentication-session-and-tenant-context",
+      "source_name": "oidc-authentication-session-and-tenant-context",
+      "source_line": 50450,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "48c27c851d5b6788bac99cb8e4b89681f4b840984d6ff56a099f9f1d7878550d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "tenant-membership-rbac-resource-authorization-and-postgresql-rls",
+      "source_name": "tenant-membership-rbac-resource-authorization-and-postgresql-rls",
+      "source_line": 50550,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "15f86989da824917e0a804db5ed2ab76cf99e42da7cc96ee7c6eb565bd0b1742"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "github-app-installation-repository-sync-and-token-broker",
+      "source_name": "github-app-installation-repository-sync-and-token-broker",
+      "source_line": 50642,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c8f3eb191923b850efb315e16b5c18ce282ddaf5b3f32680e5eb849efa251104"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "secure-runner-enrollment-workload-identity-and-revocation",
+      "source_name": "secure-runner-enrollment-workload-identity-and-revocation",
+      "source_line": 50735,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2b5d49da7a492ef4701ccb05dff44148eae8d0d07f09e37014c48ac2f1f4e1dc"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "per-task-sandbox-resource-network-secret-and-cleanup",
+      "source_name": "per-task-sandbox-resource-network-secret-and-cleanup",
+      "source_line": 50917,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "76101dfa226df74b87b222e5681ce7ad7c9eac35f6aeef18d059fa342a683a96"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "immutable-repository-snapshot-manifest-and-retention",
+      "source_name": "immutable-repository-snapshot-manifest-and-retention",
+      "source_line": 51005,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "02b752ab5d152b512aba8a45c8a9ba039ccbf2df0f2d5aa0b8d753e755603dd8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "maven-baseline-build-toolchain-and-failure-classification",
+      "source_name": "maven-baseline-build-toolchain-and-failure-classification",
+      "source_line": 51090,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c476efa14868ff3db31cad1cbaeca7edc2304b3407c321c8b86ac7366814a5df"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "java-legacy-health-check-and-risk-evidence",
+      "source_name": "java-legacy-health-check-and-risk-evidence",
+      "source_line": 51180,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4867da77ddb390498ad0db85edbe58fd5e44e4974deadbf0bd6e219478a4630d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "migration-target-dag-plan-approval-and-wave-design",
+      "source_name": "migration-target-dag-plan-approval-and-wave-design",
+      "source_line": 51288,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4b21f556bb2b158d58ebc2e550b566d7bab3309d20905bd462358ee2ae7641ce"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "openrewrite-recipe-license-execution-and-idempotency",
+      "source_name": "openrewrite-recipe-license-execution-and-idempotency",
+      "source_line": 51387,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "46216c8ed8f4f996961ac3de05912d3dec1d140e819ea555eaba4e1ceb3d45de"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "compile-test-api-compatibility-and-regression-verification",
+      "source_name": "compile-test-api-compatibility-and-regression-verification",
+      "source_line": 51491,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "682939f65c02be42a1f13866ec8953747551237102e46e1088a1105db2fdb782"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "github-branch-commit-pr-checks-and-delivery-governor",
+      "source_name": "github-branch-commit-pr-checks-and-delivery-governor",
+      "source_line": 51594,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "359c9ccdd85731fa9eff101d0295776769653e968e66bfd46bbce0974fa7be0d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "evidence-pack-provenance-signing-retention-and-export",
+      "source_name": "evidence-pack-provenance-signing-retention-and-export",
+      "source_line": 51707,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5983552a0a94bfc9bfadb52e1ab7a63dbcf43795ce61a7d4cd930e43c6e596c6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "audit-observability-sse-and-incident-readiness",
+      "source_name": "audit-observability-sse-and-incident-readiness",
+      "source_line": 51811,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "aae77257f25ccbdafa4048c87a53221203134805200f71d0e50e8827ca5cfab1"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "fixture-e2e-security-recovery-and-release-validation",
+      "source_name": "fixture-e2e-security-recovery-and-release-validation",
+      "source_line": 51913,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c39ee528cdc51c00c0b8bd514672b53524b2a049650895dc67fac6066bba83ab"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "java-modernization-mvp-unified-evidence-integration",
+      "source_name": "java-modernization-mvp-unified-evidence-integration",
+      "source_line": 51997,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5bbcd6a9aeebff155f0e4517c12fad522d33e2bf1952c4ed876a21f8eb6caaa5"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "oidc-tenant-membership-and-request-context",
+      "source_name": "oidc-tenant-membership-and-request-context",
+      "source_line": 52738,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3a80cdf1aa25b5e34df91aef6cd55153078eb5bda92e0f89983bd9ee01956821"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "postgres-runtime-roles-rls-and-tenant-isolation",
+      "source_name": "postgres-runtime-roles-rls-and-tenant-isolation",
+      "source_line": 52860,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "71df6f5dd32b6089d37056aa9c2282aaa580992dd74bf0bc866854fe4c9e60bf"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "github-app-installation-repository-and-token-lifecycle",
+      "source_name": "github-app-installation-repository-and-token-lifecycle",
+      "source_line": 52990,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "b1a9e701c7e11e9d183424df8617443aef3743f5a6e0729d17e6fb3b961e3868"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "github-webhook-idempotency-and-access-reconciliation",
+      "source_name": "github-webhook-idempotency-and-access-reconciliation",
+      "source_line": 53131,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3c79dc6fabbad5b9776700a190932960394559d6af49f6bd78b27d31d0c432c8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "private-runner-enrollment-workload-identity-and-attestation",
+      "source_name": "private-runner-enrollment-workload-identity-and-attestation",
+      "source_line": 53234,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4a0dc0c96ec015686dbe39076fb0ecb4aaac68f8e5a48d6d0539dd157b9f3109"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "runner-lease-heartbeat-cancel-reaper-and-reconciliation",
+      "source_name": "runner-lease-heartbeat-cancel-reaper-and-reconciliation",
+      "source_line": 53367,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "b9db5abbf6f4f28942ad66078f32504d6025e509073c4c49ffee3642115626a2"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "per-task-sandbox-resource-network-secret-and-cache-isolation",
+      "source_name": "per-task-sandbox-resource-network-secret-and-cache-isolation",
+      "source_line": 53519,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "06aeb5b8a6ce41e0db7a1b70378726a2181e36fdacc63bc1a9ded4e105eb5afb"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "immutable-repository-snapshot-submodule-lfs-and-retention",
+      "source_name": "immutable-repository-snapshot-submodule-lfs-and-retention",
+      "source_line": 53654,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2f152ab849af0f7f1bc453573dd599ce0f01da5c87acfbc592761e5f45931f75"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "maven-toolchain-baseline-build-and-failure-classification",
+      "source_name": "maven-toolchain-baseline-build-and-failure-classification",
+      "source_line": 53779,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4f24c01260212fed665a5a95e73f1093304dfe049f8d15f881c97bb150ca1cb2"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "java-module-fingerprint-dependency-test-and-health-report",
+      "source_name": "java-module-fingerprint-dependency-test-and-health-report",
+      "source_line": 53905,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "be1835616ef99447e28cea0e80a768e1d435536ae0bd445fe08564f55ee821fe"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "migration-target-dag-plan-approval-and-project-cockpit",
+      "source_name": "migration-target-dag-plan-approval-and-project-cockpit",
+      "source_line": 54054,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "bbceebadb910fcff1d0f86439ec035fdcbfce8b6084ebbb75603e25b8001a1b6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "openrewrite-catalog-license-dryrun-execution-and-idempotency",
+      "source_name": "openrewrite-catalog-license-dryrun-execution-and-idempotency",
+      "source_line": 54193,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3af469d749b25ea69593cbfb8a9e56f3f9482935664229955ff36af513a22d8a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "compile-test-api-dependency-and-regression-verification",
+      "source_name": "compile-test-api-dependency-and-regression-verification",
+      "source_line": 54333,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "84f661acc3a5f4ea90ac463018fbeeabcd4d4e6a1219bc58e6bb6389ac720d74"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "bounded-coding-agent-tool-policy-budget-and-patch-review",
+      "source_name": "bounded-coding-agent-tool-policy-budget-and-patch-review",
+      "source_line": 54456,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1a13b27fd20d4917a56037c748c84e7d5d3edc131d2949ca6c64119bd5c12b00"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "temporal-start-idempotency-async-completion-cancel-and-c19803a1",
+      "source_name": "temporal-start-idempotency-async-completion-cancel-and-versioning",
+      "source_line": 54629,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "80c2f82b458dab4d992b895226c5decc5c021f501f22f4bcc02bcc7ba157f58e"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "github-branch-commit-pr-checks-and-delivery-idempotency",
+      "source_name": "github-branch-commit-pr-checks-and-delivery-idempotency",
+      "source_line": 54761,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "af1dba9701a38d0a9232f38ff9f025cb8fe34be79994dee1abe1f3dbc3f6345a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "evidence-pack-provenance-retention-and-audit",
+      "source_name": "evidence-pack-provenance-retention-and-audit",
+      "source_line": 54919,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "07cde0186f713d6417400932d5ede03bfc6d28d0a96aebd304f82a5bbca24cb2"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 33,
+      "name": "end-to-end-fixtures-security-gates-and-commercial-readiness",
+      "source_name": "end-to-end-fixtures-security-gates-and-commercial-readiness",
+      "source_line": 55072,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "3f0e00d9e1aa810afde2f34ae1728e47f8477369582cd59ee5ec2f9ec8e4019b"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "enterprise-identity-access-engine-contract-and-worker",
+      "source_name": "enterprise-identity-access-engine-contract-and-worker",
+      "source_line": 57472,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "0771cb5dfd4312f5764d941cf448a3f9db34ca9dac63b36d127d13503977bff6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-provider-registry-and-tenant-federation",
+      "source_name": "identity-provider-registry-and-tenant-federation",
+      "source_line": 57543,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4a3f431a9acc67f47615ef8ae42597e66f310f0d595f8d76bf75c93633be3d4a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "oidc-login-token-validation-and-session",
+      "source_name": "oidc-login-token-validation-and-session",
+      "source_line": 57632,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "f27614febae142d1491d5d37f29d0a81094d7e986faf97e9c551e62ff75bda87"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "saml-sso-and-enterprise-federation",
+      "source_name": "saml-sso-and-enterprise-federation",
+      "source_line": 57716,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "65a9ff3370a3485aed0fdbab6be8c726e9ed4eea46e3e9fd462ee912e662352d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "scim-directory-user-group-and-role-provisioning",
+      "source_name": "scim-directory-user-group-and-role-provisioning",
+      "source_line": 57789,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c287302b22b0359bc1c274045a532ba21a964ff33a25f7f2c697a9a39f11d777"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "organization-tenant-hierarchy-and-delegated-administration",
+      "source_name": "organization-tenant-hierarchy-and-delegated-administration",
+      "source_line": 57881,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "223046b5692ec3e408360509ee0fd288ce75c1c5e7dbac79546ea03f50656525"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "membership-invitation-lifecycle-and-offboarding",
+      "source_name": "membership-invitation-lifecycle-and-offboarding",
+      "source_line": 57958,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c6469e11dfe3463ceee71f5651eaafe048b7811413e70b7ca04ecea711cb03d6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "rbac-role-permission-and-separation-of-duties",
+      "source_name": "rbac-role-permission-and-separation-of-duties",
+      "source_line": 58056,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c29416bdeb204efd14ac74c945b1aab47e236ca2865586cccd84dd755d5c2e31"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "abac-policy-context-and-resource-authorization",
+      "source_name": "abac-policy-context-and-resource-authorization",
+      "source_line": 58151,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "958e0933f5218b0361237da4f56182e058a1df326dfe14f6dbfb991cc366684f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "repository-project-runner-artifact-scope-authorization",
+      "source_name": "repository-project-runner-artifact-scope-authorization",
+      "source_line": 58227,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "dc29c069a935e9a29af4cdf43f91f5159acf61f2ee7695f89552950792096ab6"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "service-to-service-workload-identity-and-mtls",
+      "source_name": "service-to-service-workload-identity-and-mtls",
+      "source_line": 58303,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "0127c13244588cf9647a072c4afc98713504ca620733d6c22663fd0476d6e5b8"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "api-token-cli-and-machine-credential-lifecycle",
+      "source_name": "api-token-cli-and-machine-credential-lifecycle",
+      "source_line": 58382,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "69a695fef508c089bd5cc32c54971191dc2328c1c369407c61d03ab56a8d12a1"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "privileged-access-jit-dual-control-and-break-glass",
+      "source_name": "privileged-access-jit-dual-control-and-break-glass",
+      "source_line": 58468,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fa79edc2229de07249082e40949a4907df225e4c90f50d7d077b9d1235b94700"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "access-review-certification-and-entitlement-reconciliation",
+      "source_name": "access-review-certification-and-entitlement-reconciliation",
+      "source_line": 58550,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c807892fae571fd0eae716bc97f874640db896adc2d7c6e3bb5be923474c00f9"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "session-risk-step-up-mfa-and-device-context",
+      "source_name": "session-risk-step-up-mfa-and-device-context",
+      "source_line": 58632,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2cc548b25c2d02ca2df9b06dcb58e849a53b50c19a54f0f44d0216d3731b8e11"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "postgres-rls-object-storage-and-cross-tenant-isolation",
+      "source_name": "postgres-rls-object-storage-and-cross-tenant-isolation",
+      "source_line": 58704,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "cb7b23efa34e41fef86297b849a0d413e9e5d1977661bea1b3c70cb5a239b2d9"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-audit-privacy-retention-and-incident-response",
+      "source_name": "identity-audit-privacy-retention-and-incident-response",
+      "source_line": 58785,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2423e86d381fe62447b12ca0b29173a441b1ba18857feabb2b5ae8853595d1ac"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-access-elmos-unified-evidence-integration",
+      "source_name": "identity-access-elmos-unified-evidence-integration",
+      "source_line": 58886,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "33537cc291a51046bb14ad864e09b1b6a2bcc3fcacb3aff7604e263e57283afb"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-security-foundation-orchestrator",
+      "source_name": "identity-security-foundation-orchestrator",
+      "source_line": 59687,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c4d398c945241528c16161c3349e8dbed164b1c3b4c9ce8ad29b432a9d9ec772"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "oidc-bff-resource-server-and-tenant-context",
+      "source_name": "oidc-bff-resource-server-and-tenant-context",
+      "source_line": 59903,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "8d0162362b322bc9a3b40e50d886309aded8f73fd28565984c3f2d66dfd75c91"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "tenant-membership-current-tenant-and-lifecycle",
+      "source_name": "tenant-membership-current-tenant-and-lifecycle",
+      "source_line": 60221,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "fb65794fd60d4fb444cc62b6791bbfc8a589de328a76a2d2b795873ab555d86e"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "postgres-role-separation-rls-and-tenant-unit-of-work",
+      "source_name": "postgres-role-separation-rls-and-tenant-unit-of-work",
+      "source_line": 60475,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4b88849e4c2f653b0d2d979b4974457f3de92188bd6657ba9bd2b6e6d43df787"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "resource-authorization-rbac-abac-and-audit",
+      "source_name": "resource-authorization-rbac-abac-and-audit",
+      "source_line": 60773,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "d54f2b081e21fb78312f3a1502c60262f6ca7b369e5e43e20e2673f9551e8ade"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-security-integration-tests-and-release-gates",
+      "source_name": "identity-security-integration-tests-and-release-gates",
+      "source_line": 61145,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "0ba70503329943f4effc140ac9e6017c96b0857081df70e01f55b4a016343ccc"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "saml-scim-organization-lifecycle-orchestrator",
+      "source_name": "saml-scim-organization-lifecycle-orchestrator",
+      "source_line": 61854,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c031426b1f6bdf584cb7e9eef74d29986e7b7ca84d5a99e2ecbf8f36b911a8c4"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "saml2-relying-party-metadata-login-logout-and-certifica-a1ba7ee7",
+      "source_name": "saml2-relying-party-metadata-login-logout-and-certificate-rotation",
+      "source_line": 62066,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c87fc8951a0633a261002d165ccdc4a781d35b448354b957235daf60a04c060f"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "scim2-service-provider-auth-schema-users-and-groups",
+      "source_name": "scim2-service-provider-auth-schema-users-and-groups",
+      "source_line": 62503,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "386cbfb759e30bc95f73cc7c1eeb75b6eca297a30e7d1a9eaa20f1accbb6ca6d"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "scim2-filter-patch-etag-pagination-bulk-and-idempotency",
+      "source_name": "scim2-filter-patch-etag-pagination-bulk-and-idempotency",
+      "source_line": 62940,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "6a01328add60eda088e9db1871dde4b6a916b2d28e3bd31c53c0dab3390173ab"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "organization-hierarchy-domain-claim-and-delegated-administration",
+      "source_name": "organization-hierarchy-domain-claim-and-delegated-administration",
+      "source_line": 63334,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4aa71c83baf0eb569f431f75ec8ee115b4b9d52b69015aca7506e03bcd858584"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "external-group-role-mapping-jit-and-membership-provisioning",
+      "source_name": "external-group-role-mapping-jit-and-membership-provisioning",
+      "source_line": 63665,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "c45f6627cc1f646f928ad4df6e0ec9715494a97c12c240cc1f9643f1caf7d050"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "deprovision-offboarding-session-token-ownership-and-acc-95f874ef",
+      "source_name": "deprovision-offboarding-session-token-ownership-and-access-cascade",
+      "source_line": 64018,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5825b086b0acb84e5d872422aa4ec32c1385bc89e62fe3cf7fcd335fe3caf351"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "provisioning-reconciliation-scim-events-security-tests-9fa5d05d",
+      "source_name": "provisioning-reconciliation-scim-events-security-tests-and-release-gates",
+      "source_line": 64368,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "1c447260539ef0489f97845aa1f85750f40f384d3116f129af0b56309bc2dd1a"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "workload-privileged-access-review-orchestrator",
+      "source_name": "workload-privileged-access-review-orchestrator",
+      "source_line": 65552,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "9d026320c0c869d8b306dde935f8f3eaa2d45897580d907a010ab9a7fb1afe11"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "workload-identity-trust-domain-spiffe-spire-and-mtls",
+      "source_name": "workload-identity-trust-domain-spiffe-spire-and-mtls",
+      "source_line": 65782,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "4437c1ee01cebf3a0e7b7a2f7a23f16a8d49a7c0b1a91a3bf33abae5e66217e0"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "service-principal-oauth-mtls-token-exchange-and-delegation",
+      "source_name": "service-principal-oauth-mtls-token-exchange-and-delegation",
+      "source_line": 66181,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5bbfbc37abe951bb59be5809f45ceb1b8a8e2142c30f66105ed6aa8771278708"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "machine-credential-secret-broker-rotation-revocation-an-00a3e9e4",
+      "source_name": "machine-credential-secret-broker-rotation-revocation-and-introspection",
+      "source_line": 66546,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "75dafc8809acf27f8316848672b2309237e274b7f657b21d2e88168701a3e3cd"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "privileged-access-jit-request-approval-lease-and-expiry",
+      "source_name": "privileged-access-jit-request-approval-lease-and-expiry",
+      "source_line": 66904,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "36d7d96b713c1e206146cd68d97d6ccb3654f5cfcfce8fcce930afa1401a9181"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "break-glass-emergency-access-dual-control-and-post-review",
+      "source_name": "break-glass-emergency-access-dual-control-and-post-review",
+      "source_line": 67229,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "5df81033f1414714658b40c65e6e4002d1515986dfc7c45b81d551862042a6dd"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "access-review-certification-entitlement-reconciliation-2feb75bd",
+      "source_name": "access-review-certification-entitlement-reconciliation-and-remediation",
+      "source_line": 67602,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "247427d78d332f4a51d332c7a158097352f5ecf6e259f82eb558cc23d6d4eb63"
+    },
+    {
+      "family": "elmos-product-roadmap",
+      "batch": 34,
+      "name": "identity-incident-compromise-containment-recovery-tests-6eeb05a2",
+      "source_name": "identity-incident-compromise-containment-recovery-tests-and-release-gates",
+      "source_line": 67967,
+      "source": "/Users/stephen/DevProjects/AIProjects/elmos/ChatGPT-Git项目商业化模式 (1).md",
+      "sha256": "2e6cf5d3a08c5d723e6581d3fcbe939920fcc61db0628df844a9a958761c7369"
+    }
+  ]
+}

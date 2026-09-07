@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-04:verification-obligation",
+  "title": "VerificationObligation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checked_by",
+    "obligation_id",
+    "postcondition",
+    "record_id",
+    "result",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "obligation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "postcondition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checked_by": {
+      "enum": [
+        "compile",
+        "test",
+        "differential",
+        "static",
+        "not-checked"
+      ]
+    },
+    "result": {
+      "enum": [
+        "pass",
+        "fail",
+        "not-run",
+        "inconclusive"
+      ]
+    }
+  }
+}

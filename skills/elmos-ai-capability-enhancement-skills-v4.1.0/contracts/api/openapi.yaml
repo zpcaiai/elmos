@@ -1,0 +1,224 @@
+openapi: 3.1.0
+info:
+  title: Elmos AI-Native Project Factory API
+  version: 1.0.0
+  description: >
+    Revision-bound control API. A terminal run state is not a production
+    certificate unless an independent K8 certificate exists.
+servers:
+  - url: /api
+security:
+  - oidc: []
+paths:
+  /v1/ai-solutions/compile:
+    post:
+      operationId: compileAISolution
+      summary: Compile requirements or an imported source into AI-SIR and a target plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenantId, projectId, goal]
+              properties:
+                tenantId: {type: string, format: uuid}
+                projectId: {type: string, format: uuid}
+                goal: {type: object}
+                sourceRef: {type: string}
+                requestedTargets:
+                  type: array
+                  items: {type: string}
+      responses:
+        '202':
+          description: Compilation run accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunRef'}
+        '409': {$ref: '#/components/responses/Blocked'}
+  /v1/ai-solutions/import:
+    post:
+      operationId: importAIProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenantId, projectId, sourceArtifact]
+              properties:
+                tenantId: {type: string, format: uuid}
+                projectId: {type: string, format: uuid}
+                sourceArtifact: {type: string}
+                adapterHint: {type: string}
+      responses:
+        '202':
+          description: Import accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunRef'}
+  /v1/ai-solutions/{solutionId}/generate:
+    post:
+      operationId: generateTargets
+      parameters:
+        - {$ref: '#/components/parameters/SolutionId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [revisionSetId]
+              properties:
+                revisionSetId: {type: string, format: uuid}
+                targets:
+                  type: array
+                  items: {type: string}
+                assuranceLevel: {type: string}
+      responses:
+        '202':
+          description: Generation run accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunRef'}
+        '409': {$ref: '#/components/responses/Blocked'}
+  /v1/capabilities/negotiate:
+    post:
+      operationId: negotiateCapabilities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [requirements, targets]
+              properties:
+                requirements:
+                  type: array
+                  items: {type: string}
+                targets:
+                  type: array
+                  items: {type: string}
+                exactVersions:
+                  type: object
+                  additionalProperties: {type: string}
+      responses:
+        '200':
+          description: Capability negotiation result
+          content:
+            application/json:
+              schema: {$ref: '../schemas/capability-negotiation-result.schema.json'}
+  /v1/runs/{runId}:
+    get:
+      operationId: getRun
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '200':
+          description: Run state and evidence references
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+  /v1/runs/{runId}/pause:
+    post:
+      operationId: pauseRun
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '202': {description: Pause requested}
+        '409': {$ref: '#/components/responses/Blocked'}
+  /v1/runs/{runId}/resume:
+    post:
+      operationId: resumeRun
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '202': {description: Resume requested}
+        '409': {$ref: '#/components/responses/Blocked'}
+  /v1/runs/{runId}/cancel:
+    post:
+      operationId: cancelRun
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '202': {description: Cancellation and reconciliation requested}
+        '409': {$ref: '#/components/responses/Blocked'}
+  /v1/revisions/{revisionSetId}/certify:
+    post:
+      operationId: certifyRevision
+      parameters:
+        - name: revisionSetId
+          in: path
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: Certificate or bounded/blocked decision
+          content:
+            application/json:
+              schema: {$ref: '../schemas/completion-certificate.schema.json'}
+  /v1/adapters:
+    get:
+      operationId: listAdapters
+      responses:
+        '200':
+          description: Versioned adapter catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {type: object}
+components:
+  parameters:
+    SolutionId:
+      name: solutionId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+  schemas:
+    RunRef:
+      type: object
+      required: [runId, revisionSetId, status]
+      properties:
+        runId: {type: string, format: uuid}
+        revisionSetId: {type: string, format: uuid}
+        status: {type: string}
+        machineEtaSeconds: {type: integer}
+    Run:
+      allOf:
+        - {$ref: '#/components/schemas/RunRef'}
+        - type: object
+          properties:
+            steps:
+              type: array
+              items: {type: object}
+            cost: {type: object}
+            blockedReasons:
+              type: array
+              items: {type: string}
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: {type: string}
+        title: {type: string}
+        status: {type: integer}
+        detail: {type: string}
+        evidenceRefs:
+          type: array
+          items: {type: string}
+  responses:
+    Blocked:
+      description: Policy or evidence blocked
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://RELEASE_TIME_IDP/.well-known/openid-configuration

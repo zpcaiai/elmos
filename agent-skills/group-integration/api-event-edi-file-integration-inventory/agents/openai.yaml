@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 707: api event edi file integration inventory"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $api-event-edi-file-integration-inventory to evaluate this capability with evidence."

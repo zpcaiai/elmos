@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Identity Security Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $identity-security-security-privacy-quality-performance-72275265 to implement its fail-closed ELMOS Product B48 contract."

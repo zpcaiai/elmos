@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "training-pipeline-plan-example",
+  "status": "READY",
+  "content_hash": "03a16643896d721a1f8be0a90ecaeb0ec8440c669f160fbe146f725276bab3b7",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "steps": [
+    {
+      "id": "S1",
+      "action": "freeze exact versions",
+      "depends_on": []
+    }
+  ],
+  "rollback_steps": [
+    "restore prior signed artifact"
+  ],
+  "proof_obligations": [
+    "PO-example"
+  ]
+}

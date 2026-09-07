@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/gate-result.v1.schema.json",
+  "title": "FRT G01-G30 repository gate result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "gate_request_sha256",
+    "package",
+    "batch_count",
+    "skill_count",
+    "directed_route_count",
+    "decision",
+    "local_ready",
+    "external_checks_complete",
+    "external_check_states",
+    "failures",
+    "maximum_local_decision",
+    "production_certification",
+    "production_operation_authorized",
+    "external_trust_store_sha256",
+    "result_digest"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "gate_request_sha256": { "$ref": "#/$defs/digest" },
+    "package": { "const": "FRT_G01_G30_Complete_Skills_Pack" },
+    "batch_count": { "const": 30 },
+    "skill_count": { "const": 472 },
+    "directed_route_count": { "const": 30 },
+    "decision": { "enum": ["REJECTED", "NOT_READY", "READY_FOR_EXTERNAL_GATE"] },
+    "local_ready": { "type": "boolean" },
+    "external_checks_complete": { "type": "boolean" },
+    "external_check_states": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "real_source_target_builds",
+        "device_matrix",
+        "independent_holdout",
+        "formal_proof",
+        "performance",
+        "chaos_dr",
+        "penetration_test",
+        "production_observation",
+        "customer_acceptance"
+      ],
+      "properties": {
+        "real_source_target_builds": { "$ref": "#/$defs/state" },
+        "device_matrix": { "$ref": "#/$defs/state" },
+        "independent_holdout": { "$ref": "#/$defs/state" },
+        "formal_proof": { "$ref": "#/$defs/state" },
+        "performance": { "$ref": "#/$defs/state" },
+        "chaos_dr": { "$ref": "#/$defs/state" },
+        "penetration_test": { "$ref": "#/$defs/state" },
+        "production_observation": { "$ref": "#/$defs/state" },
+        "customer_acceptance": { "$ref": "#/$defs/state" }
+      }
+    },
+    "failures": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "maximum_local_decision": { "const": "READY_FOR_EXTERNAL_GATE" },
+    "production_certification": { "const": "NOT_CERTIFIED" },
+    "production_operation_authorized": { "const": false },
+    "external_trust_store_sha256": {
+      "oneOf": [
+        { "$ref": "#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "result_digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "state": { "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"] }
+  }
+}

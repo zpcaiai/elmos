@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Source Target Navigation"
+  short_description: "Run evidence-bound Batch 36 source target navigation work"
+  default_prompt: "Use $b36-source-target-navigation to implement and verify this capability with fail-closed evidence."

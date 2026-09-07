@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/composite/system-cutover-decision/1.0.0",
+  "title": "ELMOS System Cutover Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "cutoverPlanId", "organizationId", "landscapeId", "currentState", "requestedState", "decision", "humanApprovalRequired", "blockers", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "cutoverPlanId": { "type": "string", "minLength": 1 },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "landscapeId": { "type": "string", "minLength": 1 },
+    "currentState": { "type": "string", "minLength": 1 },
+    "requestedState": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["APPROVE", "HOLD", "PAUSE", "ROLLBACK", "FORWARD_FIX", "BLOCKED"] },
+    "humanApprovalRequired": { "type": "boolean" },
+    "rollbackClassification": { "enum": ["REVERSIBLE", "REVERSIBLE_WITH_DATA_REPAIR", "FORWARD_FIX_ONLY", "IRREVERSIBLE"] },
+    "blockers": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "evidenceRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "contract": {
+    "id": "B105-S12",
+    "batch": 105,
+    "name": "test-estate-preservation-gate",
+    "dependencies": [
+      "B105-S03",
+      "B105-S11"
+    ],
+    "inputs": [
+      "baseline test inventory",
+      "candidate test reports",
+      "coverage/mutation results"
+    ],
+    "outputs": [
+      "TestPreservationDecision",
+      "before-after metrics",
+      "missing-test list"
+    ],
+    "implementation": {
+      "modules": [
+        "quality/test-preservation/TestEstateComparator.java",
+        "adapters/test-reports/",
+        "policies/test-preservation.yaml"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/gates/test-preservation",
+        "event gate.test-preservation.decided"
+      ],
+      "data": [
+        "test_inventory",
+        "test_delta",
+        "test_gate_decision"
+      ]
+    },
+    "workflow": [
+      "\u6807\u51c6\u5316JUnit/NUnit/pytest/go test\u7b49\u62a5\u544a",
+      "\u6bd4\u8f83\u53d1\u73b0/\u6267\u884c/\u8df3\u8fc7/\u5931\u8d25\u6570\u91cf",
+      "\u6309\u6d4b\u8bd5ID\u8ffd\u8e2a\u6d88\u5931\u3001\u91cd\u547d\u540d\u548c\u65b0\u6d4b\u8bd5",
+      "\u6bd4\u8f83\u884c/\u5206\u652f/Mutation\u8986\u76d6",
+      "\u5141\u8bb8\u7ecf\u5ba1\u6279\u7684\u5220\u9664\u4f46\u8981\u6c42\u66ff\u4ee3\u8bc1\u636e",
+      "\u4fdd\u5b88\u7b7e\u53d1PASS/WARN/FAIL"
+    ],
+    "tests": [
+      "1200\u2192430\u6d4b\u8bd5\u5373\u4f7f\u5168\u7eff\u4e5fFAIL",
+      "\u8df3\u8fc7\u6570\u589e\u52a0\u88ab\u62e6\u622a",
+      "\u6d4b\u8bd5\u91cd\u547d\u540d\u53ef\u901a\u8fc7\u6620\u5c04\u8bc6\u522b",
+      "\u8986\u76d6\u7387\u5c0f\u5e45\u6ce2\u52a8\u6309\u653f\u7b56\u5224\u65ad",
+      "\u62a5\u544a\u7f3a\u5931\u4e0d\u5f97PASS"
+    ],
+    "evidence": [
+      "test-inventory-before.json",
+      "test-inventory-after.json",
+      "test-delta.json",
+      "coverage-delta.json",
+      "gate-decision.json"
+    ],
+    "definition_of_done": [
+      "\u65e0\u672a\u89e3\u91ca\u6d4b\u8bd5\u6d88\u5931",
+      "\u8df3\u8fc7\u672a\u589e\u52a0\u6216\u6709\u6279\u51c6",
+      "\u8986\u76d6\u7387\u4e0d\u4f4e\u4e8e\u653f\u7b56",
+      "\u62a5\u544a\u6765\u6e90\u53ef\u4fe1",
+      "Gate\u7ed3\u679c\u8fdb\u5165PR\u68c0\u67e5"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:05ee3c64fcc04554cfe43d912d4caa6857338cfe48d77cf75e7d0ab90d2775a6",
+  "compiledVersion": 1
+}

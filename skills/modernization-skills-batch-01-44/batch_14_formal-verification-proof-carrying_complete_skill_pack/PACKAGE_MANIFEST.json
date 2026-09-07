@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-14-formal-verification-proof-carrying-complete-skill-pack",
+  "batch": 14,
+  "title": "Formal Verification and Proof-Carrying Migration",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b14-formal-verification-proof-carrying-orchestrator",
+    "b14-formal-verification-proof-carrying-domain-model",
+    "b14-formal-verification-proof-carrying-discovery-inventory",
+    "b14-formal-verification-proof-carrying-capability-planning",
+    "b14-formal-verification-proof-carrying-deterministic-engine",
+    "b14-formal-verification-proof-carrying-adapter-provider",
+    "b14-formal-verification-proof-carrying-workflow-runtime",
+    "b14-formal-verification-proof-carrying-lineage-reconciliation",
+    "b14-formal-verification-proof-carrying-security-policy",
+    "b14-formal-verification-proof-carrying-human-approval",
+    "b14-formal-verification-proof-carrying-observability-economics",
+    "b14-formal-verification-proof-carrying-corpus-benchmark",
+    "b14-formal-verification-proof-carrying-failure-recovery",
+    "b14-formal-verification-proof-carrying-integration-api",
+    "b14-formal-verification-proof-carrying-lifecycle-recertification",
+    "b14-formal-verification-proof-carrying-certification-gate"
+  ],
+  "upstream_batch": 13,
+  "files": [
+    {
+      "path": "BATCH13_COMPATIBILITY.md",
+      "sha256": "e4ab5d08bbcbeac31863806fc8e9486fbcfdde3b253dfa507480ef02cb496234",
+      "size": 2146
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "34424d469988992b36237dc7d7887f293cafbf032000ee967150de883e334ee3",
+      "size": 2332
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "c4743df4fe2e5b32f9397abe2909c6370ca84498520fa3b78e32085523bc9e47",
+      "size": 1809
+    },
+    {
+      "path": "README.md",
+      "sha256": "5710ff8cb6432507058580abff1849a320d44fbfed38041cedf70e6b0db5e521",
+      "size": 1073
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "4585a02791e7ac03177beb15e28d59e8121e3b03f4416dc2b5096232482fba91",
+      "size": 3664
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "4ec632c2e675d4275fd0cffdf6301eb5aab30559ec7f832bf32aae3cd68f10b6",
+      "size": 3161
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "fa8800fe181657c54f0873458d8adf776d9510c5ed842ef3a7c04042085e6388",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "f5a1bcfc332e931b49b58db40d68724d89353879ce2431141ee0954d6901eaac",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "554bcf065e929e6f4d86049474b25c52146cbf9617c2e2e4976b074aa3da9b5e",
+      "size": 282
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "f43bd957b223b304c1d6cb3782d6a3a2646f57bd1db2b0ffb7fb9f1d80ade8ec",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "421cd280575d38e0525a824ac059a3faab7ea6db4a3c467590dd4ff437b99f7e",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "13350cafe64038d765d0a7f21401014e73f9f875d637862620955e66864d1077",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "c1bd1f6271de4835b7229e7fc743433d0e772dffed8f90809cf7e182df7de342",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "8da1a4f88adc3bfe8fa32395d64275c6bb322475a019cea4891f52824e1aca64",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "47718f31932287ca8f8045742299760d20eb41e2c955d7e44d0aabc0df568d71",
+      "size": 848
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-adapter-provider/SKILL.md",
+      "sha256": "2e338febb0117678309b2abedef18cc181eb4011d16cef136ead087f4e433745",
+      "size": 3921
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-capability-planning/SKILL.md",
+      "sha256": "a77675987e6baab2e649cbb518f63a364e575abb49747ba61486c2cd11afbb88",
+      "size": 3823
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-certification-gate/SKILL.md",
+      "sha256": "57debc9c69ffe4df211674db4564ec04fbc6fa781895d518bf1e28ae0d4c43dd",
+      "size": 3952
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-corpus-benchmark/SKILL.md",
+      "sha256": "b827858f290fe56acc6c43d492856bc3b1e5a92df721e454af17b8be659319ad",
+      "size": 3862
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-deterministic-engine/SKILL.md",
+      "sha256": "4d10abf6f0358107dc00e217648a4492f4cd3cc59ae0699a365e1162cb071e83",
+      "size": 3839
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-discovery-inventory/SKILL.md",
+      "sha256": "5715fd0c5c09fc1bea1d533ac8879676c9cc8caebb3933efdbf62343115bff60",
+      "size": 3866
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-domain-model/SKILL.md",
+      "sha256": "d286abe2009acc63ab397e3c766748c83e4bc2d84ef88142d2850779824735d2",
+      "size": 3893
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-failure-recovery/SKILL.md",
+      "sha256": "9c2a0b0b5c5b2c0896996c17686a1bc835b8153c1492752c68e8000051613f76",
+      "size": 3870
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-human-approval/SKILL.md",
+      "sha256": "f8bb91a6558af98b7aabe5ccba00776ac550a0d85e5e41a0c8c16262b127b959",
+      "size": 3855
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-integration-api/SKILL.md",
+      "sha256": "80a5cadc6636c0449399a76a187baed401e15c12eda39554b4c99eee49177c34",
+      "size": 3840
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-lifecycle-recertification/SKILL.md",
+      "sha256": "a073e45de5166e19faa07ec1e6eead9b5728f7fdad8972d19b07031edd347943",
+      "size": 3930
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-lineage-reconciliation/SKILL.md",
+      "sha256": "d663f0334f3a48eb03352e71851eed39a2cfece07294a66ca9fe7627a2de8c96",
+      "size": 3881
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-observability-economics/SKILL.md",
+      "sha256": "6fb8b1dd44f41ea71b659ef4bafbc5a49c0375ba984ef6ebf7d07f63a93768d9",
+      "size": 3896
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-orchestrator/SKILL.md",
+      "sha256": "8c220498b708334adfc1c9cf0e48786b54316a561fbb226395a2258a36902327",
+      "size": 3918
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-security-policy/SKILL.md",
+      "sha256": "d286dd06ed6b651a6506b45cb98580952fe9acec64c27725a2c872f3e6266bf4",
+      "size": 3875
+    },
+    {
+      "path": "skills/b14-formal-verification-proof-carrying-workflow-runtime/SKILL.md",
+      "sha256": "4405021df939ca19e5c0878ba49317944e4bf8f8fe7ddffbea0bfeeb7bb4799f",
+      "size": 3884
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "f21f641a8cdc2be9ef99d386a888052759294e283206b7a643be5b1380b142c1",
+      "size": 425
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "6685d012fe8dedac7ae7c8c72ddec490a58b9eabcc6c8383e503b0850050b681",
+      "size": 1926
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

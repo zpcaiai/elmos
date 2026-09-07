@@ -1,0 +1,4 @@
+interface:
+  display_name: "B56 Provider Certification Factory and Support Matrix"
+  short_description: "Run this Product Batch 56 guidance Skill safely"
+  default_prompt: "Use $b56-provider-certification-factory-and-support-matrix as inactive Product Batch 56 guidance; preserve Product 56A authority and fail closed on missing evidence."

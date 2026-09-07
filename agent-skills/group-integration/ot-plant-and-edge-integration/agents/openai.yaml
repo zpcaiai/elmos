@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 723: ot plant and edge integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $ot-plant-and-edge-integration to evaluate this capability with evidence."

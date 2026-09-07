@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TargetCapabilityProfile",
+  "type": "object",
+  "required": [
+    "target",
+    "versionPolicy",
+    "features"
+  ],
+  "properties": {
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "versionPolicy": {
+      "type": "object",
+      "required": [
+        "exactVersionRequired",
+        "adapterDigestRequired"
+      ],
+      "properties": {
+        "exactVersionRequired": {
+          "type": "boolean"
+        },
+        "adapterDigestRequired": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "conditional",
+              "emulated",
+              "external-runtime",
+              "external-policy",
+              "unsupported",
+              "blocked"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nativeConformanceRequired": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

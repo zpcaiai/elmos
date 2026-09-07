@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/skill-contract.schema.json",
+  "title": "Elmos Proof-Carrying Skill Contract",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v1"
+    },
+    "kind": {
+      "const": "ProofCarryingSkill"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "pack",
+        "priority",
+        "owner"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 64
+        },
+        "version": {
+          "type": "string"
+        },
+        "pack": {
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "description",
+        "preconditions",
+        "inputs",
+        "outputs",
+        "workflow",
+        "tools",
+        "evidence",
+        "rollback",
+        "learning"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "riskClass": {
+          "type": "string"
+        },
+        "preconditions": {
+          "type": "array"
+        },
+        "inputs": {
+          "type": "array"
+        },
+        "outputs": {
+          "type": "array"
+        },
+        "workflow": {
+          "type": "array",
+          "minItems": 3
+        },
+        "tools": {
+          "type": "object"
+        },
+        "evidence": {
+          "type": "object"
+        },
+        "rollback": {
+          "type": "object"
+        },
+        "learning": {
+          "type": "object"
+        },
+        "telemetry": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

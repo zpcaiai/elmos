@@ -1,0 +1,46 @@
+# case TS-GOV-03-001
+# started_at 2026-08-06T10:11:29Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py fixture-factory
+=== probe: fixture-factory ===
+[PASS] fixture-deterministic-suite.json
+[PASS] fixture-deterministic-strict-profile.json
+[PASS] fixture-deterministic-coverage-matrix.json
+[PASS] fixture-deterministic-cases/catalog.json
+[PASS] fixture-starts-with-empty-results
+[PASS] fixture-mutation-does-not-leak-to-source
+[PASS] fixture-mutation-does-not-leak-across-fixtures
+[PASS] source-suite-digest-unchanged
+[PASS] fixture-contains-no-production-secrets :: []
+[PASS] fixture-carries-no-wall-clock-values
+[PASS] fixture-rebuild-is-byte-identical
+
+11/11 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py control-manifest
+=== probe: control-manifest ===
+[PASS] live-controls-match-recorded-digests :: []
+[PASS] gate-reports-four-control-digests
+[PASS] control-digest-nonzero-catalog
+[PASS] control-digest-nonzero-coverage_matrix
+[PASS] control-digest-nonzero-strict_profile
+[PASS] control-digest-nonzero-suite
+[PASS] catalog-tamper-detected-by-control-manifest :: ['case/control manifest control digests are stale or tampered']
+
+7/7 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

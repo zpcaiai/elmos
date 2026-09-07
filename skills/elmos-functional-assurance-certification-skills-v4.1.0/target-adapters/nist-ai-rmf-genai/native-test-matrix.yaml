@@ -1,0 +1,45 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterNativeTestMatrix
+metadata:
+  adapter: nist-ai-rmf-genai
+  version: 4.0.0
+spec:
+  fixtures:
+  - minimal
+  - representative
+  - negative
+  - upgrade
+  - recovery
+  tests:
+  - id: NATIVE-01
+    scenario: detect exact version
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-02
+    scenario: import or profile source
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-03
+    scenario: emit minimal target
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-04
+    scenario: native load/build/start
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-05
+    scenario: execute representative contract
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-06
+    scenario: deny unsupported critical capability
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-07
+    scenario: upgrade and rollback
+    required: true
+    oracle: native runtime/tool plus typed assertions
+  - id: NATIVE-08
+    scenario: capture versions/digests/evidence
+    required: true
+    oracle: native runtime/tool plus typed assertions

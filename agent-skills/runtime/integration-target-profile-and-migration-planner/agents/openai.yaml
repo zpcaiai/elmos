@@ -1,0 +1,4 @@
+interface:
+  display_name: "integration target profile and migration planner"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $integration-target-profile-and-migration-planner to modernize this integration scope safely."

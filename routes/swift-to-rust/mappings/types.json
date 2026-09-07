@@ -1,0 +1,17 @@
+{
+  "input_domain": "typed-pure-function-v1-declared-domain",
+  "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
+  "out_of_domain_arithmetic_behavior": "profile-specific",
+  "schema_version": 1,
+  "source": "swift",
+  "string_semantics": "PROFILE_DEFINED",
+  "target": "rust",
+  "type_evidence_corpora": {},
+  "types": [
+    "integer",
+    "number",
+    "boolean",
+    "string"
+  ],
+  "unknown_type_policy": "BLOCK"
+}

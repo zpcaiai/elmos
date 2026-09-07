@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 705: data platform bi and metric integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $data-platform-bi-and-metric-integration to evaluate this capability with evidence."

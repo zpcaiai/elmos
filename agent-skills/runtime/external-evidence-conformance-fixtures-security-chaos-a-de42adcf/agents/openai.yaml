@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: External Evidence Conformance Fixtures Security Chaos And Release Gates"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $external-evidence-conformance-fixtures-security-chaos-a-de42adcf to implement its fail-closed ELMOS Product B37 contract."

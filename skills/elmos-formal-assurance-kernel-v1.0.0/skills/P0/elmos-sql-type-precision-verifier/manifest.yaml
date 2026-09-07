@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-sql-type-precision-verifier
+  title: SQL Type and Precision Verifier
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: sql-conversion
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明数值范围/Scale、字符集、Collation、时间、JSON、二进制和布尔映射不会丢失业务语义。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-sql-semantic-ir
+  capabilities:
+  - range proofs
+  - rounding semantics
+  - encoding equivalence
+  - type refinement
+  inputs:
+  - name: source/target type maps
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: data constraints
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: dialect profiles
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: type obligations
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: safe cast plan
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample value
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

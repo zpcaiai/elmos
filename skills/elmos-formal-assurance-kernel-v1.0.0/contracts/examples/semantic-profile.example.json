@@ -1,0 +1,21 @@
+{
+  "id": "java-core-21",
+  "language": "Java",
+  "version": "1.0.0",
+  "runtime": "JDK 21",
+  "features": {
+    "reflection": "RUNTIME_MONITORED",
+    "integer-arithmetic": "VERIFIED",
+    "native-method": "UNSUPPORTED",
+    "threads": "BOUNDED"
+  },
+  "numericModel": {
+    "int": "signed-32-bit-two-complement",
+    "long": "signed-64-bit-two-complement",
+    "floating": "IEEE-754"
+  },
+  "nullModel": "nullable references",
+  "concurrencyModel": "Java Memory Model subset",
+  "undefinedBehaviorPolicy": "REJECT",
+  "digest": "c976db476475e952534822babfb111be4d389f52e900a13ad4f224a430a2336a"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cobol Copybook Semantic Symbol And Data Layout Graph"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $cobol-copybook-semantic-symbol-and-data-layout-graph to execute this ELMOS Runtime Skill with fail-closed evidence."

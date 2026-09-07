@@ -1,0 +1,103 @@
+apiVersion: elmos.ai/v2alpha1
+kind: SkillImplementationPlan
+metadata:
+  name: elmos-proof-status-policy
+  version: 1.0.0
+  domain: core
+spec:
+  components:
+  - name: ingress-adapter
+    responsibility: validate inputs, provenance, tenant and source revisions
+  - name: obligation-compiler
+    responsibility: compile Proof Status Policy domain facts into proof obligations
+  - name: verifier-runner
+    responsibility: execute selected adapters in isolated durable workers
+  - name: evidence-committer
+    responsibility: atomically commit status, artifacts, hashes and coverage
+  - name: drift-subscriber
+    responsibility: invalidate proof evidence after semantic or TCB changes
+  ports:
+    inbound:
+    - POST /v1/formal/specs
+    - POST /v1/proof-plans
+    - POST /v1/proof-runs
+    - event:changegraph.changed
+    outbound:
+    - object-storage
+    - postgresql-17
+    - event-bus
+    - verifier-adapters
+    - OpenTelemetry
+  dataEntities:
+  - formal_spec
+  - proof_obligation
+  - proof_plan
+  - proof_run
+  - proof_artifact
+  - proof_assumption
+  - proof_counterexample
+  - proof_coverage
+  workPackages:
+  - id: WP1
+    name: domain extraction
+    deliverables:
+    - parser/adapter
+    - source map
+    - semantic hash
+    gate: E1_STATIC
+  - id: WP2
+    name: proof compilation
+    deliverables:
+    - obligation generator
+    - fixtures
+    - negative cases
+    gate: E2_MODEL
+  - id: WP3
+    name: execution integration
+    deliverables:
+    - sandbox runner
+    - checkpoint/retry
+    - evidence commit
+    gate: E3_DIFFERENTIAL
+  - id: WP4
+    name: resilience and security
+    deliverables:
+    - fault injection
+    - tenant isolation
+    - quota enforcement
+    gate: E4_FAILURE_INJECTION
+  - id: WP5
+    name: commercial certification
+    deliverables:
+    - golden route evidence
+    - SLO report
+    - operations sign-off
+    gate: E5_CUSTOMER_GOLDEN_ROUTE
+  adapters: []
+  migrationStrategy:
+  - shadow mode
+  - advisory gate
+  - blocking gate for P0
+  - customer-certified TRUSTED
+  rollout:
+    stages:
+    - DEV
+    - SHADOW
+    - STAGING
+    - PROD_ADVISORY
+    - PROD_BLOCKING
+    rollback: disable gate, preserve evidence, never rewrite status history
+  observability:
+    metrics:
+    - proof_run_total
+    - proof_wall_clock_seconds
+    - proof_unknown_ratio
+    - proof_cache_hit_ratio
+    - proof_evidence_age_seconds
+    traces: true
+    logs: structured-redacted
+  security:
+    sandbox: network-deny and secretless
+    leastPrivilege: true
+    artifactEncryption: true
+    fourEyesWaiver: true

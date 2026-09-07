@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B38 45 Evidence Integrity Anti Cheating"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b38-45-evidence-integrity-anti-cheating to run its exact Batch 38-45 cases with fail-closed evidence."

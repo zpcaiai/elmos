@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B22: Oracle Feature Migration Decision"
+  short_description: "Run Precision Migration B22 with evidence controls"
+  default_prompt: "Use $pm-b22-oracle-feature-migration-decision to execute this Precision Migration contract with fail-closed evidence."

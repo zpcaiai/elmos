@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python AI ML Modernizer"
+  short_description: "Modernize model code artifacts and GPU stacks"
+  default_prompt: "Use $python-ai-ml-framework-modernizer to modernize this AI or ML project."

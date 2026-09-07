@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 004"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $github-webhook-idempotency-and-access-reconciliation to implement its fail-closed ELMOS Product Batch 33-mature contract."

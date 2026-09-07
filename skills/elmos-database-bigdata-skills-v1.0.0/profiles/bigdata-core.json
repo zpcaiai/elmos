@@ -1,0 +1,30 @@
+{
+  "profile": "bigdata-core",
+  "version": "1.0.0",
+  "skills": [
+    "elmos-bigdata-project-classifier",
+    "elmos-bigdata-pattern-selector",
+    "elmos-ingestion-connector-planner",
+    "elmos-cdc-event-backbone",
+    "elmos-batch-processing-generator",
+    "elmos-stream-processing-generator",
+    "elmos-lakehouse-generator",
+    "elmos-warehouse-olap-serving",
+    "elmos-federated-query-data-fabric",
+    "elmos-data-modeling-semantic-layer",
+    "elmos-metadata-catalog-lineage",
+    "elmos-data-quality-observability",
+    "elmos-orchestration-backfill-replay",
+    "elmos-feature-store-ml-pipeline",
+    "elmos-bigdata-api-dashboard",
+    "elmos-bigdata-infra-deployment",
+    "elmos-bigdata-security-governance",
+    "elmos-bigdata-test-validation",
+    "elmos-bigdata-performance-chaos",
+    "elmos-bigdata-cost-autotuning",
+    "elmos-bigdata-auto-repair",
+    "elmos-bigdata-evidence-certification",
+    "elmos-bigdata-project-orchestrator"
+  ],
+  "dependency_policy": "installer expands transitive dependencies"
+}

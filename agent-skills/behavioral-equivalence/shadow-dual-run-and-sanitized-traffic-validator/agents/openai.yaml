@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadow Dual Run And Sanitized Traffic Validator"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $shadow-dual-run-and-sanitized-traffic-validator to perform this Batch 9 behavioral-equivalence task."

@@ -1,0 +1,41 @@
+.card, .shell, .provider { box-sizing: border-box; margin: 20rpx 0; padding: 24rpx; border: 1rpx solid #d7deea; border-radius: 16rpx; background: #fff; color: #172033; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; font-size: 30rpx; font-weight: 600; }
+.status { margin: 12rpx 0; color: #58677d; font-size: 24rpx; }
+.status--failed, .status--configuration-required { color: #a51d2d; }
+.source-labels, .content { display: flex; flex-direction: column; gap: 8rpx; margin-top: 12rpx; }
+.source-label { color: #46566f; font-size: 24rpx; }
+.actions { display: flex; flex-wrap: wrap; gap: 12rpx; margin: 16rpx 0; }
+.data-row, .table-row, .bar-row { display: flex; align-items: center; gap: 16rpx; min-height: 56rpx; border-top: 1rpx solid #edf0f5; }
+.data-row > text:first-child, .table-key, .bar-label { width: 220rpx; color: #59677a; }
+.table-scroll { width: 100%; }
+.table-row { min-width: 900rpx; }
+.chart { display: flex; flex-direction: column; gap: 12rpx; }
+.bar { min-width: 4rpx; max-width: 280rpx; height: 20rpx; border-radius: 10rpx; background: #3568d4; }
+.icon { display: inline-flex; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; font-size: 36rpx; }
+.source-assetIdentity { box-sizing: border-box; }
+.source-assetList { box-sizing: border-box; }
+.source-assetRow { box-sizing: border-box; }
+.source-assetState { box-sizing: border-box; }
+.source-assetToolbar { box-sizing: border-box; }
+.source-boundary { box-sizing: border-box; }
+.source-directInput { box-sizing: border-box; }
+.source-dropzone { box-sizing: border-box; }
+.source-empty { box-sizing: border-box; }
+.source-estimateBox { box-sizing: border-box; }
+.source-feedback { box-sizing: border-box; }
+.source-field { box-sizing: border-box; }
+.source-header { box-sizing: border-box; }
+.source-headerStatus { box-sizing: border-box; }
+.source-inlineControl { box-sizing: border-box; }
+.source-jsonPreview { box-sizing: border-box; }
+.source-layout { box-sizing: border-box; }
+.source-overline { box-sizing: border-box; }
+.source-page { box-sizing: border-box; }
+.source-panel { box-sizing: border-box; }
+.source-progress { box-sizing: border-box; }
+.source-reviewActions { box-sizing: border-box; }
+.source-reviewBox { box-sizing: border-box; }
+.source-reviewTaskSummary { box-sizing: border-box; }
+.source-sectionHeading { box-sizing: border-box; }
+.source-sidePanel { box-sizing: border-box; }
+.source-tree { box-sizing: border-box; }

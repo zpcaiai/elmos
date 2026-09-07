@@ -1,0 +1,4 @@
+interface:
+  display_name: "B08 API Gateway Mesh Migration"
+  short_description: "Help with B08 API Gateway Mesh Migration tasks"
+  default_prompt: "Use $b08-api-gateway-mesh-migration to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,25 @@
+{
+  "route_key": "csharp-to-rust",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 168,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.rs",
+      "sha256": "sha256:fe38942d9c82578d2374b5be82c214786372957e4b6b0458691c8a5d9ad2bb62"
+    },
+    {
+      "bytes": 156,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.rs",
+      "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+    },
+    {
+      "bytes": 165,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.rs",
+      "sha256": "sha256:e1ed2f573427cf79c1aa23b4408c65800c23c5db68fe57a12621aad1d5cf0f4f"
+    }
+  ]
+}

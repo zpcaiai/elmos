@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "model-weight-provenance-example",
+  "status": "READY",
+  "content_hash": "a6590e4e36b4e54f00d74270ea9c6faf06180e9ce3a8fbaa9c89adb28a6990d5",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

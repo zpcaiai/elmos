@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 494: revenue bookings and pipeline planner"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $revenue-bookings-and-pipeline-planner to evaluate this capability with evidence."

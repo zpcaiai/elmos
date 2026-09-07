@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-22T13:28:59+08:00",
+  "scope": "local development evidence only",
+  "browser": "Google Chrome 150.0.7871.129",
+  "viewports": [
+    {"width": 1440, "height": 1000, "journey": "migration marketplace and local draft"},
+    {"width": 390, "height": 844, "journey": "commercialization B37 review"}
+  ],
+  "checks": {
+    "typescript_strict": "PASSED",
+    "next_production_build": "PASSED",
+    "runtime_routes": "PASSED",
+    "api_fail_closed_fallback": "PASSED",
+    "key_interactions": "PASSED",
+    "horizontal_overflow": "PASSED",
+    "browser_console_errors": 0,
+    "external_execution_evidence": "NOT_RUN",
+    "cross_browser": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "independent_holdout": "NOT_RUN"
+  },
+  "screenshots": [
+    {"path":"elmos-migration-marketplace-desktop.png","sha256":"5f2477f9c7a57899e700d8015d8158779f4d4055a18358e7f6487657167c56bb"},
+    {"path":"elmos-commercialization-mobile.png","sha256":"177771973ed3afb3f86b75d131c978eef5941b79d56c97ffbf156f69f1fb04ac"}
+  ],
+  "certification_claim": false
+}

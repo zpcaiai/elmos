@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/defect.schema.json",
+  "title": "Defect",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "defect_id",
+    "run_id",
+    "title",
+    "severity",
+    "priority",
+    "status",
+    "failed_test_refs",
+    "requirement_refs",
+    "reproduction",
+    "root_cause"
+  ],
+  "properties": {
+    "defect_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "informational"
+      ]
+    },
+    "priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "status": {
+      "enum": [
+        "open",
+        "triaged",
+        "repair_planned",
+        "patched",
+        "verified",
+        "rejected",
+        "accepted_risk",
+        "closed"
+      ]
+    },
+    "failed_test_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "impact": {
+      "type": "object"
+    },
+    "reproduction": {
+      "type": "object",
+      "required": [
+        "command",
+        "environment_snapshot",
+        "minimal_input"
+      ],
+      "properties": {
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment_snapshot": {
+          "type": "string"
+        },
+        "minimal_input": {},
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "root_cause": {
+      "type": "object",
+      "required": [
+        "summary",
+        "confidence"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "code_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dependency_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alternative_hypotheses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "owner": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

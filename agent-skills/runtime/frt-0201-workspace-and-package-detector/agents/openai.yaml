@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workspace and Package Detector"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0201-workspace-and-package-detector to run FRT-0201 through the governed FRT runtime with exact scope and fail-closed evidence."

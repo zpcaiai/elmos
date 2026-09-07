@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 009"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $oncall-escalation-roster-handoff-and-human-sustainability to apply its fail-closed ELMOS runtime contract."

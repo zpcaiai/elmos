@@ -1,0 +1,69 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-009",
+  "name": "spring-route-orchestrator",
+  "title": "Spring Golden Route Orchestrator",
+  "description": "编排 Eligibility→Baseline→Intelligence→Plan→Transform→Repair→Verify→Proof→Delivery。",
+  "batch": "12",
+  "batch_slug": "spring-golden-route-contract",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-route-orchestrator/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "elmos-spring-route-boundary"
+  ],
+  "outputs": [
+    "migration-run.json",
+    "phase-events",
+    "delivery-result.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "固定阶段与硬 Gate",
+    "Durable pause/resume/cancel",
+    "Typed node inputs/outputs",
+    "阶段补偿与回滚",
+    "SSE/API 可观察"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "Route Contract 漂移必须阻断执行",
+    "全 reactor clean verify 失败不得交付",
+    "关键 unsupported 无 treatment 不得认证"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: migration-run.json, phase-events, delivery-result.json"
+  ],
+  "stop_conditions": [
+    "Baseline 无法重建",
+    "关键私有依赖不可访问",
+    "P0 capability 无目标映射/验证器",
+    "rollback 未验证"
+  ],
+  "definition_of_done": [
+    "从冻结 snapshot 到 delivery bundle 的 clean-room E2E 可重复",
+    "每项源能力映射 preserved/transformed/retained/unsupported/unknown",
+    "所有 mandatory Gate 证据完整"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

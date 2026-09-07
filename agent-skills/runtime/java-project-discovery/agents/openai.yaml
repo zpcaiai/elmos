@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Project Discovery"
+  short_description: "Discover bounded Java project structure"
+  default_prompt: "Use $java-project-discovery for ELMOS Batch 3 discovery."

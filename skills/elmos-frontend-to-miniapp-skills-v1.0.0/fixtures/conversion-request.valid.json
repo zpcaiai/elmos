@@ -1,0 +1,45 @@
+{
+  "request_id": "conv-demo-001",
+  "tenant_id": "tenant-demo",
+  "source": {
+    "root": "./examples/vue3-todo/source",
+    "revision": "0123456789abcdef",
+    "framework_hint": "vue3",
+    "include": [
+      "src/**/*",
+      "package.json"
+    ],
+    "exclude": [
+      "dist/**",
+      "node_modules/**"
+    ]
+  },
+  "targets": [
+    "wechat",
+    "alipay",
+    "douyin",
+    "xiaohongshu"
+  ],
+  "strategy": {
+    "priority": "balanced",
+    "webview_fallback": "deny",
+    "full_page_canvas_fallback": "deny",
+    "unsupported_policy": "ask-decision"
+  },
+  "quality": {
+    "critical_flow_pass_rate": 1.0,
+    "visual_similarity_min": 0.95,
+    "max_auto_repair_iterations": 3,
+    "performance_policy_ref": "plans/default-performance-policy.yaml"
+  },
+  "release": {
+    "mode": "build-only",
+    "human_approval_required": true,
+    "credential_refs": {
+      "wechat": "vault://tenant-demo/wechat/build"
+    }
+  },
+  "metadata": {
+    "owner": "elmos"
+  }
+}

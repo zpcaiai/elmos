@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "DataMigrationPlan",
+  "metadata": {
+    "id": "data-migration-plan-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "snapshot": {},
+    "cdc": {},
+    "reconciliation": {},
+    "cutover": {},
+    "rollback": {}
+  }
+}

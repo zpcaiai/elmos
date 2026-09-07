@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "owner": "independent-client-verifier",
+  "cases": ["auth-expiry-during-poll", "tenant-switch", "timeout", "cancel-race", "stale-terminal-read"]
+}

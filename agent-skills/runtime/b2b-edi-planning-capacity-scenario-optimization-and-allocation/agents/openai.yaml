@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: B2B Edi Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-planning-capacity-scenario-optimization-and-allocation to implement its fail-closed ELMOS Product B46 contract."

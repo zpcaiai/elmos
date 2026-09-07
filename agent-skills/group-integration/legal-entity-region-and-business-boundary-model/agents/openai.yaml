@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 680: legal entity region and business boundary model"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $legal-entity-region-and-business-boundary-model to evaluate this capability with evidence."

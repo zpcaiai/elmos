@@ -1,0 +1,4 @@
+interface:
+  display_name: "Soak Endurance and Resource Leak Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $soak-endurance-and-resource-leak-validator to perform this Batch 10 production-hardening task."

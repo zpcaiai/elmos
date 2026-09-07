@@ -1,0 +1,128 @@
+# Scoped deliberately to packages/execution-intelligence.
+#
+# This repository has many subprojects with their own pinned toolchains; a
+# workflow that tried to build all of them would fail for reasons that have
+# nothing to do with this package, and would then be ignored. This one runs only
+# what this package can prove on its own: lint, types, and the full test suite,
+# including the PostgreSQL store-conformance cases against a real server.
+name: execution-intelligence
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      - "packages/execution-intelligence/**"
+      - ".github/workflows/execution-intelligence.yml"
+  pull_request:
+    paths:
+      - "packages/execution-intelligence/**"
+      - ".github/workflows/execution-intelligence.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: packages/execution-intelligence
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.10 is what the repository's own device VM runs; 3.12 catches anything
+        # that only works on an older interpreter.
+        python-version: ["3.10", "3.12"]
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: elmos_ei
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the dev toolchain
+        run: python -m pip install --upgrade pip ruff mypy pytest pg8000 PyYAML cryptography
+
+      - name: Apply the production schema to a real PostgreSQL
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d elmos_ei -v ON_ERROR_STOP=1 -f sql/001_execution_intelligence.sql
+
+      - name: Lint
+        run: python -m ruff check --no-cache src tests
+
+      - name: Types
+        run: MYPYPATH=$PWD/src python -m mypy --strict -p elmos_execution_intelligence
+
+      - name: Tests, including PostgreSQL store conformance
+        env:
+          ELMOS_EI_PG_DSN: postgresql://postgres:postgres@localhost:5432/elmos_ei
+        run: python -m pytest -q tests
+
+      - name: The PostgreSQL cases must actually have run
+        env:
+          ELMOS_EI_PG_DSN: postgresql://postgres:postgres@localhost:5432/elmos_ei
+        run: |
+          # A skipped conformance suite would otherwise look like a green build.
+          python -m pytest -q tests/test_store_conformance.py -rs 2>&1 | tee /tmp/conformance.txt
+          if grep -q "skipped" /tmp/conformance.txt; then
+            echo "PostgreSQL conformance cases were skipped; that is not a pass." >&2
+            exit 1
+          fi
+
+      - name: End-to-end smoke on the package's own tree
+        run: |
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli scan-tokens . \
+            --output /tmp/scan.json
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli audit-scope . \
+            --static-scan /tmp/scan.json --project-id ci --output /tmp/ci
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli decompose \
+            --scope /tmp/ci/scope-baseline.json --output /tmp/ci
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli forecast \
+            --project /tmp/ci/project-profile.seed.json --tasks /tmp/ci/task-dag.json \
+            --pricing config/model-pricing.json --static-scan /tmp/scan.json --output /tmp/ci
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli chaos \
+            --project /tmp/ci/project-profile.seed.json --output /tmp/ci
+          # A synthetic one-turn transcript: enough to exercise the mix comparison
+          # end to end, explicitly not enough to be a calibration. The command is
+          # expected to warn about the sample floor, which is the correct answer.
+          printf '%s\n' '{"message":{"model":"ci-model","usage":{"input_tokens":10,"cache_read_input_tokens":900,"cache_creation_input_tokens":40,"output_tokens":50,"output_tokens_details":{"thinking_tokens":12}}}}' > /tmp/ci-session.jsonl
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli token-mix \
+            --tasks /tmp/ci/task-dag.json --forecast /tmp/ci/token-forecast.json \
+            --pricing config/model-pricing.json --transcript /tmp/ci-session.jsonl \
+            --output /tmp/ci
+          PYTHONPATH=src python -m elmos_execution_intelligence.cli validate-schemas /tmp/ci
+
+      - name: "Negative control: synthetic evidence must remain BLOCK"
+        run: |
+          # /tmp/ci contains a synthetic one-session harness, not release evidence.
+          # This step passes only when the readiness command rejects it with the
+          # documented BLOCK exit code and persists that exact decision.
+          set +e
+          make certify OUT=/tmp/ci
+          status=$?
+          set -e
+          # GNU make normally translates a recipe's exit 1 into make exit 2.  The contract at
+          # this entrypoint is therefore nonzero propagation plus the persisted BLOCK decision,
+          # not a false promise that the wrapper preserves the CLI's exact integer.
+          test "$status" -ne 0
+          python -c 'import json; report=json.load(open("/tmp/ci/production-readiness.json", encoding="utf-8")); assert report["decision"] == "block"'

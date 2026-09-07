@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.change-request.v1",
+  "title": "ELMOS Change Request",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "project_id",
+    "base_baseline",
+    "changes",
+    "approval_state"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "base_baseline": {
+      "type": "string"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "statement"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "requirement",
+              "rule",
+              "api",
+              "data",
+              "security",
+              "architecture",
+              "delivery"
+            ]
+          },
+          "statement": {
+            "type": "string"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "approval_state": {
+      "enum": [
+        "draft",
+        "review",
+        "approved",
+        "rejected"
+      ]
+    },
+    "impact_ref": {
+      "type": "string"
+    }
+  }
+}

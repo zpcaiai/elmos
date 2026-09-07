@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/catalog.v1.schema.json",
+  "title": "FRT G01-G30 compiled catalog",
+  "type": "object",
+  "required": ["schemaVersion", "package", "packageVersion", "packageManifestSha256", "sourceTreeSha256", "batchCount", "skillCount", "directedRouteCount", "technologyStacks", "batches", "skills", "routes", "evidenceBoundary"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "package": { "const": "FRT_G01_G30_Complete_Skills_Pack" },
+    "packageVersion": { "const": "1.0.0" },
+    "packageManifestSha256": { "$ref": "#/$defs/digest" },
+    "sourceTreeSha256": { "$ref": "#/$defs/digest" },
+    "batchCount": { "const": 30 },
+    "skillCount": { "const": 472 },
+    "directedRouteCount": { "const": 30 },
+    "technologyStacks": { "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true },
+    "batches": { "type": "array", "minItems": 30, "maxItems": 30 },
+    "skills": { "type": "array", "minItems": 472, "maxItems": 472 },
+    "routes": { "type": "array", "minItems": 30, "maxItems": 30 },
+    "evidenceBoundary": {
+      "type": "object",
+      "required": ["staticPackageValidation", "runtimeExecution", "formalProof", "deviceMatrix", "performance", "chaosAndDr", "penetrationTest", "production", "certification"],
+      "properties": {
+        "staticPackageValidation": { "const": "READY" },
+        "runtimeExecution": { "const": "RUNNER_REQUIRED" },
+        "formalProof": { "const": "NOT_RUN" },
+        "deviceMatrix": { "const": "NOT_RUN" },
+        "performance": { "const": "NOT_RUN" },
+        "chaosAndDr": { "const": "NOT_RUN" },
+        "penetrationTest": { "const": "NOT_RUN" },
+        "production": { "const": "NOT_RUN" },
+        "certification": { "const": "NOT_CERTIFIED" }
+      }
+    }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

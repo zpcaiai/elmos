@@ -1,0 +1,11 @@
+{
+  "batch": 35,
+  "packKey": "template-pack",
+  "eligible": false,
+  "status": "NOT_RUN",
+  "failures": [
+    "field evidence has not run"
+  ],
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

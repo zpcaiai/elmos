@@ -1,0 +1,12 @@
+{
+  "resourceId": "mcp:contracts",
+  "resourceType": "mcp-server",
+  "source": "enterprise-registry",
+  "verification": "verified",
+  "version": "2026-07-28",
+  "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "capabilities": [
+    "search"
+  ],
+  "decision": "allow"
+}

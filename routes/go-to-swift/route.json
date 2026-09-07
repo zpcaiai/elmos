@@ -1,0 +1,51 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "canonical_finite_no_error_input_domain_required": false,
+    "concrete_spans_required": false,
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "minimum_module_functions": 3,
+    "module_equivalence_required": false,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true,
+    "specialized_string_semantics_allowed": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "input_domain": "typed-pure-function-v1-declared-domain",
+    "module_profile": "NOT_APPLICABLE",
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "swift-native-compiler"
+  },
+  "review_date": "2026-10-26",
+  "route_key": "go-to-swift",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/polyglot-route-engine/native/go/analyzer.go",
+    "language": "go",
+    "versions": [
+      "Go 1.25.0",
+      "go/parser AST"
+    ]
+  },
+  "status": "limited",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "swift",
+    "versions": [
+      "Apple Swift 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)",
+      "arm64-apple-macosx26.0",
+      "SwiftSyntax 600.0.1"
+    ]
+  },
+  "version": "1.0.0"
+}

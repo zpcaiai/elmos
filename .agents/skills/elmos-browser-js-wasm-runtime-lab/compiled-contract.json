@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-browser-js-wasm-runtime-lab"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_ADAPTER_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_browser_js_wasm_runtime_lab",
+    "operation": "NATIVE_EXECUTION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-browser-js-wasm-runtime-lab"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-browser-js-wasm-runtime-lab",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-browser-js-wasm-runtime-lab/SKILL.md",
+    "sourceSha256": "sha256:2e8c2ec62114faa2d71c90d0c4d02c98e06dc1618e69868c5766c1c9065d6868",
+    "sourceSkillId": "ELMOS-POLY-272"
+  }
+}

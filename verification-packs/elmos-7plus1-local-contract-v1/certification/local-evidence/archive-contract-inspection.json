@@ -1,0 +1,116 @@
+{
+  "active_archive_executables": [],
+  "archive_scripts": [
+    {
+      "execution_state": "NOT_EXECUTED",
+      "implementation_state": "REPOSITORY_OWNED_SAFE_REIMPLEMENTATION",
+      "logical_path": "scripts/score_readiness.py",
+      "materialized_mode": "0644",
+      "materialized_path": "_neutralized-executable-data/scripts/score_readiness.py.source-data",
+      "sha256": "sha256:a17057412f9b574b5e1445cb6191ed4a4b0a8e1f09bcf59fb12cbbabb53c3dc7",
+      "size_bytes": 1507,
+      "source_mode": "0755"
+    },
+    {
+      "execution_state": "NOT_EXECUTED",
+      "implementation_state": "REPOSITORY_OWNED_SAFE_REIMPLEMENTATION",
+      "logical_path": "scripts/validate_packages.py",
+      "materialized_mode": "0644",
+      "materialized_path": "_neutralized-executable-data/scripts/validate_packages.py.source-data",
+      "sha256": "sha256:834aae29a1ba1ffc48d9ecf621b9e72e7a0e96e9cf74e255abf30f077921ad90",
+      "size_bytes": 4743,
+      "source_mode": "0755"
+    }
+  ],
+  "archive_scripts_executed": false,
+  "external_states": {
+    "certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_execution": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "inspection_digest": "sha256:261f3ed8262b287427593a41f2c579dfbe6bff85659000529bb3eb9ace995556",
+  "inspection_status": "PASSED",
+  "neutralized_path_mapping_count": 104,
+  "readiness_checks": [
+    {
+      "detail": "8 found",
+      "name": "8 top-level packages",
+      "status": "PASSED",
+      "weight": 15
+    },
+    {
+      "detail": "11 found",
+      "name": "shared schemas",
+      "status": "PASSED",
+      "weight": 15
+    },
+    {
+      "detail": "upstream isolation",
+      "name": "source pins",
+      "status": "PASSED",
+      "weight": 10
+    },
+    {
+      "detail": "implementation sequence",
+      "name": "phase plan",
+      "status": "PASSED",
+      "weight": 10
+    },
+    {
+      "detail": "quality measurement",
+      "name": "benchmark framework",
+      "status": "PASSED",
+      "weight": 10
+    },
+    {
+      "detail": "commercial operations",
+      "name": "commercial GA checklist",
+      "status": "PASSED",
+      "weight": 10
+    },
+    {
+      "detail": "93 found",
+      "name": "on-demand subskills",
+      "status": "PASSED",
+      "weight": 15
+    },
+    {
+      "detail": "8 found",
+      "name": "package manifests",
+      "status": "PASSED",
+      "weight": 10
+    },
+    {
+      "detail": "root manifest presence",
+      "name": "integrity manifest",
+      "status": "FAILED",
+      "weight": 5
+    }
+  ],
+  "repository_reimplementation_state": "LOCAL_REIMPLEMENTED_AND_EXECUTED_SELF_ATTESTED",
+  "safe_validation": {
+    "errors": [],
+    "example_validation_count": 2,
+    "markdown_file_count": 207,
+    "package_config_validation_count": 8,
+    "package_count": 8,
+    "package_validation_count": 8,
+    "schema_meta_validation_count": 19,
+    "subskill_count": 93
+  },
+  "schema_version": "1.0",
+  "source_blueprint_presence_score": 95,
+  "source_blueprint_presence_score_authority": "NON_AUTHORITATIVE_BLUEPRINT_PRESENCE_ONLY",
+  "source_blueprint_presence_score_maximum": 100,
+  "source_file_count": 252,
+  "source_layout_incompatibilities": [
+    "ELMOS_WORKFLOW.md",
+    "README.md",
+    "SKILL.md",
+    "manifest.json"
+  ],
+  "source_tree_digest": "sha256:52ee0be0930430cf3e2177559265f50c16ec9ce2b6b0976a08e70aa21da559cb",
+  "source_validator_parity_state": "SOURCE_LAYOUT_INCOMPATIBLE"
+}

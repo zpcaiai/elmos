@@ -1,0 +1,259 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.header h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  letter-spacing: -.02em;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fact {
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.entrySelect {
+  display: grid;
+  gap: 6px;
+}
+
+.entrySelect > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .035em;
+}
+
+.entrySelect select {
+  min-width: 210px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.runButton {
+  min-width: 208px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.countdown {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, var(--green));
+  border-radius: var(--radius);
+  background: var(--green-soft);
+}
+
+.countdownClock {
+  color: var(--ink);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.countdownExpiring {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--amber));
+  background: var(--amber-soft);
+}
+
+.countdownLabel {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.serviceLink {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.checks {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+
+.checkId {
+  min-width: 148px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.checkDetail {
+  flex: 1 1 260px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.notice {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.noticeWarning {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--amber));
+  background: var(--amber-soft);
+}
+
+.noticeBlocked {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--red));
+  background: var(--red-soft);
+}
+
+.section {
+  display: grid;
+  gap: 8px;
+}
+
+.sectionTitle {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.extendForm {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px dashed color-mix(in srgb, var(--line) 60%, var(--amber));
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+}
+
+.extendGrid {
+  display: grid;
+  grid-template-columns: minmax(120px, .6fr) minmax(200px, 1.6fr) minmax(140px, .8fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.extendGrid label {
+  display: grid;
+  gap: 6px;
+}
+
+.extendGrid label > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.extendGrid input,
+.extendGrid select {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.teardownList {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.evidence {
+  display: grid;
+  gap: 8px;
+}
+
+.logBlock {
+  max-height: 220px;
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@media (width <= 760px) {
+  .extendGrid {
+    grid-template-columns: 1fr;
+  }
+}

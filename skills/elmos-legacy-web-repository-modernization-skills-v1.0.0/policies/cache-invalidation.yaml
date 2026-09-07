@@ -1,0 +1,75 @@
+policyVersion: 1.0.0
+keyComponents:
+- contentHash
+- extractorOrRecipeVersion
+- targetBaseline
+- policySnapshotHash
+- dependencySubgraphHash
+- environmentClass
+layers:
+- name: blob
+  contentAddressed: true
+  ttl: long
+  examples:
+  - source
+  - dependency
+  - build-output
+- name: analysis
+  contentAddressed: true
+  ttl: versioned
+  examples:
+  - AST
+  - symbol-index
+  - evidence-chunk
+  - IR-chunk
+- name: execution
+  contentAddressed: false
+  ttl: short
+  examples:
+  - runtime-observation
+  - test-result
+  - environment-probe
+- name: validated-pattern
+  contentAddressed: true
+  ttl: until-invalidated
+  eligibility: E4/E5 only
+invalidation:
+- change: source file
+  invalidate:
+  - dependent AST/symbol/evidence/IR/change/test subgraph
+- change: build/dependency
+  invalidate:
+  - affected modules
+  - runtime probes
+  - target compilation
+- change: policy
+  invalidate:
+  - planner
+  - generator
+  - oracle/gates affected by policy
+- change: target baseline
+  invalidate:
+  - compatibility graph
+  - planner
+  - recipes
+  - target tests
+- change: environment
+  invalidate:
+  - effective config
+  - runtime observations
+  - deployment verification
+- change: normalizer
+  invalidate:
+  - all reports using that normalizer
+neverReuseAcross:
+- tenants without dedup policy
+- secret-bearing artifacts
+- different authority scope
+- conflicted evidence
+metrics:
+- hitRate
+- byteHitRate
+- savedWallClock
+- savedTokens
+- staleRejects
+- invalidatedNodes

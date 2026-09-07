@@ -1,0 +1,233 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/execution-record.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "dependentRequired": {
+    "cost_amount": [
+      "cost_currency",
+      "pricing_effective_at",
+      "pricing_registry_digest"
+    ],
+    "cost_currency": [
+      "cost_amount",
+      "pricing_effective_at",
+      "pricing_registry_digest"
+    ],
+    "pricing_effective_at": [
+      "cost_amount",
+      "cost_currency",
+      "pricing_registry_digest"
+    ],
+    "pricing_registry_digest": [
+      "cost_amount",
+      "cost_currency",
+      "pricing_effective_at"
+    ]
+  },
+  "properties": {
+    "attempt": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "cost_amount": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+      "type": "string"
+    },
+    "cost_currency": {
+      "pattern": "^[A-Z]{3}$",
+      "type": "string"
+    },
+    "ended_at": {
+      "format": "date-time",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "items": {
+        "$id": "https://elmos.dev/schemas/repository-task-router/evidence.v1.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "oneOf": [
+              {
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bytes": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "command_or_check": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "executor": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "kind": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN",
+              "BLOCKED",
+              "INCONCLUSIVE"
+            ]
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "verifier": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "command_or_check",
+          "status",
+          "sha256",
+          "bytes",
+          "executor"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "failure_class": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fallback_from_model": {
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "model_alias": {
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5"
+      ],
+      "type": "string"
+    },
+    "output_tokens": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pricing_effective_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "pricing_registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "prompt_tokens": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "result": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "routing_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "selection_mode": {
+      "enum": [
+        "smart",
+        "manual",
+        null
+      ]
+    },
+    "selection_provenance": {
+      "enum": [
+        "system_smart",
+        "user_selected",
+        "fallback",
+        "required_verifier",
+        null
+      ]
+    },
+    "started_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "task_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "user_selected_model": {
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    }
+  },
+  "required": [
+    "task_id",
+    "model_alias",
+    "attempt",
+    "started_at",
+    "result"
+  ],
+  "type": "object"
+}

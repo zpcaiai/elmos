@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rule Registry and Pass Manager"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0702-rule-registry-and-pass-manager to run FRT-0702 through the governed FRT runtime with exact scope and fail-closed evidence."

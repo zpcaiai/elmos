@@ -1,0 +1,4 @@
+interface:
+  display_name: "Continuous Verification Scheduler"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3018-continuous-verification-scheduler to run FRT-3018 through the governed FRT runtime with exact scope and fail-closed evidence."

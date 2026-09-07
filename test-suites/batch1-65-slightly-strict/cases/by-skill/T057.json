@@ -1,0 +1,403 @@
+{
+  "schema_version": "1.0.0",
+  "test_skill_id": "T057",
+  "test_skill_name": "elmos-batch-57-slightly-strict-tests",
+  "kind": "batch",
+  "target_batches": [
+    57
+  ],
+  "cases": [
+    {
+      "case_id": "TC-T057-001",
+      "test_skill_id": "T057",
+      "category": "happy_path",
+      "severity": "HIGH",
+      "title": "Representative approved workflow completes end to end",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Use a valid representative fixture covering the primary responsibilities of the target Batch. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Execute the Batch orchestrator or representative target Skills with approved inputs. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "All mandatory outputs validate, trace to inputs, and contain no hidden warnings or unsupported claims. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-002",
+      "test_skill_id": "T057",
+      "category": "boundary",
+      "severity": "MEDIUM",
+      "title": "Boundary and moderate scale remain correct",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Use minimum/maximum supported sizes, empty optional collections, and a moderately large realistic fixture. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Execute the same workflow at declared boundaries and at 2x the normal reference volume. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "Behavior remains bounded; limits are explicit; no silent truncation, quadratic blow-up, or inconsistent result occurs. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-003",
+      "test_skill_id": "T057",
+      "category": "negative_input",
+      "severity": "HIGH",
+      "title": "Malformed or contradictory input fails safely",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Corrupt one required field, introduce one invalid reference, and add one contradictory constraint. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Submit the malformed fixture without granting an exception. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "The workflow rejects or blocks with a structured diagnostic and makes no authoritative partial success claim. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-004",
+      "test_skill_id": "T057",
+      "category": "dependency_failure",
+      "severity": "HIGH",
+      "title": "Dependency failure is contained and recoverable",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Make one required provider, registry, model, runner, database, broker, or external dependency unavailable. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Execute until the failure is reached, then restore the dependency and resume where supported. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "Failure classification is correct, partial writes are journaled, retry is bounded, and resume does not duplicate side effects. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-005",
+      "test_skill_id": "T057",
+      "category": "security_isolation",
+      "severity": "CRITICAL",
+      "title": "Security, tenant and permission boundaries cannot be bypassed",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Create two tenants/projects and an actor lacking one required permission; include a malicious embedded instruction. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Attempt cross-boundary reads/writes, privilege escalation, and prompt-injection-driven tool use. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "All attempts are denied; no sensitive data leaks; the malicious instruction is treated as untrusted content and audited. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-006",
+      "test_skill_id": "T057",
+      "category": "replay_idempotency",
+      "severity": "HIGH",
+      "title": "Replay and retry are idempotent",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Capture an accepted request, event, generation unit, migration step, or task with its idempotency identity. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Replay it twice, including once after an injected timeout where the original completion status is initially unknown. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "No duplicate semantic object or side effect is produced; the original result or safe reconciliation is returned. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-007",
+      "test_skill_id": "T057",
+      "category": "version_drift",
+      "severity": "HIGH",
+      "title": "Schema, runtime and dependency drift is detected",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Change one upstream schema or tool version compatibly and one incompatibly. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Run compatibility resolution and the target workflow against both revisions. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "Compatible evolution succeeds with evidence; incompatible evolution blocks with precise impact and migration guidance. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    },
+    {
+      "case_id": "TC-T057-008",
+      "test_skill_id": "T057",
+      "category": "evidence_tamper",
+      "severity": "CRITICAL",
+      "title": "Tampered or incomplete evidence cannot produce a pass",
+      "target_batches": [
+        57
+      ],
+      "target_skill_names": [
+        "auth-session-ui-generator",
+        "crud-table-detail-generator",
+        "dashboard-chart-generator",
+        "design-token-component-adapter",
+        "form-validation-generator",
+        "frontend-profile-selector",
+        "frontend-state-data-fetch-generator",
+        "fullstack-e2e-wiring-generator",
+        "navigation-routing-permission-generator",
+        "typescript-client-sdk-generator"
+      ],
+      "invariant": null,
+      "setup": "Remove one required evidence record and alter one stored output fingerprint. Batch theme: Frontend and full-stack generation.",
+      "stimulus": "Evaluate the run and attempt to publish a success or certification result. Exercise at least one orchestrating Skill and all directly affected target Skills.",
+      "expected": "Hash/signature or completeness checks fail and release remains blocked; no score averaging can hide the defect. Required Batch-specific contracts for Frontend and full-stack generation remain satisfied.",
+      "deterministic_oracle": "Use schema/parser validation, stable identifiers, stored baseline comparison, explicit state/permission checks, content hashes and recorded runner/tool exit status. LLM interpretation may explain a finding but cannot determine raw pass/fail facts.",
+      "required_evidence": [
+        "input and fixture fingerprints",
+        "target Skill and tool versions",
+        "structured execution events",
+        "raw validator or runner output",
+        "Artifact Graph or trace links where applicable",
+        "output fingerprints",
+        "policy and approval decisions",
+        "final deterministic assertion record"
+      ],
+      "timeout_policy": "Use the target Batch budget; timeouts are failures unless the case explicitly validates timeout handling.",
+      "retry_policy": "At most one infrastructure-only rerun; product failures cannot be erased by rerun.",
+      "disallowed_shortcuts": [
+        "delete_or_disable_test",
+        "weaken_assertion",
+        "change_approved_requirement",
+        "hide_warning_or_skip",
+        "fabricate_evidence",
+        "use_mock_in_place_of_required_real_integration",
+        "write_user_owned_code",
+        "grant_extra_permission_to_make_test_pass"
+      ]
+    }
+  ]
+}

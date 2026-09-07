@@ -1,0 +1,149 @@
+{
+  "batch": 58,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG135",
+      "name": "requirement-to-test-trace-compiler",
+      "path": "skills/batch-58/PG135-requirement-to-test-trace-compiler.md",
+      "depends_on": [
+        "PG026",
+        "PG028",
+        "PG031",
+        "PG042"
+      ],
+      "summary": "Compiles requirements and acceptance criteria into a complete test-intent graph."
+    },
+    {
+      "id": "PG136",
+      "name": "unit-test-generator",
+      "path": "skills/batch-58/PG136-unit-test-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG035",
+        "PG067",
+        "PG135"
+      ],
+      "summary": "Generates focused unit tests for domain rules, value objects, services, transformations, and pure logic."
+    },
+    {
+      "id": "PG137",
+      "name": "integration-test-generator",
+      "path": "skills/batch-58/PG137-integration-test-generator.md",
+      "depends_on": [
+        "PG113",
+        "PG117",
+        "PG118",
+        "PG119",
+        "PG123",
+        "PG135"
+      ],
+      "summary": "Generates component integration tests using compatible databases, brokers, caches, storage, identity, and external-service substitutes."
+    },
+    {
+      "id": "PG138",
+      "name": "api-contract-test-generator",
+      "path": "skills/batch-58/PG138-api-contract-test-generator.md",
+      "depends_on": [
+        "PG115",
+        "PG116",
+        "PG124",
+        "PG126",
+        "PG135"
+      ],
+      "summary": "Generates provider, consumer, schema, compatibility, authorization, and error-contract tests for APIs."
+    },
+    {
+      "id": "PG139",
+      "name": "database-migration-test-generator",
+      "path": "skills/batch-58/PG139-database-migration-test-generator.md",
+      "depends_on": [
+        "PG113",
+        "PG114",
+        "PG135"
+      ],
+      "summary": "Generates migration, upgrade, rollback/forward-recovery, restart, lock, and data-preservation tests."
+    },
+    {
+      "id": "PG140",
+      "name": "e2e-journey-test-generator",
+      "path": "skills/batch-58/PG140-e2e-journey-test-generator.md",
+      "depends_on": [
+        "PG033",
+        "PG134",
+        "PG135"
+      ],
+      "summary": "Generates end-to-end tests for critical user and system journeys across frontend, backend, identity, data, and messaging."
+    },
+    {
+      "id": "PG141",
+      "name": "property-based-test-generator",
+      "path": "skills/batch-58/PG141-property-based-test-generator.md",
+      "depends_on": [
+        "PG034",
+        "PG038",
+        "PG039",
+        "PG135"
+      ],
+      "summary": "Generates property-based and generative tests for invariants, parsers, transformations, state machines, and contracts."
+    },
+    {
+      "id": "PG142",
+      "name": "mutation-test-planner",
+      "path": "skills/batch-58/PG142-mutation-test-planner.md",
+      "depends_on": [
+        "PG026",
+        "PG136"
+      ],
+      "summary": "Plans and executes mutation testing for high-value domain and security logic under cost controls."
+    },
+    {
+      "id": "PG143",
+      "name": "performance-test-generator",
+      "path": "skills/batch-58/PG143-performance-test-generator.md",
+      "depends_on": [
+        "PG027",
+        "PG046",
+        "PG053",
+        "PG135"
+      ],
+      "summary": "Generates load, stress, endurance, concurrency, backpressure, and capacity tests from measurable quality scenarios."
+    },
+    {
+      "id": "PG144",
+      "name": "security-test-generator",
+      "path": "skills/batch-58/PG144-security-test-generator.md",
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG135"
+      ],
+      "summary": "Generates authentication, authorization, tenant-isolation, injection, abuse, secret, dependency, and configuration security tests."
+    },
+    {
+      "id": "PG145",
+      "name": "accessibility-test-generator",
+      "path": "skills/batch-58/PG145-accessibility-test-generator.md",
+      "depends_on": [
+        "PG128",
+        "PG130",
+        "PG132",
+        "PG135"
+      ],
+      "summary": "Generates automated and manual accessibility checks for keyboard, semantics, focus, contrast, forms, charts, and dynamic content."
+    },
+    {
+      "id": "PG146",
+      "name": "test-data-and-fixture-factory",
+      "path": "skills/batch-58/PG146-test-data-and-fixture-factory.md",
+      "depends_on": [
+        "PG034",
+        "PG039",
+        "PG113",
+        "PG135"
+      ],
+      "summary": "Generates deterministic, privacy-safe, referentially valid, tenant-aware test data and cleanup behavior."
+    }
+  ]
+}

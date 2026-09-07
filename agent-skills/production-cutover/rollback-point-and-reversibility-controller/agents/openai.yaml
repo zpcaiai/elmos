@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rollback Point and Reversibility Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $rollback-point-and-reversibility-controller to perform this Batch 11 production-cutover task."

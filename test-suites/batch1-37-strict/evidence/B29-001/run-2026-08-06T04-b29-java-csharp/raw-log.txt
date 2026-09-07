@@ -1,0 +1,28 @@
+# case B29-001
+# started_at 2026-08-06T12:48:33Z
+# run_id run-2026-08-06T04-b29-java-csharp
+
+$ [precondition] python3 scripts/test-suite/b29_route_preconditions.py --route routes/java-to-csharp --report test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+=== Batch 29 route preconditions: routes/java-to-csharp ===
+
+[PASS] route-contract-present: route_key=java-to-csharp status=limited profile=typed-pure-function-v1
+[PASS] route-contract-validates: OK: routes/java-to-csharp
+[PASS] route-gate-runs: GATE PASS: java-to-csharp status=limited decision=NOT_CERTIFIED
+[PASS] route-corpora-present: corpora on disk: ['development', 'holdout', 'real-repository']
+[PASS] exact-toolchain::java: OK 21.0.11
+[PASS] exact-toolchain::csharp: OK 10.0.301
+
+6/6 preconditions hold
+report written to test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+# exit=0 expect=exit-zero met=True
+
+$ [case] python3 scripts/batch29/validate_route.py routes/java-to-csharp
+OK: routes/java-to-csharp
+# exit=0 expect=exit-zero met=True
+
+$ [case] python3 -m elmos_polyglot_route.cli --source ../../routes/java-to-csharp/corpus/development/Pricing.java --source-language java --target-language csharp --function calculate --cases ../../routes/java-to-csharp/corpus/development/cases.json --output ../../test-suites/batch1-37-strict/evidence/_shared/b29-run/development/report.json
+
+--- stderr ---
+/opt/homebrew/opt/python@3.14/bin/python3.14: Error while finding module specification for 'elmos_polyglot_route.cli' (ModuleNotFoundError: No module named 'elmos_polyglot_route')
+# exit=1 expect=exit-zero met=False
+

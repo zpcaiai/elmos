@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "case_key": "assurance.sample",
+  "version": 1,
+  "owner": "TODO",
+  "top_claim": "The certified scope is acceptably correct for production use.",
+  "claims": [
+    {
+      "claim_id": "claim.behavior",
+      "statement": "Critical migrated behavior remains correct.",
+      "status": "unsupported",
+      "evidence_refs": [],
+      "assumptions": [],
+      "limitations": [
+        "Add independent evidence."
+      ]
+    }
+  ],
+  "evidence": [],
+  "residual_risks": [],
+  "monitoring_obligations": [],
+  "approvals": []
+}

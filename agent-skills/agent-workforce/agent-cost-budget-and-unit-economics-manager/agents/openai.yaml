@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 576: agent cost budget and unit economics manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-cost-budget-and-unit-economics-manager to evaluate this capability with evidence."

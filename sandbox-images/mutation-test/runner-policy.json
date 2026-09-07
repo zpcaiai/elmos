@@ -1,0 +1,1 @@
+{"schema":"elmos.test-runner-policy.v1","runner":"MUTATION","status":"NOT_CONFIGURED","rootless":true,"digestPinned":true,"network":"DENY","productionArtifactMutation":false,"cpuBudgetRequired":true,"cancellable":true}

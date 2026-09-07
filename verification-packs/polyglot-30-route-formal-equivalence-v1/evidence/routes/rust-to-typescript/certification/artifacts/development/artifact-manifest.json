@@ -1,0 +1,155 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/rust-to-typescript/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "dist/migrated.js",
+    "dist/route_harness.js",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 1570,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:7d9e510f0790649c7dbdba90d146b96bb70bc5d6e50c7cf429cca1c381ed5fff"
+    },
+    {
+      "bytes": 8389,
+      "path": "chunk-map.json",
+      "sha256": "sha256:65ee3838428b59cceccadc78ebf0dc5bee5f4e9761e3dd4371245ca7f8f185b7"
+    },
+    {
+      "bytes": 3102,
+      "path": "formal-composition.json",
+      "sha256": "sha256:43d8d7d4598c9c19ee4f58f19def1416f4460c05e23c2238350e143f21366997"
+    },
+    {
+      "bytes": 1744,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:e9b25fe187be086fef894a62af892b674441a0ef1d6a00d4d247f23f74b4f5bb"
+    },
+    {
+      "bytes": 7142,
+      "path": "formal-input.json",
+      "sha256": "sha256:7e226f0a87e9984efe96919ba4209c625955a1d7d504b047f56b20ae811df872"
+    },
+    {
+      "bytes": 2480,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:49124b0d458c9a11c0eb63e883a7a6eb4bf26383d6e8b66afcf213a0c27a9400"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 122,
+      "path": "inputs/pricing.rs",
+      "sha256": "sha256:ca052d633572faa15dbbe178c5c51088a2de5a93cdb84a3148f04384407dcc4f"
+    },
+    {
+      "bytes": 3623,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:0b834ebe05efb093c5e63ce2bfbbf4cfef245b14eb5877a0be514583b13e8cf9"
+    },
+    {
+      "bytes": 480,
+      "path": "migrated.ts",
+      "sha256": "sha256:cd7e7f800d565e91f3189d0871913ed47755720676dd3fe2ea4b66645a42750a"
+    },
+    {
+      "bytes": 6910,
+      "path": "route-evidence.json",
+      "sha256": "sha256:faa7bbc1e9d6ac21ab19d08df48f2bdaf9adfc17aff4c9d6a8a5fc2f05ba7e73"
+    },
+    {
+      "bytes": 554,
+      "path": "route_harness.ts",
+      "sha256": "sha256:0e5fb030a7f07c3f2e20c917f3093de60bd62690871002f489f8163597a9d304"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 674,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:a33be9e2aed7e1f8d637bdc2b62b714a89cba356afdc5325f2a62935ef153deb"
+    },
+    {
+      "bytes": 122,
+      "path": "source-runtime/pricing.rs",
+      "sha256": "sha256:ca052d633572faa15dbbe178c5c51088a2de5a93cdb84a3148f04384407dcc4f"
+    },
+    {
+      "bytes": 466,
+      "path": "source-runtime/source_harness.rs",
+      "sha256": "sha256:0c90768795dec901e0607b05c8580b26b32f324343280271bc36adea8aae18d8"
+    },
+    {
+      "bytes": 674,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:a33be9e2aed7e1f8d637bdc2b62b714a89cba356afdc5325f2a62935ef153deb"
+    },
+    {
+      "bytes": 695,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:63cb507db43fa1ec2daf170b5553910251de30e4425bb1fd7dc9439dc1f90827"
+    },
+    {
+      "bytes": 189,
+      "path": "tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "rust-to-typescript",
+  "schema_version": 1,
+  "total_bytes": 39396
+}

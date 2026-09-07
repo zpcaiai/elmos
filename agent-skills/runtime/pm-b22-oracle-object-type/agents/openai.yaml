@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B22: Oracle Object Type"
+  short_description: "Run Precision Migration B22 with evidence controls"
+  default_prompt: "Use $pm-b22-oracle-object-type to execute this Precision Migration contract with fail-closed evidence."

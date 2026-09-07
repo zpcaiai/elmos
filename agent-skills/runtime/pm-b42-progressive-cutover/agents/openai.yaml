@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B42: Progressive Cutover"
+  short_description: "Run Precision Migration B42 with evidence controls"
+  default_prompt: "Use $pm-b42-progressive-cutover to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/sql-transpilation-result.schema.json",
+  "title": "ELMOS SQL transpilation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "queryId",
+    "sourceProfile",
+    "targetProfile",
+    "route",
+    "state",
+    "sourceDigest",
+    "targetDigest",
+    "statements",
+    "diagnostics",
+    "verification",
+    "metadata"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "queryId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceProfile": {
+      "$ref": "#/$defs/profile"
+    },
+    "targetProfile": {
+      "$ref": "#/$defs/profile"
+    },
+    "route": {
+      "type": "object"
+    },
+    "state": {
+      "enum": [
+        "SYNTAX_READY",
+        "BLOCKED"
+      ]
+    },
+    "sourceDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "targetDigest": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/digest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "targetSql": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "statements": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "syntaxParse",
+        "targetEmit",
+        "targetReparse",
+        "parameterContract",
+        "sourceExecution",
+        "targetExecution",
+        "resultEquivalence",
+        "errorEquivalence",
+        "performance",
+        "security",
+        "certification"
+      ],
+      "properties": {
+        "syntaxParse": {
+          "$ref": "#/$defs/evidence"
+        },
+        "targetEmit": {
+          "$ref": "#/$defs/evidence"
+        },
+        "targetReparse": {
+          "$ref": "#/$defs/evidence"
+        },
+        "parameterContract": {
+          "$ref": "#/$defs/evidence"
+        },
+        "sourceExecution": {
+          "$ref": "#/$defs/evidence"
+        },
+        "targetExecution": {
+          "$ref": "#/$defs/evidence"
+        },
+        "resultEquivalence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "errorEquivalence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "performance": {
+          "$ref": "#/$defs/evidence"
+        },
+        "security": {
+          "$ref": "#/$defs/evidence"
+        },
+        "certification": {
+          "const": "NOT_CERTIFIED"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": [
+        "id",
+        "engine",
+        "engineVersion",
+        "edition",
+        "dialect"
+      ]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "evidence": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "NOT_RUN"
+      ]
+    }
+  }
+}

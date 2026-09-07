@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProviderBehaviorFingerprint",
+  "type": "object",
+  "required": [
+    "provider",
+    "requestedModel",
+    "resolvedModel",
+    "probeVersion",
+    "toolCallSignature",
+    "capturedAt"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requestedModel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resolvedModel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "probeVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schemaCompliance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "toolCallSignature": {
+      "type": "string",
+      "minLength": 1
+    },
+    "latencyDigest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "safetyDigest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capturedAt": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

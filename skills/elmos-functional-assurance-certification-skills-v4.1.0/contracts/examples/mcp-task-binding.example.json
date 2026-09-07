@@ -1,0 +1,8 @@
+{
+  "mcpTaskId": "task-1",
+  "runId": "run-1",
+  "executionEpoch": 2,
+  "leaseGeneration": 4,
+  "state": "WORKING",
+  "sideEffectState": "NONE"
+}

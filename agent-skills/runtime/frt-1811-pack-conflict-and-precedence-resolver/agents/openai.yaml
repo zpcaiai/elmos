@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pack Conflict and Precedence Resolver"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1811-pack-conflict-and-precedence-resolver to run FRT-1811 through the governed FRT runtime with exact scope and fail-closed evidence."

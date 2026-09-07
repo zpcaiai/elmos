@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Pipeline Stage Governance Hygiene Aging Inspection And Risk Analytics"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $pipeline-stage-governance-hygiene-aging-inspection-and-bd02d413 to implement its fail-closed ELMOS Product B40 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B13: Library Api Rag"
+  short_description: "Run Precision Migration B13 with evidence controls"
+  default_prompt: "Use $pm-b13-library-api-rag to execute this Precision Migration contract with fail-closed evidence."

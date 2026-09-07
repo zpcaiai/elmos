@@ -1,0 +1,42 @@
+{
+  "ingestion": {
+    "sources": [
+      "pdf",
+      "docx"
+    ],
+    "parsing": [
+      "native",
+      "ocr-fallback"
+    ],
+    "chunking": "semantic-parent-child",
+    "aclRequired": true
+  },
+  "retrieval": {
+    "strategy": "hybrid",
+    "topK": 8,
+    "rerank": true,
+    "filtersRequired": true
+  },
+  "grounding": {
+    "citations": true,
+    "abstainWhenUnsupported": true,
+    "contextBudgetTokens": 12000
+  },
+  "lifecycle": {
+    "incrementalSync": true,
+    "deletePropagation": true,
+    "versioning": true
+  },
+  "evaluation": {
+    "metrics": [
+      "recall@k",
+      "ndcg",
+      "citation-precision",
+      "faithfulness"
+    ],
+    "thresholds": {
+      "recall@k": 0.85,
+      "citation-precision": 0.95
+    }
+  }
+}

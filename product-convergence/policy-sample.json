@@ -1,0 +1,11 @@
+{
+  "effect": "deny",
+  "reasons": [
+    "unknown context defaults to deny"
+  ],
+  "obligations": [],
+  "required_approvals": [],
+  "redactions": [],
+  "limits": {},
+  "policy_version": "1.0.0"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Numerical Data Validator"
+  short_description: "Compare data and numerical behavior precisely"
+  default_prompt: "Use $numerical-data-behavior-validator to compare baseline and migrated outputs."

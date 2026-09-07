@@ -1,0 +1,10 @@
+{
+  "decisionId": "decisionId-fixture",
+  "title": "title-fixture",
+  "scope": "scope-fixture",
+  "context": "context-fixture",
+  "options": [],
+  "decision": "decision-fixture",
+  "status": "status-fixture",
+  "owner": "owner-fixture"
+}

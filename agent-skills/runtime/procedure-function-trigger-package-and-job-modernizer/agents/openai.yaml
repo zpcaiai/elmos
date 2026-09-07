@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Logic Modernizer"
+  short_description: "Modernize routines triggers packages and jobs"
+  default_prompt: "Use $procedure-function-trigger-package-and-job-modernizer to govern this ELMOS Batch 15 workflow."

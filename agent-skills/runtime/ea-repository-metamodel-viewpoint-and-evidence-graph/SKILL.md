@@ -1,0 +1,58 @@
+---
+name: ea-repository-metamodel-viewpoint-and-evidence-graph
+description: 建立联邦式EA Repository、元模型、Viewpoint、Architecture View、Snapshot和证据关系图。
+---
+
+# EA Repository
+
+## Element类型
+
+STRATEGY
+OUTCOME
+CAPABILITY
+VALUE_STREAM
+ORGANIZATION
+PRODUCT
+SERVICE
+PROCESS
+APPLICATION
+DATA
+INTEGRATION
+TECHNOLOGY
+INFRASTRUCTURE
+SECURITY
+INITIATIVE
+DECISION
+
+## Relation类型
+
+REALIZES
+ENABLES
+SUPPORTS
+USES
+DEPENDS_ON
+OWNS
+SERVES
+FLOWS_TO
+RUNS_ON
+STORES
+GOVERNS
+TRANSFORMS_TO
+SUPERSEDES
+
+## Repository Source
+
+ARCHITECT_DECLARED
+OWNER_DECLARED
+SCM
+RUNTIME
+CMDB
+CLOUD
+DATA_CATALOG
+FINANCE
+SECURITY
+PORTFOLIO
+
+## Authority
+
+每种Attribute可指定不同Authority：

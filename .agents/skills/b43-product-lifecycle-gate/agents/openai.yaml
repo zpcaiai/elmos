@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Product Lifecycle Gate"
+  short_description: "Run evidence-bound Batch 43 product lifecycle gate work"
+  default_prompt: "Use $b43-product-lifecycle-gate to implement and verify this capability with fail-closed evidence."

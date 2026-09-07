@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Aspnet Ef Wcf Modernization Route"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-aspnet-ef-wcf-modernization-route to execute this ELMOS product-closure Skill with fail-closed evidence."

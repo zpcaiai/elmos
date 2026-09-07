@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Variance Price Volume Mix Fx Timing Rate And Driver Analysis"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $variance-price-volume-mix-fx-timing-rate-and-driver-analysis to implement its fail-closed ELMOS Product B39 contract."

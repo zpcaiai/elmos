@@ -1,0 +1,10 @@
+import { clamp } from "./clamp.js";
+const actual0 = clamp(20, 10);
+if (actual0 !== 10) throw new Error("case 0");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 0, value: actual0}));
+const actual1 = clamp(-2, 10);
+if (actual1 !== 0) throw new Error("case 1");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 1, value: actual1}));
+const actual2 = clamp(7, 10);
+if (actual2 !== 7) throw new Error("case 2");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 2, value: actual2}));

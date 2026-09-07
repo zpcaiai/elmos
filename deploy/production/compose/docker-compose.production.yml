@@ -1,0 +1,332 @@
+# ELMOS 生产编排（Tier 1 最小可运营集合）
+#
+# 状态：UNVERIFIED_TEMPLATE。本文件从 deploy/compose/docker-compose.yml 的真实服务
+# 定义派生（相同 Dockerfile 路径、相同端口、相同环境变量名），但**尚未在任何环境执行过**。
+# RISK-DEPLOY-001 保持 OPEN，直至在 staging 真实起停、升级、回滚并留下证据。
+#
+# 与开发 compose 的差异（有意为之）：
+#   1. 不内置 postgres —— 生产使用托管 PostgreSQL，凭据来自 env_file，不写死在文件里
+#   2. 不对宿主暴露端口 —— 只有反向代理接触 web-console，其余服务只在内部网络可达
+#   3. 全部服务 cap_drop ALL + no-new-privileges + 资源限额 + 重启策略
+#   4. 按 profile 切分：默认只起 /generation 业务线所需服务
+#
+# 用法：
+#   docker compose -f docker-compose.production.yml up -d                    # 仅 /generation
+#   docker compose -f docker-compose.production.yml \
+#     -f docker-compose.spring-application.yml --profile spring up -d         # 追加 Spring 升级
+#
+# ⚠ 标记 VERIFY-REQUIRED 的项目必须在 staging 逐条验证后才能保留：
+#   read_only 与 user 依赖各服务镜像的实际写入路径，本文件的作者未构建过这些镜像。
+
+x-hardening: &hardening
+  init: true
+  restart: unless-stopped
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+x-java-service: &java-service
+  <<: *hardening
+  # VERIFY-REQUIRED: Java 镜像的可写路径未经确认，暂不设 read_only / user
+  deploy:
+    resources:
+      limits: { cpus: "2.0", memory: 2g }
+      reservations: { memory: 512m }
+
+networks:
+  edge:            # 反向代理 ↔ web-console
+    driver: bridge
+
+  # 服务之间的内部网络。
+  #
+  # ⚠ 这里**不能**用 `internal: true`。Docker 的 internal 网络会切断全部出站流量，
+  #   而以下服务必须能出网：
+  #     - control-plane / commercial-api / workspace-service → 托管 PostgreSQL（外部）
+  #     - commercial-api → 支付宝/微信支付 API 与回调重试
+  #     - web-console BFF → Runner Agent（独立主机）
+  #   设成 internal 会让这些服务在启动或首次调用时静默失败，
+  #   而且症状表现为"连不上数据库"，很难第一时间联想到网络定义。
+  #
+  #   出网限制应由**宿主防火墙 + egress-proxy 白名单**实现，
+  #   而不是靠 compose 的 internal 标志一刀切。
+  backend:
+    driver: bridge
+
+  # ChinaDB source-side parser has no database, customer-workspace or internet
+  # access. Only the database-data worker can reach this network.
+  chinadb-preflight:
+    driver: bridge
+    internal: true
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Tier 1 · 产品门面
+  # ---------------------------------------------------------------------------
+  web-console:
+    <<: *hardening
+    build: { context: ../../.., dockerfile: apps/web-console/Dockerfile }
+    user: "10001:10001"          # 与 deploy/compose 一致，已在开发环境验证
+    read_only: true
+    pids_limit: 512
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=64m"
+    env_file: ["${ELMOS_WEB_ENV_FILE:?web-console env file is required}"]
+    environment:
+      NODE_ENV: production
+      # 同一受控 Compose bridge 内只允许下面三个精确服务名使用 HTTP；
+      # 任意其他主机、路径、凭据或未显式开启的 HTTP 仍会失败关闭。
+      # 对外入口仍必须由 edge 提供 HTTPS。
+      ELMOS_TRUSTED_INTERNAL_HTTP: "true"
+      ELMOS_CONTROL_PLANE_BASE_URL: http://control-plane:8080
+      ELMOS_COMMERCIAL_API_URL: http://commercial-api:8085
+      ELMOS_WORKSPACE_SERVICE_URL: http://workspace-service:8082
+      # Repository BFF 当前代理的是 Control Plane 的 /api/v1/repository-workspaces。
+      ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
+      # Enable only together with the chinadb-sql profile and an approved
+      # internal worker deployment. Disabled remains a safe 503/BLOCKED state.
+      # Spring profile 仍由环境变量单独授权；多租户模式禁止回退到全局租户。
+      ELMOS_SPRING_PROXY_ENABLED: "${ELMOS_SPRING_PROXY_ENABLED:-false}"
+      ELMOS_SPRING_PROXY_MULTI_TENANT: "true"
+      # 基础业务线不挂载 Spring Secret；Spring overlay 才同时启用认证和精确文件挂载。
+      ELMOS_SPRING_ENGINE_AUTH_ENABLED: "${ELMOS_SPRING_ENGINE_AUTH_ENABLED:-false}"
+      ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
+      JAVA_ENGINE_BASE_URL: http://java-engine-worker:8081
+      # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
+      ELMOS_HOSTED_EXECUTION_ENABLED: "true"
+      ELMOS_LOCAL_RUNNER_ENABLED: "false"
+    volumes:
+      # 管理员登录邮件 API Key；宿主文件需由容器 UID 10001 读取且不得授予 group/other。
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/web/resend-api-key:/run/secrets/elmos/resend-api-key:ro"
+    networks: [edge, backend]
+    expose: ["3000"]
+    depends_on:
+      control-plane: { condition: service_started }
+      commercial-api: { condition: service_started }
+      workspace-service: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null",
+             "http://127.0.0.1:3000/api/health?probe=readiness"]
+      interval: 15s
+      timeout: 3s
+      retries: 4
+      start_period: 20s
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 1g, pids: 512 }
+
+  # ---------------------------------------------------------------------------
+  # Tier 1 · 控制面
+  # ---------------------------------------------------------------------------
+  control-plane:
+    <<: *java-service
+    build: { context: ../../.., dockerfile: apps/control-plane/Dockerfile }
+    env_file: ["${ELMOS_CONTROL_PLANE_ENV_FILE:?control-plane env file is required}"]
+    environment:
+      # 来自 env_file：ELMOS_DATABASE_URL / _USER / _PASSWORD（托管 PostgreSQL）
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+      ELMOS_DATABASE_DATA_ENGINE_BASE_URL: http://database-data-engine-worker:8089
+    volumes:
+      # owner-only 对象存储凭据与可选本地身份 pepper；只读挂载。
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/control-plane:/run/secrets/elmos:ro"
+    networks: [backend]
+    expose: ["8080"]
+
+  # ---------------------------------------------------------------------------
+  # Tier 1 · 计费
+  # ---------------------------------------------------------------------------
+  commercial-api:
+    <<: *java-service
+    build: { context: ../../.., dockerfile: apps/commercial-api/Dockerfile }
+    env_file: ["${ELMOS_COMMERCIAL_API_ENV_FILE:?commercial-api env file is required}"]
+    environment:
+      ELMOS_COMMERCIAL_API_PORT: "8085"
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+      # 计费数据库适配器只在 ELMOS_COMMERCIAL_DATABASE_URL 存在时创建（来自 env_file）
+      # 缺失时计费 Controller 不注册 —— 这是预期的失败关闭，不是启动失败
+    volumes:
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/commercial-api:/run/secrets/elmos:ro"
+    networks: [backend]
+    expose: ["8085"]
+
+  # ---------------------------------------------------------------------------
+  # Tier 1 · 工作区
+  # ---------------------------------------------------------------------------
+  workspace-service:
+    <<: *java-service
+    build: { context: ../../.., dockerfile: apps/workspace-service/Dockerfile }
+    env_file: ["${ELMOS_WORKSPACE_SERVICE_ENV_FILE:?workspace-service env file is required}"]
+    environment:
+      ELMOS_WORKSPACE_DOCKER_ENABLED: "false"   # 容器执行由独立 Runner 主机承担
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    networks: [backend]
+    expose: ["8082"]
+
+  # ---------------------------------------------------------------------------
+  # Tier 2 · ChinaDB SQL source-side typed preflight（profile: chinadb-sql）
+  # 只做源 SQL typed AST/义务分析；不发射目标 SQL、不连接数据库、不产生认证证据。
+  # ---------------------------------------------------------------------------
+  chinadb-sql-preflight:
+    <<: *hardening
+    profiles: ["chinadb-sql"]
+    build:
+      context: ../../..
+      dockerfile: engines/database-data-engine/sql-transpiler/Dockerfile
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 64
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=16m"
+    environment:
+      ELMOS_CHINADB_PREFLIGHT_PORT: "8101"
+    networks: [chinadb-preflight]
+    expose: ["8101"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/readyz', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512m, pids: 64 }
+
+  database-data-engine-worker:
+    <<: *java-service
+    profiles: ["chinadb-sql"]
+    build: { context: ../../.., dockerfile: engines/database-data-engine/Dockerfile }
+    env_file: ["${ELMOS_DATABASE_DATA_ENGINE_ENV_FILE:?database-data-engine env file is required}"]
+    environment:
+      ELMOS_DATABASE_DATA_PORT: "8089"
+      ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
+      ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL: http://chinadb-sql-preflight:8101
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    networks: [backend, chinadb-preflight]
+    expose: ["8089"]
+    depends_on:
+      chinadb-sql-preflight: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 1g }
+
+  # ---------------------------------------------------------------------------
+  # Tier 1 · 产物存储
+  # 若使用云对象存储（S3/OSS/R2），删除本服务并在 env_file 中指向外部 endpoint
+  # ---------------------------------------------------------------------------
+  minio:
+    <<: *hardening
+    # 仅供隔离 staging。正式环境使用已验证的外部 S3/OSS 服务。
+    profiles: ["minio"]
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    command: server /data --console-address :9001
+    env_file: ["${ELMOS_MINIO_ENV_FILE:?minio env file is required}"]
+    volumes: ["artifact-data:/data"]
+    networks: [backend]
+    expose: ["9000"]
+    healthcheck:
+      # minio 镜像不保证带 mc 客户端，用官方健康端点
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 1g }
+
+  # ---------------------------------------------------------------------------
+  # Tier 2 · 受控出网（需要默认拒绝出网策略的执行点时启用）
+  # ---------------------------------------------------------------------------
+  egress-proxy:
+    <<: *java-service
+    profiles: ["egress"]
+    build: { context: ../../.., dockerfile: apps/egress-proxy/Dockerfile }
+    env_file: ["${ELMOS_EGRESS_PROXY_ENV_FILE:?egress-proxy env file is required}"]
+    networks: [backend]
+
+  # ---------------------------------------------------------------------------
+  # Tier 2 · Spring 升级业务线（profile: spring）
+  # 仅在售卖 Boot 2.7.18 / Java 17 / Maven 3.9.11 这一条设计伙伴路线时启用。
+  # 必须与 docker-compose.spring-application.yml 一起启用；overlay 才给 BFF 与本
+  # Worker 精确挂载同一 engine HMAC。外部 Runner URL、共享工作区和四份互不复用
+  # 的 HMAC Secret 必须先通过 launch preflight。
+  # ---------------------------------------------------------------------------
+  java-engine-worker:
+    <<: *java-service
+    profiles: ["spring"]
+    build: { context: ../../.., dockerfile: apps/java-engine-worker/Dockerfile }
+    # The Spring worker consumes only the explicit allowlist below and never
+    # receives any service runtime env file.
+    env_file: []
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 1024
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=512m"
+      - "/home/elmos/.m2:rw,noexec,nosuid,size=512m"
+    environment:
+      # Fail closed at the process boundary: image/env-file JVM flags, JSON
+      # configuration, or servlet mappings must not change the path signed by
+      # the BFF.  The launch gate separately rejects these names in the actual
+      # deployment env and invoking process environment.
+      SPRING_APPLICATION_JSON: ""
+      JAVA_TOOL_OPTIONS: ""
+      _JAVA_OPTIONS: ""
+      JAVA_OPTS: ""
+      JDK_JAVA_OPTIONS: ""
+      SERVER_SERVLET_CONTEXT_PATH: ""
+      SERVER_SERVLET_PATH: ""
+      SPRING_MVC_SERVLET_PATH: ""
+      ELMOS_SPRING_UPGRADE_ENABLED: "true"
+      ELMOS_SPRING_ENGINE_AUTH_ENABLED: "true"
+      ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
+      ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT: /var/lib/elmos/spring-engine-auth-replay
+      # ⚠ 以下两项必须由真实的 rootless / 网络策略证明置为 true，
+      #   在证明产生前保持 false 会让 Spring 升级失败关闭 —— 这是正确行为
+      ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED: "${ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED:-false}"
+      ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED: "${ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED:-false}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED: "${ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED:-false}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_ID: "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:-NOT_CONFIGURED}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL: "${ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL:-https://spring-runner.invalid}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE: /run/secrets/elmos-verifier-hmac
+      ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED: "${ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED:-false}"
+      ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL: "${ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL:-https://spring-runner.invalid}"
+      ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE: /run/secrets/elmos-transformer-hmac
+      ELMOS_SPRING_RUNTIME_RUNNER_ENABLED: "${ELMOS_SPRING_RUNTIME_RUNNER_ENABLED:-false}"
+      ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL: "${ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL:-https://spring-runner.invalid}"
+      ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE: /run/secrets/elmos-runtime-hmac
+      ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"
+      ELMOS_SPRING_CODING_AGENT_ENABLED: "false"
+      ELMOS_ALLOW_FILE_REPOSITORIES: "false"
+      ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT: /workspace/private-runner
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    volumes:
+      - type: bind
+        source: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:-/srv/elmos/spring-disabled/workspace}"
+        target: /workspace/private-runner
+        read_only: false
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/verifier-hmac}"
+        target: /run/secrets/elmos-verifier-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/transformer-hmac}"
+        target: /run/secrets/elmos-transformer-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/runtime-hmac}"
+        target: /run/secrets/elmos-runtime-hmac
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [backend]
+    expose: ["8081"]
+    deploy:
+      resources:
+        limits: { cpus: "4.0", memory: 6g, pids: 1024 }
+
+volumes:
+  artifact-data:

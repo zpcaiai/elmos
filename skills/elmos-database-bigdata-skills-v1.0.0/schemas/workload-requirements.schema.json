@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/workload-requirements.schema.json",
+  "title": "Elmos Workload Requirement IR",
+  "type": "object",
+  "required": [
+    "project_id",
+    "tenant_id",
+    "business_goal",
+    "sources",
+    "consumers",
+    "slo",
+    "data_characteristics",
+    "constraints"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "business_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/consumer"
+      }
+    },
+    "data_characteristics": {
+      "$ref": "#/$defs/data_characteristics"
+    },
+    "slo": {
+      "$ref": "#/$defs/slo"
+    },
+    "consistency": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "enum": [
+            "strong",
+            "bounded-staleness",
+            "eventual",
+            "mixed",
+            "unknown"
+          ]
+        },
+        "transactions": {
+          "enum": [
+            "single-record",
+            "single-database",
+            "cross-aggregate",
+            "cross-system",
+            "unknown"
+          ]
+        },
+        "ordering_scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "delivery_semantics": {
+          "enum": [
+            "at-most-once",
+            "at-least-once",
+            "exactly-once-required",
+            "mixed",
+            "unknown"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contains_pii": {
+          "type": "boolean"
+        },
+        "data_residency": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tenant_isolation": {
+          "enum": [
+            "shared-row",
+            "shared-schema",
+            "schema-per-tenant",
+            "database-per-tenant",
+            "hybrid",
+            "unknown"
+          ]
+        },
+        "audit_required": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "constraints": {
+      "type": "object",
+      "required": [
+        "deployment",
+        "budget_tier",
+        "operations_maturity"
+      ],
+      "properties": {
+        "deployment": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "on-prem",
+              "private-cloud",
+              "public-cloud",
+              "hybrid",
+              "edge",
+              "unknown"
+            ]
+          }
+        },
+        "budget_tier": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "operations_maturity": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "preferred_open_source": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "must_have": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "statement",
+          "confidence"
+        ],
+        "properties": {
+          "statement": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "validation": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "technology": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "estimated_volume_gb": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "change_mode": {
+          "enum": [
+            "snapshot",
+            "incremental",
+            "cdc",
+            "stream",
+            "file",
+            "api",
+            "unknown"
+          ]
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "freshness_ms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "query_pattern": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "data_characteristics": {
+      "type": "object",
+      "required": [
+        "volume_tb",
+        "growth_tb_per_month",
+        "peak_events_per_second",
+        "variety"
+      ],
+      "properties": {
+        "volume_tb": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "growth_tb_per_month": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "peak_events_per_second": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "average_event_bytes": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "variety": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "structured",
+              "semi-structured",
+              "unstructured",
+              "graph",
+              "time-series",
+              "vector",
+              "binary"
+            ]
+          }
+        },
+        "retention_days": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "late_data_max_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "skew_risk": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "slo": {
+      "type": "object",
+      "required": [
+        "p95_read_ms",
+        "p95_write_ms",
+        "freshness_ms",
+        "availability_percent",
+        "rpo_seconds",
+        "rto_seconds"
+      ],
+      "properties": {
+        "p95_read_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "p95_write_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "freshness_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "availability_percent": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "rpo_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "rto_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

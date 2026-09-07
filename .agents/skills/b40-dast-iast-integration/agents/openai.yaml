@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Dast Iast Integration"
+  short_description: "Run evidence-bound Batch 40 dast iast integration work"
+  default_prompt: "Use $b40-dast-iast-integration to implement and verify this capability with fail-closed evidence."

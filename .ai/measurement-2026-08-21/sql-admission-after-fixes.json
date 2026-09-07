@@ -1,0 +1,670 @@
+{
+  "kind": "elmos.sql-dialect-admission-measurement",
+  "schema_version": "1.0.0",
+  "profile": "certified-ddl-v1 + certified-alter-v1",
+  "instrument": "elmos_sql_dialect.scan.scan_repository",
+  "toolchain": {
+    "sqlglot": "30.14.0",
+    "status": "PINNED_VERIFIED",
+    "note": "This engine pins a library version, not a host path, so the measurement carries the same toolchain attestation anywhere it runs -- unlike engines/polyglot-route-engine, which refuses off Darwin/arm64."
+  },
+  "aggregate": {
+    "corpora": 5,
+    "files_total": 89,
+    "files_parse_failed": 15,
+    "files_parse_failed_bytes": 992408,
+    "statements_all": 5297,
+    "in_subset_all": 729,
+    "coverage_all_statements": 0.1376,
+    "schema_statements": 1774,
+    "schema_in_subset": 729,
+    "coverage_schema_statements_only": 0.4109,
+    "scan_errors": 0,
+    "blockers": [
+      {
+        "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+        "family": "statement-kind",
+        "count": 3942,
+        "distinct_reasons": 5,
+        "share_of_blocked": 0.863
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+        "family": "constraints",
+        "count": 407,
+        "distinct_reasons": 10,
+        "share_of_blocked": 0.0891
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+        "family": "types",
+        "count": 86,
+        "distinct_reasons": 13,
+        "share_of_blocked": 0.0188
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+        "family": "identifiers",
+        "count": 72,
+        "distinct_reasons": 69,
+        "share_of_blocked": 0.0158
+      },
+      {
+        "reason_code": "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+        "family": "statement-kind",
+        "count": 20,
+        "distinct_reasons": 2,
+        "share_of_blocked": 0.0044
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+        "family": "identifiers",
+        "count": 20,
+        "distinct_reasons": 5,
+        "share_of_blocked": 0.0044
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_PARSE_FAILED",
+        "family": "source-format",
+        "count": 15,
+        "distinct_reasons": 15,
+        "share_of_blocked": 0.0033
+      },
+      {
+        "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+        "family": "defaults",
+        "count": 6,
+        "distinct_reasons": 1,
+        "share_of_blocked": 0.0013
+      }
+    ]
+  },
+  "corpora": [
+    {
+      "corpus": "elmos-persistence-migrations",
+      "source_dialect": "postgres",
+      "files": {
+        "total": 67,
+        "parsed": 61,
+        "parse_failed": 6,
+        "parse_failed_detail": [
+          {
+            "file": "V52__execution_job_queue_and_runner_fleet.sql",
+            "bytes": 39989,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'expression' missing for <class 'sqlglot.expressions.ddl.Comment'>. Line 92, Col: 64.",
+            "statements": 0
+          },
+          {
+            "file": "V53__tenant_quota_administration.sql",
+            "bytes": 2336,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'expression' missing for <class 'sqlglot.expressions.ddl.Comment'>. Line 44, Col: 69.",
+            "statements": 0
+          },
+          {
+            "file": "V54__multi_provider_payment_callbacks.sql",
+            "bytes": 6553,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 65, Col: 35.",
+            "statements": 0
+          },
+          {
+            "file": "V56__authentication_service_runtime.sql",
+            "bytes": 25274,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'expression' missing for <class 'sqlglot.expressions.ddl.Comment'>. Line 144, Col: 55.",
+            "statements": 0
+          },
+          {
+            "file": "V59__identity_runtime_and_organization_self_service_api.sql",
+            "bytes": 38519,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'this' missing for <class 'sqlglot.expressions.properties.LanguageProperty'>. Line 219, Col: 21.",
+            "statements": 0
+          },
+          {
+            "file": "V62__payment_order_directory.sql",
+            "bytes": 9640,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 78, Col: 50.",
+            "statements": 0
+          }
+        ],
+        "parse_failed_bytes": 122311
+      },
+      "totals": {
+        "discovered": 1093,
+        "inSubset": 234,
+        "outOfSubset": 859,
+        "scanErrors": 0,
+        "files": 67
+      },
+      "coverage": {
+        "all_statements": 0.214,
+        "schema_statements_only": 0.2347,
+        "schema_statements": 997,
+        "schema_in_subset": 234,
+        "data_and_session_statements": 90
+      },
+      "statement_kinds": {
+        "Create": 832,
+        "Alter": 140,
+        "Command": 67,
+        "Comment": 25,
+        "Revoke": 17,
+        "Insert": 4,
+        "Update": 2
+      },
+      "blockers": [
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+          "family": "statement-kind",
+          "count": 394,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.459
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+          "family": "constraints",
+          "count": 393,
+          "distinct_reasons": 5,
+          "share_of_blocked": 0.458
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+          "family": "types",
+          "count": 49,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.057
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+          "family": "identifiers",
+          "count": 17,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.02
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_PARSE_FAILED",
+          "family": "source-format",
+          "count": 6,
+          "distinct_reasons": 6,
+          "share_of_blocked": 0.007
+        }
+      ],
+      "blocker_examples": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": [
+          "CREATE TRIGGER commercial_events_append_only BEFORE UPDATE OR DELETE ON commercial_events FOR EACH ROW EXECUTE..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_CHECK": [
+          "/* ELMOS Batch 10: commercial fulfillment, delivery operations and reusable asset lifecycle. */ /* This is not...",
+          "ALTER TABLE cobol_calls ADD COLUMN call_type VARCHAR(64), ADD COLUMN target_name VARCHAR(255), ADD COLUMN conf...",
+          "CREATE TABLE workspace_mounts (mount_id VARCHAR(64) PRIMARY KEY, workspace_id VARCHAR(64) NOT NULL REFERENCES ..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": [
+          "ALTER TABLE service_level_objectives ADD COLUMN IF NOT EXISTS infrastructure_estate_ref VARCHAR(255), ADD COLU...",
+          "CREATE TABLE workspace_resource_samples (sample_id BIGSERIAL PRIMARY KEY, workspace_id VARCHAR(64) NOT NULL RE...",
+          "CREATE TABLE usage_alert_preferences (usage_alert_preference_id VARCHAR(96) PRIMARY KEY, organization_id VARCH..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": [
+          "CREATE UNIQUE INDEX accounts_primary_email_uq ON accounts(LOWER(primary_email) NULLS LAST) WHERE primary_email...",
+          "CREATE UNIQUE INDEX recipe_definitions_name_unique ON recipe_definitions((JSON_EXTRACT_SCALAR(payload, '$.reci...",
+          "ALTER TABLE cas_object_catalog ADD CONSTRAINT cas_object_catalog_provenance_digest_complete CHECK ((provenance..."
+        ],
+        "CERTIFIED_DDL_PARSE_FAILED": [
+          "",
+          "",
+          ""
+        ]
+      },
+      "caveats": [
+        "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
+        "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
+        "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
+        "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
+        "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do."
+      ]
+    },
+    {
+      "corpus": "elmos-build-cache-migrations",
+      "source_dialect": "postgres",
+      "files": {
+        "total": 8,
+        "parsed": 8,
+        "parse_failed": 0,
+        "parse_failed_detail": [],
+        "parse_failed_bytes": 0
+      },
+      "totals": {
+        "discovered": 134,
+        "inSubset": 64,
+        "outOfSubset": 70,
+        "scanErrors": 0,
+        "files": 8
+      },
+      "coverage": {
+        "all_statements": 0.478,
+        "schema_statements_only": 0.5333,
+        "schema_statements": 120,
+        "schema_in_subset": 64,
+        "data_and_session_statements": 14
+      },
+      "statement_kinds": {
+        "Create": 58,
+        "Alter": 56,
+        "Command": 14,
+        "Drop": 6
+      },
+      "blockers": [
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+          "family": "statement-kind",
+          "count": 26,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.371
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+          "family": "types",
+          "count": 24,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.343
+        },
+        {
+          "reason_code": "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+          "family": "statement-kind",
+          "count": 19,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.271
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+          "family": "constraints",
+          "count": 1,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.014
+        }
+      ],
+      "blocker_examples": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": [
+          "/* ELMOS cache/staging production metadata schema (PostgreSQL 16+ reference) */ CREATE EXTENSION IF NOT EXISTS..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": [
+          "CREATE TABLE snapshots (snapshot_id UUID PRIMARY KEY DEFAULT UUID(), tenant_id TEXT NOT NULL REFERENCES tenant...",
+          "CREATE TABLE run_nodes (run_id TEXT NOT NULL REFERENCES runs (run_id) ON DELETE CASCADE, node_id TEXT NOT NULL...",
+          "CREATE TABLE outbox_events (outbox_id BIGSERIAL PRIMARY KEY, topic TEXT NOT NULL, event_key TEXT NOT NULL, pay..."
+        ],
+        "CERTIFIED_ALTER_UNSUPPORTED_ACTION": [
+          "ALTER TABLE snapshots ALTER COLUMN snapshot_id SET DATA TYPE TEXT USING CAST(snapshot_id AS TEXT)"
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_CHECK": [
+          "CREATE TABLE IF NOT EXISTS context_checkpoints (tenant_id TEXT NOT NULL, project_id TEXT NOT NULL, stream_id T..."
+        ]
+      },
+      "caveats": [
+        "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
+        "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
+        "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
+        "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
+        "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do."
+      ]
+    },
+    {
+      "corpus": "elmos-p0-sql",
+      "source_dialect": "postgres",
+      "files": {
+        "total": 6,
+        "parsed": 2,
+        "parse_failed": 4,
+        "parse_failed_detail": [
+          {
+            "file": "V52__execution_job_queue_and_runner_fleet.sql",
+            "bytes": 39989,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'expression' missing for <class 'sqlglot.expressions.ddl.Comment'>. Line 92, Col: 64.",
+            "statements": 0
+          },
+          {
+            "file": "V55__authentication_service_runtime.sql",
+            "bytes": 25274,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Required keyword: 'expression' missing for <class 'sqlglot.expressions.ddl.Comment'>. Line 144, Col: 55.",
+            "statements": 0
+          },
+          {
+            "file": "smoke_test_identity.sql",
+            "bytes": 17046,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 8, Col: 1.",
+            "statements": 0
+          },
+          {
+            "file": "smoke_test_p0.sql",
+            "bytes": 19734,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 5, Col: 1.",
+            "statements": 0
+          }
+        ],
+        "parse_failed_bytes": 102043
+      },
+      "totals": {
+        "discovered": 89,
+        "inSubset": 29,
+        "outOfSubset": 60,
+        "scanErrors": 0,
+        "files": 6
+      },
+      "coverage": {
+        "all_statements": 0.326,
+        "schema_statements_only": 0.3973,
+        "schema_statements": 73,
+        "schema_in_subset": 29,
+        "data_and_session_statements": 12
+      },
+      "statement_kinds": {
+        "Create": 53,
+        "Comment": 17,
+        "Revoke": 6,
+        "Command": 5,
+        "Alter": 3,
+        "Insert": 1
+      },
+      "blockers": [
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+          "family": "statement-kind",
+          "count": 39,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.65
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+          "family": "constraints",
+          "count": 13,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.217
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_PARSE_FAILED",
+          "family": "source-format",
+          "count": 4,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.067
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+          "family": "identifiers",
+          "count": 3,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.05
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+          "family": "types",
+          "count": 1,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.017
+        }
+      ],
+      "blocker_examples": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": [
+          "COMMENT ON TABLE accounts IS 'Platform-global person record. Deliberately not tenant isolated: an account exis..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_CHECK": [
+          "/* ELMOS V53: global account identity and organization self-service. */ /* Why this migration exists */ /* ---...",
+          "ALTER TABLE organization_memberships ADD COLUMN account_ref VARCHAR(96) REFERENCES accounts (account_id), ADD ...",
+          "/* --------------------------------------------------------------------------- */ /* 3. Artifacts published by..."
+        ],
+        "CERTIFIED_DDL_PARSE_FAILED": [
+          "",
+          "",
+          ""
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": [
+          "CREATE UNIQUE INDEX accounts_primary_email_uq ON accounts(LOWER(primary_email) NULLS LAST) WHERE primary_email..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": [
+          "CREATE TABLE account_credentials (credential_id VARCHAR(96) PRIMARY KEY, account_id VARCHAR(96) NOT NULL REFER..."
+        ]
+      },
+      "caveats": [
+        "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
+        "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
+        "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
+        "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
+        "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do."
+      ]
+    },
+    {
+      "corpus": "external-postgres-schemas",
+      "source_dialect": "postgres",
+      "files": {
+        "total": 5,
+        "parsed": 2,
+        "parse_failed": 3,
+        "parse_failed_detail": [
+          {
+            "file": "chinook-postgres.sql",
+            "bytes": 600200,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 28, Col: 1.",
+            "statements": 0
+          },
+          {
+            "file": "pagila-postgres.sql",
+            "bytes": 89841,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Expecting (. Line 221, Col: 51.",
+            "statements": 0
+          },
+          {
+            "file": "sakila-postgres.sql",
+            "bytes": 50732,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Expecting ). Line 771, Col: 47.",
+            "statements": 0
+          }
+        ],
+        "parse_failed_bytes": 740773
+      },
+      "totals": {
+        "discovered": 3846,
+        "inSubset": 402,
+        "outOfSubset": 3444,
+        "scanErrors": 0,
+        "files": 5
+      },
+      "coverage": {
+        "all_statements": 0.105,
+        "schema_statements_only": 0.8894,
+        "schema_statements": 452,
+        "schema_in_subset": 402,
+        "data_and_session_statements": 3391
+      },
+      "statement_kinds": {
+        "Insert": 3369,
+        "Create": 315,
+        "Alter": 123,
+        "Drop": 14,
+        "Select": 11,
+        "Set": 8,
+        "Command": 2,
+        "Semicolon": 1
+      },
+      "blockers": [
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+          "family": "statement-kind",
+          "count": 3417,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.992
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+          "family": "types",
+          "count": 12,
+          "distinct_reasons": 4,
+          "share_of_blocked": 0.003
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+          "family": "defaults",
+          "count": 6,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.002
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+          "family": "identifiers",
+          "count": 5,
+          "distinct_reasons": 2,
+          "share_of_blocked": 0.001
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_PARSE_FAILED",
+          "family": "source-format",
+          "count": 3,
+          "distinct_reasons": 3,
+          "share_of_blocked": 0.001
+        },
+        {
+          "reason_code": "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+          "family": "statement-kind",
+          "count": 1,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.0
+        }
+      ],
+      "blocker_examples": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": [
+          "SET statement_timeout = 0 /* PostgreSQL database dump */"
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": [
+          "/* Name: categories; Type: TABLE; Schema: public; Owner: -; Tablespace: */ CREATE TABLE categories (category_i...",
+          "/* Name: order_details; Type: TABLE; Schema: public; Owner: -; Tablespace: */ CREATE TABLE order_details (orde...",
+          "CREATE TABLE cache_invalidation_stream_by_instance (stream_id BIGINT NOT NULL, instance_name TEXT NOT NULL, ca..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_DEFAULT": [
+          "CREATE TABLE appservice_stream_position (lock CHAR(1) DEFAULT CAST('X' AS BPCHAR) NOT NULL, stream_ordering BI..."
+        ],
+        "CERTIFIED_DDL_QUOTED_IDENTIFIER": [
+          "CREATE TABLE monthly_active_users (user_id TEXT NOT NULL, \"timestamp\" BIGINT NOT NULL)",
+          "CREATE INDEX monthly_active_users_time_stamp ON monthly_active_users USING btree(\"timestamp\" NULLS LAST)"
+        ],
+        "CERTIFIED_DDL_PARSE_FAILED": [
+          "",
+          "",
+          ""
+        ],
+        "CERTIFIED_ALTER_UNSUPPORTED_ACTION": [
+          "ALTER TABLE ONLY instance_map ALTER COLUMN instance_id SET DEFAULT NEXTVAL(CAST('instance_map_instance_id_seq'..."
+        ]
+      },
+      "caveats": [
+        "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
+        "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
+        "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
+        "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
+        "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do."
+      ]
+    },
+    {
+      "corpus": "external-mysql-schemas",
+      "source_dialect": "mysql",
+      "files": {
+        "total": 3,
+        "parsed": 1,
+        "parse_failed": 2,
+        "parse_failed_detail": [
+          {
+            "file": "employees-mysql.sql",
+            "bytes": 4193,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Invalid expression / Unexpected token. Line 31, Col: 30.",
+            "statements": 0
+          },
+          {
+            "file": "sakila-mysql.sql",
+            "bytes": 23088,
+            "status": "FILE_PARSE_FAILED",
+            "error": "ParseError: Expecting ). Line 292, Col: 29.",
+            "statements": 0
+          }
+        ],
+        "parse_failed_bytes": 27281
+      },
+      "totals": {
+        "discovered": 135,
+        "inSubset": 0,
+        "outOfSubset": 135,
+        "scanErrors": 0,
+        "files": 3
+      },
+      "coverage": {
+        "all_statements": 0.0,
+        "schema_statements_only": 0.0,
+        "schema_statements": 132,
+        "schema_in_subset": 0,
+        "data_and_session_statements": 1
+      },
+      "statement_kinds": {
+        "Create": 67,
+        "Drop": 65,
+        "Insert": 1
+      },
+      "blockers": [
+        {
+          "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+          "family": "identifiers",
+          "count": 67,
+          "distinct_reasons": 67,
+          "share_of_blocked": 0.496
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+          "family": "statement-kind",
+          "count": 66,
+          "distinct_reasons": 1,
+          "share_of_blocked": 0.489
+        },
+        {
+          "reason_code": "CERTIFIED_DDL_PARSE_FAILED",
+          "family": "source-format",
+          "count": 2,
+          "distinct_reasons": 2,
+          "share_of_blocked": 0.015
+        }
+      ],
+      "blocker_examples": {
+        "CERTIFIED_DDL_QUOTED_IDENTIFIER": [
+          "CREATE TABLE \"%TABLE_PREFIX%api_key\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"isactive\" TINYINT(1) NOT NULL DE...",
+          "CREATE TABLE \"%TABLE_PREFIX%attachment\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"object_id\" UINT(11) NOT NULL,...",
+          "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%faq\" (\"faq_id\" UINT(10) NOT NULL AUTO_INCREMENT, \"category_id\" UINT(..."
+        ],
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": [
+          "DROP TABLE IF EXISTS \"%TABLE_PREFIX%api_key\""
+        ],
+        "CERTIFIED_DDL_PARSE_FAILED": [
+          "",
+          ""
+        ]
+      },
+      "caveats": [
+        "This is an UPPER BOUND. Parsing proves a statement is inside certified-ddl-v1 from the SOURCE side. During a real run each emission is re-parsed by the TARGET dialect in strict mode, and a statement can still be reported BLOCKED there.",
+        "Counts are exact -- every statement was really parsed by sqlglot and by this engine's certified parser. Nothing is sampled or extrapolated.",
+        "Read the `Distinct` column, not just the count. A blocker with 342 occurrences but 3 distinct reasons is one idiom repeated across a schema; widening the subset for it buys far less than the raw count suggests, and ranking by occurrences alone would misdirect the roadmap.",
+        "Statements are split by the real parser, not by semicolons, so string literals, $$-quoted bodies and BEGIN ... END blocks are counted correctly.",
+        "Everything executable stays in the denominator. Unlike the component scanner -- where a function returning no JSX is a helper rather than a migration unit -- an ALTER TABLE, view or stored procedure IS work the customer needs done, so excluding it would flatter the ratio by hiding exactly what this engine cannot do."
+      ]
+    }
+  ],
+  "limitations": [
+    "UPPER BOUND from the source side. Target-side emission can still refuse a statement that parsed into the subset.",
+    "A file the pinned parser cannot tokenise contributes ONE blocked finding, not one per statement. Read files_parse_failed alongside any percentage.",
+    "Counts are exact, not sampled.",
+    "Rank by distinct_reasons, not count.",
+    "This measures the certified DDL/ALTER subset of engines/sql-dialect-engine. It says nothing about the Batch 31 typed transpiler or the ChinaDB targets."
+  ]
+}

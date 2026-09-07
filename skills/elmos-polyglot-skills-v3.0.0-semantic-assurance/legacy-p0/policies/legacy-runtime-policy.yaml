@@ -1,0 +1,4 @@
+unavailableSourceRuntime: record-limitation-and-require-approved-characterization
+binaryOnlyDependency: opaque-component-register
+externalPlatformAccess: explicit-authorization
+longTask: checkpointed-server-side

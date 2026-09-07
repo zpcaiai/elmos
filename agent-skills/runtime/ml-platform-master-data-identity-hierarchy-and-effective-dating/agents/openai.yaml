@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Ml Platform Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $ml-platform-master-data-identity-hierarchy-and-effective-dating to implement its fail-closed ELMOS Product B45 contract."

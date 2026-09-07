@@ -1,0 +1,36 @@
+{
+  "$id": "elmos.ai-feature-parity-result.v1",
+  "type": "object",
+  "required": [
+    "featureId",
+    "offlineVersion",
+    "onlineVersion",
+    "status",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "featureId": {
+      "type": "string"
+    },
+    "offlineVersion": {
+      "type": "string"
+    },
+    "onlineVersion": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "EXACT",
+        "WITHIN_TOLERANCE",
+        "SKEW",
+        "STALE",
+        "MISSING",
+        "INCONCLUSIVE"
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

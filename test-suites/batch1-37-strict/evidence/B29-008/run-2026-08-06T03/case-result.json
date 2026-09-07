@@ -1,0 +1,70 @@
+{
+  "case_id": "B29-008",
+  "severity": "P0",
+  "test_type": "evidence_tamper",
+  "steps": [
+    {
+      "id": "b29-route-preconditions",
+      "phase": "precondition",
+      "command": [
+        "python3",
+        "scripts/test-suite/b29_route_preconditions.py",
+        "--route",
+        "routes/java-to-csharp",
+        "--report",
+        "test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 1,
+      "met_expectation": false,
+      "establishes": "Batch 29实现与契约可定位 / 输入、版本、Owner和环境已锁定"
+    },
+    {
+      "id": "route-gate",
+      "phase": "case",
+      "command": [
+        "python3",
+        "scripts/batch29/run_route_gate.py",
+        "routes/java-to-csharp"
+      ],
+      "expect": "exit-zero",
+      "exit_code": null,
+      "met_expectation": false,
+      "not_executed": true,
+      "establishes": "Route Gate 在无独立验证时保持 NOT_CERTIFIED"
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "Gate必须拒绝认证并指出最小不一致证据",
+      "established_by": []
+    },
+    {
+      "index": 1,
+      "assertion": "方向独立",
+      "established_by": []
+    },
+    {
+      "index": 2,
+      "assertion": "版本精确",
+      "established_by": []
+    },
+    {
+      "index": 3,
+      "assertion": "真实编译",
+      "established_by": []
+    },
+    {
+      "index": 4,
+      "assertion": "“Route Gate”不得通过以下捷径：反向路线复用认证; generic support; 伪certified",
+      "established_by": []
+    },
+    {
+      "index": 5,
+      "assertion": "失败时状态、数据、权限和外部副作用必须可解释",
+      "established_by": []
+    }
+  ],
+  "all_steps_met_expectation": false
+}

@@ -1,0 +1,61 @@
+<view class="evidence-dimension" aria-labelledby="generation-behavior-title">
+  <view class="evidence-section-heading">
+    <text>
+      <view class="cc-h5" id="generation-behavior-title">
+        本地行为验证与跨目标等价
+      </view>
+      <text class="cc-small">
+        单目标原生检查通过不会自动提升 NxN 等价状态
+      </text>
+    </text>
+    <status-mark status="{{ behavior.status }}" compact="{{ true }}" />
+  </view>
+  <view class="evidence-target-grid">
+    <view wx:for="{{ behavior.targets }}" wx:for-item="target" wx:key="language">
+      <view>
+        <text class="cc-strong">
+          {{ (target.language === "java") ? "Java" : ((target.language === "python") ? "Python" : ((target.language === "csharp") ? "C#" : ((target.language === "typescript") ? "TypeScript" : ((target.language === "go") ? "Go" : ((target.language === "kotlin") ? "Kotlin" : ((target.language === "php") ? "PHP" : ((target.language === "rust") ? "Rust" : null))))))) }}
+        </text>
+        <status-mark status="{{ target.status }}" compact="{{ true }}" />
+      </view>
+      <view>
+        <view>
+          <text class="cc-dt">
+            精确工具链
+          </text>
+          <text class="cc-dd">
+            <status-mark status="{{ target.exact_toolchain_status }}" compact="{{ true }}" />
+          </text>
+        </view>
+        <view>
+          <text class="cc-dt">
+            构建 / 测试
+          </text>
+          <text class="cc-dd">
+            {{ target.build_analysis.total }}
+          </text>
+        </view>
+        <view>
+          <text class="cc-dt">
+            启动探针
+          </text>
+          <text class="cc-dd">
+            <status-mark status="{{ target.startup_status }}" compact="{{ true }}" />
+          </text>
+        </view>
+      </view>
+    </view>
+    <block wx:if="{{ behavior.targets.length === 0 }}">
+      <empty-evidence title="{{ &quot;目标验证尚无数据&quot; }}" detail="{{ &quot;没有目标语言验证结果。&quot; }}" />
+    </block>
+  </view>
+  <view class="evidence-matrix-pair">
+    <equivalence-matrix behavior="{{ behavior }}" dimension="{{ &quot;semantic&quot; }}" />
+    <equivalence-matrix behavior="{{ behavior }}" dimension="{{ &quot;behavior&quot; }}" />
+  </view>
+  <view class="evidence-limitations cc-ul" aria-label="行为证据限制">
+    <view wx:for="{{ behavior.limitations }}" wx:for-item="limitation" wx:key="*this" class="cc-li">
+      {{ limitation }}
+    </view>
+  </view>
+</view>

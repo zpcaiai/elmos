@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Engine Contract And Zos Runner"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-engine-contract-and-zos-runner to execute this ELMOS Runtime Skill with fail-closed evidence."

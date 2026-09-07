@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2517",
+  "skill_name": "frt-2517-usability-evidence-generator",
+  "batch": "G25",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g25/frt-2517-usability-evidence-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.usability-evidence-generator",
+  "execution_contract_sha256": "sha256:91e84bf6e8ae32aea533bd1bd684e38c762e3925610c3ad66d3a13c824741cbb",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:48c083b1d3d7bd124ebdb3b9882a654eef806c44c105d413016440ccd1a4dfbd",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

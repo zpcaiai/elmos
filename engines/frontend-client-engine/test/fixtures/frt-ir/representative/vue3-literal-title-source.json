@@ -1,0 +1,11 @@
+{
+  "corpusRole": "representative",
+  "stack": "Vue 3",
+  "note": "Title comes from a literal text node rather than a script constant.",
+  "files": {
+    "package.json": "{\n  \"dependencies\": {\n    \"vue\": \"3.5.39\"\n  }\n}\n",
+    "src/App.vue": "<template><main aria-label=\"Ticket tally\"><h1>Ticket tally</h1><button aria-label=\"Add one ticket to the tally\" @click=\"apply\">Add one ticket</button><p aria-live=\"polite\">{{ count }}</p></main></template><script setup lang=\"ts\">import { ref } from \"vue\"; const title = \"Counter\"; const count = ref(12); function apply() { count.value++; }</script><style scoped>button { color: #1B7F5A; }</style>\n"
+  },
+  "expectedStatus": "GENERATED",
+  "expectedGapCodes": []
+}

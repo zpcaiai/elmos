@@ -1,0 +1,45 @@
+{
+  "kind": "elmos.sql-dialect-check-predicate-execution-evidence",
+  "schema_version": "1.0.0",
+  "servers": {
+    "postgres": "PostgreSQL 16.15",
+    "mysql": "MySQL 8.0.46"
+  },
+  "cases": [
+    {
+      "case": "is-null",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    },
+    {
+      "case": "is-not-null",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    },
+    {
+      "case": "in-strings",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    },
+    {
+      "case": "in-quoted",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    },
+    {
+      "case": "between",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    },
+    {
+      "case": "composed",
+      "postgres": "EXECUTED",
+      "mysql": "EXECUTED"
+    }
+  ],
+  "execution_status": "LOCAL_EXECUTED",
+  "certification_status": "NOT_CERTIFIED",
+  "limitations": [
+    "Oracle and SQL Server have no freely licensed root-less local server, so their cells are syntax-validated only; that is why the profile only admits predicates whose spelling and meaning are identical in all four, rather than per-dialect ones."
+  ]
+}

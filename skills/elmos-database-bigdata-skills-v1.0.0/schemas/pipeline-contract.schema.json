@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/pipeline-contract.schema.json",
+  "type": "object",
+  "required": [
+    "id",
+    "mode",
+    "inputs",
+    "outputs",
+    "semantics",
+    "slo",
+    "recovery"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "batch",
+        "stream",
+        "micro-batch",
+        "hybrid"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "semantics": {
+      "type": "object",
+      "required": [
+        "delivery",
+        "idempotency_key"
+      ],
+      "properties": {
+        "delivery": {
+          "enum": [
+            "at-most-once",
+            "at-least-once",
+            "exactly-once"
+          ]
+        },
+        "idempotency_key": {
+          "type": "string"
+        },
+        "ordering_scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "event_time_field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "slo": {
+      "type": "object"
+    },
+    "recovery": {
+      "type": "object",
+      "required": [
+        "checkpoint_or_snapshot",
+        "replayable"
+      ],
+      "properties": {
+        "checkpoint_or_snapshot": {
+          "type": "string"
+        },
+        "replayable": {
+          "type": "boolean"
+        },
+        "rollback": {
+          "type": "string"
+        }
+      }
+    },
+    "data_contract": {
+      "type": "string"
+    },
+    "lineage_emission": {
+      "type": "boolean"
+    }
+  }
+}

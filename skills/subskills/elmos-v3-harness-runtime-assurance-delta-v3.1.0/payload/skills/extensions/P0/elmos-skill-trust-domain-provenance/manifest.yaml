@@ -1,0 +1,59 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-010
+  name: elmos-skill-trust-domain-provenance
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: Skill 执行事实与 Skill 授权可信度分离；只有验证后的 trust root、签名、digest 和 install scope 才能成为授权证据。
+  ownerKernels:
+  - K7
+  - K8
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-certification-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-certification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-host-minted-security-context
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - SkillProvenanceVerifier
+  - CanonicalPathGuard
+  - TrustDomainPolicy
+  - SignatureVerifier
+  - InvocationEvidenceRecorder
+  invariants:
+  - skill invocation does not by itself imply authorization
+  - trust domains USER, ENTERPRISE, MARKETPLACE, REPOSITORY and EPHEMERAL are distinct
+  - same display name never merges provenance identities
+  - authorization semantics are explicit and least-privilege
+  upstreamEvidence:
+  - openai/codex#41006
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

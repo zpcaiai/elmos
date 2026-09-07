@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "ce.cross-tenant-write-negative-control",
+  "technique": "security-negative-control",
+  "claim_id": "claim.deny-no-side-effects",
+  "failure_fingerprint": "sha256:ab109679ced846b2b978fcaee06d5e75b9577136c43e50e18ee5bc61e95ba6f6",
+  "environment_digest": "sha256:TODO",
+  "artifact_digests": [
+    "sha256:TODO"
+  ],
+  "input_ref": "counterexamples/input.json",
+  "replay": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src python3 -m pytest -q -p no:cacheprovider engines/multimodal-intake-engine/tests",
+    "expected_fingerprint": "sha256:ab109679ced846b2b978fcaee06d5e75b9577136c43e50e18ee5bc61e95ba6f6"
+  },
+  "status": "open",
+  "owner": "elmos-multimodal-intake-security"
+}

@@ -1,0 +1,42 @@
+{
+  "charset": "UTF8",
+  "collation": "C",
+  "dialect": "postgresql",
+  "driver_versions": [
+    "psql:17.5"
+  ],
+  "edition": "community",
+  "engine": "postgresql",
+  "extensions": [],
+  "health_check": {
+    "query": "SELECT 1"
+  },
+  "migration": {
+    "data_strategy": "bounded-bulk-load",
+    "ddl_strategy": "typed-create"
+  },
+  "owner": "ELMOS Database Migration",
+  "profile_key": "postgresql-17-5-local-disposable",
+  "providers": {
+    "filesystem": "temporary-directory",
+    "network": "loopback-only"
+  },
+  "provision": {
+    "commands": [
+      "initdb",
+      "pg_ctl start",
+      "createdb"
+    ],
+    "image_digests": []
+  },
+  "schema_version": 1,
+  "security": {
+    "credential_mode": "ephemeral-local-trust",
+    "tls": "not-applicable-loopback-disposable"
+  },
+  "timezone": "UTC",
+  "version": "1.0.0",
+  "versions": [
+    "17.5"
+  ]
+}

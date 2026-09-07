@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "Conflict resolution profile",
+  "key": "elmos-local-developer-workflow-conflict",
+  "status": "experimental",
+  "ambiguous_action": "escalate",
+  "human_regions": "preserve",
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-cli-result.json",
+    "certification/source-manifest.json"
+  ]
+}

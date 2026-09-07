@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Client Identity Permission Flags"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-client-identity-permission-flags to execute this ELMOS Runtime Skill with fail-closed evidence."

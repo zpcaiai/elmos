@@ -1,0 +1,4 @@
+interface:
+  display_name: "B56 Composite Application Data Infrastructure Cutover Journey"
+  short_description: "Run this Product Batch 56 guidance Skill safely"
+  default_prompt: "Use $b56-composite-application-data-infrastructure-cutover-journey as inactive Product Batch 56 guidance; preserve Product 56A authority and fail closed on missing evidence."

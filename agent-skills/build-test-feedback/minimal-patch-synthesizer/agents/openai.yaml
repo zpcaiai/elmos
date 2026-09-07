@@ -1,0 +1,4 @@
+interface:
+  display_name: "minimal patch synthesizer"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $minimal-patch-synthesizer to perform this Batch 8 repair step."

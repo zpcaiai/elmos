@@ -1,0 +1,4 @@
+interface:
+  display_name: "Route Guard Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1003-route-guard-mapper to run FRT-1003 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Opportunity Product Stakeholder Stage Activity Competitor And Close Management"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $opportunity-product-stakeholder-stage-activity-competit-a1a58331 to implement its fail-closed ELMOS Product B40 contract."

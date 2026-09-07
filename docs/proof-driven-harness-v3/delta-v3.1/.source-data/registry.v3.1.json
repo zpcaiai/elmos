@@ -1,0 +1,159 @@
+{
+  "entries": [
+    {
+      "id": "ELMOS-V3D-001",
+      "name": "elmos-tool-result-interception-commit",
+      "ownerKernels": [
+        "K7",
+        "K6",
+        "K8"
+      ],
+      "path": "P0/elmos-tool-result-interception-commit/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-002",
+      "name": "elmos-step-finalized-execution-plan",
+      "ownerKernels": [
+        "K7",
+        "K4"
+      ],
+      "path": "P0/elmos-step-finalized-execution-plan/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-003",
+      "name": "elmos-lossless-permission-replay",
+      "ownerKernels": [
+        "K7",
+        "K8"
+      ],
+      "path": "P0/elmos-lossless-permission-replay/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-004",
+      "name": "elmos-invocation-scoped-capability-lease",
+      "ownerKernels": [
+        "K7"
+      ],
+      "path": "P0/elmos-invocation-scoped-capability-lease/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-005",
+      "name": "elmos-host-minted-security-context",
+      "ownerKernels": [
+        "K7",
+        "K8"
+      ],
+      "path": "P0/elmos-host-minted-security-context/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-006",
+      "name": "elmos-environment-attachment-authority",
+      "ownerKernels": [
+        "K7"
+      ],
+      "path": "P0/elmos-environment-attachment-authority/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-007",
+      "name": "elmos-executor-generation-fencing",
+      "ownerKernels": [
+        "K7"
+      ],
+      "path": "P0/elmos-executor-generation-fencing/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-008",
+      "name": "elmos-workspace-ownership-lease",
+      "ownerKernels": [
+        "K7",
+        "K5"
+      ],
+      "path": "P0/elmos-workspace-ownership-lease/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-009",
+      "name": "elmos-harness-transport-version-negotiation",
+      "ownerKernels": [
+        "K7"
+      ],
+      "path": "P0/elmos-harness-transport-version-negotiation/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-010",
+      "name": "elmos-skill-trust-domain-provenance",
+      "ownerKernels": [
+        "K7",
+        "K8"
+      ],
+      "path": "P0/elmos-skill-trust-domain-provenance/SKILL.md",
+      "priority": "P0",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-011",
+      "name": "elmos-registered-durable-plugin-events",
+      "ownerKernels": [
+        "K7",
+        "K8"
+      ],
+      "path": "P1/elmos-registered-durable-plugin-events/SKILL.md",
+      "priority": "P1",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-012",
+      "name": "elmos-typed-external-ingress",
+      "ownerKernels": [
+        "K7",
+        "K1"
+      ],
+      "path": "P1/elmos-typed-external-ingress/SKILL.md",
+      "priority": "P1",
+      "routable": false,
+      "version": "3.1.0"
+    },
+    {
+      "id": "ELMOS-V3D-013",
+      "name": "elmos-subagent-model-execution-spec",
+      "ownerKernels": [
+        "K4",
+        "K7"
+      ],
+      "path": "P1/elmos-subagent-model-execution-spec/SKILL.md",
+      "priority": "P1",
+      "routable": false,
+      "version": "3.1.0"
+    }
+  ],
+  "routable": false,
+  "version": "3.1.0"
+}

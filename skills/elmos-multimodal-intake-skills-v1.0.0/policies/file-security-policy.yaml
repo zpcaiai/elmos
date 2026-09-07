@@ -1,0 +1,59 @@
+schema_version: 1.0.0
+policy_id: elmos-file-security-default
+version: 1.0.0
+default_decision: QUARANTINE_ON_UNKNOWN
+content_is_untrusted_data: true
+type_validation:
+  require_extension_mime_magic_agreement: false
+  require_magic_or_structure_confirmation: true
+  allow_unknown_binary_as_metadata_only: true
+  reject_executable_disguised_as_document: true
+scanner:
+  antivirus_required: true
+  macro_detection_required: true
+  pdf_javascript_detection_required: true
+  embedded_object_inventory_required: true
+  signature_freshness_max_hours: 24
+  on_scanner_unavailable: QUARANTINE
+parser_sandbox:
+  network: DENY_BY_DEFAULT
+  read_only_runtime: true
+  ephemeral_workspace: true
+  allow_host_mounts: false
+  allow_docker_socket: false
+  allow_cloud_metadata: false
+  max_cpu_cores_default: 2
+  max_memory_mib_default: 4096
+  max_scratch_mib_default: 8192
+  max_processes_default: 64
+  hard_timeout_seconds_default: 900
+  destroy_after_job: true
+  record_image_digest_and_sbom: true
+execution:
+  execute_macros: false
+  execute_pdf_javascript: false
+  execute_embedded_scripts: false
+  execute_project_code: false
+  run_install_hooks: false
+  run_dockerfile: false
+  separate_code_execution_trust_zone_required: true
+prompt_injection:
+  mark_all_extracted_content_as_untrusted: true
+  allow_content_to_modify_system_policy: false
+  allow_content_to_grant_tool_access: false
+  require_tool_allowlist: true
+  require_parameter_validation: true
+  human_approval_for_high_risk: true
+secrets:
+  scan_before_model_routing: true
+  redact_in_derived_content: true
+  allow_in_logs: false
+  allow_in_traces: false
+  allow_in_events: false
+  allow_in_model_context_by_default: false
+  raw_access_requires_explicit_permission: true
+failures:
+  high_severity: QUARANTINE
+  ambiguous_executable: QUARANTINE
+  parser_timeout: FAILED_RETRYABLE_WITH_LIMIT
+  type_mismatch: NEEDS_REVIEW_OR_QUARANTINE

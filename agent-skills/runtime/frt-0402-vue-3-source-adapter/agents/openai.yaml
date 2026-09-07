@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue 3 Source Adapter"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0402-vue-3-source-adapter to run FRT-0402 through the governed FRT runtime with exact scope and fail-closed evidence."

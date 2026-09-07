@@ -1,0 +1,4 @@
+interface:
+  display_name: "support-entitlement-and-service-tier-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $support-entitlement-and-service-tier-manager to evaluate this Batch 13 commercial capability with evidence."

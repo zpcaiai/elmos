@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SqlDualExecutionResult",
+  "metadata": {
+    "id": "sql-dual-execution-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceObservation": {},
+    "targetObservation": {},
+    "normalization": {},
+    "differences": []
+  }
+}

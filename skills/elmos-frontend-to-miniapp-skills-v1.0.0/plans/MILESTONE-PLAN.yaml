@@ -1,0 +1,96 @@
+plan_version: '1.0'
+milestones:
+- id: M0
+  name: contracts-and-skeleton
+  tasks:
+  - MAPP-001
+  - MAPP-002
+  - MAPP-003
+  - MAPP-004
+  exit_gates:
+  - G0
+  - G1
+- id: M1
+  name: vue-wechat-minimum-loop
+  tasks:
+  - MAPP-005
+  - MAPP-006
+  - MAPP-011
+  - MAPP-012
+  - MAPP-013
+  - MAPP-014
+  - MAPP-015
+  - MAPP-016
+  - MAPP-017
+  - MAPP-018
+  - MAPP-019
+  - MAPP-020
+  - MAPP-021
+  - MAPP-022
+  - MAPP-023
+  exit_gates:
+  - G2
+  - G3
+  - G4
+  - G5
+- id: M2
+  name: react-and-dependencies
+  tasks:
+  - MAPP-007
+  - MAPP-008
+  - MAPP-021
+  - MAPP-022
+  exit_gates:
+  - G2
+  - G3
+  - G5
+- id: M3
+  name: flutter-reconstruction
+  tasks:
+  - MAPP-009
+  - MAPP-010
+  exit_gates:
+  - G2
+  - G3
+  - G5
+  - G6
+- id: M4
+  name: four-target-generators
+  tasks:
+  - MAPP-023
+  - MAPP-024
+  - MAPP-025
+  - MAPP-026
+  exit_gates:
+  - G4
+- id: M5
+  name: commerce-privacy-security
+  tasks:
+  - MAPP-027
+  - MAPP-028
+  - MAPP-029
+  - MAPP-030
+  exit_gates:
+  - G8
+- id: M6
+  name: differential-visual-repair
+  tasks:
+  - MAPP-031
+  - MAPP-032
+  - MAPP-033
+  - MAPP-034
+  - MAPP-035
+  - MAPP-036
+  exit_gates:
+  - G5
+  - G6
+  - G7
+- id: M7
+  name: ci-evidence-production
+  tasks:
+  - MAPP-037
+  - MAPP-038
+  - MAPP-039
+  - MAPP-040
+  exit_gates:
+  - G9

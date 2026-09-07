@@ -1,0 +1,6 @@
+{
+  "route": "/generation",
+  "allowed_origins": ["self", "http://127.0.0.1:*"],
+  "forbidden_data": ["authorization tokens in logs", "customer code", "production secrets"],
+  "status": "NOT_RUN"
+}

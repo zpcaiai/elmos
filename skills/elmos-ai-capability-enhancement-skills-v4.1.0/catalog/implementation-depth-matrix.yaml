@@ -1,0 +1,1024 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ImplementationDepthMatrix
+metadata:
+  version: 4.0.0
+spec:
+  requirements:
+  - domain model
+  - interfaces
+  - persistence
+  - algorithms
+  - state machine
+  - native conformance
+  - threat model
+  - benchmark
+  - evidence contract
+  skills:
+  - skill: elmos-a2a-v1-agent-card-trust-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-registry-resource-discovery-governor
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-skill-ir-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 3
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-skill-mcp-supply-chain-certifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-skill-portability-emitter
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 3
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-skill-trigger-evaluator
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 3
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-agent-workload-delegated-identity-controller
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-agent-contract-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-artifact-provenance-packager
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-assurance-contract-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-bom-provenance-generator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-capability-negotiator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-compatibility-drift-monitor
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-compliance-profile-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-config-secret-materializer
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-content-provenance-labeling-controller
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-context-memory-governor
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-cross-framework-differential-validator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-dependency-version-resolver
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-deployment-pack-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-durable-runtime-integrator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-e0-e5-certifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-eval-dataset-governor
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-generated-project-conformance-validator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-generated-project-upgrader
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-golden-route-autogen-sk-to-agent-framework
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-golden-route-business-requirement-multitarget
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-golden-route-dify-to-production-code
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-golden-route-langchain-to-langgraph
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-golden-route-repository-to-coding-harness
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-graph-liveness-side-effect-verifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-incident-kill-switch-controller
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-interaction-channel-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-judge-calibration-stochastic-assurance
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-mcp-a2a-gateway-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-memory-semantic-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-model-contract-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-model-routing-fallback-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-multi-target-lowering-planner
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-multitenant-control-plane-generator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-normalized-agent-trace-recorder
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-observability-finops-generator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-online-shadow-eval-controller
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-operator-console-generator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-project-factory-orchestrator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-project-repository-emitter
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-prompt-tool-security-redteam
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 5
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-provider-behavior-fingerprint-recertifier
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-provider-data-residency-controller
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-rag-retrieval-grounding-certifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-rag-semantic-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-requirement-contract-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-retention-erasure-verifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-revision-set-freezer
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-roundtrip-migration-controller
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-runaway-loop-economic-dos-guard
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-runtime-operations-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-security-governance-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-sir-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-solution-archetype-selector
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-source-project-importer
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-supply-chain-performance-resilience-certifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-system-model-card-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-target-adapter-sdk
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-target-portfolio-planner
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-tool-authority-policy-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-tool-protocol-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-unsupported-feature-ledger
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-ai-workflow-state-machine-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-human-oversight-consent-contract-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-managed-agent-cloud-deployment-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-mcp-2026-profile-compiler
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-mcp-apps-a2ui-generator
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-mcp-enterprise-authorization-controller
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-mcp-tasks-durable-bridge
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-model-response-schema-evolution-controller
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-multi-agent-budget-scheduler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-multi-agent-deadlock-consensus-verifier
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-multi-agent-topology-delegation-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-multimodal-document-intelligence-generator
+    domainEntities: 7
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-openai-plugin-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-prompt-program-ir-compiler
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-prompt-registry-experiment-controller
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-rag-acl-freshness-deletion-verifier
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-rag-corpus-connector-cdc-governor
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-rag-memory-poisoning-verifier
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-rag-query-planner-optimizer
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-structured-output-contract-verifier
+    domainEntities: 5
+    algorithms: 4
+    nativeChecks: 4
+    threats: 4
+    benchmarks: 4
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-coding-agent-harness-family-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-crewai-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-deepseek-harness-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-dify-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 7
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-google-adk-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-haystack-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-langchain-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-langchain4j-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-langgraph-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 7
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-lightweight-agent-sdk-family-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-llamaindex-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-mastra-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-microsoft-agent-framework-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-openai-agents-sdk-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-openclaw-assistant-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 7
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-openharness-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-pi-package-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-pydanticai-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-ragflow-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-spring-ai-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 8
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-symphony-workflow-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-universal-rag-project-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 7
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-vercel-ai-sdk-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed
+  - skill: elmos-target-visual-agent-platform-family-generator
+    domainEntities: 6
+    algorithms: 4
+    nativeChecks: 5
+    threats: 4
+    benchmarks: 5
+    stateMachine: true
+    evidenceContract: true
+    implementationStatus: contract-not-executed

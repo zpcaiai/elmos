@@ -1,0 +1,4 @@
+interface:
+  display_name: "Message Producer Consumer and Offset Cutover"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $message-producer-consumer-and-offset-cutover to perform this Batch 11 production-cutover task."

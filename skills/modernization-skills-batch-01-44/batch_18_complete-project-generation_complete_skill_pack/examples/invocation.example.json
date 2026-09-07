@@ -1,0 +1,12 @@
+{
+  "request_id": "b18-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Complete Project Generation Standard",
+  "upstream_certificate_refs": [
+    "batch-17-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

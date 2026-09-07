@@ -1,0 +1,91 @@
+{
+  "controls" : {
+    "application_egress" : "DENY",
+    "credential_access" : false,
+    "customer_data" : false,
+    "dependency_resolution" : "DECLARED_MAVEN_REPOSITORIES_ONLY",
+    "external_certification_promotion" : false,
+    "production_deployment" : false,
+    "source_tree_mutation" : "DENY",
+    "target_artifact_overwrite" : false,
+    "workspace" : "EPHEMERAL_ISOLATED"
+  },
+  "evidence_policy" : {
+    "certification_status" : "NOT_CERTIFIED",
+    "digest_algorithm" : "SHA-256",
+    "external_evidence_status" : "NOT_RUN",
+    "independent_verifier_required" : true,
+    "required_evidence_types" : [ "source_build", "target_build", "source_startup", "target_startup", "behavioral_equivalence", "security", "performance", "operability", "sbom", "rollback", "independent_review", "customer_acceptance", "external_certification" ],
+    "signature_algorithm" : "Ed25519"
+  },
+  "exact_tuple" : {
+    "source" : {
+      "framework" : "spring-framework-mvc",
+      "framework_version" : "5.3.39",
+      "java" : "11.0.26",
+      "maven" : "3.9.11",
+      "packaging" : "war",
+      "servlet_api" : "4.0.1",
+      "servlet_namespace" : "javax.servlet"
+    },
+    "target" : {
+      "embedded_tomcat" : "10.1.42",
+      "framework" : "spring-boot",
+      "framework_version" : "3.5.3",
+      "java" : "21.0.11",
+      "maven" : "3.9.11",
+      "packaging" : "executable-war",
+      "servlet_api" : "6.1",
+      "servlet_namespace" : "jakarta.servlet",
+      "spring_framework" : "6.2.8"
+    }
+  },
+  "policy_id" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3-local-qualification",
+  "policy_version" : "2026-08-30.1",
+  "promotion_boundary" : {
+    "certification_authority" : "EXTERNAL_ONLY",
+    "maximum_local_decision" : "READY_FOR_EXTERNAL_GATE_REVIEW",
+    "status_mutation_by_local_runner" : false
+  },
+  "rewrite_recipe_artifact" : {
+    "build_output_timestamp" : "2026-08-28T00:00:00Z",
+    "coordinate" : "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+    "files" : [ {
+      "bytes" : 7464,
+      "path" : "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.jar",
+      "sha256" : "a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c"
+    }, {
+      "bytes" : 751,
+      "path" : "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.pom",
+      "sha256" : "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a"
+    }, {
+      "bytes" : 10461,
+      "path" : "io/elmos/elmos-parent/0.1.0-SNAPSHOT/elmos-parent-0.1.0-SNAPSHOT.pom",
+      "sha256" : "ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8"
+    } ],
+    "jar_sha256" : "sha256:a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c",
+    "parent_pom_sha256" : "sha256:ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8",
+    "recipe_pom_sha256" : "sha256:22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a"
+  },
+  "schema_version" : 1,
+  "scope" : "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
+  "source_commit" : "7e1c098541143c96cce7d9a637fffe57d0e2baae",
+  "source_mode" : "MATERIALIZED_SNAPSHOT",
+  "target_artifact" : {
+    "format" : "spring-boot-executable-war",
+    "manifest" : {
+      "Main-Class" : "org.springframework.boot.loader.launch.WarLauncher",
+      "Spring-Boot-Version" : "3.5.3",
+      "Start-Class" : "io.elmos.legacy.LegacyMvcApplication"
+    },
+    "sha256" : "sha256:7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97"
+  },
+  "toolchain_bindings" : {
+    "source-container" : "sha256:93306f86baafe13186cc3e705c201040d68b0192a50be667a1f576ee4711db0d",
+    "source-java" : "sha256:09d5fffa5ad3de15dcfd603e747df1e6c9ecdb58f25d333e89661910064e884a",
+    "source-maven" : "sha256:0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb",
+    "target-container" : "sha256:c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790",
+    "target-java" : "sha256:7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
+    "target-maven" : "sha256:0d7125e8c91097b36edb990ea5934e6c68b4440eef4ea96510a0f6815e7eeadb"
+  }
+}

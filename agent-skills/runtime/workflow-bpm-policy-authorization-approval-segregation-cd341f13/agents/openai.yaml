@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Workflow Bpm Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-policy-authorization-approval-segregation-cd341f13 to implement its fail-closed ELMOS Product B46 contract."

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "59a98667de543184b2e6e535",
+  "direction": {
+    "routeId": "angular--to--react",
+    "source": "angular",
+    "target": "react",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "19.2.8",
+    "supportState": "PROJECT_GENERATION_READY",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "react",
+    "label": "React",
+    "frameworkVersion": "19.2.8",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "7.0.2",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Vite",
+    "buildToolVersion": "8.1.5",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "react-router-dom 7.18.1",
+    "state": "React reducer/context",
+    "rendering": "CSR",
+    "testTool": "Vitest 4.1.10",
+    "runnerProfile": "MODERN_WEB",
+    "requiredProjectFiles": [
+      "package.json",
+      "vite.config.ts",
+      "src/main.tsx",
+      "src/App.tsx"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:53f75372e66310ae6c6574a538b46d884c8a2eb9ccdb0a4844f5f71145945527",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.html",
+      "package.json",
+      "scripts/verify.sh",
+      "src/App.tsx",
+      "src/elmos-bounded-navigation.ts",
+      "src/main.tsx",
+      "src/routes.test.ts",
+      "src/routes.ts",
+      "src/styles.css",
+      "target-profile/profile.json",
+      "tsconfig.json",
+      "ui-ir/model.json",
+      "vite.config.ts"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

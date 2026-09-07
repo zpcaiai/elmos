@@ -1,0 +1,11 @@
+requirement_range,summary,primary_skill,acceptance_gate
+FR-ID-001..005,"Identity, membership, forced RLS, roles, audit",ELMOS-MTF-002,G1
+FR-CC-001..008,"Idempotent submission, max-three slots, queue, quotas",ELMOS-MTF-003,G2
+FR-WF-001..007,"Temporal state, startup, pause/cancel/retry/versioning",ELMOS-MTF-005,G4
+FR-PR-001..007,"Event journal, snapshots, progress, ETA, SSE",ELMOS-MTF-006,G5
+FR-RC-001..008,"Checkpoint, receipts, leases, reconcile, resume/fork",ELMOS-MTF-007,G6
+FR-IO-001..007,"Input/output/log/archive, integrity, retention",ELMOS-MTF-008,G7
+FR-CO-001..008,"Usage, price book, cost, budgets, reconciliation",ELMOS-MTF-009,G8
+FR-RV-001..008,"Revenue entries, billing modes, allocations, margin",ELMOS-MTF-010,G9
+FR-AN-001..007,Operations/finance analytics and rebuild,ELMOS-MTF-011,G10
+NFR-001..015,"Performance, security, recovery, scale, runtime reporting",ELMOS-MTF-012,G11/G12

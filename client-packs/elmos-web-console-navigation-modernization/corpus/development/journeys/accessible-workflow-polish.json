@@ -1,0 +1,14 @@
+{
+  "id": "journey.accessible-workflow-polish",
+  "synthetic_data": true,
+  "browser_scope": "Google Chrome 150.0.7871.129 local",
+  "steps": [
+    "Filter the migration catalog to zero results and clear the filter",
+    "Open the local draft dialog and verify initial focus",
+    "Cycle focus, dismiss with Escape, and verify trigger focus restoration",
+    "Create a synthetic local draft and verify the live success announcement",
+    "Switch trust-chain stages with ArrowRight and verify the tabpanel",
+    "Read every assurance queue field in the mobile card layout"
+  ],
+  "expected": "All information and keyboard outcomes remain available without adding external execution, authorization, or certification side effects."
+}

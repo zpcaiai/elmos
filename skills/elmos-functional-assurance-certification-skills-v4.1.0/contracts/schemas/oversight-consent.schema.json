@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OversightConsent",
+  "type": "object",
+  "required": [
+    "actionDigest",
+    "approverRoles",
+    "requiredApprovals",
+    "expiresAt",
+    "status"
+  ],
+  "properties": {
+    "actionDigest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approverRoles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "requiredApprovals": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "receivedApprovals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "expiresAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "expired",
+        "revoked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

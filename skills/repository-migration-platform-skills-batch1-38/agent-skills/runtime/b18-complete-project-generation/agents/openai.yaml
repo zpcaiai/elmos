@@ -1,0 +1,4 @@
+interface:
+  display_name: "B18 Complete Project Generation"
+  short_description: "Help with B18 Complete Project Generation tasks"
+  default_prompt: "Use $b18-complete-project-generation to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Runner Site Agent And Connector Machine Identity"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $runner-site-agent-and-connector-machine-identity to implement its fail-closed ELMOS Product B34 contract."

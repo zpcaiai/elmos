@@ -1,0 +1,4 @@
+interface:
+  display_name: "JavaScript TypeScript Semantic Adapter"
+  short_description: "Extract TypeChecker semantics and Babel syntax"
+  default_prompt: "Use $javascript-typescript-semantic-adapter to analyze JS or TS without executing modules."

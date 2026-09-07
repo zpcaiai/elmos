@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-knowledge-quality-auditor"
+  short_description: "Use this imported Elmos commercial blueprint"
+  default_prompt: "Use $elmos-knowledge-quality-auditor within its imported blueprint boundary; require real runtime and external evidence before completion claims."

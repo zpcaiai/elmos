@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "react",
+  "framework_version": "19.2.8",
+  "platforms": [
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:5e544167ab78553c8020f13df8332706d2c6c27e585afbb508f5b6cd2d1d25fe",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 23,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:45ed317f23d2be2de2ca77a48a0bd15430503377e5fde9af93d9a163964b6e98",
+      "byte_count": 522
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "sha256:89d6abc7cbd516992af9a131693cc021827f6c3bac49e8b06878e258f6cec99c",
+      "byte_count": 75
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "sha256:e8e8584c09cc1d8fbb12fbf9c0f6f84053223ab8a236a5230c3c9b20ff1a017a",
+      "byte_count": 7
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:bd8ba0c3b2fda756389ba8ebc610d4747443ec83fb731eeddbfd58ab1c7b31b7",
+      "byte_count": 1863
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:79e65349bb23b913f51fb5f7b0564d445429b2f22089597b84bc41ae8ae0a70f",
+      "byte_count": 1063
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:bc19db5a96a0af60b8294ad3ff7d510348fc013c4dbc5e5764c0ae6b2a5ce311",
+      "byte_count": 311
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:706dfc1eedac2ed473cea5903977d8ab52736fa7f07d1fb86aabfec2ae5a0016",
+      "byte_count": 2346
+    },
+    {
+      "path": "index.html",
+      "sha256": "sha256:c2b2f80ba69b4ccb263a1bf5f68eba0b2f7405d2a1220961bc6c2c872305f2ce",
+      "byte_count": 300
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:acdeaf0eada145ab10be44d3c474dbeb964a3251aeafe08955f861ff76156441",
+      "byte_count": 576
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:2c5d289b9b9bcc60dd0828885aa6cdd6080ad139d01ea37dab89f787126f4205",
+      "byte_count": 151
+    },
+    {
+      "path": "src/App.tsx",
+      "sha256": "sha256:4d044b77c13d93b5411ddd5a1d99d6ed050346b31b22d0a1c39e2bc610cdd7d1",
+      "byte_count": 1179
+    },
+    {
+      "path": "src/elmos-bounded-navigation.ts",
+      "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
+      "byte_count": 1934
+    },
+    {
+      "path": "src/main.tsx",
+      "sha256": "sha256:54b508361f3f478d2c34dbf71428fdf89bd3dd7ceddb9b1ae40ac8b799d5e815",
+      "byte_count": 356
+    },
+    {
+      "path": "src/routes.test.ts",
+      "sha256": "sha256:f647681b29c641f1efb24b00ba607a429af8cc950427f1fba0a34027cca3e020",
+      "byte_count": 328
+    },
+    {
+      "path": "src/routes.ts",
+      "sha256": "sha256:309e2c7e51a4548ef7a80918170a3fb1db2c35267e940df0da44babc70566f83",
+      "byte_count": 155
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "sha256:a80d8095fbf09c981e539bce5d3d6f5e5dc9dfa623faa0f4c185bf8d351957d9",
+      "byte_count": 1085
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:da5a718a07e22364f5668543b174010d37fa435b1b24987412de6b448e462443",
+      "byte_count": 687
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "sha256:aa62002db7608d9b51ae221321715e07748f7fc6bee35c6a26bc4bf376926f9c",
+      "byte_count": 494
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:5495a9fe0506a269cb6dcf3e94d12a13a62d2e37612dfd2dc03a22f25122d1d9",
+      "byte_count": 7148
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "sha256:4c176a81060f72365d86a18a1f399fb37a00a80fb68dc8ffe38e60c5f2fa7cf3",
+      "byte_count": 132
+    }
+  ],
+  "manifest_digest": "sha256:c2133c0a14b8974fc4e4c142a95b5d9e8fe60e3e8f4ada105b8d60d34ca4fc04"
+}

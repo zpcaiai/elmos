@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frontend/design-component-mapping.v1.schema.json",
+  "title": "Design component mapping",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "organizationId", "mappingId", "legacyComponent", "targetComponent", "compatibility", "status", "unsupportedBehaviors", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "organizationId": {"type": "string", "minLength": 1},
+    "mappingId": {"type": "string", "minLength": 1},
+    "legacyComponent": {"type": "string", "minLength": 1},
+    "targetComponent": {"type": "string", "minLength": 1},
+    "compatibility": {"enum": ["FULL", "PARTIAL", "REQUIRES_ADAPTER", "REQUIRES_REDESIGN", "NO_EQUIVALENT"]},
+    "status": {"enum": ["CANDIDATE", "APPROVED", "BLOCKED", "MIGRATED", "REMOVED"]},
+    "unsupportedBehaviors": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "approvedBy": {"type": "string", "minLength": 1},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "allOf": [{"if": {"properties": {"status": {"const": "APPROVED"}}}, "then": {"required": ["approvedBy"]}}]
+}

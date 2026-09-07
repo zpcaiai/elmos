@@ -1,0 +1,22 @@
+# case B29-001
+# started_at 2026-09-03T15:59:02Z
+# run_id dry-run-001
+
+$ [precondition] (cwd=.) python3 scripts/test-suite/b29_route_preconditions.py --route routes/java-to-csharp --report test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+=== Batch 29 route preconditions: routes/java-to-csharp ===
+
+[PASS] route-contract-present: route_key=java-to-csharp status=limited profile=typed-pure-function-v1
+[BLOCK] route-contract-validates: ERROR: engine source manifest live file drifted: scripts/operations/validate_translation_route_matrix.py
+[BLOCK] route-gate-runs: GATE WALL: 2.480s
+[PASS] route-corpora-present: corpora on disk: ['development', 'holdout', 'real-repository']
+[PASS] exact-toolchain::java: OK 21.0.11
+[PASS] exact-toolchain::csharp: OK 10.0.301
+
+4/6 preconditions hold
+  BLOCKED BY route-contract-validates
+  BLOCKED BY route-gate-runs
+report written to test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+# exit=1 expect=exit-zero met=False
+
+# preconditions unmet: ['b29-route-preconditions'] -- the case body is not executed, because the catalog lists these as preconditions rather than assertions
+

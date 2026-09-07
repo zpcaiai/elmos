@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/legacy-health-report/v1",
+  "title": "ELMOS Java Legacy Health Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "reportId", "snapshotId", "generatedAt", "buildSystem", "modules", "dependencies", "vulnerabilities", "vulnerabilityEvidence", "findings", "publicApis", "testReadiness", "targetRecommendation", "healthScore", "overallRisk", "status", "evidenceDigests"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "reportId": {"type": "string", "pattern": "^health-[a-f0-9]{24}$"},
+    "snapshotId": {"type": "string", "minLength": 1},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "buildSystem": {"enum": ["MAVEN", "GRADLE", "MIXED", "UNKNOWN"]},
+    "detectedJavaVersion": {"type": ["string", "null"]},
+    "springBootVersion": {"type": ["string", "null"]},
+    "springCloudVersion": {"type": ["string", "null"]},
+    "modules": {"type": "array", "items": {"$ref": "#/$defs/module"}},
+    "dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependency"}},
+    "vulnerabilities": {"type": "array", "items": {"$ref": "#/$defs/vulnerability"}},
+    "vulnerabilityEvidence": {"$ref": "#/$defs/vulnerabilityEvidence"},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "publicApis": {"type": "array", "items": {"type": "object"}},
+    "testReadiness": {"type": "object"},
+    "targetRecommendation": {"type": "object"},
+    "healthScore": {"type": "integer", "minimum": 0, "maximum": 100},
+    "overallRisk": {"$ref": "#/$defs/severity"},
+    "status": {"$ref": "#/$defs/evidenceStatus"},
+    "evidenceDigests": {"type": "array", "items": {"type": "string", "pattern": "^.+:sha256:[a-f0-9]{64}$"}}
+  },
+  "$defs": {
+    "severity": {"enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "evidenceStatus": {"enum": ["PASS", "FAIL", "INCONCLUSIVE", "NOT_RUN"]},
+    "module": {"type": "object", "required": ["path", "buildSystem", "declaredModules"], "properties": {"path": {"type": "string"}, "groupId": {"type": ["string", "null"]}, "artifactId": {"type": ["string", "null"]}, "version": {"type": ["string", "null"]}, "buildSystem": {"enum": ["MAVEN", "GRADLE"]}, "declaredModules": {"type": "array", "items": {"type": "string"}}}},
+    "dependency": {"type": "object", "required": ["groupId", "artifactId", "scope", "modulePath", "direct"], "properties": {"groupId": {"type": "string"}, "artifactId": {"type": "string"}, "version": {"type": ["string", "null"]}, "scope": {"type": "string"}, "modulePath": {"type": "string"}, "direct": {"type": "boolean"}}},
+    "vulnerability": {"type": "object", "required": ["id", "dependency", "severity", "summary", "advisoryUrl", "observedAt"], "properties": {"id": {"type": "string"}, "dependency": {"type": "string"}, "severity": {"$ref": "#/$defs/severity"}, "summary": {"type": "string"}, "advisoryUrl": {"type": "string", "format": "uri"}, "fixedVersion": {"type": ["string", "null"]}, "observedAt": {"type": "string", "format": "date-time"}}},
+    "vulnerabilityEvidence": {"type": "object", "required": ["status", "provider", "observedAt"], "properties": {"status": {"$ref": "#/$defs/evidenceStatus"}, "provider": {"type": "string"}, "observedAt": {"type": "string", "format": "date-time"}, "databaseVersion": {"type": ["string", "null"]}, "errorCode": {"type": ["string", "null"]}}},
+    "finding": {"type": "object", "required": ["code", "category", "severity", "location", "message", "status", "attributes"], "properties": {"code": {"type": "string"}, "category": {"type": "string"}, "severity": {"$ref": "#/$defs/severity"}, "location": {"type": "string"}, "message": {"type": "string"}, "status": {"$ref": "#/$defs/evidenceStatus"}, "attributes": {"type": "object", "additionalProperties": {"type": "string"}}}}
+  }
+}

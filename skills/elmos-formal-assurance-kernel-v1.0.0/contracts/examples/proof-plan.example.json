@@ -1,0 +1,24 @@
+{
+  "id": "plan-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "businessLine": "spring-modernization",
+  "obligationIds": [
+    "obl-demo-001"
+  ],
+  "dag": [],
+  "budget": {
+    "wallClockSeconds": 600,
+    "cpuSeconds": 900,
+    "memoryMb": 2048,
+    "creditMicros": 100000
+  },
+  "estimatedWallClockSeconds": 120,
+  "createdAt": "2026-08-27T00:00:00Z",
+  "modelVersion": "1.0.0",
+  "policyRevision": "formal-gate-v1"
+}

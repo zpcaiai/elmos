@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Bitbucket Cloud Workspace Repository Scm Connector"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $bitbucket-cloud-workspace-repository-scm-connector to implement its fail-closed ELMOS Product B35 contract."

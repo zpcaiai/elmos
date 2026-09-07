@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Secure Sdlc Ssdf"
+  short_description: "Run evidence-bound Batch 40 secure sdlc ssdf work"
+  default_prompt: "Use $b40-secure-sdlc-ssdf to implement and verify this capability with fail-closed evidence."

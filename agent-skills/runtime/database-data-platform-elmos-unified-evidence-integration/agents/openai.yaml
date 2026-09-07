@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Evidence Integration"
+  short_description: "Integrate data evidence risk cost and delivery"
+  default_prompt: "Use $database-data-platform-elmos-unified-evidence-integration to govern this ELMOS Batch 15 workflow."

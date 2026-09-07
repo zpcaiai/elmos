@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Dialect Provider Capability Matrix"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-dialect-provider-capability-matrix to execute this ELMOS Runtime Skill with fail-closed evidence."

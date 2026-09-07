@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/behavior-equivalence/batch-9-conformance-report.schema.json",
+  "title": "Batch 9 conformance report",
+  "type": "object",
+  "required": ["batch", "equivalence_run_id", "status", "modules", "blockers", "open_blocking_obligations", "eligible_for_production_hardening", "eligible_for_cutover", "evaluated_at"],
+  "properties": {
+    "batch": {"const": 9}, "equivalence_run_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["INITIALIZED", "BASELINE_ALIGNED", "CAPTURING", "COMPARING", "TRIAGING", "EQUIVALENT", "EQUIVALENT_WITH_APPROVED_DIFFERENCES", "PARTIALLY_EQUIVALENT", "REGRESSION_DETECTED", "NOT_COMPARABLE", "BLOCKED"]},
+    "modules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/module"}},
+    "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "open_blocking_obligations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "eligible_for_production_hardening": {"type": "boolean"}, "eligible_for_cutover": {"const": false},
+    "evaluated_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {"module": {"type": "object", "required": ["module_id", "gate", "eligible_for_production_hardening", "eligible_for_cutover", "blockers", "restrictions", "metrics"], "properties": {
+    "module_id": {"type": "string", "minLength": 1}, "gate": {"enum": ["BLOCKED", "E_A", "E_B", "E_C", "E_D", "E_E"]},
+    "eligible_for_production_hardening": {"type": "boolean"}, "eligible_for_cutover": {"const": false},
+    "blockers": {"type": "array", "items": {"type": "string"}}, "restrictions": {"type": "array", "items": {"type": "string"}},
+    "metrics": {"type": "object", "required": ["critical_scenario_coverage", "public_endpoint_coverage", "database_effect_coverage", "transaction_failure_path_coverage", "observation_coverage", "critical_scenario_equivalence", "required_scenario_equivalence", "property_differential_pass_rate", "metamorphic_relation_pass_rate", "flaky_difference_rate", "source_target_trace_coverage", "approved_changes", "regressions", "unknown_differences", "stable_clean_runs"], "additionalProperties": {"type": ["number", "integer"]}}
+  }, "additionalProperties": false}},
+  "additionalProperties": false
+}

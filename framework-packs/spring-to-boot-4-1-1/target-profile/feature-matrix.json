@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "profile_key": "spring-to-boot-4-1-1-java-21",
+  "target": {
+    "spring_boot": "4.1.1",
+    "spring_framework": "7.0.8",
+    "java": "21",
+    "servlet": "jakarta.servlet",
+    "status": "NOT_RUN"
+  },
+  "source_languages": [
+    {"id": "java", "extensions": [".java"], "strategy": "java-toolchain-and-openrewrite"},
+    {"id": "kotlin", "extensions": [".kt"], "strategy": "kotlin-compiler-and-spring-kotlin-adapter"},
+    {"id": "groovy", "extensions": [".groovy"], "strategy": "groovy-compiler-and-spring-groovy-adapter"},
+    {"id": "configuration", "extensions": [".xml", ".properties", ".yml", ".yaml"], "strategy": "typed-config-and-fcm-emitter"}
+  ],
+  "components": [
+    {"id": "spring-core-context", "features": ["core-bean-di", "core-component-scan", "core-profiles-conditions", "core-configuration-properties", "core-events", "core-async", "core-resilience", "core-spel", "core-resource-message"], "strategy": "fcm-bean-and-config-emitter"},
+    {"id": "spring-aop", "features": ["core-aop"], "strategy": "fcm-proxy-emitter"},
+    {"id": "spring-boot", "features": ["boot-application-bootstrap", "boot-autoconfiguration", "boot-modular-starters", "boot-config-data", "boot-logging", "boot-file-rotation", "boot-graceful-shutdown", "boot-aot-native", "boot-null-safety", "boot-jackson"], "strategy": "upstream-openrewrite-plus-target-profile"},
+    {"id": "spring-boot-actuator", "features": ["boot-actuator", "boot-observability"], "strategy": "fcm-actuator-and-observation-emitter"},
+    {"id": "spring-boot-grpc", "features": ["boot-grpc"], "strategy": "exact-provider-profile-required"},
+    {"id": "spring-webmvc", "features": ["mvc-annotated-endpoints", "mvc-binding-validation", "mvc-error-handling", "mvc-filters-interceptors", "mvc-view-resources", "mvc-multipart-cors"], "strategy": "fcm-mvc-emitter"},
+    {"id": "spring-webflux", "features": ["webflux-reactive-endpoints", "web-client", "web-rsocket"], "strategy": "fcm-reactive-emitter"},
+    {"id": "spring-graphql-hateoas", "features": ["web-graphql", "web-hateoas"], "strategy": "exact-provider-profile-required"},
+    {"id": "spring-websocket", "features": ["mvc-websocket-stomp"], "strategy": "fcm-websocket-emitter"},
+    {"id": "spring-data", "features": ["data-jpa", "data-jdbc", "data-r2dbc", "data-redis", "data-document"], "strategy": "exact-provider-profile-required"},
+    {"id": "spring-tx", "features": ["transactions"], "strategy": "fcm-transaction-emitter"},
+    {"id": "spring-messaging", "features": ["messaging-kafka", "messaging-amqp", "messaging-jms", "messaging-integration", "messaging-batch"], "strategy": "exact-provider-profile-required"},
+    {"id": "spring-ldap-session", "features": ["integration-ldap-session"], "strategy": "exact-provider-profile-required"},
+    {"id": "spring-cache-task-security-test", "features": ["cache", "scheduler", "security-web", "security-method-oauth2", "testing-spring", "testing-container", "testing-spock-groovy"], "strategy": "fcm-and-provider-profile-required"},
+    {"id": "spring-unknown", "features": ["unmapped-spring-construct"], "strategy": "unsupported-preserve-and-report"}
+  ],
+  "conversion_policy": {
+    "deterministic": "Run pinned OpenRewrite and Java 21 transformations only for the exact source tuple.",
+    "conditional": "Emit FCM obligations and require source/target contract evidence.",
+    "blocked": "Fail closed when provider, security, data, transaction, or lifecycle semantics cannot be resolved.",
+    "unsupported": "Keep the source construct and report an explicit unsupported obligation."
+  }
+}

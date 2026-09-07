@@ -1,0 +1,183 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/csharp-to-typescript/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "dist/migrated.js",
+    "dist/route_harness.js",
+    "source-runtime/bin/Release/net10.0/SourceHarness",
+    "source-runtime/bin/Release/net10.0/SourceHarness.deps.json",
+    "source-runtime/bin/Release/net10.0/SourceHarness.dll",
+    "source-runtime/bin/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/bin/Release/net10.0/SourceHarness.runtimeconfig.json",
+    "source-runtime/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfo.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfoInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GlobalUsings.g.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.assets.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.CoreCompileInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.FileListAbsolute.txt",
+    "source-runtime/obj/Release/net10.0/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/SourceHarness.genruntimeconfig.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/obj/Release/net10.0/apphost",
+    "source-runtime/obj/Release/net10.0/ref/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/refint/SourceHarness.dll",
+    "source-runtime/obj/SourceHarness.csproj.nuget.dgspec.json",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.props",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.targets",
+    "source-runtime/obj/project.assets.json",
+    "source-runtime/obj/project.nuget.cache"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1556,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:ad0362dd04d584fa2f30830b6dbf423f2cc8be26924af3db237a547ebd952ae2"
+    },
+    {
+      "bytes": 8389,
+      "path": "chunk-map.json",
+      "sha256": "sha256:6e573317463429f5cf2487b7865f6cfac6297b9e81083648ab2767c31356c44d"
+    },
+    {
+      "bytes": 3106,
+      "path": "formal-composition.json",
+      "sha256": "sha256:2c2600f8dad51d0521d170b705bab11fbdb1cf5a1eaf0854e9a7f3bbc12df4a7"
+    },
+    {
+      "bytes": 1741,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:e6ab466b021b3dbc7214c27e7b828bfeb440458f113c714a337c232f0e5c449d"
+    },
+    {
+      "bytes": 7270,
+      "path": "formal-input.json",
+      "sha256": "sha256:a94dd3bb3b5cf0ec2ae42c9d47333bd22eaff1680f3b76513e6edab725eaebbb"
+    },
+    {
+      "bytes": 2484,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:9b50cac5027dfabb2de1c797ed29e201b7912bd92873b510b445bb934367a9e0"
+    },
+    {
+      "bytes": 201,
+      "path": "inputs/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 3638,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:6cba8c77985f73e5e751bbeac3c1f859ff2da73f2fc8211afbf7ab5fe629b277"
+    },
+    {
+      "bytes": 480,
+      "path": "migrated.ts",
+      "sha256": "sha256:cd7e7f800d565e91f3189d0871913ed47755720676dd3fe2ea4b66645a42750a"
+    },
+    {
+      "bytes": 7443,
+      "path": "route-evidence.json",
+      "sha256": "sha256:f95184810549027efa268fb1375a80cf72c32d7f75e476f8cfeb77cd03c176e2"
+    },
+    {
+      "bytes": 554,
+      "path": "route_harness.ts",
+      "sha256": "sha256:0e5fb030a7f07c3f2e20c917f3093de60bd62690871002f489f8163597a9d304"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 683,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:e3965d2c4127551fb6fbc163434181115e9187ca3cc4435b7f3e1372d296571b"
+    },
+    {
+      "bytes": 201,
+      "path": "source-runtime/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 886,
+      "path": "source-runtime/Program.cs",
+      "sha256": "sha256:03b394e85ed4348a801af9560d1564c78b46a6b4b91c2ba75812761c95fb3c5c"
+    },
+    {
+      "bytes": 262,
+      "path": "source-runtime/SourceHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 683,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:e3965d2c4127551fb6fbc163434181115e9187ca3cc4435b7f3e1372d296571b"
+    },
+    {
+      "bytes": 695,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:63cb507db43fa1ec2daf170b5553910251de30e4425bb1fd7dc9439dc1f90827"
+    },
+    {
+      "bytes": 189,
+      "path": "tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "csharp-to-typescript",
+  "schema_version": 1,
+  "total_bytes": 40921
+}

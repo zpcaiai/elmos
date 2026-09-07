@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B09: Batch 09 Effect State Observation"
+  short_description: "Run Precision Migration B09 with evidence controls"
+  default_prompt: "Use $pm-b09-effect-state-observation to execute this Precision Migration contract with fail-closed evidence."

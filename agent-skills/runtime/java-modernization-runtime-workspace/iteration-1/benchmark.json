@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "skill_name": "java-modernization-runtime",
+    "skill_path": "agent-skills/runtime/java-modernization-runtime",
+    "executor_model": "current-session-inline",
+    "analyzer_model": "current-session-inline",
+    "timestamp": "2026-07-20T17:04:33Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 874,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output refuses commercial execution before download.",
+          "passed": true,
+          "evidence": "result.md section 1 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output checks both child recipes and transitive artifacts.",
+          "passed": true,
+          "evidence": "result.md section 2 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output does not create an execution manifest.",
+          "passed": true,
+          "evidence": "result.md section 3 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output returns a structured license-blocked reason and required remediation.",
+          "passed": true,
+          "evidence": "result.md section 4 explicitly satisfies this boundary."
+        }
+      ],
+      "notes": [
+        "Sequential inline Skill evaluation; no live external provider action was attempted.",
+        "Baseline runs omitted because sub-agent delegation is disabled for this task."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 860,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output rejects out-of-scope changes, test deletion and SCM mutation.",
+          "passed": true,
+          "evidence": "result.md section 1 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output does not accept Agent-reported validation.",
+          "passed": true,
+          "evidence": "result.md section 2 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output stops because the remaining budget is zero.",
+          "passed": true,
+          "evidence": "result.md section 3 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output escalates with evidence rather than pushing or merging.",
+          "passed": true,
+          "evidence": "result.md section 4 explicitly satisfies this boundary."
+        }
+      ],
+      "notes": [
+        "Sequential inline Skill evaluation; no live external provider action was attempted.",
+        "Baseline runs omitted because sub-agent delegation is disabled for this task."
+      ]
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0,
+        "tokens": 759,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output treats missing validation and signing as blockers.",
+          "passed": true,
+          "evidence": "result.md section 1 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output marks the old report/check stale after HEAD changes.",
+          "passed": true,
+          "evidence": "result.md section 2 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output does not claim a live GitHub PR or green check without credentials.",
+          "passed": true,
+          "evidence": "result.md section 3 explicitly satisfies this boundary."
+        },
+        {
+          "text": "The output keeps Delivered, Accepted, Merged, Released and Closed separate.",
+          "passed": true,
+          "evidence": "result.md section 4 explicitly satisfies this boundary."
+        }
+      ],
+      "notes": [
+        "Sequential inline Skill evaluation; no live external provider action was attempted.",
+        "Baseline runs omitted because sub-agent delegation is disabled for this task."
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1,
+        "max": 1
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      },
+      "tokens": {
+        "mean": 831.0,
+        "stddev": 62.7455,
+        "min": 759,
+        "max": 874
+      }
+    },
+    "delta": {
+      "pass_rate": "+1.00",
+      "time_seconds": "+0.0",
+      "tokens": "+831"
+    }
+  },
+  "notes": [
+    "All three single-run with-skill evaluations passed, so there is no within-evaluation variance to analyze.",
+    "No without-skill baseline was run because sub-agent delegation is disabled; the displayed delta is a missing-baseline artifact and must not be interpreted as measured skill uplift.",
+    "Timing and tool-call telemetry were unavailable in the inline harness and are represented as zero; the token field is an output-character fallback rather than provider token usage.",
+    "Coverage targets fail-closed edge cases in recipe licensing, constrained repair, independent validation, and delivery governance; it is not a substitute for live Docker, provider, SCM, or signing-key integration tests."
+  ]
+}

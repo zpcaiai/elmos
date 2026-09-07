@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/evidence.schema.json",
+  "title": "Content-addressed evidence record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidenceId", "tenantId", "projectId", "subjectRevision", "kind", "contentDigest", "size", "mediaType", "producer", "environmentDigest", "createdAt", "lineage"],
+  "properties": {
+    "evidenceId": {"type": "string"},
+    "tenantId": {"type": "string"},
+    "projectId": {"type": "string"},
+    "subjectRevision": {"$ref": "#/$defs/digest"},
+    "kind": {"type": "string"},
+    "contentDigest": {"$ref": "#/$defs/digest"},
+    "size": {"type": "integer", "minimum": 0},
+    "mediaType": {"type": "string"},
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executionId", "source", "toolDigest"],
+      "properties": {
+        "executionId": {"type": "string"},
+        "source": {"enum": ["ENGINE", "RUNNER", "VERIFIER", "CERTIFIER", "CUSTOMER", "OPERATOR"]},
+        "toolDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "environmentDigest": {"$ref": "#/$defs/digest"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": ["string", "null"], "format": "date-time"},
+    "lineage": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "classification": {"enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"]}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Git Submodule Recursive Identity Policy And Recovery"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $git-submodule-recursive-identity-policy-and-recovery to implement its fail-closed ELMOS Product B35 contract."

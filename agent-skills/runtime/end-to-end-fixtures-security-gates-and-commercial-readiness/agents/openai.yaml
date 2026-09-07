@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 018"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $end-to-end-fixtures-security-gates-and-commercial-readiness to implement its fail-closed ELMOS Product Batch 33-mature contract."

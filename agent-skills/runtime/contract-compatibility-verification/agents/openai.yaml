@@ -1,0 +1,6 @@
+interface:
+  display_name: "Contract Compatibility Verification"
+  short_description: "Run contract-compatibility-verification with bounded commercial controls"
+  default_prompt: "Use $contract-compatibility-verification through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

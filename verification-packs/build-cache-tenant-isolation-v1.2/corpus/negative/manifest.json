@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "corpus_key": "build-cache-tenant-isolation-negative-v1",
+  "classification": "negative",
+  "execution_status": "NOT_RUN",
+  "derived_from": "security/principal-resource-action-matrix.json",
+  "case_ids": [
+    "SEC-001",
+    "SEC-002",
+    "SEC-004",
+    "SEC-005",
+    "SEC-006",
+    "SEC-007",
+    "SEC-008",
+    "SEC-009",
+    "SEC-010",
+    "SEC-011"
+  ],
+  "required_observations": [
+    "response",
+    "database-row-count-before-after",
+    "CAS-ownership-before-after",
+    "quarantine-before-after",
+    "process-start-sentinel",
+    "external-call-sentinel"
+  ],
+  "acceptance": "zero P0 authorization violations and zero denied-action side effects"
+}

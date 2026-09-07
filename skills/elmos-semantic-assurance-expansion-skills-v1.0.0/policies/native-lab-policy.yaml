@@ -1,0 +1,8 @@
+schemaVersion: elmos.policy/v1
+kind: NativeLabPolicy
+metadata: {name: native-lab, version: 3.0.0}
+spec:
+  evidenceEnvironmentFingerprintRequired: true
+  commandsAndExitCodesRequired: true
+  unavailableRuntimeStatus: not-run
+  staleEvidenceCanPass: false

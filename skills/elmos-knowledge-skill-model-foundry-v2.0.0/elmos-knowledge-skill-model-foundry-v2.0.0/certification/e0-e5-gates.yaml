@@ -1,0 +1,31 @@
+apiVersion: elmos.ai/v1
+kind: CertificationProfile
+metadata:
+  name: elmos-e0-e5
+spec:
+  E0:
+  - identity-and-provenance-complete
+  - schema-valid
+  - license-and-rights-classified
+  - reproducible-inputs
+  E1:
+  - unit-and-trigger-evals-pass
+  - deterministic-scripts-pass
+  - no-critical-security-findings
+  E2:
+  - multi-repository-integration-pass
+  - tenant-isolation-pass
+  - data-leakage-and-contamination-pass
+  E3:
+  - shadow-execution-pass
+  - behavior-differential-pass
+  - rollback-replay-pass
+  E4:
+  - canary-slo-pass
+  - cost-and-wall-clock-within-envelope
+  - automatic-rollback-tested
+  E5:
+  - large-repository-golden-route
+  - long-soak-and-chaos-pass
+  - cross-version-recertification
+  - disaster-recovery-pass

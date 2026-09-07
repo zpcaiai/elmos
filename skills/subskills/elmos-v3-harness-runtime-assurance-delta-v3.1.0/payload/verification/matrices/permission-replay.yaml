@@ -1,0 +1,19 @@
+apiVersion: elmos.ai/v3delta1
+kind: VerificationMatrix
+metadata:
+  name: permission-replay
+  version: 3.1.0
+spec:
+  cases:
+  - case: exact mapping
+    expected: resume allowed
+  - case: lossy mapping
+    expected: resume rejected
+  - case: unsupported mapping
+    expected: resume rejected
+  - case: cwd compatible
+    expected: profile retained
+  - case: cwd escapes roots
+    expected: operation rejected
+  - case: legacy field conflicts
+    expected: canonical profile wins or fail closed

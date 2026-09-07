@@ -1,0 +1,58 @@
+{
+  "campaign_type": "production-like-rehearsal",
+  "case_results": [
+    {
+      "canary_state_digest": "sha256:6f63d9c1f981621a2c4b2b3c8a5002d490c7fd4441a5f327dd00ca0559c5a7c8",
+      "case_id": "canary-rehearsal",
+      "control_decision": "ROLLBACK",
+      "error_basis_points": 5000,
+      "event_set_digest": "sha256:d2b581837586406eff74bbf0558800cbef3e02f85ba0ecbfffa72c1fb55bfa08",
+      "initial_state_digest": "sha256:d84e80e909aeb6c85e8a6ff1d550ebc21888c873d57f7fae214c09a93ad33914",
+      "network_calls_executed": false,
+      "production_writes_executed": 0,
+      "provider_calls_executed": false,
+      "rollback_complete": true,
+      "rollback_state_digest": "sha256:d84e80e909aeb6c85e8a6ff1d550ebc21888c873d57f7fae214c09a93ad33914",
+      "status": "PASSED",
+      "uncertain_outcome": false
+    }
+  ],
+  "corpus_digest": "sha256:6bf7b34524265a784d2c45de7e33920c595f238ebbdb134884136b10571e887c",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+  "evidence_state": "LOCAL_PRODUCTION_LIKE_REHEARSAL_SELF_ATTESTED",
+  "execution_digest": "sha256:11d1d5d585d91c7e6b517566ca44fa9777577779b4792efa0c2266f975ec3dfc",
+  "external_states": {
+    "archive_scripts_executed": false,
+    "external_certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_canary": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
+    "production_writes": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "limitations": [
+    "SELF_ATTESTED",
+    "SYNTHETIC_ONLY",
+    "PRODUCTION_NOT_RUN"
+  ],
+  "manifest_digest": "sha256:21f657a095f85241f9c1db1da29a44636ffa9b8ee73b99cfca7685d4948bae25",
+  "receipt_digest": "sha256:e29e270e66fe85a9c5528c7bc337b4993db0c23f9dfc4dd7295efe8889f48218",
+  "replay": {
+    "campaign_type": "production-like-rehearsal",
+    "expected_execution_digest": "sha256:11d1d5d585d91c7e6b517566ca44fa9777577779b4792efa0c2266f975ec3dfc",
+    "manifest_digest": "sha256:21f657a095f85241f9c1db1da29a44636ffa9b8ee73b99cfca7685d4948bae25",
+    "operation": "campaign-replay"
+  },
+  "runtime_binding_digest": "sha256:7aeae6f6b4737f818241c9b65fd20ac3a5b47d68ea618e2ca106c4469a6458cc",
+  "schema_version": "1.0",
+  "scope": {
+    "campaign_id": "production-like-rehearsal-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "project_id": "elmos-7plus1",
+    "source_revision": "working-tree-qualification-v2",
+    "tenant_id": "elmos-local"
+  },
+  "status": "PASSED",
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4"
+}

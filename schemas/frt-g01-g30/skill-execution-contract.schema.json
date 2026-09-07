@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/skill-execution-contract.v1.schema.json",
+  "title": "FRT compiled per-Skill execution contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "skillId",
+    "skillName",
+    "batch",
+    "capabilityKey",
+    "handlerKind",
+    "risk",
+    "executionClass",
+    "inputContract",
+    "outputContracts",
+    "requiredEvidenceRoles",
+    "obligations",
+    "apiOperations",
+    "requiredSurfaces",
+    "assuranceCounts",
+    "sourcePath",
+    "sourceSha256",
+    "contractDigest",
+    "productionOperationAuthority",
+    "certification"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "skillId": { "type": "string", "pattern": "^FRT-[0-9]{4}$" },
+    "skillName": { "type": "string", "pattern": "^frt-[a-z0-9-]+$" },
+    "batch": { "type": "string", "pattern": "^G(?:0[1-9]|[12][0-9]|30)$" },
+    "capabilityKey": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+    "handlerKind": { "type": "string", "minLength": 1 },
+    "risk": { "type": "string", "minLength": 1 },
+    "executionClass": {
+      "enum": [
+        "CONTROL_PLANE_ANALYSIS",
+        "SANDBOX_RUNNER",
+        "GOVERNED_EXTERNAL_RUNNER",
+        "AUTHORIZED_EXTERNAL_ASSURANCE",
+        "EXTERNAL_PRODUCTION_AUTHORITY"
+      ]
+    },
+    "inputContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "optional", "additionalProperties"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+        },
+        "optional": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+        },
+        "additionalProperties": { "const": false }
+      }
+    },
+    "outputContracts": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "requiredEvidenceRoles": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
+    },
+    "obligations": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" }
+    },
+    "apiOperations": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["method", "path"],
+        "properties": {
+          "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+          "path": { "type": "string", "pattern": "^/v1/skills/frt-[a-z0-9-]+/.+" }
+        }
+      }
+    },
+    "requiredSurfaces": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "assuranceCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inputCount",
+        "outputCount",
+        "workflowStepCount",
+        "hardRuleCount",
+        "verificationCount",
+        "stopConditionCount",
+        "definitionOfDoneCount",
+        "apiOperationCount",
+        "surfaceCount"
+      ],
+      "properties": {
+        "inputCount": { "$ref": "#/$defs/positiveInteger" },
+        "outputCount": { "$ref": "#/$defs/positiveInteger" },
+        "workflowStepCount": { "$ref": "#/$defs/positiveInteger" },
+        "hardRuleCount": { "$ref": "#/$defs/positiveInteger" },
+        "verificationCount": { "$ref": "#/$defs/positiveInteger" },
+        "stopConditionCount": { "$ref": "#/$defs/positiveInteger" },
+        "definitionOfDoneCount": { "$ref": "#/$defs/positiveInteger" },
+        "apiOperationCount": { "$ref": "#/$defs/positiveInteger" },
+        "surfaceCount": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "sourcePath": { "type": "string", "pattern": "^skills/FRT_G01_G30_Complete_Skills_Pack/skills/.+/SKILL\\.md$" },
+    "sourceSha256": { "$ref": "#/$defs/digest" },
+    "contractDigest": { "$ref": "#/$defs/digest" },
+    "productionOperationAuthority": { "const": "EXTERNAL_ONLY" },
+    "certification": { "const": "NOT_CERTIFIED" }
+  },
+  "$defs": {
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

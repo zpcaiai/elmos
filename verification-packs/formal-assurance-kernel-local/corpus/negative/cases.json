@@ -1,0 +1,14 @@
+{
+  "cases": [
+    "path-traversal-denied",
+    "unknown-fields-denied",
+    "expired-permit-denied",
+    "tampered-permit-denied",
+    "permit-replay-denied",
+    "missing-role-denied",
+    "strong-sandbox-downgrade-denied",
+    "database-file-escape-denied",
+    "cross-tenant-receipt-read-denied"
+  ],
+  "format": "elmos-formal-negative-corpus/v1"
+}

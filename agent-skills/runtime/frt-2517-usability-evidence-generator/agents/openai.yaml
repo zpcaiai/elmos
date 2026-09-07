@@ -1,0 +1,4 @@
+interface:
+  display_name: "Usability Evidence Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2517-usability-evidence-generator to run FRT-2517 through the governed FRT runtime with exact scope and fail-closed evidence."

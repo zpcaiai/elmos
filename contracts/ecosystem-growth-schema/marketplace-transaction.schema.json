@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/marketplace-transaction.schema.json",
+  "title": "Marketplace Transaction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "transaction_id",
+    "organization_id",
+    "publisher_id",
+    "asset_id",
+    "currency",
+    "gross_amount",
+    "tax_amount",
+    "net_amount",
+    "status",
+    "external_payment_ref"
+  ],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "asset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "gross_amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "tax_amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "net_amount": {
+      "type": "number"
+    },
+    "status": {
+      "enum": [
+        "OBSERVED",
+        "AUTHORIZED",
+        "SETTLED",
+        "REFUNDED",
+        "DISPUTED",
+        "BLOCKED"
+      ]
+    },
+    "external_payment_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
+

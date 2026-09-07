@@ -1,0 +1,80 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceGoldenRoute
+metadata:
+  name: elmos-runtime-formal-assurance
+  title: Elmos Runtime and Billing Formal Golden Route
+  version: 1.0.0
+  domain: platform
+spec:
+  inputs:
+  - task state machine
+  - scheduler
+  - billing ledger
+  - lease protocol
+  - fault model
+  requiredSkills:
+  - elmos-formal-spec-ir
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-assumption-ledger
+  - elmos-proof-status-policy
+  - elmos-trusted-computing-base-registry
+  - elmos-verifier-portfolio-router
+  - elmos-proof-cache-invalidation
+  - elmos-formal-model-versioning
+  - elmos-formal-assurance-orchestrator
+  - elmos-tla-task-runtime-model
+  - elmos-credit-billing-invariant-model
+  - elmos-lease-fencing-verifier
+  - elmos-counterexample-to-test
+  - elmos-proof-artifact-store
+  - elmos-formal-release-gate
+  - elmos-formal-assurance-report
+  - elmos-proof-evidence-bundle
+  - elmos-proof-drift-monitor
+  - elmos-waiver-governance
+  - elmos-formal-observability-slo
+  phases:
+  - id: E1_STATIC
+    goal: inventory, parse, source-map and structural constraints
+    blocking: true
+  - id: E2_MODEL
+    goal: formal models, contracts, invariants and proof obligations
+    blocking: true
+  - id: E3_DIFFERENTIAL
+    goal: source-target differential and translation validation
+    blocking: true
+  - id: E4_FAILURE_INJECTION
+    goal: fault, concurrency, recovery and security adversarial validation
+    blocking: true
+  - id: E5_CUSTOMER_GOLDEN_ROUTE
+    goal: repeatable commercial certification on representative repositories
+    blocking: true
+  criticalProperties:
+  - top-level active tasks per account never exceed three
+  - stale fencing tokens cannot commit state or evidence
+  - terminal states do not regress
+  - usage events are charged at most once and balances never go negative
+  - pause/resume/cancel/recovery do not repeat committed side effects
+  certificationRequirements:
+  - network partition
+  - worker crash
+  - database failover
+  - event duplication/reordering
+  - E1-E5 complete
+  releasePolicy:
+    requiredGate: P05_DEPLOYMENT_COMPLETE
+    unknown: DENY
+    boundedForP0: DENY_UNLESS_EXPLICIT_A1
+    waiver: four-eyes-time-bound
+  evidence:
+  - source/target manifests
+  - formal specs
+  - proof plans
+  - proof results
+  - counterexamples
+  - tests
+  - coverage
+  - TCB/SBOM
+  - gate decisions
+  - signed bundle

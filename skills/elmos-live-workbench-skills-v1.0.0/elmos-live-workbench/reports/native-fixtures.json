@@ -1,0 +1,256 @@
+{
+  "schema_version": "lw.v1",
+  "scope": "original bounded cart fixtures, native processes only",
+  "generated_at": "2026-09-06T09:32:00.717398+00:00",
+  "isolated_provider_tested": false,
+  "real_600_seconds_tested": false,
+  "results": [
+    {
+      "input": 0,
+      "expected": {
+        "subtotal": 0,
+        "discount": 0,
+        "total": 0
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 0,
+          "discount": 0,
+          "total": 0
+        },
+        "javascript": {
+          "subtotal": 0,
+          "discount": 0,
+          "total": 0
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 1,
+      "expected": {
+        "subtotal": 1,
+        "discount": 0,
+        "total": 1
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 1,
+          "discount": 0,
+          "total": 1
+        },
+        "javascript": {
+          "subtotal": 1,
+          "discount": 0,
+          "total": 1
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 9999,
+      "expected": {
+        "subtotal": 9999,
+        "discount": 0,
+        "total": 9999
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 9999,
+          "discount": 0,
+          "total": 9999
+        },
+        "javascript": {
+          "subtotal": 9999,
+          "discount": 0,
+          "total": 9999
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 10000,
+      "expected": {
+        "subtotal": 10000,
+        "discount": 1000,
+        "total": 9000
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 10000,
+          "discount": 1000,
+          "total": 9000
+        },
+        "javascript": {
+          "subtotal": 10000,
+          "discount": 1000,
+          "total": 9000
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 10001,
+      "expected": {
+        "subtotal": 10001,
+        "discount": 1000,
+        "total": 9001
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 10001,
+          "discount": 1000,
+          "total": 9001
+        },
+        "javascript": {
+          "subtotal": 10001,
+          "discount": 1000,
+          "total": 9001
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 1000000,
+      "expected": {
+        "subtotal": 1000000,
+        "discount": 100000,
+        "total": 900000
+      },
+      "outputs": {
+        "python": {
+          "subtotal": 1000000,
+          "discount": 100000,
+          "total": 900000
+        },
+        "javascript": {
+          "subtotal": 1000000,
+          "discount": 100000,
+          "total": 900000
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": -1,
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 1000001,
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": true,
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": "10000",
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": 3.5,
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    },
+    {
+      "input": null,
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      },
+      "outputs": {
+        "python": {
+          "error": "INVALID_AMOUNT"
+        },
+        "javascript": {
+          "error": "INVALID_AMOUNT"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "mutation_test": {
+    "mutation": ">=10000 to >10000",
+    "input": 10000,
+    "expected": {
+      "subtotal": 10000,
+      "discount": 1000,
+      "total": 9000
+    },
+    "mutant_output": {
+      "subtotal": 10000,
+      "discount": 0,
+      "total": 10000
+    },
+    "detected": true
+  },
+  "status": "passed",
+  "versions": {
+    "python": "3.13.5",
+    "node": "v22.16.0"
+  },
+  "commands": {
+    "python": [
+      "/opt/pyvenv/bin/python",
+      "/mnt/data/elmos-live-workbench/fixtures/cart-python/quote.py"
+    ],
+    "javascript": [
+      "/opt/nvm/versions/node/v22.16.0/bin/node",
+      "/mnt/data/elmos-live-workbench/fixtures/cart-js/quote.cjs"
+    ]
+  },
+  "wall_clock_seconds": 8.087414
+}

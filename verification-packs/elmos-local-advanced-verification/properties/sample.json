@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "property_id": "property.seeded-bounded-evaluation",
+  "claim_id": "claim.local-bounded-techniques",
+  "owner": "elmos-verification-engineering",
+  "generator": {
+    "kind": "seeded-java-generator",
+    "constraints": [
+      "bounded-cases",
+      "deterministic-seed"
+    ]
+  },
+  "oracle_refs": [
+    "oracle.java-contract",
+    "oracle.junit-regression"
+  ],
+  "assertion": {
+    "kind": "declared-property"
+  },
+  "shrinker": {
+    "kind": "bounded-domain-shrinker"
+  },
+  "replay": {
+    "seed": "42",
+    "command": "mvn -pl modules/advanced-verification -am -Dtest=AdvancedVerificationTechniquesTest -Dsurefire.failIfNoSpecifiedTests=false test"
+  }
+}

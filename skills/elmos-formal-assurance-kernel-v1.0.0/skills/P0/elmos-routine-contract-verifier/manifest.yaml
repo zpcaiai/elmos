@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-routine-contract-verifier
+  title: SQL Routine Contract Verifier
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: sql-conversion
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 把存储过程/函数编译为 CFG/SSA 和数据库状态转换，证明前置、后置、修改集、异常、事务与终止性。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-sql-semantic-ir
+  capabilities:
+  - Hoare logic
+  - Boogie VC generation
+  - symbolic execution
+  - loop invariants
+  inputs:
+  - name: routine AST
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: schema
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: contracts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: dialect semantics
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: Boogie/Dafny model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: proof result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: path counterexample
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

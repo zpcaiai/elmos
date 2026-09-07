@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/growth-experiment.schema.json",
+  "title": "Growth Experiment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "hypothesis",
+    "assignment_unit",
+    "population",
+    "variants",
+    "primary_metric",
+    "guardrails",
+    "decision_status",
+    "policy_version"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hypothesis": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assignment_unit": {
+      "enum": [
+        "USER",
+        "ACCOUNT",
+        "TENANT",
+        "SESSION",
+        "REGION"
+      ]
+    },
+    "population": {
+      "type": "string",
+      "minLength": 1
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "primary_metric": {
+      "type": "string",
+      "minLength": 1
+    },
+    "guardrails": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision_status": {
+      "enum": [
+        "PRE_REGISTERED",
+        "RUNNING",
+        "ship",
+        "ship-to-segment",
+        "continue",
+        "iterate",
+        "stop-no-impact",
+        "stop-harmful",
+        "invalid-experiment"
+      ]
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
+

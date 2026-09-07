@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AdapterDescriptor",
+  "type": "object",
+  "required": [
+    "name",
+    "kind",
+    "interfaces",
+    "versionPolicy",
+    "failureMode"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "versionPolicy": {
+      "type": "object",
+      "required": [
+        "exactVersion",
+        "digest"
+      ],
+      "properties": {
+        "exactVersion": {
+          "type": "boolean"
+        },
+        "digest": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "failureMode": {
+      "const": "fail-closed"
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

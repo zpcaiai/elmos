@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/authorization-audit-evidence.schema.json",
+  "title": "T-B Authorization and Audit Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "api_permission_coverage", "policy_coverage", "policy_decision_audit_coverage", "high_risk_approval_coverage", "self_approval_events", "tenant_admin_platform_privilege_events", "separation_of_duties_passed", "break_glass_drill_passed", "unbounded_break_glass_events", "break_glass_audit_coverage", "critical_audit_coverage", "audit_tamper_detection_passed", "audit_overwrite_events", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string"}, "platform_version": {"type": "string"}, "status": {"const": "PASSED"},
+    "api_permission_coverage": {"const": 1}, "policy_coverage": {"const": 1}, "policy_decision_audit_coverage": {"const": 1}, "high_risk_approval_coverage": {"const": 1},
+    "self_approval_events": {"const": 0}, "tenant_admin_platform_privilege_events": {"const": 0}, "separation_of_duties_passed": {"const": true},
+    "break_glass_drill_passed": {"const": true}, "unbounded_break_glass_events": {"const": 0}, "break_glass_audit_coverage": {"const": 1},
+    "critical_audit_coverage": {"const": 1}, "audit_tamper_detection_passed": {"const": true}, "audit_overwrite_events": {"const": 0},
+    "authority_id": {"type": "string", "minLength": 1}, "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

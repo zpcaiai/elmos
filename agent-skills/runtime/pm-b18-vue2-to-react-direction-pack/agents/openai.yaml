@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B18: Vue2 To React Direction Pack"
+  short_description: "Run Precision Migration B18 with evidence controls"
+  default_prompt: "Use $pm-b18-vue2-to-react-direction-pack to execute this Precision Migration contract with fail-closed evidence."

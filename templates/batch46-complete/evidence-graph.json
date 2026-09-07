@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {
+      "id": "source-commit",
+      "type": "source-commit",
+      "digest": "41cf6794ba4200b839c53531555f0f3998df4cbb01a4d5cb0b94e3ca5e23947d",
+      "producer": "scm",
+      "timestamp": "2026-07-23T09:01:47.524301+00:00",
+      "tenant_id": "reference",
+      "project_id": "reference-product",
+      "version": "1.0.0",
+      "trust_level": "internal",
+      "retention": "P7Y",
+      "signature": "sig-source"
+    },
+    {
+      "id": "target-release",
+      "type": "release",
+      "digest": "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+      "producer": "build",
+      "timestamp": "2026-07-23T09:01:47.524301+00:00",
+      "tenant_id": "reference",
+      "project_id": "reference-product",
+      "version": "1.0.0",
+      "trust_level": "internal",
+      "retention": "P7Y",
+      "signature": "sig-target"
+    }
+  ],
+  "edges": [
+    {
+      "from": "source-commit",
+      "to": "target-release",
+      "relation": "transformed-to"
+    }
+  ]
+}

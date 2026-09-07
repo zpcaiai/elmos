@@ -1,0 +1,230 @@
+from __future__ import annotations
+
+import copy
+import unittest
+
+from tooling.validate_runtime_operability import (
+    ROOT,
+    validate_prod_database_config,
+    validate_repository,
+    validate_service_config,
+    validate_compose_web_routing,
+    validate_exception_handler_source,
+    validate_engine_job_controller_source,
+    validate_public_error_boundary_source,
+)
+
+
+class RuntimeOperabilityTests(unittest.TestCase):
+    def test_repository_runtime_operability_baseline(self) -> None:
+        report = validate_repository(ROOT)
+        self.assertEqual("PASS", report["status"], report["errors"])
+        self.assertEqual(18, report["service_count"])
+        self.assertEqual(18, report["unique_application_names"])
+        self.assertEqual(18, report["unique_default_ports"])
+        self.assertGreaterEqual(report["compose_service_count"], 20)
+        self.assertTrue(report["checks"]["web_control_plane_routing"])
+        self.assertTrue(report["checks"]["safe_error_responses"])
+        self.assertGreaterEqual(report["explicit_exception_handler_files"], 20)
+        self.assertGreaterEqual(report["engine_job_lifecycle_controllers"], 13)
+        self.assertTrue(report["checks"]["engine_job_lifecycle_http_semantics"])
+        self.assertEqual("NOT_RUN", report["external_evidence_status"])
+
+    def test_explicit_exception_messages_cannot_bypass_safe_server_config(self) -> None:
+        unsafe = """
+        @ExceptionHandler(IllegalArgumentException.class)
+        Map<String,Object> bad(IllegalArgumentException error) {
+            return Map.of("message", error.getMessage());
+        }
+        """
+        errors = validate_exception_handler_source("UnsafeController.java", unsafe)
+        self.assertTrue(any("EXPLICIT_EXCEPTION_MESSAGE_DISCLOSURE" in error for error in errors))
+        safe = unsafe.replace('error.getMessage()', '"The request was rejected."')
+        self.assertEqual([], validate_exception_handler_source("SafeController.java", safe))
+
+    def test_operations_admin_requires_exact_verified_email_session(self) -> None:
+        source = (
+            ROOT / "apps/web-console/app/lib/server/operationsProxy.ts"
+        ).read_text(encoding="utf-8")
+        for token in (
+            "accountSessionFromRequest",
+            "isPlatformAdministrator",
+            "ADMIN_EMAIL_REQUIRED",
+            'authentication: "OIDC_SESSION"',
+        ):
+            self.assertIn(token, source)
+        self.assertNotIn("ELMOS_ADMIN_OBSERVABILITY_TOKEN", source)
+        self.assertNotIn("BREAK_GLASS_TOKEN", source)
+
+        authorization = (
+            ROOT
+            / "apps/control-plane/src/main/java/io/elmos/controlplane/OperationsAuthorization.java"
+        ).read_text(encoding="utf-8")
+        for token in (
+            "api-key-expires-at",
+            "organization-id",
+            "actor-id",
+            "expiry.isAfter(now)",
+            "boundOrganizationId.equals(organizationId)",
+            "boundActorId.equals(actorId)",
+        ):
+            self.assertIn(token, authorization)
+
+    def test_spring_capability_response_never_outpaces_exact_route_evidence(self) -> None:
+        source = (
+            ROOT / "apps/web-console/app/api/capabilities/spring/_route.ts"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('build: "Maven 3.9.11"', source)
+        self.assertIn("Spring Framework MVC 5.3.39 / Java 11 / Maven 3.9.11 精确夹具已 PASSED_LOCAL", source)
+        self.assertIn("Gradle 为 NOT_IMPLEMENTED", source)
+        self.assertNotIn("Maven 3.9+ / Gradle exact wrapper", source)
+        self.assertNotIn('spring-framework-xml", label: "Spring Framework XML", detail: "web.xml', source)
+
+    def test_polyglot_public_errors_cannot_echo_internal_exception_messages(self) -> None:
+        self.assertTrue(validate_public_error_boundary_source("DotnetEngine.cs", "return exception.Message;"))
+        self.assertTrue(validate_public_error_boundary_source("server.ts", "message: String(error)"))
+        self.assertEqual([], validate_public_error_boundary_source("server.ts", 'message: "Request rejected."'))
+
+    def test_engine_job_controllers_must_preserve_404_and_409_semantics(self) -> None:
+        unsafe = '@GetMapping("/jobs/{jobId}") public Object job() { return null; }'
+        errors = validate_engine_job_controller_source("EngineController.java", unsafe)
+        self.assertEqual(5, len(errors))
+        safe = unsafe + " JobNotFoundException.class HttpStatus.NOT_FOUND JobConflictException.class IdempotencyConflictException.class HttpStatus.CONFLICT"
+        self.assertEqual([], validate_engine_job_controller_source("EngineController.java", safe))
+
+    def test_web_console_uses_compose_service_discovery(self) -> None:
+        valid = {
+            "services": {
+                "control-plane": {},
+                "web-console": {
+                    "environment": {"CONTROL_PLANE_BASE_URL": "http://control-plane:8080"},
+                    "depends_on": ["control-plane"],
+                },
+            }
+        }
+        self.assertEqual([], validate_compose_web_routing("compose.yml", valid))
+
+    def test_web_console_loopback_backend_fails_closed(self) -> None:
+        invalid = {
+            "services": {
+                "control-plane": {},
+                "web-console": {
+                    "environment": {"CONTROL_PLANE_BASE_URL": "http://127.0.0.1:8080"},
+                    "depends_on": ["control-plane"],
+                },
+            }
+        }
+        errors = validate_compose_web_routing("compose.yml", invalid)
+        self.assertTrue(any("LOOPBACK_BACKEND_FORBIDDEN" in error for error in errors))
+
+    def test_web_console_missing_dependency_fails_closed(self) -> None:
+        invalid = {
+            "services": {
+                "control-plane": {},
+                "web-console": {
+                    "environment": {"CONTROL_PLANE_BASE_URL": "http://control-plane:8080"},
+                },
+            }
+        }
+        errors = validate_compose_web_routing("compose.yml", invalid)
+        self.assertTrue(any("depends_on" in error for error in errors))
+
+    def test_web_console_unknown_backend_service_fails_closed(self) -> None:
+        invalid = {
+            "services": {
+                "control-plane": {},
+                "web-console": {
+                    "environment": {"CONTROL_PLANE_BASE_URL": "http://missing-control-plane:8080"},
+                    "depends_on": ["control-plane"],
+                },
+            }
+        }
+        errors = validate_compose_web_routing("compose.yml", invalid)
+        self.assertTrue(any("UNKNOWN_BACKEND_SERVICE" in error for error in errors))
+
+    def test_missing_readiness_probe_fails_closed(self) -> None:
+        valid = {
+            "server": {
+                "port": "${ELMOS_TEST_PORT:8999}",
+                "shutdown": "graceful",
+                "error": {
+                    "include-message": "never",
+                    "include-binding-errors": "never",
+                    "include-stacktrace": "never",
+                },
+            },
+            "spring": {
+                "application": {"name": "elmos-test"},
+                "lifecycle": {"timeout-per-shutdown-phase": "${ELMOS_SHUTDOWN_TIMEOUT:30s}"},
+                "mvc": {"problemdetails": {"enabled": True}},
+            },
+            "management": {
+                "endpoint": {
+                    "health": {
+                        "probes": {"enabled": True, "add-additional-paths": True},
+                        "show-details": "never",
+                    }
+                },
+                "endpoints": {"web": {"exposure": {"include": "health,info"}}},
+            },
+        }
+        self.assertEqual([], validate_service_config("test/application.yml", valid))
+        invalid = copy.deepcopy(valid)
+        invalid["management"]["endpoint"]["health"]["probes"]["enabled"] = False
+        self.assertTrue(any("probes.enabled" in error for error in validate_service_config("test", invalid)))
+
+    def test_prometheus_exposure_is_scoped_to_the_spring_worker(self) -> None:
+        valid = {
+            "server": {
+                "port": "${ELMOS_JAVA_WORKER_PORT:8083}",
+                "shutdown": "graceful",
+                "error": {
+                    "include-message": "never",
+                    "include-binding-errors": "never",
+                    "include-stacktrace": "never",
+                },
+            },
+            "spring": {
+                "application": {"name": "elmos-java-engine-worker"},
+                "lifecycle": {"timeout-per-shutdown-phase": "${ELMOS_SHUTDOWN_TIMEOUT:30s}"},
+                "mvc": {"problemdetails": {"enabled": True}},
+            },
+            "management": {
+                "endpoint": {
+                    "health": {
+                        "probes": {"enabled": True, "add-additional-paths": True},
+                        "show-details": "never",
+                    }
+                },
+                "endpoints": {"web": {"exposure": {"include": "health,info,prometheus"}}},
+            },
+        }
+        worker_path = "apps/java-engine-worker/src/main/resources/application.yml"
+        self.assertEqual([], validate_service_config(worker_path, valid))
+        self.assertTrue(
+            any(
+                "EXACT_INTERNAL_ENDPOINTS_REQUIRED:health,info" in error
+                for error in validate_service_config("test/application.yml", valid)
+            )
+        )
+
+    def test_production_database_credentials_cannot_have_defaults(self) -> None:
+        valid = {
+            "spring": {
+                "config": {"activate": {"on-profile": "prod"}},
+                "datasource": {
+                    "url": "${ELMOS_DATABASE_URL}",
+                    "username": "${ELMOS_DATABASE_USER}",
+                    "password": "${ELMOS_DATABASE_PASSWORD}",
+                },
+            }
+        }
+        self.assertEqual([], validate_prod_database_config("test", valid))
+        invalid = copy.deepcopy(valid)
+        invalid["spring"]["datasource"]["password"] = "${ELMOS_DATABASE_PASSWORD:changeme}"
+        self.assertTrue(any("REQUIRED_ENV_WITHOUT_DEFAULT" in error for error in validate_prod_database_config("test", invalid)))
+
+
+if __name__ == "__main__":
+    unittest.main()

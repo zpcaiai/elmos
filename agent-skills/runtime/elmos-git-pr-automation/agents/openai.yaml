@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Git、文档 PR 与变更交付自动化"
+  short_description: "Guide Git、文档 PR 与变更交付自动化 with evidence controls"
+  default_prompt: "Use $elmos-git-pr-automation as guidance for Git、文档 PR 与变更交付自动化 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

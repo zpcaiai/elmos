@@ -1,0 +1,151 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-python/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "__pycache__/migrated.cpython-312.pyc",
+    "__pycache__/route_harness.cpython-312.pyc",
+    "source-runtime/Pricing.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1556,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:ad0362dd04d584fa2f30830b6dbf423f2cc8be26924af3db237a547ebd952ae2"
+    },
+    {
+      "bytes": 8462,
+      "path": "chunk-map.json",
+      "sha256": "sha256:b7bbd7f4082f492d171a63e2078290a5f840f4b4d5c5e557e3d14e966d5ad466"
+    },
+    {
+      "bytes": 2960,
+      "path": "formal-composition.json",
+      "sha256": "sha256:b1d48ce3f5d04a2f97ec6989e367b4a5554d5f6a47758ed3558c53f33d81b580"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:6fc5acf73bd8c32883a11840edc7f7de5f32827ce7738a950f2e0c8c4039c291"
+    },
+    {
+      "bytes": 7655,
+      "path": "formal-input.json",
+      "sha256": "sha256:49c889b201f5068aaa688d9514182b41897d248c0bda4f0d578406b1465a4ab2"
+    },
+    {
+      "bytes": 2338,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:a24d82c34cfcf910ff942605b439e686fb87e43c1212e1f9f8809574bd58859e"
+    },
+    {
+      "bytes": 214,
+      "path": "inputs/Pricing.java",
+      "sha256": "sha256:9c5363d41c0b9b93508b5d9888e75afd26fced14b74ece68d6d7280a2b0a718f"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 3448,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:ed0704de20438e3771b7e2b0d28114ed856dd7f73471397ff3516d471edc95f1"
+    },
+    {
+      "bytes": 773,
+      "path": "migrated.py",
+      "sha256": "sha256:4f03efd77189cd4f860237b81acec501d99d4a3ffc0843a1e669317cb07c44ff"
+    },
+    {
+      "bytes": 7075,
+      "path": "route-evidence.json",
+      "sha256": "sha256:98fcee092f7433e19b5761ec3c9648a070d1440cf923af278a4b12620d1098cc"
+    },
+    {
+      "bytes": 572,
+      "path": "route_harness.py",
+      "sha256": "sha256:85ba58956008d760e63315a826f1a906162e15a3759003d723686a25eff2d36a"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 676,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:7063c85df2b9023e1057bd526b84b0a8528ea6eba12efd54fb4fe6a35347d736"
+    },
+    {
+      "bytes": 214,
+      "path": "source-runtime/Pricing.java",
+      "sha256": "sha256:9c5363d41c0b9b93508b5d9888e75afd26fced14b74ece68d6d7280a2b0a718f"
+    },
+    {
+      "bytes": 964,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:51f123eeda2c3faaf1e8510017d6fa100e1b27b0deae93f5fb257f29b94b75e8"
+    },
+    {
+      "bytes": 676,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:7063c85df2b9023e1057bd526b84b0a8528ea6eba12efd54fb4fe6a35347d736"
+    },
+    {
+      "bytes": 666,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:90b1603d1c575a23218d5116ee8e795c59698bdc0965b805275be7558bfd75f5"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-python",
+  "schema_version": 1,
+  "total_bytes": 39690
+}

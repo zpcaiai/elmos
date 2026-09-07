@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: managed-cloud-agent-deployment
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: select-cloud-target
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: negotiate-capabilities
+    ordinal: 2
+    dependsOn:
+    - select-cloud-target
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: compile-deployment
+    ordinal: 3
+    dependsOn:
+    - negotiate-capabilities
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: bind-identity-network-telemetry
+    ordinal: 4
+    dependsOn:
+    - compile-deployment
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: native-deploy-test
+    ordinal: 5
+    dependsOn:
+    - bind-identity-network-telemetry
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: export-and-rollback-drill
+    ordinal: 6
+    dependsOn:
+    - native-deploy-test
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: seal-evidence
+    ordinal: 7
+    dependsOn:
+    - export-and-rollback-drill
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

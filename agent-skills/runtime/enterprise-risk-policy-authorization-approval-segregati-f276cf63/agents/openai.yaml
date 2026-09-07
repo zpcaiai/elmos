@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Enterprise Risk Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $enterprise-risk-policy-authorization-approval-segregati-f276cf63 to implement its fail-closed ELMOS Product B48 contract."

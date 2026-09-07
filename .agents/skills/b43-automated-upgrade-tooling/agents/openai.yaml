@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Automated Upgrade Tooling"
+  short_description: "Run evidence-bound Batch 43 automated upgrade tooling work"
+  default_prompt: "Use $b43-automated-upgrade-tooling to implement and verify this capability with fail-closed evidence."

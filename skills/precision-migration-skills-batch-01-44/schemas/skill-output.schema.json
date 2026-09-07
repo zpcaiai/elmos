@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Result",
+  "type": "object",
+  "required": [
+    "skill",
+    "status",
+    "artifacts",
+    "evidence",
+    "unresolved"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PROVED",
+        "VERIFIED",
+        "CONDITIONALLY_VERIFIED",
+        "REQUIRES_ADAPTER",
+        "REQUIRES_HUMAN_REVIEW",
+        "UNSUPPORTED",
+        "FAILED"
+      ]
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "unresolved": {
+      "type": "array"
+    },
+    "next_actions": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

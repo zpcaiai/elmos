@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-38-platform-convergence-complete-skill-pack",
+  "batch": 38,
+  "title": "Canonical CapabilityPackage, Dependency Graph and Platform Convergence",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b38-platform-convergence-orchestrator",
+    "b38-platform-convergence-domain-model",
+    "b38-platform-convergence-discovery-inventory",
+    "b38-platform-convergence-capability-planning",
+    "b38-platform-convergence-deterministic-engine",
+    "b38-platform-convergence-adapter-provider",
+    "b38-platform-convergence-workflow-runtime",
+    "b38-platform-convergence-lineage-reconciliation",
+    "b38-platform-convergence-security-policy",
+    "b38-platform-convergence-human-approval",
+    "b38-platform-convergence-observability-economics",
+    "b38-platform-convergence-corpus-benchmark",
+    "b38-platform-convergence-failure-recovery",
+    "b38-platform-convergence-integration-api",
+    "b38-platform-convergence-lifecycle-recertification",
+    "b38-platform-convergence-certification-gate"
+  ],
+  "upstream_batch": 37,
+  "files": [
+    {
+      "path": "BATCH37_COMPATIBILITY.md",
+      "sha256": "562fb6550e77b311e42820a6ad488c7bc9dc296160309ead0dd6d394b878ca79",
+      "size": 2123
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "fd358f589dc4479d9523fb6f3543c1b7dd1279b8472f8ee228bb8ba4ee0f2365",
+      "size": 2328
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "a53e91523a58988f6b67e443501e0f5156757b8142db8672d147fc0397a743fd",
+      "size": 1790
+    },
+    {
+      "path": "README.md",
+      "sha256": "95fec93b189a1f17ba8cd55ab34aae71c750a99f7d59abe041d76170bcee84c0",
+      "size": 1114
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "154c4d31b5d8ff1b01a035ea8aafe0f4d43fe1c9c1673e5b3aa0391f1a89bf8b",
+      "size": 3444
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "4a7baf4b90449252d3b719b6360e397dae6804398e08e8e175f71ce6b2f7c91d",
+      "size": 2959
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "f0079a71154882bf922dd9e886d7d63187216ddfde274702b377b34981250e81",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "f0e2c84b50aab450e79a947236187f6d25ecfcc4d0ffd216b21291bc0d47b2fb",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "2fd367fcb534acfbfdbae8a240a28a35905daa0cab26ee5888b6ff0b59b8b74e",
+      "size": 304
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "348ba1167420b3d61b0ba534df20f899e8e9c7c16d3fed1df69914a952df1958",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "21f2a12a4b11da5b5a061e745308d69241057898a044ef9701e2e3f1397b2ef4",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "dbaeaea87118f66abc9799330c1adc10925834429b83215333d81f839d1abf83",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "1a3875e3bc9807c6124c277fb5e086e370105d67c0a9cb8bf085513bcc5ba567",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "5a8be0a9acf0c53b114eaf4d498467c0b485bf8c580256edce33921d322fb78c",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "7ea2fa2bb9a90b891d83c2541865071d86b757b557cbde68160925ad72163ed2",
+      "size": 848
+    },
+    {
+      "path": "skills/b38-platform-convergence-adapter-provider/SKILL.md",
+      "sha256": "e7a41845e4486c395a0507d069980628820eeec9d307754fa79f6ed1bb2b7a8d",
+      "size": 3931
+    },
+    {
+      "path": "skills/b38-platform-convergence-capability-planning/SKILL.md",
+      "sha256": "4d98ee9ac1f8939540f11e3328470ff0dee895eccd4be2a74c6030d641b2ca7d",
+      "size": 3833
+    },
+    {
+      "path": "skills/b38-platform-convergence-certification-gate/SKILL.md",
+      "sha256": "afa0d1c3b5b51e7e9ab031abba5b7f481ac109cd6368801ea05c90542dc20b1c",
+      "size": 3962
+    },
+    {
+      "path": "skills/b38-platform-convergence-corpus-benchmark/SKILL.md",
+      "sha256": "c7f4ae6a0eae617d24fa5b5929144400a85cb8151eb46c190db2022cb2b64cf1",
+      "size": 3872
+    },
+    {
+      "path": "skills/b38-platform-convergence-deterministic-engine/SKILL.md",
+      "sha256": "dc2a7aaf2f1b8f409c75ee3c242e5f862a784d4e82678a777d4c919d8dc09755",
+      "size": 3849
+    },
+    {
+      "path": "skills/b38-platform-convergence-discovery-inventory/SKILL.md",
+      "sha256": "20d5cb78fa29d59c32d3376eab31a1e81655ed64296d601624e1bc7b8d7ddc25",
+      "size": 3876
+    },
+    {
+      "path": "skills/b38-platform-convergence-domain-model/SKILL.md",
+      "sha256": "1c4f6efcdba56bdc7dbf18517b75dd0daa34f7b28c9d79ad505e879acee5f92f",
+      "size": 3903
+    },
+    {
+      "path": "skills/b38-platform-convergence-failure-recovery/SKILL.md",
+      "sha256": "04462abca3b006af94b4163a108dc30e35e40c32a5fb945e4ce843109538934d",
+      "size": 3880
+    },
+    {
+      "path": "skills/b38-platform-convergence-human-approval/SKILL.md",
+      "sha256": "d8d0814980dac1bb21c68429fe0d3323bd2f05de5fffc39e765306b0553a4597",
+      "size": 3865
+    },
+    {
+      "path": "skills/b38-platform-convergence-integration-api/SKILL.md",
+      "sha256": "bc785c7f800c9c146a16833ec900ec6bb1041996381fded4a14ceb6cbd351cc7",
+      "size": 3850
+    },
+    {
+      "path": "skills/b38-platform-convergence-lifecycle-recertification/SKILL.md",
+      "sha256": "6cce830c2beabd759b035e439569979c4e99eb986b39e408242c8993d8d8cc9d",
+      "size": 3940
+    },
+    {
+      "path": "skills/b38-platform-convergence-lineage-reconciliation/SKILL.md",
+      "sha256": "aa5407ccabab46d3a72450908617b2c34f44c2d7693de9ee17996b702c2bc9bc",
+      "size": 3891
+    },
+    {
+      "path": "skills/b38-platform-convergence-observability-economics/SKILL.md",
+      "sha256": "aff70b52032baf48e0cb62ebe9ad36e606c6c5e201b4e611b8928e64f6d25af9",
+      "size": 3906
+    },
+    {
+      "path": "skills/b38-platform-convergence-orchestrator/SKILL.md",
+      "sha256": "a9388ba05586188b126d3e20953cf0322dc3b78b533efc2ec4d3017f9bb4ba12",
+      "size": 3928
+    },
+    {
+      "path": "skills/b38-platform-convergence-security-policy/SKILL.md",
+      "sha256": "5a8aef690df12989166f8ba55746455e891cae30d95ef9d69249e5a0dd488744",
+      "size": 3885
+    },
+    {
+      "path": "skills/b38-platform-convergence-workflow-runtime/SKILL.md",
+      "sha256": "b86d551d52432b6236cfa94e41bf16e39cc11c34021e5e06e29c4cd09bfc5f79",
+      "size": 3894
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "26a047c2b0780683c1a0d0a812d0a545ef40eaeb94bc4aaf46f191d47be537a6",
+      "size": 379
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "9915761ccf04bfb7699844aefe7c2d45719a2d70793eb565664e799fcb5d9ce4",
+      "size": 1948
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

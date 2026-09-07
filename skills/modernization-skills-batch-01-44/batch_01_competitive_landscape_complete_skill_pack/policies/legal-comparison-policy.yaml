@@ -1,0 +1,4 @@
+legal_comparison:
+  named_comparison_requires_review: true
+  superlatives_without_evidence: forbidden
+  retain_source_snapshot: true

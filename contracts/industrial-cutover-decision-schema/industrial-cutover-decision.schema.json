@@ -1,0 +1,40 @@
+{
+  "$id": "elmos.industrial-cutover-decision.v1",
+  "type": "object",
+  "required": [
+    "cutoverScopeId",
+    "decision",
+    "safetyStatus",
+    "shadowStatus",
+    "rollbackStatus",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "cutoverScopeId": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "READY",
+        "READY_WITH_CONDITIONS",
+        "BLOCKED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "ROLLBACK_REQUIRED"
+      ]
+    },
+    "safetyStatus": {
+      "type": "string"
+    },
+    "shadowStatus": {
+      "type": "string"
+    },
+    "rollbackStatus": {
+      "type": "string"
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

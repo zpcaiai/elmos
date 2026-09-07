@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Talent Development Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $talent-development-data-quality-dedup-reconciliation-an-bdb7a576 to implement its fail-closed ELMOS Product B43 contract."

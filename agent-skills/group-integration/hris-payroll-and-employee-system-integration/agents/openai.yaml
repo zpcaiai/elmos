@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 720: hris payroll and employee system integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $hris-payroll-and-employee-system-integration to evaluate this capability with evidence."

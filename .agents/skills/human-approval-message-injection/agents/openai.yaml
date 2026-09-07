@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human Approval Message Injection"
+  short_description: "Run human-approval-message-injection with bounded commercial controls"
+  default_prompt: "Use $human-approval-message-injection through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

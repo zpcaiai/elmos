@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2818",
+  "skill_name": "frt-2818-resilience-runbook-generator",
+  "batch": "G28",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g28/frt-2818-resilience-runbook-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "resilience_dr",
+  "capability_key": "frt.g28.resilience-runbook-generator",
+  "execution_contract_sha256": "sha256:2445bf5aad1b6828e50312bb42918cbde66f58601c539dbd092b9a4bb7baf454",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "scenarios",
+      "recoveryObjectives"
+    ],
+    "optional": [
+      "observations"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:227697a31bd6eba1cf7e0814f842d5e80e272a6fbd163da5f2e8de1a63dd5587",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

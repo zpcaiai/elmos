@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-production-like-rehearsal-v1",
+  "campaign_type": "production-like-rehearsal",
+  "corpus_role": "IMMUTABLE_SYNTHETIC_INPUT",
+  "input_state": "LOCAL_SELF_AUTHORED_SYNTHETIC_ONLY",
+  "campaign_ref": "verification-packs/elmos-7plus1-local-contract-v1/campaigns/production-like-canary-rehearsal-v1.json",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "production-like-rehearsal-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "corpus_digest": "sha256:6bf7b34524265a784d2c45de7e33920c595f238ebbdb134884136b10571e887c",
+  "event_count": 2,
+  "event_ids": [
+    "event-001-health",
+    "event-002-regression"
+  ],
+  "production_derived": false,
+  "production_execution_state": "NOT_RUN",
+  "limitations": [
+    "This corpus is synthetic and permits zero production population, network calls, provider calls, deployments, or writes.",
+    "Execution state and receipt identity are recorded outside this immutable input descriptor to avoid a digest cycle."
+  ]
+}

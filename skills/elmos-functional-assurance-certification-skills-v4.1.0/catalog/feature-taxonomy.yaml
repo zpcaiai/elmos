@@ -1,0 +1,121 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AIFeatureTaxonomy
+metadata:
+  version: 4.0.0
+spec:
+  semantic:
+  - structured_output
+  - tool_calling
+  - handoff
+  - delegation
+  - supervision
+  - state_machine
+  - loops
+  - parallel_join
+  - human_approval
+  - durable_execution
+  - long_term_memory
+  - prompt_program
+  - schema_evolution
+  rag:
+  - ingestion
+  - document_parsing
+  - multimodal_layout
+  - ocr
+  - acl
+  - dense_retrieval
+  - sparse_retrieval
+  - hybrid_retrieval
+  - graph_retrieval
+  - reranking
+  - citations
+  - abstention
+  - incremental_sync
+  - cdc
+  - delete_propagation
+  - poisoning_defense
+  protocol:
+  - mcp_client
+  - mcp_server
+  - mcp_tasks
+  - mcp_skills
+  - mcp_apps
+  - a2a_client
+  - a2a_server
+  - signed_agent_card
+  - resource_discovery
+  - openapi_tools
+  - ag_ui
+  - a2ui
+  - realtime
+  - voice
+  identity:
+  - human_identity
+  - agent_identity
+  - workload_identity
+  - delegated_identity
+  - token_exchange
+  - short_lived_credentials
+  - revocation
+  - trust_federation
+  security:
+  - tenant_isolation
+  - request_scoped_authority
+  - secretless
+  - deny_network
+  - prompt_injection_defense
+  - skill_supply_chain
+  - data_residency
+  - audit
+  - approval
+  - kill_switch
+  - economic_dos_guard
+  runtime:
+  - checkpoint
+  - pause_resume_cancel
+  - lease_fencing
+  - idempotency
+  - side_effect_reconciliation
+  - backpressure
+  - autoscaling
+  - backup_restore
+  - managed_runtime
+  - exit_plan
+  evaluation:
+  - versioned_dataset
+  - holdout_isolation
+  - judge_calibration
+  - trace_evaluation
+  - shadow_eval
+  - provider_fingerprint
+  - statistical_confidence
+  - drift_recertification
+  operations:
+  - otel
+  - openinference
+  - token_cost
+  - machine_eta
+  - cache_metrics
+  - slo
+  - drift_detection
+  - upgrade
+  - rollback
+  - incident_response
+  governance:
+  - nist_ai_rmf
+  - iso_iec_42001
+  - eu_ai_act_profile
+  - china_genai_profile
+  - ai_bom
+  - system_model_card
+  - retention_erasure
+  - content_provenance
+  assurance:
+  - native_conformance
+  - differential_trace
+  - property_test
+  - security_redteam
+  - performance
+  - resilience
+  - e0_e5
+  - certificate

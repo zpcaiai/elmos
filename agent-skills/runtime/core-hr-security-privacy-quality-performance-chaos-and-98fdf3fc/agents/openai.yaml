@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Core Hr Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $core-hr-security-privacy-quality-performance-chaos-and-98fdf3fc to implement its fail-closed ELMOS Product B43 contract."

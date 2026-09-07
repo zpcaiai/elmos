@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "property_id": "property.no-unverified-pass",
+  "claim_id": "claim.evidence-integrity",
+  "owner": "elmos-verification-engineering",
+  "generator": {
+    "kind": "schema-aware-content-reference",
+    "constraints": ["bounded-local-files", "independent-executor-verifier", "ed25519-envelope", "exact-request-binding"]
+  },
+  "oracle_refs": ["oracle.runtime-contract", "oracle.negative-corpus"],
+  "assertion": { "kind": "for-all-pass-results-all-required-content-and-signature-checks-verified" },
+  "shrinker": { "kind": "remove-one-reference-field-or-envelope-binding" },
+  "replay": { "seed": "precision-trust-v1", "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/precision-migration -p 'test_*.py'" }
+}

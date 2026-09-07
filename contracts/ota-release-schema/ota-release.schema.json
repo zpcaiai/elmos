@@ -1,0 +1,33 @@
+{
+  "$id": "elmos.ota-release.v1",
+  "type": "object",
+  "required": [
+    "releaseId",
+    "artifactDigest",
+    "targetModels",
+    "releaseCounter",
+    "signatureRefs",
+    "rollbackPolicy"
+  ],
+  "properties": {
+    "releaseId": {
+      "type": "string"
+    },
+    "artifactDigest": {
+      "type": "string"
+    },
+    "targetModels": {
+      "type": "array"
+    },
+    "releaseCounter": {
+      "type": "integer"
+    },
+    "signatureRefs": {
+      "type": "array"
+    },
+    "rollbackPolicy": {
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

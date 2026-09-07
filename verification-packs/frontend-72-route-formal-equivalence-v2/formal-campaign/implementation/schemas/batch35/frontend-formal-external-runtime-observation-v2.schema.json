@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch35/frontend-formal-external-runtime-observation-v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "scope_digest", "route_id", "block_id",
+    "profile_id", "corpus_case_ids", "observer_protocol",
+    "model_values_used_as_actual", "actuals"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "kind": {"const": "frontend-formal-runtime-observation-v2"},
+    "scope_digest": {"$ref": "#/$defs/sha256"},
+    "route_id": {"$ref": "#/$defs/routeId"},
+    "block_id": {"$ref": "#/$defs/blockId"},
+    "profile_id": {"$ref": "#/$defs/profileId"},
+    "corpus_case_ids": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}},
+    "observer_protocol": {"const": "block-specific-runtime-observation-v1"},
+    "model_values_used_as_actual": {"const": false},
+    "actuals": {
+      "type": "array", "minItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["case_id", "actual"],
+        "properties": {
+          "case_id": {"$ref": "#/$defs/nonEmpty"},
+          "actual": {"type": "object", "minProperties": 1}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmpty": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "profileId": {"enum": ["angular", "flutter", "harmony-arkui", "jquery", "react", "react-native", "svelte", "vue2", "vue3"]},
+    "routeId": {"type": "string", "pattern": "^(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)--to--(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)$"},
+    "blockId": {"enum": ["route-navigation-deeplink-404", "component-template-view", "state-management", "action-event", "effect-lifecycle", "form-binding-validation", "api-network", "identity-permission", "rendering-hydration", "accessibility-focus", "i18n-theme-responsive", "native-platform"]}
+  }
+}

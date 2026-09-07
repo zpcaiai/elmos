@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 005"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $opc-ua-server-client-pubsub-and-information-model-modernizer to apply its fail-closed ELMOS runtime contract."

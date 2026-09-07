@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Enterprise Support Sla"
+  short_description: "Run evidence-bound Batch 39 enterprise support sla work"
+  default_prompt: "Use $b39-enterprise-support-sla to implement and verify this capability with fail-closed evidence."

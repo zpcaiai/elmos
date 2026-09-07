@@ -1,0 +1,4 @@
+verification:
+  postcondition_required: true
+  not_run_is_not_pass: true
+  inconclusive_blocks_certification: true

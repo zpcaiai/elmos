@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.proof-harness.composite-source-integrity",
+  "artifact": "elmos-proof-driven-harness-engine@3.1.0",
+  "materials": [
+    {
+      "role": "base-declarative-source",
+      "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+      "version": "3.0.0",
+      "archive_bytes": 5601254,
+      "archive_sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+      "executed": false
+    },
+    {
+      "role": "runtime-assurance-delta-declarative-source",
+      "name": "elmos-v3-harness-runtime-assurance-delta",
+      "version": "3.1.0",
+      "archive_bytes": 173228,
+      "archive_sha256": "13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+      "executed": false
+    }
+  ],
+  "identity_scope": "BYTE_IDENTITY_ONLY",
+  "local_engineering_maximum": "READY_FOR_EXTERNAL_GATE",
+  "commercial_distribution": "BLOCKED",
+  "external_evidence": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

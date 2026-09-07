@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Coverage Confidence"
+  short_description: "Run evidence-bound Batch 35 coverage confidence work"
+  default_prompt: "Use $b35-coverage-confidence to implement and verify this capability with fail-closed evidence."

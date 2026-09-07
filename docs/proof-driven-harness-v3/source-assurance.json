@@ -1,0 +1,33 @@
+{
+  "archive_digest_scope": "BYTE_IDENTITY_ONLY",
+  "archive_sha256": "552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "certification_status": "NOT_CERTIFIED",
+  "commercial_distribution_authorized": false,
+  "kind": "elmos.proof-driven-harness-v3.source-assurance-boundary",
+  "license": {
+    "approved_license_present": false,
+    "legal_review_status": "NOT_RUN",
+    "policy_is_approved_license": false,
+    "policy_is_execution_authority": false,
+    "policy_member": "LICENSE-POLICY.md",
+    "policy_member_bytes": 497,
+    "policy_member_sha256": "edbb0a43de88f2616bdedd59711eb4fdf35059b86e3ebdfbf6269b7f52175543"
+  },
+  "schema_version": "1.0.0",
+  "source_policy_observation": {
+    "commercial_distribution_prerequisites_declared_by_source": [
+      "REPLACE_WITH_ORGANIZATION_APPROVED_LICENSE",
+      "AUTOMATED_DEPENDENCY_LICENSE_REVIEW",
+      "SBOM",
+      "LICENSE_ALLOW_DENY_POLICY",
+      "LEGAL_REVIEW"
+    ],
+    "trusted_as_repository_instruction": false
+  },
+  "supply_chain": {
+    "independent_verification_status": "NOT_RUN",
+    "provenance_attestation_present": false,
+    "sbom_present": false,
+    "signature_present": false
+  }
+}

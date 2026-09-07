@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/model-call.schema.json",
+  "title": "Governed Model Call",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "call_id",
+    "tenant_id",
+    "project_id",
+    "task_class",
+    "model",
+    "prompt_digest",
+    "context_manifest_digest",
+    "structured_output_schema_digest",
+    "budget",
+    "tools",
+    "data_policy",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "call_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "task_class": {
+      "type": "string"
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "name",
+        "revision"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        },
+        "deployment": {
+          "type": "string"
+        }
+      }
+    },
+    "prompt_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "context_manifest_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "structured_output_schema_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_prompt_tokens",
+        "max_completion_tokens",
+        "max_cost_usd",
+        "max_wall_seconds",
+        "reservation_id"
+      ],
+      "properties": {
+        "max_prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_cost_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_wall_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reservation_id": {
+          "type": "string"
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "schema_digest"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "schema_digest": {
+            "$ref": "digest.schema.json"
+          },
+          "requires_approval": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "data_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "provider_allowed",
+        "source_export_allowed"
+      ],
+      "properties": {
+        "classification": {
+          "type": "string"
+        },
+        "provider_allowed": {
+          "type": "boolean"
+        },
+        "source_export_allowed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "RESERVED",
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED",
+        "REJECTED",
+        "CANCELLED"
+      ]
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prompt_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost_usd": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "response_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "failure_class": {
+      "type": "string"
+    }
+  }
+}

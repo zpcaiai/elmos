@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/runner-schema/frt-runner-completion.schema.json",
+  "title": "FRT Runner Completion",
+  "description": "A runner's signed report of what it actually executed for a claimed FRT EXECUTE run. Posted to POST /engine/v1/frt/runs/{runId}/complete. The control plane verifies the attestation before trusting any field; an unverified completion can never mark customerCodeExecuted or productionOperationExecuted as true, and a completion never certifies anything.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "expectedVersion",
+    "completion"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optimistic-concurrency version of the run as last read by the runner. Must equal the stored version or the completion is rejected with a version conflict."
+    },
+    "completion": { "$ref": "#/$defs/completion" }
+  },
+  "$defs": {
+    "scopedId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Ed25519 signature, base64url, over the canonical JSON of the enclosing object with its own signature field removed. Canonical JSON is defined as: object keys sorted ascending, no insignificant whitespace, and raw UTF-8 rather than \\uXXXX escapes. The TypeScript control plane sorts by UTF-16 code unit and Python by code point; these agree for every ASCII key, and all key patterns in this schema are ASCII-only, so no key may be widened beyond ASCII without fixing both implementations in one change."
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runnerId",
+        "exitStatus",
+        "startedAt",
+        "finishedAt",
+        "customerCodeExecuted",
+        "productionOperationExecuted",
+        "artifacts",
+        "evidence",
+        "authority",
+        "keyId",
+        "issuedAt",
+        "expiresAt",
+        "signature"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "runnerId": {
+          "$ref": "#/$defs/scopedId",
+          "description": "Must equal the identity subject completing the run and the executor named on every reported evidence item."
+        },
+        "exitStatus": {
+          "enum": ["COMPLETED", "FAILED"],
+          "description": "FAILED is a real, recorded outcome, not an error: the run lands in FAILED with outcome RUNNER_EXECUTION_FAILED and stays retryable."
+        },
+        "startedAt": { "$ref": "#/$defs/timestamp" },
+        "finishedAt": {
+          "$ref": "#/$defs/timestamp",
+          "description": "Must not precede startedAt."
+        },
+        "customerCodeExecuted": {
+          "type": "boolean",
+          "description": "True only if the runner really built, ran or tested customer code. Ignored unless the attestation verifies."
+        },
+        "productionOperationExecuted": {
+          "type": "boolean",
+          "description": "True only if the runner really performed a production operation. Ignored unless the attestation verifies."
+        },
+        "artifacts": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/artifact" },
+          "description": "Content-addressed outputs the runner produced. Names must be unique; a duplicate name or a missing digest blocks the run."
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/evidence" },
+          "description": "Evidence the runner produced. The runner is the executor and may never be the verifier."
+        },
+        "authority": { "$ref": "#/$defs/scopedId" },
+        "keyId": {
+          "$ref": "#/$defs/scopedId",
+          "description": "Must resolve in the trust store to a key carrying the RUNNER purpose."
+        },
+        "issuedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" },
+        "signature": { "$ref": "#/$defs/signature" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "uri", "digest", "byteCount"],
+      "properties": {
+        "name": { "$ref": "#/$defs/scopedId" },
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/sha256" },
+        "byteCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "uri",
+        "digest",
+        "state",
+        "executor",
+        "verifier",
+        "synthetic",
+        "byteCount",
+        "authority",
+        "keyId",
+        "issuedAt",
+        "expiresAt",
+        "signature"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Evidence role such as SOURCE_BUILD, TARGET_BUILD, TYPECHECK or NEGATIVE_TEST. A role may appear at most once per completion."
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Must resolve below an approved evidence root and match byteCount and digest exactly."
+        },
+        "digest": { "$ref": "#/$defs/sha256" },
+        "state": {
+          "enum": ["PASSED", "FAILED", "INCONCLUSIVE", "NOT_RUN"],
+          "description": "NOT_RUN and INCONCLUSIVE never pass a gate."
+        },
+        "executor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Must equal runnerId."
+        },
+        "verifier": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Must differ from executor and from runnerId. A runner verifying its own evidence blocks the run."
+        },
+        "synthetic": {
+          "type": "boolean",
+          "description": "Synthetic evidence is recorded but can never support a real gate."
+        },
+        "byteCount": { "type": "integer", "minimum": 0 },
+        "authority": { "$ref": "#/$defs/scopedId" },
+        "keyId": { "$ref": "#/$defs/scopedId" },
+        "issuedAt": { "$ref": "#/$defs/timestamp" },
+        "expiresAt": { "$ref": "#/$defs/timestamp" },
+        "signature": { "$ref": "#/$defs/signature" }
+      }
+    }
+  }
+}

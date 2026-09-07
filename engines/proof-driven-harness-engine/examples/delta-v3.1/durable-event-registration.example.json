@@ -1,0 +1,12 @@
+{
+  "compatibility": "BACKWARD",
+  "owner": "plugin-1",
+  "projections": [
+    "execution-state"
+  ],
+  "schemaVersion": 1,
+  "semantics": "REQUIRED_STATE",
+  "type": "plugin.result.reviewed",
+  "upgrader": "cas:upgrader",
+  "validator": "cas:validator"
+}

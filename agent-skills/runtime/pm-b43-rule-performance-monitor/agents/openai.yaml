@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B43: Rule Performance Monitor"
+  short_description: "Run Precision Migration B43 with evidence controls"
+  default_prompt: "Use $pm-b43-rule-performance-monitor to execute this Precision Migration contract with fail-closed evidence."

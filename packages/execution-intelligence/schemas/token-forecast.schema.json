@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/token-forecast.schema.json",
+  "title": "token-forecast",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "project_id",
+    "definition_of_done",
+    "confidence",
+    "assumptions",
+    "exclusions",
+    "runs",
+    "totals",
+    "by_task"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "token-forecast"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string"
+    },
+    "definition_of_done": {
+      "type": "object"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runs": {
+      "type": "integer",
+      "minimum": 100
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "totals": {
+      "type": "object",
+      "required": [
+        "input",
+        "cached_input",
+        "cache_write",
+        "output",
+        "reasoning_output",
+        "total",
+        "category_sum_equals_total"
+      ],
+      "properties": {
+        "input": {
+          "$ref": "envelope.schema.json"
+        },
+        "cached_input": {
+          "$ref": "envelope.schema.json"
+        },
+        "cache_write": {
+          "$ref": "envelope.schema.json"
+        },
+        "output": {
+          "$ref": "envelope.schema.json"
+        },
+        "reasoning_output": {
+          "$ref": "envelope.schema.json"
+        },
+        "total": {
+          "$ref": "envelope.schema.json"
+        },
+        "category_sum_equals_total": {
+          "const": true
+        },
+        "accounting_rule": {
+          "type": "string"
+        }
+      }
+    },
+    "by_task": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "total_tokens",
+          "by_category"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "total_tokens": {
+            "$ref": "envelope.schema.json"
+          },
+          "by_category": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "static_scan_totals": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "accounting_rule": {
+      "type": "string"
+    }
+  }
+}

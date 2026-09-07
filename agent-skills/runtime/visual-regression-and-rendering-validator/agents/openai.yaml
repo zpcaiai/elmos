@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visual Regression Validator"
+  short_description: "Compare rendering in stable approved environments"
+  default_prompt: "Use $visual-regression-and-rendering-validator to evaluate component and page rendering against approved environment-bound baselines."

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id":"contracts-200","operation":"contracts","expected_calls":1,"expected":"render-64-contracts"},
+    {"id":"create-202","operation":"create-job","expected_calls":1,"expected":"poll-job-id"},
+    {"id":"create-timeout","operation":"create-job","expected_calls":1,"expected":"show-error-no-retry"},
+    {"id":"poll-unmount","operation":"get-job","expected":"abort-and-no-state-write"},
+    {"id":"poll-terminal","operation":"get-job","expected":"stop-polling"}
+  ]
+}

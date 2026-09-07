@@ -1,0 +1,10 @@
+{
+  "engine_version": "3.53.3",
+  "objects": [
+    "table:work_orders",
+    "index:idx_work_orders_tenant_created"
+  ],
+  "row_count": 3,
+  "schema_version": 1,
+  "sensitive_data": false
+}

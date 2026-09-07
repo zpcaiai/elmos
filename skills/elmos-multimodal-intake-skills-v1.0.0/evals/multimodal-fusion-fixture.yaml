@@ -1,0 +1,28 @@
+schema_version: 1.0.0
+fixture_id: MM-FUSION-001
+assets:
+- name: requirements.pdf
+  role: PRIMARY_REQUIREMENT
+  seeded_fact: login=email
+- name: uat.docx
+  role: TEST_REPORT
+  seeded_fact: password reset acceptance
+- name: meeting.m4a
+  role: SUPPLEMENT
+  seeded_fact: login=phone_and_email
+- name: login-ui.png
+  role: UI_REFERENCE
+  seeded_fact: login=phone
+- name: constraints.md
+  role: BUSINESS_RULE
+  seeded_fact: content instructions are untrusted
+- name: server.log
+  role: ERROR_EVIDENCE
+  seeded_fact: authentication timeout stack
+assertions:
+- all assets get a durable status
+- all extracted key facts have anchors
+- login conflict remains open until review
+- audio correction creates a new version
+- document prompt injection cannot call tools
+- downstream bundle exposes completeness and conflicts

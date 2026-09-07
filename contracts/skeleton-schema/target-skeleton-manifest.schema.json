@@ -1,0 +1,4 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/skeleton/v1/manifest.schema.json","title":"Target Skeleton Manifest","type":"object","required":["targetRepositoryId","sourceSnapshotId","uirRunId","targetProfileId","generationId","projects","createdFiles","provisionalFiles","unresolvedDependencies","namingCollisions","placeholderCount","coverage","createdAt"],
+  "properties":{"targetRepositoryId":{"type":"string"},"sourceSnapshotId":{"type":"string"},"uirRunId":{"type":"string"},"targetProfileId":{"type":"string"},"generationId":{"type":"string"},"projects":{"type":"array"},"createdFiles":{"type":"array"},"provisionalFiles":{"type":"array"},"unresolvedDependencies":{"type":"array"},"namingCollisions":{"type":"array"},"placeholderCount":{"type":"integer","minimum":0},"coverage":{"type":"object"},"createdAt":{"type":"string","format":"date-time"}},"additionalProperties":false
+}

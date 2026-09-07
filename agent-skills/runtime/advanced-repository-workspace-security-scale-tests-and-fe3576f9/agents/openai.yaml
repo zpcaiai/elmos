@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Advanced Repository Workspace Security Scale Tests And Release Gates"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $advanced-repository-workspace-security-scale-tests-and-fe3576f9 to implement its fail-closed ELMOS Product B35 contract."

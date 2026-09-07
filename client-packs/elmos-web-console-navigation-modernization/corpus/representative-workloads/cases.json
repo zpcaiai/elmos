@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "corpus": "representative-workloads",
+  "independent_from_development": true,
+  "contains_customer_data": false,
+  "execution_status": "NOT_RUN",
+  "workloads": [
+    {
+      "id": "NAV-REP-001",
+      "description": "Synthetic desktop navigation across every declared route with keyboard-only activation",
+      "expected_journeys": [
+        "workspace-navigation",
+        "skills-qualification",
+        "trust-chain-review"
+      ]
+    },
+    {
+      "id": "NAV-REP-002",
+      "description": "Synthetic mobile navigation and project-generation fail-closed credential journey",
+      "expected_journeys": [
+        "mobile-bottom-navigation",
+        "project-generation-draft"
+      ]
+    }
+  ],
+  "representative_customer_execution_status": "NOT_RUN",
+  "customer_acceptance_status": "NOT_RUN"
+}

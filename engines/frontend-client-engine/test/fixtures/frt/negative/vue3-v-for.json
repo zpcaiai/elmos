@@ -1,0 +1,8 @@
+{
+  "corpusRole": "negative",
+  "files": {
+    "package.json": "{\"dependencies\":{\"vue\":\"3.5.39\"}}",
+    "src/App.vue": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nconst items = ref([1, 2, 3]);\n</script>\n<template><ul><li v-for=\"item in items\" :key=\"item\">{{ item }}</li></ul></template>"
+  },
+  "expectedStatus": "BLOCKED"
+}

@@ -1,0 +1,26 @@
+schema_version: '1.0'
+techniques:
+  - id: example-based
+    cadence: [smoke, pr, nightly, release]
+    implementation: concrete fixtures and public repository regression cases
+  - id: property-based
+    cadence: [nightly, weekly, exhaustive]
+    implementation: generated values constrained by language, API and SQL schemas
+  - id: differential
+    cadence: [smoke, pr, nightly, release, golden]
+    implementation: source and target dual execution with normalized output/state comparison
+  - id: metamorphic
+    cadence: [nightly, weekly, exhaustive]
+    implementation: semantics-preserving input transformations with relation oracles
+  - id: fuzz
+    cadence: [weekly, exhaustive]
+    implementation: grammar, AST, API and state-machine fuzzing with reduction
+  - id: mutation
+    cadence: [nightly, weekly, release]
+    implementation: transformation and target-code mutants must be killed by hidden oracles
+  - id: fault-injection
+    cadence: [nightly, release, golden]
+    implementation: phase-boundary failures, retries, resume, rollback and idempotency probes
+  - id: temporal-hidden
+    cadence: [release, golden]
+    implementation: time-split repositories and withheld tests inaccessible to generation agents

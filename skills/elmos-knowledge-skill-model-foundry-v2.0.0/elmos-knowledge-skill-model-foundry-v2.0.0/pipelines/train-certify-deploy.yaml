@@ -1,0 +1,18 @@
+apiVersion: elmos.ai/v1
+kind: Pipeline
+metadata:
+  name: train-certify-deploy
+spec:
+  steps:
+  - freeze-data-and-code
+  - launch-reproducible-training
+  - checkpoint-and-resume-test
+  - offline-evals
+  - security-redteam
+  - skill-model-ablation
+  - assemble-release-bundle
+  - shadow
+  - canary
+  - e4-promotion
+  - continuous-monitoring
+  - automatic-rollback-on-hard-signal

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 742: integration incident command and freeze manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-incident-command-and-freeze-manager to evaluate this capability with evidence."

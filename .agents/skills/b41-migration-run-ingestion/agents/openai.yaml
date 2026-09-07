@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Migration Run Ingestion"
+  short_description: "Run evidence-bound Batch 41 migration run ingestion work"
+  default_prompt: "Use $b41-migration-run-ingestion to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,62 @@
+{
+  "evidence_refs": [
+    "artifacts/engine-tree-inventory.json",
+    "environment/local-environment.json",
+    "qualification/source-receipt.json",
+    "qualification/receipt-validation.json",
+    "qualification/delta-v3.1/source-receipt.json",
+    "qualification/delta-v3.1/receipt-validation.json",
+    "qualification/delta-v3.1/acceptance-results.json",
+    "qualification/raw/archive-installation-check.json",
+    "qualification/raw/engine-tests.json",
+    "qualification/raw/package-integration-tests.json",
+    "qualification/delta-v3.1/raw/delta-engine-tests.json",
+    "qualification/delta-v3.1/raw/delta-importer-tests.json",
+    "qualification/delta-v3.1/raw/delta-installation-check.json",
+    "certification/repository-binding.json",
+    "corpus/development/seed.json",
+    "corpus/negative/cases.json"
+  ],
+  "execution_states": {
+    "certification": "NOT_CERTIFIED",
+    "concurrency_campaign": "NOT_RUN",
+    "delta_acceptance_104": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "delta_adapter_profile_negotiation": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "delta_opa": "NOT_RUN",
+    "delta_postgresql17": "NOT_RUN",
+    "delta_provider_runtime": "NOT_RUN",
+    "delta_receipt_revalidation": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "delta_remote_executor": "NOT_RUN",
+    "delta_target_environment_conformance": "NOT_RUN",
+    "development_corpus": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "external_verification": "NOT_RUN",
+    "fuzz_campaign": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "model_campaign": "NOT_RUN",
+    "mutation_campaign": "NOT_RUN",
+    "negative_corpus": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "postgresql17": "NOT_RUN",
+    "query_numeric_data_money": "NOT_RUN",
+    "receipt_revalidation": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "representative_workloads": "NOT_RUN",
+    "solver_symbolic": "NOT_RUN"
+  },
+  "integrity_manifest": "certification/integrity-manifest.json",
+  "metrics": {
+    "local_test_pass_rate": 1.0,
+    "local_tests": 485
+  },
+  "notes": [
+    "Only the development and negative local corpora are passed.",
+    "Both qualification receipts and their raw logs are self-attested local engineering evidence.",
+    "No source ZIP content was executed by this publisher."
+  ],
+  "pack_key": "proof-driven-harness-v3-local",
+  "repository_binding_records": [
+    "certification/repository-binding.json"
+  ],
+  "schema_version": 1,
+  "zero_tolerance": {
+    "local_negative_control_failures": 0
+  }
+}

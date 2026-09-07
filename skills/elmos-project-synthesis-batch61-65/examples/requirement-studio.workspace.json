@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "workspace_id": "WS-MAINTENANCE",
+  "project_id": "PRJ-EQUIPMENT-MAINTENANCE",
+  "revision": 7,
+  "sections": [
+    {
+      "id": "requirements",
+      "count": 28
+    },
+    {
+      "id": "assumptions",
+      "count": 3
+    },
+    {
+      "id": "conflicts",
+      "count": 0
+    },
+    {
+      "id": "acceptance",
+      "count": 41
+    }
+  ],
+  "collaboration": {
+    "reviewers": [
+      "product-owner",
+      "architect"
+    ],
+    "open_comments": 2
+  },
+  "approval_state": "review",
+  "source_refs": [
+    "SRC-CONVERSATION",
+    "SRC-PRD"
+  ]
+}

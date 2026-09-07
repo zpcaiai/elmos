@@ -1,0 +1,126 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: structured-output-enforcement
+  version: 3.0.0
+  pack: 10-serving-routing-inference
+  priority: P0
+  owner: inference-platform-team
+spec:
+  description: 使用 JSON Schema、语法约束和修复策略保证输出可被程序消费。
+  kernel: K8 Serving and Runtime Control
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: inference request
+    required: true
+  - name: task risk
+    required: true
+  - name: tenant policy
+    required: true
+  - name: model registry
+    required: true
+  - name: capacity state
+    required: true
+  outputs:
+  - name: routed request
+    contentAddressed: true
+  - name: structured response
+    contentAddressed: true
+  - name: usage record
+    contentAddressed: true
+  - name: serving evidence
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - gateway.route
+    - model.invoke
+    - adapter.resolve
+    - quota.check
+    - deployment.rollout
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - authorized-route
+    - version-pinned
+    - quota-respected
+    - telemetry-emitted
+    - fallback-defined
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+  businessLines:
+  - model-serving
+  capabilityTags:
+  - 10-serving-routing-inference
+  - enforcement
+  - model-serving
+  - output
+  - structured
+  triggers:
+  - 任务需要：使用 JSON Schema、语法约束和修复策略保证输出可被程序消费。
+  - 任务属于 model-serving 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - authorized-route
+  - version-pinned
+  - quota-respected
+  - telemetry-emitted
+  - fallback-defined
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "OrmPersistenceIR",
+  "metadata": {
+    "id": "orm-persistence-ir-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "orm": "example-orm",
+    "entities": [],
+    "relationships": [],
+    "transactionScopes": []
+  }
+}

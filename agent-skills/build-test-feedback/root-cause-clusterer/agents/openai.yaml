@@ -1,0 +1,4 @@
+interface:
+  display_name: "root cause clusterer"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $root-cause-clusterer to perform this Batch 8 repair step."

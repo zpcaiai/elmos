@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Tool Runtime Requirement Graph"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-tool-runtime-requirement-graph to execute this ELMOS product-closure Skill with fail-closed evidence."

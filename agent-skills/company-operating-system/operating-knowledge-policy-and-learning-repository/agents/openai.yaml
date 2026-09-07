@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 524: operating knowledge policy and learning repository"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $operating-knowledge-policy-and-learning-repository to evaluate this capability with evidence."

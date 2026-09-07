@@ -1,0 +1,34 @@
+{
+  "valid": true,
+  "release_mode": false,
+  "case_count": 46664,
+  "case_files": {
+    "suites/spring-modernization.jsonl": 3116,
+    "suites/cross-language.jsonl": 29534,
+    "suites/project-generation.jsonl": 1450,
+    "suites/sql-conversion.jsonl": 11760,
+    "suites/cross-cutting.jsonl": 800,
+    "suites/smoke.jsonl": 4
+  },
+  "skill_count": 24,
+  "errors": [],
+  "warnings": [
+    "corpus license review required: spring-petclinic-framework",
+    "corpus license review required: apache-struts-examples",
+    "corpus license review required: apache-roller",
+    "corpus license review required: broadleaf-legacy-demo",
+    "corpus license review required: realworld-spec",
+    "corpus license review required: repo-trans-bench",
+    "corpus license review required: rust-repo-trans",
+    "corpus license review required: trans-repo",
+    "corpus license review required: project-eval",
+    "corpus license review required: dev-eval",
+    "corpus license review required: human-evo",
+    "corpus license review required: repo-exec",
+    "corpus license review required: jhipster-sample-app",
+    "corpus license review required: jooq-sakila",
+    "corpus license review required: sqlancer",
+    "corpus license review required: sqlglot",
+    "corpus license review required: aws-db-migration-tester"
+  ]
+}

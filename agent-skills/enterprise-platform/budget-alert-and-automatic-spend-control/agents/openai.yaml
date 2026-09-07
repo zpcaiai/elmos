@@ -1,0 +1,4 @@
+interface:
+  display_name: "budget-alert-and-automatic-spend-control"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $budget-alert-and-automatic-spend-control to evaluate this enterprise platform capability with evidence."

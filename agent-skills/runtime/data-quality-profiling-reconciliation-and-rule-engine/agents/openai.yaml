@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Quality Reconciler"
+  short_description: "Profile reconcile and gate migrated data"
+  default_prompt: "Use $data-quality-profiling-reconciliation-and-rule-engine to govern this ELMOS Batch 15 workflow."

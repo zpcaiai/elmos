@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "FrontendConformanceResult",
+  "metadata": {
+    "id": "frontend-conformance-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "frontend": "example-frontend",
+    "toolDigest": "example-toolDigest",
+    "constructCoverage": 0.99,
+    "counterexamples": []
+  }
+}

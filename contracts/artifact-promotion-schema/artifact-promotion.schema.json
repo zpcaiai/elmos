@@ -1,0 +1,34 @@
+{
+  "$id": "elmos.artifact-promotion.v1",
+  "type": "object",
+  "required": [
+    "artifactDigest",
+    "sourceStage",
+    "targetStage",
+    "decision",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "artifactDigest": {
+      "type": "string"
+    },
+    "sourceStage": {
+      "type": "string"
+    },
+    "targetStage": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "APPROVED",
+        "APPROVED_WITH_CONDITIONS",
+        "BLOCKED",
+        "REVOKED"
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

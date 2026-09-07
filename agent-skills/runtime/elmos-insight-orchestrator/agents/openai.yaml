@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Project Intelligence Studio 总编排"
+  short_description: "Guide Project Intelligence Studio 总编排 with evidence controls"
+  default_prompt: "Use $elmos-insight-orchestrator as guidance for Project Intelligence Studio 总编排 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

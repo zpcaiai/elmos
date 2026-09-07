@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Sandbox Secret Lease Injection Redaction And Zeroization"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $sandbox-secret-lease-injection-redaction-and-zeroization to implement its fail-closed ELMOS Product B36 contract."

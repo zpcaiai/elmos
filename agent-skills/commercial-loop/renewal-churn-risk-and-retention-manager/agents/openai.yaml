@@ -1,0 +1,4 @@
+interface:
+  display_name: "renewal-churn-risk-and-retention-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $renewal-churn-risk-and-retention-manager to evaluate this Batch 13 commercial capability with evidence."

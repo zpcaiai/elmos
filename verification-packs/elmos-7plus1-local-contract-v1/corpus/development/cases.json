@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-development-cases-v1",
+  "corpus_role": "LOCAL_SELF_AUTHORED_DEVELOPMENT_INPUT",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "local-holdout-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "case_count": 3,
+  "case_digests": [
+    "sha256:e700624f3b86e2f2c4910804ffd2e235737da6af1b4ff7e40fa4024bae2b4187",
+    "sha256:8b7aa40b917fb3571dbdaf2a3d2ebd53d15968d8e96812c32175ccfe9512748f",
+    "sha256:0822d59eef022f23fbfb43dbf4a4d627736d36d65ea3c2b244b4f45f38689977"
+  ],
+  "cases": [
+    {
+      "case_id": "development-001",
+      "skill_name": "elmos-architecture-invariant-linter",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "development-001",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "compile-workflow",
+          "nodes": [],
+          "invariants": []
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-architecture-invariant-linter"
+          ],
+          "allowed_actions": [
+            "compile-workflow"
+          ],
+          "allowed_permissions": [
+            "read"
+          ],
+          "approval_required_actions": [],
+          "approved_actions": [],
+          "allowed_sandbox_modes": [
+            "read-only"
+          ],
+          "allowed_providers": [],
+          "allowed_data_classes": [
+            "public"
+          ],
+          "max_nodes": 64,
+          "max_parallelism": 1,
+          "max_retries": 0,
+          "max_cost_micros": 0,
+          "min_quality_basis_points": 0,
+          "allow_global_knowledge": false
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "EXECUTED",
+      "expected_error_code": null
+    },
+    {
+      "case_id": "development-002",
+      "skill_name": "elmos-architecture-invariant-linter",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "development-002",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "compile-workflow",
+          "nodes": [],
+          "invariants": []
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-architecture-invariant-linter"
+          ],
+          "allowed_actions": [
+            "compile-workflow"
+          ]
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "FAILED",
+      "expected_error_code": "REQUEST_INVALID"
+    },
+    {
+      "case_id": "development-003",
+      "skill_name": "elmos-release-certification",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "development-003",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "certify-release",
+          "evidence_bundle": {}
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-release-certification"
+          ],
+          "allowed_actions": [
+            "certify-release"
+          ],
+          "allowed_permissions": [
+            "read"
+          ],
+          "approval_required_actions": [],
+          "approved_actions": [],
+          "allowed_sandbox_modes": [
+            "read-only"
+          ],
+          "allowed_providers": [],
+          "allowed_data_classes": [
+            "public"
+          ],
+          "max_nodes": 64,
+          "max_parallelism": 1,
+          "max_retries": 0,
+          "max_cost_micros": 0,
+          "min_quality_basis_points": 0,
+          "allow_global_knowledge": false
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "REQUIRES_ADAPTER",
+      "expected_error_code": "ADAPTER_REQUIRED"
+    }
+  ],
+  "limitations": [
+    "Content-bound repository-owned development cases; self-attested and not independent holdout evidence."
+  ]
+}

@@ -1,0 +1,169 @@
+mappingVersion: 1.0.0
+source: Servlet/JSP
+target: Spring Boot 4 / Jakarta Servlet 6.1 / Spring MVC
+constructs:
+- source: HttpServlet doGet/doPost/doPut/doDelete
+  targetCandidates:
+  - '@RequestMapping'
+  - retain Jakarta Servlet
+  decision: retain for low-level protocol/streaming/async semantics
+  risk: high
+- source: Servlet init/destroy
+  targetCandidates:
+  - '@PostConstruct/@PreDestroy'
+  - Servlet registration lifecycle
+  requiredIR:
+  - container callback semantics
+  risk: high
+- source: load-on-startup
+  targetCandidates:
+  - registration bean/startup runner
+  requiredIR:
+  - order
+  - failure behavior
+  risk: high
+- source: init-param/context-param
+  targetCandidates:
+  - typed configuration
+  - registration bean
+  - ServletContextInitializer
+  requiredIR:
+  - effective values
+  - environment override
+  risk: high
+- source: servlet-mapping
+  targetCandidates:
+  - '@RequestMapping'
+  - ServletRegistrationBean
+  requiredIR:
+  - URL precedence
+  - methods
+  risk: critical
+- source: Filter
+  targetCandidates:
+  - FilterRegistrationBean
+  - OncePerRequestFilter
+  - Security filter
+  requiredIR:
+  - order
+  - dispatcher types
+  - url/servlet-name
+  - async
+  risk: critical
+- source: Listener
+  targetCandidates:
+  - retain Jakarta Listener
+  - Spring lifecycle/event
+  requiredIR:
+  - callback type/order/thread/context
+  risk: high
+- source: RequestDispatcher.forward
+  targetCandidates:
+  - 'forward:'
+  - dispatcher adapter
+  requiredIR:
+  - attributes
+  - buffer/commit
+  - filters
+  risk: critical
+- source: RequestDispatcher.include
+  targetCandidates:
+  - include adapter
+  - retain servlet
+  requiredIR:
+  - included attributes
+  - response behavior
+  risk: critical
+- source: sendRedirect
+  targetCandidates:
+  - RedirectView
+  - response.sendRedirect
+  requiredIR:
+  - status
+  - URL encoding
+  - context
+  risk: critical
+- source: sendError/error-page
+  targetCandidates:
+  - ErrorController
+  - ExceptionResolver
+  - container error page
+  requiredIR:
+  - status/exception mapping
+  - error attributes
+  risk: critical
+- source: getParameter/getParameterValues
+  targetCandidates:
+  - '@RequestParam'
+  - ArgumentResolver
+  requiredIR:
+  - multi-value/null/encoding
+  risk: high
+- source: request/session/context attributes
+  targetCandidates:
+  - request/session model
+  - scoped beans
+  requiredIR:
+  - key/type/lifetime
+  risk: critical
+- source: Cookie/session tracking
+  targetCandidates:
+  - Spring Session/container config
+  requiredIR:
+  - path/domain/flags/tracking mode
+  risk: critical
+- source: getWriter/getOutputStream
+  targetCandidates:
+  - ResponseEntity
+  - StreamingResponseBody
+  - retain servlet
+  requiredIR:
+  - mutual exclusion
+  - encoding
+  - commit
+  risk: critical
+- source: AsyncContext
+  targetCandidates:
+  - Callable/DeferredResult/WebAsyncTask
+  - retain async servlet
+  requiredIR:
+  - dispatch/complete/timeout/listeners
+  risk: critical
+- source: '@MultipartConfig/Part'
+  targetCandidates:
+  - MultipartFile
+  - Part
+  requiredIR:
+  - limits/temp/location
+  risk: critical
+- source: security-constraint/login-config
+  targetCandidates:
+  - Spring Security
+  requiredIR:
+  - patterns/methods/roles/auth method/transport guarantee
+  risk: critical
+- source: resource-ref/env-entry/JNDI
+  targetCandidates:
+  - Spring Bean/config/managed resource
+  requiredIR:
+  - lookup name/type/container binding
+  risk: critical
+- source: ServletContext resource/classloader
+  targetCandidates:
+  - ResourceLoader
+  - ServletContext
+  requiredIR:
+  - WEB-INF/META-INF visibility/classloader
+  risk: high
+- source: welcome-file/mime/static
+  targetCandidates:
+  - WebMvcConfigurer/container config
+  requiredIR:
+  - effective order/content type
+  risk: high
+- source: session listener/activation/passivation
+  targetCandidates:
+  - retain listener/Spring Session event
+  requiredIR:
+  - cluster serialization and callbacks
+  risk: critical

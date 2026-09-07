@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "sdk": "6.0.0(20)",
+  "apiLevel": 20,
+  "runnerProfile": "harmonyos-6.0.0-api20",
+  "signing": "NOT_RUN",
+  "deviceEvidence": "NOT_RUN"
+}

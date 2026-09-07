@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 003"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $service-topology-dependency-and-business-service-model to apply its fail-closed ELMOS runtime contract."

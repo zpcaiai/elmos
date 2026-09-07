@@ -1,0 +1,152 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: mobile-device-platform-test
+  version: 3.0.0
+  pack: 27-test-quality-assurance-factory
+  priority: P0
+  owner: quality-assurance-team
+spec:
+  description: 在系统、设备、权限、网络、后台和升级矩阵上测试移动端与小程序。
+  kernel: K6 Verification + K8 Certification
+  riskClass: high
+  exposure: atomic-registry-only
+  businessLines:
+  - test-quality-certification
+  capabilityTags:
+  - 27-test-quality-assurance-factory
+  - device
+  - mobile
+  - platform
+  - test
+  - test-quality-certification
+  triggers:
+  - 任务明确要求：在系统、设备、权限、网络、后台和升级矩阵上测试移动端与小程序。
+  - 任务属于 test-quality-certification，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 mobile-device-platform-test 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: requirements, risk model and implementation under test
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - inventory-requirements-and-tests
+  - derive-oracles-and-invariants
+  - generate-test-portfolio
+  - execute-independent-matrix
+  - diagnose-and-repair
+  - measure-adequacy
+  - certify-or-block
+  tools:
+    allowed:
+    - requirements.read
+    - test.generate
+    - test.execute
+    - fuzz.run
+    - load.run
+    - security.scan
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - test-to-code-evidence-graph
+  - deterministic-grader-framework
+  - e0-e5-certification-engine
+  invariants:
+  - requirements-covered
+  - independent-oracles-pass
+  - tests-not-weakened
+  - regression-risk-acceptable
+  - evidence-complete
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - requirements-covered
+    - independent-oracles-pass
+    - tests-not-weakened
+    - regression-risk-acceptable
+    - evidence-complete
+    minimumLevel: E3
+    sourceBindingRequired: true
+    independentReplayRequired: true
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

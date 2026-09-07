@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-intake-ingestion-connector-sync-and-i-b284758e to implement its fail-closed ELMOS Product B51 contract."

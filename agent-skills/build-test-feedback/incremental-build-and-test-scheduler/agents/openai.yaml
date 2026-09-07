@@ -1,0 +1,4 @@
+interface:
+  display_name: "incremental build and test scheduler"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $incremental-build-and-test-scheduler to perform this Batch 8 repair step."

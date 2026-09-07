@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-product-lifecycle-zero-tolerance",
+  "batch": 43,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "flags": [
+    {
+      "name": "expiredFeatureFlags",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "irreversibleUpgradeWithoutApproval",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "runnerProtocolSafetyRegressions",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "schemaDataLoss",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "testIntegrityViolations",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unannouncedBreakingChanges",
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "b43-schema-compatibility-run"
+      ],
+      "note": "527 schemas compared against the baseline revision"
+    },
+    {
+      "name": "unpatchedSupportedCriticalVulnerabilities",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    },
+    {
+      "name": "unsupportedVersionPromotions",
+      "evaluated": false,
+      "observed": null,
+      "evidenceRefs": [],
+      "note": "not evaluated"
+    }
+  ],
+  "packKey": "elmos-platform-product-lifecycle"
+}

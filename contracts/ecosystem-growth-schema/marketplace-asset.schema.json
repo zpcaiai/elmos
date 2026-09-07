@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/marketplace-asset.schema.json",
+  "title": "Marketplace Asset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "asset_id",
+    "publisher_id",
+    "asset_type",
+    "version",
+    "runtime_api_version",
+    "provenance_ref",
+    "license_id",
+    "certification_level",
+    "support_policy",
+    "deprecation_status"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "asset_type": {
+      "enum": [
+        "RECIPE",
+        "TEMPLATE",
+        "CONNECTOR",
+        "VALIDATOR",
+        "REPORT",
+        "DASHBOARD",
+        "INDUSTRY_PACK"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_api_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "certification_level": {
+      "enum": [
+        "Community",
+        "Verified",
+        "Certified",
+        "Enterprise Certified",
+        "Offline Certified"
+      ]
+    },
+    "support_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deprecation_status": {
+      "enum": [
+        "ACTIVE",
+        "DEPRECATED",
+        "REVOKED"
+      ]
+    }
+  }
+}
+

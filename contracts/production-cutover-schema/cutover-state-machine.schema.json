@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/cutover-state-machine.schema.json",
+  "title": "Production Cutover Control Model State Machine",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "batch", "current_phase", "gate", "single_write_authority_required", "control_plane_executes_production_changes", "phases"],
+  "properties": {
+    "protocol": {"const": "ELMOS-PCCM"},
+    "version": {"const": "1.0"},
+    "batch": {"const": 11},
+    "current_phase": {"$ref": "#/$defs/phaseId"},
+    "gate": {"$ref": "#/$defs/gateId"},
+    "single_write_authority_required": {"const": true},
+    "control_plane_executes_production_changes": {"const": false},
+    "phases": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/phaseId"}
+    }
+  },
+  "$defs": {
+    "phaseId": {
+      "enum": ["P0_PREPARED", "P1_SCHEMA_EXPANDED", "P2_BACKFILL_RUNNING", "P3_INCREMENTAL_SYNC_HEALTHY", "P4_SHADOW_READ", "P5_READ_CANARY", "P6_TARGET_READ_PRIMARY", "P7_WRITE_CANARY", "P8_TARGET_WRITE_PRIMARY", "P9_SOURCE_READ_ONLY", "P10_HYPERCARE", "P11_RETIREMENT_CANDIDATE", "P12_DECOMMISSIONED"]
+    },
+    "gateId": {"enum": ["BLOCKED", "C_A", "C_B", "C_C", "C_D", "C_E", "C_F", "C_G"]}
+  }
+}

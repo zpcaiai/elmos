@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 677: duplicate system and capability overlap detector"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $duplicate-system-and-capability-overlap-detector to evaluate this capability with evidence."

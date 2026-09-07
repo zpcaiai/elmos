@@ -1,0 +1,1 @@
+{"estateId":"estate-1","organizationId":"org-1","applications":["core-banking"],"subsystems":["CICS","DB2_ZOS","VSAM"],"observationWindow":{"from":"2025-01-01T00:00:00Z","to":"2026-01-01T00:00:00Z"},"evidenceRefs":["sha256:estate"]}

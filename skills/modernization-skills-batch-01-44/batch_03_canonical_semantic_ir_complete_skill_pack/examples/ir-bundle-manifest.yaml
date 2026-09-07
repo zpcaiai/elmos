@@ -1,0 +1,11 @@
+# Example instance for batch-03: ir-bundle-manifest
+bundle_id: example
+frontend_id: example
+frontend_version: example
+node_count: 1
+record_id: example
+schema_version: 1.0.0
+scope: example
+semantic_level: syntax
+source_snapshot_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+unknown_node_count: 1

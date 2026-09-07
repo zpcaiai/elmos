@@ -1,0 +1,348 @@
+{
+  "package": "elmos-project-synthesis-batch-57-60",
+  "engine": "elmos.project-synthesis",
+  "skills": 46,
+  "batches": [
+    57,
+    58,
+    59,
+    60
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "67aa7851378f99f1e507f6d11d021fd89acc494d52adeef661276fc9da4e1d07",
+      "size_bytes": 1881
+    },
+    {
+      "path": "batch-57-manifest.json",
+      "sha256": "229f913dc03406dc06f6eae0e96482fc4d474cdab6537fc48802910359d64464",
+      "size_bytes": 3897
+    },
+    {
+      "path": "batch-58-manifest.json",
+      "sha256": "e0a6d0c7af67848b64cfbe290a1b2aa98a9503c91229cb81ab5450a3e621f00e",
+      "size_bytes": 4594
+    },
+    {
+      "path": "batch-59-manifest.json",
+      "sha256": "eae63e33e140b01debc8c37e109e8b39f5f070d7e013fa82918c8a2cae4f7ae8",
+      "size_bytes": 4316
+    },
+    {
+      "path": "batch-60-manifest.json",
+      "sha256": "e29f6660e689820950a432b695f16989a24d4f3eb325dd7102a098a9817db087",
+      "size_bytes": 4679
+    },
+    {
+      "path": "docs/CERTIFICATION_PIPELINE.md",
+      "sha256": "124df7aacbcc19f4a44c7245cdddc2491a9784d9fce8e46a8efb755dd3804872",
+      "size_bytes": 1315
+    },
+    {
+      "path": "docs/DEPENDENCY_GRAPH.md",
+      "sha256": "05b9935c9d2ed675b88c9294006873f72840123b644bbe71e36c4d48bd55cba4",
+      "size_bytes": 9769
+    },
+    {
+      "path": "docs/PRODUCTION_EXIT_GATE.md",
+      "sha256": "5037171a9ec223bcd8fc5a44aab28d5faf848a10554c9210b20f3755766e502a",
+      "size_bytes": 1006
+    },
+    {
+      "path": "docs/REPAIR_SAFETY_RULES.md",
+      "sha256": "e1b1ae8a990a4a996d7b085a2876f795c05cc68c8c0ad1951d1e83848badbd71",
+      "size_bytes": 985
+    },
+    {
+      "path": "docs/SKILL_CATALOG.md",
+      "sha256": "b70c132c978f5b60c8163d4df38dd830d26fce717204737aa47433b248b9391f",
+      "size_bytes": 6556
+    },
+    {
+      "path": "examples/bounded.repair-plan.json",
+      "sha256": "f621fe58f250f28093a8632ba0652a8742cb6a244c5dd188035a404e975b7106",
+      "size_bytes": 579
+    },
+    {
+      "path": "examples/build.execution-evidence.json",
+      "sha256": "2c64e01a776db41e54695c5763df4c05e70ad4cc008325a54a311eefe409362a",
+      "size_bytes": 570
+    },
+    {
+      "path": "examples/critical-journey.test-spec.json",
+      "sha256": "6b21321fcb908d2351002caab6af7365ff6d335a6a26544652a73ff1a0ef1c9a",
+      "size_bytes": 601
+    },
+    {
+      "path": "examples/predictive-maintenance.frontend.json",
+      "sha256": "3118b675b97f4d597723d71c176e48d616a85482d5e0bedd90a068f5dcd2f61b",
+      "size_bytes": 827
+    },
+    {
+      "path": "examples/production.delivery-policy.json",
+      "sha256": "8e9e9d35e840cbcf3a42af1fe2b94084ae86afe544cc9d2439fb7d9e10463a69",
+      "size_bytes": 648
+    },
+    {
+      "path": "index.json",
+      "sha256": "ff092b9dc1fbc5c8e5d08004abb290090eb9a54a90aee7ea557dd4b74e1875fe",
+      "size_bytes": 17256
+    },
+    {
+      "path": "schemas/delivery-policy-v1.schema.json",
+      "sha256": "132128947c56762c1c425ec241107fca943dcd08f57f5948aec24eceb5b2260b",
+      "size_bytes": 668
+    },
+    {
+      "path": "schemas/execution-evidence-v1.schema.json",
+      "sha256": "bb4d791a44b8b219f32464105896a763d940372a5e9bc35952dcb30c194bfc1c",
+      "size_bytes": 1328
+    },
+    {
+      "path": "schemas/frontend-application-v1.schema.json",
+      "sha256": "403c079c433c3fe5d7d81ccb6edea9187cf0e5e3e3e60fc6d5b673c3a8c6f2cd",
+      "size_bytes": 816
+    },
+    {
+      "path": "schemas/repair-plan-v1.schema.json",
+      "sha256": "1d4923cc26dd712cbfb68f886ed4469e1aa174eb976e6c44b338c544452ee613",
+      "size_bytes": 822
+    },
+    {
+      "path": "schemas/test-specification-v1.schema.json",
+      "sha256": "3071cd9db7d2a30f2a2415bf06c7653d89a4706024d405bae8421b22c7771e30",
+      "size_bytes": 982
+    },
+    {
+      "path": "skills/batch-57/PG125-frontend-profile-selector.md",
+      "sha256": "6bb639563e3917c80604b0d0cb52103b7bed750f14192e5990da89f33d7cf5d5",
+      "size_bytes": 10251
+    },
+    {
+      "path": "skills/batch-57/PG126-typescript-client-sdk-generator.md",
+      "sha256": "b4701b0af849f2504abc31ff1b727c34c4c64f36ce41afc4f0bb1b5e7bf81587",
+      "size_bytes": 9907
+    },
+    {
+      "path": "skills/batch-57/PG127-auth-session-ui-generator.md",
+      "sha256": "4d949f6dc9ea35c82f5bbb43218d1b18d398797069e21f665def07764f59e226",
+      "size_bytes": 9987
+    },
+    {
+      "path": "skills/batch-57/PG128-form-validation-generator.md",
+      "sha256": "664fa24b162deb615ea7980ab556dfc174eb46c1e9d533a5a45701be67b55f4f",
+      "size_bytes": 9956
+    },
+    {
+      "path": "skills/batch-57/PG129-crud-table-detail-generator.md",
+      "sha256": "8f159b0073e1e8f7b0eade523b7050b0bafa5e12b56b5eaf2fb1fbe036f69f19",
+      "size_bytes": 9957
+    },
+    {
+      "path": "skills/batch-57/PG130-dashboard-chart-generator.md",
+      "sha256": "556e64af892cc3e327b8c8ce6902d36d6d829e44f19232116fc6b813bd3b3cef",
+      "size_bytes": 9908
+    },
+    {
+      "path": "skills/batch-57/PG131-navigation-routing-permission-generator.md",
+      "sha256": "9e72e0682349979de28bfb28dfd4ac965703e6f6df89acc150855baa43365029",
+      "size_bytes": 9887
+    },
+    {
+      "path": "skills/batch-57/PG132-design-token-component-adapter.md",
+      "sha256": "f5e5e808202365c9acebd3fbd7cc64dee6c7a65d1730bd71c319d6fd7797486f",
+      "size_bytes": 9859
+    },
+    {
+      "path": "skills/batch-57/PG133-frontend-state-data-fetch-generator.md",
+      "sha256": "f98a9d4460c7d62dfe604d11c5aea941ce2239092f9539e4e08c74fc9df02fe1",
+      "size_bytes": 9954
+    },
+    {
+      "path": "skills/batch-57/PG134-fullstack-e2e-wiring-generator.md",
+      "sha256": "4dbd240c7735a4a5bd8a5da032c91ddbf19e2f0a6d8e442954c5681d102fb1d7",
+      "size_bytes": 10209
+    },
+    {
+      "path": "skills/batch-58/PG135-requirement-to-test-trace-compiler.md",
+      "sha256": "6d720e23062279bfcc5e528725c33e513f2173de2a10a893a9578ca425a377af",
+      "size_bytes": 10010
+    },
+    {
+      "path": "skills/batch-58/PG136-unit-test-generator.md",
+      "sha256": "d9d3d9bbf54a4a4b86c9268a7fcd318d1eccbd049e6917c75cf59447d96a296f",
+      "size_bytes": 9907
+    },
+    {
+      "path": "skills/batch-58/PG137-integration-test-generator.md",
+      "sha256": "6cb368d705deb81dfd94499bd985f6245527568139c77aaef3ec11d2f52788ea",
+      "size_bytes": 10103
+    },
+    {
+      "path": "skills/batch-58/PG138-api-contract-test-generator.md",
+      "sha256": "3b93d218b55a33eb3f1cd0f6787e294ab0acdfea03001a8f5b227492903c1a78",
+      "size_bytes": 10056
+    },
+    {
+      "path": "skills/batch-58/PG139-database-migration-test-generator.md",
+      "sha256": "a466fde1679ef5692c128be6133f3ff798183569ae47908f1c741f9823ad6345",
+      "size_bytes": 9999
+    },
+    {
+      "path": "skills/batch-58/PG140-e2e-journey-test-generator.md",
+      "sha256": "e9a917fce313baa4bb4be096a38a59058a50413426ef510a87c2a6822472203a",
+      "size_bytes": 9896
+    },
+    {
+      "path": "skills/batch-58/PG141-property-based-test-generator.md",
+      "sha256": "e6220c43ac81e3f141dab9abf870a54ec51ee3bfb234e869fa46e7f346cfd281",
+      "size_bytes": 10013
+    },
+    {
+      "path": "skills/batch-58/PG142-mutation-test-planner.md",
+      "sha256": "1e38d9a8f798175a7b1b502aafd7d5ef6ccda19ee45fc6480be8371ac4a00b11",
+      "size_bytes": 9867
+    },
+    {
+      "path": "skills/batch-58/PG143-performance-test-generator.md",
+      "sha256": "30965fc427ce5f95528b038163a8df58294ac00eda005cc389f63d6a96fc81ac",
+      "size_bytes": 10069
+    },
+    {
+      "path": "skills/batch-58/PG144-security-test-generator.md",
+      "sha256": "d91cf3650c6c2f2985d02cc547ce1ff94d6c1650d2b84f760f11592d74e05830",
+      "size_bytes": 10006
+    },
+    {
+      "path": "skills/batch-58/PG145-accessibility-test-generator.md",
+      "sha256": "fba9d4fe096692652062cecde32cc978cfa7674e009265ae1bfa3083cc2a71f3",
+      "size_bytes": 9997
+    },
+    {
+      "path": "skills/batch-58/PG146-test-data-and-fixture-factory.md",
+      "sha256": "2212dd9a47b839137b2256902943861d123bffbac62d6cbcea93b8f9535458fb",
+      "size_bytes": 9988
+    },
+    {
+      "path": "skills/batch-59/PG147-isolated-build-runner.md",
+      "sha256": "bde8efd01397a70b53f06bddb83c7f17757ce58e3e402ae39448341d3961927a",
+      "size_bytes": 9859
+    },
+    {
+      "path": "skills/batch-59/PG148-dependency-resolution-diagnoser.md",
+      "sha256": "9b178864502a84c087513e3853c8861cf932cb73cb24f28708f2fe021bded4fb",
+      "size_bytes": 9977
+    },
+    {
+      "path": "skills/batch-59/PG149-compile-error-classifier.md",
+      "sha256": "9a6af1bf11df1da4e8dc165763bcc70ccb244d483db6b4254860495a976bc5d0",
+      "size_bytes": 9914
+    },
+    {
+      "path": "skills/batch-59/PG150-test-failure-classifier.md",
+      "sha256": "06c5d12146c4f06255529235f1882402f91deff32556805eeedb76f8b5e5e1f4",
+      "size_bytes": 9947
+    },
+    {
+      "path": "skills/batch-59/PG151-runtime-log-trace-diagnoser.md",
+      "sha256": "2fcab925ed4e3e073cc5e26e0a070afbf2ec5cd04191366893fe55c3f3f09847",
+      "size_bytes": 9915
+    },
+    {
+      "path": "skills/batch-59/PG152-application-startup-probe.md",
+      "sha256": "3919156afc03b6046973ea3ec4e4ad93c012c95c28f76a36a5f6136b9618dec5",
+      "size_bytes": 9882
+    },
+    {
+      "path": "skills/batch-59/PG153-smoke-and-health-verifier.md",
+      "sha256": "9dd19b024d780df0625303e24cedde5ebe82a5b87229033ec80bc1f70d33f16b",
+      "size_bytes": 9835
+    },
+    {
+      "path": "skills/batch-59/PG154-automated-patch-planner.md",
+      "sha256": "cf910fc3ad2c01ebfcf28d004913c209d639ff6b1a45505cf55046209b4ac118",
+      "size_bytes": 9981
+    },
+    {
+      "path": "skills/batch-59/PG155-bounded-repair-loop.md",
+      "sha256": "57ebe9b194d71e9c5ac90cf3349eb545168899478c518920029efca1887410fb",
+      "size_bytes": 9816
+    },
+    {
+      "path": "skills/batch-59/PG156-flaky-test-detector.md",
+      "sha256": "fa55215890a551ee31e2b574170f6bb4579abb43ba37207c9efe71eaee7ad7a5",
+      "size_bytes": 9889
+    },
+    {
+      "path": "skills/batch-59/PG157-cross-environment-matrix-validator.md",
+      "sha256": "e607b44026d4e888e9d7f45e35968cdf38e18c63deddfabc2c4406d0c89182da",
+      "size_bytes": 9917
+    },
+    {
+      "path": "skills/batch-59/PG158-build-green-evidence-publisher.md",
+      "sha256": "174cef0203da252eef6a003b9a7fccde90ec13675ebd94df651e6709de1b5423",
+      "size_bytes": 10075
+    },
+    {
+      "path": "skills/batch-60/PG159-ci-pipeline-generator.md",
+      "sha256": "4fb5273f34d62925e257193c1aa9185e801de44a5f0c32ca02fc0c7e5bd03cc1",
+      "size_bytes": 9895
+    },
+    {
+      "path": "skills/batch-60/PG160-branch-pr-checks-generator.md",
+      "sha256": "15d38529e7ea28247df8e1d27acd87628bfc2e4684bfd008a5a1c1995bea104c",
+      "size_bytes": 9826
+    },
+    {
+      "path": "skills/batch-60/PG161-secret-config-policy-generator.md",
+      "sha256": "3f25ac9821d82d2150b94bd393de80386bddc9e12ad639c2dc02889cbfda1c6d",
+      "size_bytes": 9899
+    },
+    {
+      "path": "skills/batch-60/PG162-sast-sca-license-gate.md",
+      "sha256": "400aebe7b92201fcda5b1983c2dd11f09ca4837d4d22cbf2d33c75e531123e09",
+      "size_bytes": 9920
+    },
+    {
+      "path": "skills/batch-60/PG163-container-hardening-generator.md",
+      "sha256": "96e68f261f9ce7131a5c52dd301766f7ae3264f3d8e8aec244b2cc3edc129364",
+      "size_bytes": 9908
+    },
+    {
+      "path": "skills/batch-60/PG164-kubernetes-helm-generator.md",
+      "sha256": "e20ca76d6bef09474335a0e34ce27e09306a8c927220cfe30903aee19a7a1736",
+      "size_bytes": 9969
+    },
+    {
+      "path": "skills/batch-60/PG165-infrastructure-as-code-generator.md",
+      "sha256": "4e90cd01b36a66d0607406b535acad67de40c1ae1a67edd1a4382c63fc5f7e9c",
+      "size_bytes": 10049
+    },
+    {
+      "path": "skills/batch-60/PG166-otel-logging-metrics-tracing-generator.md",
+      "sha256": "1fa0ee3901c151e901b71494ab22279db9e9fe0131a998fef6a1c6b8ca701d9e",
+      "size_bytes": 10109
+    },
+    {
+      "path": "skills/batch-60/PG167-health-readiness-slo-generator.md",
+      "sha256": "bddd2cfb252c75b30f0eedeb982f779f67e1a239db72d5e66e1a8f51cd789f30",
+      "size_bytes": 9900
+    },
+    {
+      "path": "skills/batch-60/PG168-release-versioning-changelog-generator.md",
+      "sha256": "e3e9468e6f6080d05a6019fb61ea5e67dba7ebbc2155a39162a58f0e1d74d57b",
+      "size_bytes": 9969
+    },
+    {
+      "path": "skills/batch-60/PG169-canary-bluegreen-rollout-generator.md",
+      "sha256": "c61983287fa188ee8b7419f8a5fe57aee6fd5bb645eeeb48912c699d2542aa79",
+      "size_bytes": 9981
+    },
+    {
+      "path": "skills/batch-60/PG170-rollback-disaster-recovery-plan.md",
+      "sha256": "f1109c9aeeeb69a8616659ce9a5da655c561cba02bcee436310a7912687b713d",
+      "size_bytes": 10060
+    }
+  ]
+}

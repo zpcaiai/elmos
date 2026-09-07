@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/module-case-manifest.schema.json",
+  "title": "Batch29TypedPureModuleCaseManifest",
+  "type": "object",
+  "required": ["schema_version", "profile", "composition", "functions"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "profile": {"const": "typed-pure-module-v1"},
+    "composition": {
+      "const": {
+        "call_graph": [],
+        "global_state": "none",
+        "effects": "none",
+        "exceptions": "canonical-arithmetic-errors-only",
+        "input_domain": "canonical-finite-no-error-input-domain"
+      }
+    },
+    "functions": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["symbol", "signature", "cases"],
+        "properties": {
+          "symbol": {"type": "string", "minLength": 1},
+          "signature": {
+            "type": "object",
+            "required": ["parameters", "return_type"],
+            "properties": {
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "type"],
+                  "properties": {
+                    "name": {"type": "string", "minLength": 1},
+                    "type": {"enum": ["integer", "number", "boolean"]}
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "return_type": {"enum": ["integer", "number", "boolean"]}
+            },
+            "additionalProperties": false
+          },
+          "cases": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["args", "expected"],
+              "properties": {
+                "args": {"type": "array"},
+                "expected": {}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

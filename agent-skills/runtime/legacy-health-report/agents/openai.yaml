@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legacy Health Report"
+  short_description: "Assemble evidence-bound health reports"
+  default_prompt: "Use $legacy-health-report to assemble ELMOS Batch 3 output."

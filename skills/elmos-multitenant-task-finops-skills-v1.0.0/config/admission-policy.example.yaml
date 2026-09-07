@@ -1,0 +1,25 @@
+schema_version: '1.0'
+account:
+  hard_max_active_root_tasks: 3
+  queued_task_limit: 100
+  paused_task_limit: 20
+  slot_lease_seconds: 120
+  slot_renew_every_seconds: 30
+  queue_policy: weighted_fair_fifo
+  urgent_aging_minutes: 15
+  release_slot_on_states: [PAUSED, SUCCEEDED, FAILED, CANCELLED]
+tenant:
+  max_active_tasks: 100
+  max_queued_tasks: 10000
+  max_concurrency_units: 500
+  monthly_cost_budget:
+    amount: '50000.00'
+    currency: USD
+platform:
+  protect_on_database_pool_utilization: 0.80
+  protect_on_queue_age_p95_seconds: 300
+  workload_circuit_breaker: true
+budget:
+  reject_before_start: false
+  queue_on_soft_limit: true
+  cancel_on_hard_limit: false

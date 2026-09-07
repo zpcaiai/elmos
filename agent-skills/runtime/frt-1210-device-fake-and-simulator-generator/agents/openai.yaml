@@ -1,0 +1,4 @@
+interface:
+  display_name: "Device Fake and Simulator Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1210-device-fake-and-simulator-generator to run FRT-1210 through the governed FRT runtime with exact scope and fail-closed evidence."

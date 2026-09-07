@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/rust-to-go/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1491,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:dc087db409ea46cb70d450da68b676f8579c0b7dacccd9df8f9c542bb356f993"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:142aa9f34ec5a198df307ea98b835cc66d5d06a84128b26179e8e854d5a00b30"
+    },
+    {
+      "bytes": 2942,
+      "path": "formal-composition.json",
+      "sha256": "sha256:e490dd8bb4f741e1179ca49b7dfdcdb53f58cb183d657414acbb9a6017ac6f9b"
+    },
+    {
+      "bytes": 977,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:8ef990bfb7830c5750432fb7a1c2c9ae8e8eb2fa360ee1379f9a3047e054013b"
+    },
+    {
+      "bytes": 6957,
+      "path": "formal-input.json",
+      "sha256": "sha256:ea8e3cd55de9f33e3fc33b488986ae68eaaf6d11e96352cfa6d1a79085a99a30"
+    },
+    {
+      "bytes": 2320,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:f6b5c0ff8f7b84282277ad4817e8b43a680f0cf87d99f6c3bd3b44ac7b35367f"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 156,
+      "path": "inputs/clamp.rs",
+      "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+    },
+    {
+      "bytes": 3425,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:c218723efee69eca05a5f133c5afa41f9b87a8bfee451fe18627d944b92cc4a7"
+    },
+    {
+      "bytes": 174,
+      "path": "migrated.go",
+      "sha256": "sha256:8722e81c3ce037f65fdedcc2229f83b8a0580889ac4b74bd6264beab4cbdf077"
+    },
+    {
+      "bytes": 6699,
+      "path": "route-evidence.json",
+      "sha256": "sha256:bc484f939dc44de09a2def0881c935b6c8631c193338b86909a65eb1855847ff"
+    },
+    {
+      "bytes": 623,
+      "path": "route_harness.go",
+      "sha256": "sha256:1e934cde9220337c6bdd43495b06b359522fe0e19d26c2d5eaf7e96a12eafe1b"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 803,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9"
+    },
+    {
+      "bytes": 156,
+      "path": "source-runtime/clamp.rs",
+      "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+    },
+    {
+      "bytes": 451,
+      "path": "source-runtime/source_harness.rs",
+      "sha256": "sha256:ea4abdd2484affa53729c5209831c698598804970c59a0de7d72a9f0b215ac31"
+    },
+    {
+      "bytes": 803,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9"
+    },
+    {
+      "bytes": 796,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:3184f7d2b4c538149c8771c49e15df82173847767629aff98771cc99a8ea1dbd"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "rust-to-go",
+  "schema_version": 1,
+  "total_bytes": 39773
+}

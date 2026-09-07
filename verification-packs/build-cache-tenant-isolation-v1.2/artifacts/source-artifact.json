@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "user-supplied-build-cache-skill-package",
+  "package_id": "elmos-build-cache-staging-codex-claude-parity-skills",
+  "package_version": "1.2.0",
+  "path": "skills/subskills/elmos-build-cache-staging-codex-claude-parity-skills-v1.2.0.zip",
+  "byte_count": 298670,
+  "sha256": "sha256:dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7",
+  "trust_boundary": "untrusted_input_contract_only",
+  "package_scripts_executed": false
+}

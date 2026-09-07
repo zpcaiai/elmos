@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.relational-schema.v1",
+  "title": "ELMOS Relational Schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "database_profile",
+    "schemas",
+    "tables"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "database_profile": {
+      "enum": [
+        "postgresql",
+        "mysql",
+        "sqlserver",
+        "h2-test-only",
+        "sqlite-limited"
+      ]
+    },
+    "schemas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "owner_module",
+          "columns",
+          "primary_key"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "owner_module": {
+            "type": "string"
+          },
+          "tenant_scoped": {
+            "type": "boolean"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "primary_key": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "foreign_keys": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "indexes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

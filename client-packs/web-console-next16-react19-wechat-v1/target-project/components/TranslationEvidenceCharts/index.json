@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "coverage-meter": "/components/CoverageMeter/index",
+    "empty-evidence": "/components/EmptyEvidence/index",
+    "status-mark": "/components/StatusMark/index"
+  }
+}

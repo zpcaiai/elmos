@@ -1,0 +1,20 @@
+{
+  "allow": [
+    {
+      "calibration_status": "calibrated",
+      "confidence": 0.95,
+      "minimum_confidence": 0.9,
+      "judge_model_fingerprint": "a",
+      "candidate_model_fingerprint": "b"
+    }
+  ],
+  "deny": [
+    {
+      "calibration_status": "calibrated",
+      "confidence": 0.95,
+      "minimum_confidence": 0.9,
+      "judge_model_fingerprint": "a",
+      "candidate_model_fingerprint": "a"
+    }
+  ]
+}

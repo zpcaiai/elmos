@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency Failure Model Registry"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2801-dependency-failure-model-registry to run FRT-2801 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/routing-decision.schema.json",
+  "title": "RoutingDecision",
+  "type": "object",
+  "required": [
+    "decisionId",
+    "outcome",
+    "reasons",
+    "consideredProviderIds"
+  ],
+  "properties": {
+    "decisionId": {
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "ROUTED",
+        "HUMAN_REQUIRED",
+        "NO_ELIGIBLE_PROVIDER",
+        "BUDGET_BLOCKED"
+      ]
+    },
+    "providerId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consideredProviderIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

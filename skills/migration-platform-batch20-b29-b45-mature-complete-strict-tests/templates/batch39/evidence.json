@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "example-sre-operations",
+  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "metrics": {
+    "service_catalog_coverage": 0,
+    "slo_compliance_rate": 0,
+    "incident_response_exercise_pass_rate": 0,
+    "restore_pass_rate": 0,
+    "multiregion_failover_pass_rate": 0,
+    "fair_scheduling_pass_rate": 0,
+    "support_sla_pass_rate": 0,
+    "production_readiness_pass_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "unresolved_sev1_incidents": 1,
+    "rpo_breaches": 1,
+    "rto_breaches": 1,
+    "tenant_starvation_events": 1,
+    "unowned_critical_alerts": 1,
+    "missing_critical_runbooks": 1,
+    "cross_tenant_observability_leaks": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": []
+}

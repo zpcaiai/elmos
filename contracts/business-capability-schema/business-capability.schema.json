@@ -1,0 +1,36 @@
+{
+  "$id": "elmos.business-capability.v1",
+  "type": "object",
+  "required": [
+    "capabilityId",
+    "name",
+    "level",
+    "definition",
+    "owner",
+    "version"
+  ],
+  "properties": {
+    "capabilityId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "level": {
+      "type": "integer"
+    },
+    "definition": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "parentCapabilityId": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

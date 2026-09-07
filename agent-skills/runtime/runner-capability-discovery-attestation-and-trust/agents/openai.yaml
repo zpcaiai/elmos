@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Capability Discovery Attestation And Trust"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-capability-discovery-attestation-and-trust to implement its fail-closed ELMOS Product B36 contract."

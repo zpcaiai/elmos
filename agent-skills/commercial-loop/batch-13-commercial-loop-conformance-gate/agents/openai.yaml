@@ -1,0 +1,4 @@
+interface:
+  display_name: "batch-13-commercial-loop-conformance-gate"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $batch-13-commercial-loop-conformance-gate to evaluate this Batch 13 commercial capability with evidence."

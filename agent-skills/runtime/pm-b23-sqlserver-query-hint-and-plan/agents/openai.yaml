@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B23: Sqlserver Query Hint And Plan"
+  short_description: "Run Precision Migration B23 with evidence controls"
+  default_prompt: "Use $pm-b23-sqlserver-query-hint-and-plan to execute this Precision Migration contract with fail-closed evidence."

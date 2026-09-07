@@ -1,0 +1,22 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "TiDB",
+  "discovery_required": true,
+  "preferred_sources": [
+    "MySQL",
+    "Oracle modernization",
+    "SQL Server modernization"
+  ],
+  "native_tool_hooks": [
+    "TiDB DM for MySQL-compatible sources"
+  ],
+  "procedural_policy": "lift_to_app_or_rewrite_when_no_native_feature",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

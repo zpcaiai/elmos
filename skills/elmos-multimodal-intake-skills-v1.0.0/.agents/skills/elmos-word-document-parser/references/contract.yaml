@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 10
+name: elmos-word-document-parser
+title: Word 文档解析
+objective: 保留 Word 逻辑结构、修订语义和来源位置，并在隔离环境中安全处理旧 DOC。
+dependencies:
+- elmos-malware-quarantine-and-sandbox
+- elmos-source-anchor-and-provenance
+inputs:
+- DOCX/DOC 资产、修订读取模式
+outputs:
+- ParsedDocument、Revision、Comment
+responsibilities:
+- 直接解析 DOCX OOXML，旧 DOC 仅在隔离环境转换
+- 保留标题、编号、表格、图片、脚注、超链接和书签
+- 支持最终版、全部修订、删除历史等读取模式
+- 将批注和未接受修订提取为待办或审阅项
+deliverables:
+- WordParser 与修订策略接口
+- WordBlock、Revision、Comment 模型
+- 复杂表格、批注、修订和旧 DOC 安全转换测试
+acceptance:
+- 宏与嵌入可执行对象绝不运行
+- 用户可选择修订视图且输出可复现
+- 批注、删除和插入内容不被静默丢弃
+- 关键块可定位到段落、表格、书签或页面近似位置
+data_entities:
+- word_blocks
+- word_revisions
+- word_comments
+events:
+- word.document.parsed
+- word.revision.detected
+metrics:
+- structure_preservation_rate
+- revision_coverage
+failure_modes:
+- 损坏 OOXML
+- 旧 DOC 转换失败
+- 嵌入对象风险
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

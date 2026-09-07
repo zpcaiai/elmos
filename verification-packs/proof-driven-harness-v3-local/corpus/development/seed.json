@@ -1,0 +1,106 @@
+{
+  "delta_acceptance": {
+    "evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "failed": 0,
+    "p0_passed": 89,
+    "p1_passed": 15,
+    "passed": 104
+  },
+  "delta_receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
+  "delta_source_digest": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+  "kind": "elmos.proof-driven-harness-v3.local-development-corpus",
+  "limitations": [
+    "This is repository-owned development evidence, not an independent holdout."
+  ],
+  "raw_logs": [
+    {
+      "bytes": 10226,
+      "path": "qualification/raw/archive-installation-check.json",
+      "sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7"
+    },
+    {
+      "bytes": 176911,
+      "path": "qualification/raw/engine-tests.json",
+      "sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce"
+    },
+    {
+      "bytes": 29509,
+      "path": "qualification/raw/package-integration-tests.json",
+      "sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c"
+    },
+    {
+      "bytes": 102042,
+      "path": "qualification/delta-v3.1/raw/delta-engine-tests.json",
+      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9"
+    },
+    {
+      "bytes": 18381,
+      "path": "qualification/delta-v3.1/raw/delta-importer-tests.json",
+      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4"
+    },
+    {
+      "bytes": 2205,
+      "path": "qualification/delta-v3.1/raw/delta-installation-check.json",
+      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3"
+    }
+  ],
+  "receipt_sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb",
+  "schema_version": 1,
+  "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "structured_test_outcomes": [
+    {
+      "raw_log": "qualification/raw/engine-tests.json",
+      "results_sha256": "sha256:e065307721a49cfca7cdcc80f69f89bb026aead8fa598ca888baa7c159a0eea2",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 265,
+        "selected": 265,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    },
+    {
+      "raw_log": "qualification/raw/package-integration-tests.json",
+      "results_sha256": "sha256:d81711b2fd7baa3327f22075ebaee3875960a04446f880e8326b94f49b8bdd22",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 43,
+        "selected": 43,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    },
+    {
+      "raw_log": "qualification/delta-v3.1/raw/delta-engine-tests.json",
+      "results_sha256": "sha256:bb8d3e4f814a0e4d197cc79ef400c566af809d7f455d28c15d95a0924e2dcdda",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 151,
+        "selected": 151,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    },
+    {
+      "raw_log": "qualification/delta-v3.1/raw/delta-importer-tests.json",
+      "results_sha256": "sha256:3707de04263b0e8974bb7be4412bd2187da26deb224e7c40b71ff4fa067b9cbd",
+      "totals": {
+        "errors": 0,
+        "expected_failures": 0,
+        "failed": 0,
+        "passed": 26,
+        "selected": 26,
+        "skipped": 0,
+        "unexpected_successes": 0
+      }
+    }
+  ],
+  "target_digest": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4"
+}

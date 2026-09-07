@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "REP-001",
+      "workload": "generated FastAPI CRUD service with authenticated health and external PostgreSQL",
+      "provider_execution": "NOT_RUN"
+    },
+    {
+      "id": "REP-002",
+      "workload": "generated eight-target project with one independently deployed Cloud Run service per target",
+      "provider_execution": "NOT_RUN"
+    }
+  ]
+}

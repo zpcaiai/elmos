@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Integration API Event And Extension Decoupling"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-integration-api-event-and-extension-decoupling to govern this enterprise suite modernization task with fail-closed evidence."

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "extension_id": "sample.publisher.extension",
+  "owner": "lifecycle-team",
+  "deprecation_announced": false,
+  "eol_date": "2027-07-01",
+  "replacement_or_exit_available": false,
+  "config_export_tested": false,
+  "data_portability_tested": false,
+  "uninstall_tested": false,
+  "residual_dependencies": 0,
+  "customers_unresolved": 1,
+  "evidence_refs": [
+    "lifecycle/evidence.txt"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "No authorized external execution was performed."
+  ]
+}

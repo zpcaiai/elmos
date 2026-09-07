@@ -1,0 +1,208 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "FRTSkillPack",
+  "metadata": {
+    "name": "FRT_G01_G30_Complete_Skills_Pack",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "batchRange": "G01-G30",
+    "batchCount": 30,
+    "skillCount": 472,
+    "technologyStacks": [
+      "Vue 2",
+      "Vue 3",
+      "React",
+      "WeChat Mini Program",
+      "ArkUI",
+      "Flutter"
+    ],
+    "directedRouteCount": 30,
+    "riskModel": "R0-R5",
+    "certificateFamilies": [
+      "FD",
+      "RM",
+      "IR",
+      "SA",
+      "MP",
+      "TA",
+      "CG",
+      "CS",
+      "RS",
+      "AB",
+      "UI",
+      "CP",
+      "WR",
+      "WM",
+      "WA",
+      "WF",
+      "TR",
+      "PK",
+      "FA",
+      "PD",
+      "FC",
+      "BC",
+      "DC",
+      "AC",
+      "UX",
+      "RQ",
+      "PC",
+      "RC",
+      "SC",
+      "PR"
+    ],
+    "batches": [
+      {
+        "id": "G01",
+        "title": "系统宪章、Monorepo、Skill标准、Artifact与Release Gate基础",
+        "path": "batches/G01_foundation-system-charter/SKILL.md"
+      },
+      {
+        "id": "G02",
+        "title": "Repository Discovery、技术识别、依赖图与可迁移仓库模型",
+        "path": "batches/G02_repository-discovery-model/SKILL.md"
+      },
+      {
+        "id": "G03",
+        "title": "Typed Semantic IR与Universal Semantic Type System",
+        "path": "batches/G03_typed-semantic-ir/SKILL.md"
+      },
+      {
+        "id": "G04",
+        "title": "Vue2、Vue3、React、小程序、ArkUI、Flutter六类Source Adapter",
+        "path": "batches/G04_six-source-adapters/SKILL.md"
+      },
+      {
+        "id": "G05",
+        "title": "Semantic Gap、兼容性评估、Product Decision与Migration Plan",
+        "path": "batches/G05_semantic-gap-migration-planning/SKILL.md"
+      },
+      {
+        "id": "G06",
+        "title": "六类Target Architecture Synthesizer与可构建Skeleton",
+        "path": "batches/G06_target-architecture-synthesis/SKILL.md"
+      },
+      {
+        "id": "G07",
+        "title": "Code Generation Kernel、AST Emitter、Typed Hole与确定性修复",
+        "path": "batches/G07_code-generation-kernel/SKILL.md"
+      },
+      {
+        "id": "G08",
+        "title": "Component、Props、Events、Slots、Hooks、Context与Identity语义",
+        "path": "batches/G08_component-semantics/SKILL.md"
+      },
+      {
+        "id": "G09",
+        "title": "State、Effect、Lifecycle、Concurrency、Cancellation与Resource语义",
+        "path": "batches/G09_state-effect-runtime-semantics/SKILL.md"
+      },
+      {
+        "id": "G10",
+        "title": "Routes、Forms、Network、Storage、Identity与Permissions边界",
+        "path": "batches/G10_application-boundaries/SKILL.md"
+      },
+      {
+        "id": "G11",
+        "title": "UI、Layout、Style、Assets、i18n与Accessibility语义",
+        "path": "batches/G11_ui-layout-style-a11y/SKILL.md"
+      },
+      {
+        "id": "G12",
+        "title": "平台能力、Native Bridge、支付、权限与Device Fake",
+        "path": "batches/G12_platform-capabilities-native-bridges/SKILL.md"
+      },
+      {
+        "id": "G13",
+        "title": "Vue2、Vue3、React Web Triangle六条有向转换路径",
+        "path": "batches/G13_web-triangle-six-directions/SKILL.md"
+      },
+      {
+        "id": "G14",
+        "title": "Web与微信小程序双向六条转换路径",
+        "path": "batches/G14_web-mini-program-six-directions/SKILL.md"
+      },
+      {
+        "id": "G15",
+        "title": "Web与ArkUI双向六条转换路径",
+        "path": "batches/G15_web-arkui-six-directions/SKILL.md"
+      },
+      {
+        "id": "G16",
+        "title": "Web与Flutter双向六条转换路径",
+        "path": "batches/G16_web-flutter-six-directions/SKILL.md"
+      },
+      {
+        "id": "G17",
+        "title": "小程序、ArkUI、Flutter Mobile Triangle六条有向路径与30路径收口",
+        "path": "batches/G17_mobile-triangle-six-directions/SKILL.md"
+      },
+      {
+        "id": "G18",
+        "title": "Domain、Framework、UI、State、Router、Build、Version、Enterprise与Industry Packs",
+        "path": "batches/G18_pack-overlay-composition/SKILL.md"
+      },
+      {
+        "id": "G19",
+        "title": "Proof Obligation、Lean、SMT、Model Checking、CEGAR与反例驱动修复",
+        "path": "batches/G19_proof-driven-generation/SKILL.md"
+      },
+      {
+        "id": "G20",
+        "title": "Skill SDK、Runtime、Registry、Marketplace、Worker与一键产品化",
+        "path": "batches/G20_skill-sdk-productization/SKILL.md"
+      },
+      {
+        "id": "G21",
+        "title": "Requirements Traceability 与全系统功能闭环",
+        "path": "batches/G21_requirements-traceability-product-closure/SKILL.md"
+      },
+      {
+        "id": "G22",
+        "title": "端到端价值流、业务状态机、Saga、补偿、对账与业务线闭环",
+        "path": "batches/G22_business-line-end-to-end-closure/SKILL.md"
+      },
+      {
+        "id": "G23",
+        "title": "Data Contract、全链路血缘、数据Authority、一致性、修复与生命周期闭环",
+        "path": "batches/G23_data-integrity-lifecycle-closure/SKILL.md"
+      },
+      {
+        "id": "G24",
+        "title": "管理端能力矩阵、运营治理、异常处置、数据修正与全后台闭环",
+        "path": "batches/G24_admin-console-completeness/SKILL.md"
+      },
+      {
+        "id": "G25",
+        "title": "任务可完成性、全旅程可用性、无障碍、多端适配与感知性能",
+        "path": "batches/G25_functional-usability-accessibility/SKILL.md"
+      },
+      {
+        "id": "G26",
+        "title": "全量回归测试、并行测试平台、Flaky治理与Release Qualification",
+        "path": "batches/G26_regression-assurance-release-qualification/SKILL.md"
+      },
+      {
+        "id": "G27",
+        "title": "高并发正确性、性能容量、压力稳定性与安全降级",
+        "path": "batches/G27_performance-concurrency-capacity/SKILL.md"
+      },
+      {
+        "id": "G28",
+        "title": "高可用、故障隔离、Chaos、灾难恢复与持续韧性认证",
+        "path": "batches/G28_resilience-ha-dr/SKILL.md"
+      },
+      {
+        "id": "G29",
+        "title": "威胁建模、身份权限、供应链、AI安全、隐私合规与持续安全认证",
+        "path": "batches/G29_security-privacy-supply-chain/SKILL.md"
+      },
+      {
+        "id": "G30",
+        "title": "Production Readiness、SRE运营、渐进发布、自动回滚与持续认证总收口",
+        "path": "batches/G30_production-readiness-sre-closure/SKILL.md"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 运行时 Trace、日志与静态图谱融合
+  short_description: 接入 OpenTelemetry Trace、结构化日志、覆盖率和性能剖析，将实际运行边与静态图谱关联。用于确认流程、发现动态调用和比较静态/运行架构。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-runtime-trace-fusion 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

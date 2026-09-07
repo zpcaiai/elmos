@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/usage-event.v1.json",
+  "title": "Elmos Usage Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "tenant_id",
+    "source_system",
+    "source_event_id",
+    "task_id",
+    "run_id",
+    "resource_code",
+    "quantity",
+    "occurred_at",
+    "billability",
+    "raw_payload_hash"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^use_[A-Za-z0-9_-]+$"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_system": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provider": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resource_code": {
+      "type": "string",
+      "enum": [
+        "model_input_tokens",
+        "model_output_tokens",
+        "cache_read_tokens",
+        "cache_write_tokens",
+        "embedding_tokens",
+        "rerank_units",
+        "sandbox_cpu_ms",
+        "sandbox_gpu_ms",
+        "browser_ms",
+        "test_cpu_ms",
+        "storage_byte_hours",
+        "network_egress_bytes",
+        "third_party_calls"
+      ]
+    },
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)?$"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "billability": {
+      "type": "string",
+      "enum": [
+        "customer",
+        "platform",
+        "free",
+        "failed_retry",
+        "byok_excluded",
+        "review"
+      ]
+    },
+    "raw_payload_hash": {
+      "type": "string",
+      "minLength": 16
+    },
+    "correction_of_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

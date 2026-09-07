@@ -1,0 +1,8 @@
+Command: repository-owned read-only SHA-256/size/aggregate verifier over artifacts/target-artifacts.json
+Date: 2026-08-24
+Exit code: 0
+
+{"computed_aggregate_sha256": "439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4", "declared_aggregate_sha256": "439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4", "declared_file_count": 44, "declared_total_size_bytes": 1385264, "file_count": 44, "manifest_sha256": "108f38e6547603c68a7ea7a93b53ff8bf23009d4a7769bb7157dbb418e6dcb9e", "mismatches": [], "total_size_bytes": 1385264}
+
+Evidence classification: LOCAL_EXECUTED_SELF_ATTESTED
+The verifier reads each listed file, checks its exact byte count and SHA-256, and recomputes the declared sorted aggregate. It does not inspect external systems.

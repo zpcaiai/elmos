@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "extension_key": "migration-vscode",
+  "host": "vscode",
+  "version": "0.1.0",
+  "host_version_range": "1.110.0-1.110.x",
+  "protocol_version": "1.0.0",
+  "capabilities": [
+    "preview",
+    "navigation",
+    "explain",
+    "quick-fix",
+    "local-eval"
+  ],
+  "permissions": {
+    "repository_write": "none",
+    "arbitrary_shell": false,
+    "secret_read": false,
+    "network_domains": []
+  },
+  "distribution": {
+    "signed": false,
+    "package_ref": "NOT_RUN:real-host-package",
+    "signature_ref": "NOT_RUN:real-host-signature"
+  },
+  "validation_status": "NOT_RUN"
+}

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/runtime-profile.schema.json",
+  "title": "runtime-profile",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "framework": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime": {
+      "type": "string",
+      "minLength": 1
+    },
+    "os": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adapter": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adapter_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runtime_digest": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "preview_kind": {
+      "type": "string",
+      "enum": [
+        "web",
+        "api",
+        "cli",
+        "library-test",
+        "native-stream"
+      ]
+    },
+    "qualification_status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "lab-tested",
+        "deployment-qualified",
+        "blocked"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "license_review_required": {
+      "const": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "language",
+    "framework",
+    "runtime",
+    "os",
+    "arch",
+    "adapter",
+    "adapter_version",
+    "runtime_digest",
+    "preview_kind",
+    "qualification_status",
+    "capabilities",
+    "evidence_ids",
+    "limitations",
+    "license_review_required"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "qualification_status": {
+            "const": "deployment-qualified"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "runtime_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "adapter_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

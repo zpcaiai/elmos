@@ -1,0 +1,25 @@
+{
+  "recordType": "provenance",
+  "batch": 40,
+  "check": "batch40-dependency-inventory",
+  "claimIds": [
+    "b40-declared-dependency-inventory",
+    "b40-no-credential-leak-in-working-tree"
+  ],
+  "repositoryRevision": "2c9c668fd559011da3016e939c73fa7359cec44e",
+  "artifactRootsClean": true,
+  "baselineRevision": null,
+  "replayCommand": "python3 scripts/batch40_dependency_inventory.py",
+  "toolDigest": "sha256:870db267f19dff587d0756e0ce559a91986927e47a3e07ab1b9ab3ff5d18e313",
+  "runReport": {
+    "path": "evidence/execution/b40-dependency-inventory.json",
+    "sha256": "sha256:a1824c40fd18515b50e9c8d7d066823e3b5dc0bbd0f95c157d1d1942d3c6d336",
+    "bytes": 272738
+  },
+  "artifactCompositeDigest": "sha256:f43197d5b8cec074b11ed22700be9f715f7f80d0c388563ce0e72e4ee10d8d28",
+  "environmentDigest": "sha256:3a1a7fcc68960f6f02828af7cc161a4f3d8de224b795d143d3d5b3c915879f86",
+  "startedAt": "2026-08-06T11:03:31.884667Z",
+  "finishedAt": "2026-08-06T11:04:13.846460Z",
+  "reproducible": true,
+  "reproducibilityNote": "no tracked file under ['pom.xml', 'contracts'] differs from HEAD (untracked files were not enumerated); this run replays from the recorded revision."
+}

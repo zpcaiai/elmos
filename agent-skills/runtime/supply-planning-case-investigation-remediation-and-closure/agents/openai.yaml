@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B42 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Java Route Discovery Baseline"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-java-route-discovery-baseline to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,25 @@
+package_id: P00
+version: "1.0.0"
+enabled: true
+components:
+  - P00-C01
+  - P00-C02
+  - P00-C03
+  - P00-C04
+  - P00-C05
+  - P00-C06
+  - P00-C07
+  - P00-C08
+policy:
+  tenant_isolation: strict
+  evidence_gate_required: true
+  fail_closed: true
+  adapter_pin_required: true
+  default_data_scope: tenant-private
+limits:
+  max_parallel_tasks: 4
+  max_attempts: 3
+  max_wall_clock_seconds: 21600
+feature_flags:
+  experimental_upstream_adapters: false
+  shadow_mode: true

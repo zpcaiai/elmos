@@ -1,0 +1,6 @@
+interface:
+  display_name: "Semantic Ir Lift Lower"
+  short_description: "Run semantic-ir-lift-lower with bounded commercial controls"
+  default_prompt: "Use $semantic-ir-lift-lower through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

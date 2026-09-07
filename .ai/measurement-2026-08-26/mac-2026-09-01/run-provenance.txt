@@ -1,0 +1,4 @@
+run_started_utc   2026-09-01T09:42:35Z
+head_at_start     7d17aa2a2
+tree              live worktree
+host              Darwin 25.6.0 arm64

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Developer Portal Builder"
+  short_description: "Authoritative Batch 14 Skill 423 workflow"
+  default_prompt: "Use $developer-portal-builder to execute its evidence-bound Batch 14 workflow."
+

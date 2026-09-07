@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/budget.schema.json",
+  "title": "ETGB Budget Reservation",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["run_id", "tenant_id", "owner_id", "state", "limits", "used", "reserved_at", "updated_at"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "tenant_id": {"type": "string"},
+    "owner_id": {"type": "string"},
+    "state": {"enum": ["RESERVED", "ACTIVE", "EXHAUSTED", "CLOSED", "CANCELLED"]},
+    "limits": {"type": "object"},
+    "used": {"type": "object"},
+    "reserved_at": {"type": "string"},
+    "updated_at": {"type": "string"}
+  }
+}

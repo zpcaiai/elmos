@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B21: Procedure Differential Test Generator"
+  short_description: "Run Precision Migration B21 with evidence controls"
+  default_prompt: "Use $pm-b21-procedure-differential-test-generator to execute this Precision Migration contract with fail-closed evidence."

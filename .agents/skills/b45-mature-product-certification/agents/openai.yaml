@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Mature Product Certification"
+  short_description: "Run evidence-bound Batch 45 mature product certification work"
+  default_prompt: "Use $b45-mature-product-certification to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,38 @@
+{
+  "batch": 39,
+  "packKey": "elmos-platform-sre-operations",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    "engines/operations-sre-itsm-engine as the operations capability surface",
+    "telemetry/events.schema.json, telemetry/metric-definitions.json, telemetry/policy.json and telemetry/validate.mjs as the observability contract",
+    "apps/control-plane, apps/agent-gateway and apps/workspace-service as the always-on request paths carrying SLOs",
+    "the 18 Spring HTTP services enumerated by tooling/validate_runtime_operability.py for liveness, readiness and graceful shutdown"
+  ],
+  "skillIds": [
+    1347,
+    1348,
+    1349,
+    1350,
+    1351,
+    1352,
+    1353,
+    1354,
+    1355,
+    1356,
+    1357,
+    1358,
+    1359,
+    1360,
+    1361,
+    1362,
+    1363,
+    1364,
+    1365,
+    1366,
+    1367,
+    1368
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

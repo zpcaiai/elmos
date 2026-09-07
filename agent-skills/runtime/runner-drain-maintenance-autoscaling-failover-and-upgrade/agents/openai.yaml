@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Drain Maintenance Autoscaling Failover And Upgrade"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-drain-maintenance-autoscaling-failover-and-upgrade to implement its fail-closed ELMOS Product B36 contract."

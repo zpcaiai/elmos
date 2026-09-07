@@ -1,0 +1,67 @@
+schema_version: '1.0'
+package: elmos-etgb-sota-skills-package
+version: 1.0.0
+skills:
+- name: etgb-orchestrator
+  path: skills/etgb-orchestrator/SKILL.md
+  description: Plan, execute, resume, aggregate, and certify Elmos ETGB test runs across all four business lines.
+  depends_on:
+  - corpus-governance
+  - differential-oracle-engine
+  - release-certification
+- name: test-case-authoring
+  path: skills/test-case-authoring/SKILL.md
+  description: Create, review, materialize, and maintain executable ETGB test cases and capability matrices.
+  depends_on:
+  - differential-oracle-engine
+- name: spring-modernization-validation
+  path: skills/spring-modernization-validation/SKILL.md
+  description: Validate repository-level modernization of Servlet, JSP, Struts, Spring Framework, and Spring Boot legacy systems
+    to Spring Boot 4.
+  depends_on:
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+- name: repository-translation-validation
+  path: skills/repository-translation-validation/SKILL.md
+  description: Validate whole-repository cross-language conversions with executable semantics, architecture adaptation, dependency
+    handling, and hidden tests.
+  depends_on:
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+- name: project-generation-validation
+  path: skills/project-generation-validation/SKILL.md
+  description: Validate multilingual greenfield and evolutionary project generation from executable requirement contracts.
+  depends_on:
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+- name: sql-dialect-routine-validation
+  path: skills/sql-dialect-routine-validation/SKILL.md
+  description: Validate SQL dialect, DDL/DML, stored routine, trigger, transaction, and analytics-platform conversion by dual-database
+    execution.
+  depends_on:
+  - differential-oracle-engine
+  - metamorphic-fuzz-mutation
+  - corpus-governance
+- name: differential-oracle-engine
+  path: skills/differential-oracle-engine/SKILL.md
+  description: Capture, normalize, compare, and explain source/target behavior, state, side effects, traces, security, and
+    performance.
+  depends_on: []
+- name: metamorphic-fuzz-mutation
+  path: skills/metamorphic-fuzz-mutation/SKILL.md
+  description: Generate high-value property, metamorphic, fuzz, mutation, and fault-injection campaigns for ETGB cases.
+  depends_on:
+  - differential-oracle-engine
+- name: corpus-governance
+  path: skills/corpus-governance/SKILL.md
+  description: Select, pin, license-review, sandbox, time-split, fetch, and maintain public/private ETGB corpora reproducibly.
+  depends_on: []
+- name: release-certification
+  path: skills/release-certification/SKILL.md
+  description: Evaluate ETGB release gates, evidence completeness, waivers, and promotion decisions for Elmos candidates.
+  depends_on: []
+entry_skill: etgb-orchestrator
+capability_model: matrices/coverage-requirements.yaml
+cli: etgb

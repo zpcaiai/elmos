@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Batch Restart Checkpoint And Scheduler Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-batch-restart-checkpoint-and-scheduler-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

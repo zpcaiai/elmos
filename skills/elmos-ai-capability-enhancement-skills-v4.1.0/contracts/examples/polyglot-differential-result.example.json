@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "PolyglotDifferentialResult",
+  "metadata": {
+    "id": "polyglot-differential-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "sourceRun": "example-sourceRun",
+    "targetRun": "example-targetRun",
+    "scenarioCount": 1,
+    "mismatches": [],
+    "decision": "example-decision"
+  }
+}

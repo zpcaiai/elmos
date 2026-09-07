@@ -1,0 +1,85 @@
+{
+  "$id": "https://elmos.ai/schemas/v3.1/tool-result-commit.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "callIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "authoritySnapshotId": {
+          "type": "string"
+        },
+        "callId": {
+          "type": "string"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "executionPlanHash": {
+          "type": "string"
+        },
+        "invocationId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "invocationId",
+        "callId",
+        "executionPlanHash",
+        "environmentId",
+        "authoritySnapshotId"
+      ],
+      "type": "object"
+    },
+    "commitState": {
+      "enum": [
+        "RAW_CAPTURED",
+        "INTERCEPTING",
+        "COMMITTED",
+        "PUBLISHED",
+        "ABORTED"
+      ]
+    },
+    "effectiveResultRef": {
+      "type": "string"
+    },
+    "interceptorChain": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "decisionHash": {
+            "type": "string"
+          },
+          "interceptorId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "interceptorId",
+          "version",
+          "decisionHash"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "mutationProvenanceRef": {
+      "type": "string"
+    },
+    "rawResultRef": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "callIdentity",
+    "rawResultRef",
+    "effectiveResultRef",
+    "interceptorChain",
+    "commitState"
+  ],
+  "title": "Committed Tool Result",
+  "type": "object"
+}

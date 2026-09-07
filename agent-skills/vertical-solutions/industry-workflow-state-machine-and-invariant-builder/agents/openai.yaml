@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 602: industry workflow state machine and invariant builder"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $industry-workflow-state-machine-and-invariant-builder to evaluate this capability with evidence."

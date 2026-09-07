@@ -1,0 +1,74 @@
+{
+  "caseId": "22-performance-guardrail-regression",
+  "description": "A quiet metric regresses; a noisy one with the same delta does not.",
+  "evidence": {
+    "performanceReportDigest": "sha256:5cd3d747af5b81b151788647ef64552964dc04455ac1374e4a4d21502c824647"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:6707ee23fd908ba5673f4cfb3e9cb66485dafa3d9ecb2cdbd10679b0e816a7b6",
+  "outputDigest": "sha256:1c3be3c3e31ded1e2133770454a2e52294dbe8c5f5b936a6d1543be02b0fc973",
+  "projections": {
+    "output.guardrailDecision": {
+      "allowed": false,
+      "blockingMetrics": [
+        "latency_ms"
+      ]
+    },
+    "output.performanceDiff": [
+      {
+        "baselineMedian": "100",
+        "baselineP95": "102",
+        "baselineSamples": 7,
+        "blocks": true,
+        "candidateMedian": "112",
+        "candidateP95": "114",
+        "candidateSamples": 7,
+        "detail": "12.00% worse than baseline, over the 5.00% guardrail",
+        "guardrail": "0.05",
+        "metric": "latency_ms",
+        "noiseBand": "0.02",
+        "relativeChange": "0.12",
+        "unit": "ms",
+        "verdict": "regressed",
+        "workload": "component"
+      },
+      {
+        "baselineMedian": "100",
+        "baselineP95": "140",
+        "baselineSamples": 7,
+        "blocks": false,
+        "candidateMedian": "112",
+        "candidateP95": "150",
+        "candidateSamples": 7,
+        "detail": "the 12.00% change sits inside the 60.00% noise band derived from the benchmark's own spread",
+        "guardrail": "0.05",
+        "metric": "noisy_ms",
+        "noiseBand": "0.6",
+        "relativeChange": "0.12",
+        "unit": "ms",
+        "verdict": "unchanged",
+        "workload": "component"
+      }
+    ],
+    "output.regressionSuspects": [
+      {
+        "changedByThisPatch": false,
+        "delta": "25",
+        "detail": "this symbol got slower but the patch did not touch it; look for a changed caller, a changed data shape, or environmental drift before attributing it to the refactor",
+        "symbol": "acme.ledger.post_entry"
+      },
+      {
+        "changedByThisPatch": false,
+        "delta": "7",
+        "detail": "this symbol got slower but the patch did not touch it; look for a changed caller, a changed data shape, or environmental drift before attributing it to the refactor",
+        "symbol": "acme.api.handle"
+      }
+    ],
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "performance-preservation",
+  "status": "blocked"
+}

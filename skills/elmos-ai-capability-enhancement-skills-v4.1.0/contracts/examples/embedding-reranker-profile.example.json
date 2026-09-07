@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "embedding-reranker-profile-example",
+  "status": "READY",
+  "content_hash": "5e6a852a05812544168f12f9216b550c7981b4a2b3d4dfcc6dc57e54f50fc58e",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "version_pins": {
+    "runtime": "RELEASE_TIME_EXACT"
+  },
+  "capabilities": [
+    "detect",
+    "validate"
+  ],
+  "constraints": [
+    "fail-closed"
+  ]
+}

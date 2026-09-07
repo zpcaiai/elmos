@@ -1,0 +1,15 @@
+id: sql-dialect-routine-conversion-v1
+job_type: SQL_CONVERSION
+stages:
+  - inventory-parse
+  - dependency-graph
+  - dialect-gap-analysis
+  - ddl-conversion
+  - query-view-conversion
+  - routine-conversion
+  - trigger-conversion
+  - target-compile
+  - result-regression
+  - performance-risk
+  - auto-repair
+  - report-review

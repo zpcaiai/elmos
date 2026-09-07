@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/protocol-capabilities.schema.json",
+  "title": "Harness Protocol Capabilities",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "version",
+    "transport",
+    "historyMode",
+    "typedToolResult",
+    "schemaDialect",
+    "consistencyModel"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "transport": {
+      "enum": [
+        "LOCAL_STDIO",
+        "REMOTE_GATEWAY",
+        "HTTP",
+        "WEBSOCKET",
+        "ACP",
+        "CUSTOM"
+      ]
+    },
+    "authScheme": {
+      "type": "string"
+    },
+    "historyMode": {
+      "enum": [
+        "LEGACY_EMBEDDED",
+        "PAGINATED",
+        "BOTH",
+        "NONE"
+      ]
+    },
+    "typedToolResult": {
+      "type": "boolean"
+    },
+    "schemaDialect": {
+      "type": "string"
+    },
+    "consistencyModel": {
+      "enum": [
+        "STRONG",
+        "EVENTUAL",
+        "UNKNOWN"
+      ]
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsupportedRequired": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

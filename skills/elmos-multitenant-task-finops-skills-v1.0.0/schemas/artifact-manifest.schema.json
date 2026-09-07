@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/artifact-manifest.schema.json",
+  "title": "Elmos Task Artifact Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "tenant_id",
+    "task_id",
+    "task_run_id",
+    "artifact_role",
+    "artifact_type",
+    "version_no",
+    "object_uri",
+    "object_sha256",
+    "object_size_bytes",
+    "media_type",
+    "retention_class",
+    "integrity_status",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "artifact_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "node_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version_no": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "object_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "object_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "media_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "encryption_key_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "retention_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "integrity_status": {
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "FAILED",
+        "MISSING"
+      ]
+    },
+    "evidence_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

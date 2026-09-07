@@ -1,0 +1,95 @@
+{
+  "graphVersion": "1.0.0",
+  "repositorySnapshotId": "snapshot-demo-001",
+  "environmentClass": "baseline-test",
+  "nodes": [
+    {
+      "id": "route:orders-create",
+      "type": "route",
+      "label": "POST /orders/create.do",
+      "status": "confirmed",
+      "confidence": 0.99,
+      "attributes": {
+        "framework": "struts1",
+        "mapping": "/orders/create"
+      },
+      "evidence": [
+        {
+          "kind": "config",
+          "uri": "git://demo@abc/WEB-INF/struts-config.xml#action:/orders/create",
+          "digest": "sha256:111",
+          "environment": "all",
+          "extractor": "struts1-config",
+          "extractorVersion": "1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "symbol:CreateOrderAction",
+      "type": "symbol",
+      "label": "com.acme.orders.CreateOrderAction",
+      "status": "confirmed",
+      "confidence": 1.0,
+      "attributes": {
+        "kind": "Action"
+      },
+      "evidence": [
+        {
+          "kind": "source",
+          "uri": "git://demo@abc/src/main/java/com/acme/orders/CreateOrderAction.java#L1-L120",
+          "digest": "sha256:222",
+          "environment": "all",
+          "extractor": "java-symbol",
+          "extractorVersion": "1.0.0"
+        }
+      ]
+    },
+    {
+      "id": "state:currentOrder",
+      "type": "state",
+      "label": "session.currentOrder",
+      "status": "confirmed",
+      "confidence": 0.95,
+      "attributes": {
+        "scope": "session"
+      },
+      "evidence": [
+        {
+          "kind": "source",
+          "uri": "git://demo@abc/src/main/java/com/acme/orders/CreateOrderAction.java#L65-L66",
+          "digest": "sha256:222",
+          "environment": "all",
+          "extractor": "state-flow",
+          "extractorVersion": "1.0.0"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:1",
+      "from": "route:orders-create",
+      "to": "symbol:CreateOrderAction",
+      "type": "handles",
+      "status": "confirmed",
+      "confidence": 0.99,
+      "attributes": {}
+    },
+    {
+      "id": "edge:2",
+      "from": "symbol:CreateOrderAction",
+      "to": "state:currentOrder",
+      "type": "writes",
+      "status": "confirmed",
+      "confidence": 0.95,
+      "attributes": {}
+    }
+  ],
+  "coverage": {
+    "totalFacts": 3,
+    "confirmedFacts": 3,
+    "inferredFacts": 0,
+    "unknownFacts": 0
+  },
+  "generatedAt": "2026-08-26T09:00:00Z"
+}

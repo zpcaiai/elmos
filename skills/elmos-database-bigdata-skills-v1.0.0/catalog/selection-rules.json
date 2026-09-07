@@ -1,0 +1,68 @@
+{
+  "rules_version": "2026-08-19.1",
+  "hard_constraint_order": [
+    "security_and_residency",
+    "deployment_and_license",
+    "transaction_and_consistency",
+    "data_model_and_types",
+    "capacity_limits",
+    "rpo_rto_and_availability",
+    "connector_and_language_compatibility"
+  ],
+  "default_soft_weights": {
+    "system-of-record": {
+      "transactions": 0.18,
+      "read_latency": 0.12,
+      "write_throughput": 0.12,
+      "horizontal_scale": 0.1,
+      "operational_simplicity": 0.15,
+      "cost_efficiency": 0.13,
+      "ecosystem": 0.1,
+      "migration_fit": 0.1
+    },
+    "real-time-analytics": {
+      "analytical_scan": 0.2,
+      "real_time_ingest": 0.18,
+      "read_latency": 0.18,
+      "horizontal_scale": 0.12,
+      "cost_efficiency": 0.12,
+      "operational_simplicity": 0.08,
+      "ecosystem": 0.07,
+      "lakehouse": 0.05
+    },
+    "lakehouse": {
+      "lakehouse": 0.25,
+      "analytical_scan": 0.18,
+      "federation": 0.12,
+      "cost_efficiency": 0.14,
+      "operational_simplicity": 0.1,
+      "write_throughput": 0.08,
+      "ecosystem": 0.08,
+      "transactions": 0.05
+    },
+    "vector-search": {
+      "vector": 0.3,
+      "read_latency": 0.18,
+      "horizontal_scale": 0.15,
+      "write_throughput": 0.1,
+      "filtering_fit": 0.1,
+      "operational_simplicity": 0.1,
+      "cost_efficiency": 0.07
+    }
+  },
+  "complexity_penalty": {
+    "additional_stateful_technology": 0.08,
+    "additional_cross_system_sync_path": 0.06,
+    "unverified_adapter": 0.12,
+    "duplicate_business_logic": 0.15
+  },
+  "mandatory_outputs": [
+    "feasible candidates",
+    "rejected candidates with reasons",
+    "top-N by role",
+    "Pareto frontier",
+    "sensitivity analysis",
+    "benchmark plan",
+    "ADR"
+  ]
+}

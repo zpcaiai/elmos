@@ -1,0 +1,37 @@
+{
+  "mapping_id": "map-demo",
+  "source_revision_id": "source-rev",
+  "target_revision_id": "target-rev",
+  "semantic_ir_version": "1.0.0",
+  "entries": [
+    {
+      "entry_id": "map-order-service",
+      "source_ref": "java:OrderService#create",
+      "semantic_ir_ref": "sir:order.create",
+      "target_ref": "csharp:OrderService.CreateAsync",
+      "rule_ids": [
+        "rule-service-method-001"
+      ],
+      "repair_attempt_ids": [],
+      "status": "mapped",
+      "confidence": 0.94,
+      "evidence_refs": [
+        "ev-build",
+        "ev-contract"
+      ]
+    },
+    {
+      "entry_id": "map-legacy-reflection",
+      "source_ref": "java:LegacyPluginLoader#load",
+      "semantic_ir_ref": "sir:dynamic.plugin.load",
+      "target_ref": null,
+      "rule_ids": [],
+      "repair_attempt_ids": [],
+      "status": "unsupported",
+      "confidence": 0.99,
+      "evidence_refs": [
+        "ev-reflection"
+      ]
+    }
+  ]
+}

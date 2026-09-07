@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Django Flask Modernization Route"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-django-flask-modernization-route to execute this ELMOS product-closure Skill with fail-closed evidence."

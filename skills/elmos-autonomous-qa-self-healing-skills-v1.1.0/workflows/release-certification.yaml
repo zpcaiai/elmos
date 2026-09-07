@@ -1,0 +1,45 @@
+workflow_id: release-certification
+version: 2
+mode: certify
+scope: full_required
+required_profiles:
+  - functional
+  - api
+  - contract
+  - database
+  - migration
+  - message
+  - ui
+  - visual
+  - accessibility
+  - compatibility
+  - performance
+  - load
+  - stress
+  - security
+  - resilience
+  - recovery
+requirements:
+  immutable_snapshot: true
+  clean_release_candidate_commit: true
+  no_pending_high_risk_patch: true
+  all_quality_gates_pass: true
+  all_required_tests_materialized: true
+  generated_tests_discoverable_and_buildable: true
+  project_output_manifest_signed: true
+  evidence_manifest_signed: true
+  all_bundles_integrity_verified: true
+outputs:
+  - project_with_tests_bundle
+  - tests_only_bundle
+  - qa_evidence_bundle
+  - repair_patches_bundle_when_present
+  - executive_report
+  - engineering_report
+  - junit_xml
+  - coverage_matrix
+  - performance_bundle
+  - ui_evidence_bundle
+  - security_bundle
+  - patch_manifest
+  - release_certificate

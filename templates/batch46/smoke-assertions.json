@@ -1,0 +1,73 @@
+{
+  "schema": "elmos.batch46.smoke-assertions/1",
+  "generated_at": "<utc-timestamp>",
+  "scope": "functional smoke only",
+  "not_evidence_for": [
+    "route or dialect equivalence",
+    "performance",
+    "security",
+    "accessibility",
+    "certification of any migration pack"
+  ],
+  "checks": [
+    {
+      "id": "process-started",
+      "kind": "process",
+      "required": true,
+      "expect": "the start command produces a live process"
+    },
+    {
+      "id": "port-listening",
+      "kind": "tcp",
+      "required": true,
+      "timeout_seconds": 120,
+      "expect": "the service accepts a TCP connection on the allocated port"
+    },
+    {
+      "id": "http-readiness",
+      "kind": "http",
+      "required": true,
+      "method": "GET",
+      "path": "<readiness path>",
+      "accept_status": [
+        200,
+        204
+      ],
+      "timeout_seconds": 120,
+      "expect": "readiness endpoint answers"
+    },
+    {
+      "id": "http-functional",
+      "kind": "http",
+      "required": true,
+      "method": "GET",
+      "path": "<non-readiness path>",
+      "accept_status": [
+        200,
+        201,
+        202,
+        204
+      ],
+      "expect": "one contract-declared endpoint serves a response backed by seeded data"
+    },
+    {
+      "id": "seed-visible",
+      "kind": "datastore",
+      "required": false,
+      "status_when_absent": "NOT_RUN",
+      "expect": "seeded rows are readable through the running service or the ephemeral datastore"
+    },
+    {
+      "id": "graceful-shutdown",
+      "kind": "lifecycle",
+      "required": true,
+      "expect": "SIGTERM is honoured within the grace period without orphaned children"
+    },
+    {
+      "id": "lease-teardown",
+      "kind": "lifecycle",
+      "required": true,
+      "expect": "lease expiry stops every started service and deletes all ephemeral smoke data"
+    }
+  ]
+}

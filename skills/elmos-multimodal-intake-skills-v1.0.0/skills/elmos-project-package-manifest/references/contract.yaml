@@ -1,0 +1,69 @@
+schema_version: 1.0.0
+ordinal: 43
+name: elmos-project-package-manifest
+title: 项目包清单
+objective: 用规范化 ProjectPackageManifest 描述全部条目、根目录、角色、安全状态和内容哈希，支撑解压、索引、增量更新与审计。
+dependencies:
+- elmos-file-type-detection-and-validation
+- elmos-source-anchor-and-provenance
+inputs:
+- 上传文件条目或归档检查结果
+- 路径规范化策略
+- 分类/安全结果
+- 项目根角色
+outputs:
+- 不可变 ProjectPackageManifest
+- manifest digest/Merkle root
+- 分析视图
+- 清单差异
+responsibilities:
+- 定义 Package、PackageVersion、Manifest、Entry 和 RootCandidate 契约，覆盖目录、普通文件、链接、归档和特殊条目。
+- 对相对路径执行统一规范化，同时保留原始显示名，检测重复、冲突、大小写碰撞和 Unicode碰撞。
+- 为每个条目记录大小、哈希、MIME、编码、修改时间、来源、处理状态、分类和安全发现引用。
+- 计算条目排序稳定的 manifest digest 和 Merkle 根，用于完整性和增量比较。
+- 区分原始上传清单、解压后清单、过滤后分析视图和当前项目版本，禁止互相覆盖。
+- 支持多个项目根、文档根、测试数据根、参考项目和历史版本角色。
+- 将忽略/隔离/metadata-only 决策作为视图策略，不从原始清单删除条目。
+- 提供清单查询、分页目录树、导出和版本差异接口。
+deliverables:
+- ProjectPackageManifest JSON Schema
+- 规范化、碰撞检测、digest/Merkle 计算实现
+- 原始/解压/分析视图和版本数据库模型
+- 清单 API、差异和完整性测试
+acceptance:
+- 相同条目集无论遍历顺序都产生相同 manifest digest
+- 原始清单不可变，策略变化只产生新分析视图或版本
+- 大小写与 Unicode 路径碰撞被显式检测
+- 每个分析文件可追溯到上传或归档条目
+- 多项目根和资料角色可配置且进入清单
+- 清单规模大时支持分页/流式处理，不需全部载入内存
+data_entities:
+- input_packages
+- input_package_versions
+- package_manifests
+- package_entries
+- package_manifest_views
+events:
+- package.manifest.created
+- package.manifest.verified
+- package.manifest.view.created
+- package.manifest.conflict.detected
+metrics:
+- manifest_verification_success_rate
+- path_collision_count
+- manifest_build_files_per_second
+- untraceable_entry_count
+failure_modes:
+- non-deterministic digest
+- path normalization collision
+- entry omitted silently
+- manifest too large for memory
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

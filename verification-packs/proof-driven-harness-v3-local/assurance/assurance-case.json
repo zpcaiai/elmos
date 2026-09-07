@@ -1,0 +1,82 @@
+{
+  "approvals": [],
+  "case_key": "proof-driven-harness-v3-local-assurance-v1",
+  "claims": [
+    {
+      "assumptions": [
+        "Repository-owned publisher and qualifier are not independent parties."
+      ],
+      "claim_id": "claim.local.qualification-binding",
+      "evidence_refs": [
+        "qualification/receipt-validation.json",
+        "certification/repository-binding.json"
+      ],
+      "limitations": [
+        "Local self-attestation is not independent verification."
+      ],
+      "statement": "The fixed local receipt bindings were independently recomputed by the publisher implementation.",
+      "status": "partially-supported"
+    },
+    {
+      "assumptions": [
+        "The fixed local filesystem semantics match the observed test environment."
+      ],
+      "claim_id": "claim.local.safe-deterministic-publication",
+      "evidence_refs": [
+        "corpus/negative/cases.json",
+        "qualification/raw/engine-tests.json"
+      ],
+      "limitations": [
+        "No independent platform replay has occurred."
+      ],
+      "statement": "Deterministic generation and unsafe-output negative controls execute locally.",
+      "status": "partially-supported"
+    },
+    {
+      "assumptions": [],
+      "claim_id": "claim.external.production-assurance",
+      "evidence_refs": [
+        "corpus/holdout/not-run.json",
+        "corpus/representative-workloads/not-run.json"
+      ],
+      "limitations": [
+        "Required external and independent evidence is NOT_RUN."
+      ],
+      "statement": "External runtime, holdout, representative, and production assurance is established.",
+      "status": "unsupported"
+    }
+  ],
+  "evidence": [
+    "qualification/source-receipt.json",
+    "qualification/receipt-validation.json",
+    "certification/repository-binding.json",
+    "corpus/development/manifest.json",
+    "corpus/negative/manifest.json"
+  ],
+  "expiry": "ON_ANY_BOUND_DIGEST_DRIFT",
+  "monitoring_obligations": [
+    "Invalidate the pack when archive, engine, qualifier, receipt, raw log, publisher, or bound test bytes drift.",
+    "Keep unknown, unsupported, and not-run outcomes non-success."
+  ],
+  "owner": "elmos-proof-harness-engineering",
+  "residual_risks": [
+    {
+      "owner": "independent-verification-owner-unassigned",
+      "risk_id": "RISK-INDEPENDENT-HOLDOUT",
+      "status": "OPEN_NOT_RUN"
+    },
+    {
+      "owner": "product-assurance-owner-unassigned",
+      "risk_id": "RISK-REPRESENTATIVE-WORKLOAD",
+      "status": "OPEN_NOT_RUN"
+    },
+    {
+      "owner": "runtime-assurance-owner-unassigned",
+      "risk_id": "RISK-EXTERNAL-RUNTIME",
+      "status": "OPEN_NOT_RUN"
+    }
+  ],
+  "schema_version": 1,
+  "top_claim": "The exact bounded local receipt can generate a deterministic limited verification pack without asserting external or certified assurance.",
+  "version": 1
+}

@@ -1,0 +1,397 @@
+{
+  "manifest_version": "1.1.0",
+  "batch_id": "batch-05",
+  "package_name": "batch_05_target_language_lowering_complete_skill_pack",
+  "reissued_by": "scripts/modernization_b01_44/generate_foundation.py",
+  "file_count": 77,
+  "skill_count": 34,
+  "schema_count": 14,
+  "files": [
+    {
+      "path": "ARCHETYPE_MAP.json",
+      "size_bytes": 1123,
+      "sha256": "ef3feba9633ed11057b16e72e7f801a1cff2f24fe83513a700f8303edd7247a2"
+    },
+    {
+      "path": "BATCH04_COMPATIBILITY.md",
+      "size_bytes": 4209,
+      "sha256": "d8221a917a8510115f9e72283eb29185a09f3345c6d749de5fb7450d9154152b"
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "size_bytes": 9044,
+      "sha256": "cead53946ac257a6167ed38cda07610d6bf384bcc34d9a36bc39b401f2523faa"
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "size_bytes": 5082,
+      "sha256": "3632db02908ebb15eff0754e27b3f8e6e32c8426d449f1f5c23517330d1aa63e"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2811,
+      "sha256": "87435f85b1a8940eeff05c32d3ce656296276d0fc6206629ba001299f70fbf4e"
+    },
+    {
+      "path": "SKILL.md",
+      "size_bytes": 22810,
+      "sha256": "56fe112c0f3ae8e2ab9823dbf560ee0ba7a509dd1a39586998856fc00e423a57"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size_bytes": 6814,
+      "sha256": "b43da8a9c00a0f66b153d23afe47a0bbab123af76039dd7319f0b3fd519510d6"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size_bytes": 3191,
+      "sha256": "d37217c46e45e38f0fa79821719e3db93831fb4d9fc4b210ee82b406961d836e"
+    },
+    {
+      "path": "examples/java-spring-to-csharp-aspnet/generation-plan.yaml",
+      "size_bytes": 265,
+      "sha256": "6d49008fd3c37e419c54507dd85d0c1a1d8777c1d51d75e236e9559ff4ceb946"
+    },
+    {
+      "path": "examples/profiles/csharp12-aspnet8-postgresql.yaml",
+      "size_bytes": 150,
+      "sha256": "6182df50f25da9709d3a12b02c6d3cc5d3b7141f4d10969bc1ffcaf5e11efbb6"
+    },
+    {
+      "path": "examples/profiles/flutter-riverpod.yaml",
+      "size_bytes": 128,
+      "sha256": "263b544add5aaee5e2386e6cc06eb6f3f73854681cfc425f7a34d9280ef3ccc4"
+    },
+    {
+      "path": "examples/profiles/react-typescript-vite.yaml",
+      "size_bytes": 138,
+      "sha256": "b49c4411dcbe25681d302a845e646a1d654342ba030fe6986fd15dc627f764ac"
+    },
+    {
+      "path": "examples/vue-to-flutter/screen-intent.yaml",
+      "size_bytes": 212,
+      "sha256": "3ec02a6fc3de28fc44956e2d854e004c1a25e7b7d78ca8a0745f37fc858d1575"
+    },
+    {
+      "path": "examples/vue-to-react/component-mapping.yaml",
+      "size_bytes": 192,
+      "sha256": "b87ca384d7954cd1f1fb40a16d593e9adcfac5ba9a2af30be707b28702d0130d"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 305,
+      "sha256": "a24bb966657eb81295348414261521cde720758d49601f9bc9545e2524e1b623"
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "size_bytes": 150,
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2"
+    },
+    {
+      "path": "policies/certification.yaml",
+      "size_bytes": 182,
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea"
+    },
+    {
+      "path": "policies/default-agent-envelope.yaml",
+      "size_bytes": 150,
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2"
+    },
+    {
+      "path": "policies/default-build-gate-policy.yaml",
+      "size_bytes": 129,
+      "sha256": "684683d07a1f6033c3319f741510999ff8568d0ad41ef67a663a8bdab70efd6e"
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "size_bytes": 105,
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366"
+    },
+    {
+      "path": "policies/default-manual-region-policy.yaml",
+      "size_bytes": 116,
+      "sha256": "8d3f19f0a22095dd437e59d29e80b30ebb656a2081c6b0c8f5497a2817d7037b"
+    },
+    {
+      "path": "policies/default-shim-policy.yaml",
+      "size_bytes": 95,
+      "sha256": "38e6ef6a13169e22362741ee7b556d590387fcc91c4c0f93ecb3f2b4486e810d"
+    },
+    {
+      "path": "policies/default-target-idiom-policy.yaml",
+      "size_bytes": 127,
+      "sha256": "87c4fb904fbb29e4a25235e8134ac5a164369b9f0496b9d550578aa36626836c"
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "size_bytes": 156,
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2"
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "size_bytes": 143,
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f"
+    },
+    {
+      "path": "schemas/backend-plugin-manifest.schema.json",
+      "size_bytes": 1274,
+      "sha256": "2706e204a35457842e0e756675935098d248d8084a8244b885a25d13633cde9b"
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "size_bytes": 731,
+      "sha256": "014136054b510dd7408def3e016e6e5fc43d4889fc78fb42ba7a953918df33e0"
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "size_bytes": 832,
+      "sha256": "1ab9201bc0aad7a32bc01ad7e8b1d6a4888ddb64fd20263409d7618dc1c8d33f"
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "size_bytes": 1133,
+      "sha256": "9c2621d4c2d5d765b483d3b6aac792f1feabf6f40104146af55159595e8867cb"
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "size_bytes": 1280,
+      "sha256": "65e93f8bd5912aa0fef10f91718c5bc0d9a0765fdf71636710daaccf482a3f98"
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "size_bytes": 996,
+      "sha256": "09e8a47edaae073972affbac797cd43e11262ca6855b373308abdb556f978b2c"
+    },
+    {
+      "path": "schemas/generated-project-manifest.schema.json",
+      "size_bytes": 1436,
+      "sha256": "1029e11450944b674f0747aa5e7c2584ed202f7073b8f9c2545fba71a762bd1e"
+    },
+    {
+      "path": "schemas/generation-certificate.schema.json",
+      "size_bytes": 1455,
+      "sha256": "83aeff03d1a70c8dd1f7fe0e14ea70656631ad275cb16298482fe47e4d29d47b"
+    },
+    {
+      "path": "schemas/generation-plan.schema.json",
+      "size_bytes": 1233,
+      "sha256": "ebb87e1dbe139e16ddbb9822b8de4d189707f0463dc53fef737cb1ebf83d7770"
+    },
+    {
+      "path": "schemas/source-target-map.schema.json",
+      "size_bytes": 1158,
+      "sha256": "f0900b085f3ee7bd9384db2db61f03f71e90dd9e3887433a671efb9a8b46c661"
+    },
+    {
+      "path": "schemas/target-construction-intent.schema.json",
+      "size_bytes": 1216,
+      "sha256": "9c69b74ef8003b1055000ff9b483c1ca2b4c40238e3cc0fce0422ada0b062288"
+    },
+    {
+      "path": "schemas/target-profile.schema.json",
+      "size_bytes": 1350,
+      "sha256": "b62ae9d3e1d4c3b1e7866081dd6cf73ebfec368e21ea66db5fa5abe22e7928f0"
+    },
+    {
+      "path": "schemas/target-typed-ir.schema.json",
+      "size_bytes": 1127,
+      "sha256": "70f022ebe53732fef3200be806947724e56264da77dcd967eb7f849687583ddf"
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "size_bytes": 848,
+      "sha256": "9ff167808ad947fc242e010a85498ae0abfb46e2859aa3e52eccfa607a2a0c25"
+    },
+    {
+      "path": "skills/01-target-generation-orchestrator/SKILL.md",
+      "size_bytes": 3447,
+      "sha256": "6d42b5422305bd2704119c069c90beb3a5ff661bf48426b14883c9df836f4e81"
+    },
+    {
+      "path": "skills/02-target-profile-and-platform-registry/SKILL.md",
+      "size_bytes": 3479,
+      "sha256": "6d3e3c033577e26b62df7fe8f1e43cf6a6c82809078d559a118d95d1f0042f2c"
+    },
+    {
+      "path": "skills/03-target-backend-sdk-and-plugin-registry/SKILL.md",
+      "size_bytes": 3483,
+      "sha256": "3c2b0a8317c3cbad378d0bfe01baf9d313e329a0c0bba74d97800e3837f5546d"
+    },
+    {
+      "path": "skills/04-target-typed-ir-schema/SKILL.md",
+      "size_bytes": 3431,
+      "sha256": "37175227084c1cb1439839b8004fac0c75ca832a7d31d8b18a1341b42d75e3f2"
+    },
+    {
+      "path": "skills/05-target-lowering-plan-and-pass-manager/SKILL.md",
+      "size_bytes": 3496,
+      "sha256": "c60eee39c4cb19108bfb2cecfea4ef1c095172ab3f86b76cda0e758d069d2b27"
+    },
+    {
+      "path": "skills/06-idiom-policy-and-pattern-selector/SKILL.md",
+      "size_bytes": 3493,
+      "sha256": "8950f59b8448f84d70a23fc2ff95802182c7ab964b2fd22fbfe6a223611e2226"
+    },
+    {
+      "path": "skills/07-type-nullability-generics-and-numeric-lowerer/SKILL.md",
+      "size_bytes": 3517,
+      "sha256": "75f1b805c73479af8fcdf932a832902eb068a37fa36480fa98f9aaff2ac5762c"
+    },
+    {
+      "path": "skills/08-expression-statement-control-flow-lowerer/SKILL.md",
+      "size_bytes": 3509,
+      "sha256": "b21f9779615049a4160c78754084b6d4484f9f6115af842d448a25ed6459d4ff"
+    },
+    {
+      "path": "skills/09-exception-resource-lifetime-lowerer/SKILL.md",
+      "size_bytes": 3497,
+      "sha256": "87fb6690a63178bc2fb95b3f79c6911402ab2844faceb1a72e3554f039175470"
+    },
+    {
+      "path": "skills/10-async-concurrency-cancellation-lowerer/SKILL.md",
+      "size_bytes": 3503,
+      "sha256": "382a1961d16f0be737eecf5f799bbde95ed1b5e92a1b97d9ff22722cc41adcd9"
+    },
+    {
+      "path": "skills/11-module-package-project-layout-planner/SKILL.md",
+      "size_bytes": 3496,
+      "sha256": "f5e14f2112659a5097ab4c54d85236bc4797f91b00b594462495c3c39fde2c32"
+    },
+    {
+      "path": "skills/12-build-dependency-toolchain-generator/SKILL.md",
+      "size_bytes": 3499,
+      "sha256": "86e0ac72fa6d9ff6c36b99f62c0d4020259c52fa35c51dde3d1c4827f42d15ed"
+    },
+    {
+      "path": "skills/13-api-web-di-serialization-framework-backend/SKILL.md",
+      "size_bytes": 3511,
+      "sha256": "7267772773733d453714fead491d8ef4da0eb0e7ed2d0c084989165d9447d66c"
+    },
+    {
+      "path": "skills/14-persistence-orm-transaction-framework-backend/SKILL.md",
+      "size_bytes": 3517,
+      "sha256": "cb42470fa6781877efd88fe7bf087b8ec5913aee4c8f1c510312d5d48f0ad409"
+    },
+    {
+      "path": "skills/15-messaging-scheduler-background-job-backend/SKILL.md",
+      "size_bytes": 3511,
+      "sha256": "70518fb057e6fc935ad2d69b69fa4ce06d29a8d458a247f21511b9de69c9530b"
+    },
+    {
+      "path": "skills/16-config-secrets-observability-resilience-security-backend/SKILL.md",
+      "size_bytes": 3539,
+      "sha256": "a97fa6640ceda2a9623b259a2f3a70a6f5f0cad0e29c55839468a336ed2af9b0"
+    },
+    {
+      "path": "skills/17-java-jvm-backend/SKILL.md",
+      "size_bytes": 3459,
+      "sha256": "cdf9555a0efe0661406d2a94894692af62e6b8f33ffc5d895036fdf133f3b623"
+    },
+    {
+      "path": "skills/18-csharp-dotnet-backend/SKILL.md",
+      "size_bytes": 3469,
+      "sha256": "ce2ec25133138e66d7bb9baa845b9486ebf3ff480af670aee595b295741794fd"
+    },
+    {
+      "path": "skills/19-nodejs-typescript-backend/SKILL.md",
+      "size_bytes": 3477,
+      "sha256": "bd4e7d4b4b3bc1a1e85bbff9621b4391b6748aefc83627915c3f45a5c9c28b5f"
+    },
+    {
+      "path": "skills/20-python-backend/SKILL.md",
+      "size_bytes": 3455,
+      "sha256": "9705090614815cf4b3f76fd0bc928a9874094927224f1a34eec57a3ddb6de117"
+    },
+    {
+      "path": "skills/21-cpp-backend/SKILL.md",
+      "size_bytes": 3449,
+      "sha256": "f70a9973e4d4790580ed291e1d5e2e45fb18103677aa62ddc59a66fd9dc32d83"
+    },
+    {
+      "path": "skills/22-go-backend/SKILL.md",
+      "size_bytes": 3447,
+      "sha256": "76c1b69d284021865af1b22c40fded0fcabc453514ac787ebb81ee8420de8911"
+    },
+    {
+      "path": "skills/23-rust-backend/SKILL.md",
+      "size_bytes": 3451,
+      "sha256": "f562f3a7d13c2d1b67ab1dab816a7ca53e050dd22c1705f69241d257f42cb582"
+    },
+    {
+      "path": "skills/24-vue-backend/SKILL.md",
+      "size_bytes": 3449,
+      "sha256": "aa1b1ec2354652773c3a3ae058286c16824dfd0d0bacfef923133308651e686f"
+    },
+    {
+      "path": "skills/25-react-backend/SKILL.md",
+      "size_bytes": 3453,
+      "sha256": "9c88046553f1ddff67f1383dbc9114da078b672e606ddfd08479e664d3f906f0"
+    },
+    {
+      "path": "skills/26-flutter-dart-backend/SKILL.md",
+      "size_bytes": 3467,
+      "sha256": "7077e4307e9e542825870f8c60cdc980a1d12887cba459526581f420718da1e9"
+    },
+    {
+      "path": "skills/27-target-native-ast-lst-emitter/SKILL.md",
+      "size_bytes": 3485,
+      "sha256": "32c0ab86dcbcc0e6f2c07ac201fd8f84085126829e693c85bd3fa1d44d1fccde"
+    },
+    {
+      "path": "skills/28-printer-formatter-import-and-style-organizer/SKILL.md",
+      "size_bytes": 3515,
+      "sha256": "008c738a9711cbd8f414c3f70148c19dd7955ffaa07138035989f434a0e24b94"
+    },
+    {
+      "path": "skills/29-incremental-regeneration-manual-region-protector/SKILL.md",
+      "size_bytes": 3548,
+      "sha256": "0ad4966e9d907ddb885e3f10052d86fef23b9e659261d65db353d6c3ba607c57"
+    },
+    {
+      "path": "skills/30-build-lint-typecheck-repair-loop/SKILL.md",
+      "size_bytes": 3471,
+      "sha256": "6538339ac221c47ad1231863c44a92dd1b80cb334ffaf50539f938074b9adb09"
+    },
+    {
+      "path": "skills/31-restricted-generation-agent-controller/SKILL.md",
+      "size_bytes": 3473,
+      "sha256": "f7cf13dca514f0e4727f23a0dd7bcf4896382e5b8ce93d947b16f1407626ac50"
+    },
+    {
+      "path": "skills/32-source-target-map-and-provenance-exporter/SKILL.md",
+      "size_bytes": 3519,
+      "sha256": "e6c4677f645f33f9dfdf44c1a82a7902f53d262795186bd148f4ddd52378ad85"
+    },
+    {
+      "path": "skills/33-backend-conformance-corpus-benchmark/SKILL.md",
+      "size_bytes": 3499,
+      "sha256": "4d533650aa6084299cc28c058cdc70c9c945f399af736e87f9dfd63874d449df"
+    },
+    {
+      "path": "skills/34-generated-project-completeness-and-certification-gate/SKILL.md",
+      "size_bytes": 3523,
+      "sha256": "85eeb0bf557b321f5ad50d5d495b94f1cf4386a79c02be561f748f625bc3afa8"
+    },
+    {
+      "path": "tests/SCENARIOS.md",
+      "size_bytes": 2652,
+      "sha256": "8358243dd2fec32a592e066c3c469269e96ff76a8ef1af5aceb48599e4d3067e"
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "size_bytes": 1961,
+      "sha256": "111880980a7c1672d965b7897eb3f1b1de22caad883cb3327abb0fd212b9ced5"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "size_bytes": 2280,
+      "sha256": "0f174d018825cc82f9734490e552de8818bfd8577b72be1cbd1fc51c6ddf52a5"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 72,
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4"
+    }
+  ],
+  "manifest_excludes_itself": true
+}

@@ -1,0 +1,238 @@
+{
+  "registry_version": "2026-08-19-verified-list-prices",
+  "base_currency": "USD",
+  "how_this_was_built": [
+    "Every rate below was read from the provider's own public pricing page on 2026-08-19; source_reference is the exact URL.",
+    "These are published LIST prices for the standard tier. They are not your account's negotiated rate, not batch pricing, and not a quote.",
+    "Prices change without notice. Re-verify before quoting a budget and bump verified_at when you do.",
+    "reasoning_output is set equal to output for every model here, because none of these providers bills reasoning tokens on a separate line. That is a modelling decision recorded per model, not a vendor line item."
+  ],
+  "models": [
+    {
+      "id": "anthropic-opus-5",
+      "provider": "anthropic",
+      "display_name": "Claude Opus 5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, 5-minute cache write",
+      "mapping_notes": [
+        "cached_input = the page's 'Cache Hit' column",
+        "cache_write = the page's '5m Cache Write' column; the 1h variant is $10/MTok if you need longer retention",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 5.0,
+        "cached_input": 0.5,
+        "cache_write": 6.25,
+        "output": 25.0,
+        "reasoning_output": 25.0
+      }
+    },
+    {
+      "id": "anthropic-sonnet-5",
+      "provider": "anthropic",
+      "display_name": "Claude Sonnet 5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, 5-minute cache write",
+      "mapping_notes": [
+        "cache_write = 5m column ($2.50); the 1h variant is $4/MTok",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 2.0,
+        "cached_input": 0.2,
+        "cache_write": 2.5,
+        "output": 10.0,
+        "reasoning_output": 10.0
+      }
+    },
+    {
+      "id": "anthropic-haiku-4-5",
+      "provider": "anthropic",
+      "display_name": "Claude Haiku 4.5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, 5-minute cache write",
+      "mapping_notes": [
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 1.0,
+        "cached_input": 0.1,
+        "cache_write": 1.25,
+        "output": 5.0,
+        "reasoning_output": 5.0
+      }
+    },
+    {
+      "id": "openai-gpt-5-6-sol",
+      "provider": "openai",
+      "display_name": "gpt-5.6-sol (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, short context",
+      "mapping_notes": [
+        "cache_write = 0: the page charges cached input at a reduced read rate and lists no separate cache-write charge",
+        "long-context rates are roughly double (input $5.00 / output $22.50); switch the profile if the workload exceeds the short-context threshold",
+        "regional processing endpoints carry a 10% uplift that is not modelled here",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 2.5,
+        "cached_input": 0.25,
+        "cache_write": 0.0,
+        "output": 15.0,
+        "reasoning_output": 15.0
+      }
+    },
+    {
+      "id": "openai-gpt-5-6-terra",
+      "provider": "openai",
+      "display_name": "gpt-5.6-terra (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, short context",
+      "mapping_notes": [
+        "cache_write = 0, no separate cache-write charge listed",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 1.0,
+        "cached_input": 0.1,
+        "cache_write": 0.0,
+        "output": 6.0,
+        "reasoning_output": 6.0
+      }
+    },
+    {
+      "id": "openai-gpt-5-6-luna",
+      "provider": "openai",
+      "display_name": "gpt-5.6-luna (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, standard tier, short context",
+      "mapping_notes": [
+        "cache_write = 0, no separate cache-write charge listed",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 0.1,
+        "cached_input": 0.01,
+        "cache_write": 0.0,
+        "output": 0.6,
+        "reasoning_output": 0.6
+      }
+    },
+    {
+      "id": "deepseek-v4-pro-peak",
+      "provider": "deepseek",
+      "display_name": "deepseek-v4-pro (peak hours)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, PEAK-hour rate (the conservative half of the two)",
+      "mapping_notes": [
+        "Off-peak rates are half of these. Peak is 01:00-04:00 and 06:00-10:00 UTC; everything else is off-peak.",
+        "Peak is used here on purpose: a budget built on off-peak rates is only valid if the run is guaranteed to avoid peak hours, and an agentic run lasting hours cannot guarantee that.",
+        "cache_write = 0, no separate cache-write charge listed",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 1.32,
+        "cached_input": 0.044,
+        "cache_write": 0.0,
+        "output": 3.96,
+        "reasoning_output": 3.96
+      }
+    },
+    {
+      "id": "deepseek-v4-flash-peak",
+      "provider": "deepseek",
+      "display_name": "deepseek-v4-flash (peak hours)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "rate_basis": "published list price, PEAK-hour rate",
+      "mapping_notes": [
+        "Off-peak rates are half of these.",
+        "cache_write = 0, no separate cache-write charge listed",
+        "reasoning_output = output (not billed separately)"
+      ],
+      "rates_per_million": {
+        "input": 0.44,
+        "cached_input": 0.014,
+        "cache_write": 0.0,
+        "output": 1.32,
+        "reasoning_output": 1.32
+      }
+    }
+  ],
+  "not_included": [
+    "Kimi / Moonshot and Qwen / Alibaba Cloud are listed under pending_verification below. Their rates are absent, not guessed.",
+    "Subscription-equivalent pricing (Claude Code / Codex seats) is a different billing model and is deliberately absent: converting a seat price into a per-token rate would be an invention."
+  ],
+  "pending_verification": {
+    "why": "These providers publish model catalogues at URLs that can be read, but their per-token rates are not on those pages. Third-party aggregators do carry numbers; this registry does not accept them, because a rate without vendor provenance fails the same check that rejects a null.",
+    "attempted_on": "2026-08-19",
+    "moonshot_kimi": {
+      "models_confirmed_to_exist": [
+        "Kimi K3",
+        "Kimi K2.7 Code",
+        "Kimi K2.6",
+        "Moonshot V1"
+      ],
+      "source_of_the_model_list": "https://platform.kimi.ai/docs/pricing/chat",
+      "urls_tried": [
+        "https://platform.moonshot.ai/docs/pricing/chat (302 -> platform.kimi.ai)",
+        "https://platform.kimi.ai/docs/pricing/chat (model list only, links out per model)",
+        "https://platform.kimi.ai/docs/pricing/kimi-k3 (quickstart content, no rates)",
+        "https://platform.kimi.ai/docs/pricing/kimi-k3-pricing (no rates)"
+      ],
+      "next_step": "Read the per-model page in a browser or the console, then fill rates_per_million here with that URL as source_reference."
+    },
+    "alibaba_qwen": {
+      "models_confirmed_to_exist": [
+        "qwen3.7-max",
+        "qwen3.7-plus",
+        "qwen3.6-flash"
+      ],
+      "source_of_the_model_list": "https://www.alibabacloud.com/help/en/model-studio/models",
+      "urls_tried": [
+        "https://www.alibabacloud.com/help/en/model-studio/models (catalogue and regions, no rates)"
+      ],
+      "next_step": "Model Studio's pricing page or the console shows rates; fill them here with that URL as source_reference.",
+      "currency_note": "Qwen is commonly priced in CNY. Add it with currency CNY -- this package never ranks across currencies, so mixing them is safe."
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 001"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $software-delivery-platform-engine-contract-and-worker to apply its fail-closed ELMOS runtime contract."

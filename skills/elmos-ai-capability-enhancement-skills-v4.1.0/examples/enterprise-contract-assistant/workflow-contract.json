@@ -1,0 +1,41 @@
+{
+  "stateSchema": {
+    "type": "object",
+    "properties": {
+      "question": {
+        "type": "string"
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "retrieve",
+      "kind": "retrieval",
+      "sideEffect": "read",
+      "retrySafe": true
+    },
+    {
+      "id": "answer",
+      "kind": "model",
+      "sideEffect": "none",
+      "retrySafe": true
+    }
+  ],
+  "edges": [
+    {
+      "from": "retrieve",
+      "to": "answer",
+      "condition": "evidence_found"
+    }
+  ],
+  "durability": {
+    "checkpoint": true,
+    "pauseResume": true,
+    "cancellation": true,
+    "humanApproval": true
+  },
+  "liveness": {
+    "boundedLoops": true,
+    "terminalReachable": true
+  }
+}

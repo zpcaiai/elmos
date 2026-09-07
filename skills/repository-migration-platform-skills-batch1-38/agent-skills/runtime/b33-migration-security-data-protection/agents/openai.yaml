@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Migration Security Data Protection"
+  short_description: "Help with B33 Migration Security Data Protection tasks"
+  default_prompt: "Use $b33-migration-security-data-protection to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

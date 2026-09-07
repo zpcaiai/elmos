@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/behavior-equivalence/difference-cluster.schema.json",
+  "title": "Behavioral difference root-cause cluster",
+  "type": "object",
+  "required": ["cluster_id", "module_id", "root_cause", "comparison_ids", "evidence_refs", "batch8_repair_candidate"],
+  "properties": {
+    "cluster_id": {"type": "string", "minLength": 1}, "module_id": {"type": "string", "minLength": 1},
+    "root_cause": {"type": "string", "minLength": 1},
+    "comparison_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "batch8_repair_candidate": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

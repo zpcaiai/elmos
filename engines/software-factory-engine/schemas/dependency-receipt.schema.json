@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/software-factory/dependency-receipt-1.0.json",
+  "title": "ELMOS software-factory dependency receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "package_id", "skill_name", "tenant_id", "project_id", "correlation_id",
+    "policy_revision", "source_revision", "status", "request_digest", "result_digest", "receipt_digest"
+  ],
+  "properties": {
+    "package_id": {"$ref": "#/$defs/token"},
+    "skill_name": {"$ref": "#/$defs/token"},
+    "tenant_id": {"$ref": "#/$defs/token"},
+    "project_id": {"$ref": "#/$defs/token"},
+    "correlation_id": {"$ref": "#/$defs/token"},
+    "policy_revision": {"$ref": "#/$defs/token"},
+    "source_revision": {"$ref": "#/$defs/token"},
+    "status": {"enum": ["EXECUTED", "BLOCKED", "REQUIRES_ADAPTER", "FAILED"]},
+    "request_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "result_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "receipt_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"
+    }
+  }
+}

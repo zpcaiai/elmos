@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/security-evidence.schema.json",
+  "title": "Service security and supply-chain evidence",
+  "type": "object",
+  "required": [
+    "service_id",
+    "artifact_id",
+    "status",
+    "critical_vulnerabilities",
+    "exploitable_high_vulnerabilities",
+    "secret_leaks",
+    "authentication_regressions",
+    "authorization_regressions",
+    "tenant_isolation_regressions",
+    "critical_scenario_pass_rate",
+    "penetration_passed",
+    "sbom_complete",
+    "sbom_matches_artifact",
+    "fixed_image_digest",
+    "non_root_least_privilege",
+    "production_resource_accessed",
+    "secret_material_observed",
+    "authority_id",
+    "evidence_refs"
+  ],
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "critical_vulnerabilities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exploitable_high_vulnerabilities": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_sast_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_dast_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "secret_leaks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authentication_regressions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authorization_regressions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tenant_isolation_regressions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "weak_cryptography_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_configuration_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unknown_origin_binaries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unapproved_security_waivers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_scenario_pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "penetration_passed": {
+      "type": "boolean"
+    },
+    "sbom_complete": {
+      "type": "boolean"
+    },
+    "sbom_matches_artifact": {
+      "type": "boolean"
+    },
+    "fixed_image_digest": {
+      "type": "boolean"
+    },
+    "non_root_least_privilege": {
+      "type": "boolean"
+    },
+    "production_resource_accessed": {
+      "const": false
+    },
+    "secret_material_observed": {
+      "const": false
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "status": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "NOT_RUN",
+        "BLOCKED",
+        "INCONCLUSIVE",
+        "NOT_APPLICABLE"
+      ]
+    }
+  }
+}

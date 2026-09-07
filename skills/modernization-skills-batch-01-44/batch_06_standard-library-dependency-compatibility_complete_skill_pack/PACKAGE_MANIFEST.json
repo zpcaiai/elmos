@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-06-standard-library-dependency-compatibility-complete-skill-pack",
+  "batch": 6,
+  "title": "Standard Library, Dependency Mapping and Compatibility Runtime",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b06-standard-library-dependency-compatibility-orchestrator",
+    "b06-standard-library-dependency-compatibility-domain-model",
+    "b06-standard-library-dependency-compatibility-discovery-inventory",
+    "b06-standard-library-dependency-compatibility-capability-planning",
+    "b06-standard-library-dependency-compatibility-deterministic-engine",
+    "b06-standard-library-dependency-compatibility-adapter-provider",
+    "b06-standard-library-dependency-compatibility-workflow-runtime",
+    "b06-standard-library-dependency-compatibility-lineage-reconciliation",
+    "b06-standard-library-dependency-compatibility-security-policy",
+    "b06-standard-library-dependency-compatibility-human-approval",
+    "b06-standard-library-dependency-compatibility-observability-economics",
+    "b06-standard-library-dependency-compatibility-corpus-benchmark",
+    "b06-standard-library-dependency-compatibility-failure-recovery",
+    "b06-standard-library-dependency-compatibility-integration-api",
+    "b06-standard-library-dependency-compatibility-lifecycle-recertification",
+    "b06-standard-library-dependency-compatibility-certification-gate"
+  ],
+  "upstream_batch": 5,
+  "files": [
+    {
+      "path": "BATCH05_COMPATIBILITY.md",
+      "sha256": "30a7de6d22bb5b300c2797c73e5d7a5323be23a802ab269a17965b0e1f11cc7e",
+      "size": 2175
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "62b603025c1c31030c132481844065d757689e594bb9ac7c074ccfda11f48dbd",
+      "size": 2375
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "bc64182542809cdf0e1475877a057c29d1ff04a1c211be826bc0f07b2daf1890",
+      "size": 1830
+    },
+    {
+      "path": "README.md",
+      "sha256": "0542539f62dfd278db565623fea51c5fa71f11072f12c2f75fc2a664b3dc8c06",
+      "size": 1101
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "cfccb224532bd1e8e4fac80036cb254a4e2ad5bf4cf63bc7f7ed51f6d7f64afd",
+      "size": 3840
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "f840393f37df702320e3853edfa46c96267c414f26c54129fe94cb426f306a92",
+      "size": 3287
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "e478b2ac9fb35e3c7f81ad64e688b96db60f01d3b617da300d42fd7acb912417",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "829c1a9bd18d011875bb077ce0053bb07e68b0c714b37e0da17b51239b868aee",
+      "size": 451
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "e159bd7c89a88c65c50f116baaed786df0e7253d8bc4375d6427eb76431fefad",
+      "size": 296
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "c13cd64c7aa9c6346479ea72caf52252441802c120aa4c48b874b08c3ef2fbbc",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "cc87b30a1e9d7e5f557653f4d68babfaa838c52bc51f40b529206353fc8c1ecc",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "8e6292327b4630abd7195025702e350c9e948222a6696a24389f7848b994a6ab",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "58f4c052ebfdc792dcd88418ea24bd96351d86f35cf5b9c152d39511b97770bd",
+      "size": 1280
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "0b6f9e78065f20fb9febcd826aa8d66c2c7c956dfeef186eb73cd87fc59f15a1",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "1a9cb384350224da991a58e5548b64e9a7a6adf1a492b24f83af033fd24be1ad",
+      "size": 848
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-adapter-provider/SKILL.md",
+      "sha256": "0eb79e3bb1459a95179a3be57deab21ca963cc2084e59053b8356cbdb9e75aad",
+      "size": 4004
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-capability-planning/SKILL.md",
+      "sha256": "04c9be65d5ab1b7d007d7499c9ca46d3a587301d244a9eadf5acc8be45f027e7",
+      "size": 3906
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-certification-gate/SKILL.md",
+      "sha256": "7b2477460fa3b1a92c0416444748911e78ec04f66a0faab3f4572fce303587f9",
+      "size": 4035
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-corpus-benchmark/SKILL.md",
+      "sha256": "e95f2f5f0929088e750ba5f22f5e615cd5720e360dc678865634a082c47e2edb",
+      "size": 3945
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-deterministic-engine/SKILL.md",
+      "sha256": "95632607b8dc3c5a8ce8540f2ce792ad670b3c842757dff5283e9a295bb96150",
+      "size": 3922
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-discovery-inventory/SKILL.md",
+      "sha256": "0e14dc73faf761c672d44f30bc5493e5c3d2e8ed95b7dd1099e6715f2700c684",
+      "size": 3949
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-domain-model/SKILL.md",
+      "sha256": "f7ce1e8fcf2edb82424386427728439236e8cec3f375ec7c54e81ac8c62048c4",
+      "size": 3976
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-failure-recovery/SKILL.md",
+      "sha256": "07392e2c84384cacce19949a23359a753153356ca94db4b863e5b409b6430208",
+      "size": 3953
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-human-approval/SKILL.md",
+      "sha256": "26ebfbf009229d2c2d575f6b6fdeba18a1e9de22e21fb64241902ed876f3de36",
+      "size": 3938
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-integration-api/SKILL.md",
+      "sha256": "3564552bec320de95dad381d34e2e2afb05e5e35a0cd594124d51064c76d4e45",
+      "size": 3923
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-lifecycle-recertification/SKILL.md",
+      "sha256": "aff075d496a4dc643646bfa64de3cdcee46103f2d21bb5687a5bc2a092e70e30",
+      "size": 4013
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-lineage-reconciliation/SKILL.md",
+      "sha256": "a1fdf09a1b31728977e402dbd61c880e58550e617cefa8496b99399ad63391dc",
+      "size": 3964
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-observability-economics/SKILL.md",
+      "sha256": "948b2e8316e81550e241586116b02ab569c320d16283fadd99564037d5b6d0d6",
+      "size": 3979
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-orchestrator/SKILL.md",
+      "sha256": "45e5ef88ffece352809c12ab954fd44acf606c685f4e5454774c8c47fb78f204",
+      "size": 4001
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-security-policy/SKILL.md",
+      "sha256": "1b19a0b487f5faeafa220a476a490ba1c1fa452abbe26d82770583dabf85aa5e",
+      "size": 3958
+    },
+    {
+      "path": "skills/b06-standard-library-dependency-compatibility-workflow-runtime/SKILL.md",
+      "sha256": "a5ed71f27ed4a7b692ceacaf345d4a49b7a6ed021534aca20dc56f58928722e7",
+      "size": 3967
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "9bde8fae97630436d55b508cae499ed688a0367f61e8992a68dd8b2953a03552",
+      "size": 442
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "2d1604523fabf6aebde11f12893c4deb7c9cd223d5d6ad10fc74a04e59639f04",
+      "size": 1939
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

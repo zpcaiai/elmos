@@ -1,0 +1,255 @@
+{
+  "kind": "elmos.sql-dialect.regex-equivalence-execution-evidence",
+  "date": "2026-08-26",
+  "patterns": 8,
+  "probes": 35,
+  "agreements": 35,
+  "divergences": [],
+  "rows": [
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "aaaaaaaaaaaa...(64 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "AAAAAAAAAAAA...(64 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "aaaaaaaaaaaa...(63 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "aaaaaaaaaaaa...(65 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "gggggggggggg...(64 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{64}$",
+      "probe": "",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "probe": "sha256:aaaaa...(71 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "probe": "SHA256:aaaaa...(71 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "probe": "sha256:AAAAA...(71 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "probe": "aaaaaaaaaaaa...(64 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "a",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "A",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "a.b_c:d-e",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "_leading",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "aaaaaaaaaaaa...(128 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "aaaaaaaaaaaa...(129 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "probe": "",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "probe": "z",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "probe": "aaaaaaaaaaaa...(64 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "probe": "aaaaaaaaaaaa...(65 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+      "probe": "-nope",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$",
+      "probe": "repo/img:500...(87 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$",
+      "probe": "REPO/img@sha...(80 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$",
+      "probe": "repo@sha256:...(76 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "probe": "0",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "probe": "1234567890",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "probe": "12a",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "probe": "",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9]+$",
+      "probe": " 1",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{40}$",
+      "probe": "bbbbbbbbbbbb...(40 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{40}$",
+      "probe": "BBBBBBBBBBBB...(40 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "^[0-9a-f]{40}$",
+      "probe": "bbbbbbbbbbbb...(39 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "@sha256:[0-9a-f]{64}$",
+      "probe": "x@sha256:aaa...(73 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    },
+    {
+      "pattern": "@sha256:[0-9a-f]{64}$",
+      "probe": "x@SHA256:aaa...(73 chars)",
+      "postgres": "REJECTED",
+      "mysql": "REJECTED",
+      "agree": true
+    },
+    {
+      "pattern": "@sha256:[0-9a-f]{64}$",
+      "probe": "@sha256:aaaa...(72 chars)",
+      "postgres": "ACCEPTED",
+      "mysql": "ACCEPTED",
+      "agree": true
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Provider Static Kubernetes Kueue And Vm Adapters"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-provider-static-kubernetes-kueue-and-vm-adapters to implement its fail-closed ELMOS Product B36 contract."

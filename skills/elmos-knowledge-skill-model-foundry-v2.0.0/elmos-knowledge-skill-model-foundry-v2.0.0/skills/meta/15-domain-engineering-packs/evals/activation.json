@@ -1,0 +1,18 @@
+[
+  {
+    "query": "为 Elmos 规划并执行 15-domain-engineering-packs 相关生产能力，必须给出证据和回滚。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个任务涉及 把 Elmos 四条核心业务线及前端平台转换的深层语义、验证和训练资产封装为领域 Skill。，请选择合适技能。",
+    "should_trigger": true
+  },
+  {
+    "query": "解释一个普通编程概念，不需要访问仓库或执行工具。",
+    "should_trigger": false
+  },
+  {
+    "query": "只改写下面一句中文，使其更通顺。",
+    "should_trigger": false
+  }
+]

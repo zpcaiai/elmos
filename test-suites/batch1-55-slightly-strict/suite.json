@@ -1,0 +1,34 @@
+{
+  "suite_id": "batch1-55-slightly-strict-supplemental",
+  "version": "2.0.0",
+  "status": "active",
+  "authority": "supplemental-design-and-local-engineering-only",
+  "replaces_batch1_37_strict_suite": false,
+  "scope": {
+    "batch_from": 1,
+    "batch_to": 55,
+    "seed_cases": 660
+  },
+  "source_namespace_model": "single-numeric-batch-1-55",
+  "repository_namespace_model": {
+    "migration-pack": "M1-M45",
+    "product-commercialization": "B34-B55"
+  },
+  "namespace_interpretation": {
+    "source_batches_1_33": "migration-pack design references",
+    "source_batches_34_55": "product-commercialization design references"
+  },
+  "uncovered_repository_namespaces": [
+    "migration-pack:M34-M45"
+  ],
+  "case_catalog": "cases/catalog.json",
+  "result_catalog": "results/catalog.json",
+  "control_manifest": "control-manifest.json",
+  "gate": "scripts/test-suite/run_batch1_55_slightly_strict_gate.py",
+  "default_decision": "BLOCKED",
+  "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
+  "certification_authority": false,
+  "source_skill_count": 71,
+  "source_skills_installed": false,
+  "source_skills_note": "The 71 source Skills are preserved by source-package provenance but are not installed because the repository's 52 Batch 1-37 tst-* Skills remain the stronger authoritative certification workflow."
+}

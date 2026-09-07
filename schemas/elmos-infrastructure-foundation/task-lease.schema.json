@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/task-lease.schema.json",
+  "title": "Runner Task Lease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "runner_id",
+    "attempt",
+    "lease_generation",
+    "fencing_token",
+    "leased_at",
+    "expires_at",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "runner_id": {
+      "type": "string"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lease_generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "fencing_token": {
+      "type": "string",
+      "minLength": 16
+    },
+    "leased_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "LEASED",
+        "ACKNOWLEDGED",
+        "RUNNING",
+        "CANCEL_REQUESTED",
+        "COMPLETING",
+        "COMPLETED",
+        "FAILED",
+        "EXPIRED",
+        "UNKNOWN_RESULT",
+        "QUARANTINED"
+      ]
+    },
+    "checkpoint_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "last_heartbeat_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancel_reason": {
+      "type": "string"
+    }
+  }
+}

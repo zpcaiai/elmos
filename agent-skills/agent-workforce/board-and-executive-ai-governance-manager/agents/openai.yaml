@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 591: board and executive ai governance manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $board-and-executive-ai-governance-manager to evaluate this capability with evidence."

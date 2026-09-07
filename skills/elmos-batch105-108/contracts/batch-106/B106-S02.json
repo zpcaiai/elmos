@@ -1,0 +1,67 @@
+{
+  "id": "B106-S02",
+  "batch": 106,
+  "name": "runtime-manifest-generator",
+  "dependencies": [
+    "B106-S01"
+  ],
+  "inputs": [
+    "RuntimeDetectionResult",
+    "selected service",
+    "tenant policy"
+  ],
+  "outputs": [
+    "RuntimeManifest",
+    "manifest digest",
+    "human preview"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/manifest/RuntimeManifestService.java",
+      "contracts/runtime-manifest.schema.json",
+      "apps/web/src/features/runtime-manifest/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/runtime-manifests",
+      "event runtime-manifest.generated"
+    ],
+    "data": [
+      "runtime_manifest",
+      "runtime_command",
+      "runtime_resource_policy"
+    ]
+  },
+  "workflow": [
+    "选择检测候选和适配器",
+    "规范化build/start命令为argv",
+    "注入PORT/host而不覆盖用户Secret",
+    "配置health、homepage、OpenAPI和协议",
+    "应用CPU/内存/磁盘/TTL/网络政策",
+    "验证Schema并计算不可变摘要"
+  ],
+  "tests": [
+    "shell注入字符以argv安全处理",
+    "端口越界拒绝",
+    "TTL超过策略拒绝",
+    "未声明Secret不能引用",
+    "manifest重复生成稳定"
+  ],
+  "evidence": [
+    "runtime.yaml",
+    "runtime-manifest.json",
+    "manifest.sha256",
+    "policy-application.json"
+  ],
+  "definition_of_done": [
+    "Schema有效",
+    "命令无隐式shell注入",
+    "资源不超租户配额",
+    "TTL明确",
+    "摘要可复算"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

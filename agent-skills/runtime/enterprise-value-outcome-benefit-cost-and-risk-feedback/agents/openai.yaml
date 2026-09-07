@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 013"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $enterprise-value-outcome-benefit-cost-and-risk-feedback to implement its evidence-bound ELMOS Product Batch 30 contract."

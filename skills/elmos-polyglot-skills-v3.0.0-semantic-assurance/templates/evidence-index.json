@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "elmos.evidence-index/v1",
+  "runId": "REPLACE-ME",
+  "snapshotId": "REPLACE-ME",
+  "generatedAt": "REPLACE-ME",
+  "artifacts": [],
+  "claims": [],
+  "readiness": "not-run"
+}

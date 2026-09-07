@@ -1,0 +1,5 @@
+interface:
+  display_name: "Documentation As Product Manager"
+  short_description: "Authoritative Batch 14 Skill 424 workflow"
+  default_prompt: "Use $documentation-as-product-manager to execute its evidence-bound Batch 14 workflow."
+

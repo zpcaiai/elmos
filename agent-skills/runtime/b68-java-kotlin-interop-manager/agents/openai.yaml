@@ -1,0 +1,4 @@
+interface:
+  display_name: "B68 Java Kotlin Interop Manager"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b68-java-kotlin-interop-manager to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,32 @@
+skill: vue-to-miniapp-analyzer
+version: 1.0.0
+task_ids:
+- MAPP-005
+- MAPP-006
+required_outputs:
+- path: vue-analysis.json
+  required: true
+- path: component-graph.json
+  required: true
+- path: route-graph.json
+  required: true
+- path: state-graph.json
+  required: true
+- path: source-trace-map.json
+  required: true
+gates:
+- name: 所有 SFC 均有解析结果或错误记录
+  required: true
+- name: 路由与 store 引用闭合
+  required: true
+- name: 源节点到 IR 候选的 trace 覆盖率=100%
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

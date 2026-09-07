@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 495: cost opex and investment planner"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $cost-opex-and-investment-planner to evaluate this capability with evidence."

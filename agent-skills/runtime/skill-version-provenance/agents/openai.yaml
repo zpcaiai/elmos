@@ -1,0 +1,6 @@
+interface:
+  display_name: "Skill Version Provenance"
+  short_description: "Run skill-version-provenance with bounded commercial controls"
+  default_prompt: "Use $skill-version-provenance through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

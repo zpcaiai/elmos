@@ -1,0 +1,25 @@
+{
+  "name": "@elmos/repository-refactoring-sdk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Typed TypeScript shell over the deterministic elmos-repository-refactoring core",
+  "packageManager": "pnpm@10.12.4",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node --test --test-concurrency=1 dist/test/*.test.js",
+    "check": "pnpm run test",
+    "catalog:generate": "node dist/scripts/generate-catalog.js"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "typescript": "5.9.2"
+  },
+  "dependencies": {}
+}

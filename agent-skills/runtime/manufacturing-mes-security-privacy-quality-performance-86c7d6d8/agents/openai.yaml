@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Mes Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-security-privacy-quality-performance-86c7d6d8 to implement its fail-closed ELMOS Product B50 contract."

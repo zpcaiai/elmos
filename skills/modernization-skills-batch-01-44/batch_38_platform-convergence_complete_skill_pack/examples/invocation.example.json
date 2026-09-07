@@ -1,0 +1,12 @@
+{
+  "request_id": "b38-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Canonical CapabilityPackage, Dependency Graph and Platform Convergence",
+  "upstream_certificate_refs": [
+    "batch-37-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "every must-have maps to observable evidence",
+      "unknowns are classified and high-impact ambiguity is visible"
+    ],
+    "guardrails": [
+      "Do not infer hidden requirements here; that requires repository evidence.",
+      "Do not decompose by files until behavioral scenarios and repository graph exist."
+    ],
+    "inputs": [
+      "`raw requirement`",
+      "`repo metadata`"
+    ],
+    "outputs": [
+      "`explicit requirement spec`",
+      "`non-goals`",
+      "`constraints`",
+      "`observable acceptance criteria`",
+      "`unknown/ambiguity ledger`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-repository-orchestrator",
+      "elmos-run-state-journal",
+      "elmos-model-selection-controller"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.requirement-baseline",
+    "handler": "requirement_normalizer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-requirement-normalizer",
+    "ordinal": 1,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/01-requirement-normalizer/SKILL.md",
+    "sha256": "sha256:0fa24cc134702a355679ddcb62581ae6b8c9e66f407dd8410a7804c9dcb3d89e",
+    "version": "2.0.0"
+  }
+}

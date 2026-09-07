@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Validation Profile"
+  short_description: "Compose risk-tiered independent verification oracles"
+  default_prompt: "Use $b35-validation-profile-oracle-composition to implement and verify this capability with fail-closed evidence."

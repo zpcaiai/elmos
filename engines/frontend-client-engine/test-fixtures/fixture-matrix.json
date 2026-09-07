@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "fixtures": [
+    {"schema": "contracts/frontend-route-schema/frontend-route-node.schema.json", "instance": "frontend-route-node.json"},
+    {"schema": "contracts/component-graph-schema/design-component-mapping.schema.json", "instance": "design-component-mapping.json"},
+    {"schema": "contracts/visual-diff-schema/visual-difference.schema.json", "instance": "visual-difference.json"},
+    {"schema": "contracts/accessibility-schema/accessibility-finding.schema.json", "instance": "accessibility-finding.json"},
+    {"schema": "contracts/client-contract-schema/client-version-compatibility.schema.json", "instance": "client-version-compatibility.json"},
+    {"schema": "contracts/client-release-schema/client-release-decision.schema.json", "instance": "client-release-decision.json"}
+  ]
+}

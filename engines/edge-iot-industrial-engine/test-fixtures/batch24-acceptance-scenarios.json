@@ -1,0 +1,290 @@
+[
+  {
+    "scenarioId": "B24-S01",
+    "title": "主动扫描导致PLC通信异常",
+    "requirements": "Given：\n生产PLC对大量并发连接敏感\n\nWhen：\nDiscovery尝试主动端口和协议扫描\n\nThen：\nOT Policy阻止主动扫描\n改用配置导出和Passive Evidence。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S02",
+    "title": "PLC工程项目与生产不一致",
+    "requirements": "Given：\n工程站中的PLC Project版本\n与PLC运行Checksum不一致\n\nWhen：\n准备现代化\n\nThen：\n生成PLC_PROJECT_RUNTIME_MISMATCH\n阻止自动生成目标逻辑。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S03",
+    "title": "Safety PLC被当作普通PLC",
+    "requirements": "Given：\nSafety Controller出现在Device Inventory\n\nWhen：\nTarget Planner建议容器化控制逻辑\n\nThen：\nSafety Classification阻止\n要求独立安全认证和人工流程。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S04",
+    "title": "Tag单位错误",
+    "requirements": "Given：\nPLC值实际单位为0.1°C\n新平台按1°C解释\n\nWhen：\n比较Historian\n\nThen：\nScale和Engineering Unit验证失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S05",
+    "title": "Bad Quality被当作正常零值",
+    "requirements": "Given：\n设备离线时Tag Quality=BAD\n值字段保持0\n\nWhen：\n业务系统读取\n\nThen：\n不得把0解释为真实测量\n必须传播Quality。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S06",
+    "title": "时间被云接收时间覆盖",
+    "requirements": "Given：\n网络中断两小时后批量上传数据\n\nWhen：\nCloud使用接收时间作为事件时间\n\nThen：\n时序顺序和生产批次错误\nTime Semantics Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S07",
+    "title": "OPC UA平铺Tag丢失资产结构",
+    "requirements": "Given：\n新Server发布数万个Variable\n没有Asset和Component关系\n\nWhen：\n评估Information Model\n\nThen：\n只能标记Protocol Enabled\n不能标记Semantic Modernized。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S08",
+    "title": "OPC UA匿名写入",
+    "requirements": "Given：\n生产Endpoint允许Anonymous Session写Setpoint\n\nWhen：\n执行Security Assessment\n\nThen：\nCritical Finding\n禁止进入Cutover。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S09",
+    "title": "MQTT QoS 2被理解为业务一次执行",
+    "requirements": "Given：\n设备命令使用QoS 2\n设备重启后业务动作可能重复\n\nWhen：\n判断Exactly Once\n\nThen：\n要求Command ID和设备幂等\nQoS 2不足以证明业务一次执行。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S10",
+    "title": "Retained Command重新执行",
+    "requirements": "Given：\n控制命令发布为Retained Message\n\nWhen：\n设备重新订阅\n\nThen：\n旧命令被再次接收\n\n结果：\n禁止Command Topic使用Retained\n或要求严格过期和幂等。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S11",
+    "title": "重复MQTT Client ID",
+    "requirements": "Given：\n两台Gateway使用相同Client ID\n\nWhen：\n第二台连接\n\nThen：\n第一台被Broker断开\n产生采集抖动\nIdentity Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S12",
+    "title": "Sparkplug Birth不完整",
+    "requirements": "Given：\nEdge Node上线只发布部分Metric\n\nWhen：\nSCADA接收Birth\n\nThen：\n不能可靠建立完整状态\nSparkplug Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S13",
+    "title": "Sparkplug Sequence错误重置",
+    "requirements": "Given：\nGateway未重新Birth就重置Sequence\n\nWhen：\nSubscriber接收数据\n\nThen：\n识别Session State不一致。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S14",
+    "title": "Protocol Gateway轮询压垮设备",
+    "requirements": "Given：\n旧仪表只允许每秒少量请求\n\nWhen：\nGateway以50ms周期读取所有Register\n\nThen：\nDevice Load Validation失败\n调整批量读取和周期。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S15",
+    "title": "Modbus写地址过宽",
+    "requirements": "Given：\nGateway允许写入全部Holding Register\n\nWhen：\n业务应用只需一个Setpoint\n\nThen：\n收窄到Tag和范围级Allowlist。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S16",
+    "title": "云断网后边缘服务停止",
+    "requirements": "Given：\n产线网络与云断开\n\nWhen：\nEdge Application无法获取配置和License\n\nThen：\nOffline Autonomy Gate失败\n不能进入生产主路径。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S17",
+    "title": "边缘磁盘写满",
+    "requirements": "Given：\n断网期间Telemetry持续缓存\n\nWhen：\nDisk达到100%\n\nThen：\n低优先数据按Policy降采样\nCritical Alarm和Audit不能静默丢失。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S18",
+    "title": "设备共用证书",
+    "requirements": "Given：\n一千台设备使用同一Client Certificate\n\nWhen：\n其中一台被盗\n\nThen：\n无法单独撤销\nDevice Identity Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S19",
+    "title": "OPC UA证书集中到期",
+    "requirements": "Given：\n大量Server证书同一天到期\n\nWhen：\n没有GDS或自动轮换\n\nThen：\n产生Fleet Availability风险\n要求分批轮换和TrustList验证。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S20",
+    "title": "OTA下发错误硬件型号",
+    "requirements": "Given：\nARM固件被下发到不同Controller型号\n\nWhen：\n设备验证Manifest\n\nThen：\nHardware Compatibility失败\n设备拒绝安装。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S21",
+    "title": "OTA掉电变砖",
+    "requirements": "Given：\n设备写入固件期间断电\n\nWhen：\n再次启动\n\nThen：\nA/B或Recovery恢复旧版本\n否则OTA Release失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S22",
+    "title": "OTA回滚攻击",
+    "requirements": "Given：\n攻击者重放已签名旧固件\n\nWhen：\n设备检查Release Counter\n\nThen：\n拒绝低于可信版本的Artifact。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S23",
+    "title": "Desired State被误认为Applied",
+    "requirements": "Given：\n云端把阀门Desired State设为Open\n\nWhen：\n设备网络中断\n\nThen：\nTwin显示Requested而不是Applied\n不能向业务声明阀门已打开。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S24",
+    "title": "过期命令恢复后执行",
+    "requirements": "Given：\n停机命令在断网期间排队\n网络三小时后恢复\n\nWhen：\n命令Deadline已过\n\nThen：\nEdge丢弃并报告Expired\n不能迟到执行。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S25",
+    "title": "Historian压缩丢失短时异常",
+    "requirements": "Given：\n压缩算法认为短时压力峰值不重要\n\nWhen：\n事故分析需要该峰值\n\nThen：\nHistorian Profile被判不适合该安全信号。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S26",
+    "title": "Edge AI量化后漏检",
+    "requirements": "Given：\n视觉模型从FP32量化到INT8\n\nWhen：\n普通准确率变化很小\n关键缺陷Slice召回率显著下降\n\nThen：\nEdge AI Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S27",
+    "title": "Edge AI控制越过安全联锁",
+    "requirements": "Given：\n优化模型建议提高设备速度\n超过安全逻辑批准范围\n\nWhen：\n准备写Setpoint\n\nThen：\nLocal Interlock和Command Guard阻止。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S28",
+    "title": "Shadow AI产生真实副作用",
+    "requirements": "Given：\n候选模型处于Shadow\n仍向PLC写入优化值\n\nWhen：\n运行验证\n\nThen：\nCritical Shadow Policy失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S29",
+    "title": "单设备成功后全厂OTA",
+    "requirements": "Given：\n实验室设备升级成功一次\n\nWhen：\n系统准备全厂发布\n\nThen：\nRing Policy阻止\n必须经过Pilot Device、Cell和Line阶段。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S30",
+    "title": "新SCADA读路径正确但写路径错误",
+    "requirements": "Given：\n新旧SCADA显示值一致\n\nWhen：\n新SCADA写Setpoint没有正确Ack\n\nThen：\nRead Gate通过\nWrite Cutover Gate失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S31",
+    "title": "切换后旧网关仍发送命令",
+    "requirements": "Given：\n新Gateway已成为Primary\n旧Gateway仍连接PLC写接口\n\nWhen：\n准备稳定观察\n\nThen：\n发现双Command Authority\n立即暂停Cutover。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S32",
+    "title": "退役设备仍在备用链路中",
+    "requirements": "Given：\n旧Gateway日常流量为0\n故障切换配置仍引用它\n\nWhen：\n准备删除\n\nThen：\nStandby Dependency阻止退役。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S33",
+    "title": "设备替换但Twin身份复用",
+    "requirements": "Given：\n旧传感器被新硬件替换\n直接复用旧Device Identity\n\nWhen：\n审计历史\n\nThen：\n无法区分物理设备\n要求新Device Identity和Asset关系。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S34",
+    "title": "边缘时钟漂移",
+    "requirements": "Given：\nEdge Node时钟漂移数分钟\n\nWhen：\n合并多个传感器事件\n\nThen：\n顺序和因果关系错误\n触发Clock Drift Finding。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S35",
+    "title": "远程供应商拥有永久VPN",
+    "requirements": "Given：\nVendor账户全年可访问控制网络\n\nWhen：\n执行Zone和Conduit评估\n\nThen：\n改为JIT、MFA、站点批准和Session Audit。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B24-S36",
+    "title": "稳定观察未覆盖完整生产周期",
+    "requirements": "Given：\n新系统只运行了普通日班\n尚未经历换型、清洗和夜间Batch\n\nWhen：\n准备退役旧SCADA\n\nThen：\nStability Hold不完整\n阻止Decommission。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  }
+]

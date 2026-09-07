@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scan Generate Edit Lifecycle"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $scan-generate-edit-lifecycle for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-provider-adapters-versioning-compatibil-c846fe8f to implement its fail-closed ELMOS Product B42 contract."

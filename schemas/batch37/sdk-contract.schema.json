@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "sdk_kind",
+    "sdk_version",
+    "protocol_version",
+    "supported_extension_kinds",
+    "contracts",
+    "conformance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "sdk_kind": {
+      "type": "string"
+    },
+    "sdk_version": {
+      "type": "string"
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "supported_extension_kinds": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "language-adapter",
+          "framework-adapter",
+          "transformation-recipe",
+          "dependency-mapping",
+          "comparator-normalizer",
+          "evidence-collector",
+          "runner-job",
+          "vertical-pack",
+          "policy-extension"
+        ]
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "name",
+          "version",
+          "schema_ref"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "schema_ref": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "conformance": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "properties": {
+        "development": {
+          "type": "string"
+        },
+        "negative": {
+          "type": "string"
+        },
+        "holdout": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/sdk-contract.schema.json"
+}

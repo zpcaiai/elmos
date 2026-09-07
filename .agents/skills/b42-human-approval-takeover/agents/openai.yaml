@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Human Approval Takeover"
+  short_description: "Run evidence-bound Batch 42 human approval takeover work"
+  default_prompt: "Use $b42-human-approval-takeover to implement and verify this capability with fail-closed evidence."

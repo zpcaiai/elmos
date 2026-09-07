@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "fingerprint_kind": "source-framework-fingerprint",
+  "required_fields": ["source_family", "exact_framework_version", "source_java", "build_tool", "dependency_authority"],
+  "allowed_source_families": ["spring-boot", "spring-mvc", "spring-framework"],
+  "unknown_policy": "fail-closed",
+  "version_policy": "resolve-one-exact-version-before-route-selection",
+  "route_selection_authority": "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B32: Differential Fuzzing"
+  short_description: "Run Precision Migration B32 with evidence controls"
+  default_prompt: "Use $pm-b32-differential-fuzzing to execute this Precision Migration contract with fail-closed evidence."

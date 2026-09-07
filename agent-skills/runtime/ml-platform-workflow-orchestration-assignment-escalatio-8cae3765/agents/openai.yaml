@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Ml Platform Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $ml-platform-workflow-orchestration-assignment-escalatio-8cae3765 to implement its fail-closed ELMOS Product B45 contract."

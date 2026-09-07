@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/task-checkpoint.schema.json",
+  "title": "Elmos TaskCheckpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "checkpoint_id",
+    "task_id",
+    "task_run_id",
+    "checkpoint_type",
+    "sequence",
+    "package_version_id",
+    "model_capability_snapshot_id",
+    "critical_state",
+    "execution_state",
+    "side_effect_cursor",
+    "cost_cursor",
+    "integrity",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "checkpoint_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "task_run_id": {
+      "type": "string"
+    },
+    "checkpoint_type": {
+      "enum": [
+        "PERIODIC",
+        "PRE_SIDE_EFFECT",
+        "POST_SIDE_EFFECT",
+        "PRE_COMPACTION",
+        "POST_COMPACTION",
+        "STAGE_BOUNDARY",
+        "MANUAL",
+        "FAILURE"
+      ]
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "package_version_id": {
+      "type": "string"
+    },
+    "model_capability_snapshot_id": {
+      "type": "string"
+    },
+    "critical_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_goal",
+        "latest_user_requirements",
+        "constraints",
+        "acceptance_criteria",
+        "approved_decisions",
+        "completed_work",
+        "pending_work",
+        "changed_files",
+        "test_results",
+        "security_findings",
+        "source_anchor_ids",
+        "retrieval_keys"
+      ],
+      "properties": {
+        "task_goal": {
+          "type": "string"
+        },
+        "latest_user_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "approved_decisions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "completed_work": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pending_work": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "changed_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_results": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "security_findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_anchor_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "retrieval_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "execution_state": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context_load_plan_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "compaction_checkpoint_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "side_effect_cursor": {
+      "type": "string"
+    },
+    "cost_cursor": {
+      "type": "string"
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical_fact_set_id",
+        "status",
+        "hash"
+      ],
+      "properties": {
+        "critical_fact_set_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "PASSED",
+            "FAILED",
+            "NOT_RUN"
+          ]
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "uri",
+          "hash"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2909",
+  "skill_name": "frt-2909-file-upload-and-content-security-validator",
+  "batch": "G29",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g29/frt-2909-file-upload-and-content-security-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "security_privacy",
+  "capability_key": "frt.g29.file-upload-and-content-security-validator",
+  "execution_contract_sha256": "sha256:57bca875aa21ab87f093347483a33cee496ca51488122526f85baaf27f41c7fb",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "assets",
+      "findings"
+    ],
+    "optional": [
+      "dataFlows",
+      "sbomComponents"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2d7d947dfdadce844df996c18898d116a46736b4ae99da145c00a63c2ef048d3",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

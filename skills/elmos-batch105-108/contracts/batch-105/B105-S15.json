@@ -1,0 +1,68 @@
+{
+  "id": "B105-S15",
+  "batch": 105,
+  "name": "sales-demo-golden-journey-publisher",
+  "dependencies": [
+    "B105-S14"
+  ],
+  "inputs": [
+    "DEMO_READY decision",
+    "sanitized evidence",
+    "demo metadata"
+  ],
+  "outputs": [
+    "GoldenJourneyPackage",
+    "catalog entry",
+    "replay instructions"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../catalog/GoldenJourneyPublisher.java",
+      "catalog/golden-journeys/",
+      "apps/web/src/features/golden-journeys/"
+    ],
+    "interfaces": [
+      "POST /api/golden-journeys",
+      "GET /api/golden-journeys/{id}",
+      "event golden-journey.published"
+    ],
+    "data": [
+      "golden_journey",
+      "journey_version",
+      "journey_artifact"
+    ]
+  },
+  "workflow": [
+    "清理客户Secret和敏感路径",
+    "固定源与目标Commit/镜像摘要",
+    "打包输入、步骤、预期结果和证据",
+    "生成一键重放说明和成本基线",
+    "发布到受控Catalog并设置可见性",
+    "执行重放验证后标记ACTIVE"
+  ],
+  "tests": [
+    "未脱敏证据禁止发布",
+    "源仓许可证不允许再分发时仅发布元数据",
+    "重放失败不能ACTIVE",
+    "版本更新不覆盖旧版本",
+    "客户私有Journey默认私有"
+  ],
+  "evidence": [
+    "golden-journey.json",
+    "replay-plan.json",
+    "sanitization-report.json",
+    "catalog-publication.json"
+  ],
+  "definition_of_done": [
+    "可重放",
+    "无敏感数据",
+    "许可证策略通过",
+    "版本不可变",
+    "Catalog条目与证据一致"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

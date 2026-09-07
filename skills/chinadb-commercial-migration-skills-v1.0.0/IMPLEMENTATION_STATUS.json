@@ -1,0 +1,237 @@
+{
+  "00-migration-program-orchestrator": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "01-estate-inventory-assessment": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "02-semantic-db-ir": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "03-rule-mutation-dsl": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "04-data-movement-cdc": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "05-ddl-auto-conversion": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "06-sql-auto-conversion": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "07-plsql-tsql-conversion": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "08-application-code-auto-refactor": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "09-behavior-equivalence-verification": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "10-performance-equivalence-verification": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "11-guarded-auto-repair": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "12-cutover-rollback": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "13-production-migration-certification": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "14-security-governance": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "15-evidence-ledger-reproducibility": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "16-release-ci-quality-gates": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "20-source-oracle-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "21-source-sqlserver-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "22-source-postgresql-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "23-source-mysql-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "24-source-db2-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "25-source-sybase-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "30-app-java-spring-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "31-app-dotnet-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "32-app-python-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "33-app-nodejs-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "34-app-go-adapter": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "40-target-dm8": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "41-target-kingbasees": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "42-target-opengauss": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "43-target-tidb": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "44-target-gbase8s": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "45-target-gbase8c": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "46-target-gbase8a": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "47-target-highgo": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "48-target-oceanbase-oracle": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "49-target-oceanbase-mysql": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "50-target-gaussdb-oracle": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "51-target-gaussdb-m": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "52-target-goldendb": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "60-route-support-matrix": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "61-fixture-corpus-and-mutation-tests": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "62-benchmark-lab": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "63-migration-estimation-commercial-report": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "64-vendor-native-tool-bridge": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  },
+  "65-observability-migration-control-plane": {
+    "implemented": false,
+    "evidence_ids": [],
+    "note": "Specification only; set true only after real repository implementation and evidence."
+  }
+}

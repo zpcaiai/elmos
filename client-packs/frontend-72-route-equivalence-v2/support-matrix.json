@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v2",
+  "capabilities": [
+    {
+      "id": "route-and-navigation",
+      "domain": "navigation",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    },
+    {
+      "id": "component-and-view",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    },
+    {
+      "id": "state-and-effects",
+      "domain": "state",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    },
+    {
+      "id": "forms-and-validation",
+      "domain": "forms",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    },
+    {
+      "id": "identity-and-permission",
+      "domain": "security",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    },
+    {
+      "id": "accessibility-i18n-visual",
+      "domain": "quality",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "reason": "Bounded proof remains under assumptions; runtime status is NOT_RUN and independent/customer certification evidence remains fail-closed."
+    }
+  ]
+}

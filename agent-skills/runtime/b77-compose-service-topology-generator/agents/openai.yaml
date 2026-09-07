@@ -1,0 +1,4 @@
+interface:
+  display_name: "B77 Compose Service Topology Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b77-compose-service-topology-generator to execute this ELMOS project Skill with fail-closed evidence."

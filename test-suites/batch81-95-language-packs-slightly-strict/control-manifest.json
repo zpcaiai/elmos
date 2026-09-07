@@ -1,0 +1,25 @@
+{
+  "controlled_files": {
+    "cases/catalog.json": "sha256:678ae4930c66aa0da7d717129b15bb7da665430cd501fd2cabe8938300bab202",
+    "coverage-matrix.csv": "sha256:d27ca19778f5d62be20553d38bb33bebf5c0435c9758347c43ef84e15a17d913",
+    "coverage-matrix.json": "sha256:85518001b51d0412af57e4fb39ce292244508a4a21187587fc2a6b7acb10dea1",
+    "strictness-profile.json": "sha256:92700e2ec70c03d2d8e49e4767b6d937951ba5f0b8d9a9f76df8c2652f77302a",
+    "suite.json": "sha256:3f8db8c77d521bf873dfd91f03444334e6427b963523adf315794173f3851c1b",
+    "target-manifest.json": "sha256:7a101e3327828af69943183f7b7f6ec7698974ca3df2f3f93fde4e9ee67af498"
+  },
+  "language_package": {
+    "install_manifest_sha256": "sha256:e01f005781647b39f0dcc3e71131998b3971505ff28471e1872d598f1cd4cec4",
+    "namespace": "package-local-language-pack",
+    "package": "elmos-language-packs-batch81-95-complete",
+    "target_manifest_sha256": "sha256:7a101e3327828af69943183f7b7f6ec7698974ca3df2f3f93fde4e9ee67af498"
+  },
+  "manifest_version": 1,
+  "source_test_package": {
+    "declared_source_zip_sha256": "4c3de1f268c3c0b98e6fc500240618d58d5255df5e75f5c00ff9f8211565d13d",
+    "file_manifest_sha256": "sha256:d61442a43d537c4d1645964c6904466dd81ce8d7adedf9380dfae069828aae53",
+    "manifest_sha256": "sha256:c450107d2a7ac6b74e2efa88aabe7cdf28ab01bd2ef0dbed509a63af090efdb8",
+    "package": "elmos-batch81-95-slightly-strict-test-skills",
+    "sha256s_sha256": "sha256:abbf2478744409873dde22673dad8ebb19414ea056e715faa963dbd6ca5a1731"
+  },
+  "suite_id": "batch81-95-language-packs-slightly-strict"
+}

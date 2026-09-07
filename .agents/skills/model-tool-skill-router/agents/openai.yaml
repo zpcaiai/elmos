@@ -1,0 +1,6 @@
+interface:
+  display_name: "Model Tool Skill Router"
+  short_description: "Run model-tool-skill-router with bounded commercial controls"
+  default_prompt: "Use $model-tool-skill-router through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

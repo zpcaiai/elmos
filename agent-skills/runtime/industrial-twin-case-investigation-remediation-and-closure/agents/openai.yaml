@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B50 contract."

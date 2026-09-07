@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "The output does not arbitrarily select a primary solution and records MULTIPLE_SOLUTIONS_AMBIGUOUS.", "passed": true, "evidence": "discovery-decision.json sets primarySolution to null and includes MULTIPLE_SOLUTIONS_AMBIGUOUS."},
+    {"text": "The output keeps unsupported languages and custom MSBuild tasks visible rather than omitting them.", "passed": true, "evidence": "The finding list contains UNSUPPORTED_PROJECT_TYPE and CUSTOM_MSBUILD_TASK; Visual Basic is SCAN_ONLY_MANUAL_OR_FUTURE_ENGINE_REQUIRED."},
+    {"text": "The output separates safe static parsing from dynamic MSBuild and requires an isolated network-denied Windows Runner for the latter.", "passed": true, "evidence": "phase is STATIC_SAFE_PARSE; MSBuild is in notExecuted; nextGate is NOT_RUN on WINDOWS_LEGACY with isolated root, denied network and no secrets."}
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "claims": [{"claim": "No dynamic MSBuild was executed", "type": "process", "verified": true, "evidence": "The transcript records file-only evaluation and no build/tool execution."}],
+  "user_notes_summary": {"uncertainties": [], "needs_review": ["Run dynamic MSBuild on a real approved Windows Runner."], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "Assertions cover ambiguity, unsupported inputs, and execution separation."}
+}

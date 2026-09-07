@@ -1,0 +1,4 @@
+interface:
+  display_name: "Log Audit And Observability Event Comparator"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $log-audit-and-observability-event-comparator to perform this Batch 9 behavioral-equivalence task."

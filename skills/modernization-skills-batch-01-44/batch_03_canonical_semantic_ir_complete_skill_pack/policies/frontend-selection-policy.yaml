@@ -1,0 +1,4 @@
+frontend_selection:
+  explicit_language_version_required: true
+  fallback_frontend: forbidden
+  unsupported_dialect_is_unknown: true

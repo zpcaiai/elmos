@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.control-assessment-result.v1",
+  "type": "object",
+  "required": ["controlId", "implementationId", "result", "assessmentMethod", "evidenceRefs"],
+  "properties": {
+    "controlId": {"type": "string"}, "implementationId": {"type": "string"},
+    "result": {"enum": ["SATISFIED", "OTHER_THAN_SATISFIED", "NOT_APPLICABLE", "NOT_ASSESSED", "INCONCLUSIVE"]},
+    "assessmentMethod": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

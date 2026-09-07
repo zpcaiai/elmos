@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-36:evidence-ref",
+  "title": "EvidenceRef",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "digest",
+    "producer",
+    "created_at",
+    "trust_level",
+    "scope"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "producer": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trust_level": {
+      "enum": [
+        "measured",
+        "compiler-confirmed",
+        "deterministic",
+        "runtime-observed",
+        "independent-verified",
+        "human-approved",
+        "model-inferred",
+        "unknown"
+      ]
+    },
+    "scope": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

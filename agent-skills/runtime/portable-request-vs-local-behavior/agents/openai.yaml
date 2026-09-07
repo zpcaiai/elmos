@@ -1,0 +1,4 @@
+interface:
+  display_name: "Portable Request Vs Local Behavior"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $portable-request-vs-local-behavior for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

@@ -1,0 +1,16 @@
+schema_version: '1.0'
+suite_id: elmos-etgb-full-product-assurance-v2
+version: 2.0.0
+case_files:
+- suites/spring-modernization.jsonl
+- suites/cross-language.jsonl
+- suites/project-generation.jsonl
+- suites/sql-conversion.jsonl
+- suites/full-product.jsonl
+- suites/product-journeys.jsonl
+- suites/standards-assurance.jsonl
+- suites/cross-cutting.jsonl
+- suites/smoke.jsonl
+coverage_model: matrices/coverage-requirements.yaml
+expected_minimum_case_count: 70000
+release_gates: matrices/release-gates.yaml

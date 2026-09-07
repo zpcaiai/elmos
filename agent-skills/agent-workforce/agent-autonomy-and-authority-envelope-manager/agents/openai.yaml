@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 534: agent autonomy and authority envelope manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-autonomy-and-authority-envelope-manager to evaluate this capability with evidence."

@@ -1,0 +1,5 @@
+prediction:
+  interval_required: true
+  minimum_calibration_samples: 20
+  uncalibrated_prediction_is_advisory: true
+  point_estimate_alone: forbidden

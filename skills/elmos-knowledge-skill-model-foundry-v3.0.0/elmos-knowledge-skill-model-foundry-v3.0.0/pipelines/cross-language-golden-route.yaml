@@ -1,0 +1,30 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: cross-language-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: profile-language-pair
+    emitEvidence: true
+  - id: extract-ir
+    emitEvidence: true
+  - id: measure-loss
+    emitEvidence: true
+  - id: generate-target
+    emitEvidence: true
+  - id: build-and-link
+    emitEvidence: true
+  - id: differential-run
+    emitEvidence: true
+  - id: interop-test
+    emitEvidence: true
+  - id: wave-cutover
+    emitEvidence: true
+  - id: certify
+    emitEvidence: true

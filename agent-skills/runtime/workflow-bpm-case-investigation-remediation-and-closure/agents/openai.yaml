@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Workflow Bpm Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $workflow-bpm-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B46 contract."

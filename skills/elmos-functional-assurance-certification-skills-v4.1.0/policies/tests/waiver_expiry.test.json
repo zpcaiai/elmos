@@ -1,0 +1,11 @@
+{
+  "policy": "waiver_expiry",
+  "positive": {
+    "active_waivers_have_owner": true,
+    "critical_waivers_authorized": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

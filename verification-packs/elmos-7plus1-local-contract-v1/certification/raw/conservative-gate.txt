@@ -1,0 +1,4 @@
+OK: 5 oracles
+OK: model states=8 transitions=6
+OK: verification pack elmos-7plus1-local-contract-v1
+GATE PASS: elmos-7plus1-local-contract-v1 status=experimental decision=NOT_CERTIFIED

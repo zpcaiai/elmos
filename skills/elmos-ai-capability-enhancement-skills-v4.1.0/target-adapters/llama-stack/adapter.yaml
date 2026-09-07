@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: llama-stack
+  ecosystem: Llama Stack
+  version: 4.0.0
+spec:
+  adapterKind: ai-platform
+  maturity: P1
+  modes:
+  - inference
+  - agents
+  - safety
+  - eval
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - llama-stack exact-version profile
+  - llama-stack capability and semantic-gap map
+  - llama-stack native conformance evidence
+  - llama-stack deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

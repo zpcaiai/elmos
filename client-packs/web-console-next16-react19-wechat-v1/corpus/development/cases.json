@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "independence": "development",
+  "cases": [
+    {
+      "id": "dev-effect-cleanup",
+      "target": "cancellable request and detached cleanup"
+    },
+    {
+      "id": "dev-map-set",
+      "target": "plain collection projection"
+    },
+    {
+      "id": "dev-platform",
+      "target": "table disclosure svg html slot adapters"
+    }
+  ]
+}

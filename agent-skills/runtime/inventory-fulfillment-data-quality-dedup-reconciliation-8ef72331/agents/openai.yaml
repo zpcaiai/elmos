@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Inventory Fulfillment Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $inventory-fulfillment-data-quality-dedup-reconciliation-8ef72331 to implement its fail-closed ELMOS Product B42 contract."

@@ -1,0 +1,7 @@
+{
+  "coverage": 1.0,
+  "discovery_mode": "disposable-synthetic-sqlite",
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "schema_version": 1,
+  "snapshot_digest": "sha256:9b7defefdecca924c8fa34d25b378bbc6df29854d4b96c57b07f570f56129065"
+}

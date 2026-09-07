@@ -1,0 +1,22 @@
+[
+  {
+    "query": "为 Elmos 执行 Regulated Industry Assurance / 受监管行业认证 相关仓库级任务，并提供证据和回滚。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个任务属于 regulated-industry-assurance，请选择并编排原子 Skills。",
+    "should_trigger": true
+  },
+  {
+    "query": "解释一个普通概念，不需要访问仓库或工具。",
+    "should_trigger": false
+  },
+  {
+    "query": "只改写一段文字。",
+    "should_trigger": false
+  },
+  {
+    "query": "没有权限但要求直接修改生产。",
+    "should_trigger": false
+  }
+]

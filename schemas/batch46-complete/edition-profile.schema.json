@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "editions",
+    "expansion_policy"
+  ],
+  "properties": {
+    "editions": {
+      "type": "array",
+      "minItems": 3
+    },
+    "expansion_policy": {
+      "type": "object",
+      "required": [
+        "requires_customer_order",
+        "requires_test_matrix_capacity"
+      ],
+      "properties": {
+        "requires_customer_order": {
+          "const": true
+        },
+        "requires_test_matrix_capacity": {
+          "const": true
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

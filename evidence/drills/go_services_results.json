@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "qps": 403.9,
+  "latency_p50_ms": 7.15,
+  "latency_p95_ms": 30.67,
+  "latency_p99_ms": 60.66,
+  "success_rate": "76.0%",
+  "metrics": {
+    "circuitBreaker": "CLOSED",
+    "rejectedRequests": 84,
+    "successRequests": 117,
+    "totalRequests": 201,
+    "totalTokens": 2558
+  }
+}

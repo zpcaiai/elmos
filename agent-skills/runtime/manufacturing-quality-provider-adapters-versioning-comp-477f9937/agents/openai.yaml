@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Quality Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-provider-adapters-versioning-comp-477f9937 to implement its fail-closed ELMOS Product B50 contract."

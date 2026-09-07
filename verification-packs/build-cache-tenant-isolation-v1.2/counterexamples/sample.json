@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "counterexample.not-observed.placeholder.v1",
+  "technique": "security-property",
+  "claim_id": "claim.tenant-noninterference",
+  "failure_fingerprint": "NO_OBSERVED_COUNTEREXAMPLE_EXECUTION_NOT_RUN",
+  "environment_digest": "sha256:aa65fad54e738274bd289ccc4d603387b1b2f2429a1970817dbac38365f60a2e",
+  "artifact_digests": [
+    "sha256:327f4136846a20dda3ccfaba6cd235716ea8c807b5b689aeca3e55a09eeb6dbd"
+  ],
+  "input_ref": "corpus/negative/manifest.json",
+  "replay": {
+    "command": "engines/build-cache-engine/.venv/bin/pytest -q engines/build-cache-engine/tests/test_api.py engines/build-cache-engine/tests/test_affinity.py engines/build-cache-engine/tests/test_parity_api.py engines/build-cache-engine/tests/test_environment_service.py engines/build-cache-engine/tests/test_context_compaction.py engines/build-cache-engine/tests/test_metadata_store_contract.py",
+    "expected_fingerprint": "NO_COUNTEREXAMPLE_EXPECTED"
+  },
+  "status": "invalid",
+  "owner": "ELMOS verification maintainers",
+  "execution_status": "NOT_RUN",
+  "placeholder_reason": "Batch 35 pack validator requires a typed counterexample document; no failure is claimed or fabricated. Replace only if a real execution produces a counterexample."
+}

@@ -1,0 +1,61 @@
+{
+  "id": "B108-S06",
+  "batch": 108,
+  "name": "runtime-preview-evidence-schema",
+  "dependencies": [
+    "B107-S15",
+    "B108-S01"
+  ],
+  "inputs": [
+    "LiveValidationBundle",
+    "runtime lifecycle receipts"
+  ],
+  "outputs": [
+    "RuntimePreviewEvidence"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/runtime/RuntimePreviewEvidenceService.java",
+      "schemas/runtime-preview-evidence.schema.json"
+    ],
+    "interfaces": [
+      "POST /api/evidence/runtime-preview",
+      "event evidence.runtime-preview.created"
+    ],
+    "data": [
+      "runtime_preview_evidence"
+    ]
+  },
+  "workflow": [
+    "映射Run与Image血缘",
+    "纳入ready/expires/destroyed时间",
+    "仅保存Endpoint hash或受控引用",
+    "关联健康/API/浏览器Claims",
+    "记录资源/Provider/Policy摘要",
+    "Schema验证并签名"
+  ],
+  "tests": [
+    "destroyed_at早于ready_at拒绝",
+    "URL明文按Policy禁止",
+    "Claims无证据链接拒绝",
+    "Image digest缺失拒绝",
+    "Provider receipt签名验证"
+  ],
+  "evidence": [
+    "runtime-preview-evidence.json",
+    "runtime-preview-signature.json",
+    "schema-validation.json"
+  ],
+  "definition_of_done": [
+    "Schema有效",
+    "时间线一致",
+    "敏感URL受控",
+    "Claims有证据",
+    "主体绑定准确"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

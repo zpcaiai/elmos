@@ -1,0 +1,9 @@
+{
+  "schemaVersion":"1.0",
+  "profiles":["BASELINE","STANDARD","HIGH_ASSURANCE","REGULATED","CRITICAL_SYSTEM"],
+  "criticalSystem":{
+    "dualSecurityApproval":true,"independentAssessment":true,"killSwitch":true,
+    "incidentGameDay":true,"recoveryValidation":true,"automaticRiskAcceptance":false,"automaticProductionAuthorization":false
+  },
+  "frameworks":["NIST_CSF_2.0","NIST_SP_800_207","NIST_SP_800_207A","NIST_SSDF_1.1","OWASP_ASVS_5.0.0","SLSA_1.2","OSCAL"]
+}

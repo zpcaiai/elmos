@@ -1,0 +1,4 @@
+interface:
+  display_name: "scheduler-background-job-and-worker-migrator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $scheduler-background-job-and-worker-migrator to perform this Batch 7 framework migration step."

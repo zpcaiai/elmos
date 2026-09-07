@@ -1,0 +1,20 @@
+{
+  "profile": "database",
+  "version": "1.0.0",
+  "skills": [
+    "elmos-data-requirement-intake",
+    "elmos-workload-profiler",
+    "elmos-database-capability-registry",
+    "elmos-database-constraint-filter",
+    "elmos-database-mcda-ranker",
+    "elmos-polyglot-persistence-planner",
+    "elmos-data-architecture-adr",
+    "elmos-database-benchmark-harness",
+    "elmos-database-cost-capacity-planner",
+    "elmos-database-schema-physical-design",
+    "elmos-database-ha-dr",
+    "elmos-database-security-multitenancy",
+    "elmos-database-migration-modernization"
+  ],
+  "dependency_policy": "installer expands transitive dependencies"
+}

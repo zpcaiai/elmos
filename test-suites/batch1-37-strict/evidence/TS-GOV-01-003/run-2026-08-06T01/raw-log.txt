@@ -1,0 +1,57 @@
+# case TS-GOV-01-003
+# started_at 2026-08-06T09:56:48Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py negative-inputs
+=== probe: negative-inputs ===
+[PASS] malformed-json-rejected
+[PASS] missing-file-rejected
+[PASS] missing-required-field-rejected
+[PASS] conflicting-case-ids-rejected
+[PASS] unknown-enum-values-rejected
+[PASS] declared-count-mismatch-rejected
+[PASS] pristine-catalog-accepted
+
+7/7 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py environment-invalid
+=== probe: environment-invalid ===
+[PASS] well-formed-result-accepted
+[PASS] reject-placeholder-artifact-digest
+[PASS] reject-placeholder-environment-digest
+[PASS] reject-naive-timestamp
+[PASS] reject-reversed-interval
+[PASS] reject-simulated-execution-kind
+[PASS] reject-passed-without-evidence
+[PASS] reject-passed-without-replay
+[PASS] reject-not-run-carrying-evidence
+
+9/9 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py control-manifest
+=== probe: control-manifest ===
+[PASS] live-controls-match-recorded-digests :: []
+[PASS] gate-reports-four-control-digests
+[PASS] control-digest-nonzero-catalog
+[PASS] control-digest-nonzero-coverage_matrix
+[PASS] control-digest-nonzero-strict_profile
+[PASS] control-digest-nonzero-suite
+[PASS] catalog-tamper-detected-by-control-manifest :: ['case/control manifest control digests are stale or tampered']
+
+7/7 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

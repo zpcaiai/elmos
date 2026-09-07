@@ -1,0 +1,2 @@
+> elmos-vue3-todo-fixture@1.0.1 typecheck
+> tsc --noEmit

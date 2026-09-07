@@ -1,0 +1,4 @@
+interface:
+  display_name: "Asset I18n and Accessibility Inventory"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0210-asset-i18n-and-accessibility-inventory to run FRT-0210 through the governed FRT runtime with exact scope and fail-closed evidence."

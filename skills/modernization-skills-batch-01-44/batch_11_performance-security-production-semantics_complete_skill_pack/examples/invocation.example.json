@@ -1,0 +1,12 @@
+{
+  "request_id": "b11-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Performance, Security and Production Semantics Validation",
+  "upstream_certificate_refs": [
+    "batch-10-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

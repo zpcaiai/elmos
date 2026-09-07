@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "suite.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "suite_id",
+    "scope",
+    "version",
+    "test_skill_count",
+    "case_count",
+    "source_skill_count",
+    "status",
+    "thresholds"
+  ],
+  "properties": {
+    "suite_id": {
+      "const": "batch66-80-slightly-strict"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "test_skill_count": {
+      "const": 35
+    },
+    "case_count": {
+      "const": 450
+    },
+    "source_skill_count": {
+      "const": 195
+    },
+    "status": {
+      "const": "not-run"
+    },
+    "thresholds": {
+      "type": "object"
+    }
+  }
+}

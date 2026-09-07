@@ -1,0 +1,92 @@
+{
+  "package_id": "P03",
+  "name": "elmos-project-generation-transformation-engine",
+  "version": "1.0.0",
+  "phase": "Phase 2（核心商业能力）",
+  "dependencies": [
+    "P00",
+    "P01",
+    "P02",
+    "P05"
+  ],
+  "capabilities": [
+    {
+      "id": "P03-C01",
+      "name": "Requirement Expansion Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C02",
+      "name": "Project Archetype Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C03",
+      "name": "Architecture Synthesizer",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C04",
+      "name": "Implementation DAG Planner",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C05",
+      "name": "Transformation Rule Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C06",
+      "name": "Mutation & Exception Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C07",
+      "name": "Multi-language Emitters",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C08",
+      "name": "Framework/Platform Adapters",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C09",
+      "name": "Data & Integration Transformer",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C10",
+      "name": "Infrastructure & Operations Generator",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C11",
+      "name": "Unsupported Semantics Manager",
+      "maturity": "design"
+    },
+    {
+      "id": "P03-C12",
+      "name": "Migration Controller",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "Elmos proprietary transformation architecture",
+    "OpenAI Harness Engineering"
+  ],
+  "subskills": [
+    "requirement-expander",
+    "project-archetype-engine",
+    "architecture-synthesizer",
+    "implementation-dag-planner",
+    "transformation-rule-engine",
+    "mutation-exception-engine",
+    "multi-language-emitter",
+    "framework-platform-adapter",
+    "data-integration-transformer",
+    "frontend-miniapp-transformer",
+    "infrastructure-operations-generator",
+    "migration-controller"
+  ]
+}

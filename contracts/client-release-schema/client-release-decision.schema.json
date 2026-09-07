@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frontend/client-release-decision.v1.schema.json",
+  "title": "Client release decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "organizationId", "releasePlanId", "currentStage", "requestedStage", "decision", "automatic", "blockers", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "organizationId": {"type": "string", "minLength": 1},
+    "releasePlanId": {"type": "string", "minLength": 1},
+    "currentStage": {"enum": ["NONE", "INTERNAL", "CANARY", "PROGRESSIVE", "FULL"]},
+    "requestedStage": {"enum": ["INTERNAL", "CANARY", "PROGRESSIVE", "FULL", "DECOMMISSION"]},
+    "decision": {"enum": ["PROMOTE", "HOLD", "HUMAN_REVIEW", "BLOCKED"]},
+    "automatic": {"type": "boolean"},
+    "blockers": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "approvedBy": {"type": "string", "minLength": 1},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  },
+  "allOf": [{"if": {"properties": {"decision": {"const": "PROMOTE"}, "requestedStage": {"enum": ["FULL", "DECOMMISSION"]}}}, "then": {"required": ["approvedBy"], "properties": {"automatic": {"const": false}}}}]
+}

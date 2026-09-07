@@ -1,0 +1,21 @@
+{
+  "candidateRevision": "rev-2",
+  "trafficPercent": 1.0,
+  "sideEffects": "disabled",
+  "privacyFilter": "policy-1",
+  "qualityGates": [
+    {
+      "metric": "task_success",
+      "min": 0.9
+    }
+  ],
+  "operationalGates": [
+    {
+      "metric": "cost_delta",
+      "max": 0.1
+    }
+  ],
+  "rollback": {
+    "automatic": true
+  }
+}

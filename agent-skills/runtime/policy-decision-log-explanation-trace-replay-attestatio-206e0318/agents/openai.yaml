@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Decision Log Explanation Trace Replay Attestation And Evidence"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-decision-log-explanation-trace-replay-attestatio-206e0318 to implement its fail-closed ELMOS Product B38 contract."

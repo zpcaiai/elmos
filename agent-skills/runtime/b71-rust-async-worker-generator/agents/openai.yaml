@@ -1,0 +1,4 @@
+interface:
+  display_name: "B71 Rust Async Worker Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b71-rust-async-worker-generator to execute this ELMOS project Skill with fail-closed evidence."

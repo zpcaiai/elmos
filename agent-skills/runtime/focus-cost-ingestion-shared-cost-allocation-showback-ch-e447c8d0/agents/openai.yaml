@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Focus Cost Ingestion Shared Cost Allocation Showback Chargeback And Unit Cost"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $focus-cost-ingestion-shared-cost-allocation-showback-ch-e447c8d0 to implement its fail-closed ELMOS Product B39 contract."

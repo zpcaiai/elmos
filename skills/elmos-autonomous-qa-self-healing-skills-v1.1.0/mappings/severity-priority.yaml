@@ -1,0 +1,44 @@
+version: 1
+severity:
+  critical:
+    criteria:
+      - remote_code_execution_or_system_compromise
+      - cross_tenant_or_mass_sensitive_data_exposure
+      - unrecoverable_data_loss
+      - payment_or_authentication_systemic_failure
+      - service_unavailable_for_all_critical_users_without_workaround
+    default_priority: P0
+  high:
+    criteria:
+      - critical_business_flow_unusable
+      - privilege_escalation_or_major_authorization_bypass
+      - major_data_corruption_with_recovery
+      - severe_slo_or_capacity_breach
+    default_priority: P0
+  medium:
+    criteria:
+      - important_function_incorrect_with_workaround
+      - limited_data_or_user_scope
+      - meaningful_performance_or_ui_regression
+    default_priority: P1
+  low:
+    criteria:
+      - minor_behavior_or_visual_issue
+      - low_frequency_edge_case_without_data_or_security_risk
+    default_priority: P2
+  informational:
+    criteria:
+      - improvement_or_hardening_without_current_failure
+    default_priority: P3
+
+priority_adjusters:
+  increase:
+    - affects_p0_requirement
+    - no_workaround
+    - likely_to_spread
+    - release_blocking_dependency
+  decrease_only_with_approval:
+    - feature_disabled
+    - verified_non_production_path
+    - accepted_risk_with_expiry
+

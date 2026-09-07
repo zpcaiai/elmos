@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Reference Route Acceptance Profile"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-reference-route-acceptance-profile to execute this ELMOS product-convergence Skill with fail-closed evidence."

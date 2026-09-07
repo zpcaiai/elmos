@@ -1,0 +1,4 @@
+interface:
+  display_name: "B84 Scan Cycle Task Priority Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b84-scan-cycle-task-priority-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/numerical-ir.schema.json",
+  "title": "Numerical IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "kernels",
+    "precision",
+    "memory_layout",
+    "tolerances"
+  ],
+  "properties": {
+    "kernels": {},
+    "precision": {},
+    "memory_layout": {},
+    "tolerances": {}
+  }
+}

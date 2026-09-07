@@ -1,0 +1,79 @@
+{
+  "archiveBytes": 632740,
+  "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+  "batchCounts": {
+    "J": 16,
+    "K": 14,
+    "L": 16,
+    "M": 18,
+    "N": 16,
+    "O": 14,
+    "P": 12,
+    "Q": 14,
+    "R": 12
+  },
+  "compiledContractSha256": "sha256:664949cff35cd2c6d21c9dcfb40160d516556042d96df9b19623fc05bb287fe7",
+  "corpora": {
+    "count": 40,
+    "status": "NOT_RUN"
+  },
+  "decision": "VALIDATED_WITH_BLOCKERS",
+  "dependencyEdges": {
+    "acyclic": true,
+    "external": [
+      "elmos-embedded-sql-routine-migrator",
+      "elmos-multi-source-repository-discovery"
+    ],
+    "internal": 227,
+    "total": 229
+  },
+  "entryCount": 337,
+  "evidence": {
+    "certification": "NOT_CERTIFIED",
+    "external": "NOT_RUN",
+    "independent": "NOT_RUN",
+    "localRuntime": "NOT_RUN"
+  },
+  "fileCount": 194,
+  "installedManifestSha256": "sha256:3020d3a70410f5b81bdc02c2ded3504e1642813c6aa536d2901e1dded195aba4",
+  "internalFileManifestRows": 192,
+  "labs": {
+    "count": 9,
+    "status": "NOT_RUN"
+  },
+  "outputCount": 396,
+  "packageBlockersSha256": "sha256:d3a52bee15d522721213cd89454d04769af36b9a16f9a8beabf0198f5c6ea10b",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "routes": {
+    "count": 40,
+    "missingProfiles": 40,
+    "status": "BLOCKED"
+  },
+  "runtime": {
+    "genericFallbackAllowed": false,
+    "mappingAuthority": "REPOSITORY_OWNED",
+    "operations": [
+      "MODEL_NORMALIZATION",
+      "SEMANTIC_COMPARISON",
+      "GRAPH_ANALYSIS",
+      "COVERAGE_ANALYSIS",
+      "CORPUS_GOVERNANCE",
+      "EVIDENCE_VALIDATION",
+      "NATIVE_EXECUTION",
+      "FORMAL_EXECUTION",
+      "FUZZ_EXECUTION",
+      "GATE_EVALUATION",
+      "CACHE_INVALIDATION",
+      "COUNTEREXAMPLE_REPLAY"
+    ]
+  },
+  "schemaVersion": "elmos.semantic-assurance.qualification-receipt/v1",
+  "skillCount": 132,
+  "sourceCodeExecuted": false,
+  "supply_chain": {
+    "byte_identity_only": true,
+    "provenance_attestation_present": false,
+    "sbom_present": false,
+    "signature_present": false
+  }
+}

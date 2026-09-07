@@ -1,0 +1,4 @@
+interface:
+  display_name: "Control Flow Summary Extractor"
+  short_description: "Summarize callable control flow and effects"
+  default_prompt: "Use $control-flow-summary-extractor to produce traceable language-neutral CFG summaries."

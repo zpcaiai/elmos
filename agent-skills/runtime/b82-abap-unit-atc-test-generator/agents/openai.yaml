@@ -1,0 +1,4 @@
+interface:
+  display_name: "B82 Abap Unit Atc Test Generator"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b82-abap-unit-atc-test-generator to execute this ELMOS Language Pack Skill with fail-closed evidence."

@@ -1,0 +1,3702 @@
+{
+  "namespace": "precision-migration-b01-44",
+  "orchestrator_count": 45,
+  "orchestrators": [
+    {
+      "batch": null,
+      "dag_digest": "sha256:05d25d7bd20c6d91b77acc8de8ee2ca22f6ad16e57c020fd55e2106b2589cd32",
+      "edges": [
+        {
+          "from": "pm-b01-competition-positioning",
+          "to": "pm-b02-modernization-assessment"
+        },
+        {
+          "from": "pm-b02-modernization-assessment",
+          "to": "pm-b03-feasibility-estimation"
+        },
+        {
+          "from": "pm-b03-feasibility-estimation",
+          "to": "pm-b04-target-recommendation"
+        },
+        {
+          "from": "pm-b04-target-recommendation",
+          "to": "pm-b05-repository-semantic-recovery"
+        },
+        {
+          "from": "pm-b05-repository-semantic-recovery",
+          "to": "pm-b06-toolchain-registry"
+        },
+        {
+          "from": "pm-b06-toolchain-registry",
+          "to": "pm-b07-sandbox-security-reproducibility"
+        },
+        {
+          "from": "pm-b07-sandbox-security-reproducibility",
+          "to": "pm-b08-canonical-type-system"
+        },
+        {
+          "from": "pm-b08-canonical-type-system",
+          "to": "pm-b09-effect-state-observation"
+        },
+        {
+          "from": "pm-b09-effect-state-observation",
+          "to": "pm-b10-backend-frontend-semantic-ir"
+        },
+        {
+          "from": "pm-b10-backend-frontend-semantic-ir",
+          "to": "pm-b11-transformation-skill-recipe"
+        },
+        {
+          "from": "pm-b11-transformation-skill-recipe",
+          "to": "pm-b12-lossless-semantic-transformation"
+        },
+        {
+          "from": "pm-b12-lossless-semantic-transformation",
+          "to": "pm-b13-neurosymbolic-candidate-generation"
+        },
+        {
+          "from": "pm-b13-neurosymbolic-candidate-generation",
+          "to": "pm-b14-backend-compiler-adapters"
+        },
+        {
+          "from": "pm-b14-backend-compiler-adapters",
+          "to": "pm-b15-backend-semantic-lowering"
+        },
+        {
+          "from": "pm-b15-backend-semantic-lowering",
+          "to": "pm-b16-backend-direction-packs"
+        },
+        {
+          "from": "pm-b16-backend-direction-packs",
+          "to": "pm-b17-frontend-semantic-conversion"
+        },
+        {
+          "from": "pm-b17-frontend-semantic-conversion",
+          "to": "pm-b18-frontend-direction-packs"
+        },
+        {
+          "from": "pm-b18-frontend-direction-packs",
+          "to": "pm-b19-database-semantic-ir"
+        },
+        {
+          "from": "pm-b19-database-semantic-ir",
+          "to": "pm-b20-database-schema-data-migration"
+        },
+        {
+          "from": "pm-b20-database-schema-data-migration",
+          "to": "pm-b21-stored-procedure-conversion"
+        },
+        {
+          "from": "pm-b21-stored-procedure-conversion",
+          "to": "pm-b22-oracle-proprietary-pack"
+        },
+        {
+          "from": "pm-b22-oracle-proprietary-pack",
+          "to": "pm-b23-sqlserver-proprietary-pack"
+        },
+        {
+          "from": "pm-b23-sqlserver-proprietary-pack",
+          "to": "pm-b24-mysql-proprietary-pack"
+        },
+        {
+          "from": "pm-b24-mysql-proprietary-pack",
+          "to": "pm-b25-postgresql-proprietary-pack"
+        },
+        {
+          "from": "pm-b25-postgresql-proprietary-pack",
+          "to": "pm-b26-database-direction-packs"
+        },
+        {
+          "from": "pm-b26-database-direction-packs",
+          "to": "pm-b27-application-database-joint-migration"
+        },
+        {
+          "from": "pm-b27-application-database-joint-migration",
+          "to": "pm-b28-source-test-assessment"
+        },
+        {
+          "from": "pm-b28-source-test-assessment",
+          "to": "pm-b29-automatic-test-generation"
+        },
+        {
+          "from": "pm-b29-automatic-test-generation",
+          "to": "pm-b30-dual-run-differential"
+        },
+        {
+          "from": "pm-b30-dual-run-differential",
+          "to": "pm-b31-failed-conversion-repair"
+        },
+        {
+          "from": "pm-b31-failed-conversion-repair",
+          "to": "pm-b32-advanced-dynamic-validation"
+        },
+        {
+          "from": "pm-b32-advanced-dynamic-validation",
+          "to": "pm-b33-proof-obligations"
+        },
+        {
+          "from": "pm-b33-proof-obligations",
+          "to": "pm-b34-leanstral-lean-proof"
+        },
+        {
+          "from": "pm-b34-leanstral-lean-proof",
+          "to": "pm-b35-formal-analysis-toolchain"
+        },
+        {
+          "from": "pm-b35-formal-analysis-toolchain",
+          "to": "pm-b36-model-routing-review"
+        },
+        {
+          "from": "pm-b36-model-routing-review",
+          "to": "pm-b37-agentic-migration-harness"
+        },
+        {
+          "from": "pm-b37-agentic-migration-harness",
+          "to": "pm-b38-executable-skill-specification"
+        },
+        {
+          "from": "pm-b38-executable-skill-specification",
+          "to": "pm-b39-complete-project-generation"
+        },
+        {
+          "from": "pm-b39-complete-project-generation",
+          "to": "pm-b40-product-entry-modes"
+        },
+        {
+          "from": "pm-b40-product-entry-modes",
+          "to": "pm-b41-evidence-release-gates"
+        },
+        {
+          "from": "pm-b41-evidence-release-gates",
+          "to": "pm-b42-shadow-canary-cutover"
+        },
+        {
+          "from": "pm-b42-shadow-canary-cutover",
+          "to": "pm-b43-continuous-modernization-learning"
+        },
+        {
+          "from": "pm-b43-continuous-modernization-learning",
+          "to": "pm-b44-enterprise-private-commercialization"
+        }
+      ],
+      "function_name": "execute_pm_precision_migration_orchestrator",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_precision_migration_orchestrator",
+      "handler_id": "orchestrator-dag-v2:precision-migration-orchestrator",
+      "implementation_digest": "sha256:1b3778e5dad79889ee78fdeb073accf527dfa972ffe52cb385d1d10677be95fb",
+      "kind": "global-orchestrator",
+      "nodes": [
+        "pm-b01-competition-positioning",
+        "pm-b02-modernization-assessment",
+        "pm-b03-feasibility-estimation",
+        "pm-b04-target-recommendation",
+        "pm-b05-repository-semantic-recovery",
+        "pm-b06-toolchain-registry",
+        "pm-b07-sandbox-security-reproducibility",
+        "pm-b08-canonical-type-system",
+        "pm-b09-effect-state-observation",
+        "pm-b10-backend-frontend-semantic-ir",
+        "pm-b11-transformation-skill-recipe",
+        "pm-b12-lossless-semantic-transformation",
+        "pm-b13-neurosymbolic-candidate-generation",
+        "pm-b14-backend-compiler-adapters",
+        "pm-b15-backend-semantic-lowering",
+        "pm-b16-backend-direction-packs",
+        "pm-b17-frontend-semantic-conversion",
+        "pm-b18-frontend-direction-packs",
+        "pm-b19-database-semantic-ir",
+        "pm-b20-database-schema-data-migration",
+        "pm-b21-stored-procedure-conversion",
+        "pm-b22-oracle-proprietary-pack",
+        "pm-b23-sqlserver-proprietary-pack",
+        "pm-b24-mysql-proprietary-pack",
+        "pm-b25-postgresql-proprietary-pack",
+        "pm-b26-database-direction-packs",
+        "pm-b27-application-database-joint-migration",
+        "pm-b28-source-test-assessment",
+        "pm-b29-automatic-test-generation",
+        "pm-b30-dual-run-differential",
+        "pm-b31-failed-conversion-repair",
+        "pm-b32-advanced-dynamic-validation",
+        "pm-b33-proof-obligations",
+        "pm-b34-leanstral-lean-proof",
+        "pm-b35-formal-analysis-toolchain",
+        "pm-b36-model-routing-review",
+        "pm-b37-agentic-migration-harness",
+        "pm-b38-executable-skill-specification",
+        "pm-b39-complete-project-generation",
+        "pm-b40-product-entry-modes",
+        "pm-b41-evidence-release-gates",
+        "pm-b42-shadow-canary-cutover",
+        "pm-b43-continuous-modernization-learning",
+        "pm-b44-enterprise-private-commercialization"
+      ],
+      "schema_version": 1,
+      "skill": "pm-precision-migration-orchestrator",
+      "source_skill": "precision-migration-orchestrator"
+    },
+    {
+      "batch": 1,
+      "dag_digest": "sha256:b2913d6992e250e9d64272ebdc1f3d2b435386ed9e58fe68e5b08933e300d046",
+      "edges": [
+        {
+          "from": "pm-b01-build-buy-partner-decision",
+          "to": "pm-b01-capability-gap-analyzer"
+        },
+        {
+          "from": "pm-b01-capability-gap-analyzer",
+          "to": "pm-b01-competitor-capability-radar"
+        },
+        {
+          "from": "pm-b01-competitor-capability-radar",
+          "to": "pm-b01-differentiation-strategy-generator"
+        },
+        {
+          "from": "pm-b01-differentiation-strategy-generator",
+          "to": "pm-b01-platform-commoditization-risk"
+        },
+        {
+          "from": "pm-b01-platform-commoditization-risk",
+          "to": "pm-b01-vertical-market-selector"
+        }
+      ],
+      "function_name": "execute_pm_b01_competition_positioning",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b01_competition_positioning",
+      "handler_id": "orchestrator-dag-v2:batch-01-competition-positioning",
+      "implementation_digest": "sha256:06113b9c1efa4385be244b9877fc2a30a19c1dca14a3014d215923f3822a5f82",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b01-build-buy-partner-decision",
+        "pm-b01-capability-gap-analyzer",
+        "pm-b01-competitor-capability-radar",
+        "pm-b01-differentiation-strategy-generator",
+        "pm-b01-platform-commoditization-risk",
+        "pm-b01-vertical-market-selector"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b01-competition-positioning",
+      "source_skill": "batch-01-competition-positioning"
+    },
+    {
+      "batch": 2,
+      "dag_digest": "sha256:a201093bacc9c31f1349353f41d4afcf426db62ed54bf143f13c7fc73fde1c65",
+      "edges": [
+        {
+          "from": "pm-b02-application-architecture-recovery",
+          "to": "pm-b02-assessment-report-generator"
+        },
+        {
+          "from": "pm-b02-assessment-report-generator",
+          "to": "pm-b02-modernization-blocker-discovery"
+        },
+        {
+          "from": "pm-b02-modernization-blocker-discovery",
+          "to": "pm-b02-modernization-option-comparator"
+        },
+        {
+          "from": "pm-b02-modernization-option-comparator",
+          "to": "pm-b02-modernization-readiness-score"
+        },
+        {
+          "from": "pm-b02-modernization-readiness-score",
+          "to": "pm-b02-repository-modernization-assessment"
+        },
+        {
+          "from": "pm-b02-repository-modernization-assessment",
+          "to": "pm-b02-representative-slice-pilot"
+        },
+        {
+          "from": "pm-b02-representative-slice-pilot",
+          "to": "pm-b02-technical-debt-inventory"
+        }
+      ],
+      "function_name": "execute_pm_b02_modernization_assessment",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b02_modernization_assessment",
+      "handler_id": "orchestrator-dag-v2:batch-02-modernization-assessment",
+      "implementation_digest": "sha256:d01ac6f330fb9b1317b2dad8256e6ea893e7bf6b48263a64d74092a75fc8f502",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b02-application-architecture-recovery",
+        "pm-b02-assessment-report-generator",
+        "pm-b02-modernization-blocker-discovery",
+        "pm-b02-modernization-option-comparator",
+        "pm-b02-modernization-readiness-score",
+        "pm-b02-repository-modernization-assessment",
+        "pm-b02-representative-slice-pilot",
+        "pm-b02-technical-debt-inventory"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b02-modernization-assessment",
+      "source_skill": "batch-02-modernization-assessment"
+    },
+    {
+      "batch": 3,
+      "dag_digest": "sha256:1efc2015b39e1841ff879fc88d4805ce145bad9b7da5bec0d309a56304fe804f",
+      "edges": [
+        {
+          "from": "pm-b03-conversion-cost-estimator",
+          "to": "pm-b03-conversion-duration-estimator"
+        },
+        {
+          "from": "pm-b03-conversion-duration-estimator",
+          "to": "pm-b03-conversion-feasibility-estimator"
+        },
+        {
+          "from": "pm-b03-conversion-feasibility-estimator",
+          "to": "pm-b03-conversion-risk-register"
+        },
+        {
+          "from": "pm-b03-conversion-risk-register",
+          "to": "pm-b03-conversion-success-range-estimator"
+        },
+        {
+          "from": "pm-b03-conversion-success-range-estimator",
+          "to": "pm-b03-estimate-confidence-calibrator"
+        },
+        {
+          "from": "pm-b03-estimate-confidence-calibrator",
+          "to": "pm-b03-iteration-count-planner"
+        },
+        {
+          "from": "pm-b03-iteration-count-planner",
+          "to": "pm-b03-manual-effort-estimator"
+        }
+      ],
+      "function_name": "execute_pm_b03_feasibility_estimation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b03_feasibility_estimation",
+      "handler_id": "orchestrator-dag-v2:batch-03-feasibility-estimation",
+      "implementation_digest": "sha256:c5ef77ddc16181df17dcb0696f2a6cd94ef253b1278ead5a5cf0aa84f47a058b",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b03-conversion-cost-estimator",
+        "pm-b03-conversion-duration-estimator",
+        "pm-b03-conversion-feasibility-estimator",
+        "pm-b03-conversion-risk-register",
+        "pm-b03-conversion-success-range-estimator",
+        "pm-b03-estimate-confidence-calibrator",
+        "pm-b03-iteration-count-planner",
+        "pm-b03-manual-effort-estimator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b03-feasibility-estimation",
+      "source_skill": "batch-03-feasibility-estimation"
+    },
+    {
+      "batch": 4,
+      "dag_digest": "sha256:d94cfa979d337ce312673c142c3d8c17a5300c86801f9bed59bedeab3bd942b6",
+      "edges": [
+        {
+          "from": "pm-b04-architecture-migration-strategy",
+          "to": "pm-b04-do-not-convert-advisor"
+        },
+        {
+          "from": "pm-b04-do-not-convert-advisor",
+          "to": "pm-b04-migration-alternative-generator"
+        },
+        {
+          "from": "pm-b04-migration-alternative-generator",
+          "to": "pm-b04-migration-business-case"
+        },
+        {
+          "from": "pm-b04-migration-business-case",
+          "to": "pm-b04-target-framework-selector"
+        },
+        {
+          "from": "pm-b04-target-framework-selector",
+          "to": "pm-b04-target-language-suitability-analysis"
+        },
+        {
+          "from": "pm-b04-target-language-suitability-analysis",
+          "to": "pm-b04-target-platform-benefit-analysis"
+        },
+        {
+          "from": "pm-b04-target-platform-benefit-analysis",
+          "to": "pm-b04-team-capability-fit-analysis"
+        }
+      ],
+      "function_name": "execute_pm_b04_target_recommendation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b04_target_recommendation",
+      "handler_id": "orchestrator-dag-v2:batch-04-target-recommendation",
+      "implementation_digest": "sha256:0805f9b2bb46fb981890a6b2a875d06204c9ac823b50f5b8eb8cc9a4bc3d8b3d",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b04-architecture-migration-strategy",
+        "pm-b04-do-not-convert-advisor",
+        "pm-b04-migration-alternative-generator",
+        "pm-b04-migration-business-case",
+        "pm-b04-target-framework-selector",
+        "pm-b04-target-language-suitability-analysis",
+        "pm-b04-target-platform-benefit-analysis",
+        "pm-b04-team-capability-fit-analysis"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b04-target-recommendation",
+      "source_skill": "batch-04-target-recommendation"
+    },
+    {
+      "batch": 5,
+      "dag_digest": "sha256:a0bcbdfc7766e57fdb090494222e4040c5a6a8df4b53fbd24af9ec2355fb161c",
+      "edges": [
+        {
+          "from": "pm-b05-build-system-detector",
+          "to": "pm-b05-business-rule-extractor"
+        },
+        {
+          "from": "pm-b05-business-rule-extractor",
+          "to": "pm-b05-call-graph-builder"
+        },
+        {
+          "from": "pm-b05-call-graph-builder",
+          "to": "pm-b05-data-flow-graph-builder"
+        },
+        {
+          "from": "pm-b05-data-flow-graph-builder",
+          "to": "pm-b05-database-access-discovery"
+        },
+        {
+          "from": "pm-b05-database-access-discovery",
+          "to": "pm-b05-dependency-and-plugin-discovery"
+        },
+        {
+          "from": "pm-b05-dependency-and-plugin-discovery",
+          "to": "pm-b05-effect-and-side-effect-discovery"
+        },
+        {
+          "from": "pm-b05-effect-and-side-effect-discovery",
+          "to": "pm-b05-external-service-discovery"
+        },
+        {
+          "from": "pm-b05-external-service-discovery",
+          "to": "pm-b05-repository-inventory-scanner"
+        },
+        {
+          "from": "pm-b05-repository-inventory-scanner",
+          "to": "pm-b05-runtime-trace-fusion"
+        },
+        {
+          "from": "pm-b05-runtime-trace-fusion",
+          "to": "pm-b05-semantic-slice-extractor"
+        },
+        {
+          "from": "pm-b05-semantic-slice-extractor",
+          "to": "pm-b05-symbol-and-type-indexer"
+        }
+      ],
+      "function_name": "execute_pm_b05_repository_semantic_recovery",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b05_repository_semantic_recovery",
+      "handler_id": "orchestrator-dag-v2:batch-05-repository-semantic-recovery",
+      "implementation_digest": "sha256:78505e330d24265fcfd7f60c2e979f02edca1f334ed39c3e175bf001e0db41b2",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b05-build-system-detector",
+        "pm-b05-business-rule-extractor",
+        "pm-b05-call-graph-builder",
+        "pm-b05-data-flow-graph-builder",
+        "pm-b05-database-access-discovery",
+        "pm-b05-dependency-and-plugin-discovery",
+        "pm-b05-effect-and-side-effect-discovery",
+        "pm-b05-external-service-discovery",
+        "pm-b05-repository-inventory-scanner",
+        "pm-b05-runtime-trace-fusion",
+        "pm-b05-semantic-slice-extractor",
+        "pm-b05-symbol-and-type-indexer"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b05-repository-semantic-recovery",
+      "source_skill": "batch-05-repository-semantic-recovery"
+    },
+    {
+      "batch": 6,
+      "dag_digest": "sha256:731c9deb6aedacab5917118f301d7d04f9f746930c6a301f3288d94a1e2cf56a",
+      "edges": [
+        {
+          "from": "pm-b06-build-command-generator",
+          "to": "pm-b06-compiler-diagnostic-normalizer"
+        },
+        {
+          "from": "pm-b06-compiler-diagnostic-normalizer",
+          "to": "pm-b06-compiler-version-resolver"
+        },
+        {
+          "from": "pm-b06-compiler-version-resolver",
+          "to": "pm-b06-package-manager-adapter"
+        },
+        {
+          "from": "pm-b06-package-manager-adapter",
+          "to": "pm-b06-platform-worker-router"
+        },
+        {
+          "from": "pm-b06-platform-worker-router",
+          "to": "pm-b06-runtime-environment-provisioner"
+        },
+        {
+          "from": "pm-b06-runtime-environment-provisioner",
+          "to": "pm-b06-runtime-version-resolver"
+        },
+        {
+          "from": "pm-b06-runtime-version-resolver",
+          "to": "pm-b06-test-runner-adapter"
+        },
+        {
+          "from": "pm-b06-test-runner-adapter",
+          "to": "pm-b06-toolchain-manifest-detector"
+        },
+        {
+          "from": "pm-b06-toolchain-manifest-detector",
+          "to": "pm-b06-toolchain-reproducibility-certificate"
+        }
+      ],
+      "function_name": "execute_pm_b06_toolchain_registry",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b06_toolchain_registry",
+      "handler_id": "orchestrator-dag-v2:batch-06-toolchain-registry",
+      "implementation_digest": "sha256:ba94f4e2c81fb21c06847166145076e1e6c9f3c0f4deb00278d470aff0eb2331",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b06-build-command-generator",
+        "pm-b06-compiler-diagnostic-normalizer",
+        "pm-b06-compiler-version-resolver",
+        "pm-b06-package-manager-adapter",
+        "pm-b06-platform-worker-router",
+        "pm-b06-runtime-environment-provisioner",
+        "pm-b06-runtime-version-resolver",
+        "pm-b06-test-runner-adapter",
+        "pm-b06-toolchain-manifest-detector",
+        "pm-b06-toolchain-reproducibility-certificate"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b06-toolchain-registry",
+      "source_skill": "batch-06-toolchain-registry"
+    },
+    {
+      "batch": 7,
+      "dag_digest": "sha256:5b44830972534eb9740081e3e2ce8b4d7584b0cfde329607a870755564661cf6",
+      "edges": [
+        {
+          "from": "pm-b07-artifact-signing-and-provenance",
+          "to": "pm-b07-dependency-proxy-and-cache"
+        },
+        {
+          "from": "pm-b07-dependency-proxy-and-cache",
+          "to": "pm-b07-ephemeral-workspace-manager"
+        },
+        {
+          "from": "pm-b07-ephemeral-workspace-manager",
+          "to": "pm-b07-execution-audit-recorder"
+        },
+        {
+          "from": "pm-b07-execution-audit-recorder",
+          "to": "pm-b07-malicious-build-script-detector"
+        },
+        {
+          "from": "pm-b07-malicious-build-script-detector",
+          "to": "pm-b07-network-egress-policy"
+        },
+        {
+          "from": "pm-b07-network-egress-policy",
+          "to": "pm-b07-reproducible-build-validator"
+        },
+        {
+          "from": "pm-b07-reproducible-build-validator",
+          "to": "pm-b07-resource-quota-governor"
+        },
+        {
+          "from": "pm-b07-resource-quota-governor",
+          "to": "pm-b07-secret-scope-manager"
+        },
+        {
+          "from": "pm-b07-secret-scope-manager",
+          "to": "pm-b07-untrusted-code-sandbox"
+        }
+      ],
+      "function_name": "execute_pm_b07_sandbox_security_reproducibility",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b07_sandbox_security_reproducibility",
+      "handler_id": "orchestrator-dag-v2:batch-07-sandbox-security-reproducibility",
+      "implementation_digest": "sha256:acaf56b3056cb3fade0a7001b36fa4b691fcfefac44467e1ebb414c42d461f26",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b07-artifact-signing-and-provenance",
+        "pm-b07-dependency-proxy-and-cache",
+        "pm-b07-ephemeral-workspace-manager",
+        "pm-b07-execution-audit-recorder",
+        "pm-b07-malicious-build-script-detector",
+        "pm-b07-network-egress-policy",
+        "pm-b07-reproducible-build-validator",
+        "pm-b07-resource-quota-governor",
+        "pm-b07-secret-scope-manager",
+        "pm-b07-untrusted-code-sandbox"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b07-sandbox-security-reproducibility",
+      "source_skill": "batch-07-sandbox-security-reproducibility"
+    },
+    {
+      "batch": 8,
+      "dag_digest": "sha256:25f025eb27503e5bf5756675499c17f1708311c97e9ba6c052b68e561ec25bb7",
+      "edges": [
+        {
+          "from": "pm-b08-canonical-primitive-types",
+          "to": "pm-b08-collection-semantics-model"
+        },
+        {
+          "from": "pm-b08-collection-semantics-model",
+          "to": "pm-b08-datetime-timezone-model"
+        },
+        {
+          "from": "pm-b08-datetime-timezone-model",
+          "to": "pm-b08-decimal-and-rounding-model"
+        },
+        {
+          "from": "pm-b08-decimal-and-rounding-model",
+          "to": "pm-b08-generic-and-variance-model"
+        },
+        {
+          "from": "pm-b08-generic-and-variance-model",
+          "to": "pm-b08-gradual-type-recovery"
+        },
+        {
+          "from": "pm-b08-gradual-type-recovery",
+          "to": "pm-b08-null-missing-undefined-model"
+        },
+        {
+          "from": "pm-b08-null-missing-undefined-model",
+          "to": "pm-b08-numeric-semantics-model"
+        },
+        {
+          "from": "pm-b08-numeric-semantics-model",
+          "to": "pm-b08-option-result-union-model"
+        },
+        {
+          "from": "pm-b08-option-result-union-model",
+          "to": "pm-b08-ownership-and-lifetime-model"
+        },
+        {
+          "from": "pm-b08-ownership-and-lifetime-model",
+          "to": "pm-b08-refinement-type-contracts"
+        },
+        {
+          "from": "pm-b08-refinement-type-contracts",
+          "to": "pm-b08-serialization-type-model"
+        }
+      ],
+      "function_name": "execute_pm_b08_canonical_type_system",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b08_canonical_type_system",
+      "handler_id": "orchestrator-dag-v2:batch-08-canonical-type-system",
+      "implementation_digest": "sha256:81b448c0ec7a245a583a703e8775d297bf2f1c1285a60a305a642686cb39d01b",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b08-canonical-primitive-types",
+        "pm-b08-collection-semantics-model",
+        "pm-b08-datetime-timezone-model",
+        "pm-b08-decimal-and-rounding-model",
+        "pm-b08-generic-and-variance-model",
+        "pm-b08-gradual-type-recovery",
+        "pm-b08-null-missing-undefined-model",
+        "pm-b08-numeric-semantics-model",
+        "pm-b08-option-result-union-model",
+        "pm-b08-ownership-and-lifetime-model",
+        "pm-b08-refinement-type-contracts",
+        "pm-b08-serialization-type-model"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b08-canonical-type-system",
+      "source_skill": "batch-08-canonical-type-system"
+    },
+    {
+      "batch": 9,
+      "dag_digest": "sha256:3e9bc1c51ebd281be4c8058ab81d9877bb2e5a0572a303b50648a63cfe9e0731",
+      "edges": [
+        {
+          "from": "pm-b09-async-cancellation-model",
+          "to": "pm-b09-business-state-machine-ir"
+        },
+        {
+          "from": "pm-b09-business-state-machine-ir",
+          "to": "pm-b09-database-effect-model"
+        },
+        {
+          "from": "pm-b09-database-effect-model",
+          "to": "pm-b09-effect-system"
+        },
+        {
+          "from": "pm-b09-effect-system",
+          "to": "pm-b09-external-call-effect-model"
+        },
+        {
+          "from": "pm-b09-external-call-effect-model",
+          "to": "pm-b09-message-effect-model"
+        },
+        {
+          "from": "pm-b09-message-effect-model",
+          "to": "pm-b09-observable-behavior-ir"
+        },
+        {
+          "from": "pm-b09-observable-behavior-ir",
+          "to": "pm-b09-protocol-and-workflow-ir"
+        },
+        {
+          "from": "pm-b09-protocol-and-workflow-ir",
+          "to": "pm-b09-resource-lifecycle-model"
+        },
+        {
+          "from": "pm-b09-resource-lifecycle-model",
+          "to": "pm-b09-semantic-loss-ledger"
+        },
+        {
+          "from": "pm-b09-semantic-loss-ledger",
+          "to": "pm-b09-transaction-effect-model"
+        },
+        {
+          "from": "pm-b09-transaction-effect-model",
+          "to": "pm-b09-ui-state-machine-ir"
+        }
+      ],
+      "function_name": "execute_pm_b09_effect_state_observation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b09_effect_state_observation",
+      "handler_id": "orchestrator-dag-v2:batch-09-effect-state-observation",
+      "implementation_digest": "sha256:11bafeb4d7ae4f7725fc82546bd081db797d795a2551667664644760d01ebf5b",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b09-async-cancellation-model",
+        "pm-b09-business-state-machine-ir",
+        "pm-b09-database-effect-model",
+        "pm-b09-effect-system",
+        "pm-b09-external-call-effect-model",
+        "pm-b09-message-effect-model",
+        "pm-b09-observable-behavior-ir",
+        "pm-b09-protocol-and-workflow-ir",
+        "pm-b09-resource-lifecycle-model",
+        "pm-b09-semantic-loss-ledger",
+        "pm-b09-transaction-effect-model",
+        "pm-b09-ui-state-machine-ir"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b09-effect-state-observation",
+      "source_skill": "batch-09-effect-state-observation"
+    },
+    {
+      "batch": 10,
+      "dag_digest": "sha256:2757ffa47f8a62d9fdd6559aa4b77946a2a0109dcffe19cc2f5b628289c2274b",
+      "edges": [
+        {
+          "from": "pm-b10-backend-application-ir",
+          "to": "pm-b10-controller-endpoint-ir"
+        },
+        {
+          "from": "pm-b10-controller-endpoint-ir",
+          "to": "pm-b10-dependency-injection-ir"
+        },
+        {
+          "from": "pm-b10-dependency-injection-ir",
+          "to": "pm-b10-domain-and-service-ir"
+        },
+        {
+          "from": "pm-b10-domain-and-service-ir",
+          "to": "pm-b10-event-and-lifecycle-ir"
+        },
+        {
+          "from": "pm-b10-event-and-lifecycle-ir",
+          "to": "pm-b10-frontend-component-ir"
+        },
+        {
+          "from": "pm-b10-frontend-component-ir",
+          "to": "pm-b10-message-consumer-ir"
+        },
+        {
+          "from": "pm-b10-message-consumer-ir",
+          "to": "pm-b10-platform-capability-ir"
+        },
+        {
+          "from": "pm-b10-platform-capability-ir",
+          "to": "pm-b10-repository-and-orm-ir"
+        },
+        {
+          "from": "pm-b10-repository-and-orm-ir",
+          "to": "pm-b10-route-navigation-ir"
+        },
+        {
+          "from": "pm-b10-route-navigation-ir",
+          "to": "pm-b10-scheduled-job-ir"
+        },
+        {
+          "from": "pm-b10-scheduled-job-ir",
+          "to": "pm-b10-ui-layout-constraint-ir"
+        }
+      ],
+      "function_name": "execute_pm_b10_backend_frontend_semantic_ir",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b10_backend_frontend_semantic_ir",
+      "handler_id": "orchestrator-dag-v2:batch-10-backend-frontend-semantic-ir",
+      "implementation_digest": "sha256:b7f06ca4c72eb1af1e5a344db91d1c3077554e2b5b508771bafa1048bc712d32",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b10-backend-application-ir",
+        "pm-b10-controller-endpoint-ir",
+        "pm-b10-dependency-injection-ir",
+        "pm-b10-domain-and-service-ir",
+        "pm-b10-event-and-lifecycle-ir",
+        "pm-b10-frontend-component-ir",
+        "pm-b10-message-consumer-ir",
+        "pm-b10-platform-capability-ir",
+        "pm-b10-repository-and-orm-ir",
+        "pm-b10-route-navigation-ir",
+        "pm-b10-scheduled-job-ir",
+        "pm-b10-ui-layout-constraint-ir"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b10-backend-frontend-semantic-ir",
+      "source_skill": "batch-10-backend-frontend-semantic-ir"
+    },
+    {
+      "batch": 11,
+      "dag_digest": "sha256:5077a44a7a71ef31527e8f9b1e1bccac973800021216cfabf5254866eb240cba",
+      "edges": [
+        {
+          "from": "pm-b11-code-example-rule-induction",
+          "to": "pm-b11-declarative-recipe-dsl"
+        },
+        {
+          "from": "pm-b11-declarative-recipe-dsl",
+          "to": "pm-b11-imperative-recipe-runtime"
+        },
+        {
+          "from": "pm-b11-imperative-recipe-runtime",
+          "to": "pm-b11-managed-transformation-pack"
+        },
+        {
+          "from": "pm-b11-managed-transformation-pack",
+          "to": "pm-b11-multi-cycle-transformation-engine"
+        },
+        {
+          "from": "pm-b11-multi-cycle-transformation-engine",
+          "to": "pm-b11-natural-language-transformation-definition"
+        },
+        {
+          "from": "pm-b11-natural-language-transformation-definition",
+          "to": "pm-b11-organization-private-transformation-pack"
+        },
+        {
+          "from": "pm-b11-organization-private-transformation-pack",
+          "to": "pm-b11-recipe-composition-and-ordering"
+        },
+        {
+          "from": "pm-b11-recipe-composition-and-ordering",
+          "to": "pm-b11-recipe-precondition-engine"
+        },
+        {
+          "from": "pm-b11-recipe-precondition-engine",
+          "to": "pm-b11-recipe-versioning"
+        },
+        {
+          "from": "pm-b11-recipe-versioning",
+          "to": "pm-b11-reference-knowledge-loader"
+        },
+        {
+          "from": "pm-b11-reference-knowledge-loader",
+          "to": "pm-b11-scanning-recipe-engine"
+        },
+        {
+          "from": "pm-b11-scanning-recipe-engine",
+          "to": "pm-b11-transformation-registry"
+        },
+        {
+          "from": "pm-b11-transformation-registry",
+          "to": "pm-b11-transformation-skill-compiler"
+        }
+      ],
+      "function_name": "execute_pm_b11_transformation_skill_recipe",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b11_transformation_skill_recipe",
+      "handler_id": "orchestrator-dag-v2:batch-11-transformation-skill-recipe",
+      "implementation_digest": "sha256:5b41442ec7e0a9ebc1142ac67ea45fb5060ad7dbd4014e00313769b6b06b61e3",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b11-code-example-rule-induction",
+        "pm-b11-declarative-recipe-dsl",
+        "pm-b11-imperative-recipe-runtime",
+        "pm-b11-managed-transformation-pack",
+        "pm-b11-multi-cycle-transformation-engine",
+        "pm-b11-natural-language-transformation-definition",
+        "pm-b11-organization-private-transformation-pack",
+        "pm-b11-recipe-composition-and-ordering",
+        "pm-b11-recipe-precondition-engine",
+        "pm-b11-recipe-versioning",
+        "pm-b11-reference-knowledge-loader",
+        "pm-b11-scanning-recipe-engine",
+        "pm-b11-transformation-registry",
+        "pm-b11-transformation-skill-compiler"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b11-transformation-skill-recipe",
+      "source_skill": "batch-11-transformation-skill-recipe"
+    },
+    {
+      "batch": 12,
+      "dag_digest": "sha256:e9660e6b4a864c32c4ae13ad538be6ed3cfefd4eb554f7d0f3c540079d00fbd5",
+      "edges": [
+        {
+          "from": "pm-b12-comment-and-format-preservation",
+          "to": "pm-b12-import-and-namespace-rewriter"
+        },
+        {
+          "from": "pm-b12-import-and-namespace-rewriter",
+          "to": "pm-b12-lossless-source-tree"
+        },
+        {
+          "from": "pm-b12-lossless-source-tree",
+          "to": "pm-b12-minimal-change-generator"
+        },
+        {
+          "from": "pm-b12-minimal-change-generator",
+          "to": "pm-b12-rollback-patch-generator"
+        },
+        {
+          "from": "pm-b12-rollback-patch-generator",
+          "to": "pm-b12-semantic-diff-generator"
+        },
+        {
+          "from": "pm-b12-semantic-diff-generator",
+          "to": "pm-b12-source-location-mapper"
+        },
+        {
+          "from": "pm-b12-source-location-mapper",
+          "to": "pm-b12-symbol-safe-renaming"
+        },
+        {
+          "from": "pm-b12-symbol-safe-renaming",
+          "to": "pm-b12-transformation-result-set"
+        },
+        {
+          "from": "pm-b12-transformation-result-set",
+          "to": "pm-b12-type-attributed-tree"
+        }
+      ],
+      "function_name": "execute_pm_b12_lossless_semantic_transformation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b12_lossless_semantic_transformation",
+      "handler_id": "orchestrator-dag-v2:batch-12-lossless-semantic-transformation",
+      "implementation_digest": "sha256:38a8d28c8d3f51a97f771b69ffade1eeea0fd85a5a44e40662e8fae8a318e5f5",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b12-comment-and-format-preservation",
+        "pm-b12-import-and-namespace-rewriter",
+        "pm-b12-lossless-source-tree",
+        "pm-b12-minimal-change-generator",
+        "pm-b12-rollback-patch-generator",
+        "pm-b12-semantic-diff-generator",
+        "pm-b12-source-location-mapper",
+        "pm-b12-symbol-safe-renaming",
+        "pm-b12-transformation-result-set",
+        "pm-b12-type-attributed-tree"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b12-lossless-semantic-transformation",
+      "source_skill": "batch-12-lossless-semantic-transformation"
+    },
+    {
+      "batch": 13,
+      "dag_digest": "sha256:56deb0fb4493304a94620d7ad789416f0cd9ef1addc85d178d89f766894793b8",
+      "edges": [
+        {
+          "from": "pm-b13-adapter-and-shim-generator",
+          "to": "pm-b13-candidate-cost-ranker"
+        },
+        {
+          "from": "pm-b13-candidate-cost-ranker",
+          "to": "pm-b13-candidate-verifiability-ranker"
+        },
+        {
+          "from": "pm-b13-candidate-verifiability-ranker",
+          "to": "pm-b13-deterministic-rule-generator"
+        },
+        {
+          "from": "pm-b13-deterministic-rule-generator",
+          "to": "pm-b13-egraph-equivalence-search"
+        },
+        {
+          "from": "pm-b13-egraph-equivalence-search",
+          "to": "pm-b13-idiomatic-target-code-generator"
+        },
+        {
+          "from": "pm-b13-idiomatic-target-code-generator",
+          "to": "pm-b13-library-api-rag"
+        },
+        {
+          "from": "pm-b13-library-api-rag",
+          "to": "pm-b13-llm-candidate-generator"
+        },
+        {
+          "from": "pm-b13-llm-candidate-generator",
+          "to": "pm-b13-multi-candidate-search"
+        },
+        {
+          "from": "pm-b13-multi-candidate-search",
+          "to": "pm-b13-unsupported-semantics-classifier"
+        }
+      ],
+      "function_name": "execute_pm_b13_neurosymbolic_candidate_generation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b13_neurosymbolic_candidate_generation",
+      "handler_id": "orchestrator-dag-v2:batch-13-neurosymbolic-candidate-generation",
+      "implementation_digest": "sha256:da1d2ec00bf67d36a8e9f1f6cba5af3494793e0f7f09ca7f956bc7bc52a1820f",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b13-adapter-and-shim-generator",
+        "pm-b13-candidate-cost-ranker",
+        "pm-b13-candidate-verifiability-ranker",
+        "pm-b13-deterministic-rule-generator",
+        "pm-b13-egraph-equivalence-search",
+        "pm-b13-idiomatic-target-code-generator",
+        "pm-b13-library-api-rag",
+        "pm-b13-llm-candidate-generator",
+        "pm-b13-multi-candidate-search",
+        "pm-b13-unsupported-semantics-classifier"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b13-neurosymbolic-candidate-generation",
+      "source_skill": "batch-13-neurosymbolic-candidate-generation"
+    },
+    {
+      "batch": 14,
+      "dag_digest": "sha256:dbeb598a699bebc2b95c1dfd2c22a5865c7a97f70cb86bf01b5b96a50afb0741",
+      "edges": [
+        {
+          "from": "pm-b14-csharp-async-concurrency-adapter",
+          "to": "pm-b14-csharp-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-cfg-ssa-adapter",
+          "to": "pm-b14-csharp-code-generator"
+        },
+        {
+          "from": "pm-b14-csharp-code-generator",
+          "to": "pm-b14-csharp-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-error-exception-adapter",
+          "to": "pm-b14-csharp-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-formatter-linter-adapter",
+          "to": "pm-b14-csharp-framework-detector"
+        },
+        {
+          "from": "pm-b14-csharp-framework-detector",
+          "to": "pm-b14-csharp-parser-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-parser-adapter",
+          "to": "pm-b14-csharp-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-symbol-adapter",
+          "to": "pm-b14-csharp-test-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-test-adapter",
+          "to": "pm-b14-csharp-type-adapter"
+        },
+        {
+          "from": "pm-b14-csharp-type-adapter",
+          "to": "pm-b14-go-async-concurrency-adapter"
+        },
+        {
+          "from": "pm-b14-go-async-concurrency-adapter",
+          "to": "pm-b14-go-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-go-cfg-ssa-adapter",
+          "to": "pm-b14-go-code-generator"
+        },
+        {
+          "from": "pm-b14-go-code-generator",
+          "to": "pm-b14-go-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-go-error-exception-adapter",
+          "to": "pm-b14-go-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-go-formatter-linter-adapter",
+          "to": "pm-b14-go-framework-detector"
+        },
+        {
+          "from": "pm-b14-go-framework-detector",
+          "to": "pm-b14-go-parser-adapter"
+        },
+        {
+          "from": "pm-b14-go-parser-adapter",
+          "to": "pm-b14-go-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-go-symbol-adapter",
+          "to": "pm-b14-go-test-adapter"
+        },
+        {
+          "from": "pm-b14-go-test-adapter",
+          "to": "pm-b14-go-type-adapter"
+        },
+        {
+          "from": "pm-b14-go-type-adapter",
+          "to": "pm-b14-java-async-concurrency-adapter"
+        },
+        {
+          "from": "pm-b14-java-async-concurrency-adapter",
+          "to": "pm-b14-java-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-java-cfg-ssa-adapter",
+          "to": "pm-b14-java-code-generator"
+        },
+        {
+          "from": "pm-b14-java-code-generator",
+          "to": "pm-b14-java-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-java-error-exception-adapter",
+          "to": "pm-b14-java-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-java-formatter-linter-adapter",
+          "to": "pm-b14-java-framework-detector"
+        },
+        {
+          "from": "pm-b14-java-framework-detector",
+          "to": "pm-b14-java-parser-adapter"
+        },
+        {
+          "from": "pm-b14-java-parser-adapter",
+          "to": "pm-b14-java-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-java-symbol-adapter",
+          "to": "pm-b14-java-test-adapter"
+        },
+        {
+          "from": "pm-b14-java-test-adapter",
+          "to": "pm-b14-java-type-adapter"
+        },
+        {
+          "from": "pm-b14-java-type-adapter",
+          "to": "pm-b14-python-async-concurrency-adapter"
+        },
+        {
+          "from": "pm-b14-python-async-concurrency-adapter",
+          "to": "pm-b14-python-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-python-cfg-ssa-adapter",
+          "to": "pm-b14-python-code-generator"
+        },
+        {
+          "from": "pm-b14-python-code-generator",
+          "to": "pm-b14-python-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-python-error-exception-adapter",
+          "to": "pm-b14-python-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-python-formatter-linter-adapter",
+          "to": "pm-b14-python-framework-detector"
+        },
+        {
+          "from": "pm-b14-python-framework-detector",
+          "to": "pm-b14-python-parser-adapter"
+        },
+        {
+          "from": "pm-b14-python-parser-adapter",
+          "to": "pm-b14-python-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-python-symbol-adapter",
+          "to": "pm-b14-python-test-adapter"
+        },
+        {
+          "from": "pm-b14-python-test-adapter",
+          "to": "pm-b14-python-type-adapter"
+        },
+        {
+          "from": "pm-b14-python-type-adapter",
+          "to": "pm-b14-rust-async-concurrency-adapter"
+        },
+        {
+          "from": "pm-b14-rust-async-concurrency-adapter",
+          "to": "pm-b14-rust-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-rust-cfg-ssa-adapter",
+          "to": "pm-b14-rust-code-generator"
+        },
+        {
+          "from": "pm-b14-rust-code-generator",
+          "to": "pm-b14-rust-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-rust-error-exception-adapter",
+          "to": "pm-b14-rust-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-rust-formatter-linter-adapter",
+          "to": "pm-b14-rust-framework-detector"
+        },
+        {
+          "from": "pm-b14-rust-framework-detector",
+          "to": "pm-b14-rust-parser-adapter"
+        },
+        {
+          "from": "pm-b14-rust-parser-adapter",
+          "to": "pm-b14-rust-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-rust-symbol-adapter",
+          "to": "pm-b14-rust-test-adapter"
+        },
+        {
+          "from": "pm-b14-rust-test-adapter",
+          "to": "pm-b14-rust-type-adapter"
+        },
+        {
+          "from": "pm-b14-rust-type-adapter",
+          "to": "pm-b14-typescript-async-concurrency-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-async-concurrency-adapter",
+          "to": "pm-b14-typescript-cfg-ssa-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-cfg-ssa-adapter",
+          "to": "pm-b14-typescript-code-generator"
+        },
+        {
+          "from": "pm-b14-typescript-code-generator",
+          "to": "pm-b14-typescript-error-exception-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-error-exception-adapter",
+          "to": "pm-b14-typescript-formatter-linter-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-formatter-linter-adapter",
+          "to": "pm-b14-typescript-framework-detector"
+        },
+        {
+          "from": "pm-b14-typescript-framework-detector",
+          "to": "pm-b14-typescript-parser-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-parser-adapter",
+          "to": "pm-b14-typescript-symbol-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-symbol-adapter",
+          "to": "pm-b14-typescript-test-adapter"
+        },
+        {
+          "from": "pm-b14-typescript-test-adapter",
+          "to": "pm-b14-typescript-type-adapter"
+        }
+      ],
+      "function_name": "execute_pm_b14_backend_compiler_adapters",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b14_backend_compiler_adapters",
+      "handler_id": "orchestrator-dag-v2:batch-14-backend-compiler-adapters",
+      "implementation_digest": "sha256:db96cda2348458e34467ab7b8e4d37dcad11f2ca669e3ff0ea6a1cc7eba58a79",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b14-csharp-async-concurrency-adapter",
+        "pm-b14-csharp-cfg-ssa-adapter",
+        "pm-b14-csharp-code-generator",
+        "pm-b14-csharp-error-exception-adapter",
+        "pm-b14-csharp-formatter-linter-adapter",
+        "pm-b14-csharp-framework-detector",
+        "pm-b14-csharp-parser-adapter",
+        "pm-b14-csharp-symbol-adapter",
+        "pm-b14-csharp-test-adapter",
+        "pm-b14-csharp-type-adapter",
+        "pm-b14-go-async-concurrency-adapter",
+        "pm-b14-go-cfg-ssa-adapter",
+        "pm-b14-go-code-generator",
+        "pm-b14-go-error-exception-adapter",
+        "pm-b14-go-formatter-linter-adapter",
+        "pm-b14-go-framework-detector",
+        "pm-b14-go-parser-adapter",
+        "pm-b14-go-symbol-adapter",
+        "pm-b14-go-test-adapter",
+        "pm-b14-go-type-adapter",
+        "pm-b14-java-async-concurrency-adapter",
+        "pm-b14-java-cfg-ssa-adapter",
+        "pm-b14-java-code-generator",
+        "pm-b14-java-error-exception-adapter",
+        "pm-b14-java-formatter-linter-adapter",
+        "pm-b14-java-framework-detector",
+        "pm-b14-java-parser-adapter",
+        "pm-b14-java-symbol-adapter",
+        "pm-b14-java-test-adapter",
+        "pm-b14-java-type-adapter",
+        "pm-b14-python-async-concurrency-adapter",
+        "pm-b14-python-cfg-ssa-adapter",
+        "pm-b14-python-code-generator",
+        "pm-b14-python-error-exception-adapter",
+        "pm-b14-python-formatter-linter-adapter",
+        "pm-b14-python-framework-detector",
+        "pm-b14-python-parser-adapter",
+        "pm-b14-python-symbol-adapter",
+        "pm-b14-python-test-adapter",
+        "pm-b14-python-type-adapter",
+        "pm-b14-rust-async-concurrency-adapter",
+        "pm-b14-rust-cfg-ssa-adapter",
+        "pm-b14-rust-code-generator",
+        "pm-b14-rust-error-exception-adapter",
+        "pm-b14-rust-formatter-linter-adapter",
+        "pm-b14-rust-framework-detector",
+        "pm-b14-rust-parser-adapter",
+        "pm-b14-rust-symbol-adapter",
+        "pm-b14-rust-test-adapter",
+        "pm-b14-rust-type-adapter",
+        "pm-b14-typescript-async-concurrency-adapter",
+        "pm-b14-typescript-cfg-ssa-adapter",
+        "pm-b14-typescript-code-generator",
+        "pm-b14-typescript-error-exception-adapter",
+        "pm-b14-typescript-formatter-linter-adapter",
+        "pm-b14-typescript-framework-detector",
+        "pm-b14-typescript-parser-adapter",
+        "pm-b14-typescript-symbol-adapter",
+        "pm-b14-typescript-test-adapter",
+        "pm-b14-typescript-type-adapter"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b14-backend-compiler-adapters",
+      "source_skill": "batch-14-backend-compiler-adapters"
+    },
+    {
+      "batch": 15,
+      "dag_digest": "sha256:84fd631c05b9b1eb8e999faa3449f1bf44c40777acfe02c010ae7f0f670c3ea9",
+      "edges": [
+        {
+          "from": "pm-b15-collection-pipeline-lowering",
+          "to": "pm-b15-configuration-lowering"
+        },
+        {
+          "from": "pm-b15-configuration-lowering",
+          "to": "pm-b15-dependency-injection-lowering"
+        },
+        {
+          "from": "pm-b15-dependency-injection-lowering",
+          "to": "pm-b15-exception-to-result-error-lowering"
+        },
+        {
+          "from": "pm-b15-exception-to-result-error-lowering",
+          "to": "pm-b15-generic-type-lowering"
+        },
+        {
+          "from": "pm-b15-generic-type-lowering",
+          "to": "pm-b15-inheritance-to-composition-lowering"
+        },
+        {
+          "from": "pm-b15-inheritance-to-composition-lowering",
+          "to": "pm-b15-interface-trait-protocol-lowering"
+        },
+        {
+          "from": "pm-b15-interface-trait-protocol-lowering",
+          "to": "pm-b15-logging-observability-lowering"
+        },
+        {
+          "from": "pm-b15-logging-observability-lowering",
+          "to": "pm-b15-null-to-option-pointer-lowering"
+        },
+        {
+          "from": "pm-b15-null-to-option-pointer-lowering",
+          "to": "pm-b15-orm-and-transaction-lowering"
+        },
+        {
+          "from": "pm-b15-orm-and-transaction-lowering",
+          "to": "pm-b15-reflection-elimination"
+        },
+        {
+          "from": "pm-b15-reflection-elimination",
+          "to": "pm-b15-resource-ownership-lowering"
+        },
+        {
+          "from": "pm-b15-resource-ownership-lowering",
+          "to": "pm-b15-sync-async-lowering"
+        },
+        {
+          "from": "pm-b15-sync-async-lowering",
+          "to": "pm-b15-thread-goroutine-future-lowering"
+        }
+      ],
+      "function_name": "execute_pm_b15_backend_semantic_lowering",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b15_backend_semantic_lowering",
+      "handler_id": "orchestrator-dag-v2:batch-15-backend-semantic-lowering",
+      "implementation_digest": "sha256:fe049b48ba3034cb0a6640074739bec831a117736b2aad5c193756cd940a625d",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b15-collection-pipeline-lowering",
+        "pm-b15-configuration-lowering",
+        "pm-b15-dependency-injection-lowering",
+        "pm-b15-exception-to-result-error-lowering",
+        "pm-b15-generic-type-lowering",
+        "pm-b15-inheritance-to-composition-lowering",
+        "pm-b15-interface-trait-protocol-lowering",
+        "pm-b15-logging-observability-lowering",
+        "pm-b15-null-to-option-pointer-lowering",
+        "pm-b15-orm-and-transaction-lowering",
+        "pm-b15-reflection-elimination",
+        "pm-b15-resource-ownership-lowering",
+        "pm-b15-sync-async-lowering",
+        "pm-b15-thread-goroutine-future-lowering"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b15-backend-semantic-lowering",
+      "source_skill": "batch-15-backend-semantic-lowering"
+    },
+    {
+      "batch": 16,
+      "dag_digest": "sha256:c5eb1dde9164b8be67dceedc977cd6206ace828e167fd0d786aac3e4e3bc1630",
+      "edges": [
+        {
+          "from": "pm-b16-csharp-to-go-direction-pack",
+          "to": "pm-b16-csharp-to-java-direction-pack"
+        },
+        {
+          "from": "pm-b16-csharp-to-java-direction-pack",
+          "to": "pm-b16-csharp-to-python-direction-pack"
+        },
+        {
+          "from": "pm-b16-csharp-to-python-direction-pack",
+          "to": "pm-b16-csharp-to-rust-direction-pack"
+        },
+        {
+          "from": "pm-b16-csharp-to-rust-direction-pack",
+          "to": "pm-b16-csharp-to-typescript-direction-pack"
+        },
+        {
+          "from": "pm-b16-csharp-to-typescript-direction-pack",
+          "to": "pm-b16-go-to-csharp-direction-pack"
+        },
+        {
+          "from": "pm-b16-go-to-csharp-direction-pack",
+          "to": "pm-b16-go-to-java-direction-pack"
+        },
+        {
+          "from": "pm-b16-go-to-java-direction-pack",
+          "to": "pm-b16-go-to-python-direction-pack"
+        },
+        {
+          "from": "pm-b16-go-to-python-direction-pack",
+          "to": "pm-b16-go-to-rust-direction-pack"
+        },
+        {
+          "from": "pm-b16-go-to-rust-direction-pack",
+          "to": "pm-b16-go-to-typescript-direction-pack"
+        },
+        {
+          "from": "pm-b16-go-to-typescript-direction-pack",
+          "to": "pm-b16-java-to-csharp-direction-pack"
+        },
+        {
+          "from": "pm-b16-java-to-csharp-direction-pack",
+          "to": "pm-b16-java-to-go-direction-pack"
+        },
+        {
+          "from": "pm-b16-java-to-go-direction-pack",
+          "to": "pm-b16-java-to-python-direction-pack"
+        },
+        {
+          "from": "pm-b16-java-to-python-direction-pack",
+          "to": "pm-b16-java-to-rust-direction-pack"
+        },
+        {
+          "from": "pm-b16-java-to-rust-direction-pack",
+          "to": "pm-b16-java-to-typescript-direction-pack"
+        },
+        {
+          "from": "pm-b16-java-to-typescript-direction-pack",
+          "to": "pm-b16-python-to-csharp-direction-pack"
+        },
+        {
+          "from": "pm-b16-python-to-csharp-direction-pack",
+          "to": "pm-b16-python-to-go-direction-pack"
+        },
+        {
+          "from": "pm-b16-python-to-go-direction-pack",
+          "to": "pm-b16-python-to-java-direction-pack"
+        },
+        {
+          "from": "pm-b16-python-to-java-direction-pack",
+          "to": "pm-b16-python-to-rust-direction-pack"
+        },
+        {
+          "from": "pm-b16-python-to-rust-direction-pack",
+          "to": "pm-b16-python-to-typescript-direction-pack"
+        },
+        {
+          "from": "pm-b16-python-to-typescript-direction-pack",
+          "to": "pm-b16-rust-to-csharp-direction-pack"
+        },
+        {
+          "from": "pm-b16-rust-to-csharp-direction-pack",
+          "to": "pm-b16-rust-to-go-direction-pack"
+        },
+        {
+          "from": "pm-b16-rust-to-go-direction-pack",
+          "to": "pm-b16-rust-to-java-direction-pack"
+        },
+        {
+          "from": "pm-b16-rust-to-java-direction-pack",
+          "to": "pm-b16-rust-to-python-direction-pack"
+        },
+        {
+          "from": "pm-b16-rust-to-python-direction-pack",
+          "to": "pm-b16-rust-to-typescript-direction-pack"
+        },
+        {
+          "from": "pm-b16-rust-to-typescript-direction-pack",
+          "to": "pm-b16-typescript-to-csharp-direction-pack"
+        },
+        {
+          "from": "pm-b16-typescript-to-csharp-direction-pack",
+          "to": "pm-b16-typescript-to-go-direction-pack"
+        },
+        {
+          "from": "pm-b16-typescript-to-go-direction-pack",
+          "to": "pm-b16-typescript-to-java-direction-pack"
+        },
+        {
+          "from": "pm-b16-typescript-to-java-direction-pack",
+          "to": "pm-b16-typescript-to-python-direction-pack"
+        },
+        {
+          "from": "pm-b16-typescript-to-python-direction-pack",
+          "to": "pm-b16-typescript-to-rust-direction-pack"
+        }
+      ],
+      "function_name": "execute_pm_b16_backend_direction_packs",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b16_backend_direction_packs",
+      "handler_id": "orchestrator-dag-v2:batch-16-backend-direction-packs",
+      "implementation_digest": "sha256:87f454ca543a3573e734da628ef8815bea95507403a494dabae723dc44a1da50",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b16-csharp-to-go-direction-pack",
+        "pm-b16-csharp-to-java-direction-pack",
+        "pm-b16-csharp-to-python-direction-pack",
+        "pm-b16-csharp-to-rust-direction-pack",
+        "pm-b16-csharp-to-typescript-direction-pack",
+        "pm-b16-go-to-csharp-direction-pack",
+        "pm-b16-go-to-java-direction-pack",
+        "pm-b16-go-to-python-direction-pack",
+        "pm-b16-go-to-rust-direction-pack",
+        "pm-b16-go-to-typescript-direction-pack",
+        "pm-b16-java-to-csharp-direction-pack",
+        "pm-b16-java-to-go-direction-pack",
+        "pm-b16-java-to-python-direction-pack",
+        "pm-b16-java-to-rust-direction-pack",
+        "pm-b16-java-to-typescript-direction-pack",
+        "pm-b16-python-to-csharp-direction-pack",
+        "pm-b16-python-to-go-direction-pack",
+        "pm-b16-python-to-java-direction-pack",
+        "pm-b16-python-to-rust-direction-pack",
+        "pm-b16-python-to-typescript-direction-pack",
+        "pm-b16-rust-to-csharp-direction-pack",
+        "pm-b16-rust-to-go-direction-pack",
+        "pm-b16-rust-to-java-direction-pack",
+        "pm-b16-rust-to-python-direction-pack",
+        "pm-b16-rust-to-typescript-direction-pack",
+        "pm-b16-typescript-to-csharp-direction-pack",
+        "pm-b16-typescript-to-go-direction-pack",
+        "pm-b16-typescript-to-java-direction-pack",
+        "pm-b16-typescript-to-python-direction-pack",
+        "pm-b16-typescript-to-rust-direction-pack"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b16-backend-direction-packs",
+      "source_skill": "batch-16-backend-direction-packs"
+    },
+    {
+      "batch": 17,
+      "dag_digest": "sha256:d041d41d61a8a56d231227b436d0925429ba45c530069f6cb79681575d5249ae",
+      "edges": [
+        {
+          "from": "pm-b17-accessibility-semantic-tree",
+          "to": "pm-b17-component-contract-recovery"
+        },
+        {
+          "from": "pm-b17-component-contract-recovery",
+          "to": "pm-b17-event-effect-trace-recovery"
+        },
+        {
+          "from": "pm-b17-event-effect-trace-recovery",
+          "to": "pm-b17-form-validation-mapping"
+        },
+        {
+          "from": "pm-b17-form-validation-mapping",
+          "to": "pm-b17-layout-constraint-mapping"
+        },
+        {
+          "from": "pm-b17-layout-constraint-mapping",
+          "to": "pm-b17-lifecycle-semantic-mapping"
+        },
+        {
+          "from": "pm-b17-lifecycle-semantic-mapping",
+          "to": "pm-b17-local-storage-mapping"
+        },
+        {
+          "from": "pm-b17-local-storage-mapping",
+          "to": "pm-b17-network-request-semantic-mapping"
+        },
+        {
+          "from": "pm-b17-network-request-semantic-mapping",
+          "to": "pm-b17-reactive-dependency-analysis"
+        },
+        {
+          "from": "pm-b17-reactive-dependency-analysis",
+          "to": "pm-b17-route-navigation-mapping"
+        },
+        {
+          "from": "pm-b17-route-navigation-mapping",
+          "to": "pm-b17-slot-children-content-mapping"
+        },
+        {
+          "from": "pm-b17-slot-children-content-mapping",
+          "to": "pm-b17-ui-state-machine-recovery"
+        }
+      ],
+      "function_name": "execute_pm_b17_frontend_semantic_conversion",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b17_frontend_semantic_conversion",
+      "handler_id": "orchestrator-dag-v2:batch-17-frontend-semantic-conversion",
+      "implementation_digest": "sha256:eee3c1c719a1afc8d2334fd65d2fbbd07a4408082cbb1e2f28bf130a1aa2ff3b",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b17-accessibility-semantic-tree",
+        "pm-b17-component-contract-recovery",
+        "pm-b17-event-effect-trace-recovery",
+        "pm-b17-form-validation-mapping",
+        "pm-b17-layout-constraint-mapping",
+        "pm-b17-lifecycle-semantic-mapping",
+        "pm-b17-local-storage-mapping",
+        "pm-b17-network-request-semantic-mapping",
+        "pm-b17-reactive-dependency-analysis",
+        "pm-b17-route-navigation-mapping",
+        "pm-b17-slot-children-content-mapping",
+        "pm-b17-ui-state-machine-recovery"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b17-frontend-semantic-conversion",
+      "source_skill": "batch-17-frontend-semantic-conversion"
+    },
+    {
+      "batch": 18,
+      "dag_digest": "sha256:4867e662fc3fb27dfa08a575d846ceb6f9c5c43771ab3130df36737f9a4d095c",
+      "edges": [
+        {
+          "from": "pm-b18-arkui-to-flutter-direction-pack",
+          "to": "pm-b18-arkui-to-react-direction-pack"
+        },
+        {
+          "from": "pm-b18-arkui-to-react-direction-pack",
+          "to": "pm-b18-arkui-to-vue2-direction-pack"
+        },
+        {
+          "from": "pm-b18-arkui-to-vue2-direction-pack",
+          "to": "pm-b18-arkui-to-vue3-direction-pack"
+        },
+        {
+          "from": "pm-b18-arkui-to-vue3-direction-pack",
+          "to": "pm-b18-arkui-to-wechat-miniprogram-direction-pack"
+        },
+        {
+          "from": "pm-b18-arkui-to-wechat-miniprogram-direction-pack",
+          "to": "pm-b18-flutter-to-arkui-direction-pack"
+        },
+        {
+          "from": "pm-b18-flutter-to-arkui-direction-pack",
+          "to": "pm-b18-flutter-to-react-direction-pack"
+        },
+        {
+          "from": "pm-b18-flutter-to-react-direction-pack",
+          "to": "pm-b18-flutter-to-vue2-direction-pack"
+        },
+        {
+          "from": "pm-b18-flutter-to-vue2-direction-pack",
+          "to": "pm-b18-flutter-to-vue3-direction-pack"
+        },
+        {
+          "from": "pm-b18-flutter-to-vue3-direction-pack",
+          "to": "pm-b18-flutter-to-wechat-miniprogram-direction-pack"
+        },
+        {
+          "from": "pm-b18-flutter-to-wechat-miniprogram-direction-pack",
+          "to": "pm-b18-javascript-to-typescript-modernization-pack"
+        },
+        {
+          "from": "pm-b18-javascript-to-typescript-modernization-pack",
+          "to": "pm-b18-react-class-to-hooks-modernization-pack"
+        },
+        {
+          "from": "pm-b18-react-class-to-hooks-modernization-pack",
+          "to": "pm-b18-react-to-arkui-direction-pack"
+        },
+        {
+          "from": "pm-b18-react-to-arkui-direction-pack",
+          "to": "pm-b18-react-to-flutter-direction-pack"
+        },
+        {
+          "from": "pm-b18-react-to-flutter-direction-pack",
+          "to": "pm-b18-react-to-vue2-direction-pack"
+        },
+        {
+          "from": "pm-b18-react-to-vue2-direction-pack",
+          "to": "pm-b18-react-to-vue3-direction-pack"
+        },
+        {
+          "from": "pm-b18-react-to-vue3-direction-pack",
+          "to": "pm-b18-react-to-wechat-miniprogram-direction-pack"
+        },
+        {
+          "from": "pm-b18-react-to-wechat-miniprogram-direction-pack",
+          "to": "pm-b18-vue2-to-arkui-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue2-to-arkui-direction-pack",
+          "to": "pm-b18-vue2-to-flutter-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue2-to-flutter-direction-pack",
+          "to": "pm-b18-vue2-to-react-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue2-to-react-direction-pack",
+          "to": "pm-b18-vue2-to-vue3-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue2-to-vue3-direction-pack",
+          "to": "pm-b18-vue2-to-wechat-miniprogram-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue2-to-wechat-miniprogram-direction-pack",
+          "to": "pm-b18-vue3-to-arkui-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue3-to-arkui-direction-pack",
+          "to": "pm-b18-vue3-to-flutter-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue3-to-flutter-direction-pack",
+          "to": "pm-b18-vue3-to-react-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue3-to-react-direction-pack",
+          "to": "pm-b18-vue3-to-vue2-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue3-to-vue2-direction-pack",
+          "to": "pm-b18-vue3-to-wechat-miniprogram-direction-pack"
+        },
+        {
+          "from": "pm-b18-vue3-to-wechat-miniprogram-direction-pack",
+          "to": "pm-b18-wechat-miniprogram-to-arkui-direction-pack"
+        },
+        {
+          "from": "pm-b18-wechat-miniprogram-to-arkui-direction-pack",
+          "to": "pm-b18-wechat-miniprogram-to-flutter-direction-pack"
+        },
+        {
+          "from": "pm-b18-wechat-miniprogram-to-flutter-direction-pack",
+          "to": "pm-b18-wechat-miniprogram-to-react-direction-pack"
+        },
+        {
+          "from": "pm-b18-wechat-miniprogram-to-react-direction-pack",
+          "to": "pm-b18-wechat-miniprogram-to-vue2-direction-pack"
+        },
+        {
+          "from": "pm-b18-wechat-miniprogram-to-vue2-direction-pack",
+          "to": "pm-b18-wechat-miniprogram-to-vue3-direction-pack"
+        }
+      ],
+      "function_name": "execute_pm_b18_frontend_direction_packs",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b18_frontend_direction_packs",
+      "handler_id": "orchestrator-dag-v2:batch-18-frontend-direction-packs",
+      "implementation_digest": "sha256:38a005296b712c940fedf3a19f0c9a928a80457f24cdba58beb3be0fdaf65e51",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b18-arkui-to-flutter-direction-pack",
+        "pm-b18-arkui-to-react-direction-pack",
+        "pm-b18-arkui-to-vue2-direction-pack",
+        "pm-b18-arkui-to-vue3-direction-pack",
+        "pm-b18-arkui-to-wechat-miniprogram-direction-pack",
+        "pm-b18-flutter-to-arkui-direction-pack",
+        "pm-b18-flutter-to-react-direction-pack",
+        "pm-b18-flutter-to-vue2-direction-pack",
+        "pm-b18-flutter-to-vue3-direction-pack",
+        "pm-b18-flutter-to-wechat-miniprogram-direction-pack",
+        "pm-b18-javascript-to-typescript-modernization-pack",
+        "pm-b18-react-class-to-hooks-modernization-pack",
+        "pm-b18-react-to-arkui-direction-pack",
+        "pm-b18-react-to-flutter-direction-pack",
+        "pm-b18-react-to-vue2-direction-pack",
+        "pm-b18-react-to-vue3-direction-pack",
+        "pm-b18-react-to-wechat-miniprogram-direction-pack",
+        "pm-b18-vue2-to-arkui-direction-pack",
+        "pm-b18-vue2-to-flutter-direction-pack",
+        "pm-b18-vue2-to-react-direction-pack",
+        "pm-b18-vue2-to-vue3-direction-pack",
+        "pm-b18-vue2-to-wechat-miniprogram-direction-pack",
+        "pm-b18-vue3-to-arkui-direction-pack",
+        "pm-b18-vue3-to-flutter-direction-pack",
+        "pm-b18-vue3-to-react-direction-pack",
+        "pm-b18-vue3-to-vue2-direction-pack",
+        "pm-b18-vue3-to-wechat-miniprogram-direction-pack",
+        "pm-b18-wechat-miniprogram-to-arkui-direction-pack",
+        "pm-b18-wechat-miniprogram-to-flutter-direction-pack",
+        "pm-b18-wechat-miniprogram-to-react-direction-pack",
+        "pm-b18-wechat-miniprogram-to-vue2-direction-pack",
+        "pm-b18-wechat-miniprogram-to-vue3-direction-pack"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b18-frontend-direction-packs",
+      "source_skill": "batch-18-frontend-direction-packs"
+    },
+    {
+      "batch": 19,
+      "dag_digest": "sha256:80487ab2d13bcee75dd9b6c6797bffe7db4b12773e6b07542db6e4e644b794b4",
+      "edges": [
+        {
+          "from": "pm-b19-constraint-and-index-ir",
+          "to": "pm-b19-database-effect-ir"
+        },
+        {
+          "from": "pm-b19-database-effect-ir",
+          "to": "pm-b19-database-schema-ir"
+        },
+        {
+          "from": "pm-b19-database-schema-ir",
+          "to": "pm-b19-database-security-ir"
+        },
+        {
+          "from": "pm-b19-database-security-ir",
+          "to": "pm-b19-database-type-system"
+        },
+        {
+          "from": "pm-b19-database-type-system",
+          "to": "pm-b19-procedure-control-flow-ir"
+        },
+        {
+          "from": "pm-b19-procedure-control-flow-ir",
+          "to": "pm-b19-query-plan-ir"
+        },
+        {
+          "from": "pm-b19-query-plan-ir",
+          "to": "pm-b19-replication-and-cdc-ir"
+        },
+        {
+          "from": "pm-b19-replication-and-cdc-ir",
+          "to": "pm-b19-sequence-identity-ir"
+        },
+        {
+          "from": "pm-b19-sequence-identity-ir",
+          "to": "pm-b19-sql-expression-ir"
+        },
+        {
+          "from": "pm-b19-sql-expression-ir",
+          "to": "pm-b19-transaction-isolation-ir"
+        },
+        {
+          "from": "pm-b19-transaction-isolation-ir",
+          "to": "pm-b19-trigger-and-event-ir"
+        }
+      ],
+      "function_name": "execute_pm_b19_database_semantic_ir",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b19_database_semantic_ir",
+      "handler_id": "orchestrator-dag-v2:batch-19-database-semantic-ir",
+      "implementation_digest": "sha256:e8ac9ff4b62ba06448122223cc1ef0f043ab3098160acd40578f5415c279eba6",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b19-constraint-and-index-ir",
+        "pm-b19-database-effect-ir",
+        "pm-b19-database-schema-ir",
+        "pm-b19-database-security-ir",
+        "pm-b19-database-type-system",
+        "pm-b19-procedure-control-flow-ir",
+        "pm-b19-query-plan-ir",
+        "pm-b19-replication-and-cdc-ir",
+        "pm-b19-sequence-identity-ir",
+        "pm-b19-sql-expression-ir",
+        "pm-b19-transaction-isolation-ir",
+        "pm-b19-trigger-and-event-ir"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b19-database-semantic-ir",
+      "source_skill": "batch-19-database-semantic-ir"
+    },
+    {
+      "batch": 20,
+      "dag_digest": "sha256:e8e0c1316041542df4acb6c771af0ab7bd659aa93263830742184197ca57fb33",
+      "edges": [
+        {
+          "from": "pm-b20-cutover-and-rollback-plan",
+          "to": "pm-b20-data-checksum-validation"
+        },
+        {
+          "from": "pm-b20-data-checksum-validation",
+          "to": "pm-b20-data-profile-and-quality-analysis"
+        },
+        {
+          "from": "pm-b20-data-profile-and-quality-analysis",
+          "to": "pm-b20-data-type-mapping"
+        },
+        {
+          "from": "pm-b20-data-type-mapping",
+          "to": "pm-b20-full-load-migration"
+        },
+        {
+          "from": "pm-b20-full-load-migration",
+          "to": "pm-b20-incremental-cdc-migration"
+        },
+        {
+          "from": "pm-b20-incremental-cdc-migration",
+          "to": "pm-b20-index-and-partition-converter"
+        },
+        {
+          "from": "pm-b20-index-and-partition-converter",
+          "to": "pm-b20-row-level-differential-validation"
+        },
+        {
+          "from": "pm-b20-row-level-differential-validation",
+          "to": "pm-b20-schema-inventory"
+        },
+        {
+          "from": "pm-b20-schema-inventory",
+          "to": "pm-b20-sequence-and-identity-converter"
+        },
+        {
+          "from": "pm-b20-sequence-and-identity-converter",
+          "to": "pm-b20-table-and-constraint-converter"
+        },
+        {
+          "from": "pm-b20-table-and-constraint-converter",
+          "to": "pm-b20-view-and-materialized-view-converter"
+        }
+      ],
+      "function_name": "execute_pm_b20_database_schema_data_migration",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b20_database_schema_data_migration",
+      "handler_id": "orchestrator-dag-v2:batch-20-database-schema-data-migration",
+      "implementation_digest": "sha256:1eb26cedd2e3b07d43a7dbb25a255f00b0df8c68c77af7a01ad013c6cf217bc1",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b20-cutover-and-rollback-plan",
+        "pm-b20-data-checksum-validation",
+        "pm-b20-data-profile-and-quality-analysis",
+        "pm-b20-data-type-mapping",
+        "pm-b20-full-load-migration",
+        "pm-b20-incremental-cdc-migration",
+        "pm-b20-index-and-partition-converter",
+        "pm-b20-row-level-differential-validation",
+        "pm-b20-schema-inventory",
+        "pm-b20-sequence-and-identity-converter",
+        "pm-b20-table-and-constraint-converter",
+        "pm-b20-view-and-materialized-view-converter"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b20-database-schema-data-migration",
+      "source_skill": "batch-20-database-schema-data-migration"
+    },
+    {
+      "batch": 21,
+      "dag_digest": "sha256:5d16ce20dccfc1ebeb4547a94302bcd55fdb20509434a13803549d076134c59a",
+      "edges": [
+        {
+          "from": "pm-b21-cursor-semantics-converter",
+          "to": "pm-b21-dynamic-sql-converter"
+        },
+        {
+          "from": "pm-b21-dynamic-sql-converter",
+          "to": "pm-b21-exception-handler-converter"
+        },
+        {
+          "from": "pm-b21-exception-handler-converter",
+          "to": "pm-b21-package-state-converter"
+        },
+        {
+          "from": "pm-b21-package-state-converter",
+          "to": "pm-b21-procedure-cfg-builder"
+        },
+        {
+          "from": "pm-b21-procedure-cfg-builder",
+          "to": "pm-b21-procedure-differential-test-generator"
+        },
+        {
+          "from": "pm-b21-procedure-differential-test-generator",
+          "to": "pm-b21-procedure-performance-validator"
+        },
+        {
+          "from": "pm-b21-procedure-performance-validator",
+          "to": "pm-b21-procedure-side-effect-analyzer"
+        },
+        {
+          "from": "pm-b21-procedure-side-effect-analyzer",
+          "to": "pm-b21-procedure-symbolic-validator"
+        },
+        {
+          "from": "pm-b21-procedure-symbolic-validator",
+          "to": "pm-b21-scheduled-event-converter"
+        },
+        {
+          "from": "pm-b21-scheduled-event-converter",
+          "to": "pm-b21-stored-procedure-parser"
+        },
+        {
+          "from": "pm-b21-stored-procedure-parser",
+          "to": "pm-b21-temporary-object-converter"
+        },
+        {
+          "from": "pm-b21-temporary-object-converter",
+          "to": "pm-b21-transaction-boundary-converter"
+        },
+        {
+          "from": "pm-b21-transaction-boundary-converter",
+          "to": "pm-b21-trigger-semantics-converter"
+        }
+      ],
+      "function_name": "execute_pm_b21_stored_procedure_conversion",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b21_stored_procedure_conversion",
+      "handler_id": "orchestrator-dag-v2:batch-21-stored-procedure-conversion",
+      "implementation_digest": "sha256:fe62e7dd8d426905ea238586233ace2187f2e152c6042d2ea6c44a2661154465",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b21-cursor-semantics-converter",
+        "pm-b21-dynamic-sql-converter",
+        "pm-b21-exception-handler-converter",
+        "pm-b21-package-state-converter",
+        "pm-b21-procedure-cfg-builder",
+        "pm-b21-procedure-differential-test-generator",
+        "pm-b21-procedure-performance-validator",
+        "pm-b21-procedure-side-effect-analyzer",
+        "pm-b21-procedure-symbolic-validator",
+        "pm-b21-scheduled-event-converter",
+        "pm-b21-stored-procedure-parser",
+        "pm-b21-temporary-object-converter",
+        "pm-b21-transaction-boundary-converter",
+        "pm-b21-trigger-semantics-converter"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b21-stored-procedure-conversion",
+      "source_skill": "batch-21-stored-procedure-conversion"
+    },
+    {
+      "batch": 22,
+      "dag_digest": "sha256:d4854bb868bd074801bdd9a6f0942bdae4f849a6eb3f01476089b2031c886761",
+      "edges": [
+        {
+          "from": "pm-b22-oracle-advanced-queue",
+          "to": "pm-b22-oracle-autonomous-transaction"
+        },
+        {
+          "from": "pm-b22-oracle-autonomous-transaction",
+          "to": "pm-b22-oracle-bulk-collect-forall"
+        },
+        {
+          "from": "pm-b22-oracle-bulk-collect-forall",
+          "to": "pm-b22-oracle-collection"
+        },
+        {
+          "from": "pm-b22-oracle-collection",
+          "to": "pm-b22-oracle-database-link"
+        },
+        {
+          "from": "pm-b22-oracle-database-link",
+          "to": "pm-b22-oracle-feature-migration-decision"
+        },
+        {
+          "from": "pm-b22-oracle-feature-migration-decision",
+          "to": "pm-b22-oracle-fine-grained-access-control"
+        },
+        {
+          "from": "pm-b22-oracle-fine-grained-access-control",
+          "to": "pm-b22-oracle-flashback"
+        },
+        {
+          "from": "pm-b22-oracle-flashback",
+          "to": "pm-b22-oracle-hierarchical-query"
+        },
+        {
+          "from": "pm-b22-oracle-hierarchical-query",
+          "to": "pm-b22-oracle-materialized-view"
+        },
+        {
+          "from": "pm-b22-oracle-materialized-view",
+          "to": "pm-b22-oracle-null-and-date-semantics"
+        },
+        {
+          "from": "pm-b22-oracle-null-and-date-semantics",
+          "to": "pm-b22-oracle-object-type"
+        },
+        {
+          "from": "pm-b22-oracle-object-type",
+          "to": "pm-b22-oracle-plsql-package-and-state"
+        },
+        {
+          "from": "pm-b22-oracle-plsql-package-and-state",
+          "to": "pm-b22-oracle-scheduler"
+        },
+        {
+          "from": "pm-b22-oracle-scheduler",
+          "to": "pm-b22-oracle-sequence"
+        },
+        {
+          "from": "pm-b22-oracle-sequence",
+          "to": "pm-b22-oracle-synonym"
+        }
+      ],
+      "function_name": "execute_pm_b22_oracle_proprietary_pack",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b22_oracle_proprietary_pack",
+      "handler_id": "orchestrator-dag-v2:batch-22-oracle-proprietary-pack",
+      "implementation_digest": "sha256:66721254fe78656a59bc0a83c3766b8ebd5bd8231be5a64e5ccbd79810d1aff2",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b22-oracle-advanced-queue",
+        "pm-b22-oracle-autonomous-transaction",
+        "pm-b22-oracle-bulk-collect-forall",
+        "pm-b22-oracle-collection",
+        "pm-b22-oracle-database-link",
+        "pm-b22-oracle-feature-migration-decision",
+        "pm-b22-oracle-fine-grained-access-control",
+        "pm-b22-oracle-flashback",
+        "pm-b22-oracle-hierarchical-query",
+        "pm-b22-oracle-materialized-view",
+        "pm-b22-oracle-null-and-date-semantics",
+        "pm-b22-oracle-object-type",
+        "pm-b22-oracle-plsql-package-and-state",
+        "pm-b22-oracle-scheduler",
+        "pm-b22-oracle-sequence",
+        "pm-b22-oracle-synonym"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b22-oracle-proprietary-pack",
+      "source_skill": "batch-22-oracle-proprietary-pack"
+    },
+    {
+      "batch": 23,
+      "dag_digest": "sha256:a8c272d598b56a188dba07967e5abb8420d07ecd0f7b6dc67893482e381aed74",
+      "edges": [
+        {
+          "from": "pm-b23-sqlserver-agent",
+          "to": "pm-b23-sqlserver-always-encrypted"
+        },
+        {
+          "from": "pm-b23-sqlserver-always-encrypted",
+          "to": "pm-b23-sqlserver-cdc-and-change-tracking"
+        },
+        {
+          "from": "pm-b23-sqlserver-cdc-and-change-tracking",
+          "to": "pm-b23-sqlserver-clr-stored-procedure"
+        },
+        {
+          "from": "pm-b23-sqlserver-clr-stored-procedure",
+          "to": "pm-b23-sqlserver-identity-and-sequence"
+        },
+        {
+          "from": "pm-b23-sqlserver-identity-and-sequence",
+          "to": "pm-b23-sqlserver-indexed-view"
+        },
+        {
+          "from": "pm-b23-sqlserver-indexed-view",
+          "to": "pm-b23-sqlserver-linked-server"
+        },
+        {
+          "from": "pm-b23-sqlserver-linked-server",
+          "to": "pm-b23-sqlserver-merge"
+        },
+        {
+          "from": "pm-b23-sqlserver-merge",
+          "to": "pm-b23-sqlserver-query-hint-and-plan"
+        },
+        {
+          "from": "pm-b23-sqlserver-query-hint-and-plan",
+          "to": "pm-b23-sqlserver-row-level-security"
+        },
+        {
+          "from": "pm-b23-sqlserver-row-level-security",
+          "to": "pm-b23-sqlserver-service-broker"
+        },
+        {
+          "from": "pm-b23-sqlserver-service-broker",
+          "to": "pm-b23-sqlserver-ssis-dependency"
+        },
+        {
+          "from": "pm-b23-sqlserver-ssis-dependency",
+          "to": "pm-b23-sqlserver-table-variable"
+        },
+        {
+          "from": "pm-b23-sqlserver-table-variable",
+          "to": "pm-b23-sqlserver-temporal-table"
+        },
+        {
+          "from": "pm-b23-sqlserver-temporal-table",
+          "to": "pm-b23-sqlserver-temporary-table"
+        },
+        {
+          "from": "pm-b23-sqlserver-temporary-table",
+          "to": "pm-b23-sqlserver-try-catch"
+        },
+        {
+          "from": "pm-b23-sqlserver-try-catch",
+          "to": "pm-b23-sqlserver-tsql"
+        }
+      ],
+      "function_name": "execute_pm_b23_sqlserver_proprietary_pack",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b23_sqlserver_proprietary_pack",
+      "handler_id": "orchestrator-dag-v2:batch-23-sqlserver-proprietary-pack",
+      "implementation_digest": "sha256:dd77b98f148bba3a5551466a55912d5bcecb5759839c758c0a0117eaabb8873a",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b23-sqlserver-agent",
+        "pm-b23-sqlserver-always-encrypted",
+        "pm-b23-sqlserver-cdc-and-change-tracking",
+        "pm-b23-sqlserver-clr-stored-procedure",
+        "pm-b23-sqlserver-identity-and-sequence",
+        "pm-b23-sqlserver-indexed-view",
+        "pm-b23-sqlserver-linked-server",
+        "pm-b23-sqlserver-merge",
+        "pm-b23-sqlserver-query-hint-and-plan",
+        "pm-b23-sqlserver-row-level-security",
+        "pm-b23-sqlserver-service-broker",
+        "pm-b23-sqlserver-ssis-dependency",
+        "pm-b23-sqlserver-table-variable",
+        "pm-b23-sqlserver-temporal-table",
+        "pm-b23-sqlserver-temporary-table",
+        "pm-b23-sqlserver-try-catch",
+        "pm-b23-sqlserver-tsql"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b23-sqlserver-proprietary-pack",
+      "source_skill": "batch-23-sqlserver-proprietary-pack"
+    },
+    {
+      "batch": 24,
+      "dag_digest": "sha256:d7bc6c917313c502d14c5aa67340481903ae3dd156186505dea45c48120ad779",
+      "edges": [
+        {
+          "from": "pm-b24-mysql-auto-increment",
+          "to": "pm-b24-mysql-character-set-and-collation"
+        },
+        {
+          "from": "pm-b24-mysql-character-set-and-collation",
+          "to": "pm-b24-mysql-enum-and-set"
+        },
+        {
+          "from": "pm-b24-mysql-enum-and-set",
+          "to": "pm-b24-mysql-event-scheduler"
+        },
+        {
+          "from": "pm-b24-mysql-event-scheduler",
+          "to": "pm-b24-mysql-generated-column"
+        },
+        {
+          "from": "pm-b24-mysql-generated-column",
+          "to": "pm-b24-mysql-implicit-type-conversion"
+        },
+        {
+          "from": "pm-b24-mysql-implicit-type-conversion",
+          "to": "pm-b24-mysql-innodb-transaction-behavior"
+        },
+        {
+          "from": "pm-b24-mysql-innodb-transaction-behavior",
+          "to": "pm-b24-mysql-json"
+        },
+        {
+          "from": "pm-b24-mysql-json",
+          "to": "pm-b24-mysql-on-duplicate-key"
+        },
+        {
+          "from": "pm-b24-mysql-on-duplicate-key",
+          "to": "pm-b24-mysql-partition"
+        },
+        {
+          "from": "pm-b24-mysql-partition",
+          "to": "pm-b24-mysql-replication-and-binlog"
+        },
+        {
+          "from": "pm-b24-mysql-replication-and-binlog",
+          "to": "pm-b24-mysql-spatial"
+        },
+        {
+          "from": "pm-b24-mysql-spatial",
+          "to": "pm-b24-mysql-sql-mode"
+        },
+        {
+          "from": "pm-b24-mysql-sql-mode",
+          "to": "pm-b24-mysql-stored-procedure-and-function"
+        },
+        {
+          "from": "pm-b24-mysql-stored-procedure-and-function",
+          "to": "pm-b24-mysql-trigger"
+        }
+      ],
+      "function_name": "execute_pm_b24_mysql_proprietary_pack",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b24_mysql_proprietary_pack",
+      "handler_id": "orchestrator-dag-v2:batch-24-mysql-proprietary-pack",
+      "implementation_digest": "sha256:1dc555592c336b848dfb4caa972c128ac73579ae27309f9745c7f2417b6a30eb",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b24-mysql-auto-increment",
+        "pm-b24-mysql-character-set-and-collation",
+        "pm-b24-mysql-enum-and-set",
+        "pm-b24-mysql-event-scheduler",
+        "pm-b24-mysql-generated-column",
+        "pm-b24-mysql-implicit-type-conversion",
+        "pm-b24-mysql-innodb-transaction-behavior",
+        "pm-b24-mysql-json",
+        "pm-b24-mysql-on-duplicate-key",
+        "pm-b24-mysql-partition",
+        "pm-b24-mysql-replication-and-binlog",
+        "pm-b24-mysql-spatial",
+        "pm-b24-mysql-sql-mode",
+        "pm-b24-mysql-stored-procedure-and-function",
+        "pm-b24-mysql-trigger"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b24-mysql-proprietary-pack",
+      "source_skill": "batch-24-mysql-proprietary-pack"
+    },
+    {
+      "batch": 25,
+      "dag_digest": "sha256:ae26b00369355bd26ed6dd05bf49a0fc634c7540a05038abba88b89d4ec78ed6",
+      "edges": [
+        {
+          "from": "pm-b25-postgresql-array-range-composite",
+          "to": "pm-b25-postgresql-custom-operator-and-type"
+        },
+        {
+          "from": "pm-b25-postgresql-custom-operator-and-type",
+          "to": "pm-b25-postgresql-event-trigger"
+        },
+        {
+          "from": "pm-b25-postgresql-event-trigger",
+          "to": "pm-b25-postgresql-extension"
+        },
+        {
+          "from": "pm-b25-postgresql-extension",
+          "to": "pm-b25-postgresql-foreign-data-wrapper"
+        },
+        {
+          "from": "pm-b25-postgresql-foreign-data-wrapper",
+          "to": "pm-b25-postgresql-jsonb"
+        },
+        {
+          "from": "pm-b25-postgresql-jsonb",
+          "to": "pm-b25-postgresql-listen-notify"
+        },
+        {
+          "from": "pm-b25-postgresql-listen-notify",
+          "to": "pm-b25-postgresql-logical-decoding"
+        },
+        {
+          "from": "pm-b25-postgresql-logical-decoding",
+          "to": "pm-b25-postgresql-logical-replication"
+        },
+        {
+          "from": "pm-b25-postgresql-logical-replication",
+          "to": "pm-b25-postgresql-materialized-view"
+        },
+        {
+          "from": "pm-b25-postgresql-materialized-view",
+          "to": "pm-b25-postgresql-on-conflict"
+        },
+        {
+          "from": "pm-b25-postgresql-on-conflict",
+          "to": "pm-b25-postgresql-partial-expression-index"
+        },
+        {
+          "from": "pm-b25-postgresql-partial-expression-index",
+          "to": "pm-b25-postgresql-plpgsql"
+        },
+        {
+          "from": "pm-b25-postgresql-plpgsql",
+          "to": "pm-b25-postgresql-returning"
+        },
+        {
+          "from": "pm-b25-postgresql-returning",
+          "to": "pm-b25-postgresql-row-level-security"
+        },
+        {
+          "from": "pm-b25-postgresql-row-level-security",
+          "to": "pm-b25-postgresql-sequence-and-identity"
+        }
+      ],
+      "function_name": "execute_pm_b25_postgresql_proprietary_pack",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b25_postgresql_proprietary_pack",
+      "handler_id": "orchestrator-dag-v2:batch-25-postgresql-proprietary-pack",
+      "implementation_digest": "sha256:2e5e4e6354159bd865c3866ac676c0eafeb1a31611a0511a1bd127d54c1a1060",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b25-postgresql-array-range-composite",
+        "pm-b25-postgresql-custom-operator-and-type",
+        "pm-b25-postgresql-event-trigger",
+        "pm-b25-postgresql-extension",
+        "pm-b25-postgresql-foreign-data-wrapper",
+        "pm-b25-postgresql-jsonb",
+        "pm-b25-postgresql-listen-notify",
+        "pm-b25-postgresql-logical-decoding",
+        "pm-b25-postgresql-logical-replication",
+        "pm-b25-postgresql-materialized-view",
+        "pm-b25-postgresql-on-conflict",
+        "pm-b25-postgresql-partial-expression-index",
+        "pm-b25-postgresql-plpgsql",
+        "pm-b25-postgresql-returning",
+        "pm-b25-postgresql-row-level-security",
+        "pm-b25-postgresql-sequence-and-identity"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b25-postgresql-proprietary-pack",
+      "source_skill": "batch-25-postgresql-proprietary-pack"
+    },
+    {
+      "batch": 26,
+      "dag_digest": "sha256:dd3a267e9104f78ff36264e05400b01f4154a8edadff3cea2f06e5b44e79cbfe",
+      "edges": [
+        {
+          "from": "pm-b26-mysql-to-oracle-database-direction-pack",
+          "to": "pm-b26-mysql-to-postgresql-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-mysql-to-postgresql-database-direction-pack",
+          "to": "pm-b26-mysql-to-sqlserver-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-mysql-to-sqlserver-database-direction-pack",
+          "to": "pm-b26-oracle-to-mysql-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-oracle-to-mysql-database-direction-pack",
+          "to": "pm-b26-oracle-to-postgresql-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-oracle-to-postgresql-database-direction-pack",
+          "to": "pm-b26-oracle-to-sqlserver-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-oracle-to-sqlserver-database-direction-pack",
+          "to": "pm-b26-postgresql-to-mysql-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-postgresql-to-mysql-database-direction-pack",
+          "to": "pm-b26-postgresql-to-oracle-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-postgresql-to-oracle-database-direction-pack",
+          "to": "pm-b26-postgresql-to-sqlserver-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-postgresql-to-sqlserver-database-direction-pack",
+          "to": "pm-b26-sqlserver-to-mysql-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-sqlserver-to-mysql-database-direction-pack",
+          "to": "pm-b26-sqlserver-to-oracle-database-direction-pack"
+        },
+        {
+          "from": "pm-b26-sqlserver-to-oracle-database-direction-pack",
+          "to": "pm-b26-sqlserver-to-postgresql-database-direction-pack"
+        }
+      ],
+      "function_name": "execute_pm_b26_database_direction_packs",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b26_database_direction_packs",
+      "handler_id": "orchestrator-dag-v2:batch-26-database-direction-packs",
+      "implementation_digest": "sha256:3e680ba855813200445ac5c22a3506e79aed8c97352db22e2702cb1235acf5c6",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b26-mysql-to-oracle-database-direction-pack",
+        "pm-b26-mysql-to-postgresql-database-direction-pack",
+        "pm-b26-mysql-to-sqlserver-database-direction-pack",
+        "pm-b26-oracle-to-mysql-database-direction-pack",
+        "pm-b26-oracle-to-postgresql-database-direction-pack",
+        "pm-b26-oracle-to-sqlserver-database-direction-pack",
+        "pm-b26-postgresql-to-mysql-database-direction-pack",
+        "pm-b26-postgresql-to-oracle-database-direction-pack",
+        "pm-b26-postgresql-to-sqlserver-database-direction-pack",
+        "pm-b26-sqlserver-to-mysql-database-direction-pack",
+        "pm-b26-sqlserver-to-oracle-database-direction-pack",
+        "pm-b26-sqlserver-to-postgresql-database-direction-pack"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b26-database-direction-packs",
+      "source_skill": "batch-26-database-direction-packs"
+    },
+    {
+      "batch": 27,
+      "dag_digest": "sha256:9e60bbf1b8381e439531df0f2f106c449f8d21c02f39886f51a8f84cc6258eba",
+      "edges": [
+        {
+          "from": "pm-b27-application-database-dual-validation",
+          "to": "pm-b27-cross-layer-performance-tuning"
+        },
+        {
+          "from": "pm-b27-cross-layer-performance-tuning",
+          "to": "pm-b27-database-error-code-mapping"
+        },
+        {
+          "from": "pm-b27-database-error-code-mapping",
+          "to": "pm-b27-embedded-sql-discovery"
+        },
+        {
+          "from": "pm-b27-embedded-sql-discovery",
+          "to": "pm-b27-jdbc-ado-odbc-driver-migration"
+        },
+        {
+          "from": "pm-b27-jdbc-ado-odbc-driver-migration",
+          "to": "pm-b27-native-query-rewriter"
+        },
+        {
+          "from": "pm-b27-native-query-rewriter",
+          "to": "pm-b27-orm-dialect-migration"
+        },
+        {
+          "from": "pm-b27-orm-dialect-migration",
+          "to": "pm-b27-pagination-and-locking-rewriter"
+        },
+        {
+          "from": "pm-b27-pagination-and-locking-rewriter",
+          "to": "pm-b27-query-builder-migration"
+        },
+        {
+          "from": "pm-b27-query-builder-migration",
+          "to": "pm-b27-query-plan-regression-analysis"
+        },
+        {
+          "from": "pm-b27-query-plan-regression-analysis",
+          "to": "pm-b27-stored-procedure-call-rewriter"
+        },
+        {
+          "from": "pm-b27-stored-procedure-call-rewriter",
+          "to": "pm-b27-transaction-api-rewriter"
+        }
+      ],
+      "function_name": "execute_pm_b27_application_database_joint_migration",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b27_application_database_joint_migration",
+      "handler_id": "orchestrator-dag-v2:batch-27-application-database-joint-migration",
+      "implementation_digest": "sha256:b82bdbb78f56ed7a0b33a4eaf5d3d482b7c2c6b55617699616c0160651c98dc9",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b27-application-database-dual-validation",
+        "pm-b27-cross-layer-performance-tuning",
+        "pm-b27-database-error-code-mapping",
+        "pm-b27-embedded-sql-discovery",
+        "pm-b27-jdbc-ado-odbc-driver-migration",
+        "pm-b27-native-query-rewriter",
+        "pm-b27-orm-dialect-migration",
+        "pm-b27-pagination-and-locking-rewriter",
+        "pm-b27-query-builder-migration",
+        "pm-b27-query-plan-regression-analysis",
+        "pm-b27-stored-procedure-call-rewriter",
+        "pm-b27-transaction-api-rewriter"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b27-application-database-joint-migration",
+      "source_skill": "batch-27-application-database-joint-migration"
+    },
+    {
+      "batch": 28,
+      "dag_digest": "sha256:4e4042322c89e37b5dc108022804d23de21f24957a4cf29fac9c90da39f3ca1d",
+      "edges": [
+        {
+          "from": "pm-b28-assertion-quality-analyzer",
+          "to": "pm-b28-missing-test-gap-analysis"
+        },
+        {
+          "from": "pm-b28-missing-test-gap-analysis",
+          "to": "pm-b28-skipped-and-flaky-test-detector"
+        },
+        {
+          "from": "pm-b28-skipped-and-flaky-test-detector",
+          "to": "pm-b28-source-test-inventory"
+        },
+        {
+          "from": "pm-b28-source-test-inventory",
+          "to": "pm-b28-test-coverage-normalizer"
+        },
+        {
+          "from": "pm-b28-test-coverage-normalizer",
+          "to": "pm-b28-test-migration-feasibility"
+        },
+        {
+          "from": "pm-b28-test-migration-feasibility",
+          "to": "pm-b28-test-mutation-strength-assessment"
+        },
+        {
+          "from": "pm-b28-test-mutation-strength-assessment",
+          "to": "pm-b28-test-oracle-classifier"
+        }
+      ],
+      "function_name": "execute_pm_b28_source_test_assessment",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b28_source_test_assessment",
+      "handler_id": "orchestrator-dag-v2:batch-28-source-test-assessment",
+      "implementation_digest": "sha256:6a1c8d2ca33a00eeb94fe2162e4fb32bb45940ae8973035588fa0f4826b3c9b4",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b28-assertion-quality-analyzer",
+        "pm-b28-missing-test-gap-analysis",
+        "pm-b28-skipped-and-flaky-test-detector",
+        "pm-b28-source-test-inventory",
+        "pm-b28-test-coverage-normalizer",
+        "pm-b28-test-migration-feasibility",
+        "pm-b28-test-mutation-strength-assessment",
+        "pm-b28-test-oracle-classifier"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b28-source-test-assessment",
+      "source_skill": "batch-28-source-test-assessment"
+    },
+    {
+      "batch": 29,
+      "dag_digest": "sha256:ff622fe23f275c8f58e629cb15d3c83edfed48da8dc6d4545aed6fcd786f6123",
+      "edges": [
+        {
+          "from": "pm-b29-business-invariant-test-generator",
+          "to": "pm-b29-concurrency-test-generator"
+        },
+        {
+          "from": "pm-b29-concurrency-test-generator",
+          "to": "pm-b29-controller-route-test-generator"
+        },
+        {
+          "from": "pm-b29-controller-route-test-generator",
+          "to": "pm-b29-database-state-test-generator"
+        },
+        {
+          "from": "pm-b29-database-state-test-generator",
+          "to": "pm-b29-dto-validation-test-generator"
+        },
+        {
+          "from": "pm-b29-dto-validation-test-generator",
+          "to": "pm-b29-fuzz-test-generator"
+        },
+        {
+          "from": "pm-b29-fuzz-test-generator",
+          "to": "pm-b29-graphql-test-generator"
+        },
+        {
+          "from": "pm-b29-graphql-test-generator",
+          "to": "pm-b29-mutation-test-generator"
+        },
+        {
+          "from": "pm-b29-mutation-test-generator",
+          "to": "pm-b29-openapi-contract-test-generator"
+        },
+        {
+          "from": "pm-b29-openapi-contract-test-generator",
+          "to": "pm-b29-production-trace-test-generator"
+        },
+        {
+          "from": "pm-b29-production-trace-test-generator",
+          "to": "pm-b29-property-test-generator"
+        },
+        {
+          "from": "pm-b29-property-test-generator",
+          "to": "pm-b29-protobuf-api-test-generator"
+        },
+        {
+          "from": "pm-b29-protobuf-api-test-generator",
+          "to": "pm-b29-side-effect-test-generator"
+        },
+        {
+          "from": "pm-b29-side-effect-test-generator",
+          "to": "pm-b29-user-journey-test-generator"
+        }
+      ],
+      "function_name": "execute_pm_b29_automatic_test_generation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b29_automatic_test_generation",
+      "handler_id": "orchestrator-dag-v2:batch-29-automatic-test-generation",
+      "implementation_digest": "sha256:0cbde3df42649175d1b55b6546a5f560d5c3c8f221a23796dc81148d069ae1ca",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b29-business-invariant-test-generator",
+        "pm-b29-concurrency-test-generator",
+        "pm-b29-controller-route-test-generator",
+        "pm-b29-database-state-test-generator",
+        "pm-b29-dto-validation-test-generator",
+        "pm-b29-fuzz-test-generator",
+        "pm-b29-graphql-test-generator",
+        "pm-b29-mutation-test-generator",
+        "pm-b29-openapi-contract-test-generator",
+        "pm-b29-production-trace-test-generator",
+        "pm-b29-property-test-generator",
+        "pm-b29-protobuf-api-test-generator",
+        "pm-b29-side-effect-test-generator",
+        "pm-b29-user-journey-test-generator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b29-automatic-test-generation",
+      "source_skill": "batch-29-automatic-test-generation"
+    },
+    {
+      "batch": 30,
+      "dag_digest": "sha256:466c7a82227b0b7e627560f4f0fe4f54aaf54bc2b69cf60870ad56f677c36a4c",
+      "edges": [
+        {
+          "from": "pm-b30-clock-random-uuid-controller",
+          "to": "pm-b30-database-state-comparator"
+        },
+        {
+          "from": "pm-b30-database-state-comparator",
+          "to": "pm-b30-external-call-comparator"
+        },
+        {
+          "from": "pm-b30-external-call-comparator",
+          "to": "pm-b30-http-differential-comparator"
+        },
+        {
+          "from": "pm-b30-http-differential-comparator",
+          "to": "pm-b30-input-and-environment-synchronizer"
+        },
+        {
+          "from": "pm-b30-input-and-environment-synchronizer",
+          "to": "pm-b30-message-side-effect-comparator"
+        },
+        {
+          "from": "pm-b30-message-side-effect-comparator",
+          "to": "pm-b30-navigation-and-storage-comparator"
+        },
+        {
+          "from": "pm-b30-navigation-and-storage-comparator",
+          "to": "pm-b30-performance-differential-comparator"
+        },
+        {
+          "from": "pm-b30-performance-differential-comparator",
+          "to": "pm-b30-source-target-dual-runner"
+        },
+        {
+          "from": "pm-b30-source-target-dual-runner",
+          "to": "pm-b30-trace-graph-comparator"
+        },
+        {
+          "from": "pm-b30-trace-graph-comparator",
+          "to": "pm-b30-ui-semantic-tree-comparator"
+        },
+        {
+          "from": "pm-b30-ui-semantic-tree-comparator",
+          "to": "pm-b30-visual-differential-comparator"
+        }
+      ],
+      "function_name": "execute_pm_b30_dual_run_differential",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b30_dual_run_differential",
+      "handler_id": "orchestrator-dag-v2:batch-30-dual-run-differential",
+      "implementation_digest": "sha256:df56aca59211e44b4f425d5d15afb718b367553682ef5bb0faa6f3d628f8f357",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b30-clock-random-uuid-controller",
+        "pm-b30-database-state-comparator",
+        "pm-b30-external-call-comparator",
+        "pm-b30-http-differential-comparator",
+        "pm-b30-input-and-environment-synchronizer",
+        "pm-b30-message-side-effect-comparator",
+        "pm-b30-navigation-and-storage-comparator",
+        "pm-b30-performance-differential-comparator",
+        "pm-b30-source-target-dual-runner",
+        "pm-b30-trace-graph-comparator",
+        "pm-b30-ui-semantic-tree-comparator",
+        "pm-b30-visual-differential-comparator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b30-dual-run-differential",
+      "source_skill": "batch-30-dual-run-differential"
+    },
+    {
+      "batch": 31,
+      "dag_digest": "sha256:d97f367eca149ad684032092684f7857819aea59b6e43550bd6086390bde8f7a",
+      "edges": [
+        {
+          "from": "pm-b31-behavior-mismatch-classifier",
+          "to": "pm-b31-counterexample-guided-repair"
+        },
+        {
+          "from": "pm-b31-counterexample-guided-repair",
+          "to": "pm-b31-manual-redesign-decision"
+        },
+        {
+          "from": "pm-b31-manual-redesign-decision",
+          "to": "pm-b31-minimal-counterexample-generator"
+        },
+        {
+          "from": "pm-b31-minimal-counterexample-generator",
+          "to": "pm-b31-missing-feature-detector"
+        },
+        {
+          "from": "pm-b31-missing-feature-detector",
+          "to": "pm-b31-patch-existing-decision"
+        },
+        {
+          "from": "pm-b31-patch-existing-decision",
+          "to": "pm-b31-regenerate-module-decision"
+        },
+        {
+          "from": "pm-b31-regenerate-module-decision",
+          "to": "pm-b31-repair-evidence-generator"
+        },
+        {
+          "from": "pm-b31-repair-evidence-generator",
+          "to": "pm-b31-repair-regression-validator"
+        },
+        {
+          "from": "pm-b31-repair-regression-validator",
+          "to": "pm-b31-retranslate-project-decision"
+        },
+        {
+          "from": "pm-b31-retranslate-project-decision",
+          "to": "pm-b31-source-target-feature-matrix"
+        },
+        {
+          "from": "pm-b31-source-target-feature-matrix",
+          "to": "pm-b31-suspected-code-slice-locator"
+        }
+      ],
+      "function_name": "execute_pm_b31_failed_conversion_repair",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b31_failed_conversion_repair",
+      "handler_id": "orchestrator-dag-v2:batch-31-failed-conversion-repair",
+      "implementation_digest": "sha256:68c7e14f83f82f0ad3940afe885f92a62f514e66a4a9fb350eb339e23d5f85fb",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b31-behavior-mismatch-classifier",
+        "pm-b31-counterexample-guided-repair",
+        "pm-b31-manual-redesign-decision",
+        "pm-b31-minimal-counterexample-generator",
+        "pm-b31-missing-feature-detector",
+        "pm-b31-patch-existing-decision",
+        "pm-b31-regenerate-module-decision",
+        "pm-b31-repair-evidence-generator",
+        "pm-b31-repair-regression-validator",
+        "pm-b31-retranslate-project-decision",
+        "pm-b31-source-target-feature-matrix",
+        "pm-b31-suspected-code-slice-locator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b31-failed-conversion-repair",
+      "source_skill": "batch-31-failed-conversion-repair"
+    },
+    {
+      "batch": 32,
+      "dag_digest": "sha256:97edf4e5e379955f41ba76c3ab92a465998c7f2f2e81b183d4a65f61aa1b5663",
+      "edges": [
+        {
+          "from": "pm-b32-coverage-guided-fuzzing",
+          "to": "pm-b32-crash-point-exploration"
+        },
+        {
+          "from": "pm-b32-crash-point-exploration",
+          "to": "pm-b32-deterministic-record-replay"
+        },
+        {
+          "from": "pm-b32-deterministic-record-replay",
+          "to": "pm-b32-differential-fuzzing"
+        },
+        {
+          "from": "pm-b32-differential-fuzzing",
+          "to": "pm-b32-fault-injection"
+        },
+        {
+          "from": "pm-b32-fault-injection",
+          "to": "pm-b32-language-pair-mutation-testing"
+        },
+        {
+          "from": "pm-b32-language-pair-mutation-testing",
+          "to": "pm-b32-metamorphic-testing"
+        },
+        {
+          "from": "pm-b32-metamorphic-testing",
+          "to": "pm-b32-performance-stress-validation"
+        },
+        {
+          "from": "pm-b32-performance-stress-validation",
+          "to": "pm-b32-resource-leak-validation"
+        },
+        {
+          "from": "pm-b32-resource-leak-validation",
+          "to": "pm-b32-retry-idempotency-validation"
+        },
+        {
+          "from": "pm-b32-retry-idempotency-validation",
+          "to": "pm-b32-systematic-concurrency-exploration"
+        },
+        {
+          "from": "pm-b32-systematic-concurrency-exploration",
+          "to": "pm-b32-transaction-atomicity-validation"
+        }
+      ],
+      "function_name": "execute_pm_b32_advanced_dynamic_validation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b32_advanced_dynamic_validation",
+      "handler_id": "orchestrator-dag-v2:batch-32-advanced-dynamic-validation",
+      "implementation_digest": "sha256:e19e88c7fcae5a9c926dc3f430291e30942737ef603451c4bff92a8a769e47bd",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b32-coverage-guided-fuzzing",
+        "pm-b32-crash-point-exploration",
+        "pm-b32-deterministic-record-replay",
+        "pm-b32-differential-fuzzing",
+        "pm-b32-fault-injection",
+        "pm-b32-language-pair-mutation-testing",
+        "pm-b32-metamorphic-testing",
+        "pm-b32-performance-stress-validation",
+        "pm-b32-resource-leak-validation",
+        "pm-b32-retry-idempotency-validation",
+        "pm-b32-systematic-concurrency-exploration",
+        "pm-b32-transaction-atomicity-validation"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b32-advanced-dynamic-validation",
+      "source_skill": "batch-32-advanced-dynamic-validation"
+    },
+    {
+      "batch": 33,
+      "dag_digest": "sha256:66c425e599932f221faa2ba354fd953dace207289a665bebea8662b9342fa5b0",
+      "edges": [
+        {
+          "from": "pm-b33-effect-preservation-obligation",
+          "to": "pm-b33-nullability-preservation-obligation"
+        },
+        {
+          "from": "pm-b33-nullability-preservation-obligation",
+          "to": "pm-b33-numeric-semantics-obligation"
+        },
+        {
+          "from": "pm-b33-numeric-semantics-obligation",
+          "to": "pm-b33-permission-non-expansion-obligation"
+        },
+        {
+          "from": "pm-b33-permission-non-expansion-obligation",
+          "to": "pm-b33-pure-function-equivalence-obligation"
+        },
+        {
+          "from": "pm-b33-pure-function-equivalence-obligation",
+          "to": "pm-b33-serializer-roundtrip-obligation"
+        },
+        {
+          "from": "pm-b33-serializer-roundtrip-obligation",
+          "to": "pm-b33-state-refinement-obligation"
+        },
+        {
+          "from": "pm-b33-state-refinement-obligation",
+          "to": "pm-b33-trace-refinement-obligation"
+        },
+        {
+          "from": "pm-b33-trace-refinement-obligation",
+          "to": "pm-b33-transaction-invariant-obligation"
+        },
+        {
+          "from": "pm-b33-transaction-invariant-obligation",
+          "to": "pm-b33-type-preservation-obligation"
+        }
+      ],
+      "function_name": "execute_pm_b33_proof_obligations",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b33_proof_obligations",
+      "handler_id": "orchestrator-dag-v2:batch-33-proof-obligations",
+      "implementation_digest": "sha256:f26b5f601ccc28590ec783058bf121ccf952d5c28564e713d06edcd6d2cb34fe",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b33-effect-preservation-obligation",
+        "pm-b33-nullability-preservation-obligation",
+        "pm-b33-numeric-semantics-obligation",
+        "pm-b33-permission-non-expansion-obligation",
+        "pm-b33-pure-function-equivalence-obligation",
+        "pm-b33-serializer-roundtrip-obligation",
+        "pm-b33-state-refinement-obligation",
+        "pm-b33-trace-refinement-obligation",
+        "pm-b33-transaction-invariant-obligation",
+        "pm-b33-type-preservation-obligation"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b33-proof-obligations",
+      "source_skill": "batch-33-proof-obligations"
+    },
+    {
+      "batch": 34,
+      "dag_digest": "sha256:c8a00092b8dfcdb9c8b79271176dca7b875b516d5b31e968c80c5775905fe248",
+      "edges": [
+        {
+          "from": "pm-b34-lean-kernel-certificate",
+          "to": "pm-b34-lean-theorem-generator"
+        },
+        {
+          "from": "pm-b34-lean-theorem-generator",
+          "to": "pm-b34-leanstral-proof-repair"
+        },
+        {
+          "from": "pm-b34-leanstral-proof-repair",
+          "to": "pm-b34-leanstral-proof-synthesis"
+        },
+        {
+          "from": "pm-b34-leanstral-proof-synthesis",
+          "to": "pm-b34-lemma-library-retrieval"
+        },
+        {
+          "from": "pm-b34-lemma-library-retrieval",
+          "to": "pm-b34-proof-build-runner"
+        },
+        {
+          "from": "pm-b34-proof-build-runner",
+          "to": "pm-b34-proof-regression-ci"
+        },
+        {
+          "from": "pm-b34-proof-regression-ci",
+          "to": "pm-b34-semantic-core-lean-model"
+        },
+        {
+          "from": "pm-b34-semantic-core-lean-model",
+          "to": "pm-b34-sorry-and-axiom-detector"
+        },
+        {
+          "from": "pm-b34-sorry-and-axiom-detector",
+          "to": "pm-b34-unproved-obligation-ledger"
+        }
+      ],
+      "function_name": "execute_pm_b34_leanstral_lean_proof",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b34_leanstral_lean_proof",
+      "handler_id": "orchestrator-dag-v2:batch-34-leanstral-lean-proof",
+      "implementation_digest": "sha256:9b6468cbf79ff95f15baf824ff737d4ad0000b0aed4e75f204de81c07abe185c",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b34-lean-kernel-certificate",
+        "pm-b34-lean-theorem-generator",
+        "pm-b34-leanstral-proof-repair",
+        "pm-b34-leanstral-proof-synthesis",
+        "pm-b34-lemma-library-retrieval",
+        "pm-b34-proof-build-runner",
+        "pm-b34-proof-regression-ci",
+        "pm-b34-semantic-core-lean-model",
+        "pm-b34-sorry-and-axiom-detector",
+        "pm-b34-unproved-obligation-ledger"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b34-leanstral-lean-proof",
+      "source_skill": "batch-34-leanstral-lean-proof"
+    },
+    {
+      "batch": 35,
+      "dag_digest": "sha256:0d337bf75a7950b74bc157429f09ca88e055f42a5e79d7800b07e4cb4484627a",
+      "edges": [
+        {
+          "from": "pm-b35-abstract-interpretation",
+          "to": "pm-b35-alloy-architecture-validator"
+        },
+        {
+          "from": "pm-b35-alloy-architecture-validator",
+          "to": "pm-b35-concolic-differential-execution"
+        },
+        {
+          "from": "pm-b35-concolic-differential-execution",
+          "to": "pm-b35-formal-runtime-evidence-merger"
+        },
+        {
+          "from": "pm-b35-formal-runtime-evidence-merger",
+          "to": "pm-b35-model-checking-runner"
+        },
+        {
+          "from": "pm-b35-model-checking-runner",
+          "to": "pm-b35-proof-counterexample-to-test"
+        },
+        {
+          "from": "pm-b35-proof-counterexample-to-test",
+          "to": "pm-b35-relational-verification"
+        },
+        {
+          "from": "pm-b35-relational-verification",
+          "to": "pm-b35-smt-translation-validator"
+        },
+        {
+          "from": "pm-b35-smt-translation-validator",
+          "to": "pm-b35-symbolic-execution"
+        },
+        {
+          "from": "pm-b35-symbolic-execution",
+          "to": "pm-b35-tla-state-machine-generator"
+        }
+      ],
+      "function_name": "execute_pm_b35_formal_analysis_toolchain",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b35_formal_analysis_toolchain",
+      "handler_id": "orchestrator-dag-v2:batch-35-formal-analysis-toolchain",
+      "implementation_digest": "sha256:492d640ffdccf0c2f1556808a61dad2568d738fbf3f4d8b230b86d03c1b6dc45",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b35-abstract-interpretation",
+        "pm-b35-alloy-architecture-validator",
+        "pm-b35-concolic-differential-execution",
+        "pm-b35-formal-runtime-evidence-merger",
+        "pm-b35-model-checking-runner",
+        "pm-b35-proof-counterexample-to-test",
+        "pm-b35-relational-verification",
+        "pm-b35-smt-translation-validator",
+        "pm-b35-symbolic-execution",
+        "pm-b35-tla-state-machine-generator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b35-formal-analysis-toolchain",
+      "source_skill": "batch-35-formal-analysis-toolchain"
+    },
+    {
+      "batch": 36,
+      "dag_digest": "sha256:c88f38e7452801698dd5551f2b180b3c0c3a573548e2abb8cda008146a4fd29b",
+      "edges": [
+        {
+          "from": "pm-b36-byok-provider-adapter",
+          "to": "pm-b36-cost-aware-model-routing"
+        },
+        {
+          "from": "pm-b36-cost-aware-model-routing",
+          "to": "pm-b36-cost-per-accepted-module"
+        },
+        {
+          "from": "pm-b36-cost-per-accepted-module",
+          "to": "pm-b36-heterogeneous-model-review"
+        },
+        {
+          "from": "pm-b36-heterogeneous-model-review",
+          "to": "pm-b36-language-pair-model-ranking"
+        },
+        {
+          "from": "pm-b36-language-pair-model-ranking",
+          "to": "pm-b36-model-capability-registry"
+        },
+        {
+          "from": "pm-b36-model-capability-registry",
+          "to": "pm-b36-model-output-calibration"
+        },
+        {
+          "from": "pm-b36-model-output-calibration",
+          "to": "pm-b36-private-model-routing"
+        },
+        {
+          "from": "pm-b36-private-model-routing",
+          "to": "pm-b36-stronger-model-escalation"
+        },
+        {
+          "from": "pm-b36-stronger-model-escalation",
+          "to": "pm-b36-task-risk-scoring"
+        }
+      ],
+      "function_name": "execute_pm_b36_model_routing_review",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b36_model_routing_review",
+      "handler_id": "orchestrator-dag-v2:batch-36-model-routing-review",
+      "implementation_digest": "sha256:b5afe6422499618384e5cd2519de40f695d04234c7b5e0480a06fbb6c90eeb86",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b36-byok-provider-adapter",
+        "pm-b36-cost-aware-model-routing",
+        "pm-b36-cost-per-accepted-module",
+        "pm-b36-heterogeneous-model-review",
+        "pm-b36-language-pair-model-ranking",
+        "pm-b36-model-capability-registry",
+        "pm-b36-model-output-calibration",
+        "pm-b36-private-model-routing",
+        "pm-b36-stronger-model-escalation",
+        "pm-b36-task-risk-scoring"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b36-model-routing-review",
+      "source_skill": "batch-36-model-routing-review"
+    },
+    {
+      "batch": 37,
+      "dag_digest": "sha256:b6dcce59778c621c4ee3d6980b52362f235ce408f3285e9f616e9b90bcba53c9",
+      "edges": [
+        {
+          "from": "pm-b37-build-repair-agent",
+          "to": "pm-b37-difference-diagnosis-agent"
+        },
+        {
+          "from": "pm-b37-difference-diagnosis-agent",
+          "to": "pm-b37-human-approval-gate"
+        },
+        {
+          "from": "pm-b37-human-approval-gate",
+          "to": "pm-b37-migration-task-decomposer"
+        },
+        {
+          "from": "pm-b37-migration-task-decomposer",
+          "to": "pm-b37-multi-agent-worktree-manager"
+        },
+        {
+          "from": "pm-b37-multi-agent-worktree-manager",
+          "to": "pm-b37-pause-resume-cancel"
+        },
+        {
+          "from": "pm-b37-pause-resume-cancel",
+          "to": "pm-b37-proof-agent"
+        },
+        {
+          "from": "pm-b37-proof-agent",
+          "to": "pm-b37-retry-and-idempotency"
+        },
+        {
+          "from": "pm-b37-retry-and-idempotency",
+          "to": "pm-b37-security-review-agent"
+        },
+        {
+          "from": "pm-b37-security-review-agent",
+          "to": "pm-b37-semantic-slice-task-planner"
+        },
+        {
+          "from": "pm-b37-semantic-slice-task-planner",
+          "to": "pm-b37-test-migration-agent"
+        },
+        {
+          "from": "pm-b37-test-migration-agent",
+          "to": "pm-b37-token-and-resource-governance"
+        }
+      ],
+      "function_name": "execute_pm_b37_agentic_migration_harness",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b37_agentic_migration_harness",
+      "handler_id": "orchestrator-dag-v2:batch-37-agentic-migration-harness",
+      "implementation_digest": "sha256:a27ad81f63985e1401ee079c570cbe84feb204001eff794de04f7fdc58857926",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b37-build-repair-agent",
+        "pm-b37-difference-diagnosis-agent",
+        "pm-b37-human-approval-gate",
+        "pm-b37-migration-task-decomposer",
+        "pm-b37-multi-agent-worktree-manager",
+        "pm-b37-pause-resume-cancel",
+        "pm-b37-proof-agent",
+        "pm-b37-retry-and-idempotency",
+        "pm-b37-security-review-agent",
+        "pm-b37-semantic-slice-task-planner",
+        "pm-b37-test-migration-agent",
+        "pm-b37-token-and-resource-governance"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b37-agentic-migration-harness",
+      "source_skill": "batch-37-agentic-migration-harness"
+    },
+    {
+      "batch": 38,
+      "dag_digest": "sha256:9112b491f8d51c908cc736ecf0631fdad1155d75af737acc2013ce67597c1387",
+      "edges": [
+        {
+          "from": "pm-b38-acceptance-test-compiler",
+          "to": "pm-b38-behavior-contract-compiler"
+        },
+        {
+          "from": "pm-b38-behavior-contract-compiler",
+          "to": "pm-b38-domain-model-compiler"
+        },
+        {
+          "from": "pm-b38-domain-model-compiler",
+          "to": "pm-b38-skill-composition-planner"
+        },
+        {
+          "from": "pm-b38-skill-composition-planner",
+          "to": "pm-b38-skill-conflict-detector"
+        },
+        {
+          "from": "pm-b38-skill-conflict-detector",
+          "to": "pm-b38-skill-dependency-resolver"
+        },
+        {
+          "from": "pm-b38-skill-dependency-resolver",
+          "to": "pm-b38-skill-marketplace-package"
+        },
+        {
+          "from": "pm-b38-skill-marketplace-package",
+          "to": "pm-b38-skill-schema-validator"
+        },
+        {
+          "from": "pm-b38-skill-schema-validator",
+          "to": "pm-b38-skill-version-compatibility"
+        },
+        {
+          "from": "pm-b38-skill-version-compatibility",
+          "to": "pm-b38-state-machine-compiler"
+        }
+      ],
+      "function_name": "execute_pm_b38_executable_skill_specification",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b38_executable_skill_specification",
+      "handler_id": "orchestrator-dag-v2:batch-38-executable-skill-specification",
+      "implementation_digest": "sha256:fef7355238205c66c507b3ea23af1f82804e5bc28f19e14a064711e620a320ef",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b38-acceptance-test-compiler",
+        "pm-b38-behavior-contract-compiler",
+        "pm-b38-domain-model-compiler",
+        "pm-b38-skill-composition-planner",
+        "pm-b38-skill-conflict-detector",
+        "pm-b38-skill-dependency-resolver",
+        "pm-b38-skill-marketplace-package",
+        "pm-b38-skill-schema-validator",
+        "pm-b38-skill-version-compatibility",
+        "pm-b38-state-machine-compiler"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b38-executable-skill-specification",
+      "source_skill": "batch-38-executable-skill-specification"
+    },
+    {
+      "batch": 39,
+      "dag_digest": "sha256:1e038a107fa3bd8541a05fc7c57a31aad98a7a8d03b653abedcd3c38768d08d5",
+      "edges": [
+        {
+          "from": "pm-b39-admin-generator",
+          "to": "pm-b39-architecture-blueprint-generator"
+        },
+        {
+          "from": "pm-b39-architecture-blueprint-generator",
+          "to": "pm-b39-backend-generator"
+        },
+        {
+          "from": "pm-b39-backend-generator",
+          "to": "pm-b39-ci-cd-generator"
+        },
+        {
+          "from": "pm-b39-ci-cd-generator",
+          "to": "pm-b39-complete-project-manifest"
+        },
+        {
+          "from": "pm-b39-complete-project-manifest",
+          "to": "pm-b39-database-generator"
+        },
+        {
+          "from": "pm-b39-database-generator",
+          "to": "pm-b39-deployment-generator"
+        },
+        {
+          "from": "pm-b39-deployment-generator",
+          "to": "pm-b39-documentation-and-runbook-generator"
+        },
+        {
+          "from": "pm-b39-documentation-and-runbook-generator",
+          "to": "pm-b39-frontend-generator"
+        },
+        {
+          "from": "pm-b39-frontend-generator",
+          "to": "pm-b39-observability-generator"
+        },
+        {
+          "from": "pm-b39-observability-generator",
+          "to": "pm-b39-project-completeness-score"
+        },
+        {
+          "from": "pm-b39-project-completeness-score",
+          "to": "pm-b39-repository-template-registry"
+        },
+        {
+          "from": "pm-b39-repository-template-registry",
+          "to": "pm-b39-security-crosscutting-generator"
+        },
+        {
+          "from": "pm-b39-security-crosscutting-generator",
+          "to": "pm-b39-worker-and-scheduler-generator"
+        }
+      ],
+      "function_name": "execute_pm_b39_complete_project_generation",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b39_complete_project_generation",
+      "handler_id": "orchestrator-dag-v2:batch-39-complete-project-generation",
+      "implementation_digest": "sha256:20af66d7550141d0bcce8b5ec1161a55cac4368c5aa10453ba4d2b2ed181af9e",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b39-admin-generator",
+        "pm-b39-architecture-blueprint-generator",
+        "pm-b39-backend-generator",
+        "pm-b39-ci-cd-generator",
+        "pm-b39-complete-project-manifest",
+        "pm-b39-database-generator",
+        "pm-b39-deployment-generator",
+        "pm-b39-documentation-and-runbook-generator",
+        "pm-b39-frontend-generator",
+        "pm-b39-observability-generator",
+        "pm-b39-project-completeness-score",
+        "pm-b39-repository-template-registry",
+        "pm-b39-security-crosscutting-generator",
+        "pm-b39-worker-and-scheduler-generator"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b39-complete-project-generation",
+      "source_skill": "batch-39-complete-project-generation"
+    },
+    {
+      "batch": 40,
+      "dag_digest": "sha256:100a47405eac198c460101b35dd11e05617610a418d3c53850b8571826ee22f4",
+      "edges": [
+        {
+          "from": "pm-b40-asset-reuse-planner",
+          "to": "pm-b40-compare-and-repair"
+        },
+        {
+          "from": "pm-b40-compare-and-repair",
+          "to": "pm-b40-convert-and-certify"
+        },
+        {
+          "from": "pm-b40-convert-and-certify",
+          "to": "pm-b40-generate-from-skills"
+        },
+        {
+          "from": "pm-b40-generate-from-skills",
+          "to": "pm-b40-migration-mode-selector"
+        }
+      ],
+      "function_name": "execute_pm_b40_product_entry_modes",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b40_product_entry_modes",
+      "handler_id": "orchestrator-dag-v2:batch-40-product-entry-modes",
+      "implementation_digest": "sha256:492186c904e7762c1a3a394f807b829acbf764c29f408cfd820da51b9b6c9a9e",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b40-asset-reuse-planner",
+        "pm-b40-compare-and-repair",
+        "pm-b40-convert-and-certify",
+        "pm-b40-generate-from-skills",
+        "pm-b40-migration-mode-selector"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b40-product-entry-modes",
+      "source_skill": "batch-40-product-entry-modes"
+    },
+    {
+      "batch": 41,
+      "dag_digest": "sha256:9fb8a5c2814559b34d6b1e558199a0a0675a238fadccf9e76e1af5087f89cc13",
+      "edges": [
+        {
+          "from": "pm-b41-certificate-signing",
+          "to": "pm-b41-conversion-provenance"
+        },
+        {
+          "from": "pm-b41-conversion-provenance",
+          "to": "pm-b41-correctness-level-classifier"
+        },
+        {
+          "from": "pm-b41-correctness-level-classifier",
+          "to": "pm-b41-evidence-manifest"
+        },
+        {
+          "from": "pm-b41-evidence-manifest",
+          "to": "pm-b41-module-equivalence-certificate"
+        },
+        {
+          "from": "pm-b41-module-equivalence-certificate",
+          "to": "pm-b41-release-gate-engine"
+        },
+        {
+          "from": "pm-b41-release-gate-engine",
+          "to": "pm-b41-rule-proof-certificate"
+        },
+        {
+          "from": "pm-b41-rule-proof-certificate",
+          "to": "pm-b41-runtime-evidence-package"
+        },
+        {
+          "from": "pm-b41-runtime-evidence-package",
+          "to": "pm-b41-semantic-loss-report"
+        },
+        {
+          "from": "pm-b41-semantic-loss-report",
+          "to": "pm-b41-unresolved-obligation-report"
+        }
+      ],
+      "function_name": "execute_pm_b41_evidence_release_gates",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b41_evidence_release_gates",
+      "handler_id": "orchestrator-dag-v2:batch-41-evidence-release-gates",
+      "implementation_digest": "sha256:35c6b7ce8635a584876e469f3f822d4926836ff65e3bf0623688fbc100818eda",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b41-certificate-signing",
+        "pm-b41-conversion-provenance",
+        "pm-b41-correctness-level-classifier",
+        "pm-b41-evidence-manifest",
+        "pm-b41-module-equivalence-certificate",
+        "pm-b41-release-gate-engine",
+        "pm-b41-rule-proof-certificate",
+        "pm-b41-runtime-evidence-package",
+        "pm-b41-semantic-loss-report",
+        "pm-b41-unresolved-obligation-report"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b41-evidence-release-gates",
+      "source_skill": "batch-41-evidence-release-gates"
+    },
+    {
+      "batch": 42,
+      "dag_digest": "sha256:d14de06eecaf4a1580f5f36aa4447c2785ce51a7c17a48bf181b30da6e49afca",
+      "edges": [
+        {
+          "from": "pm-b42-automatic-rollback",
+          "to": "pm-b42-canary-traffic-planner"
+        },
+        {
+          "from": "pm-b42-canary-traffic-planner",
+          "to": "pm-b42-dual-write-validation"
+        },
+        {
+          "from": "pm-b42-dual-write-validation",
+          "to": "pm-b42-live-event-replay"
+        },
+        {
+          "from": "pm-b42-live-event-replay",
+          "to": "pm-b42-migration-wave-planner"
+        },
+        {
+          "from": "pm-b42-migration-wave-planner",
+          "to": "pm-b42-post-cutover-monitoring"
+        },
+        {
+          "from": "pm-b42-post-cutover-monitoring",
+          "to": "pm-b42-production-shadow-run"
+        },
+        {
+          "from": "pm-b42-production-shadow-run",
+          "to": "pm-b42-progressive-cutover"
+        },
+        {
+          "from": "pm-b42-progressive-cutover",
+          "to": "pm-b42-side-effect-suppression"
+        },
+        {
+          "from": "pm-b42-side-effect-suppression",
+          "to": "pm-b42-strangler-routing"
+        }
+      ],
+      "function_name": "execute_pm_b42_shadow_canary_cutover",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b42_shadow_canary_cutover",
+      "handler_id": "orchestrator-dag-v2:batch-42-shadow-canary-cutover",
+      "implementation_digest": "sha256:4367b203c36813f2da1c8dbf1bc5035e8d70c1c814fcc5d2a4368023d0e457f6",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b42-automatic-rollback",
+        "pm-b42-canary-traffic-planner",
+        "pm-b42-dual-write-validation",
+        "pm-b42-live-event-replay",
+        "pm-b42-migration-wave-planner",
+        "pm-b42-post-cutover-monitoring",
+        "pm-b42-production-shadow-run",
+        "pm-b42-progressive-cutover",
+        "pm-b42-side-effect-suppression",
+        "pm-b42-strangler-routing"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b42-shadow-canary-cutover",
+      "source_skill": "batch-42-shadow-canary-cutover"
+    },
+    {
+      "batch": 43,
+      "dag_digest": "sha256:9ab13f0eb2dae3091cc1947ffd8fef0ce2e22658a45457bafd76083f2d792193",
+      "edges": [
+        {
+          "from": "pm-b43-counterexample-knowledge-store",
+          "to": "pm-b43-direction-pack-continuous-improvement"
+        },
+        {
+          "from": "pm-b43-direction-pack-continuous-improvement",
+          "to": "pm-b43-framework-obsolescence-monitor"
+        },
+        {
+          "from": "pm-b43-framework-obsolescence-monitor",
+          "to": "pm-b43-golden-repository-regression"
+        },
+        {
+          "from": "pm-b43-golden-repository-regression",
+          "to": "pm-b43-rule-performance-monitor"
+        },
+        {
+          "from": "pm-b43-rule-performance-monitor",
+          "to": "pm-b43-scheduled-repository-analysis"
+        },
+        {
+          "from": "pm-b43-scheduled-repository-analysis",
+          "to": "pm-b43-security-modernization-scan"
+        },
+        {
+          "from": "pm-b43-security-modernization-scan",
+          "to": "pm-b43-successful-repair-rule-induction"
+        },
+        {
+          "from": "pm-b43-successful-repair-rule-induction",
+          "to": "pm-b43-technical-debt-drift-detection"
+        },
+        {
+          "from": "pm-b43-technical-debt-drift-detection",
+          "to": "pm-b43-transformation-quality-learning"
+        }
+      ],
+      "function_name": "execute_pm_b43_continuous_modernization_learning",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b43_continuous_modernization_learning",
+      "handler_id": "orchestrator-dag-v2:batch-43-continuous-modernization-learning",
+      "implementation_digest": "sha256:c75ac10f4cf0e2cd0092deb62ca37dc5f2d81140f759761578cfae5df53a1d79",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b43-counterexample-knowledge-store",
+        "pm-b43-direction-pack-continuous-improvement",
+        "pm-b43-framework-obsolescence-monitor",
+        "pm-b43-golden-repository-regression",
+        "pm-b43-rule-performance-monitor",
+        "pm-b43-scheduled-repository-analysis",
+        "pm-b43-security-modernization-scan",
+        "pm-b43-successful-repair-rule-induction",
+        "pm-b43-technical-debt-drift-detection",
+        "pm-b43-transformation-quality-learning"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b43-continuous-modernization-learning",
+      "source_skill": "batch-43-continuous-modernization-learning"
+    },
+    {
+      "batch": 44,
+      "dag_digest": "sha256:e28486686fe7cebd61357682a6496e4f3b684f15000c682d06e8c1c986968be8",
+      "edges": [
+        {
+          "from": "pm-b44-air-gapped-installation",
+          "to": "pm-b44-audit-and-compliance"
+        },
+        {
+          "from": "pm-b44-audit-and-compliance",
+          "to": "pm-b44-customer-private-rule-pack"
+        },
+        {
+          "from": "pm-b44-customer-private-rule-pack",
+          "to": "pm-b44-enterprise-reporting"
+        },
+        {
+          "from": "pm-b44-enterprise-reporting",
+          "to": "pm-b44-license-and-entitlement"
+        },
+        {
+          "from": "pm-b44-license-and-entitlement",
+          "to": "pm-b44-multi-tenant-isolation"
+        },
+        {
+          "from": "pm-b44-multi-tenant-isolation",
+          "to": "pm-b44-offline-toolchain-registry"
+        },
+        {
+          "from": "pm-b44-offline-toolchain-registry",
+          "to": "pm-b44-private-deployment-planner"
+        },
+        {
+          "from": "pm-b44-private-deployment-planner",
+          "to": "pm-b44-private-model-gateway"
+        },
+        {
+          "from": "pm-b44-private-model-gateway",
+          "to": "pm-b44-rbac-and-sso"
+        },
+        {
+          "from": "pm-b44-rbac-and-sso",
+          "to": "pm-b44-sla-and-support-readiness"
+        },
+        {
+          "from": "pm-b44-sla-and-support-readiness",
+          "to": "pm-b44-white-label-partner-mode"
+        }
+      ],
+      "function_name": "execute_pm_b44_enterprise_private_commercialization",
+      "handler_entrypoint": "scripts.precision_migration.generated_orchestrators:execute_pm_b44_enterprise_private_commercialization",
+      "handler_id": "orchestrator-dag-v2:batch-44-enterprise-private-commercialization",
+      "implementation_digest": "sha256:c58e2e60db570ed2f2ee95d73de8ef62fb61e43c120eeabf2008a8876f205164",
+      "kind": "batch-orchestrator",
+      "nodes": [
+        "pm-b44-air-gapped-installation",
+        "pm-b44-audit-and-compliance",
+        "pm-b44-customer-private-rule-pack",
+        "pm-b44-enterprise-reporting",
+        "pm-b44-license-and-entitlement",
+        "pm-b44-multi-tenant-isolation",
+        "pm-b44-offline-toolchain-registry",
+        "pm-b44-private-deployment-planner",
+        "pm-b44-private-model-gateway",
+        "pm-b44-rbac-and-sso",
+        "pm-b44-sla-and-support-readiness",
+        "pm-b44-white-label-partner-mode"
+      ],
+      "schema_version": 1,
+      "skill": "pm-b44-enterprise-private-commercialization",
+      "source_skill": "batch-44-enterprise-private-commercialization"
+    }
+  ],
+  "schema_version": 1
+}

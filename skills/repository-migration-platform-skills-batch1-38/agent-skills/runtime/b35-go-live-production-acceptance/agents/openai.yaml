@@ -1,0 +1,4 @@
+interface:
+  display_name: "B35 Go Live Production Acceptance"
+  short_description: "Help with B35 Go Live Production Acceptance tasks"
+  default_prompt: "Use $b35-go-live-production-acceptance to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

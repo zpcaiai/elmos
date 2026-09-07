@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B24: Mysql Generated Column"
+  short_description: "Run Precision Migration B24 with evidence controls"
+  default_prompt: "Use $pm-b24-mysql-generated-column to execute this Precision Migration contract with fail-closed evidence."

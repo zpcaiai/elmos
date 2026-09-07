@@ -1,0 +1,36 @@
+{
+  "critical_behavior_regressions": 0,
+  "critical_unknown_semantics": 1,
+  "execution_status": "NOT_RUN",
+  "metrics": {
+    "build_green_rate": 0.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 0.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 0.0,
+    "source_map_coverage": 0.0
+  },
+  "module_equivalence": {
+    "bytes": 1822,
+    "path": "certification/module-equivalence.json",
+    "sha256": "sha256:29276e27d97c85e15a8325033fe2ce87f05b7ce2db4285e30295136c828067ff"
+  },
+  "module_execution_status": "NOT_RUN",
+  "negative_runs": [
+    "certification/local-negative-evidence.json"
+  ],
+  "notes": [
+    "No local route or module behavior is claimed before native execution.",
+    "Independent, external, customer, and production evidence remain NOT_RUN."
+  ],
+  "route_key": "java-to-javascript",
+  "route_maturity": "LIMITED",
+  "route_version": "1.0.0",
+  "runs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json"
+  ],
+  "schema_version": 1,
+  "test_integrity_violations": 0
+}

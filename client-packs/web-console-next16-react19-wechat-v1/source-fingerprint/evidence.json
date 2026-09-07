@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "state": "LOCAL_STATIC_EXECUTED",
+  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+  "snapshot_digest": "sha256:67b44b68d3c6065d8199f2f01297e6968db49d9cb9957be1b12f51f629f27497",
+  "file_count": 781,
+  "component_count": 71,
+  "scan_errors": 0,
+  "certification": "NOT_CERTIFIED"
+}

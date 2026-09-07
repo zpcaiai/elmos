@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 570: ai regulatory transparency and documentation manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-regulatory-transparency-and-documentation-manager to evaluate this capability with evidence."

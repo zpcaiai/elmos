@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/software-factory/external-observation-1.0.json",
+  "title": "ELMOS caller-supplied external observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observation_id", "action", "tenant_id", "project_id", "correlation_id",
+    "policy_revision", "source_revision", "evidence_digest", "byte_count", "executor_id",
+    "verifier_id", "authorized", "verified", "observation_digest"
+  ],
+  "properties": {
+    "observation_id": {"$ref": "#/$defs/token"},
+    "action": {"$ref": "#/$defs/token"},
+    "tenant_id": {"$ref": "#/$defs/token"},
+    "project_id": {"$ref": "#/$defs/token"},
+    "correlation_id": {"$ref": "#/$defs/token"},
+    "policy_revision": {"$ref": "#/$defs/token"},
+    "source_revision": {"$ref": "#/$defs/token"},
+    "evidence_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "byte_count": {"type": "integer", "minimum": 1, "maximum": 9223372036854775807},
+    "executor_id": {"$ref": "#/$defs/token"},
+    "verifier_id": {"$ref": "#/$defs/token"},
+    "authorized": {"type": "boolean"},
+    "verified": {"type": "boolean"},
+    "observation_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"
+    }
+  },
+  "description": "Integrity-scoped caller claims only. This runtime does not resolve evidence bytes, signatures, trust roots, or authorization."
+}

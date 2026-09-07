@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B105-S14",
+    "batch": 105,
+    "name": "modernization-demo-success-gate",
+    "dependencies": [
+      "B105-S07",
+      "B105-S12",
+      "B105-S13"
+    ],
+    "inputs": [
+      "all Batch105 evidence",
+      "policy version"
+    ],
+    "outputs": [
+      "ModernizationDemoDecision",
+      "blocking findings",
+      "next actions"
+    ],
+    "implementation": {
+      "modules": [
+        "certification/demo/ModernizationDemoGate.java",
+        "policies/demo-readiness.yaml",
+        "apps/web/src/features/release-gate/"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/gates/demo-readiness",
+        "event gate.demo-readiness.decided"
+      ],
+      "data": [
+        "demo_gate_input",
+        "demo_gate_decision",
+        "blocking_finding"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1\u8bc1\u636e\u8840\u7f18\u548c\u65b0\u9c9c\u5ea6",
+      "\u68c0\u67e5Baseline\u53ef\u590d\u73b0",
+      "\u68c0\u67e5\u6240\u6709\u8fc1\u79fb\u9636\u6bb5\u548c\u4fee\u590dCommit",
+      "\u68c0\u67e5\u6d4b\u8bd5\u4fdd\u62a4\u548c\u77e9\u9635\u8303\u56f4",
+      "\u5e94\u7528\u963b\u65ad/\u8b66\u544a\u653f\u7b56\u5e76\u62d2\u7edd\u4f2a\u9020\u6210\u529f",
+      "\u7b7e\u53d1REJECTED/PARTIAL/ENGINEERING_READY/DEMO_READY"
+    ],
+    "tests": [
+      "\u7f3aBaseline\u8bc1\u636e\u62d2\u7edd",
+      "\u6d4b\u8bd5\u4fdd\u62a4FAIL\u4e0d\u80fd\u88ab\u62a5\u544a\u8986\u76d6",
+      "\u8fc7\u671f\u8bc1\u636e\u62d2\u7edd",
+      "\u4f2a\u9020certified\u5b57\u6bb5\u4e0d\u751f\u6548",
+      "\u5168\u90e8\u5fc5\u9700\u8bc1\u636e\u901a\u8fc7\u7b7e\u53d1DEMO_READY"
+    ],
+    "evidence": [
+      "demo-gate-input.json",
+      "demo-gate-decision.json",
+      "blocking-findings.json",
+      "policy-evaluation.log"
+    ],
+    "definition_of_done": [
+      "\u51b3\u5b9a\u53ef\u91cd\u590d",
+      "\u9ed8\u8ba4\u4fdd\u5b88",
+      "\u6240\u6709\u963b\u65ad\u9879\u53ef\u8ffd\u6eaf",
+      "\u7b7e\u540d\u5305\u542bPolicy\u6458\u8981",
+      "\u65e0\u8fd0\u884c\u9a8c\u8bc1\u65f6\u6700\u9ad8\u53ea\u5230ENGINEERING_READY"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:b52733bcb0daca1503da7d9af33c5c6b46428187550e3c55d3f83233e5ef4f57",
+  "compiledVersion": 1
+}

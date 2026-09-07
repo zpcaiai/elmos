@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/protocol-version.schema.json",
+  "title": "PSP Protocol Version",
+  "type": "object",
+  "required": ["protocolVersion", "idAlgorithmVersion", "sourcePositionEncoding", "columns"],
+  "properties": {
+    "protocolVersion": {"const": "1.0"},
+    "idAlgorithmVersion": {"const": 1},
+    "sourcePositionEncoding": {"const": "UTF-8-bytes"},
+    "columns": {"const": "zero-based"}
+  },
+  "additionalProperties": false
+}

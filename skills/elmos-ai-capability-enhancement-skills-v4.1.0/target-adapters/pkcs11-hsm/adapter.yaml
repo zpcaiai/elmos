@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: pkcs11-hsm
+  ecosystem: PKCS#11 HSM
+  version: 4.0.0
+spec:
+  adapterKind: hardware-key
+  maturity: P1
+  modes:
+  - sign
+  - verify
+  - rotate
+  - ceremony
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - pkcs11-hsm exact-version profile
+  - pkcs11-hsm capability and semantic-gap map
+  - pkcs11-hsm native conformance evidence
+  - pkcs11-hsm deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

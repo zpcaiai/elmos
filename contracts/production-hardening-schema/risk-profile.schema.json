@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/risk-profile.schema.json",
+  "title": "Production readiness risk profile",
+  "type": "object",
+  "required": [
+    "profile_id",
+    "service_id",
+    "tier",
+    "minimum_headroom_percent",
+    "approved",
+    "approval_evidence_ref"
+  ],
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tier": {
+      "enum": [
+        "TIER_0",
+        "TIER_1",
+        "TIER_2",
+        "TIER_3",
+        "TIER_4"
+      ]
+    },
+    "minimum_headroom_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "require_soak": {
+      "type": "boolean"
+    },
+    "require_penetration": {
+      "type": "boolean"
+    },
+    "require_backup_restore": {
+      "type": "boolean"
+    },
+    "require_pitr": {
+      "type": "boolean"
+    },
+    "require_disaster_recovery": {
+      "type": "boolean"
+    },
+    "require_canary_drill": {
+      "type": "boolean"
+    },
+    "require_rollback_drill": {
+      "type": "boolean"
+    },
+    "approved": {
+      "const": true
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approval_evidence_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}
+

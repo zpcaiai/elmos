@@ -1,0 +1,6 @@
+defaultReadiness: not-run
+blindLineTranslation: forbidden
+criticalSemanticLoss: block
+sourceBaseline: required-when-executable
+agentPatches: bounded-and-verified
+productionClaim: executed-evidence-only

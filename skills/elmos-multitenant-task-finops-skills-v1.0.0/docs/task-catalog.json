@@ -1,0 +1,2024 @@
+{
+  "schema_version": "1.0",
+  "package": "elmos-multitenant-task-finops-skills",
+  "version": "1.0.0",
+  "total_tasks": 144,
+  "tasks": [
+    {
+      "task_id": "ELMOS-MTF-001-T01",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Scan the target repository and locate identity, task, workflow, runner, event, storage, billing, and analytics boundaries.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T02",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Create a requirement-to-component gap matrix and mark existing, reusable, conflicting, and missing implementation.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T03",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Freeze domain names, state machine, identifiers, idempotency keys, event names, and financial terms.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T04",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Select the authoritative storage owner for every persistent data type and prohibit dual truth.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T05",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Plan backward-compatible schema migrations and rollback/roll-forward procedures.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T06",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Define the first production-shaped vertical slice and its fixtures.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T07",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Sequence dependent skills and assign evidence owners.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T08",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Define environment-specific feature flags and safe rollout order.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T09",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Integrate runtime ETA reporting with queue, execution, model, validation, transfer, and recovery time.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T10",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Track implementation status in a stable task matrix.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T11",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Run all package and repository validation gates.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-001-T12",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "task": "Generate the final execution report with known limitations and waivers.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T01",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Define OIDC claims and membership resolution rules.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T02",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Remove all trust in client-provided tenant headers.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T03",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Define transaction-local identity context propagation.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T04",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Create non-superuser database roles and grants.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T05",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Enable and force RLS on all tenant-scoped task tables.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T06",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Create account-owner policies for global concurrency slots.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T07",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Add admin and workflow-service access through explicit least-privilege paths.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T08",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Classify task inputs, outputs, logs, prompts, usage, and revenue fields.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T09",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Implement encryption-key references and log redaction.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T10",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Audit all privileged task and finance operations.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T11",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Add tenant export, retention, and deletion workflows.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-002-T12",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "task": "Execute cross-tenant, confused-deputy, and BYPASSRLS tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T01",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Define slot-consuming and non-slot-consuming task states.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T02",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Implement three durable account slot rows.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T03",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Implement atomic slot claim with row locking and lease generation.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T04",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Implement generation-safe slot renewal and release.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T05",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Implement idempotent task submission.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T06",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Queue fourth and later tasks without executing them.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T07",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Promote queued tasks after terminal, paused, or safely reconciled slot release.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T08",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Enforce tenant active-task, queued-task, and resource-unit quotas.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T09",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Expose concurrency status and queue position APIs.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T10",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Publish admission and slot lifecycle events.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T11",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Add stale-slot reaping and reconciliation.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-003-T12",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "task": "Run high-contention race tests across multiple API replicas.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T01",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Define workload classes and resource-unit weights.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T02",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Estimate root-task and node-level resource demand.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T03",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Create workload-specific Temporal task queues.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T04",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Configure bounded worker concurrency per queue.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T05",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Implement tenant active-task and resource-unit quotas.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T06",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Implement weighted fair scheduling and priority aging.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T07",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Implement platform backpressure and admission delay reasons.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T08",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Integrate cost budget and provider quota gates.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T09",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Expose queue position and estimated start time.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T10",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Emit queue and scheduling metrics through OpenTelemetry.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T11",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Define autoscaling policies and safe minimum/maximum workers.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-004-T12",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "task": "Run fairness, saturation, and noisy-neighbor benchmarks.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T01",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Define task, run, node, and attempt states and legal transitions.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T02",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Create deterministic workflow IDs and run numbers.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T03",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Implement idempotent workflow startup through outbox or Update-with-Start.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T04",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Use typed versioned workflow payloads.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T05",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Persist every critical transition with a unique transition_id.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T06",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Implement explicit application failure mapping.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T07",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Propagate pause and cancel to all activities and runner tasks.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T08",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Implement retry policies by error class.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T09",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Add Search Attributes and operational queries.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T10",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Use Continue-As-New for long histories.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T11",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Project terminal state in a global try/catch/finally path.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-005-T12",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "task": "Run Temporal replay and duplicate-start tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T01",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Define the append-only task event catalog.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T02",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Allocate monotonic per-run event sequences.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T03",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Enforce event and transition idempotency.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T04",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Persist current node and progress snapshots.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T05",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Compute weighted monotonic progress.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T06",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Store elapsed time and machine ETA P50/P90.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T07",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Batch asynchronous heartbeat and progress writes.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T08",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Segment large logs into object storage.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T09",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Publish outbox events to the configured event bus.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T10",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Expose SSE replay with after_sequence.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T11",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Rebuild snapshots from the journal.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-006-T12",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "task": "Test duplicate, delayed, and out-of-order event delivery.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T01",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Identify safe checkpoint boundaries for every task type.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T02",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Persist atomic checkpoint manifests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T03",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Record completed side effects and immutable receipts.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T04",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Implement runner lease generation and renewal.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T05",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Implement generation-safe complete and fail operations.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T06",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Detect expired leases and set UNKNOWN_RESULT.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T07",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Reconcile provider, workspace, artifact, and receipt state.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T08",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Validate input, revision, tool, model, and schema compatibility.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T09",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Resume from a compatible checkpoint.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T10",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Fork a new run for incompatible recovery.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T11",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Expose manual recovery with audited decisions.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-007-T12",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "task": "Inject crashes at every checkpoint and side-effect boundary.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T01",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Define input and output manifest schemas.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T02",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Store small validated task parameters in JSONB.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T03",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Store large payloads in tenant-scoped object storage.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T04",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Compute and verify SHA-256 content digests.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T05",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Record execution environment and version lineage.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T06",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Version outputs and artifacts append-only.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T07",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Segment and archive logs outside PostgreSQL.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T08",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Implement redacted searchable projections.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T09",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Implement retention classes and legal hold.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T10",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Implement tenant export and deletion.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T11",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Prevent secret and credential persistence.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-008-T12",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "task": "Run integrity, retention, and cross-tenant object-access tests.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T01",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Define canonical usage dimensions and units.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T02",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Create versioned provider and internal price books.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T03",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Meter uncached input, cached input, output, and specialized model units.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T04",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Meter CPU, memory, GPU, sandbox, and runner time.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T05",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Meter storage byte-hours and network egress.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T06",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Meter third-party API and rendering costs.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T07",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Ingest idempotent immutable usage events.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T08",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Calculate base-currency cost with FX snapshots.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T09",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Track estimated, reserved, posted, and final actual cost.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T10",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Enforce per-task and tenant budget gates.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T11",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Aggregate historical total cost by business dimensions.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-009-T12",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "task": "Reconcile provider invoices with explicit correction events.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T01",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Define supported billing modes and revenue states.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T02",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Create append-only revenue ledger entries.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T03",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Record charges, credits, refunds, recognition, and collection separately.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T04",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Map direct task and project revenue.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T05",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Allocate fixed-project revenue by milestone or usage.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T06",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Allocate subscription revenue with a versioned policy.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T07",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Record taxes, payment fees, and FX separately.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T08",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Calculate recognized and collected totals.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T09",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Calculate per-task gross profit and gross margin.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T10",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Calculate tenant, account, project, and platform totals.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T11",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Reconcile payment-provider settlements.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-010-T12",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "task": "Audit manual revenue and allocation adjustments.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T01",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Define metric names, formulas, dimensions, and grain.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T02",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create hourly and daily task aggregates.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T03",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create cost, revenue, profit, and margin aggregates.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T04",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create task throughput and concurrency metrics.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T05",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create progress, retry, recovery, and cancellation metrics.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T06",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create model and cache efficiency metrics.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T07",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Add filters by tenant, account, project, task type, model, and period.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T08",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Add drill-through to source events and ledger entries.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T09",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Detect missing, duplicated, stale, and unreconciled financial data.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T10",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Create tenant-isolated CSV/JSON exports.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T11",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Rebuild and checksum aggregate projections.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-011-T12",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "task": "Publish operational and executive dashboard specifications.",
+      "priority": "P1",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T01",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Validate schemas, API, events, migrations, and state transitions.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T02",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Run one-account 100-request admission race tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T03",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Run cross-tenant and cross-account isolation tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T04",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Run workload fairness and noisy-neighbor load tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T05",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Run worker saturation and retry-storm tests.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T06",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Inject workflow-start dual-write failures.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T07",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Inject runner crashes at every side-effect boundary.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T08",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Test pause, resume, cancel, stale lease, and reconciliation.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T09",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Verify input/output object integrity and retention.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T10",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Reconcile usage, cost, revenue, refund, and margin totals.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T11",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Measure SLOs and capacity limits.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    },
+    {
+      "task_id": "ELMOS-MTF-012-T12",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "task": "Generate signed evidence and block release on hard-gate failure.",
+      "priority": "P0",
+      "gate": "required",
+      "evidence_required": true,
+      "skill_path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ]
+    }
+  ]
+}

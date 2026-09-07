@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "2.0",
+  "projectId": "d987df49475baaef0abc853b",
+  "direction": {
+    "routeId": "angular--to--svelte",
+    "source": "angular",
+    "target": "svelte",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "5.56.8",
+    "supportState": "PROJECT_GENERATION_READY",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "svelte",
+    "label": "Svelte",
+    "frameworkVersion": "5.56.8",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "6.0.3",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Vite",
+    "buildToolVersion": "8.1.5",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "History API adapter",
+    "state": "Svelte runes",
+    "rendering": "CSR",
+    "testTool": "Vitest 4.1.10",
+    "runnerProfile": "MODERN_WEB",
+    "requiredProjectFiles": [
+      "package.json",
+      "svelte.config.js",
+      "vite.config.ts",
+      "src/main.ts",
+      "src/App.svelte"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:f44eebb500c1dd15c505c6406c7d4c9b86679ac8bbead5411de3de5dd54a1b8a",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.html",
+      "package.json",
+      "scripts/verify.sh",
+      "src/App.svelte",
+      "src/elmos-bounded-navigation.ts",
+      "src/main.ts",
+      "src/routes.test.ts",
+      "src/routes.ts",
+      "src/styles.css",
+      "svelte.config.js",
+      "target-profile/profile.json",
+      "tsconfig.json",
+      "ui-ir/model.json",
+      "vite.config.ts"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "proofProfile": "bounded-frontend-interaction-v1",
+  "interactionScenarioCount": 18,
+  "interactionBlockIds": [
+    "route-navigation-deeplink-404",
+    "component-template-view",
+    "state-management",
+    "action-event",
+    "effect-lifecycle",
+    "form-binding-validation",
+    "api-network",
+    "identity-permission",
+    "rendering-hydration",
+    "accessibility-focus",
+    "i18n-theme-responsive",
+    "native-platform"
+  ]
+}

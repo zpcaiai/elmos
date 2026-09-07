@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/framework-recipe.schema.json",
+  "title": "Framework Migration Recipe",
+  "type": "object",
+  "required": ["recipeId", "version", "sourceFramework", "sourceVersionRange", "targetFramework", "targetVersionRange", "entityKind", "specificity", "priority", "fidelity", "idempotent", "production", "transformations", "requiredDependencies", "obligationTemplates", "validations", "tests", "provenanceRef"],
+  "properties": {
+    "recipeId": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "sourceFramework": {"type": "string", "minLength": 1},
+    "sourceVersionRange": {"type": "string", "minLength": 1},
+    "targetFramework": {"type": "string", "minLength": 1},
+    "targetVersionRange": {"type": "string", "minLength": 1},
+    "entityKind": {"type": "string", "minLength": 1},
+    "specificity": {"type": "integer", "minimum": 0},
+    "priority": {"type": "integer"},
+    "fidelity": {"enum": ["exact", "equivalent", "conditional", "partial", "lossy"]},
+    "idempotent": {"type": "boolean"},
+    "production": {"type": "boolean"},
+    "transformations": {"type": "array", "items": {"type": "string"}},
+    "requiredDependencies": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "obligationTemplates": {"type": "array", "items": {"type": "string"}},
+    "validations": {"type": "array", "items": {"type": "string"}},
+    "tests": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "provenanceRef": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

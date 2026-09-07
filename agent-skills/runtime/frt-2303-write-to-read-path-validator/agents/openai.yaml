@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write-to-Read Path Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2303-write-to-read-path-validator to run FRT-2303 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "migration-program-plan-and-wave-builder"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $migration-program-plan-and-wave-builder to evaluate this Batch 13 commercial capability with evidence."

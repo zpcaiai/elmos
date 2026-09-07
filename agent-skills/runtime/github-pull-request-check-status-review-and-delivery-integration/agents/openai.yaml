@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Github Pull Request Check Status Review And Delivery Integration"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $github-pull-request-check-status-review-and-delivery-integration to implement its fail-closed ELMOS Product B35 contract."

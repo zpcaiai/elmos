@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Mes Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-policy-authorization-approval-segrega-f6abac75 to implement its fail-closed ELMOS Product B50 contract."

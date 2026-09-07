@@ -1,0 +1,52 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "canonical_finite_no_error_input_domain_required": false,
+    "concrete_spans_required": false,
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "minimum_module_functions": 3,
+    "module_equivalence_required": false,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true,
+    "specialized_string_semantics_allowed": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "input_domain": "typed-pure-function-v1-declared-domain",
+    "module_profile": "NOT_APPLICABLE",
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "typescript-native-compiler"
+  },
+  "review_date": "2026-10-26",
+  "route_key": "objc-to-typescript",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
+    "language": "objc",
+    "versions": [
+      "Objective-C",
+      "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "arm64-apple-darwin25.6.0",
+      "Foundation"
+    ]
+  },
+  "status": "limited",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "typescript",
+    "versions": [
+      "TypeScript 5.9.2",
+      "Node.js 26.0.0"
+    ]
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 27 Skill 018"
+  short_description: "Run ELMOS Product Batch 27 governance safely"
+  default_prompt: "Use $tbm-investment-elmos-unified-evidence-integration to implement its evidence-bound ELMOS Product Batch 27 contract."

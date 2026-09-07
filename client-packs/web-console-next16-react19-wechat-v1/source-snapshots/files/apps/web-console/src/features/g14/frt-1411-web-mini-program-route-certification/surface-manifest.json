@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1411",
+  "skill_name": "frt-1411-web-mini-program-route-certification",
+  "batch": "G14",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g14/frt-1411-web-mini-program-route-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "capability_key": "frt.g14.web-mini-program-route-certification",
+  "execution_contract_sha256": "sha256:4ae820157056897350c1913af1b5e88e1c05cea1f4e2eee0be799b73cf41cb4e",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c3f1e52ad079591197cbe63e2787dbfb6e51c342ecda1875ec8b1dc622d91be1",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

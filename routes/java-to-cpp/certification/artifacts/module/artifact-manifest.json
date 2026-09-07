@@ -1,0 +1,336 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-cpp/certification/artifacts/module",
+  "corpus": "module",
+  "excluded_files": [
+    "source-runtime/000/EquivalenceModule.class",
+    "source-runtime/000/RouteHarness.class",
+    "source-runtime/001/EquivalenceModule.class",
+    "source-runtime/001/RouteHarness.class",
+    "source-runtime/002/EquivalenceModule.class",
+    "source-runtime/002/RouteHarness.class",
+    "source-runtime/003/EquivalenceModule.class",
+    "source-runtime/003/RouteHarness.class",
+    "source-runtime/004/EquivalenceModule.class",
+    "source-runtime/004/RouteHarness.class",
+    "target-runtime/000/route_harness",
+    "target-runtime/001/route_harness",
+    "target-runtime/002/route_harness",
+    "target-runtime/003/route_harness",
+    "target-runtime/004/route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 52,
+  "files": [
+    {
+      "bytes": 2602,
+      "path": "formal-function-000-input.json",
+      "sha256": "sha256:db9237deda8dd9250834d61d4a89ebaeb0e3ca68c81b43feb2e2c19c1df3e63d"
+    },
+    {
+      "bytes": 2412,
+      "path": "formal-function-000-result.json",
+      "sha256": "sha256:b9c3b177f8f52732c7ecf37b6060eaff90f22dc169da9870d9657527574fb964"
+    },
+    {
+      "bytes": 1275,
+      "path": "formal-function-000.smt2",
+      "sha256": "sha256:5f66b451cc8bba966e7b7381492d9724b6e77a134f01eabd3ac11053ff05a748"
+    },
+    {
+      "bytes": 3066,
+      "path": "formal-function-001-input.json",
+      "sha256": "sha256:30e3df04601b3b97de7415017e201ff328d6790cb6fb41e98693586230829d97"
+    },
+    {
+      "bytes": 2421,
+      "path": "formal-function-001-result.json",
+      "sha256": "sha256:db613291eb1c5522755c82906f381dc19a9c1b0afec81604a1cf1498e1ec4e6f"
+    },
+    {
+      "bytes": 1985,
+      "path": "formal-function-001.smt2",
+      "sha256": "sha256:75f085e444b0e3ce99e7c9cf5f7c14d2d9d8f863c59af273df2cca5c37553b6d"
+    },
+    {
+      "bytes": 3559,
+      "path": "formal-function-002-input.json",
+      "sha256": "sha256:50b78ab44eddca5a9c3f2e5076e9b1b78800e63326cec888b9f67664ecedb89f"
+    },
+    {
+      "bytes": 2448,
+      "path": "formal-function-002-result.json",
+      "sha256": "sha256:f6acdc18b7178bd6ae7f35e76a9513baa3c9fdb3f058980be3f4d46c10a17054"
+    },
+    {
+      "bytes": 1873,
+      "path": "formal-function-002.smt2",
+      "sha256": "sha256:bb8627b455432c14554e9a838ab59a1fddc778dd97dcfc1d0ff55e302a963379"
+    },
+    {
+      "bytes": 3568,
+      "path": "formal-function-003-input.json",
+      "sha256": "sha256:f1960e5531cba91dae625829f9d67fa705ea74ec4c5efb236d2ad71cadd58f42"
+    },
+    {
+      "bytes": 2732,
+      "path": "formal-function-003-result.json",
+      "sha256": "sha256:e2a303c1e70702460451cd3073ee24e7a4904e0672115943b25d889af16b3206"
+    },
+    {
+      "bytes": 2551,
+      "path": "formal-function-003.smt2",
+      "sha256": "sha256:47d3e12fc2dcc50579432afb2495c3abc3c680867a01ccb2e91187b9fc5fdb31"
+    },
+    {
+      "bytes": 2624,
+      "path": "formal-function-004-input.json",
+      "sha256": "sha256:c0fd83c71e4949b799a60afb349d71cc18dd235f8f6a34bd98f451548dee6b4c"
+    },
+    {
+      "bytes": 2418,
+      "path": "formal-function-004-result.json",
+      "sha256": "sha256:46e186ce87ee62d432dd879927a983e47b2af5a14bc33e8b54ccffa605ea3e7c"
+    },
+    {
+      "bytes": 1771,
+      "path": "formal-function-004.smt2",
+      "sha256": "sha256:c4261d9a1aa01087a771c87f1ef5be4ac2af9a63f3e5b7b90f60c1285f235cf2"
+    },
+    {
+      "bytes": 11194,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:cb7b4c004a10cd26d46e9f8ee0abf81664156bfd24830806fad8586b2dfbad91"
+    },
+    {
+      "bytes": 2122,
+      "path": "migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2794,
+      "path": "module-case-manifest.json",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 3898,
+      "path": "module-formal-input.json",
+      "sha256": "sha256:52e8e903a00d7b6b95ca1addb9c3f76a704fd418b50abe09f82faf195bc895c1"
+    },
+    {
+      "bytes": 884,
+      "path": "source-module-artifact/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 3604,
+      "path": "source-module-inventory.json",
+      "sha256": "sha256:dd1a86f02060e3cbb6a019d2732de467eeacc6948d032f775914977c8a2a009d"
+    },
+    {
+      "bytes": 1881,
+      "path": "source-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7640,
+      "path": "source-module-semantic-ir.json",
+      "sha256": "sha256:a458b10c0ba9502a2e5fea84c99c80deb2dce1db3ea92599418c8bbb59d8f5bf"
+    },
+    {
+      "bytes": 10018,
+      "path": "source-module-validation.json",
+      "sha256": "sha256:22b5e3ddebe4e75200df865194b2e599cf791d8e086402f6f6a7f247c28f874a"
+    },
+    {
+      "bytes": 884,
+      "path": "source-runtime/000/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 1078,
+      "path": "source-runtime/000/RouteHarness.java",
+      "sha256": "sha256:30d184d0160d0728296219f078f7ca60032d0e82fdd3305fbfb91bfd91e29546"
+    },
+    {
+      "bytes": 884,
+      "path": "source-runtime/001/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 1100,
+      "path": "source-runtime/001/RouteHarness.java",
+      "sha256": "sha256:175cb25370e7004030b6f92c196181b5a79c68e9ac0fe8c6a71a6f0de2a4788c"
+    },
+    {
+      "bytes": 884,
+      "path": "source-runtime/002/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 1314,
+      "path": "source-runtime/002/RouteHarness.java",
+      "sha256": "sha256:5dd3ca91e2a419dc06c9ec71c2249ec92f3e1d2371d80a389fbb212fccb65045"
+    },
+    {
+      "bytes": 884,
+      "path": "source-runtime/003/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 2272,
+      "path": "source-runtime/003/RouteHarness.java",
+      "sha256": "sha256:008121298c20e13a69faee8c4da2048d786bc9f63fb28ceae8e2df8ab059839f"
+    },
+    {
+      "bytes": 884,
+      "path": "source-runtime/004/EquivalenceModule.java",
+      "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+    },
+    {
+      "bytes": 1063,
+      "path": "source-runtime/004/RouteHarness.java",
+      "sha256": "sha256:5e5208ae16a74acdef60d70c39b1c1a554f3edb51e037e1cc729a60048912fcc"
+    },
+    {
+      "bytes": 4607,
+      "path": "target-module-inventory.json",
+      "sha256": "sha256:3c0a1b73e3141fc39dbb6b2d3cac069ede652a0bf0e2f8d9be1bc73ac8b95c43"
+    },
+    {
+      "bytes": 1881,
+      "path": "target-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7128,
+      "path": "target-module-semantic-ir.json",
+      "sha256": "sha256:1a21948413964ff99e93bef307e909e1b83391feb5b4932689ac9255309e5e8a"
+    },
+    {
+      "bytes": 7893,
+      "path": "target-module-validation.json",
+      "sha256": "sha256:860affc74396f48a69c31793ea2c20f29effc8634ae0c2c7ed00acefb43943e1"
+    },
+    {
+      "bytes": 2122,
+      "path": "target-runtime/000/migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2288,
+      "path": "target-runtime/000/route_harness.cpp",
+      "sha256": "sha256:051e0e92c4fab57ec97221b61459297126909112b1a2cb780c466264a6668293"
+    },
+    {
+      "bytes": 2122,
+      "path": "target-runtime/001/migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2180,
+      "path": "target-runtime/001/route_harness.cpp",
+      "sha256": "sha256:08c2a13fb6497860b8765e2697df458d0d886860ad51085302ea2859caddada5"
+    },
+    {
+      "bytes": 2122,
+      "path": "target-runtime/002/migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2390,
+      "path": "target-runtime/002/route_harness.cpp",
+      "sha256": "sha256:2dd02a2b69dfdbf7a91f9813ea421b8ba62481c49d262030036abf0d6563dd7e"
+    },
+    {
+      "bytes": 2122,
+      "path": "target-runtime/003/migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2573,
+      "path": "target-runtime/003/route_harness.cpp",
+      "sha256": "sha256:9f58ac37c11fec2fba4db67991fb4d955d0ce2a6e1cc44b7bd24e277caccd210"
+    },
+    {
+      "bytes": 2122,
+      "path": "target-runtime/004/migrated.cpp",
+      "sha256": "sha256:02c6b33eb6e2e769f5f54fa2824ada5dda040da95355bb1a4f71c2540f689493"
+    },
+    {
+      "bytes": 2137,
+      "path": "target-runtime/004/route_harness.cpp",
+      "sha256": "sha256:082f328bc785786f6d51a826a83655afa886e557f64e9d59e6ff35ccec61fff8"
+    },
+    {
+      "bytes": 7128,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1a21948413964ff99e93bef307e909e1b83391feb5b4932689ac9255309e5e8a"
+    },
+    {
+      "bytes": 7915,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:edbccf83560265ac5ae9bd5c80afaff2a642842dfdc9bae8387f27e0656e39fa"
+    },
+    {
+      "bytes": 217153,
+      "path": "typed-pure-module-equivalence.json",
+      "sha256": "sha256:ee37efdc00a15531523623c7f44982604b8134142d52f81d02a177dc9b35292a"
+    },
+    {
+      "bytes": 17018,
+      "path": "whole-file-module-closure.json",
+      "sha256": "sha256:7c2984b2e34e4d78a7a5de9747287ec175d638f46ad5e1ce7fcc8d680bc80112"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-cpp",
+  "schema_version": 1,
+  "total_bytes": 385488
+}

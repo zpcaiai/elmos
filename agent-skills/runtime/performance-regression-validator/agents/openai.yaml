@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance Regression Validator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $performance-regression-validator to execute this ELMOS Runtime Skill with fail-closed evidence."

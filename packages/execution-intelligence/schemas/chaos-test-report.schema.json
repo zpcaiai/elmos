@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/chaos-test-report.schema.json",
+  "title": "chaos-test-report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "scenarios",
+    "scenarios_not_run",
+    "passed",
+    "counts",
+    "rule"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "chaos-test-report"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario",
+          "passed",
+          "assertions",
+          "narrative"
+        ],
+        "properties": {
+          "scenario": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "assertions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "ok"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "ok": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "narrative": {
+            "type": "string"
+          },
+          "reconciliation": {
+            "type": "object"
+          },
+          "detection_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recovery_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "residual_impact": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scenarios_not_run": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "run",
+        "passed",
+        "failed",
+        "not_run"
+      ]
+    },
+    "rule": {
+      "type": "string"
+    }
+  }
+}

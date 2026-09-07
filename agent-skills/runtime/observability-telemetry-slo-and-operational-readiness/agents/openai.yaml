@@ -1,0 +1,4 @@
+interface:
+  display_name: "Observability Telemetry Slo And Operational Readiness"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $observability-telemetry-slo-and-operational-readiness to produce a governed infrastructure modernization artifact."

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "environment_key": "precision-migration-local-qualification-v1",
+  "execution_boundary": "local deterministic engineering qualification",
+  "required_tools": {
+    "python": ">=3.11",
+    "openssl": "Ed25519 pkeyutl support",
+    "node": "workspace-pinned",
+    "pnpm": "workspace-pinned"
+  },
+  "sandbox": {
+    "repository_source": "read-only for adapter execution",
+    "output": "dedicated non-overwriting directory",
+    "network": "not required and denied by adapter contract",
+    "secrets": "not required and denied by adapter contract",
+    "repository_commands": "never accepted from request or source content"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}

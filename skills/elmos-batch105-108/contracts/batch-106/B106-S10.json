@@ -1,0 +1,68 @@
+{
+  "id": "B106-S10",
+  "batch": 106,
+  "name": "ephemeral-sandbox-instance-provisioner",
+  "dependencies": [
+    "B106-S08",
+    "B106-S09"
+  ],
+  "inputs": [
+    "OCIImageRef",
+    "RuntimeManifest",
+    "tenant/run identity"
+  ],
+  "outputs": [
+    "SandboxInstance",
+    "lease token",
+    "provisioning receipt"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/sandbox/SandboxProvisioningService.java",
+      "private-runner/internal/sandbox/provider.go",
+      "infra/sandbox/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs",
+      "event sandbox.provisioned"
+    ],
+    "data": [
+      "runtime_run",
+      "sandbox_instance",
+      "sandbox_lease"
+    ]
+  },
+  "workflow": [
+    "分配全局Run ID和幂等键",
+    "校验镜像签名、租户配额和Policy",
+    "创建每任务隔离实例与只读根文件系统",
+    "挂载最小临时卷并注入短期身份",
+    "应用CPU/内存/PID/磁盘和egress限制",
+    "启动进程并返回租约/Provider实例映射"
+  ],
+  "tests": [
+    "同一幂等键不创建重复实例",
+    "配额超限拒绝",
+    "镜像签名无效拒绝",
+    "实例不能访问云metadata",
+    "租户隔离网络测试通过"
+  ],
+  "evidence": [
+    "provisioning-receipt.json",
+    "sandbox-policy.json",
+    "instance-identity.json",
+    "resource-allocation.json"
+  ],
+  "definition_of_done": [
+    "每Run独立隔离",
+    "身份短期且最小权限",
+    "资源限制生效",
+    "无裸Provider凭证",
+    "实例可被Reaper定位"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

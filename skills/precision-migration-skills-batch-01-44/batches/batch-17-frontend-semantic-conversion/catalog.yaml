@@ -1,0 +1,29 @@
+batch: 17
+slug: frontend-semantic-conversion
+title: "Frontend UI Semantic Conversion"
+phase: "F 前端与多端互转"
+skills:
+  - name: component-contract-recovery
+    description: "恢复 Props、Events、Slots/Children、公开方法、Context 和组件边界契约。"
+  - name: reactive-dependency-analysis
+    description: "分析响应式读写、Computed、Watcher、Hook 依赖、派生状态和闭包捕获。"
+  - name: ui-state-machine-recovery
+    description: "从组件和流程恢复 Idle、Loading、Success、Failure、Submitting 等状态机。"
+  - name: event-effect-trace-recovery
+    description: "恢复用户事件、网络、存储、导航、定时器和平台调用的 Effect Trace。"
+  - name: lifecycle-semantic-mapping
+    description: "映射 Vue、React、小程序、ArkUI 和 Flutter 生命周期及清理语义。"
+  - name: slot-children-content-mapping
+    description: "映射 Slot、Scoped Slot、Children、Render Props、Builder 和内容投影。"
+  - name: form-validation-mapping
+    description: "映射表单字段、校验、触摸状态、错误显示、提交与异步校验。"
+  - name: route-navigation-mapping
+    description: "映射路由、参数、守卫、返回栈、Tab、深链接和页面恢复。"
+  - name: network-request-semantic-mapping
+    description: "映射请求序列化、取消、重试、缓存、错误、竞态和 Latest-wins。"
+  - name: local-storage-mapping
+    description: "映射 Cookie、LocalStorage、IndexedDB、SharedPreferences 和平台安全存储。"
+  - name: layout-constraint-mapping
+    description: "把 DOM/CSS、Flex/Grid、Widget、ArkUI 和小程序布局映射到约束 IR。"
+  - name: accessibility-semantic-tree
+    description: "提取并比较 Role、Name、State、Value、Focus 和可操作性语义树。"

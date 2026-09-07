@@ -1,0 +1,65 @@
+{
+  "id": "B106-S04",
+  "batch": 106,
+  "name": "java-preview-runtime-adapter",
+  "dependencies": [
+    "B106-S03"
+  ],
+  "inputs": [
+    "validated RuntimeManifest",
+    "Java project snapshot"
+  ],
+  "outputs": [
+    "JavaBuildSpec",
+    "JavaRunSpec",
+    "health/preview hints"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/adapters/java/JavaPreviewAdapter.java",
+      "private-runner/internal/runtime/java.go",
+      "images/java/"
+    ],
+    "interfaces": [
+      "adapter runtime.java.compile",
+      "event runtime.adapter.java.ready"
+    ],
+    "data": [
+      "runtime_adapter_result",
+      "java_build_spec"
+    ]
+  },
+  "workflow": [
+    "解析wrapper/toolchain和目标JDK",
+    "选择固定digest builder/runtime镜像",
+    "生成Maven/Gradle离线友好构建命令",
+    "定位JAR/WAR和main class",
+    "注入0.0.0.0、PORT和Actuator健康配置",
+    "输出缓存键和启动探针"
+  ],
+  "tests": [
+    "多JAR歧义失败",
+    "无wrapper时按政策使用固定工具",
+    "Java版本不匹配阻断",
+    "应用只监听localhost时修正或提示",
+    "Spring Boot Swagger路径被发现"
+  ],
+  "evidence": [
+    "java-build-spec.json",
+    "java-run-spec.json",
+    "image-lock.json",
+    "adapter-test-results.json"
+  ],
+  "definition_of_done": [
+    "构建/运行镜像固定摘要",
+    "artifact唯一",
+    "监听公网接口",
+    "健康探针可用",
+    "示例Spring项目通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

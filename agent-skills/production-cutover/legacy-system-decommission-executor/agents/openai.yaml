@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legacy System Decommission Executor"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $legacy-system-decommission-executor to perform this Batch 11 production-cutover task."

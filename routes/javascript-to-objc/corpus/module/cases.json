@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "profile": "typed-pure-module-v1",
+  "composition": {
+    "call_graph": [],
+    "global_state": "none",
+    "effects": "none",
+    "exceptions": "domain-guards-fail-closed-before-execution",
+    "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1"
+  },
+  "functions": [
+    {
+      "symbol": "calculate",
+      "signature": {
+        "parameters": [
+          {"name": "subtotal", "type": "integer"},
+          {"name": "tax", "type": "integer"}
+        ],
+        "return_type": "integer"
+      },
+      "cases": [
+        {"args": [100, 20], "expected": 120},
+        {"args": [-1, 20], "expected": 0},
+        {"args": [9007199254740900, 7], "expected": 9007199254740907}
+      ]
+    },
+    {
+      "symbol": "clamp",
+      "signature": {
+        "parameters": [
+          {"name": "value", "type": "integer"},
+          {"name": "minimum", "type": "integer"},
+          {"name": "maximum", "type": "integer"}
+        ],
+        "return_type": "integer"
+      },
+      "cases": [
+        {"args": [-10, 0, 100], "expected": 0},
+        {"args": [55, 0, 100], "expected": 55},
+        {"args": [101, 0, 100], "expected": 100}
+      ]
+    },
+    {
+      "symbol": "difference",
+      "signature": {
+        "parameters": [
+          {"name": "left", "type": "integer"},
+          {"name": "right", "type": "integer"}
+        ],
+        "return_type": "integer"
+      },
+      "cases": [
+        {"args": [9, 4], "expected": 5},
+        {"args": [4, 9], "expected": -5},
+        {"args": [-7, -10], "expected": 3}
+      ]
+    },
+    {
+      "symbol": "clampNumber",
+      "signature": {
+        "parameters": [
+          {"name": "value", "type": "number"},
+          {"name": "minimum", "type": "number"},
+          {"name": "maximum", "type": "number"}
+        ],
+        "return_type": "number"
+      },
+      "cases": [
+        {"args": [-10.5, 0.0, 100.0], "expected": 0.0},
+        {"args": [55.25, 0.0, 100.0], "expected": 55.25},
+        {"args": [-0.0, -1.0, 1.0], "expected": -0.0}
+      ]
+    },
+    {
+      "symbol": "both",
+      "signature": {
+        "parameters": [
+          {"name": "left", "type": "boolean"},
+          {"name": "right", "type": "boolean"}
+        ],
+        "return_type": "boolean"
+      },
+      "cases": [
+        {"args": [true, true], "expected": true},
+        {"args": [true, false], "expected": false},
+        {"args": [false, false], "expected": false}
+      ]
+    }
+  ]
+}

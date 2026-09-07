@@ -1,0 +1,64 @@
+schema_version: 1.0.0
+scenario_id: LC-2M-001
+title: Two-million-token multimodal repository long-task
+preconditions:
+  corpus_estimated_tokens:
+    minimum: 2000000
+  content:
+  - PDF requirements
+  - DOCX UAT report
+  - audio meeting
+  - UI images
+  - Markdown constraints
+  - large multi-language repository
+  current_compatibility_fixture:
+    context_window_tokens: 1050000
+    max_output_tokens: 128000
+    as_of: '2026-08-19'
+  runtime_model_capability_snapshot_required: true
+task: Implement a cross-module requirement, run affected and full regression tests, and produce a provenance-backed report.
+required_actions:
+  structured_compactions:
+    minimum: 3
+  exact_rehydrations:
+    minimum: 5
+    anchor_types:
+    - pdf_region
+    - word_part
+    - audio_time
+    - image_region
+    - code_symbol
+  service_restarts:
+    minimum: 1
+  client_disconnect_reconnect:
+    minimum: 1
+  model_switch_to_smaller_context:
+    minimum: 1
+  real_code_change: true
+  real_test_execution: true
+assertions:
+- active context never exceeds effective input budget
+- P0/P1 items are never evicted
+- no silent truncation or omitted input is reported as read
+- critical fact retention equals 1.0
+- critical source anchor retention equals 1.0
+- model switch causes compatibility recalculation and planned compaction/partition
+- rehydration validates tenant, package version and hash
+- server task continues after client disconnect
+- restart resumes from a compatible checkpoint
+- no duplicate tool side effect
+- no duplicate provider usage or cost ledger entry
+- final result identifies files not parsed/indexed/loaded
+- final requirements and code changes cite original evidence
+evidence:
+- context usage snapshots
+- load plans
+- pressure transitions
+- compaction checkpoints
+- integrity reports
+- rehydration reports
+- task checkpoints
+- tool receipts
+- provider usage reconciliation
+- test reports
+- machine wall-clock and cost report

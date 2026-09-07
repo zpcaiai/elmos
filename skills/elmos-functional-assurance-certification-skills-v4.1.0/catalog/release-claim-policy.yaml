@@ -1,0 +1,23 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ReleaseClaimPolicy
+metadata:
+  version: 4.0.0
+spec:
+  allowedPackageClaims:
+  - STRUCTURALLY_VALID
+  - REFERENCE_TESTED
+  - INSTALLER_TESTED
+  - ARCHIVE_VALID
+  forbiddenWithoutRuntimeEvidence:
+  - PROD
+  - E5
+  - P05
+  - CERTIFIED
+  - NATIVE_CONFORMANT
+  - CUSTOMER_ACCEPTED
+  statusRules:
+    UNKNOWN: never PASS
+    UNSUPPORTED: block critical or explicit bounded delta
+    WAIVED: display as waiver, never proof
+    MOCK_ONLY: never native conformance
+  releasePinRule: Exact tool, model, adapter, SDK, image, policy, schema and RevisionSet digests are mandatory.

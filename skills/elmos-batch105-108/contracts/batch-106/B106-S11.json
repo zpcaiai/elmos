@@ -1,0 +1,68 @@
+{
+  "id": "B106-S11",
+  "batch": 106,
+  "name": "preview-port-exposure-controller",
+  "dependencies": [
+    "B106-S10"
+  ],
+  "inputs": [
+    "SandboxInstance",
+    "service port/protocol",
+    "access policy"
+  ],
+  "outputs": [
+    "PublicEndpoint",
+    "access token",
+    "route receipt"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/gateway/PreviewEndpointService.java",
+      "gateway/preview-routes/",
+      "apps/web/src/features/preview/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/endpoints",
+      "DELETE /api/runtime-runs/{id}/endpoints",
+      "event preview.endpoint.created"
+    ],
+    "data": [
+      "preview_endpoint",
+      "endpoint_token",
+      "route_binding"
+    ]
+  },
+  "workflow": [
+    "验证端口属于该实例和Manifest",
+    "创建随机不可猜子域与TLS路由",
+    "配置身份、限流、最大Body和WebSocket升级",
+    "只暴露声明的路径/端口",
+    "返回不含内部拓扑的PublicEndpoint",
+    "销毁时先撤销路由再停止实例"
+  ],
+  "tests": [
+    "未声明端口拒绝",
+    "URL不可枚举",
+    "过期Token拒绝",
+    "WebSocket握手通过",
+    "路由撤销后立即不可访问"
+  ],
+  "evidence": [
+    "endpoint-receipt.json",
+    "route-policy.json",
+    "access-audit.json",
+    "revocation-receipt.json"
+  ],
+  "definition_of_done": [
+    "HTTPS可访问",
+    "默认需要认证",
+    "内部地址不泄露",
+    "限流生效",
+    "撤销具原子性"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

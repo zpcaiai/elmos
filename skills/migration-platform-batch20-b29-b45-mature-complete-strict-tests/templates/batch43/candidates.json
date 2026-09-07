@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "example-product-lifecycle-candidates",
+  "candidates": [
+    {
+      "id": "candidate-a",
+      "score": 0.0,
+      "evidence_refs": []
+    }
+  ]
+}

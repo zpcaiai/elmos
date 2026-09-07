@@ -1,0 +1,5 @@
+human_approval:
+  irreversible_actions: required
+  critical_exceptions: dual_control
+  approvals_expire: true
+  input_change_invalidates: true

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/suite.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["suite_id", "version", "scope", "skill_count", "case_count", "product_skill_count", "profile", "case_catalog", "case_manifest", "coverage_matrix", "release_gate", "result_schema", "authoritative_gate", "certification_default"],
+  "properties": {
+    "suite_id": {"const": "batch38-45-strict"},
+    "version": {"const": "2.0.0"},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batches", "product_skills", "test_skills"],
+      "properties": {
+        "batches": {"type": "array", "const": [38, 39, 40, 41, 42, 43, 44, 45]},
+        "product_skills": {"type": "object", "additionalProperties": false, "required": ["from", "to", "count"], "properties": {"from": {"const": 1325}, "to": {"const": 1496}, "count": {"const": 172}}},
+        "test_skills": {"const": 30}
+      }
+    },
+    "skill_count": {"const": 30},
+    "case_count": {"const": 400},
+    "product_skill_count": {"const": 172},
+    "profile": {"const": "strict-profile.json"},
+    "case_catalog": {"const": "cases/catalog.json"},
+    "case_manifest": {"const": "cases/manifest.json"},
+    "coverage_matrix": {"const": "coverage-matrix.json"},
+    "release_gate": {"const": "release-gate.json"},
+    "result_schema": {"const": "../../schemas/test-suite-b38-45/result.schema.json"},
+    "authoritative_gate": {"const": "scripts/test-suite-b38-45/run_strict_gate.py"},
+    "certification_default": {"const": "BLOCKED"}
+  }
+}

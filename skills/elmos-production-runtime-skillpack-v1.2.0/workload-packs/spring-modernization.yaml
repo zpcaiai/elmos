@@ -1,0 +1,23 @@
+id: spring-modernization-v1
+job_type: SPRING_MODERNIZATION
+stages:
+  - inventory
+  - build-and-semantic-graph
+  - migration-plan
+  - dependency-upgrade
+  - jakarta-namespace
+  - configuration
+  - web-layer
+  - service-transaction
+  - persistence
+  - security
+  - sql-integration
+  - compile
+  - unit-integration-test
+  - behavioral-diff
+  - auto-repair
+  - regression-retest
+  - package-report
+completion_gates:
+  target_build_pass: true
+  unresolved_p0_defects: 0

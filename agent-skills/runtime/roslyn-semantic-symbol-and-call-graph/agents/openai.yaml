@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roslyn Semantic Symbol And Call Graph"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $roslyn-semantic-symbol-and-call-graph to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Contract Schema Compatibility Roundtrip"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-contract-schema-compatibility-roundtrip to run the exact Batch 66-80 test scope with fail-closed evidence."

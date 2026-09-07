@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B42 contract."

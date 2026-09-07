@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: asyncapi-3.1
+  ecosystem: AsyncAPI 3.1
+  version: 4.0.0
+spec:
+  adapterKind: event-contract
+  maturity: P1
+  modes:
+  - import
+  - emit
+  - validate
+  - codegen
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - asyncapi-3.1 exact-version profile
+  - asyncapi-3.1 capability and semantic-gap map
+  - asyncapi-3.1 native conformance evidence
+  - asyncapi-3.1 deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

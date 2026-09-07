@@ -1,0 +1,21 @@
+apiVersion: elmos.ai/v3delta1
+kind: AlertCatalog
+metadata:
+  version: 3.1.0
+spec:
+  alerts:
+  - name: AuthorityWideningAttempt
+    severity: critical
+    condition: increase(elmos_authority_widening_blocked_total[5m]) > 0
+  - name: StaleExecutorCommitAccepted
+    severity: critical
+    condition: elmos_stale_executor_result_rejected_total indicates acceptance anomaly
+  - name: ResultCommitReplayMismatch
+    severity: critical
+    condition: increase(elmos_tool_result_replay_mismatch_total[5m]) > 0
+  - name: UnknownRequiredDurableEvent
+    severity: critical
+    condition: increase(elmos_unknown_required_event_total[5m]) > 0
+  - name: AdapterVersionMismatch
+    severity: high
+    condition: increase(elmos_adapter_version_mismatch_total[15m]) > 0

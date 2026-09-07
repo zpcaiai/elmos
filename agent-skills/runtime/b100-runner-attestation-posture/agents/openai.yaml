@@ -1,0 +1,4 @@
+interface:
+  display_name: "B100 Runner Attestation Posture"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b100-runner-attestation-posture to execute this ELMOS product-closure Skill with fail-closed evidence."

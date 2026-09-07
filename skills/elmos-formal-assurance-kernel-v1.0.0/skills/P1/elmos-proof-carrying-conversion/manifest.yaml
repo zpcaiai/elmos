@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-proof-carrying-conversion
+  title: Proof-Carrying Conversion
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 让每次仓库转换交付可校验的证明清单、证书、假设、边界、反例、覆盖率和 TCB 摘要。
+  dependencies:
+  - elmos-proof-status-policy
+  - elmos-trusted-computing-base-registry
+  - elmos-proof-cache-invalidation
+  - elmos-repository-refinement-composer
+  capabilities:
+  - proof-carrying artifacts
+  - signed manifests
+  - independent replay
+  inputs:
+  - name: repository proof graph
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: proof artifacts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: source/target manifests
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: proof/manifest.json
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: certificates
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: offline verifier bundle
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: signature request
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

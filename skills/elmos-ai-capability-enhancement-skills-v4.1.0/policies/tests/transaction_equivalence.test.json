@@ -1,0 +1,11 @@
+{
+  "policy": "transaction_equivalence",
+  "positive": {
+    "isolation_scenarios_complete": true,
+    "rollback_verified": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

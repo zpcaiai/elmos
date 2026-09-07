@@ -1,0 +1,10 @@
+{
+  "oracleId": "ORACLE-ID",
+  "observable": "db-state",
+  "relation": "observational-equivalence",
+  "normalization": [
+    "generated-id-map"
+  ],
+  "tolerance": null,
+  "critical": true
+}

@@ -1,0 +1,30 @@
+apiVersion: elmos.ai/v3alpha1
+kind: FixtureManifest
+metadata:
+  packageRole: certification
+  version: 4.1.0
+spec:
+  files:
+  - certification-max/audit/capa.yaml
+  - certification-max/certificate/verifiable.json
+  - certification-max/conformity-scheme/invalid-self-certification.yaml
+  - certification-max/conformity-scheme/valid-scheme.yaml
+  - certification-max/fairness/intersectional-groups.yaml
+  - certification-max/formal/proof-artifact.yaml
+  - certification-max/laboratory/decision-rule.yaml
+  - certification-max/laboratory/uncertainty-budget.yaml
+  - certification-max/proficiency/round.yaml
+  - certification-max/sector/safety-profile.yaml
+  - certification-max/security/attestation.yaml
+  - certification-max/tevv/rare-event-scenario.yaml
+  - certification/clean-room/request.json
+  - certification/evidence-chain/entry.json
+  - commercial/dossier/question.json
+  - formal-v4/obligation.yaml
+  - qa-v4/protocol-fuzz.json
+  - qa-v4/record-replay.yaml
+  - qa/counterexample/minimal.json
+  - qa/validation-dag/example.yaml
+  - quality/accessibility/manual-review.yaml
+  - security-v4/attestation.json
+  - security-v4/egress.yaml

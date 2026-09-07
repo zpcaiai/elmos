@@ -1,0 +1,57 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: realtime-multimodal-agent
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-realtime-voice-multimodal-agent-generator
+  workflow: workflows/realtime-agent-release.yaml
+  source: Realtime voice/video agent with interruption, consent, safety and network-fault certification
+  targets:
+  - openai-realtime
+  - webrtc-sip
+  - mcp-2026-07-28
+  - a2a-v1
+  adapterCoverage:
+    knownAdapters:
+    - openai-realtime
+    - webrtc-sip
+    - mcp-2026-07-28
+    - a2a-v1
+    conceptualOrExternalTargets: []
+  eligibility:
+  - exact source/target versions and digests available
+  - observable acceptance, rollback and data ownership declared
+  - critical semantic/security/side-effect boundaries modeled
+  requiredEvidence:
+  - clean-room native build/load/start
+  - positive and negative conformance
+  - differential or invariant evidence
+  - fault/recovery and rollback drill
+  - supply-chain/signature/provenance
+  - machine wall-clock and full cost ledger
+  - customer hidden holdout where applicable
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    faultInjectionRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository/data/topology variant
+  - upstream version or behavior drift
+  - worker/dependency/region failure
+  - rollback after partial side effect
+  nonClaim: This route remains a contract until exact native runs, repeated holdout, rollback and independent K8 certification
+    are complete.

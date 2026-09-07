@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "skillId",
+    "name",
+    "version",
+    "maturity",
+    "capabilitiesProvided",
+    "capabilitiesRequired"
+  ],
+  "properties": {
+    "skillId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "maturity": {
+      "type": "string"
+    },
+    "capabilitiesProvided": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "capabilitiesRequired": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

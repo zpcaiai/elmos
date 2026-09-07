@@ -1,0 +1,31 @@
+{
+  "plan_id": "dep-plan-demo",
+  "dependencies": [
+    {
+      "name": "axios",
+      "source_version": "locked",
+      "usage_evidence": [
+        "src/services/api.ts"
+      ],
+      "action": "replace",
+      "replacement": "platform-network-port",
+      "risk": "medium",
+      "license": "MIT",
+      "targets": {
+        "wechat": "conditional",
+        "alipay": "conditional",
+        "douyin": "conditional",
+        "xiaohongshu": "conditional"
+      },
+      "required_tests": [
+        "request-timeout",
+        "error-normalization"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "blocked": 0,
+    "high_risk": 0
+  }
+}

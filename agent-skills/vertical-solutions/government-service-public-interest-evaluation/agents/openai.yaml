@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 645: government service public interest evaluation"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $government-service-public-interest-evaluation to evaluate this capability with evidence."

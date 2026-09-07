@@ -1,0 +1,106 @@
+uv --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py --json
+{
+  "declaration_cross_check": {
+    "declared_limited_route_count": 90,
+    "declared_research_route_count": 66,
+    "declared_route_count": 156,
+    "executed_bidirectional_routes": 156,
+    "status": "MATCH"
+  },
+  "declared_deprecated": [
+    "javascript"
+  ],
+  "declared_languages": [
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "go",
+    "rust",
+    "cpp",
+    "objc",
+    "swift",
+    "php",
+    "kotlin",
+    "react",
+    "flutter"
+  ],
+  "declared_pending_analyzer": [],
+  "declared_pending_repository": [],
+  "emission": {
+    "cpp": "SUPPORTED",
+    "csharp": "SUPPORTED",
+    "flutter": "SUPPORTED",
+    "go": "SUPPORTED",
+    "java": "SUPPORTED",
+    "kotlin": "SUPPORTED",
+    "objc": "SUPPORTED",
+    "php": "SUPPORTED",
+    "python": "SUPPORTED",
+    "react": "SUPPORTED",
+    "rust": "SUPPORTED",
+    "swift": "SUPPORTED",
+    "typescript": "SUPPORTED"
+  },
+  "kind": "elmos.capability-probe",
+  "lifting": {
+    "cpp": "SUPPORTED",
+    "csharp": "SUPPORTED",
+    "flutter": "SUPPORTED",
+    "go": "SUPPORTED",
+    "java": "SUPPORTED",
+    "kotlin": "SUPPORTED",
+    "objc": "SUPPORTED",
+    "php": "SUPPORTED",
+    "python": "SUPPORTED",
+    "react": "SUPPORTED",
+    "rust": "SUPPORTED",
+    "swift": "SUPPORTED",
+    "typescript": "SUPPORTED"
+  },
+  "module_enumeration": {
+    "cpp": "SUPPORTED",
+    "csharp": "SUPPORTED",
+    "flutter": "SUPPORTED",
+    "go": "SUPPORTED",
+    "java": "SUPPORTED",
+    "kotlin": "SUPPORTED",
+    "objc": "SUPPORTED",
+    "php": "SUPPORTED",
+    "python": "BY_DESIGN:PYTHON_MODULE_INVENTORY_USES_CPYTHON_AST",
+    "react": "SUPPORTED",
+    "rust": "SUPPORTED",
+    "swift": "SUPPORTED",
+    "typescript": "SUPPORTED"
+  },
+  "schema_version": "1.0.0",
+  "subset_boundary": {
+    "assignment": "REJECTED:PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+    "async": "REJECTED:ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+    "attribute_access": "REJECTED:PYTHON_UNSUPPORTED_EXPRESSION",
+    "call": "REJECTED:PYTHON_UNSUPPORTED_EXPRESSION",
+    "class_declared_beside_function": "SUPPORTED",
+    "exception": "REJECTED:PYTHON_UNSUPPORTED_STATEMENT",
+    "loop": "REJECTED:PYTHON_UNSUPPORTED_STATEMENT",
+    "subscript": "REJECTED:PYTHON_UNSUPPORTED_EXPRESSION"
+  },
+  "summary": {
+    "bidirectional": [
+      "java",
+      "python",
+      "csharp",
+      "typescript",
+      "go",
+      "rust",
+      "cpp",
+      "objc",
+      "swift",
+      "php",
+      "kotlin",
+      "react",
+      "flutter"
+    ],
+    "neither_direction": [],
+    "routes_between_bidirectional": 156
+  }
+}

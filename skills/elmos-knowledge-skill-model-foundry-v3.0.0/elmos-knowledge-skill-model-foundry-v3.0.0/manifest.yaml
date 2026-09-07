@@ -1,0 +1,83 @@
+apiVersion: elmos.ai/v1
+kind: KnowledgeSkillModelFoundryPackage
+metadata:
+  name: elmos-knowledge-skill-model-foundry
+  version: 3.0.0
+  generatedAt: '2026-08-29'
+  license: Proprietary-Elmos-Commercial
+  atomicSkillCount: 1310
+  metaSkillCount: 41
+  packCount: 41
+  priorityCounts:
+    P0: 916
+    P1: 368
+    P2: 26
+  evaluationCaseCount: 31440
+  conformanceManifestCount: 1310
+  dependencyCycleCount: 0
+  unresolvedDependencyCount: 0
+  validationStatus: package-integrity-passed
+  runtimeStatus: specification-ready
+spec:
+  architecture: Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+  packageRole: commercial-production-capability-specification-and-scaffolding
+  discoveryMode: hierarchical-meta-first-business-line-aware
+  globalExposure: skills/meta only
+  atomicRegistry: registry/skill-catalog.yaml
+  businessLineRegistry: registry/business-line-catalog.yaml
+  technologySupportMatrix: registry/technology-support-matrix.yaml
+  productionPrinciples:
+  - knowledge-skill-experience-dataset-model-evidence-separation
+  - tenant-private-by-default
+  - customer-data-never-global-train-by-default
+  - environment-and-attachment-owned-authority
+  - durable-replayable-idempotent-execution
+  - evidence-before-promotion
+  - deterministic-verification-before-model-judgment
+  - unsupported-versions-never-presented-as-supported
+  - immutable-release-bundles
+  - whole-combination-rollback
+  - machine-wall-clock-cost-and-progress-accounting
+  - specification-ready-does-not-imply-runtime-ready
+  packs:
+  - 00-foundation-contracts
+  - 01-knowledge-ingestion-governance
+  - 02-repository-semantic-intelligence
+  - 03-retrieval-context-engineering
+  - 04-memory-experience-flywheel
+  - 05-skill-foundry-runtime
+  - 06-dataset-foundry
+  - 07-private-model-foundry
+  - 08-agentic-training-rl
+  - 09-evaluation-proof-certification
+  - 10-serving-routing-inference
+  - 11-security-privacy-compliance
+  - 12-observability-lineage-finops
+  - 13-commercial-multitenant-platform
+  - 14-human-governance-operations
+  - 15-domain-engineering-packs
+  - 16-self-evolution-release-engineering
+  - 17-repository-execution-os
+  - 18-java-spring-enterprise-modernization
+  - 19-cross-language-semantic-conversion
+  - 20-sql-database-modernization
+  - 21-project-generation-product-engineering
+  - 22-frontend-mobile-miniapp-modernization
+  - 23-repository-refactoring-technical-debt
+  - 24-api-event-integration-modernization
+  - 25-data-engineering-lakehouse-analytics
+  - 26-cloud-native-devops-platform-engineering
+  - 27-test-quality-assurance-factory
+  - 28-security-compliance-supply-chain
+  - 29-performance-reliability-cost-engineering
+  - 30-architecture-documentation-ide
+  - 31-ai-agent-rag-ml-engineering
+  - 32-legacy-mainframe-enterprise-modernization
+  - 33-industrial-iot-edge-robotics
+  - 34-language-runtime-adapters
+  - 35-database-engine-adapters
+  - 36-framework-runtime-adapters
+  - 37-cloud-platform-adapters
+  - 38-golden-route-customer-delivery
+  - 39-product-commercialization-marketplace
+  - 40-regulated-industry-assurance

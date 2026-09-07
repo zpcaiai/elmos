@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Incremental Graph Impact"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-incremental-graph-impact to execute this ELMOS Runtime Skill with fail-closed evidence."

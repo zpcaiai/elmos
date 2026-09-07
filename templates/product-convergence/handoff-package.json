@@ -1,0 +1,33 @@
+{
+  "documents": [
+    "target-architecture",
+    "repository-guide",
+    "local-development",
+    "deployment-guide",
+    "runbook",
+    "api-documentation",
+    "data-model",
+    "security-model",
+    "known-differences",
+    "technical-debt-register"
+  ],
+  "exercises": [
+    {
+      "exercise": "clean-build",
+      "status": "not-run"
+    },
+    {
+      "exercise": "modify-p0-feature",
+      "status": "not-run"
+    },
+    {
+      "exercise": "deploy-and-rollback",
+      "status": "not-run"
+    },
+    {
+      "exercise": "incident-runbook",
+      "status": "not-run"
+    }
+  ],
+  "customer_approvals": []
+}

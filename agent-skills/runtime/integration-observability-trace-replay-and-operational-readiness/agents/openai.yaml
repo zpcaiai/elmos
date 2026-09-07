@@ -1,0 +1,4 @@
+interface:
+  display_name: "integration observability trace replay and operational readiness"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $integration-observability-trace-replay-and-operational-readiness to modernize this integration scope safely."

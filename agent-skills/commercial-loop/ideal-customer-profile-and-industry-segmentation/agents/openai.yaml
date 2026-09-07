@@ -1,0 +1,4 @@
+interface:
+  display_name: "ideal-customer-profile-and-industry-segmentation"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $ideal-customer-profile-and-industry-segmentation to evaluate this Batch 13 commercial capability with evidence."

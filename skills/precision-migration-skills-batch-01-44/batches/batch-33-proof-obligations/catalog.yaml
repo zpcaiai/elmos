@@ -1,0 +1,25 @@
+batch: 33
+slug: proof-obligations
+title: "Proof Obligation Generation"
+phase: "I 形式化证明"
+skills:
+  - name: type-preservation-obligation
+    description: "生成源表达式有类型则目标表达式具有映射类型的类型保持义务。"
+  - name: numeric-semantics-obligation
+    description: "生成位宽、溢出、精度、舍入、NaN 和边界语义保持义务。"
+  - name: nullability-preservation-obligation
+    description: "生成 Null、Missing、Undefined、Option、Pointer 和 zero value 的保持义务。"
+  - name: effect-preservation-obligation
+    description: "生成必需 Effect 不缺失、危险新增 Effect 为空的证明义务。"
+  - name: state-refinement-obligation
+    description: "生成目标状态机对源状态机的 Simulation/Refinement 义务。"
+  - name: pure-function-equivalence-obligation
+    description: "生成纯函数在前置条件下对所有输入结果等价的关系义务。"
+  - name: serializer-roundtrip-obligation
+    description: "生成编码、解码、规范化和跨语言 Carrier 的 Round-trip 义务。"
+  - name: permission-non-expansion-obligation
+    description: "生成迁移后权限集合不扩大、拒绝规则不弱化的义务。"
+  - name: transaction-invariant-obligation
+    description: "生成原子性、守恒、幂等、回滚和状态可见性的事务义务。"
+  - name: trace-refinement-obligation
+    description: "生成目标可观察 Trace 对源合法 Trace 的精化或等价义务。"

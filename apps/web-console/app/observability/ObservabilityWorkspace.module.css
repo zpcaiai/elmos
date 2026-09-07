@@ -1,0 +1,377 @@
+.container {
+  --border: var(--line);
+  --text-muted: var(--muted);
+  --foreground: var(--ink);
+  --accent: var(--cyan-dark);
+  --surface-active: var(--cyan-soft);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.badge {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.notice {
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line));
+  border-radius: 8px;
+  background: var(--amber-soft);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.tabBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tabBtn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.activeTab {
+  background: var(--surface-active);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  min-width: 0;
+}
+
+.fullPanel {
+  grid-column: 1 / -1;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.panel {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.panelHeader h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.metaTag {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.waterfallList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spanRow {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  width: 100%;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spanRow:hover {
+  background: var(--surface-hover);
+}
+
+.spanRowSelected {
+  background: var(--surface-active);
+  border-color: var(--accent);
+}
+
+.spanNameCol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.spanName {
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spanBarContainer {
+  background: var(--surface-subtle);
+  border-radius: 4px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.spanBar {
+  background: var(--cyan-dark);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.detailsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kvGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kvItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface-subtle);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.kLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.kValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.subHeading {
+  font-size: 0.95rem;
+  margin: 8px 0 0 0;
+}
+
+.codeBlock {
+  background: var(--surface-subtle);
+  padding: 12px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.metricCard {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mValue {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.mLabel {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+
+.mDesc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.slsaCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  background: var(--surface-subtle);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.slsaRow {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.slsaRow code {
+  font-family: var(--font-mono);
+  background: var(--surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  .titleRow,
+  .panelHeader {
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .tabBar {
+    gap: 8px;
+  }
+
+  .tabBtn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: flex-start;
+  }
+
+  .panel,
+  .fullPanel {
+    padding: 14px;
+  }
+
+  .spanRow,
+  .kvGrid,
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .spanName {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

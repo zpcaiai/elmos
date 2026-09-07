@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Healthcare Rcm Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-intake-ingestion-connector-sync-and-idempotency to implement its fail-closed ELMOS Product B52 contract."

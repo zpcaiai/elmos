@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_id",
+    "from_version",
+    "to_version",
+    "owner",
+    "steps",
+    "dry_run_passed",
+    "checkpointed",
+    "reconciliation_passed",
+    "rollback_tested",
+    "mixed_version_tested"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "config_schema_from": {
+      "type": "string",
+      "minLength": 1
+    },
+    "config_schema_to": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_schema_from": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_schema_to": {
+      "type": "string",
+      "minLength": 1
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "step_id",
+          "idempotent",
+          "reversible_or_compensated"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotent": {
+            "const": true
+          },
+          "reversible_or_compensated": {
+            "const": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "dry_run_passed": {
+      "type": "boolean"
+    },
+    "checkpointed": {
+      "type": "boolean"
+    },
+    "reconciliation_passed": {
+      "type": "boolean"
+    },
+    "rollback_tested": {
+      "type": "boolean"
+    },
+    "mixed_version_tested": {
+      "type": "boolean"
+    },
+    "secret_values_embedded": {
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/extension-migration.schema.json"
+}

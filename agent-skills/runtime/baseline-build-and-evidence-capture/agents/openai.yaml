@@ -1,0 +1,4 @@
+interface:
+  display_name: "Baseline Build And Evidence Capture"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $baseline-build-and-evidence-capture to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,11 @@
+{
+  "routeId": "angular--to--vue3",
+  "source": "angular",
+  "target": "vue3",
+  "sourceProfileVersion": "22.0.8",
+  "targetProfileVersion": "3.5.40",
+  "supportState": "PROJECT_GENERATION_READY",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

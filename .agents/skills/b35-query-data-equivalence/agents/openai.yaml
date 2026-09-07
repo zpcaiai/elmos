@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Query Data Equivalence"
+  short_description: "Run evidence-bound Batch 35 query data equivalence work"
+  default_prompt: "Use $b35-query-data-equivalence to implement and verify this capability with fail-closed evidence."

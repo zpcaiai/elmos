@@ -1,0 +1,4 @@
+interface:
+  display_name: "Environment Parity Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2613-environment-parity-validator to run FRT-2613 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ShadowEvalPlan",
+  "type": "object",
+  "required": [
+    "candidateRevision",
+    "trafficPercent",
+    "sideEffects",
+    "qualityGates",
+    "operationalGates"
+  ],
+  "properties": {
+    "candidateRevision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trafficPercent": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 100
+    },
+    "sideEffects": {
+      "const": "disabled"
+    },
+    "privacyFilter": {
+      "type": "string",
+      "minLength": 1
+    },
+    "qualityGates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "operationalGates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 1
+    },
+    "rollback": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

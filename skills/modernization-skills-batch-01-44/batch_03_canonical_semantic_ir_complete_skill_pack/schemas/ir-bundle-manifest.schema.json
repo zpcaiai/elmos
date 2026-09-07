@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:ir-bundle-manifest",
+  "title": "IRBundleManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bundle_id",
+    "frontend_id",
+    "frontend_version",
+    "node_count",
+    "record_id",
+    "schema_version",
+    "scope",
+    "semantic_level",
+    "source_snapshot_digest",
+    "unknown_node_count"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bundle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_snapshot_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "frontend_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "frontend_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_count": {
+      "type": "integer"
+    },
+    "unknown_node_count": {
+      "type": "integer"
+    },
+    "semantic_level": {
+      "enum": [
+        "syntax",
+        "resolved",
+        "typed",
+        "effectful",
+        "canonical"
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 483: recruiting funnel and candidate operations"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $recruiting-funnel-and-candidate-operations to evaluate this capability with evidence."

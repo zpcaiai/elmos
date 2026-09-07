@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Concurrency Transaction Correctness"
+  short_description: "Help with B31 Concurrency Transaction Correctness tasks"
+  default_prompt: "Use $b31-concurrency-transaction-correctness to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

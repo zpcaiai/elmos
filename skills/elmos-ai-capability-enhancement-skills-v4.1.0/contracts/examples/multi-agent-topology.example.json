@@ -1,0 +1,31 @@
+{
+  "topologyId": "review-team",
+  "agents": [
+    {
+      "id": "supervisor",
+      "role": "router"
+    },
+    {
+      "id": "analyst",
+      "role": "review"
+    }
+  ],
+  "delegations": [
+    {
+      "from": "supervisor",
+      "to": "analyst",
+      "scope": [
+        "read"
+      ]
+    }
+  ],
+  "stateOwners": {
+    "decision": "supervisor"
+  },
+  "termination": {
+    "maxRounds": 5
+  },
+  "budgets": {
+    "tokens": 20000
+  }
+}

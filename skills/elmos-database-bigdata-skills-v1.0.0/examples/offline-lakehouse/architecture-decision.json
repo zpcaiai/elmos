@@ -1,0 +1,34 @@
+{
+  "selector_version": "1.0.0",
+  "project_id": "demo-offline-lakehouse",
+  "primary_pattern": "batch-warehouse",
+  "secondary_patterns": [
+    "lakehouse",
+    "federated-query"
+  ],
+  "overlays": [
+    "data-fabric-overlay"
+  ],
+  "rationale": [
+    "Historical/bounded processing dominates the declared freshness requirement.",
+    "Historical volume/retention/variety favors an open, governed lakehouse layer.",
+    "Multiple heterogeneous sources or an explicit federation requirement exists.",
+    "Common metadata, policy, lineage, quality and discovery are needed across sources."
+  ],
+  "risks": [],
+  "validation": [
+    "incremental/full equivalence",
+    "batch SLA",
+    "atomic commits",
+    "table-format engine compatibility",
+    "file layout and maintenance",
+    "connector pushdown",
+    "source load and network cost"
+  ],
+  "reconsider_when": [
+    "freshness or throughput changes by more than 2x",
+    "a source becomes non-replayable or retention is reduced",
+    "team operations maturity or deployment policy changes",
+    "representative benchmark contradicts the heuristic decision"
+  ]
+}

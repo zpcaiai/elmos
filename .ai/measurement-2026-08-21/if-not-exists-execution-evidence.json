@@ -1,0 +1,57 @@
+{
+  "kind": "elmos.sql-dialect-if-not-exists-execution-evidence",
+  "schema_version": "1.0.0",
+  "profile": "certified-ddl-v1",
+  "servers": {
+    "postgres": "PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+    "mysql": "8.0.46-0ubuntu0.24.04.3"
+  },
+  "supported_cells": [
+    {
+      "target": "postgres",
+      "statement_kind": "TABLE",
+      "engine_status": "PASSED",
+      "emitted": "CREATE TABLE IF NOT EXISTS ev_orders (\n    id BIGINT NOT NULL,\n    total INTEGER NOT NULL,\n    PRIMARY KEY (id)\n)",
+      "executed_first": "PASSED",
+      "executed_again_is_noop": "PASSED"
+    },
+    {
+      "target": "mysql",
+      "statement_kind": "TABLE",
+      "engine_status": "PASSED",
+      "emitted": "CREATE TABLE IF NOT EXISTS ev_orders (\n    id BIGINT NOT NULL,\n    total INT NOT NULL,\n    PRIMARY KEY (id)\n)",
+      "executed_first": "PASSED",
+      "executed_again_is_noop": "PASSED"
+    },
+    {
+      "target": "postgres",
+      "statement_kind": "INDEX",
+      "engine_status": "PASSED",
+      "emitted": "CREATE INDEX IF NOT EXISTS ev_idx_total ON ev_orders (total)",
+      "executed_first": "PASSED",
+      "executed_again_is_noop": "PASSED"
+    }
+  ],
+  "refused_cells_verified_against_the_server": [
+    {
+      "target": "mysql",
+      "statement_kind": "INDEX",
+      "server_accepts_the_spelling": false,
+      "server_error": "ProgrammingError: (1064, \"You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'IF NOT EXISTS ev_",
+      "engine_status": "BLOCKED",
+      "engine_reason_code": "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET",
+      "verdict": "CONSISTENT: server rejects it and the engine fails closed"
+    }
+  ],
+  "targets_without_a_local_server": {
+    "oracle": "no freely licensed root-less local server; refused by the support table on the separate ground that Dialect carries no version and IF NOT EXISTS only exists from Oracle 23ai",
+    "tsql": "no freely licensed root-less local server; refused because SQL Server has no CREATE ... IF NOT EXISTS in any shipping version"
+  },
+  "execution_status": "LOCAL_EXECUTED",
+  "independent_verification_status": "NOT_RUN",
+  "certification_status": "NOT_CERTIFIED",
+  "limitations": [
+    "Postgres and MySQL evidence is real execution on real servers of those exact versions. Oracle and SQL Server were NOT executed -- they are refused by the support table, so no emitted statement exists to run.",
+    "This proves the modifier renders and re-runs as a no-op. It does not certify the route; certification needs the independent verifier and external evidence."
+  ]
+}

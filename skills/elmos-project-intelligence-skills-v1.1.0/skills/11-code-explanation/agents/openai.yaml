@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 证据化代码与模块讲解
+  short_description: 生成行、代码块、函数、类、模块、服务或项目层级的多受众讲解。用于理解代码、风险、输入输出、副作用和改造注意事项。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-code-explanation 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

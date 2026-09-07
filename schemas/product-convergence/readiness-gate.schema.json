@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "status",
+    "criteria",
+    "design_partner_evidence",
+    "independent_review_evidence",
+    "zero_tolerance_findings"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "not-run",
+        "passed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "criteria": {
+      "type": "object"
+    },
+    "design_partner_evidence": {
+      "type": "array"
+    },
+    "independent_review_evidence": {
+      "type": "array"
+    },
+    "zero_tolerance_findings": {
+      "type": "array"
+    },
+    "artifact_sha256": {
+      "type": "string"
+    },
+    "environment_sha256": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

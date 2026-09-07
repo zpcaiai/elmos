@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant API as Control API
+    participant DB as PostgreSQL
+    participant OB as Outbox
+    participant ST as Starter/Scheduler
+    participant TP as Temporal
+
+    U->>API: POST /tasks + Idempotency-Key
+    API->>DB: verify account/tenant membership
+    API->>DB: INSERT task (idempotent)
+    API->>DB: ensure slots 1..3
+    API->>DB: claim free slot FOR UPDATE SKIP LOCKED
+    alt slot and all quota gates pass
+        DB-->>API: slot_no + lease_generation
+        API->>DB: state=ADMITTED + outbox event
+        API-->>U: 202 ADMITTED
+        OB-->>ST: TaskAdmitted
+        ST->>TP: Update-with-Start / idempotent workflow ID
+    else no slot or lower-level gate blocks
+        API->>DB: state=WAITING_FOR_SLOT + reason
+        API-->>U: 202 WAITING_FOR_SLOT + queue position
+    end

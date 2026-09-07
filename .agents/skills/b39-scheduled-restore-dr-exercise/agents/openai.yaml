@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Scheduled Restore Dr Exercise"
+  short_description: "Run evidence-bound Batch 39 scheduled restore dr exercise work"
+  default_prompt: "Use $b39-scheduled-restore-dr-exercise to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Failure Attribution Learning"
+  short_description: "Run failure-attribution-learning with bounded commercial controls"
+  default_prompt: "Use $failure-attribution-learning through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Scm Provider Credential Proxy Tls Rate Limit And Resilience"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $scm-provider-credential-proxy-tls-rate-limit-and-resilience to implement its fail-closed ELMOS Product B35 contract."

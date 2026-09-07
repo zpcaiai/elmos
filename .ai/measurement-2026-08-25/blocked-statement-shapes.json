@@ -1,0 +1,224 @@
+{
+  "kind": "elmos.sql-dialect.blocked-statement-shapes",
+  "blocked_total": 1519,
+  "admitted_total": 941,
+  "shapes": [
+    {
+      "statement": "CREATE TABLE",
+      "blocked": 649,
+      "admitted": 211,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_CHECK": 416,
+        "CERTIFIED_DDL_QUALIFIED_TABLE_NAME": 70,
+        "CERTIFIED_DDL_QUOTED_IDENTIFIER": 69,
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": 57,
+        "CERTIFIED_DDL_UNSUPPORTED_DEFAULT": 24,
+        "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT": 9,
+        "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 1,
+        "CERTIFIED_DDL_MULTI_LEVEL_CHECK": 1,
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 1,
+        "CERTIFIED_DDL_UNSUPPORTED_TABLE_ITEM": 1
+      },
+      "corpora": {
+        "elmos-persistence": 415,
+        "ext-postgres": 109,
+        "ext-mysql": 83,
+        "elmos-build-cache": 24,
+        "elmos-p0": 18
+      },
+      "example": "/* ELMOS Batch 10: commercial fulfillment, delivery operations and reusable asset lifecycle. */ /* This is not a CRM, payment processor, tax engine or accountin"
+    },
+    {
+      "statement": "CREATE TRIGGER",
+      "blocked": 299,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 299
+      },
+      "corpora": {
+        "elmos-persistence": 254,
+        "ext-postgres": 32,
+        "elmos-build-cache": 7,
+        "elmos-p0": 6
+      },
+      "example": "CREATE TRIGGER commercial_events_append_only BEFORE UPDATE OR DELETE ON commercial_events FOR EACH ROW EXECUTE FUNCTION ELMOS_FORBID_APPEND_ONLY_MUTATION()"
+    },
+    {
+      "statement": "ALTER",
+      "blocked": 132,
+      "admitted": 337,
+      "reason_codes": {
+        "CERTIFIED_DDL_QUALIFIED_TABLE_NAME": 52,
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE": 35,
+        "CERTIFIED_DDL_UNSUPPORTED_CHECK": 23,
+        "CERTIFIED_ALTER_UNSUPPORTED_ACTION": 20,
+        "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 1,
+        "CERTIFIED_DDL_MULTI_LEVEL_CHECK": 1
+      },
+      "corpora": {
+        "elmos-persistence": 53,
+        "ext-postgres": 53,
+        "elmos-build-cache": 21,
+        "elmos-p0": 5
+      },
+      "example": "ALTER TABLE service_level_objectives ADD COLUMN IF NOT EXISTS infrastructure_estate_ref VARCHAR(255), ADD COLUMN IF NOT EXISTS observability_profile_ref VARCHAR"
+    },
+    {
+      "statement": "CREATE FUNCTION",
+      "blocked": 117,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 117
+      },
+      "corpora": {
+        "elmos-persistence": 87,
+        "elmos-p0": 22,
+        "ext-postgres": 8
+      },
+      "example": "CREATE OR REPLACE FUNCTION elmos_enqueue_usage_alerts(p_subscription_id VARCHAR, p_quota_allocation_id VARCHAR, p_actor_id VARCHAR, p_meter_id VARCHAR, p_before"
+    },
+    {
+      "statement": "COMMENT",
+      "blocked": 91,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 91
+      },
+      "corpora": {
+        "elmos-persistence": 62,
+        "elmos-p0": 28,
+        "ext-postgres": 1
+      },
+      "example": "COMMENT ON COLUMN audit_events.metadata IS 'Allow-listed technical dimensions only; input values, tokens, request bodies, query strings, raw IPs, and raw user a"
+    },
+    {
+      "statement": "DROP TABLE",
+      "blocked": 80,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 80
+      },
+      "corpora": {
+        "ext-mysql": 66,
+        "ext-postgres": 14
+      },
+      "example": "/* - */ /* - drop tables */ /* - */ DROP TABLE IF EXISTS customer_customer_demo"
+    },
+    {
+      "statement": "CREATE INDEX",
+      "blocked": 59,
+      "admitted": 393,
+      "reason_codes": {
+        "CERTIFIED_DDL_QUALIFIED_TABLE_NAME": 38,
+        "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE": 18,
+        "CERTIFIED_DDL_QUOTED_IDENTIFIER": 3
+      },
+      "corpora": {
+        "ext-postgres": 41,
+        "elmos-persistence": 15,
+        "elmos-p0": 3
+      },
+      "example": "CREATE UNIQUE INDEX accounts_primary_email_uq ON accounts(LOWER(primary_email)) WHERE primary_email IS NOT NULL AND status <> 'PURGED'"
+    },
+    {
+      "statement": "CREATE SEQUENCE",
+      "blocked": 37,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 37
+      },
+      "corpora": {
+        "ext-postgres": 37
+      },
+      "example": "/* Name: customer_customer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres */ CREATE SEQUENCE public.customer_customer_id_seq START WITH 1 INCREMENT BY "
+    },
+    {
+      "statement": "CREATE VIEW",
+      "blocked": 22,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 22
+      },
+      "corpora": {
+        "ext-postgres": 14,
+        "ext-mysql": 8
+      },
+      "example": "/* Name: actor_info; Type: VIEW; Schema: public; Owner: postgres */ CREATE VIEW public.actor_info AS SELECT a.actor_id, a.first_name, a.last_name, JSONB_OBJECT_"
+    },
+    {
+      "statement": "CREATE SCHEMA",
+      "blocked": 19,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 19
+      },
+      "corpora": {
+        "elmos-persistence": 18,
+        "ext-mysql": 1
+      },
+      "example": "/* ELMOS authoritative company-series Batch 15: Company Operating and Governance System. */ /* The dedicated schema preserves canonical logical names without co"
+    },
+    {
+      "statement": "DROP TRIGGER",
+      "blocked": 7,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 7
+      },
+      "corpora": {
+        "elmos-build-cache": 7
+      },
+      "example": "DROP TRIGGER IF EXISTS context_ledger_events_no_update ON context_ledger_events"
+    },
+    {
+      "statement": "DROP DATABASE",
+      "blocked": 2,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 2
+      },
+      "corpora": {
+        "ext-postgres": 1,
+        "ext-mysql": 1
+      },
+      "example": "/* ******************************************************************************\n   Chinook Database - Version 1.4.5\n   Script: Chinook_PostgreSql.sql\n   Descr"
+    },
+    {
+      "statement": "CREATE DATABASE",
+      "blocked": 2,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 2
+      },
+      "corpora": {
+        "ext-postgres": 1,
+        "ext-mysql": 1
+      },
+      "example": "/* ******************************************************************************\n   Create database\n***********************************************************"
+    },
+    {
+      "statement": "CREATE TYPE",
+      "blocked": 2,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 2
+      },
+      "corpora": {
+        "ext-postgres": 2
+      },
+      "example": "/* Name: mpaa_rating; Type: TYPE; Schema: public; Owner: postgres */ CREATE TYPE public.mpaa_rating AS ENUM ('G', 'PG', 'PG-13', 'R', 'NC-17')"
+    },
+    {
+      "statement": "DROP SCHEMA",
+      "blocked": 1,
+      "admitted": 0,
+      "reason_codes": {
+        "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": 1
+      },
+      "corpora": {
+        "ext-mysql": 1
+      },
+      "example": "DROP SCHEMA IF EXISTS sakila"
+    }
+  ]
+}

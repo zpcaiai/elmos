@@ -1,0 +1,12 @@
+{
+  "decision": "FAIL",
+  "profile_id": "elmos-slightly-strict-v1",
+  "metrics": {
+    "overall_pass_rate": 0.99,
+    "critical_pass_rate": 0.98
+  },
+  "blockers": [
+    "any_failed_critical_case"
+  ],
+  "warnings": []
+}

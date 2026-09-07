@@ -1,0 +1,12 @@
+{
+  "protocolVersion": "2026-07-28",
+  "coreMode": "stateless",
+  "transport": "streamable-http",
+  "extensions": {
+    "tasks": "required",
+    "skills": "required",
+    "apps": "optional"
+  },
+  "authorization": "oauth-2.1",
+  "deprecations": []
+}

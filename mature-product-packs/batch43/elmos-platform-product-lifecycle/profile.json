@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-product-lifecycle",
+  "batch": 43,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "versionedSurfaceCoverage": 1.0,
+    "compatibilityMatrixPassRate": 1.0,
+    "upgradePassRate": 1.0,
+    "rollbackPassRate": 1.0,
+    "mixedVersionPassRate": 1.0,
+    "backportValidationRate": 1.0,
+    "deprecationOwnerCoverage": 1.0,
+    "migrationGuideAccuracyRate": 1.0,
+    "evidenceTraceCoverage": 0.98
+  },
+  "zeroTolerance": [
+    "unannouncedBreakingChanges",
+    "unsupportedVersionPromotions",
+    "irreversibleUpgradeWithoutApproval",
+    "runnerProtocolSafetyRegressions",
+    "schemaDataLoss",
+    "expiredFeatureFlags",
+    "unpatchedSupportedCriticalVulnerabilities",
+    "testIntegrityViolations"
+  ],
+  "metadata": {},
+  "packKey": "elmos-platform-product-lifecycle"
+}

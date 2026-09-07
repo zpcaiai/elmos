@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/adapter-conformance.schema.json",
+  "title": "Full Product Adapter Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "failure_mode",
+    "release_rules",
+    "common_requirements",
+    "adapters"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
+    "contract_id": {
+      "type": "string"
+    },
+    "failure_mode": {
+      "const": "fail-closed"
+    },
+    "release_rules": {
+      "type": "object"
+    },
+    "common_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "adapters": {
+      "type": "array",
+      "minItems": 25,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "domain",
+          "status",
+          "phases",
+          "required_oracle",
+          "conformance_profiles",
+          "release_blocking"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^external-[a-z0-9-]+$"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "implementation-required",
+              "conformant",
+              "blocked",
+              "retired"
+            ]
+          },
+          "phases": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "required_oracle": {
+            "type": "string"
+          },
+          "conformance_profiles": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "release_blocking": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

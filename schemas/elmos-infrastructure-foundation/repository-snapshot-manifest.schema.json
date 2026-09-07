@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repository-snapshot-manifest.schema.json",
+  "title": "Repository Snapshot Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "tenant_id",
+    "repository",
+    "commit_sha",
+    "tree_digest",
+    "created_at",
+    "source_residency",
+    "statistics",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "tree_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_residency": {
+      "enum": [
+        "SOURCE_LOCAL_ONLY",
+        "ENCRYPTED_SNAPSHOT_UPLOAD",
+        "APPROVED_EXPORT"
+      ]
+    },
+    "submodules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "commit_sha"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "lfs_objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "oid",
+          "size_bytes"
+        ],
+        "properties": {
+          "oid": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file_count",
+        "total_bytes"
+      ],
+      "properties": {
+        "file_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "digest",
+          "mode"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+          },
+          "digest": {
+            "$ref": "digest.schema.json"
+          },
+          "mode": {
+            "type": "string",
+            "pattern": "^[0-7]{6}$"
+          },
+          "symlink_target": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "manifest_digest": {
+      "$ref": "digest.schema.json"
+    }
+  }
+}

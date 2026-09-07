@@ -1,0 +1,4 @@
+interface:
+  display_name: "End-to-End Journey Test Coordinator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2605-end-to-end-journey-test-coordinator to run FRT-2605 through the governed FRT runtime with exact scope and fail-closed evidence."

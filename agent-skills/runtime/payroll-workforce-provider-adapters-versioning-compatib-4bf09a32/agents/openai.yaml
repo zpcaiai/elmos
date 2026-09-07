@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-provider-adapters-versioning-compatib-4bf09a32 to implement its fail-closed ELMOS Product B43 contract."

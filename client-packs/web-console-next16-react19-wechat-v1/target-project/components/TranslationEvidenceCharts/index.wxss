@@ -1,0 +1,16 @@
+.cc-h1 { font-size: 48rpx; font-weight: bold; display: block; }
+.cc-h2 { font-size: 40rpx; font-weight: bold; display: block; }
+.cc-h3 { font-size: 36rpx; font-weight: bold; display: block; }
+.cc-h4 { font-size: 32rpx; font-weight: bold; display: block; }
+.cc-h5 { font-size: 30rpx; font-weight: bold; display: block; }
+.cc-h6 { font-size: 28rpx; font-weight: bold; display: block; }
+.cc-strong { font-weight: bold; }
+.cc-em { font-style: italic; }
+.cc-p { display: block; margin: 8rpx 0; }
+.cc-ul { display: block; }
+.cc-ol { display: block; }
+.cc-li { display: block; }
+.cc-small { font-size: 24rpx; }
+.cc-code { font-family: monospace; }
+.cc-dt { font-weight: bold; display: block; }
+.cc-dd { display: block; margin-left: 24rpx; }

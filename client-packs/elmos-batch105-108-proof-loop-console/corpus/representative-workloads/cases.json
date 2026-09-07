@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-batch105-108-proof-loop-console",
+  "corpus_role": "representative-workload",
+  "status": "NOT_RUN",
+  "independent_from_development": true,
+  "owner": "customer-or-authorized-representative-verifier",
+  "cases": [
+    {"id":"REP-PROOF-001", "journey":"authenticated-create-to-blocked-evidence-result", "status":"NOT_RUN"},
+    {"id":"REP-PROOF-002", "journey":"cancel-running-plan", "status":"NOT_RUN"},
+    {"id":"REP-PROOF-003", "journey":"keyboard-contract-selection", "status":"NOT_RUN"}
+  ]
+}

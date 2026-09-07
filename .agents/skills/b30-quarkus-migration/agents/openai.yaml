@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Quarkus Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-quarkus-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

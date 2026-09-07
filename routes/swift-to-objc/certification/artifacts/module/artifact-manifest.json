@@ -1,0 +1,315 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/swift-to-objc/certification/artifacts/module",
+  "corpus": "module",
+  "excluded_files": [
+    "source-runtime/000/source_harness",
+    "source-runtime/001/source_harness",
+    "source-runtime/002/source_harness",
+    "source-runtime/003/source_harness",
+    "source-runtime/004/source_harness",
+    "target-runtime/000/route_harness",
+    "target-runtime/001/route_harness",
+    "target-runtime/002/route_harness",
+    "target-runtime/003/route_harness",
+    "target-runtime/004/route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 49,
+  "files": [
+    {
+      "bytes": 1365,
+      "path": "formal-function-000-input.json",
+      "sha256": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7"
+    },
+    {
+      "bytes": 2418,
+      "path": "formal-function-000-result.json",
+      "sha256": "sha256:d2a902f50d59f1b1070858f8f43c41828d039069bda389fd8f6de1eb95365fc3"
+    },
+    {
+      "bytes": 1291,
+      "path": "formal-function-000.smt2",
+      "sha256": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e"
+    },
+    {
+      "bytes": 1822,
+      "path": "formal-function-001-input.json",
+      "sha256": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39"
+    },
+    {
+      "bytes": 2427,
+      "path": "formal-function-001-result.json",
+      "sha256": "sha256:45561049ffbfd1b03fb8b88c2e4bb68c655b0b4a46298860047a9fa44daf84a9"
+    },
+    {
+      "bytes": 2025,
+      "path": "formal-function-001.smt2",
+      "sha256": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb"
+    },
+    {
+      "bytes": 2221,
+      "path": "formal-function-002-input.json",
+      "sha256": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0"
+    },
+    {
+      "bytes": 2454,
+      "path": "formal-function-002-result.json",
+      "sha256": "sha256:381e993c6c0d1cc8ed05e374c7433a8681b73d750ffe0640a9d86e9144811fcb"
+    },
+    {
+      "bytes": 1907,
+      "path": "formal-function-002.smt2",
+      "sha256": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3"
+    },
+    {
+      "bytes": 2227,
+      "path": "formal-function-003-input.json",
+      "sha256": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244"
+    },
+    {
+      "bytes": 2738,
+      "path": "formal-function-003-result.json",
+      "sha256": "sha256:8789e4ab31a1a56873d15ec0bc9ffbd5f1746bdb3db2c6006375b32bb6777ad8"
+    },
+    {
+      "bytes": 2593,
+      "path": "formal-function-003.smt2",
+      "sha256": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05"
+    },
+    {
+      "bytes": 1381,
+      "path": "formal-function-004-input.json",
+      "sha256": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545"
+    },
+    {
+      "bytes": 2424,
+      "path": "formal-function-004-result.json",
+      "sha256": "sha256:eff2b53debe8a2629deb663f01cb36a28656b318726b922a37430acaffa233f0"
+    },
+    {
+      "bytes": 1807,
+      "path": "formal-function-004.smt2",
+      "sha256": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605"
+    },
+    {
+      "bytes": 1299,
+      "path": "migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 2794,
+      "path": "module-case-manifest.json",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 1265,
+      "path": "module-formal-input.json",
+      "sha256": "sha256:2a5701dbc774a0f51f032e6afacb36f43c06383035b07bd9256ec28cd14f50a1"
+    },
+    {
+      "bytes": 708,
+      "path": "source-module-artifact/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 42830,
+      "path": "source-module-inventory.json",
+      "sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9"
+    },
+    {
+      "bytes": 1881,
+      "path": "source-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 8431,
+      "path": "source-module-semantic-ir.json",
+      "sha256": "sha256:fd4ddddbb720b2740d03d5e9d3efef26a8db654391525a9c0f167e0c59a04533"
+    },
+    {
+      "bytes": 9548,
+      "path": "source-module-validation.json",
+      "sha256": "sha256:c3f24aca8ca8739d95e7f01e1afa306f8bfea536de29d8069f414769494a1140"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/000/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1088,
+      "path": "source-runtime/000/main.swift",
+      "sha256": "sha256:6dd7ff9c30fdc6100d53679e539f0a50090bd09f33f63d03639bbdae4877b100"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/001/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1152,
+      "path": "source-runtime/001/main.swift",
+      "sha256": "sha256:d617856da7a9c95d8393693b600b65376d3f0923c2fe85e12fa8b478d722010f"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/002/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1338,
+      "path": "source-runtime/002/main.swift",
+      "sha256": "sha256:60d99f1d28eefc5e1fbf61742f482a1a114b51403363abf738216be44e0e4ebc"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/003/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1426,
+      "path": "source-runtime/003/main.swift",
+      "sha256": "sha256:cc8a290a6753b3764cd83b6db419fabfdeacbd3f83c9a146a0ce2b17fd3748c8"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/004/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1117,
+      "path": "source-runtime/004/main.swift",
+      "sha256": "sha256:2b54144f6cfefea02d898e66926dd9b1b0814b0be89fe2ce2a5271eacadd2f8d"
+    },
+    {
+      "bytes": 3682,
+      "path": "target-module-inventory.json",
+      "sha256": "sha256:b7ba6c1df6406b88816fadf4b0376578b51b92afd8627f6a744ad13a1fa106ab"
+    },
+    {
+      "bytes": 1881,
+      "path": "target-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 6960,
+      "path": "target-module-semantic-ir.json",
+      "sha256": "sha256:c71e1809f49ed9ca0bcfb0f96d82275d323b5ac160d1551278d63fbb9b598a28"
+    },
+    {
+      "bytes": 8093,
+      "path": "target-module-validation.json",
+      "sha256": "sha256:f27c67c52d8a2beb5eaae922372a1a2e6fa5fe368d7d97a090b20fde23d14d8d"
+    },
+    {
+      "bytes": 1299,
+      "path": "target-runtime/000/migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 1932,
+      "path": "target-runtime/000/route_harness.m",
+      "sha256": "sha256:5402562bcc2c9d58ebb67d4044d0bc587998306657d9425eced76a79c026d6e6"
+    },
+    {
+      "bytes": 1299,
+      "path": "target-runtime/001/migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 1966,
+      "path": "target-runtime/001/route_harness.m",
+      "sha256": "sha256:69639a460de5ad565448324b5f6b3692dd4ca2e0e01c5cd66b73e6a6afa145cc"
+    },
+    {
+      "bytes": 1299,
+      "path": "target-runtime/002/migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 2129,
+      "path": "target-runtime/002/route_harness.m",
+      "sha256": "sha256:da5d5e97f8d15bee1af8ce32417b422159317b08301add1bbe2d34e29323c143"
+    },
+    {
+      "bytes": 1299,
+      "path": "target-runtime/003/migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 2422,
+      "path": "target-runtime/003/route_harness.m",
+      "sha256": "sha256:b31fbbccb1debaa7a3a73deda238027cc42995d4b8bb82f3bdf567ce512bcb75"
+    },
+    {
+      "bytes": 1299,
+      "path": "target-runtime/004/migrated.m",
+      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+    },
+    {
+      "bytes": 1927,
+      "path": "target-runtime/004/route_harness.m",
+      "sha256": "sha256:02cf94157f191c78329c76eaa03ddbcd06476c784d36ff642cadd5d2a88ed0bc"
+    },
+    {
+      "bytes": 195409,
+      "path": "typed-pure-module-equivalence.json",
+      "sha256": "sha256:8cf63508ea1491a675912836fa04fc8545ba05128c4f0f730bee4d11e960bd61"
+    },
+    {
+      "bytes": 10747,
+      "path": "whole-file-module-closure.json",
+      "sha256": "sha256:a90566dd1a62327ae00631c210f1d5090b59250352839c609b8b3d26e0ef4d73"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "swift-to-objc",
+  "schema_version": 1,
+  "total_bytes": 353160
+}

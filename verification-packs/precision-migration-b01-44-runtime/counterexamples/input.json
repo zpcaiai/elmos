@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "mutation": "replace a real file URI with file:///definitely/missing/evidence.json while retaining a syntactically valid SHA-256",
+  "legacy_observation": "VERIFIED",
+  "required_observation": "FAILED with EVIDENCE_CONTENT_UNVERIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mutation Test Coordinator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2607-mutation-test-coordinator to run FRT-2607 through the governed FRT runtime with exact scope and fail-closed evidence."

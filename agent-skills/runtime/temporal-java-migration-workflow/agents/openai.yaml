@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 31 Skill 009"
+  short_description: "Run ELMOS Product Batch 31 governance safely"
+  default_prompt: "Use $temporal-java-migration-workflow to implement its evidence-bound ELMOS Product Batch 31 contract."

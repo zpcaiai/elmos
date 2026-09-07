@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Execution Step Compiler"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-execution-step-compiler to execute this ELMOS product-closure Skill with fail-closed evidence."

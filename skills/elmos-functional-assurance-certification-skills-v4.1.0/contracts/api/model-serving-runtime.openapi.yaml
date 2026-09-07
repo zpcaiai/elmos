@@ -1,0 +1,73 @@
+openapi: 3.2.0
+info:
+  title: Model Serving Runtime API
+  version: 4.0.0
+servers:
+- url: https://RELEASE_TIME_CONTROL_PLANE
+paths:
+  /v1/models/deployments:
+    post:
+      operationId: v1_models_deployments_start
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunRequest'
+      responses:
+        '202':
+          description: Accepted
+        '403':
+          description: Denied
+        '409':
+          description: Conflict
+        '422':
+          description: Invalid contract
+    get:
+      operationId: v1_models_deployments_list
+      responses:
+        '200':
+          description: Typed, tenant-scoped results
+  /v1/models/canaries:
+    post:
+      operationId: v1_models_canaries_start
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunRequest'
+      responses:
+        '202':
+          description: Accepted
+        '403':
+          description: Denied
+        '409':
+          description: Conflict
+        '422':
+          description: Invalid contract
+    get:
+      operationId: v1_models_canaries_list
+      responses:
+        '200':
+          description: Typed, tenant-scoped results
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://RELEASE_TIME_IDP/.well-known/openid-configuration
+  schemas:
+    RunRequest:
+      type: object
+      required:
+      - goal_id
+      - revision_set_id
+      properties:
+        goal_id:
+          type: string
+        revision_set_id:
+          type: string
+        idempotency_key:
+          type: string
+security:
+- oidc: []

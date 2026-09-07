@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "The output fails TEST_INVENTORY because 800 tests became 240 even though the remaining tests can pass.", "passed": true, "evidence": "TEST_INVENTORY is FAILED with baselineDiscovered 800, migratedDiscovered 240, and 560 disappeared identities."},
+    {"text": "The output fails MIGRATED_LINUX and states that a Windows pass cannot substitute for required Linux evidence.", "passed": true, "evidence": "MIGRATED_LINUX is FAILED and its reason explicitly rejects Windows substitution."},
+    {"text": "The output maps .NET evidence into the existing same-tenant ELMOS portfolio without creating duplicate workflow, billing, audit, SCM or delivery authority.", "passed": true, "evidence": "The portfolio uses one organization, lists both engines, reuses all shared authorities, and sets duplicateControlPlaneObjectsCreated to false."}
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "claims": [{"claim": "The example content hash is production evidence", "type": "quality", "verified": false, "evidence": "user_notes.md identifies it as a schema-review fixture and not a signature or production attestation."}],
+  "user_notes_summary": {"uncertainties": [], "needs_review": ["Replace fixture hash with content-derived hash in a real run", "Resolve test and Linux blockers before promotion"], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "Assertions cover the two critical fail-closed gates and the no-duplicate-control-plane boundary."}
+}

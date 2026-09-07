@@ -1,0 +1,52 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetSelectionPolicy
+spec:
+  order:
+  - semantic-fit
+  - verification-feasibility
+  - security-and-residency
+  - durability
+  - operability
+  - cost
+  - ecosystem-fit
+  - reversibility
+  rules:
+  - when: requires visual business editing
+    prefer:
+    - dify
+    - langflow
+    - coze-studio
+    - n8n-ai
+    but: retain AI-SIR and production migration path
+  - when: requires durable state, pause/resume or HITL
+    prefer:
+    - langgraph-python
+    - langgraph-typescript
+    - microsoft-agent-framework-dotnet
+    - google-adk-python
+    block:
+    - stateless-only target without external durable runtime
+  - when: Java/Spring enterprise estate
+    prefer:
+    - spring-ai-java
+    - langchain4j
+    decision: explicit capability and support matrix
+  - when: repository coding harness
+    prefer:
+    - pi
+    - deepseek-harness
+    - openharness
+    - codex
+    - claude-code
+    - opencode
+    require:
+    - sandbox
+    - authority
+    - git lineage
+    - independent verification
+  - when: critical unsupported feature
+    decision: BLOCKED unless approved preservation/emulation and accepted assurance
+  forbidden:
+  - framework popularity as sole reason
+  - silent semantic loss
+  - unversioned adapter release claim

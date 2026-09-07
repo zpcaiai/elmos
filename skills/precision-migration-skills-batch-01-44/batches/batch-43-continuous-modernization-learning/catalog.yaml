@@ -1,0 +1,25 @@
+batch: 43
+slug: continuous-modernization-learning
+title: "持续现代化与自演进"
+phase: "L 证据、上线和产品化"
+skills:
+  - name: scheduled-repository-analysis
+    description: "按计划重新分析仓库、依赖、版本、架构、测试和运行风险。"
+  - name: technical-debt-drift-detection
+    description: "检测新技术债、已修复问题回归和跨仓库治理漂移。"
+  - name: framework-obsolescence-monitor
+    description: "监控框架生命周期、废弃 API、运行时支持和迁移窗口。"
+  - name: security-modernization-scan
+    description: "持续识别漏洞、危险 API、依赖、配置、权限和安全现代化需求。"
+  - name: rule-performance-monitor
+    description: "跟踪规则命中、构建、验证、误报、漏报、修复轮数和成本。"
+  - name: counterexample-knowledge-store
+    description: "存储方向、源码模式、错误目标、最小反例、根因、修复和版本。"
+  - name: successful-repair-rule-induction
+    description: "从重复成功修复中归纳新规则、前置条件和测试。"
+  - name: transformation-quality-learning
+    description: "用真实验收结果校准模型、路由、估计、规则优先级和风险评分。"
+  - name: golden-repository-regression
+    description: "在代表性黄金仓库矩阵上持续执行转换、构建、差分和证据回归。"
+  - name: direction-pack-continuous-improvement
+    description: "根据版本、失败、性能和客户私有知识迭代方向包。"

@@ -1,0 +1,73 @@
+{
+  "contract": {
+    "id": "B107-S15",
+    "batch": 107,
+    "name": "runtime-service-validation-evidence-assembler",
+    "dependencies": [
+      "B107-S03",
+      "B107-S07",
+      "B107-S08",
+      "B107-S13",
+      "B107-S14"
+    ],
+    "inputs": [
+      "all Batch107 evidence",
+      "run/source/image lineage"
+    ],
+    "outputs": [
+      "LiveValidationBundle",
+      "evidence index",
+      "freshness status"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/live/LiveValidationAssembler.java",
+        "schemas/live-validation-bundle.schema.json"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/evidence:assemble",
+        "event live-evidence.assembled"
+      ],
+      "data": [
+        "live_validation_bundle",
+        "evidence_link",
+        "evidence_freshness"
+      ]
+    },
+    "workflow": [
+      "\u6821\u9a8c\u6240\u6709\u8bc1\u636e\u7ed1\u5b9a\u540c\u4e00Run/Commit/Image",
+      "\u9a8c\u8bc1\u54c8\u5e0c\u3001\u7b7e\u540d\u548c\u65f6\u95f4\u7a97\u53e3",
+      "\u5efa\u7acb\u8bc1\u636e\u7d22\u5f15\u4e0e\u4f9d\u8d56\u5173\u7cfb",
+      "\u5bf9\u7f3a\u5931/\u5931\u8d25/UNKNOWN\u751f\u6210\u963b\u65ad\u9879",
+      "\u538b\u7f29\u5927\u5de5\u4ef6\u5e76\u4fdd\u7559\u5185\u5bb9\u5bfb\u5740",
+      "\u7b7e\u540dBundle\u5e76\u5199\u5165\u4e0d\u53ef\u53d8\u5b58\u50a8"
+    ],
+    "tests": [
+      "\u6df7\u5165\u5176\u4ed6Run\u8bc1\u636e\u88ab\u62d2\u7edd",
+      "\u622a\u56fe\u7be1\u6539\u88ab\u62d2\u7edd",
+      "\u8fc7\u671f\u8bc1\u636e\u6807STALE",
+      "\u7f3aOpenAPI\u65f6\u4e0d\u4f2a\u9020\u517c\u5bb9PASS",
+      "\u5927\u65e5\u5fd7\u7d22\u5f15\u53ef\u8bfb\u53d6"
+    ],
+    "evidence": [
+      "live-validation-bundle.json",
+      "evidence-index.json",
+      "integrity-report.json",
+      "bundle-signature.json"
+    ],
+    "definition_of_done": [
+      "\u8840\u7f18\u4e00\u81f4",
+      "\u5b8c\u6574\u6027\u901a\u8fc7",
+      "\u7f3a\u5931\u663e\u5f0f",
+      "\u5185\u5bb9\u5bfb\u5740",
+      "\u53ef\u4f9b\u72ec\u7acbGate\u9a8c\u8bc1"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:4ff1acf9fcabcf522f05a07433b489d1a48d6683996f35c83c3b17e3e116ad59",
+  "compiledVersion": 1
+}

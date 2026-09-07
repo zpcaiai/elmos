@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Runner Protocol Compatibility"
+  short_description: "Run evidence-bound Batch 43 runner protocol compatibility work"
+  default_prompt: "Use $b43-runner-protocol-compatibility to implement and verify this capability with fail-closed evidence."

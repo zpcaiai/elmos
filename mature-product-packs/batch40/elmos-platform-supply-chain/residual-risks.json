@@ -1,0 +1,26 @@
+{
+  "packKey": "elmos-platform-supply-chain",
+  "batch": 40,
+  "status": "OPEN",
+  "owner": "elmos-platform-maintainers",
+  "risks": [
+    {
+      "id": "RISK-B40-SIGN-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "Release artifacts are not signed and no build provenance is attested, so tampering would not be detected."
+    },
+    {
+      "id": "RISK-B40-SBOM-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "No SBOM exists for the Java or pnpm dependency graphs, so vulnerability applicability cannot be assessed."
+    },
+    {
+      "id": "RISK-B40-INDEPENDENT-001",
+      "severity": "critical",
+      "status": "OPEN",
+      "statement": "No independent penetration test or code audit has been commissioned."
+    }
+  ]
+}

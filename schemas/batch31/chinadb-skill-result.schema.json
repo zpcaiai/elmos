@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-skill-result.schema.json",
+  "title": "ELMOS bounded ChinaDB Skill execution result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "package",
+    "runtimeVersion",
+    "skillId",
+    "alias",
+    "handlerId",
+    "scope",
+    "state",
+    "localCodeStatus",
+    "requestDigest",
+    "artifactDigest",
+    "artifacts",
+    "checks",
+    "blockers",
+    "effects",
+    "verification",
+    "certification",
+    "resultDigest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "package": { "const": "chinadb-commercial-migration-skills" },
+    "runtimeVersion": { "const": "1.0.0" },
+    "skillId": { "$ref": "#/$defs/skillId" },
+    "alias": { "type": "string", "pattern": "^chinadb-[0-9]{2}-[a-z0-9-]+$" },
+    "handlerId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "scope": { "$ref": "#/$defs/scope" },
+    "state": {
+      "enum": [
+        "LOCAL_COMPLETED",
+        "LOCAL_FAILED",
+        "BLOCKED_EXTERNAL",
+        "READY_FOR_HUMAN_DECISION",
+        "READY_FOR_EXTERNAL_GATE"
+      ]
+    },
+    "localCodeStatus": { "const": "CODE_IMPLEMENTED" },
+    "requestDigest": { "$ref": "#/$defs/digest" },
+    "artifactDigest": { "$ref": "#/$defs/digest" },
+    "artifacts": { "type": "object" },
+    "checks": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "state"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "state": { "type": "string", "minLength": 1, "maxLength": 64 }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "required": ["code", "severity", "message"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$" },
+          "severity": { "enum": ["INFO", "WARNING", "ERROR", "CRITICAL"] },
+          "message": { "type": "string", "minLength": 1, "maxLength": 1024 },
+          "statementIndex": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declaredExternalEffects", "externalEffectsExecuted"],
+      "properties": {
+        "declaredExternalEffects": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        },
+        "externalEffectsExecuted": { "const": [] }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["localHandler", "externalExecution", "independentVerification"],
+      "properties": {
+        "localHandler": { "enum": ["PASSED", "FAILED"] },
+        "externalExecution": { "const": "NOT_RUN" },
+        "independentVerification": { "const": "NOT_RUN" }
+      }
+    },
+    "certification": { "const": "NOT_CERTIFIED" },
+    "resultDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "projectId", "actorId"],
+      "properties": {
+        "tenantId": { "$ref": "#/$defs/scopeToken" },
+        "projectId": { "$ref": "#/$defs/scopeToken" },
+        "actorId": { "$ref": "#/$defs/scopeToken" }
+      }
+    },
+    "scopeToken": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$"
+    },
+    "skillId": {
+      "type": "string",
+      "pattern": "^[0-9]{2}-[a-z0-9-]+$",
+      "maxLength": 128
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

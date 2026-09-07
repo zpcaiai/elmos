@@ -1,0 +1,2137 @@
+schema_version: '1.0'
+matrix_id: ETGB-XLC-1
+business_line: cross-language
+pairs:
+- id: java-to-kotlin
+  source: java
+  target: kotlin
+  kind: backend
+  tier: P1
+- id: java-to-python
+  source: java
+  target: python
+  kind: backend
+  tier: P0
+- id: java-to-csharp
+  source: java
+  target: csharp
+  kind: backend
+  tier: P0
+- id: java-to-go
+  source: java
+  target: go
+  kind: backend
+  tier: P0
+- id: java-to-rust
+  source: java
+  target: rust
+  kind: backend
+  tier: P0
+- id: java-to-cpp
+  source: java
+  target: cpp
+  kind: backend
+  tier: P1
+- id: java-to-php
+  source: java
+  target: php
+  kind: backend
+  tier: P1
+- id: java-to-typescript
+  source: java
+  target: typescript
+  kind: backend
+  tier: P1
+- id: java-to-javascript
+  source: java
+  target: javascript
+  kind: backend
+  tier: P1
+- id: kotlin-to-java
+  source: kotlin
+  target: java
+  kind: backend
+  tier: P1
+- id: kotlin-to-python
+  source: kotlin
+  target: python
+  kind: backend
+  tier: P1
+- id: kotlin-to-csharp
+  source: kotlin
+  target: csharp
+  kind: backend
+  tier: P1
+- id: kotlin-to-go
+  source: kotlin
+  target: go
+  kind: backend
+  tier: P1
+- id: kotlin-to-rust
+  source: kotlin
+  target: rust
+  kind: backend
+  tier: P1
+- id: kotlin-to-cpp
+  source: kotlin
+  target: cpp
+  kind: backend
+  tier: P2
+- id: kotlin-to-php
+  source: kotlin
+  target: php
+  kind: backend
+  tier: P2
+- id: kotlin-to-typescript
+  source: kotlin
+  target: typescript
+  kind: backend
+  tier: P2
+- id: kotlin-to-javascript
+  source: kotlin
+  target: javascript
+  kind: backend
+  tier: P2
+- id: python-to-java
+  source: python
+  target: java
+  kind: backend
+  tier: P0
+- id: python-to-kotlin
+  source: python
+  target: kotlin
+  kind: backend
+  tier: P1
+- id: python-to-csharp
+  source: python
+  target: csharp
+  kind: backend
+  tier: P1
+- id: python-to-go
+  source: python
+  target: go
+  kind: backend
+  tier: P0
+- id: python-to-rust
+  source: python
+  target: rust
+  kind: backend
+  tier: P0
+- id: python-to-cpp
+  source: python
+  target: cpp
+  kind: backend
+  tier: P1
+- id: python-to-php
+  source: python
+  target: php
+  kind: backend
+  tier: P1
+- id: python-to-typescript
+  source: python
+  target: typescript
+  kind: backend
+  tier: P1
+- id: python-to-javascript
+  source: python
+  target: javascript
+  kind: backend
+  tier: P1
+- id: csharp-to-java
+  source: csharp
+  target: java
+  kind: backend
+  tier: P0
+- id: csharp-to-kotlin
+  source: csharp
+  target: kotlin
+  kind: backend
+  tier: P1
+- id: csharp-to-python
+  source: csharp
+  target: python
+  kind: backend
+  tier: P1
+- id: csharp-to-go
+  source: csharp
+  target: go
+  kind: backend
+  tier: P1
+- id: csharp-to-rust
+  source: csharp
+  target: rust
+  kind: backend
+  tier: P1
+- id: csharp-to-cpp
+  source: csharp
+  target: cpp
+  kind: backend
+  tier: P1
+- id: csharp-to-php
+  source: csharp
+  target: php
+  kind: backend
+  tier: P1
+- id: csharp-to-typescript
+  source: csharp
+  target: typescript
+  kind: backend
+  tier: P1
+- id: csharp-to-javascript
+  source: csharp
+  target: javascript
+  kind: backend
+  tier: P1
+- id: go-to-java
+  source: go
+  target: java
+  kind: backend
+  tier: P1
+- id: go-to-kotlin
+  source: go
+  target: kotlin
+  kind: backend
+  tier: P1
+- id: go-to-python
+  source: go
+  target: python
+  kind: backend
+  tier: P1
+- id: go-to-csharp
+  source: go
+  target: csharp
+  kind: backend
+  tier: P1
+- id: go-to-rust
+  source: go
+  target: rust
+  kind: backend
+  tier: P1
+- id: go-to-cpp
+  source: go
+  target: cpp
+  kind: backend
+  tier: P1
+- id: go-to-php
+  source: go
+  target: php
+  kind: backend
+  tier: P1
+- id: go-to-typescript
+  source: go
+  target: typescript
+  kind: backend
+  tier: P1
+- id: go-to-javascript
+  source: go
+  target: javascript
+  kind: backend
+  tier: P1
+- id: rust-to-java
+  source: rust
+  target: java
+  kind: backend
+  tier: P1
+- id: rust-to-kotlin
+  source: rust
+  target: kotlin
+  kind: backend
+  tier: P2
+- id: rust-to-python
+  source: rust
+  target: python
+  kind: backend
+  tier: P1
+- id: rust-to-csharp
+  source: rust
+  target: csharp
+  kind: backend
+  tier: P1
+- id: rust-to-go
+  source: rust
+  target: go
+  kind: backend
+  tier: P1
+- id: rust-to-cpp
+  source: rust
+  target: cpp
+  kind: backend
+  tier: P2
+- id: rust-to-php
+  source: rust
+  target: php
+  kind: backend
+  tier: P2
+- id: rust-to-typescript
+  source: rust
+  target: typescript
+  kind: backend
+  tier: P2
+- id: rust-to-javascript
+  source: rust
+  target: javascript
+  kind: backend
+  tier: P2
+- id: cpp-to-java
+  source: cpp
+  target: java
+  kind: backend
+  tier: P1
+- id: cpp-to-kotlin
+  source: cpp
+  target: kotlin
+  kind: backend
+  tier: P2
+- id: cpp-to-python
+  source: cpp
+  target: python
+  kind: backend
+  tier: P1
+- id: cpp-to-csharp
+  source: cpp
+  target: csharp
+  kind: backend
+  tier: P1
+- id: cpp-to-go
+  source: cpp
+  target: go
+  kind: backend
+  tier: P1
+- id: cpp-to-rust
+  source: cpp
+  target: rust
+  kind: backend
+  tier: P0
+- id: cpp-to-php
+  source: cpp
+  target: php
+  kind: backend
+  tier: P2
+- id: cpp-to-typescript
+  source: cpp
+  target: typescript
+  kind: backend
+  tier: P2
+- id: cpp-to-javascript
+  source: cpp
+  target: javascript
+  kind: backend
+  tier: P2
+- id: php-to-java
+  source: php
+  target: java
+  kind: backend
+  tier: P1
+- id: php-to-kotlin
+  source: php
+  target: kotlin
+  kind: backend
+  tier: P2
+- id: php-to-python
+  source: php
+  target: python
+  kind: backend
+  tier: P1
+- id: php-to-csharp
+  source: php
+  target: csharp
+  kind: backend
+  tier: P1
+- id: php-to-go
+  source: php
+  target: go
+  kind: backend
+  tier: P1
+- id: php-to-rust
+  source: php
+  target: rust
+  kind: backend
+  tier: P1
+- id: php-to-cpp
+  source: php
+  target: cpp
+  kind: backend
+  tier: P2
+- id: php-to-typescript
+  source: php
+  target: typescript
+  kind: backend
+  tier: P2
+- id: php-to-javascript
+  source: php
+  target: javascript
+  kind: backend
+  tier: P2
+- id: typescript-to-java
+  source: typescript
+  target: java
+  kind: backend
+  tier: P0
+- id: typescript-to-kotlin
+  source: typescript
+  target: kotlin
+  kind: backend
+  tier: P1
+- id: typescript-to-python
+  source: typescript
+  target: python
+  kind: backend
+  tier: P1
+- id: typescript-to-csharp
+  source: typescript
+  target: csharp
+  kind: backend
+  tier: P1
+- id: typescript-to-go
+  source: typescript
+  target: go
+  kind: backend
+  tier: P1
+- id: typescript-to-rust
+  source: typescript
+  target: rust
+  kind: backend
+  tier: P1
+- id: typescript-to-cpp
+  source: typescript
+  target: cpp
+  kind: backend
+  tier: P1
+- id: typescript-to-php
+  source: typescript
+  target: php
+  kind: backend
+  tier: P1
+- id: typescript-to-javascript
+  source: typescript
+  target: javascript
+  kind: backend
+  tier: P1
+- id: javascript-to-java
+  source: javascript
+  target: java
+  kind: backend
+  tier: P1
+- id: javascript-to-kotlin
+  source: javascript
+  target: kotlin
+  kind: backend
+  tier: P2
+- id: javascript-to-python
+  source: javascript
+  target: python
+  kind: backend
+  tier: P1
+- id: javascript-to-csharp
+  source: javascript
+  target: csharp
+  kind: backend
+  tier: P1
+- id: javascript-to-go
+  source: javascript
+  target: go
+  kind: backend
+  tier: P1
+- id: javascript-to-rust
+  source: javascript
+  target: rust
+  kind: backend
+  tier: P1
+- id: javascript-to-cpp
+  source: javascript
+  target: cpp
+  kind: backend
+  tier: P2
+- id: javascript-to-php
+  source: javascript
+  target: php
+  kind: backend
+  tier: P2
+- id: javascript-to-typescript
+  source: javascript
+  target: typescript
+  kind: backend
+  tier: P2
+- id: vue2-to-wechat-miniapp
+  source: vue2
+  target: wechat-miniapp
+  kind: frontend
+  tier: P1
+- id: vue2-to-alipay-miniapp
+  source: vue2
+  target: alipay-miniapp
+  kind: frontend
+  tier: P1
+- id: vue2-to-douyin-miniapp
+  source: vue2
+  target: douyin-miniapp
+  kind: frontend
+  tier: P1
+- id: vue2-to-xiaohongshu-miniapp
+  source: vue2
+  target: xiaohongshu-miniapp
+  kind: frontend
+  tier: P1
+- id: vue3-to-wechat-miniapp
+  source: vue3
+  target: wechat-miniapp
+  kind: frontend
+  tier: P0
+- id: vue3-to-alipay-miniapp
+  source: vue3
+  target: alipay-miniapp
+  kind: frontend
+  tier: P1
+- id: vue3-to-douyin-miniapp
+  source: vue3
+  target: douyin-miniapp
+  kind: frontend
+  tier: P1
+- id: vue3-to-xiaohongshu-miniapp
+  source: vue3
+  target: xiaohongshu-miniapp
+  kind: frontend
+  tier: P1
+- id: react-to-wechat-miniapp
+  source: react
+  target: wechat-miniapp
+  kind: frontend
+  tier: P0
+- id: react-to-alipay-miniapp
+  source: react
+  target: alipay-miniapp
+  kind: frontend
+  tier: P1
+- id: react-to-douyin-miniapp
+  source: react
+  target: douyin-miniapp
+  kind: frontend
+  tier: P1
+- id: react-to-xiaohongshu-miniapp
+  source: react
+  target: xiaohongshu-miniapp
+  kind: frontend
+  tier: P1
+- id: flutter-to-wechat-miniapp
+  source: flutter
+  target: wechat-miniapp
+  kind: frontend
+  tier: P1
+- id: flutter-to-alipay-miniapp
+  source: flutter
+  target: alipay-miniapp
+  kind: frontend
+  tier: P1
+- id: flutter-to-douyin-miniapp
+  source: flutter
+  target: douyin-miniapp
+  kind: frontend
+  tier: P1
+- id: flutter-to-xiaohongshu-miniapp
+  source: flutter
+  target: xiaohongshu-miniapp
+  kind: frontend
+  tier: P1
+- id: vue2-to-vue3
+  source: vue2
+  target: vue3
+  kind: frontend
+  tier: P0
+- id: react-to-flutter
+  source: react
+  target: flutter
+  kind: frontend
+  tier: P1
+- id: flutter-to-react
+  source: flutter
+  target: react
+  kind: frontend
+  tier: P1
+- id: objective-c-to-swift
+  source: objective-c
+  target: swift
+  kind: native
+  tier: P0
+- id: swift-to-objective-c
+  source: swift
+  target: objective-c
+  kind: native
+  tier: P1
+- id: android-kotlin-to-swift
+  source: android-kotlin
+  target: swift
+  kind: native
+  tier: P1
+- id: swift-to-android-kotlin
+  source: swift
+  target: android-kotlin
+  kind: native
+  tier: P1
+variants:
+- nominal
+- edge-adversarial
+features:
+- id: types.integer-width-and-overflow
+  title: integer width and overflow
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.unsigned-integer
+  title: unsigned integer
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.floating-point-nan-infinity-negative-zero
+  title: floating point NaN infinity negative zero
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.decimal-monetary-precision
+  title: decimal monetary precision
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.boolean-coercion
+  title: boolean coercion
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.null-optional-nullable
+  title: null optional nullable
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.string-unicode-normalization
+  title: string Unicode normalization
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.string-indexing-by-code-point
+  title: string indexing by code point
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.byte-array-and-binary
+  title: byte array and binary
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.date-time-timezone-dst
+  title: date time timezone DST
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.duration-and-interval
+  title: duration and interval
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.uuid
+  title: UUID
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.enum-closed-and-open
+  title: enum closed and open
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.tuple-and-record
+  title: tuple and record
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.union-and-sum-type
+  title: union and sum type
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.generic-variance
+  title: generic variance
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.bounded-generic
+  title: bounded generic
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.reflection-type-identity
+  title: reflection type identity
+  group: types
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.serialization-field-naming
+  title: serialization field naming
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.map-key-equality
+  title: map key equality
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.collection-iteration-order
+  title: collection iteration order
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.immutable-collection
+  title: immutable collection
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.deep-copy-and-aliasing
+  title: deep copy and aliasing
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.object-identity-and-equality
+  title: object identity and equality
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: types.cyclic-object-graph
+  title: cyclic object graph
+  group: types
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - property-and-differential-execution
+  - unsupported-feature-disclosure
+- id: control-runtime.exception-type-mapping
+  title: exception type mapping
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.checked-exception-adaptation
+  title: checked exception adaptation
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.finally-and-defer-cleanup
+  title: finally and defer cleanup
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.try-with-resources
+  title: try with resources
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.context-manager
+  title: context manager
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.early-return
+  title: early return
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.generator-and-iterator
+  title: generator and iterator
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.closure-capture
+  title: closure capture
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.mutable-closure-state
+  title: mutable closure state
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.recursion-depth
+  title: recursion depth
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.tail-recursion-adaptation
+  title: tail recursion adaptation
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.dynamic-dispatch
+  title: dynamic dispatch
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.multiple-inheritance-adaptation
+  title: multiple inheritance adaptation
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.trait-interface-default-method
+  title: trait interface default method
+  group: control-runtime
+  priority: P0
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.operator-overloading
+  title: operator overloading
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.annotation-decorator-metadata
+  title: annotation decorator metadata
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.runtime-reflection
+  title: runtime reflection
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.dynamic-proxy
+  title: dynamic proxy
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.plugin-discovery
+  title: plugin discovery
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: control-runtime.foreign-function-interface
+  title: foreign function interface
+  group: control-runtime
+  priority: P1
+  level: L0
+  requires_any: []
+  default_oracles:
+  - trace-equivalence
+  - unsupported-feature-disclosure
+- id: concurrency.thread-creation-and-join
+  title: thread creation and join
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.task-async-await
+  title: task async await
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.event-loop-ordering
+  title: event loop ordering
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.goroutine-and-channel
+  title: goroutine and channel
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.mutex-mutual-exclusion
+  title: mutex mutual exclusion
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.read-write-lock
+  title: read write lock
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.condition-variable
+  title: condition variable
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.semaphore
+  title: semaphore
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.atomic-increment-compare-exchange
+  title: atomic increment compare exchange
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.volatile-visibility
+  title: volatile visibility
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.thread-local-and-context-local
+  title: thread local and context local
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.cancellation-propagation
+  title: cancellation propagation
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.timeout-propagation
+  title: timeout propagation
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.structured-concurrency
+  title: structured concurrency
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.bounded-queue-backpressure
+  title: bounded queue backpressure
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.race-freedom
+  title: race freedom
+  group: concurrency
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.deadlock-freedom
+  title: deadlock freedom
+  group: concurrency
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.deterministic-scheduler-replay
+  title: deterministic scheduler replay
+  group: concurrency
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.parallel-stream-ordering
+  title: parallel stream ordering
+  group: concurrency
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: concurrency.process-isolation
+  title: process isolation
+  group: concurrency
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - concurrency-trace-and-invariant
+  - unsupported-feature-disclosure
+- id: io-platform.filesystem-paths-and-separators
+  title: filesystem paths and separators
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.file-permissions
+  title: file permissions
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.symbolic-links
+  title: symbolic links
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.streaming-io
+  title: streaming IO
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.memory-mapped-files
+  title: memory mapped files
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.standard-input-output-protocol
+  title: standard input output protocol
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.process-spawn-environment
+  title: process spawn environment
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.signal-handling
+  title: signal handling
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.tcp-socket
+  title: TCP socket
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.udp-socket
+  title: UDP socket
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.http-client-redirect
+  title: HTTP client redirect
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.tls-verification
+  title: TLS verification
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.proxy-configuration
+  title: proxy configuration
+  group: io-platform
+  priority: P0
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.dns-failure
+  title: DNS failure
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.regex-semantics
+  title: regex semantics
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.locale-formatting
+  title: locale formatting
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.compression-archive
+  title: compression archive
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.cryptographic-hash
+  title: cryptographic hash
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.random-number-seed
+  title: random number seed
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: io-platform.environment-configuration
+  title: environment configuration
+  group: io-platform
+  priority: P1
+  level: L1
+  requires_any: []
+  default_oracles:
+  - side-effect-and-output-equivalence
+  - unsupported-feature-disclosure
+- id: repository.directory-and-module-topology
+  title: directory and module topology
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.public-api-signature
+  title: public API signature
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.dependency-graph
+  title: dependency graph
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.build-manifest
+  title: build manifest
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.lockfile-generation
+  title: lockfile generation
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.multi-module-build
+  title: multi module build
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.monorepo-workspace
+  title: monorepo workspace
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.generated-code-boundary
+  title: generated code boundary
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.resource-files
+  title: resource files
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.configuration-files
+  title: configuration files
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.database-schema-and-migrations
+  title: database schema and migrations
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.orm-mappings
+  title: ORM mappings
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.transaction-semantics
+  title: transaction semantics
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.rest-api-contract
+  title: REST API contract
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.graphql-contract
+  title: GraphQL contract
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.grpc-protobuf-contract
+  title: gRPC protobuf contract
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.authentication
+  title: authentication
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.authorization
+  title: authorization
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.cache-semantics
+  title: cache semantics
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.message-queue-semantics
+  title: message queue semantics
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.scheduled-job
+  title: scheduled job
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.retry-and-circuit-breaker
+  title: retry and circuit breaker
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.logging-schema
+  title: logging schema
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.metrics-and-tracing
+  title: metrics and tracing
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.unit-tests
+  title: unit tests
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.integration-tests
+  title: integration tests
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.property-tests
+  title: property tests
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.docker-image
+  title: Docker image
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.kubernetes-manifests
+  title: Kubernetes manifests
+  group: repository
+  priority: P0
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.ci-workflow
+  title: CI workflow
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.documentation-and-examples
+  title: documentation and examples
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.license-header-preservation
+  title: license header preservation
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.unsupported-dependency-replacement
+  title: unsupported dependency replacement
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.performance-budget
+  title: performance budget
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.memory-budget
+  title: memory budget
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.startup-behavior
+  title: startup behavior
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.shutdown-behavior
+  title: shutdown behavior
+  group: repository
+  priority: P1
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.incremental-retranslation
+  title: incremental retranslation
+  group: repository
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.bidirectional-round-trip-probe
+  title: bidirectional round trip probe
+  group: repository
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: repository.manual-intervention-manifest
+  title: manual intervention manifest
+  group: repository
+  priority: P2
+  level: L2
+  requires_any: []
+  default_oracles:
+  - repository-contract-equivalence
+  - unsupported-feature-disclosure
+- id: frontend.component-tree
+  title: component tree
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: &id001
+  - frontend
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.props-and-input-binding
+  title: props and input binding
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.state-lifecycle
+  title: state lifecycle
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.computed-state
+  title: computed state
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.watch-and-effect-ordering
+  title: watch and effect ordering
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.routing-and-navigation
+  title: routing and navigation
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.route-guards
+  title: route guards
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.form-validation
+  title: form validation
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.network-request-and-cancellation
+  title: network request and cancellation
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.authentication-state
+  title: authentication state
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.global-store
+  title: global store
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.local-storage
+  title: local storage
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.file-upload
+  title: file upload
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.camera-and-album
+  title: camera and album
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.location-permission
+  title: location permission
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.push-notification
+  title: push notification
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.payment-platform-adapter
+  title: payment platform adapter
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.share-capability
+  title: share capability
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.deep-link
+  title: deep link
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.list-virtualization
+  title: list virtualization
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.animation-lifecycle
+  title: animation lifecycle
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.responsive-layout
+  title: responsive layout
+  group: frontend
+  priority: P0
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.accessibility-semantics
+  title: accessibility semantics
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.i18n
+  title: i18n
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.offline-cache
+  title: offline cache
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.error-boundary
+  title: error boundary
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.platform-api-fallback
+  title: platform API fallback
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.bundle-size-budget
+  title: bundle size budget
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.ui-snapshot-and-interaction
+  title: UI snapshot and interaction
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: frontend.miniapp-package-split
+  title: miniapp package split
+  group: frontend
+  priority: P1
+  level: L1
+  requires_any: *id001
+  default_oracles:
+  - ui-behavior-and-platform-contract
+  - unsupported-feature-disclosure
+- id: native.arc-ownership
+  title: ARC ownership
+  group: native
+  priority: P0
+  level: L1
+  requires_any: &id002
+  - native
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.weak-strong-reference
+  title: weak strong reference
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.objective-c-selector
+  title: Objective-C selector
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.swift-protocol
+  title: Swift protocol
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.kotlin-coroutine
+  title: Kotlin coroutine
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.platform-lifecycle
+  title: platform lifecycle
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.background-execution
+  title: background execution
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.keychain-secure-storage
+  title: keychain secure storage
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.permission-declaration
+  title: permission declaration
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.native-networking
+  title: native networking
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.sqlite-persistence
+  title: SQLite persistence
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.push-notification
+  title: push notification
+  group: native
+  priority: P0
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.deep-link
+  title: deep link
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.ui-thread-confinement
+  title: UI thread confinement
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.binary-framework-dependency
+  title: binary framework dependency
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.app-signing-disclosure
+  title: app signing disclosure
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.platform-accessibility
+  title: platform accessibility
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+- id: native.crash-symbolication
+  title: crash symbolication
+  group: native
+  priority: P1
+  level: L1
+  requires_any: *id002
+  default_oracles:
+  - native-runtime-and-contract
+  - unsupported-feature-disclosure
+public_corpus_ids:
+- realworld-spec
+- repo-trans-bench
+- rust-repo-trans
+- trans-repo

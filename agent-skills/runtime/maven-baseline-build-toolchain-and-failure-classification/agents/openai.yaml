@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-core Skill 008"
+  short_description: "Run Product Batch 33-core evidence contract safely"
+  default_prompt: "Use $maven-baseline-build-toolchain-and-failure-classification to implement its fail-closed ELMOS Product Batch 33-core contract."

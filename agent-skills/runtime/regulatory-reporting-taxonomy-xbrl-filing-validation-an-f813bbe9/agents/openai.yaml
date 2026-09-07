@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Regulatory Reporting Taxonomy Xbrl Filing Validation And Acknowledgement"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $regulatory-reporting-taxonomy-xbrl-filing-validation-an-f813bbe9 to implement its fail-closed ELMOS Product B38 contract."

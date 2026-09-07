@@ -1,0 +1,78 @@
+# ELMOS Codex/Claude-class cache parity profile
+elmos:
+  cache_parity:
+    enabled: true
+    schema_version: "1.2.0"
+    claim_mode: measured_only
+
+    prompt_cache:
+      canonical_layout: true
+      compatibility_group: prompt-v1
+      stable_segment_order:
+        - system_policy
+        - safety_policy
+        - tool_schemas
+        - output_schemas
+        - stable_skills
+        - repository_architecture
+      volatile_after_boundary:
+        - current_task
+        - current_diff
+        - retrieved_files
+        - tool_results
+      provider_profiles:
+        openai: provider-profiles/openai-default.json
+        anthropic: provider-profiles/anthropic-default.json
+        self_hosted: provider-profiles/self-hosted-default.json
+      unexpected_full_prefix_miss_max: 0.02
+      stable_turn_cached_token_reuse_min: 0.90
+
+    context_ledger:
+      append_only: true
+      hash_chain: sha256
+      stale_on_content_change: true
+      whole_repository_reinjection: forbidden_after_initial_index
+      compaction:
+        enabled: true
+        soft_limit_ratio: 0.72
+        hard_limit_ratio: 0.88
+        warmup_cached_token_reuse_min: 0.80
+
+    action_reuse:
+      exact_rerun_weighted_reuse_min: 0.99
+      small_edit_weighted_reuse_min: 0.90
+      implementation_only_unnecessary_invalidation_max: 0.05
+      accepted_false_hits_max: 0
+
+    environment_snapshots:
+      enabled: true
+      hit_rate_min: 0.95
+      warm_start_p95_reduction_min: 0.80
+      secrets_in_layers: forbidden
+      verify_digests_on_restore: true
+
+    affinity:
+      enabled: true
+      consistent_hashing: rendezvous
+      wrong_shard_rate_max: 0.01
+      bounded_load_escape: true
+      fairness_guard: true
+
+    coordinator:
+      singleflight: true
+      exact_action_before_model_call: true
+      restore_vs_recompute: cost_aware
+      unified_attribution: true
+
+    restart_recovery:
+      sealed_artifact_reuse_min: 0.999
+
+    business_value:
+      stable_followup_wall_clock_saved_min: 0.70
+      model_input_cost_saved_min: 0.80
+
+    rollout:
+      phases: [observe, shadow, internal, canary, 5_percent, 25_percent, 50_percent, 100_percent]
+      automatic_rollback: true
+      false_hit_immediate_rollback: true
+      safe_baseline: s3fifo-sieve-fixed-v1

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 012"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $automated-remediation-guardrail-verification-and-recovery to apply its fail-closed ELMOS runtime contract."

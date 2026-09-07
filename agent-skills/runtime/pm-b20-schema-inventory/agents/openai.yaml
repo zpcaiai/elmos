@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B20: Schema Inventory"
+  short_description: "Run Precision Migration B20 with evidence controls"
+  default_prompt: "Use $pm-b20-schema-inventory to execute this Precision Migration contract with fail-closed evidence."

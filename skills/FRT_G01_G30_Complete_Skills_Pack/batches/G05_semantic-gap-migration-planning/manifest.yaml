@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G05",
+    "slug": "semantic-gap-migration-planning",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Semantic Gap、兼容性评估、Product Decision与Migration Plan",
+    "transitionFrom": "已恢复的源语义与候选目标能力",
+    "transitionTo": "形成显式Gap、风险、Shim、人工决策和冻结的可执行迁移计划",
+    "certificateFamily": "MP",
+    "skills": [
+      {
+        "id": "FRT-0500",
+        "name": "Migration Planning Orchestrator",
+        "path": "skills/frt-0500-migration-planning-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0501",
+        "name": "Semantic Gap Detector",
+        "path": "skills/frt-0501-semantic-gap-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-0502",
+        "name": "Capability Compatibility Matrix",
+        "path": "skills/frt-0502-capability-compatibility-matrix/SKILL.md"
+      },
+      {
+        "id": "FRT-0503",
+        "name": "Source Target Feature Mapper",
+        "path": "skills/frt-0503-source-target-feature-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0504",
+        "name": "Product Decision Generator",
+        "path": "skills/frt-0504-product-decision-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0505",
+        "name": "Shim Requirement Planner",
+        "path": "skills/frt-0505-shim-requirement-planner/SKILL.md"
+      },
+      {
+        "id": "FRT-0506",
+        "name": "Manual Boundary Planner",
+        "path": "skills/frt-0506-manual-boundary-planner/SKILL.md"
+      },
+      {
+        "id": "FRT-0507",
+        "name": "Risk Confidence and Criticality Scorer",
+        "path": "skills/frt-0507-risk-confidence-and-criticality-scorer/SKILL.md"
+      },
+      {
+        "id": "FRT-0508",
+        "name": "Migration Effort and Duration Estimator",
+        "path": "skills/frt-0508-migration-effort-and-duration-estimator/SKILL.md"
+      },
+      {
+        "id": "FRT-0509",
+        "name": "Multi-Pass Migration Plan Generator",
+        "path": "skills/frt-0509-multi-pass-migration-plan-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0510",
+        "name": "Migration Plan Freezer",
+        "path": "skills/frt-0510-migration-plan-freezer/SKILL.md"
+      },
+      {
+        "id": "FRT-0511",
+        "name": "Plan Explainability Generator",
+        "path": "skills/frt-0511-plan-explainability-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0512",
+        "name": "Migration Plan Certification",
+        "path": "skills/frt-0512-migration-plan-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "所有关键源能力均有映射或显式Gap",
+      "Unsupported不得伪装支持",
+      "R4/R5决策需人工批准",
+      "Plan绑定Source Snapshot、Target Profile和Pack Lock",
+      "估算披露假设和不确定性"
+    ]
+  }
+}

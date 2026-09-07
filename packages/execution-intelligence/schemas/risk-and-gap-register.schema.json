@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/risk-and-gap-register.schema.json",
+  "title": "risk-and-gap-register",
+  "type": "object",
+  "required": ["schema_version", "artifact", "gaps", "counts_by_severity", "rule"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "artifact": { "const": "risk-and-gap-register" },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "kind", "detail"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["high", "medium", "low"] },
+          "kind": { "type": "string" },
+          "detail": { "type": "string", "minLength": 1 },
+          "evidence": { "type": ["array", "object"] },
+          "needs_human_input": { "type": "boolean" }
+        }
+      }
+    },
+    "counts_by_severity": {
+      "type": "object",
+      "required": ["high", "medium", "low"],
+      "properties": {
+        "high": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "integer", "minimum": 0 },
+        "low": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rule": { "type": "string" }
+  }
+}

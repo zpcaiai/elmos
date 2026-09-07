@@ -1,0 +1,1 @@
+{"schema":"elmos.test-runner-policy.v1","runner":"BROWSER_CLIENT","status":"NOT_CONFIGURED","rootless":true,"digestPinned":true,"network":"DENY","deviceLeaseRequired":true,"preserveFailingEvidence":true}

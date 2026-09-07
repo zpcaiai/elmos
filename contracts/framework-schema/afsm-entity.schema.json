@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/afsm-entity.schema.json",
+  "title": "Application Framework Semantic Model Entity",
+  "type": "object",
+  "required": ["afsmVersion", "entityId", "entityKind", "targetModuleId", "sourceFramework", "sourceVersion", "targetFramework", "attributes", "relatedEntityIds", "sourceMapIds", "obligationIds", "provenance"],
+  "properties": {
+    "afsmVersion": {"const": "1.0"},
+    "entityId": {"type": "string", "minLength": 1},
+    "entityKind": {
+      "enum": ["application", "module", "component", "provider", "dependency-binding", "lifecycle-scope", "http-pipeline", "middleware", "filter", "interceptor", "guard", "endpoint", "parameter-binding", "response-contract", "exception-mapping", "validation-contract", "authentication-scheme", "authorization-policy", "entity-model", "repository-model", "query-model", "unit-of-work", "transaction-policy", "configuration-source", "configuration-binding", "message-producer", "message-consumer", "message-contract", "cache-region", "cache-operation", "scheduled-job", "background-task", "startup-hook", "shutdown-hook", "health-check"]
+    },
+    "targetModuleId": {"type": "string", "minLength": 1},
+    "sourceFramework": {"type": "string", "minLength": 1},
+    "sourceVersion": {"type": "string", "minLength": 1},
+    "targetFramework": {"type": "string", "minLength": 1},
+    "attributes": {"type": "object", "additionalProperties": {"type": "string"}},
+    "relatedEntityIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "sourceMapIds": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+    "obligationIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "provenance": {"$ref": "#/$defs/provenance"}
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "required": ["extractor", "extractorVersion", "ruleId", "confidence", "observedAt", "evidenceRefs"],
+      "properties": {
+        "extractor": {"type": "string", "minLength": 1},
+        "extractorVersion": {"type": "string", "minLength": 1},
+        "ruleId": {"type": "string", "minLength": 1},
+        "confidence": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "observedAt": {"type": "string", "format": "date-time"},
+        "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

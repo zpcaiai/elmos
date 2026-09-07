@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0700",
+  "skill_name": "frt-0700-code-generation-orchestrator",
+  "batch": "G07",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g07/frt-0700-code-generation-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.code-generation-orchestrator",
+  "execution_contract_sha256": "sha256:c2f8fe05ecc938dc590ed3cd49f7b495ee9a1312992c7721c37dff07532d35f1",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:e3ba50b1622d722a4c552796c08f839cc57c9eaa7482d1d8a1e773f88c31cf7a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

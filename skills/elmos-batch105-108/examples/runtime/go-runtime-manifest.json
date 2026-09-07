@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "project": {
+    "name": "go-demo",
+    "language": "go",
+    "framework": "gin"
+  },
+  "build": {
+    "image": "example/go-builder@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "command": [
+      "go",
+      "build",
+      "-o",
+      "/app/server",
+      "./cmd/server"
+    ],
+    "workingDirectory": "/workspace"
+  },
+  "runtime": {
+    "image": "example/go-runtime@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "command": [
+      "/app/server"
+    ],
+    "environment": {
+      "PORT": "8080"
+    }
+  },
+  "service": {
+    "protocol": "http",
+    "port": 8080,
+    "health": {
+      "path": "/healthz",
+      "expectedStatus": 200,
+      "timeoutSeconds": 120
+    }
+  },
+  "preview": {
+    "homepage": "/",
+    "apiDocs": "/swagger/index.html",
+    "openapi": "/swagger/doc.json",
+    "screenshot": true
+  },
+  "lifecycle": {
+    "ttlSeconds": 600,
+    "startTtlAfterReady": true,
+    "idleTimeoutSeconds": 300
+  },
+  "resources": {
+    "cpu": 2,
+    "memoryMb": 2048,
+    "diskMb": 4096
+  },
+  "network": {
+    "publicIngress": true,
+    "outboundPolicy": "restricted"
+  },
+  "security": {
+    "authenticatedPreview": true,
+    "readOnlyRootFilesystem": true,
+    "blockCloudMetadata": true
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-production-qualification-result.schema.json",
+  "title": "ELMOS ChinaDB production qualification result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "protocolVersion",
+    "package",
+    "scope",
+    "scopeDigest",
+    "capabilitySnapshotDigest",
+    "trustStoreDigest",
+    "requestDigest",
+    "evaluatedAt",
+    "targets",
+    "summary",
+    "externalExecution",
+    "independentVerification",
+    "certification",
+    "targetSql",
+    "productionDefinitionOfDoneCount",
+    "effects",
+    "resultDigest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "protocolVersion": { "const": "1.1.0" },
+    "package": { "const": "chinadb-commercial-migration-skills" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "scopeDigest": { "$ref": "#/$defs/digest" },
+    "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
+    "trustStoreDigest": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/digest" }
+      ]
+    },
+    "requestDigest": { "$ref": "#/$defs/digest" },
+    "evaluatedAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "targets": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": { "$ref": "#/$defs/targetResult" }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetCount",
+        "inputCompleteTargetCount",
+        "authorizationVerifiedTargetCount",
+        "externalExecutionPassedTargetCount",
+        "independentlyVerifiedTargetCount",
+        "productionDefinitionOfDoneCount"
+      ],
+      "properties": {
+        "targetCount": { "const": 13 },
+        "inputCompleteTargetCount": { "$ref": "#/$defs/count" },
+        "authorizationVerifiedTargetCount": { "$ref": "#/$defs/count" },
+        "externalExecutionPassedTargetCount": { "$ref": "#/$defs/count" },
+        "independentlyVerifiedTargetCount": { "$ref": "#/$defs/count" },
+        "productionDefinitionOfDoneCount": { "$ref": "#/$defs/count" }
+      }
+    },
+    "externalExecution": { "enum": ["NOT_RUN", "PARTIAL", "PASSED"] },
+    "independentVerification": { "enum": ["NOT_RUN", "PARTIAL", "PASSED"] },
+    "certification": {
+      "enum": ["NOT_CERTIFIED", "PARTIALLY_CERTIFIED", "CERTIFIED"]
+    },
+    "targetSql": { "type": "null" },
+    "productionDefinitionOfDoneCount": { "$ref": "#/$defs/count" },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["externalCallsExecuted"],
+      "properties": { "externalCallsExecuted": { "const": [] } }
+    },
+    "resultDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "targetResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetId",
+        "label",
+        "adapterId",
+        "state",
+        "qualificationInputDigest",
+        "exactTupleDigest",
+        "environmentDigest",
+        "vendorToolDigests",
+        "authorization",
+        "externalExecution",
+        "independentVerification",
+        "certification",
+        "targetSql",
+        "evidenceEnvelopeDigests",
+        "blockers"
+      ],
+      "properties": {
+        "targetId": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "adapterId": { "type": "string", "minLength": 1 },
+        "state": {
+          "enum": [
+            "BLOCKED_INPUT",
+            "BLOCKED_TRUST",
+            "BLOCKED_EVIDENCE",
+            "READY_FOR_AUTHORIZATION",
+            "READY_FOR_EXTERNAL_EXECUTION",
+            "READY_FOR_INDEPENDENT_VERIFICATION",
+            "READY_FOR_CERTIFICATION",
+            "PRODUCTION_DEFINITION_OF_DONE"
+          ]
+        },
+        "qualificationInputDigest": { "$ref": "#/$defs/nullableDigest" },
+        "exactTupleDigest": { "$ref": "#/$defs/nullableDigest" },
+        "environmentDigest": { "$ref": "#/$defs/nullableDigest" },
+        "vendorToolDigests": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "authorization": { "enum": ["NOT_RUN", "VERIFIED"] },
+        "externalExecution": { "enum": ["NOT_RUN", "PASSED"] },
+        "independentVerification": { "enum": ["NOT_RUN", "PASSED"] },
+        "certification": { "enum": ["NOT_CERTIFIED", "CERTIFIED"] },
+        "targetSql": { "type": "null" },
+        "evidenceEnvelopeDigests": {
+          "type": "array",
+          "maxItems": 4,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "blockers": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,127}$" },
+              "severity": { "const": "ERROR" },
+              "message": { "type": "string", "minLength": 1, "maxLength": 2048 }
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "projectId", "actorId"],
+      "properties": {
+        "tenantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "projectId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "actorId": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "count": { "type": "integer", "minimum": 0, "maximum": 13 },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableDigest": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/digest" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "System Of Record Authority Matrix"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $system-of-record-authority-matrix to execute this ELMOS product-closure Skill with fail-closed evidence."

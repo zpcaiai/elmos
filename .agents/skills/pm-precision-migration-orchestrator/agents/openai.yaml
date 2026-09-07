@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B01-B44: Precision Migration Orchestrator"
+  short_description: "Run Precision Migration B01-B44 with evidence controls"
+  default_prompt: "Use $pm-precision-migration-orchestrator to execute this Precision Migration contract with fail-closed evidence."

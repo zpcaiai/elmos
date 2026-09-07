@@ -1,0 +1,11 @@
+{
+  "kind": "elmos.sql-dialect.reserved-words-verification",
+  "dialect": "mysql",
+  "shipped_provenance": "EXECUTION_VERIFIED",
+  "shipped_count": 261,
+  "confirmed_by_probe": 261,
+  "shipped_but_accepted_by_server": [],
+  "reserved_by_server_but_not_shipped": [],
+  "catalog_available": false,
+  "verdict": "EXECUTION_VERIFIED"
+}

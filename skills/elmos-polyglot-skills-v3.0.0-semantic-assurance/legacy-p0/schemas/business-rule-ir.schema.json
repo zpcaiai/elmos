@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/business-rule-ir.schema.json",
+  "title": "Business Rule IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "rules",
+    "provenance"
+  ],
+  "properties": {
+    "rules": {},
+    "provenance": {}
+  }
+}

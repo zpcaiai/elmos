@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B10: Backend Application Ir"
+  short_description: "Run Precision Migration B10 with evidence controls"
+  default_prompt: "Use $pm-b10-backend-application-ir to execute this Precision Migration contract with fail-closed evidence."

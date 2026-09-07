@@ -1,0 +1,4 @@
+interface:
+  display_name: "ChinaDB 51 Target Gaussdb M"
+  short_description: "Run this ChinaDB migration Skill with evidence controls"
+  default_prompt: "Use $chinadb-51-target-gaussdb-m as a SPEC_ONLY ChinaDB migration contract; preserve exact route semantics and fail closed while real evidence is NOT_RUN."

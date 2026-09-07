@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 628: grid metering and dispatch semantics"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $grid-metering-and-dispatch-semantics to evaluate this capability with evidence."

@@ -1,0 +1,14 @@
+mode: convert-and-certify
+source_database: oracle
+target_database: postgresql
+include:
+  - schema
+  - data
+  - plsql_packages
+  - triggers
+  - application_sql
+validation:
+  row_level_diff: critical_tables
+  procedure_differential: true
+  plan_regression: true
+  cdc_cutover: true

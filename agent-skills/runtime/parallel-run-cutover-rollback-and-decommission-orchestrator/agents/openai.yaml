@@ -1,0 +1,4 @@
+interface:
+  display_name: "Parallel Run Cutover Rollback And Decommission Orchestrator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $parallel-run-cutover-rollback-and-decommission-orchestrator to execute this ELMOS Runtime Skill with fail-closed evidence."

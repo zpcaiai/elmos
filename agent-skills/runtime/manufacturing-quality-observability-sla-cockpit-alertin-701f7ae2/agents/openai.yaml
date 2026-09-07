@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Quality Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-quality-observability-sla-cockpit-alertin-701f7ae2 to implement its fail-closed ELMOS Product B50 contract."

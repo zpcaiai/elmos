@@ -1,0 +1,158 @@
+{
+  "batch": 50,
+  "engine": "elmos.project-synthesis",
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG043",
+      "name": "architecture-style-selector",
+      "depends_on": [
+        "PG027",
+        "PG036",
+        "PG042"
+      ],
+      "summary": "Selects and ranks architecture styles using quality attributes, domain shape, delivery constraints, and team fit.",
+      "path": "skills/batch-50/PG043-architecture-style-selector.md"
+    },
+    {
+      "id": "PG044",
+      "name": "system-context-container-planner",
+      "depends_on": [
+        "PG015",
+        "PG024",
+        "PG043"
+      ],
+      "summary": "Creates system-context and container-level architecture views.",
+      "path": "skills/batch-50/PG044-system-context-container-planner.md"
+    },
+    {
+      "id": "PG045",
+      "name": "module-and-service-decomposer",
+      "depends_on": [
+        "PG036",
+        "PG038",
+        "PG043",
+        "PG044"
+      ],
+      "summary": "Decomposes bounded contexts into modules, services, libraries, workers, and adapters.",
+      "path": "skills/batch-50/PG045-module-and-service-decomposer.md"
+    },
+    {
+      "id": "PG046",
+      "name": "quality-attribute-tradeoff-analyzer",
+      "depends_on": [
+        "PG027",
+        "PG043",
+        "PG045"
+      ],
+      "summary": "Evaluates architecture decisions against performance, availability, security, maintainability, cost, and delivery speed.",
+      "path": "skills/batch-50/PG046-quality-attribute-tradeoff-analyzer.md"
+    },
+    {
+      "id": "PG047",
+      "name": "data-ownership-consistency-planner",
+      "depends_on": [
+        "PG035",
+        "PG038",
+        "PG039",
+        "PG045"
+      ],
+      "summary": "Plans data ownership, transaction boundaries, consistency levels, replication, caching, and lifecycle responsibilities.",
+      "path": "skills/batch-50/PG047-data-ownership-consistency-planner.md"
+    },
+    {
+      "id": "PG048",
+      "name": "sync-async-communication-planner",
+      "depends_on": [
+        "PG038",
+        "PG040",
+        "PG045",
+        "PG046"
+      ],
+      "summary": "Chooses synchronous, asynchronous, streaming, batch, callback, and file-exchange communication patterns.",
+      "path": "skills/batch-50/PG048-sync-async-communication-planner.md"
+    },
+    {
+      "id": "PG049",
+      "name": "resilience-and-failure-mode-planner",
+      "depends_on": [
+        "PG027",
+        "PG038",
+        "PG044",
+        "PG048"
+      ],
+      "summary": "Plans retries, circuit breaking, bulkheads, graceful degradation, recovery, replay, and failure observability.",
+      "path": "skills/batch-50/PG049-resilience-and-failure-mode-planner.md"
+    },
+    {
+      "id": "PG050",
+      "name": "security-and-threat-model-planner",
+      "depends_on": [
+        "PG039",
+        "PG041",
+        "PG044",
+        "PG048"
+      ],
+      "summary": "Builds the architecture threat model and maps threats to controls, trust boundaries, abuse cases, and verification.",
+      "path": "skills/batch-50/PG050-security-and-threat-model-planner.md"
+    },
+    {
+      "id": "PG051",
+      "name": "multitenancy-topology-planner",
+      "depends_on": [
+        "PG024",
+        "PG041",
+        "PG046",
+        "PG047"
+      ],
+      "summary": "Plans tenant isolation, identity propagation, data partitioning, noisy-neighbor protection, and tenant lifecycle.",
+      "path": "skills/batch-50/PG051-multitenancy-topology-planner.md"
+    },
+    {
+      "id": "PG052",
+      "name": "observability-architecture-planner",
+      "depends_on": [
+        "PG027",
+        "PG038",
+        "PG044",
+        "PG045",
+        "PG050"
+      ],
+      "summary": "Plans logs, metrics, traces, audits, correlation, dashboards, alerts, SLOs, and diagnostic retention.",
+      "path": "skills/batch-50/PG052-observability-architecture-planner.md"
+    },
+    {
+      "id": "PG053",
+      "name": "deployment-topology-planner",
+      "depends_on": [
+        "PG044",
+        "PG046",
+        "PG049",
+        "PG050",
+        "PG052"
+      ],
+      "summary": "Plans environments, regions, compute, network, storage, scaling, rollout, backup, and disaster recovery topology.",
+      "path": "skills/batch-50/PG053-deployment-topology-planner.md"
+    },
+    {
+      "id": "PG054",
+      "name": "adr-and-architecture-review-pack",
+      "depends_on": [
+        "PG042",
+        "PG043",
+        "PG044",
+        "PG045",
+        "PG046",
+        "PG047",
+        "PG048",
+        "PG049",
+        "PG050",
+        "PG051",
+        "PG052",
+        "PG053"
+      ],
+      "summary": "Compiles architecture decisions, diagrams, risks, tradeoffs, open issues, and review gates into an approval package.",
+      "path": "skills/batch-50/PG054-adr-and-architecture-review-pack.md"
+    }
+  ]
+}

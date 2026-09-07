@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "status": "research",
+  "owner": "independent-client-gate",
+  "exact_tuple": {
+    "source": {"stack":"nextjs-app-router", "version":"16.3.0"},
+    "target": {"stack":"nextjs-app-router", "version":"16.3.0"},
+    "runtime_variants": ["nodejs-22.23.1", "nodejs-26.0.0"],
+    "browser": "chromium-playwright-1228-and-google-chrome-150.0.7871.189"
+  },
+  "local_gate_state": "PASSED_EXPERIMENTAL",
+  "production_operation_authorized": false,
+  "external_verification_status": "NOT_RUN",
+  "customer_acceptance_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "evidence_refs": ["certification/local-qualification.json"],
+  "recertification_triggers": ["dependency-change", "usage-schema-change", "identity-change", "billing-provider-change", "browser-matrix-change"]
+}

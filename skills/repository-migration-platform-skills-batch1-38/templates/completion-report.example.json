@@ -1,0 +1,32 @@
+{
+  "schema_version": "2.0",
+  "batch": 1,
+  "skill": "b01-source-executable-specification",
+  "status": "PARTIAL",
+  "gate_decision": "NOT_RUN",
+  "artifacts": [
+    {
+      "uri": "artifact://sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "bytes": 0,
+      "object_path": "objects/sha256/0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "evidence": [
+    "evidence://baseline-build"
+  ],
+  "findings": [],
+  "certificates": [],
+  "unknowns": [
+    "private dependency credentials unavailable"
+  ],
+  "limitations": [
+    "runtime behavior not yet replayed"
+  ],
+  "external_evidence_state": "NOT_RUN",
+  "certificate_ceiling": "LOCAL_TOOLKIT_PASS",
+  "next_batch_inputs": [
+    "source snapshot",
+    "baseline report"
+  ]
+}

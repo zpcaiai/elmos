@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cics Transaction Program And Resource Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $cics-transaction-program-and-resource-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

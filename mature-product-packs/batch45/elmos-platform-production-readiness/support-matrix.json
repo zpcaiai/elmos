@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-production-readiness",
+  "batch": 45,
+  "capabilities": [
+    {
+      "capabilityId": "b45-customer-value-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-deployment-matrix-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-design-partner-reference-validation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-developer-experience-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-economics-profitability-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-ecosystem-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-edition-route-vertical-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-functional-depth-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-independent-expert-validation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-mature-product-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-mature-product-evidence-pack",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-mature-product-final-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-mature-release-readiness",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-maturity-model-editions",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-product-governance-accountability",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-residual-risk-register",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-route-breadth-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-scale-performance-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-security-data-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-semantic-behavior-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-sre-reliability-dr-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    },
+    {
+      "capabilityId": "b45-target-maintainability-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidenceRefs": []
+    }
+  ],
+  "packKey": "elmos-platform-production-readiness"
+}

@@ -1,0 +1,66 @@
+{
+  "id": "B106-S13",
+  "batch": 106,
+  "name": "ready-triggered-ttl-controller",
+  "dependencies": [
+    "B106-S12"
+  ],
+  "inputs": [
+    "READY runtime run",
+    "tenant TTL policy",
+    "extension request"
+  ],
+  "outputs": [
+    "TTLLease",
+    "expiration events",
+    "extension decision"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/lifecycle/TtlLeaseService.java",
+      "runtime/workflow/PreviewTtlWorkflow.java",
+      "apps/web/src/features/runtime-timer/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}:extend",
+      "event runtime-run.expiring"
+    ],
+    "data": [
+      "ttl_lease",
+      "ttl_extension",
+      "expiration_notice"
+    ]
+  },
+  "workflow": [
+    "在READY事务内记录ready_at和expires_at",
+    "调度可重放durable timer",
+    "在5分钟/1分钟等阈值发布警告",
+    "按租户策略审批延期并更新版本",
+    "到期触发先撤路由后销毁",
+    "记录时钟源和所有延期历史"
+  ],
+  "tests": [
+    "构建时间不消耗预览TTL",
+    "重复延期请求幂等",
+    "超最大TTL拒绝",
+    "工作流重启后Timer恢复",
+    "时钟偏差测试保守到期"
+  ],
+  "evidence": [
+    "ttl-lease.json",
+    "extension-decisions.json",
+    "expiration-events.json"
+  ],
+  "definition_of_done": [
+    "TTL从READY计算",
+    "最大值受Policy限制",
+    "延期可审计",
+    "Timer可恢复",
+    "到期触发清理"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

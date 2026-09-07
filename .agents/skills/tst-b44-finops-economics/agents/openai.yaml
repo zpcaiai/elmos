@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B44 Finops Economics"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b44-finops-economics to run its exact Batch 38-45 cases with fail-closed evidence."

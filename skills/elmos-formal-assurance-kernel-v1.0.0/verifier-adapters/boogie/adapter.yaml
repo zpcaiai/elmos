@@ -1,0 +1,59 @@
+apiVersion: elmos.ai/v2alpha1
+kind: VerifierAdapter
+metadata:
+  name: boogie
+  title: Boogie
+  version: 1.0.0
+  versionPolicy: release-time-pinned
+  labels:
+    external: 'true'
+    productionEnablement: requires-conformance-and-license-review
+spec:
+  engine: boogie
+  evidenceTrust: SOLVER_TRUSTED
+  supportedProperties:
+  - VERIFICATION_CONDITIONS
+  - HOARE_LOGIC
+  - RELATIONAL_PROGRAMS
+  execution:
+    image: REPLACE_WITH_SIGNED_DIGEST
+    command:
+    - boogie
+    - /workspace/input.bpl
+    timeoutSeconds: 900
+    memoryMb: 4096
+    cpuLimit: '2'
+    workingDirectory: /workspace
+    exitCodePolicy:
+      '0': parsed-success
+      other: parsed-failure-or-infrastructure
+  security:
+    network: deny
+    secrets: none
+    filesystem: read-only-input-temp-output
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    seccomp: RuntimeDefault
+  inputMediaTypes:
+  - text/x-boogie
+  outputParser: elmos.formal.parsers.boogie
+  licenseReviewRequired: true
+  conformance:
+    fixtures:
+    - sat-or-counterexample
+    - unsat-or-proof
+    - timeout
+    - malformed-input
+    - resource-exhaustion
+    requiredBeforeProduction: true
+  statusMapping:
+    proof_or_unsat: PROVED_SOLVER_TRUSTED
+    no_counterexample_with_bound: BOUNDED_NO_COUNTEREXAMPLE
+    counterexample: REFUTED_WITH_COUNTEREXAMPLE
+    timeout: UNKNOWN_TIMEOUT
+    resource_exhausted: UNKNOWN_RESOURCE_LIMIT
+    unsupported: UNSUPPORTED
+  limitations:
+  - Adapter declaration is not tool installation.
+  - Exact version, image digest, SBOM and signature must be fixed at release time.
+  - Only declared and conformance-tested fragments may be routed.

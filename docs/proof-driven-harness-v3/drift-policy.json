@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "pinned archive byte length and SHA-256",
+    "safe ZIP paths and Unicode/casefold uniqueness",
+    "regular unencrypted members and bounded compression",
+    "CRC and all 985 FILES.sha256 rows",
+    "explicit quarantine of exactly 21 unlisted PYC members",
+    "exact manifest counts, 16-entry registry, and 76-edge acyclic DAG",
+    "optional receipt bound to the exact engine tree, 16 Skills, 96 components, raw logs, and fixed qualifier",
+    "byte-identical generated files in both install roots",
+    "no unmanaged files or symlinks in managed Skill directories"
+  ],
+  "decision": "FAIL_CLOSED",
+  "kind": "elmos.proof-driven-harness-v3.drift-policy",
+  "on_drift": "reject installation and preserve NOT_RUN/NOT_CERTIFIED",
+  "schema_version": "1.0.0"
+}

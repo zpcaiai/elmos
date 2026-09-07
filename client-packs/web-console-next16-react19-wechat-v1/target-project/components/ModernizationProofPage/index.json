@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "modernization-proof-studio": "/components/ModernizationProofStudio/index"
+  }
+}

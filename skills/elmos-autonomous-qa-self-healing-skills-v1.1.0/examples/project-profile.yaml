@@ -1,0 +1,33 @@
+project_id: elmos-sample-commerce
+snapshot:
+  git_commit: 6a7f0f-example
+  requirement_sources:
+    - docs/requirements.md
+    - docs/constraints.md
+    - openapi/api.yaml
+  code_roots:
+    - services/order-service
+    - services/payment-router
+    - apps/admin-web
+technology:
+  languages: [Java, TypeScript]
+  frameworks: [Spring, React]
+  database: PostgreSQL
+  message_broker: Kafka
+quality:
+  profile: strict
+  p0_p1_executable_coverage: 1.0
+support_matrix:
+  browsers: [chromium, firefox, webkit]
+  viewports: [mobile, tablet, desktop]
+performance:
+  scenarios:
+    create_order:
+      target_rps: 100
+      p95_ms: 300
+      error_rate_max: 0.001
+repair:
+  mode: repair
+  auto_accept_risk_levels: [R0, R1]
+  max_iterations: 3
+

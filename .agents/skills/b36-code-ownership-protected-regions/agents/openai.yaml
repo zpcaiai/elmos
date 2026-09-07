@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Code Ownership"
+  short_description: "Protect generated and human-owned code regions"
+  default_prompt: "Use $b36-code-ownership-protected-regions to define and verify exact ownership and protected-region policies."

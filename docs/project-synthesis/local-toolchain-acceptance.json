@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_class": "LOCAL_ENGINEERING",
+  "observed_at": "2026-07-27T03:47:03Z",
+  "environment": {
+    "operating_system": "Darwin 26.5.2",
+    "build": "25F84",
+    "architecture": "arm64",
+    "toolchain_root": "~/.local/share/elmos/toolchains"
+  },
+  "toolchains": {
+    "go": {
+      "required": "Go 1.25.0",
+      "observed": "go version go1.25.0 darwin/arm64"
+    },
+    "kotlin": {
+      "required": "Kotlin Gradle plugin 2.2.20, JVM 21, Gradle 8.14.3",
+      "observed": "Kotlin Gradle plugin 2.2.20 build passed; OpenJDK 21.0.11; Gradle 8.14.3"
+    },
+    "php": {
+      "required": "PHP 8.4.12",
+      "observed": "PHP 8.4.12 (cli) (NTS)"
+    },
+    "rust": {
+      "required": "rustc and cargo 1.89.0",
+      "observed": "rustc 1.89.0 (29483883e); cargo 1.89.0 (c24e10642)"
+    }
+  },
+  "replay": {
+    "install_and_accept": "make project-synthesis-toolchains",
+    "accept_without_install": "uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --language go --language kotlin --language php --language rust --require-all-toolchains"
+  },
+  "result": {
+    "status": "PASSED",
+    "generated_file_count": 80,
+    "build_and_analysis_count": 18,
+    "cleanup_status": "PASSED",
+    "languages": {
+      "go": {
+        "exact_toolchain": true,
+        "build_test_analysis": "PASSED",
+        "startup_probe": "PASSED"
+      },
+      "kotlin": {
+        "exact_toolchain": true,
+        "build_test_analysis": "PASSED",
+        "startup_probe": "PASSED"
+      },
+      "php": {
+        "exact_toolchain": true,
+        "build_test_analysis": "PASSED",
+        "startup_probe": "PASSED"
+      },
+      "rust": {
+        "exact_toolchain": true,
+        "build_test_analysis": "PASSED",
+        "startup_probe": "PASSED"
+      }
+    }
+  },
+  "claim_boundary": {
+    "production_delivery_status": "NOT_RUN",
+    "external_certification_status": "NOT_RUN",
+    "statement": "This is replayable local engineering evidence for the exact starter profiles. It is not production, customer, independent-review, or certification evidence."
+  }
+}

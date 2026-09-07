@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Legal Ops Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $legal-ops-policy-authorization-approval-segregation-and-94f00a8d to implement its fail-closed ELMOS Product B54 contract."

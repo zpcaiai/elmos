@@ -1,0 +1,61 @@
+feat(polyglot-route): S0/S1/S2 —— 语言集边界、属性/突变测试、L0 算术的 SMT 证明
+
+按 docs/cross-language-equivalence-gap-plan.md 的路线图执行前三阶段。
+
+S0 语言集一致性
+  models.py 显式声明 ROUTED_LANGUAGES(6) 与 ENGINE_ONLY_LANGUAGES(3)。此前引擎
+  声明 9 种语言、routes/ 只有 6 种语言的 30 条路线，二者无人对账：从引擎读是
+  72 个有向对，从证据读是 30 个。tests/test_language_set.py 校验划分穷尽、30 个
+  路线包齐全、engine-only 语言不得声称路线证据。缺口未关闭（cpp/objc/swift 仍无
+  语料与证书），但不再是无声的。
+
+S1 用例强度
+  canonical.py（新增）：R1/R2 的可执行参照实现。差分测试需要参照物，拿某个
+  target 当参照等于把一份实现悄悄提升成规范。它另报告每个中间值的最大量级，
+  这是把 TypeScript 收窄说准确所必需的 —— (a+b)*a-b 在 a=1,b=2^53-1 时答案是 1，
+  但中间值是 2^53，TypeScript 必须失败；只看操作数与结果会误判为分歧。
+
+  test_property_differential.py：覆盖 L0 全部产生式的 5 个单元 x 600 组输入
+  （225 组边界值全排列 + 固定种子分层随机），差分 + 变形关系；另有一条测试断言
+  该分布确实到达各区域，否则断言全是空转 —— 那正是 9 个手写用例的失败模式。
+
+  tools/run_emitter_mutation_campaign.py：23 个突变体，每个撤销一处补偿。
+  首轮 89.5%（17/19），两个幸存者各暴露一个真实测试空洞：
+  - Rust 括号：受检算术调用自带括号，重结合只在中缀发射的算子上显形。
+    (a || b) && c 去括号后是 a || b && c，a=true b=false c=false 时 false 变 true。
+  - Go 溢出谓词：改坏四个守卫全绿，因为没有测试执行 Go，而 SMT 证明读的是手工
+    转写的模型不是 emitter 文本 —— 模型漂移，装饰性证明的典型死法。
+  补齐后 100%（23/23）。
+
+  另修一处 S1 期间发现的缺陷：Python 与 TypeScript 是仅有的两个参数类型能容纳
+  超范围整数的目标（其余目标的 int64 物理上表示不了）。TypeScript 有守卫，
+  Python 没有，超范围实参会静默参与计算。已补 _elmos_in_range 参数守卫。
+
+S2 形式化验证
+  tools/prove_arithmetic_compensation.py：45 条义务（9 目标 x 5 算子），位向量
+  理论，证明对全部 64 位输入补偿形式与 canonical 规则同时报错或同值。
+  结果：13 条 64 位证明 / 2 条有界（go * 与 python % 只到 8 位，位向量乘法配
+  除法在全宽下打不过预算）/ 30 条公理化 / 0 条被反驳。
+
+  四种强度分开报告，这比总数重要：go 与 python 靠手写 helper 函数体补偿，是会
+  写错的普通代码，那 8 条是真正的内容；typescript 的 5 条证的是守卫结构而非函数
+  体，较弱；其余 30 条的补偿就是语言原语，义务是一条规范引用，求解器无从判定，
+  标为 AXIOM 而非 THEOREM，靠差分执行覆盖。
+
+  两处工程细节：求解器状态会改变结论（python / 在干净进程 2.4s 判定，跟在三次
+  超时查询之后就超时），故每条义务在独立子进程运行，否则报告答案取决于提问顺序；
+  MODELLED_SOURCES 把每个模型钉到它所描述的 emitter helper 文本，改一个 helper
+  就是代码+模型两处编辑而非无声分叉 —— 加锁前 4 个 Go 突变体全部存活。
+
+  范围声明：只覆盖 L0 整数算术。求解器能判定，恰恰因为这个子集小到在真实代码上
+  几乎没用。诚实的读法是证明了地基是稳的，不是证明了楼已经盖起来。
+
+尚未做，需在有全部九套工具链的机器上补：
+- scripts/batch29/run_polyglot_routes.py 重新生成 30 条路线证据（Python 目标新增
+  参数守卫，发射结果再次变化，target.sha256 全部过期）；
+- C#、Swift、Objective-C 的编译执行验证；
+- routes/*/lowering/profile.json 增记 R1/R2；
+- S3 起的 L1 局部变量与作用域。
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01RjNjTZ4krP9RxdoAQ9v9Z3

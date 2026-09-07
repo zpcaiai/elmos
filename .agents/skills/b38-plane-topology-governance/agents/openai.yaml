@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Plane Topology Governance"
+  short_description: "Run evidence-bound Batch 38 plane topology governance work"
+  default_prompt: "Use $b38-plane-topology-governance to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-intake-ingestion-connector-sync-and-idempotency to implement its fail-closed ELMOS Product B50 contract."

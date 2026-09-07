@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+ordinal: 25
+name: elmos-multimodal-input-workbench-ui
+title: 多模态输入工作台 UI
+objective: 让用户清楚看到每个资产的安全、上传、解析、上下文和审阅状态，并能控制资料角色和模型读取权限。
+dependencies:
+- elmos-ingestion-api-and-sdk
+- elmos-human-review-and-correction
+inputs:
+- 会话状态、资产、进度事件
+outputs:
+- 用户操作、审阅决策、任务提交
+responsibilities:
+- 实现统一输入区、文件卡片、目录树、音频转录和文档预览
+- 实时显示上传、解析状态、机器 ETA、成本和恢复操作
+- 支持主资料、参考资料、禁止模型读取、忽略和嵌套解压选择
+- 实现无障碍、键盘操作、超大列表虚拟化和断线重连
+deliverables:
+- 前端页面与组件
+- SSE、WebSocket 状态同步层
+- 组件、E2E、视觉回归和可访问性测试
+acceptance:
+- 用户能区分已上传、已解析、已索引、已装入上下文和仅可检索
+- 错误信息可操作且不泄露内部路径或敏感值
+- 大目录树和长转录保持可用性能
+- 刷新或重连后状态与服务端一致
+data_entities:
+- ui_sessions
+- user_asset_preferences
+events:
+- ui.asset.role.changed
+- ui.review.submitted
+metrics:
+- upload_completion_rate
+- frontend_error_rate
+failure_modes:
+- SSE 断线
+- 大树渲染卡顿
+- 状态竞态
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "source_tuple": {
+    "stack": "nextjs-app-router",
+    "versions": [
+      "16.2.10"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "24.14.0"
+    ],
+    "build_tool": "next-16.2.10",
+    "package_manager": "pnpm-10.12.4",
+    "router": [],
+    "renderer": [],
+    "state": [],
+    "forms": [],
+    "styling": [],
+    "design_system": [],
+    "api_client": [],
+    "identity": [],
+    "i18n": [],
+    "test_tools": [],
+    "browsers": [
+      "chromium-UNSET"
+    ],
+    "devices": []
+  },
+  "snapshot_digest": "UNSET",
+  "coverage": 0,
+  "routes": [],
+  "components": [],
+  "templates": [],
+  "state_stores": [],
+  "forms": [],
+  "api_clients": [],
+  "auth": [],
+  "i18n": [],
+  "design_assets": [],
+  "accessibility": [],
+  "runtime_evidence": [],
+  "evidence_refs": []
+}

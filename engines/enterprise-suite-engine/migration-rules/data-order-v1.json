@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "order": ["CONFIGURATION", "REFERENCE", "MASTER", "OPENING_BALANCE", "OPEN_TRANSACTION", "REQUIRED_HISTORY", "ATTACHMENT", "DERIVED_INDEX"],
+  "masterDataHardGate": true,
+  "financialReconciliationHardGate": true,
+  "inventoryReconciliationHardGate": true,
+  "rejectedRecordOwnerRequired": true
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Holdout Feedback Calibration"
+  short_description: "Run evidence-bound Batch 41 holdout feedback calibration work"
+  default_prompt: "Use $b41-holdout-feedback-calibration to implement and verify this capability with fail-closed evidence."

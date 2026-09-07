@@ -1,0 +1,66 @@
+{
+  "id": "B105-S07",
+  "batch": 105,
+  "name": "automated-vs-agent-change-attribution",
+  "dependencies": [
+    "B105-S06"
+  ],
+  "inputs": [
+    "stage commits",
+    "agent change ledger",
+    "manual intervention ledger"
+  ],
+  "outputs": [
+    "ChangeAttributionReport",
+    "automation metrics"
+  ],
+  "implementation": {
+    "modules": [
+      "services/control-plane/.../metrics/ChangeAttributionService.java",
+      "analytics/modernization/attribution.sql",
+      "apps/web/src/features/automation-metrics/"
+    ],
+    "interfaces": [
+      "GET /api/projects/{id}/change-attribution",
+      "event attribution.calculated"
+    ],
+    "data": [
+      "change_attribution",
+      "change_segment",
+      "automation_metric"
+    ]
+  },
+  "workflow": [
+    "读取Commit、patch和actor provenance",
+    "排除生成文件、格式化和报告噪声",
+    "按规则/Agent/人工/测试/基础设施分类",
+    "计算文件、行、语义单元和修复项四种比例",
+    "标记重叠归因并采用保守分配",
+    "输出可复算指标和口径版本"
+  ],
+  "tests": [
+    "格式化10万行不虚增业务自动化率",
+    "同一行多actor修改采用最终责任规则",
+    "缺失provenance时归为UNKNOWN",
+    "生成代码单独报告",
+    "指标可由原始patch复算"
+  ],
+  "evidence": [
+    "attribution.json",
+    "automation-metrics.json",
+    "metric-definition.json",
+    "recalculation-command.txt"
+  ],
+  "definition_of_done": [
+    "口径版本化",
+    "UNKNOWN显式展示",
+    "生成/格式化不计业务自动化",
+    "数值可复算",
+    "报告绑定Commit区间"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

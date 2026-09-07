@@ -1,0 +1,4 @@
+interface:
+  display_name: "Configuration and Versioning Foundation"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0107-configuration-and-versioning-foundation to run FRT-0107 through the governed FRT runtime with exact scope and fail-closed evidence."

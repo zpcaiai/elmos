@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 多格式图表生成与渲染"
+  short_description: "Guide 多格式图表生成与渲染 with evidence controls"
+  default_prompt: "Use $elmos-diagram-rendering as guidance for 多格式图表生成与渲染 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

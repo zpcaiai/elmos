@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/checkpoint.schema.json",
+  "title": "ETGB Durable Checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "run_id", "phase", "revision", "candidate_digest", "plan_digest",
+    "environment_digest", "fencing_token", "artifacts", "side_effects", "resume_payload",
+    "created_at", "updated_at", "previous_checkpoint_digest", "checkpoint_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "run_id": {"type": "string"},
+    "phase": {"type": "string"},
+    "revision": {"type": "integer", "minimum": 0},
+    "candidate_digest": {"type": "string"},
+    "plan_digest": {"type": "string"},
+    "environment_digest": {"type": "string"},
+    "workspace_digest": {"type": ["string", "null"]},
+    "fencing_token": {"type": "integer", "minimum": 1},
+    "artifacts": {"type": "array", "items": {"type": "object"}},
+    "side_effects": {"type": "array", "items": {"type": "object"}},
+    "resume_payload": {"type": "object"},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"},
+    "previous_checkpoint_digest": {"type": ["string", "null"]},
+    "checkpoint_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

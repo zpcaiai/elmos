@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "sat\n",
+  "stderr": "",
+  "outcome": "SAT",
+  "proof_status": "REFUTED",
+  "unconditional_proof": false,
+  "route_id": "mutation:form-binding-validation:SOURCE_ONLY",
+  "formal_input_digest": "sha256:11754e27c7c289a01e239916e3e8d926878d7bb0835b922dc367138c117aa771",
+  "solver_input_digest": "sha256:5f76dfe18f311282b04b18d3c66438c956e733ef115d40b067cfc9bf13b9f85f",
+  "smt2_digest": "sha256:5f76dfe18f311282b04b18d3c66438c956e733ef115d40b067cfc9bf13b9f85f",
+  "mutation_formal_input_path": "mutations/form-binding-validation/source-only/formal-input.json",
+  "mutation_solver_input_path": "mutations/form-binding-validation/source-only/proof.smt2",
+  "expected_outcome": "SAT",
+  "replay_status": "PASSED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Payment Treasury Conformance Security Chaos Performance And Release Gates"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $payment-treasury-conformance-security-chaos-performance-80eac559 to implement its fail-closed ELMOS Product B39 contract."

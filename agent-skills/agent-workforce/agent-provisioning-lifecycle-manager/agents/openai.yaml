@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 536: agent provisioning lifecycle manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-provisioning-lifecycle-manager to evaluate this capability with evidence."

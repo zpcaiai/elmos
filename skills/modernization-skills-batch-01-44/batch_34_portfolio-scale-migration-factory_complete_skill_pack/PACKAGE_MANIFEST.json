@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-34-portfolio-scale-migration-factory-complete-skill-pack",
+  "batch": 34,
+  "title": "Portfolio-Scale Multi-Repository Migration Factory",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b34-portfolio-scale-migration-factory-orchestrator",
+    "b34-portfolio-scale-migration-factory-domain-model",
+    "b34-portfolio-scale-migration-factory-discovery-inventory",
+    "b34-portfolio-scale-migration-factory-capability-planning",
+    "b34-portfolio-scale-migration-factory-deterministic-engine",
+    "b34-portfolio-scale-migration-factory-adapter-provider",
+    "b34-portfolio-scale-migration-factory-workflow-runtime",
+    "b34-portfolio-scale-migration-factory-lineage-reconciliation",
+    "b34-portfolio-scale-migration-factory-security-policy",
+    "b34-portfolio-scale-migration-factory-human-approval",
+    "b34-portfolio-scale-migration-factory-observability-economics",
+    "b34-portfolio-scale-migration-factory-corpus-benchmark",
+    "b34-portfolio-scale-migration-factory-failure-recovery",
+    "b34-portfolio-scale-migration-factory-integration-api",
+    "b34-portfolio-scale-migration-factory-lifecycle-recertification",
+    "b34-portfolio-scale-migration-factory-certification-gate"
+  ],
+  "upstream_batch": 33,
+  "files": [
+    {
+      "path": "BATCH33_COMPATIBILITY.md",
+      "sha256": "2b2728d216a1c9d4c4e1eee642349118bdc9612d109236d7157369f8c8aac6b1",
+      "size": 2096
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "1944455cdae377c4f47d36ebb6b2a5d0e0ddd682747213a5450ef6e0e508b15b",
+      "size": 2285
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "b1417cb82c2b7034991a58012d5fe2dacbef87efb82dec6fe3e0a9cf6979ebc7",
+      "size": 1759
+    },
+    {
+      "path": "README.md",
+      "sha256": "3ae0805008e14fb36861568dcefac15b04873ebe76e268474e2223b5782cee7a",
+      "size": 1078
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "6504ea132ba7291f4dacf769d3b4bce56dfc5c61b73018116d62c8a5d9c691ef",
+      "size": 3602
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "7cdbface03da257c88b56f929ca04478654b49818c9fa227e6481c9c611c386d",
+      "size": 3147
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "cbef935416b8c73bca76cfbcc7a78c48f9a4fd8078c9ad8180cd1b2feedd1dd3",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "38b36780a2aa3d67736842728937a5e9813ba449278634d1500a2b4dc192a008",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "e07eb250bee69937caa89a12731c1da0e11595457a0a2053341247bcda34804d",
+      "size": 284
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "b0bd71d73d8fa82bc199f6e25f489069d4d99dab914bbe4ac985758107d8af65",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "03e4b8d8df340f787ed35a9bc9a2f5bb571f5c42503f38904d76d8110f4fbd76",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "90ca8bcab850541b03330b9019ad2177365b9168e9760763e6f04e0931588429",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "19ac7080a306a7074a98aec6c6a65401cef618584722221de9729865b0c386c7",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "339aa0e0d15f674553db440fbeb5b2058f86bc5c5c6b8ebdb0cfb8b8c8e2b53b",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "52406ca88a630fc8c1db97fa2ef693b31a2704515d6f5d8e511c68034abfdf39",
+      "size": 848
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-adapter-provider/SKILL.md",
+      "sha256": "3e8851daba3acb8ac6eb4a31143012b582ca5a129fc56b9917909c7e83eb1f21",
+      "size": 3871
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-capability-planning/SKILL.md",
+      "sha256": "f92a5d586c3c56b52f3a666f9513df38ffe4a3581b2f9b1f31e94a30cb639f32",
+      "size": 3773
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-certification-gate/SKILL.md",
+      "sha256": "259316dc790451083be42cc76b1df684146ab857371d7532217dd4e05611725d",
+      "size": 3902
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-corpus-benchmark/SKILL.md",
+      "sha256": "66e660cd7ea07df222f8ec68009bafe1fa2534b40baf02743e16aee84b8080d6",
+      "size": 3812
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-deterministic-engine/SKILL.md",
+      "sha256": "70311cb0ba1e76cd8ddb6b68caf9b44653a7f843b64a45b09aea795663c7433a",
+      "size": 3789
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-discovery-inventory/SKILL.md",
+      "sha256": "0b5655e9977bec71fb2f47183e20ad1b85c01f1af17a902ed63e59ad9252d96b",
+      "size": 3816
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-domain-model/SKILL.md",
+      "sha256": "f76ed5d96f04e6f29854f90a3f298eb7f31add26c3c5a32df1a5a3fec92a0182",
+      "size": 3843
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-failure-recovery/SKILL.md",
+      "sha256": "64bb2251fd27bc20d223fa73ec00a74cf79bd8e7ea2143fdcbf4808689e6bf48",
+      "size": 3820
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-human-approval/SKILL.md",
+      "sha256": "e8a37a61b1fb364cea4e4a225143a54719632ba5b12bb92f0d568c3bdf47514a",
+      "size": 3805
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-integration-api/SKILL.md",
+      "sha256": "1363498884ab6624aca86bf56b814f4e8be727ead0be4a43a1b8af80929b78e6",
+      "size": 3790
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-lifecycle-recertification/SKILL.md",
+      "sha256": "14916dbcbc5cdb099e40720ebb75a44cf08d239887a56549a55d89517ded3103",
+      "size": 3880
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-lineage-reconciliation/SKILL.md",
+      "sha256": "4198899e765d0f07f27d8bee9f08af3044cd39f1f21d298d8fbe319aa85ab0c0",
+      "size": 3831
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-observability-economics/SKILL.md",
+      "sha256": "e7dcc49dcd342ac1872a28709d584b2f7dc8a34ee30af33d5214d034822fd758",
+      "size": 3846
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-orchestrator/SKILL.md",
+      "sha256": "91da458b6c2335ceb9744fe43e2f15e6766f8733e04785013eec176b741e5442",
+      "size": 3868
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-security-policy/SKILL.md",
+      "sha256": "daac44e4fb9e35fb034587d4a9014702011b82c952f52772ca633d9ae49ecd57",
+      "size": 3825
+    },
+    {
+      "path": "skills/b34-portfolio-scale-migration-factory-workflow-runtime/SKILL.md",
+      "sha256": "3a671ad3d985336fc659feb0020f4e882e34ed7761aabd46ff8c76dcc91e9e5e",
+      "size": 3834
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "242361ad72e2396b9e629e088cc31c9638f7ca06ccefc9b17428943289f0b8ed",
+      "size": 373
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "f5ffbddbb41ca3ec9d1804d97cf3481baa29639574aac3103343917390dc62a9",
+      "size": 1928
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

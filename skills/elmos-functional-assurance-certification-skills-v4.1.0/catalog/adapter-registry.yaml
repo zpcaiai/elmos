@@ -1,0 +1,792 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterRegistry
+metadata:
+  name: elmos-functional-assurance-certification-skills-adapters
+  version: 4.1.0
+spec:
+  packageRole: certification
+  adapters:
+  - name: aicpa-soc2-trust-services
+    ecosystem: AICPA SOC 2 Trust Services Criteria Profile
+    kind: assurance-report-profile
+    path: target-adapters/aicpa-soc2-trust-services/adapter.yaml
+    versionSupport: target-adapters/aicpa-soc2-trust-services/version-support.yaml
+    conformance: target-adapters/aicpa-soc2-trust-services/conformance.yaml
+    package_role: certification
+  - name: ccra-cpp-recognition
+    ecosystem: Common Criteria Recognition Arrangement and Collaborative Protection Profiles
+    kind: recognition-arrangement
+    path: target-adapters/ccra-cpp-recognition/adapter.yaml
+    versionSupport: target-adapters/ccra-cpp-recognition/version-support.yaml
+    conformance: target-adapters/ccra-cpp-recognition/conformance.yaml
+    package_role: certification
+  - name: common-criteria-2022
+    ecosystem: Common Criteria 2022
+    kind: security-evaluation-standard
+    path: target-adapters/common-criteria-2022/adapter.yaml
+    versionSupport: target-adapters/common-criteria-2022/version-support.yaml
+    conformance: target-adapters/common-criteria-2022/conformance.yaml
+    package_role: certification
+  - name: cyclonedx-v1.7
+    ecosystem: CycloneDX v1.7
+    kind: bom-standard
+    path: target-adapters/cyclonedx-v1.7/adapter.yaml
+    versionSupport: target-adapters/cyclonedx-v1.7/version-support.yaml
+    conformance: target-adapters/cyclonedx-v1.7/conformance.yaml
+    package_role: certification
+  - name: en-50126
+    ecosystem: EN 50126 Railway RAMS
+    kind: sector-rail-standard
+    path: target-adapters/en-50126/adapter.yaml
+    versionSupport: target-adapters/en-50126/version-support.yaml
+    conformance: target-adapters/en-50126/conformance.yaml
+    package_role: certification
+  - name: en-50129
+    ecosystem: EN 50129 Railway Safety-related Electronic Systems
+    kind: sector-rail-standard
+    path: target-adapters/en-50129/adapter.yaml
+    versionSupport: target-adapters/en-50129/version-support.yaml
+    conformance: target-adapters/en-50129/conformance.yaml
+    package_role: certification
+  - name: en-50716
+    ecosystem: EN 50716 Railway Software Development
+    kind: sector-rail-standard
+    path: target-adapters/en-50716/adapter.yaml
+    versionSupport: target-adapters/en-50716/version-support.yaml
+    conformance: target-adapters/en-50716/conformance.yaml
+    package_role: certification
+  - name: fda-ai-enabled-device-pccp
+    ecosystem: FDA Predetermined Change Control Plan for AI-enabled Device Software Functions
+    kind: sector-medical-guidance
+    path: target-adapters/fda-ai-enabled-device-pccp/adapter.yaml
+    versionSupport: target-adapters/fda-ai-enabled-device-pccp/version-support.yaml
+    conformance: target-adapters/fda-ai-enabled-device-pccp/conformance.yaml
+    package_role: certification
+  - name: fda-ai-ml-gmlp
+    ecosystem: FDA Good Machine Learning Practice Guiding Principles
+    kind: sector-medical-guidance
+    path: target-adapters/fda-ai-ml-gmlp/adapter.yaml
+    versionSupport: target-adapters/fda-ai-ml-gmlp/version-support.yaml
+    conformance: target-adapters/fda-ai-ml-gmlp/conformance.yaml
+    package_role: certification
+  - name: fips-140-3-cmvp
+    ecosystem: FIPS 140-3 Cryptographic Module Validation Program
+    kind: cryptographic-validation-program
+    path: target-adapters/fips-140-3-cmvp/adapter.yaml
+    versionSupport: target-adapters/fips-140-3-cmvp/version-support.yaml
+    conformance: target-adapters/fips-140-3-cmvp/conformance.yaml
+    package_role: certification
+  - name: fips-203-ml-kem
+    ecosystem: FIPS 203 ML-KEM
+    kind: post-quantum-standard
+    path: target-adapters/fips-203-ml-kem/adapter.yaml
+    versionSupport: target-adapters/fips-203-ml-kem/version-support.yaml
+    conformance: target-adapters/fips-203-ml-kem/conformance.yaml
+    package_role: certification
+  - name: fips-204-ml-dsa
+    ecosystem: FIPS 204 ML-DSA
+    kind: post-quantum-standard
+    path: target-adapters/fips-204-ml-dsa/adapter.yaml
+    versionSupport: target-adapters/fips-204-ml-dsa/version-support.yaml
+    conformance: target-adapters/fips-204-ml-dsa/conformance.yaml
+    package_role: certification
+  - name: fips-205-slh-dsa
+    ecosystem: FIPS 205 SLH-DSA
+    kind: post-quantum-standard
+    path: target-adapters/fips-205-slh-dsa/adapter.yaml
+    versionSupport: target-adapters/fips-205-slh-dsa/version-support.yaml
+    conformance: target-adapters/fips-205-slh-dsa/conformance.yaml
+    package_role: certification
+  - name: global-accreditation-cooperation-mra-2026
+    ecosystem: Global Accreditation Cooperation Multilateral Recognition Arrangement 2026
+    kind: recognition-arrangement
+    path: target-adapters/global-accreditation-cooperation-mra-2026/adapter.yaml
+    versionSupport: target-adapters/global-accreditation-cooperation-mra-2026/version-support.yaml
+    conformance: target-adapters/global-accreditation-cooperation-mra-2026/conformance.yaml
+    package_role: certification
+  - name: iec-61508
+    ecosystem: IEC 61508 Functional Safety
+    kind: sector-safety-standard
+    path: target-adapters/iec-61508/adapter.yaml
+    versionSupport: target-adapters/iec-61508/version-support.yaml
+    conformance: target-adapters/iec-61508/conformance.yaml
+    package_role: certification
+  - name: iec-62304
+    ecosystem: IEC 62304 Medical Device Software Life Cycle
+    kind: sector-medical-standard
+    path: target-adapters/iec-62304/adapter.yaml
+    versionSupport: target-adapters/iec-62304/version-support.yaml
+    conformance: target-adapters/iec-62304/conformance.yaml
+    package_role: certification
+  - name: iec-62366-1
+    ecosystem: IEC 62366-1 Medical Device Usability Engineering
+    kind: sector-medical-standard
+    path: target-adapters/iec-62366-1/adapter.yaml
+    versionSupport: target-adapters/iec-62366-1/version-support.yaml
+    conformance: target-adapters/iec-62366-1/conformance.yaml
+    package_role: certification
+  - name: iec-62443-3-3
+    ecosystem: IEC 62443-3-3 Industrial System Security Requirements
+    kind: sector-industrial-standard
+    path: target-adapters/iec-62443-3-3/adapter.yaml
+    versionSupport: target-adapters/iec-62443-3-3/version-support.yaml
+    conformance: target-adapters/iec-62443-3-3/conformance.yaml
+    package_role: certification
+  - name: iec-62443-4-1
+    ecosystem: IEC 62443-4-1 Secure Product Development Lifecycle
+    kind: sector-industrial-standard
+    path: target-adapters/iec-62443-4-1/adapter.yaml
+    versionSupport: target-adapters/iec-62443-4-1/version-support.yaml
+    conformance: target-adapters/iec-62443-4-1/conformance.yaml
+    package_role: certification
+  - name: iec-62443-4-2
+    ecosystem: IEC 62443-4-2 Industrial Component Security Requirements
+    kind: sector-industrial-standard
+    path: target-adapters/iec-62443-4-2/adapter.yaml
+    versionSupport: target-adapters/iec-62443-4-2/version-support.yaml
+    conformance: target-adapters/iec-62443-4-2/conformance.yaml
+    package_role: certification
+  - name: ieee-1012
+    ecosystem: IEEE 1012 System Software and Hardware Verification and Validation
+    kind: verification-validation-standard
+    path: target-adapters/ieee-1012/adapter.yaml
+    versionSupport: target-adapters/ieee-1012/version-support.yaml
+    conformance: target-adapters/ieee-1012/conformance.yaml
+    package_role: certification
+  - name: ietf-rats-rfc9334
+    ecosystem: IETF RATS RFC 9334
+    kind: attestation-standard
+    path: target-adapters/ietf-rats-rfc9334/adapter.yaml
+    versionSupport: target-adapters/ietf-rats-rfc9334/version-support.yaml
+    conformance: target-adapters/ietf-rats-rfc9334/conformance.yaml
+    package_role: certification
+  - name: ilac-g17-2021
+    ecosystem: ILAC G17:01/2021 Measurement Uncertainty in Testing
+    kind: accreditation-guidance
+    path: target-adapters/ilac-g17-2021/adapter.yaml
+    versionSupport: target-adapters/ilac-g17-2021/version-support.yaml
+    conformance: target-adapters/ilac-g17-2021/conformance.yaml
+    package_role: certification
+  - name: ilac-g8-2019
+    ecosystem: ILAC G8:09/2019 Decision Rules and Statements of Conformity
+    kind: accreditation-guidance
+    path: target-adapters/ilac-g8-2019/adapter.yaml
+    versionSupport: target-adapters/ilac-g8-2019/version-support.yaml
+    conformance: target-adapters/ilac-g8-2019/conformance.yaml
+    package_role: certification
+  - name: in-toto-attestation
+    ecosystem: in-toto Attestation
+    kind: assurance-standard
+    path: target-adapters/in-toto-attestation/adapter.yaml
+    versionSupport: target-adapters/in-toto-attestation/version-support.yaml
+    conformance: target-adapters/in-toto-attestation/conformance.yaml
+    package_role: certification
+  - name: iso-13528-2022
+    ecosystem: ISO 13528:2022 Statistical Methods for Proficiency Testing
+    kind: proficiency-statistics-standard
+    path: target-adapters/iso-13528-2022/adapter.yaml
+    versionSupport: target-adapters/iso-13528-2022/version-support.yaml
+    conformance: target-adapters/iso-13528-2022/conformance.yaml
+    package_role: certification
+  - name: iso-14971
+    ecosystem: ISO 14971 Medical Device Risk Management
+    kind: sector-medical-standard
+    path: target-adapters/iso-14971/adapter.yaml
+    versionSupport: target-adapters/iso-14971/version-support.yaml
+    conformance: target-adapters/iso-14971/conformance.yaml
+    package_role: certification
+  - name: iso-17034-2016
+    ecosystem: ISO 17034:2016 Reference Material Producers
+    kind: reference-material-standard
+    path: target-adapters/iso-17034-2016/adapter.yaml
+    versionSupport: target-adapters/iso-17034-2016/version-support.yaml
+    conformance: target-adapters/iso-17034-2016/conformance.yaml
+    package_role: certification
+  - name: iso-19011-2018
+    ecosystem: ISO 19011:2018 Management System Auditing Guidance
+    kind: audit-standard
+    path: target-adapters/iso-19011-2018/adapter.yaml
+    versionSupport: target-adapters/iso-19011-2018/version-support.yaml
+    conformance: target-adapters/iso-19011-2018/conformance.yaml
+    package_role: certification
+  - name: iso-21448
+    ecosystem: ISO 21448 Safety of the Intended Functionality
+    kind: sector-automotive-standard
+    path: target-adapters/iso-21448/adapter.yaml
+    versionSupport: target-adapters/iso-21448/version-support.yaml
+    conformance: target-adapters/iso-21448/conformance.yaml
+    package_role: certification
+  - name: iso-26262
+    ecosystem: ISO 26262 Road Vehicles Functional Safety
+    kind: sector-automotive-standard
+    path: target-adapters/iso-26262/adapter.yaml
+    versionSupport: target-adapters/iso-26262/version-support.yaml
+    conformance: target-adapters/iso-26262/conformance.yaml
+    package_role: certification
+  - name: iso-iec-12792-2025
+    ecosystem: ISO/IEC 12792:2025 Transparency Taxonomy of AI Systems
+    kind: ai-transparency-standard
+    path: target-adapters/iso-iec-12792-2025/adapter.yaml
+    versionSupport: target-adapters/iso-iec-12792-2025/version-support.yaml
+    conformance: target-adapters/iso-iec-12792-2025/conformance.yaml
+    package_role: certification
+  - name: iso-iec-15026-series
+    ecosystem: ISO/IEC 15026 Systems and Software Assurance
+    kind: assurance-case-standard
+    path: target-adapters/iso-iec-15026-series/adapter.yaml
+    versionSupport: target-adapters/iso-iec-15026-series/version-support.yaml
+    conformance: target-adapters/iso-iec-15026-series/conformance.yaml
+    package_role: certification
+  - name: iso-iec-15408-2022
+    ecosystem: ISO/IEC 15408:2022 Common Criteria Series
+    kind: security-evaluation-standard
+    path: target-adapters/iso-iec-15408-2022/adapter.yaml
+    versionSupport: target-adapters/iso-iec-15408-2022/version-support.yaml
+    conformance: target-adapters/iso-iec-15408-2022/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17000-2020
+    ecosystem: ISO/IEC 17000:2020 Conformity Assessment Vocabulary
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17000-2020/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17000-2020/version-support.yaml
+    conformance: target-adapters/iso-iec-17000-2020/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17007-2009
+    ecosystem: ISO/IEC 17007:2009 Conformity Assessment Normative Document Guidance
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17007-2009/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17007-2009/version-support.yaml
+    conformance: target-adapters/iso-iec-17007-2009/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17011-2017
+    ecosystem: ISO/IEC 17011:2017 Accreditation Bodies
+    kind: accreditation-standard
+    path: target-adapters/iso-iec-17011-2017/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17011-2017/version-support.yaml
+    conformance: target-adapters/iso-iec-17011-2017/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17020-2026
+    ecosystem: ISO/IEC 17020:2026 Inspection Bodies
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17020-2026/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17020-2026/version-support.yaml
+    conformance: target-adapters/iso-iec-17020-2026/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17021-1-2015
+    ecosystem: ISO/IEC 17021-1:2015 Management System Certification Bodies
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17021-1-2015/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17021-1-2015/version-support.yaml
+    conformance: target-adapters/iso-iec-17021-1-2015/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17024-2026
+    ecosystem: ISO/IEC 17024:2026 Persons Certification Bodies
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17024-2026/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17024-2026/version-support.yaml
+    conformance: target-adapters/iso-iec-17024-2026/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17025-2017
+    ecosystem: ISO/IEC 17025:2017 Testing and Calibration Laboratories
+    kind: laboratory-competence-standard
+    path: target-adapters/iso-iec-17025-2017/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17025-2017/version-support.yaml
+    conformance: target-adapters/iso-iec-17025-2017/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17029-2019
+    ecosystem: ISO/IEC 17029:2019 Validation and Verification Bodies
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17029-2019/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17029-2019/version-support.yaml
+    conformance: target-adapters/iso-iec-17029-2019/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17030-2021
+    ecosystem: ISO/IEC 17030:2021 Third-party Marks of Conformity
+    kind: conformity-mark-standard
+    path: target-adapters/iso-iec-17030-2021/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17030-2021/version-support.yaml
+    conformance: target-adapters/iso-iec-17030-2021/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17040-2005
+    ecosystem: ISO/IEC 17040:2005 Peer Assessment
+    kind: peer-assessment-standard
+    path: target-adapters/iso-iec-17040-2005/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17040-2005/version-support.yaml
+    conformance: target-adapters/iso-iec-17040-2005/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17043-2023
+    ecosystem: ISO/IEC 17043:2023 Proficiency Testing Providers
+    kind: proficiency-testing-standard
+    path: target-adapters/iso-iec-17043-2023/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17043-2023/version-support.yaml
+    conformance: target-adapters/iso-iec-17043-2023/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17050-1-2004
+    ecosystem: ISO/IEC 17050-1 Supplier Declaration of Conformity
+    kind: supplier-declaration-standard
+    path: target-adapters/iso-iec-17050-1-2004/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17050-1-2004/version-support.yaml
+    conformance: target-adapters/iso-iec-17050-1-2004/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17050-2-2004
+    ecosystem: ISO/IEC 17050-2 Supporting Documentation
+    kind: supplier-declaration-standard
+    path: target-adapters/iso-iec-17050-2-2004/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17050-2-2004/version-support.yaml
+    conformance: target-adapters/iso-iec-17050-2-2004/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17060-2022
+    ecosystem: ISO/IEC 17060:2022 Good Conformity Assessment Practice
+    kind: conformity-assessment-standard
+    path: target-adapters/iso-iec-17060-2022/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17060-2022/version-support.yaml
+    conformance: target-adapters/iso-iec-17060-2022/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17065-2012
+    ecosystem: ISO/IEC 17065:2012 Product Process and Service Certification Bodies
+    kind: product-certification-standard
+    path: target-adapters/iso-iec-17065-2012/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17065-2012/version-support.yaml
+    conformance: target-adapters/iso-iec-17065-2012/conformance.yaml
+    package_role: certification
+  - name: iso-iec-17067-2013
+    ecosystem: ISO/IEC 17067:2013 Product Certification Scheme Fundamentals
+    kind: product-certification-standard
+    path: target-adapters/iso-iec-17067-2013/adapter.yaml
+    versionSupport: target-adapters/iso-iec-17067-2013/version-support.yaml
+    conformance: target-adapters/iso-iec-17067-2013/conformance.yaml
+    package_role: certification
+  - name: iso-iec-18045-2022
+    ecosystem: ISO/IEC 18045:2022 Common Methodology for IT Security Evaluation
+    kind: security-evaluation-methodology
+    path: target-adapters/iso-iec-18045-2022/adapter.yaml
+    versionSupport: target-adapters/iso-iec-18045-2022/version-support.yaml
+    conformance: target-adapters/iso-iec-18045-2022/conformance.yaml
+    package_role: certification
+  - name: iso-iec-23894-2023
+    ecosystem: ISO/IEC 23894:2023 AI Risk Management
+    kind: ai-risk-standard
+    path: target-adapters/iso-iec-23894-2023/adapter.yaml
+    versionSupport: target-adapters/iso-iec-23894-2023/version-support.yaml
+    conformance: target-adapters/iso-iec-23894-2023/conformance.yaml
+    package_role: certification
+  - name: iso-iec-24029-1-2021
+    ecosystem: ISO/IEC 24029-1:2021 Neural Network Robustness Assessment
+    kind: ai-robustness-standard
+    path: target-adapters/iso-iec-24029-1-2021/adapter.yaml
+    versionSupport: target-adapters/iso-iec-24029-1-2021/version-support.yaml
+    conformance: target-adapters/iso-iec-24029-1-2021/conformance.yaml
+    package_role: certification
+  - name: iso-iec-24029-2
+    ecosystem: ISO/IEC 24029-2 Formal Methods for Neural Network Robustness
+    kind: ai-formal-robustness-standard
+    path: target-adapters/iso-iec-24029-2/adapter.yaml
+    versionSupport: target-adapters/iso-iec-24029-2/version-support.yaml
+    conformance: target-adapters/iso-iec-24029-2/conformance.yaml
+    package_role: certification
+  - name: iso-iec-25010-25040
+    ecosystem: ISO/IEC SQuaRE 25010/25040
+    kind: quality-standard
+    path: target-adapters/iso-iec-25010-25040/adapter.yaml
+    versionSupport: target-adapters/iso-iec-25010-25040/version-support.yaml
+    conformance: target-adapters/iso-iec-25010-25040/conformance.yaml
+    package_role: certification
+  - name: iso-iec-25058-2024
+    ecosystem: ISO/IEC 25058:2024 Quality Evaluation of AI Systems
+    kind: ai-quality-standard
+    path: target-adapters/iso-iec-25058-2024/adapter.yaml
+    versionSupport: target-adapters/iso-iec-25058-2024/version-support.yaml
+    conformance: target-adapters/iso-iec-25058-2024/conformance.yaml
+    package_role: certification
+  - name: iso-iec-25059
+    ecosystem: ISO/IEC 25059 AI System Quality Model
+    kind: ai-quality-standard
+    path: target-adapters/iso-iec-25059/adapter.yaml
+    versionSupport: target-adapters/iso-iec-25059/version-support.yaml
+    conformance: target-adapters/iso-iec-25059/conformance.yaml
+    package_role: certification
+  - name: iso-iec-27006-1
+    ecosystem: ISO/IEC 27006-1 Requirements for ISMS Certification Bodies
+    kind: certification-body-standard
+    path: target-adapters/iso-iec-27006-1/adapter.yaml
+    versionSupport: target-adapters/iso-iec-27006-1/version-support.yaml
+    conformance: target-adapters/iso-iec-27006-1/conformance.yaml
+    package_role: certification
+  - name: iso-iec-42001-42006
+    ecosystem: ISO/IEC 42001 + 42006
+    kind: management-system-standard
+    path: target-adapters/iso-iec-42001-42006/adapter.yaml
+    versionSupport: target-adapters/iso-iec-42001-42006/version-support.yaml
+    conformance: target-adapters/iso-iec-42001-42006/conformance.yaml
+    package_role: certification
+  - name: iso-iec-42005-2025
+    ecosystem: ISO/IEC 42005:2025 AI System Impact Assessment
+    kind: ai-assurance-standard
+    path: target-adapters/iso-iec-42005-2025/adapter.yaml
+    versionSupport: target-adapters/iso-iec-42005-2025/version-support.yaml
+    conformance: target-adapters/iso-iec-42005-2025/conformance.yaml
+    package_role: certification
+  - name: iso-iec-42006-2025
+    ecosystem: ISO/IEC 42006:2025 Bodies Auditing and Certifying AI Management Systems
+    kind: ai-certification-standard
+    path: target-adapters/iso-iec-42006-2025/adapter.yaml
+    versionSupport: target-adapters/iso-iec-42006-2025/version-support.yaml
+    conformance: target-adapters/iso-iec-42006-2025/conformance.yaml
+    package_role: certification
+  - name: iso-iec-4213-2022
+    ecosystem: ISO/IEC 4213:2022 Machine Learning Classification Performance Assessment
+    kind: ai-measurement-standard
+    path: target-adapters/iso-iec-4213-2022/adapter.yaml
+    versionSupport: target-adapters/iso-iec-4213-2022/version-support.yaml
+    conformance: target-adapters/iso-iec-4213-2022/conformance.yaml
+    package_role: certification
+  - name: iso-iec-5259-series
+    ecosystem: ISO/IEC 5259 Data Quality for Analytics and Machine Learning Series
+    kind: ai-data-quality-standard
+    path: target-adapters/iso-iec-5259-series/adapter.yaml
+    versionSupport: target-adapters/iso-iec-5259-series/version-support.yaml
+    conformance: target-adapters/iso-iec-5259-series/conformance.yaml
+    package_role: certification
+  - name: iso-iec-5338-2023
+    ecosystem: ISO/IEC 5338:2023 AI System Life Cycle Processes
+    kind: ai-lifecycle-standard
+    path: target-adapters/iso-iec-5338-2023/adapter.yaml
+    versionSupport: target-adapters/iso-iec-5338-2023/version-support.yaml
+    conformance: target-adapters/iso-iec-5338-2023/conformance.yaml
+    package_role: certification
+  - name: iso-iec-dis-42007
+    ecosystem: ISO/IEC DIS 42007 AI Conformity Assessment Scheme Framework
+    kind: draft-ai-assurance-standard
+    path: target-adapters/iso-iec-dis-42007/adapter.yaml
+    versionSupport: target-adapters/iso-iec-dis-42007/version-support.yaml
+    conformance: target-adapters/iso-iec-dis-42007/conformance.yaml
+    package_role: certification
+  - name: iso-iec-tr-24027-2021
+    ecosystem: ISO/IEC TR 24027:2021 Bias in AI Systems and AI Aided Decision Making
+    kind: ai-bias-guidance
+    path: target-adapters/iso-iec-tr-24027-2021/adapter.yaml
+    versionSupport: target-adapters/iso-iec-tr-24027-2021/version-support.yaml
+    conformance: target-adapters/iso-iec-tr-24027-2021/conformance.yaml
+    package_role: certification
+  - name: iso-iec-tr-24028-2020
+    ecosystem: ISO/IEC TR 24028:2020 Trustworthiness in AI
+    kind: ai-trustworthiness-guidance
+    path: target-adapters/iso-iec-tr-24028-2020/adapter.yaml
+    versionSupport: target-adapters/iso-iec-tr-24028-2020/version-support.yaml
+    conformance: target-adapters/iso-iec-tr-24028-2020/conformance.yaml
+    package_role: certification
+  - name: iso-iec-tr-42106-2026
+    ecosystem: ISO/IEC TR 42106:2026 Guidance for AI Management System Application
+    kind: ai-management-guidance
+    path: target-adapters/iso-iec-tr-42106-2026/adapter.yaml
+    versionSupport: target-adapters/iso-iec-tr-42106-2026/version-support.yaml
+    conformance: target-adapters/iso-iec-tr-42106-2026/conformance.yaml
+    package_role: certification
+  - name: iso-iec-tr-5469-2024
+    ecosystem: ISO/IEC TR 5469:2024 Functional Safety and AI Systems
+    kind: ai-safety-guidance
+    path: target-adapters/iso-iec-tr-5469-2024/adapter.yaml
+    versionSupport: target-adapters/iso-iec-tr-5469-2024/version-support.yaml
+    conformance: target-adapters/iso-iec-tr-5469-2024/conformance.yaml
+    package_role: certification
+  - name: iso-iec-ts-12791-2024
+    ecosystem: ISO/IEC TS 12791:2024 Treatment of Unwanted Bias in Classification and Regression
+    kind: ai-bias-standard
+    path: target-adapters/iso-iec-ts-12791-2024/adapter.yaml
+    versionSupport: target-adapters/iso-iec-ts-12791-2024/version-support.yaml
+    conformance: target-adapters/iso-iec-ts-12791-2024/conformance.yaml
+    package_role: certification
+  - name: iso-iec-ts-17035-2024
+    ecosystem: ISO/IEC TS 17035:2024 Validation and Verification Programmes
+    kind: conformity-program-standard
+    path: target-adapters/iso-iec-ts-17035-2024/adapter.yaml
+    versionSupport: target-adapters/iso-iec-ts-17035-2024/version-support.yaml
+    conformance: target-adapters/iso-iec-ts-17035-2024/conformance.yaml
+    package_role: certification
+  - name: iso-iec-ts-6254-2025
+    ecosystem: ISO/IEC TS 6254:2025 Objectives and Approaches for Explainability
+    kind: ai-explainability-standard
+    path: target-adapters/iso-iec-ts-6254-2025/adapter.yaml
+    versionSupport: target-adapters/iso-iec-ts-6254-2025/version-support.yaml
+    conformance: target-adapters/iso-iec-ts-6254-2025/conformance.yaml
+    package_role: certification
+  - name: iso-iec-ts-8200-2024
+    ecosystem: ISO/IEC TS 8200:2024 Controllability of Automated AI Systems
+    kind: ai-control-standard
+    path: target-adapters/iso-iec-ts-8200-2024/adapter.yaml
+    versionSupport: target-adapters/iso-iec-ts-8200-2024/version-support.yaml
+    conformance: target-adapters/iso-iec-ts-8200-2024/conformance.yaml
+    package_role: certification
+  - name: iso-sae-21434
+    ecosystem: ISO/SAE 21434 Road Vehicles Cybersecurity Engineering
+    kind: sector-automotive-standard
+    path: target-adapters/iso-sae-21434/adapter.yaml
+    versionSupport: target-adapters/iso-sae-21434/version-support.yaml
+    conformance: target-adapters/iso-sae-21434/conformance.yaml
+    package_role: certification
+  - name: jcgm-100-amd1-2026
+    ecosystem: JCGM 100 Amendment 1:2026 Measurement Uncertainty
+    kind: metrology-guidance
+    path: target-adapters/jcgm-100-amd1-2026/adapter.yaml
+    versionSupport: target-adapters/jcgm-100-amd1-2026/version-support.yaml
+    conformance: target-adapters/jcgm-100-amd1-2026/conformance.yaml
+    package_role: certification
+  - name: jcgm-101-2008
+    ecosystem: JCGM 101 Monte Carlo Propagation
+    kind: metrology-guidance
+    path: target-adapters/jcgm-101-2008/adapter.yaml
+    versionSupport: target-adapters/jcgm-101-2008/version-support.yaml
+    conformance: target-adapters/jcgm-101-2008/conformance.yaml
+    package_role: certification
+  - name: jcgm-102-2011
+    ecosystem: JCGM 102 Multiple Output Quantities
+    kind: metrology-guidance
+    path: target-adapters/jcgm-102-2011/adapter.yaml
+    versionSupport: target-adapters/jcgm-102-2011/version-support.yaml
+    conformance: target-adapters/jcgm-102-2011/conformance.yaml
+    package_role: certification
+  - name: jcgm-104-2009
+    ecosystem: JCGM 104 Role of Measurement Uncertainty in Conformity Assessment
+    kind: metrology-guidance
+    path: target-adapters/jcgm-104-2009/adapter.yaml
+    versionSupport: target-adapters/jcgm-104-2009/version-support.yaml
+    conformance: target-adapters/jcgm-104-2009/conformance.yaml
+    package_role: certification
+  - name: jcgm-106-2012
+    ecosystem: JCGM 106 Decision Rules in Conformity Assessment
+    kind: metrology-guidance
+    path: target-adapters/jcgm-106-2012/adapter.yaml
+    versionSupport: target-adapters/jcgm-106-2012/version-support.yaml
+    conformance: target-adapters/jcgm-106-2012/conformance.yaml
+    package_role: certification
+  - name: jcgm-gum-1-2023
+    ecosystem: JCGM GUM-1:2023 Measurement Uncertainty Introduction
+    kind: metrology-guidance
+    path: target-adapters/jcgm-gum-1-2023/adapter.yaml
+    versionSupport: target-adapters/jcgm-gum-1-2023/version-support.yaml
+    conformance: target-adapters/jcgm-gum-1-2023/conformance.yaml
+    package_role: certification
+  - name: jcgm-gum-5-2026
+    ecosystem: JCGM GUM-5:2026 Measurement Models
+    kind: metrology-guidance
+    path: target-adapters/jcgm-gum-5-2026/adapter.yaml
+    versionSupport: target-adapters/jcgm-gum-5-2026/version-support.yaml
+    conformance: target-adapters/jcgm-gum-5-2026/conformance.yaml
+    package_role: certification
+  - name: jcgm-gum-6-2020
+    ecosystem: JCGM GUM-6:2020 Measurement Models
+    kind: metrology-guidance
+    path: target-adapters/jcgm-gum-6-2020/adapter.yaml
+    versionSupport: target-adapters/jcgm-gum-6-2020/version-support.yaml
+    conformance: target-adapters/jcgm-gum-6-2020/conformance.yaml
+    package_role: certification
+  - name: jcgm-vim-200-2012
+    ecosystem: JCGM 200 International Vocabulary of Metrology
+    kind: metrology-guidance
+    path: target-adapters/jcgm-vim-200-2012/adapter.yaml
+    versionSupport: target-adapters/jcgm-vim-200-2012/version-support.yaml
+    conformance: target-adapters/jcgm-vim-200-2012/conformance.yaml
+    package_role: certification
+  - name: nist-acvp
+    ecosystem: NIST Automated Cryptographic Validation Protocol
+    kind: cryptographic-test-protocol
+    path: target-adapters/nist-acvp/adapter.yaml
+    versionSupport: target-adapters/nist-acvp/version-support.yaml
+    conformance: target-adapters/nist-acvp/conformance.yaml
+    package_role: certification
+  - name: nist-ai-100-2e2025
+    ecosystem: NIST AI 100-2e2025 Adversarial Machine Learning Taxonomy
+    kind: ai-security-guidance
+    path: target-adapters/nist-ai-100-2e2025/adapter.yaml
+    versionSupport: target-adapters/nist-ai-100-2e2025/version-support.yaml
+    conformance: target-adapters/nist-ai-100-2e2025/conformance.yaml
+    package_role: certification
+  - name: nist-ai-600-1
+    ecosystem: NIST AI 600-1 Generative AI Profile
+    kind: ai-risk-profile
+    path: target-adapters/nist-ai-600-1/adapter.yaml
+    versionSupport: target-adapters/nist-ai-600-1/version-support.yaml
+    conformance: target-adapters/nist-ai-600-1/conformance.yaml
+    package_role: certification
+  - name: nist-ai-rmf-1-0
+    ecosystem: NIST AI Risk Management Framework 1.0
+    kind: ai-risk-framework
+    path: target-adapters/nist-ai-rmf-1-0/adapter.yaml
+    versionSupport: target-adapters/nist-ai-rmf-1-0/version-support.yaml
+    conformance: target-adapters/nist-ai-rmf-1-0/conformance.yaml
+    package_role: certification
+  - name: nist-ai-rmf-genai
+    ecosystem: NIST AI RMF + Generative AI Profile
+    kind: governance-standard
+    path: target-adapters/nist-ai-rmf-genai/adapter.yaml
+    versionSupport: target-adapters/nist-ai-rmf-genai/version-support.yaml
+    conformance: target-adapters/nist-ai-rmf-genai/conformance.yaml
+    package_role: certification
+  - name: nist-csf-privacy-ssdf
+    ecosystem: NIST CSF / Privacy Framework / SSDF
+    kind: security-privacy-standard
+    path: target-adapters/nist-csf-privacy-ssdf/adapter.yaml
+    versionSupport: target-adapters/nist-csf-privacy-ssdf/version-support.yaml
+    conformance: target-adapters/nist-csf-privacy-ssdf/conformance.yaml
+    package_role: certification
+  - name: nist-sp-800-160v1v2
+    ecosystem: NIST SP 800-160 Systems Security Engineering and Cyber Resiliency
+    kind: security-engineering-standard
+    path: target-adapters/nist-sp-800-160v1v2/adapter.yaml
+    versionSupport: target-adapters/nist-sp-800-160v1v2/version-support.yaml
+    conformance: target-adapters/nist-sp-800-160v1v2/conformance.yaml
+    package_role: certification
+  - name: nist-sp-800-218a
+    ecosystem: NIST SP 800-218A Secure Software Development for Generative AI and Dual-use Foundation Models
+    kind: ai-secure-development-standard
+    path: target-adapters/nist-sp-800-218a/adapter.yaml
+    versionSupport: target-adapters/nist-sp-800-218a/version-support.yaml
+    conformance: target-adapters/nist-sp-800-218a/conformance.yaml
+    package_role: certification
+  - name: nist-sp-800-53r5
+    ecosystem: NIST SP 800-53 Revision 5 Security and Privacy Controls
+    kind: security-controls-standard
+    path: target-adapters/nist-sp-800-53r5/adapter.yaml
+    versionSupport: target-adapters/nist-sp-800-53r5/version-support.yaml
+    conformance: target-adapters/nist-sp-800-53r5/conformance.yaml
+    package_role: certification
+  - name: nist-tevv-athlon-2026
+    ecosystem: NIST TEVV-Athlon 2026
+    kind: ai-tevv-framework
+    path: target-adapters/nist-tevv-athlon-2026/adapter.yaml
+    versionSupport: target-adapters/nist-tevv-athlon-2026/version-support.yaml
+    conformance: target-adapters/nist-tevv-athlon-2026/conformance.yaml
+    package_role: certification
+  - name: oscal-v1.1.2
+    ecosystem: NIST OSCAL v1.1.2
+    kind: compliance-standard
+    path: target-adapters/oscal-v1.1.2/adapter.yaml
+    versionSupport: target-adapters/oscal-v1.1.2/version-support.yaml
+    conformance: target-adapters/oscal-v1.1.2/conformance.yaml
+    package_role: certification
+  - name: osv-openvex
+    ecosystem: OSV + OpenVEX
+    kind: vulnerability-standard
+    path: target-adapters/osv-openvex/adapter.yaml
+    versionSupport: target-adapters/osv-openvex/version-support.yaml
+    conformance: target-adapters/osv-openvex/conformance.yaml
+    package_role: certification
+  - name: rekor-transparency-log
+    ecosystem: Sigstore Rekor
+    kind: transparency
+    path: target-adapters/rekor-transparency-log/adapter.yaml
+    versionSupport: target-adapters/rekor-transparency-log/version-support.yaml
+    conformance: target-adapters/rekor-transparency-log/conformance.yaml
+    package_role: certification
+  - name: rfc3161-timestamp
+    ecosystem: RFC 3161 Time-Stamp Protocol
+    kind: trusted-time-protocol
+    path: target-adapters/rfc3161-timestamp/adapter.yaml
+    versionSupport: target-adapters/rfc3161-timestamp/version-support.yaml
+    conformance: target-adapters/rfc3161-timestamp/conformance.yaml
+    package_role: certification
+  - name: rtca-do-178c
+    ecosystem: RTCA DO-178C Software Considerations in Airborne Systems
+    kind: sector-aviation-standard
+    path: target-adapters/rtca-do-178c/adapter.yaml
+    versionSupport: target-adapters/rtca-do-178c/version-support.yaml
+    conformance: target-adapters/rtca-do-178c/conformance.yaml
+    package_role: certification
+  - name: rtca-do-330
+    ecosystem: RTCA DO-330 Software Tool Qualification Considerations
+    kind: sector-aviation-standard
+    path: target-adapters/rtca-do-330/adapter.yaml
+    versionSupport: target-adapters/rtca-do-330/version-support.yaml
+    conformance: target-adapters/rtca-do-330/conformance.yaml
+    package_role: certification
+  - name: rtca-do-333
+    ecosystem: RTCA DO-333 Formal Methods Supplement
+    kind: sector-aviation-standard
+    path: target-adapters/rtca-do-333/adapter.yaml
+    versionSupport: target-adapters/rtca-do-333/version-support.yaml
+    conformance: target-adapters/rtca-do-333/conformance.yaml
+    package_role: certification
+  - name: sacm-v2.3
+    ecosystem: OMG SACM v2.3
+    kind: assurance-standard
+    path: target-adapters/sacm-v2.3/adapter.yaml
+    versionSupport: target-adapters/sacm-v2.3/version-support.yaml
+    conformance: target-adapters/sacm-v2.3/conformance.yaml
+    package_role: certification
+  - name: sae-arp4754a
+    ecosystem: SAE ARP4754A Development of Civil Aircraft and Systems
+    kind: sector-aviation-standard
+    path: target-adapters/sae-arp4754a/adapter.yaml
+    versionSupport: target-adapters/sae-arp4754a/version-support.yaml
+    conformance: target-adapters/sae-arp4754a/conformance.yaml
+    package_role: certification
+  - name: scitt-rfc9943
+    ecosystem: IETF SCITT Architecture RFC 9943
+    kind: transparency
+    path: target-adapters/scitt-rfc9943/adapter.yaml
+    versionSupport: target-adapters/scitt-rfc9943/version-support.yaml
+    conformance: target-adapters/scitt-rfc9943/conformance.yaml
+    package_role: certification
+  - name: sigstore-cosign-v3
+    ecosystem: Sigstore Cosign v3
+    kind: signing
+    path: target-adapters/sigstore-cosign-v3/adapter.yaml
+    versionSupport: target-adapters/sigstore-cosign-v3/version-support.yaml
+    conformance: target-adapters/sigstore-cosign-v3/conformance.yaml
+    package_role: certification
+  - name: sigstore-slsa
+    ecosystem: Sigstore/SLSA
+    kind: supply-chain
+    path: target-adapters/sigstore-slsa/adapter.yaml
+    versionSupport: target-adapters/sigstore-slsa/version-support.yaml
+    conformance: target-adapters/sigstore-slsa/conformance.yaml
+    package_role: certification
+  - name: slsa-v1.2
+    ecosystem: SLSA v1.2
+    kind: assurance-standard
+    path: target-adapters/slsa-v1.2/adapter.yaml
+    versionSupport: target-adapters/slsa-v1.2/version-support.yaml
+    conformance: target-adapters/slsa-v1.2/conformance.yaml
+    package_role: certification
+  - name: spdx-v3.0
+    ecosystem: SPDX v3.0
+    kind: bom-standard
+    path: target-adapters/spdx-v3.0/adapter.yaml
+    versionSupport: target-adapters/spdx-v3.0/version-support.yaml
+    conformance: target-adapters/spdx-v3.0/conformance.yaml
+    package_role: certification
+  - name: tuf-v1.0.33
+    ecosystem: The Update Framework v1.0.33
+    kind: update-security
+    path: target-adapters/tuf-v1.0.33/adapter.yaml
+    versionSupport: target-adapters/tuf-v1.0.33/version-support.yaml
+    conformance: target-adapters/tuf-v1.0.33/conformance.yaml
+    package_role: certification
+  - name: unece-r155
+    ecosystem: UNECE Regulation 155 Cyber Security Management System
+    kind: sector-automotive-regulation
+    path: target-adapters/unece-r155/adapter.yaml
+    versionSupport: target-adapters/unece-r155/version-support.yaml
+    conformance: target-adapters/unece-r155/conformance.yaml
+    package_role: certification
+  - name: unece-r156
+    ecosystem: UNECE Regulation 156 Software Update Management System
+    kind: sector-automotive-regulation
+    path: target-adapters/unece-r156/adapter.yaml
+    versionSupport: target-adapters/unece-r156/version-support.yaml
+    conformance: target-adapters/unece-r156/conformance.yaml
+    package_role: certification
+  - name: w3c-verifiable-credentials-2
+    ecosystem: W3C Verifiable Credentials Data Model 2.0
+    kind: verifiable-credential-standard
+    path: target-adapters/w3c-verifiable-credentials-2/adapter.yaml
+    versionSupport: target-adapters/w3c-verifiable-credentials-2/version-support.yaml
+    conformance: target-adapters/w3c-verifiable-credentials-2/conformance.yaml
+    package_role: certification
+  - name: wcag-2.2
+    ecosystem: W3C WCAG 2.2
+    kind: quality-standard
+    path: target-adapters/wcag-2.2/adapter.yaml
+    versionSupport: target-adapters/wcag-2.2/version-support.yaml
+    conformance: target-adapters/wcag-2.2/conformance.yaml
+    package_role: certification

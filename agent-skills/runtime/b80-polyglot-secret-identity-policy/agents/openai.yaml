@@ -1,0 +1,4 @@
+interface:
+  display_name: "B80 Polyglot Secret Identity Policy"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b80-polyglot-secret-identity-policy to execute this ELMOS project Skill with fail-closed evidence."

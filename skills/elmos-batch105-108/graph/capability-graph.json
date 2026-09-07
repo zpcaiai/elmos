@@ -1,0 +1,863 @@
+{
+  "version": 1,
+  "externalNodes": [
+    {
+      "id": "B104-S16",
+      "name": "Real-world Product Certification Gate"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "B105-S01",
+      "name": "modernization-demo-project-selector",
+      "batch": 105
+    },
+    {
+      "id": "B105-S02",
+      "name": "immutable-baseline-commit-freezer",
+      "batch": 105
+    },
+    {
+      "id": "B105-S03",
+      "name": "baseline-reproducibility-capture",
+      "batch": 105
+    },
+    {
+      "id": "B105-S04",
+      "name": "java-runtime-upgrade-analyzer",
+      "batch": 105
+    },
+    {
+      "id": "B105-S05",
+      "name": "spring-boot-staged-upgrade-planner",
+      "batch": 105
+    },
+    {
+      "id": "B105-S06",
+      "name": "openrewrite-phase-boundary-enforcer",
+      "batch": 105
+    },
+    {
+      "id": "B105-S07",
+      "name": "automated-vs-agent-change-attribution",
+      "batch": 105
+    },
+    {
+      "id": "B105-S08",
+      "name": "migration-failure-taxonomy-generator",
+      "batch": 105
+    },
+    {
+      "id": "B105-S09",
+      "name": "codex-diagnostic-only-pass",
+      "batch": 105
+    },
+    {
+      "id": "B105-S10",
+      "name": "codex-minimal-semantic-repair",
+      "batch": 105
+    },
+    {
+      "id": "B105-S11",
+      "name": "manual-fix-regression-obligation",
+      "batch": 105
+    },
+    {
+      "id": "B105-S12",
+      "name": "test-estate-preservation-gate",
+      "batch": 105
+    },
+    {
+      "id": "B105-S13",
+      "name": "profile-and-database-matrix-verifier",
+      "batch": 105
+    },
+    {
+      "id": "B105-S14",
+      "name": "modernization-demo-success-gate",
+      "batch": 105
+    },
+    {
+      "id": "B105-S15",
+      "name": "sales-demo-golden-journey-publisher",
+      "batch": 105
+    },
+    {
+      "id": "B105-S16",
+      "name": "modernization-demo-route-certifier",
+      "batch": 105
+    },
+    {
+      "id": "B106-S01",
+      "name": "polyglot-project-runtime-detector",
+      "batch": 106
+    },
+    {
+      "id": "B106-S02",
+      "name": "runtime-manifest-generator",
+      "batch": 106
+    },
+    {
+      "id": "B106-S03",
+      "name": "runtime-manifest-schema-validator",
+      "batch": 106
+    },
+    {
+      "id": "B106-S04",
+      "name": "java-preview-runtime-adapter",
+      "batch": 106
+    },
+    {
+      "id": "B106-S05",
+      "name": "python-preview-runtime-adapter",
+      "batch": 106
+    },
+    {
+      "id": "B106-S06",
+      "name": "dotnet-preview-runtime-adapter",
+      "batch": 106
+    },
+    {
+      "id": "B106-S07",
+      "name": "go-preview-runtime-adapter",
+      "batch": 106
+    },
+    {
+      "id": "B106-S08",
+      "name": "oci-build-artifact-normalizer",
+      "batch": 106
+    },
+    {
+      "id": "B106-S09",
+      "name": "preview-image-cache-and-snapshot-manager",
+      "batch": 106
+    },
+    {
+      "id": "B106-S10",
+      "name": "ephemeral-sandbox-instance-provisioner",
+      "batch": 106
+    },
+    {
+      "id": "B106-S11",
+      "name": "preview-port-exposure-controller",
+      "batch": 106
+    },
+    {
+      "id": "B106-S12",
+      "name": "readiness-and-startup-state-machine",
+      "batch": 106
+    },
+    {
+      "id": "B106-S13",
+      "name": "ready-triggered-ttl-controller",
+      "batch": 106
+    },
+    {
+      "id": "B106-S14",
+      "name": "runtime-log-and-event-stream",
+      "batch": 106
+    },
+    {
+      "id": "B106-S15",
+      "name": "ttl-reaper-and-resource-cleaner",
+      "batch": 106
+    },
+    {
+      "id": "B106-S16",
+      "name": "preview-runtime-provider-abstraction",
+      "batch": 106
+    },
+    {
+      "id": "B107-S01",
+      "name": "runtime-health-probe-runner",
+      "batch": 107
+    },
+    {
+      "id": "B107-S02",
+      "name": "openapi-runtime-discovery",
+      "batch": 107
+    },
+    {
+      "id": "B107-S03",
+      "name": "openapi-breaking-change-gate",
+      "batch": 107
+    },
+    {
+      "id": "B107-S04",
+      "name": "dual-version-api-replay",
+      "batch": 107
+    },
+    {
+      "id": "B107-S05",
+      "name": "http-scenario-suite-generator",
+      "batch": 107
+    },
+    {
+      "id": "B107-S06",
+      "name": "newman-runtime-regression-runner",
+      "batch": 107
+    },
+    {
+      "id": "B107-S07",
+      "name": "business-api-invariant-oracle",
+      "batch": 107
+    },
+    {
+      "id": "B107-S08",
+      "name": "routing-and-trailing-slash-compatibility",
+      "batch": 107
+    },
+    {
+      "id": "B107-S09",
+      "name": "browser-preview-launcher",
+      "batch": 107
+    },
+    {
+      "id": "B107-S10",
+      "name": "browser-console-and-network-gate",
+      "batch": 107
+    },
+    {
+      "id": "B107-S11",
+      "name": "page-semantic-assertion-runner",
+      "batch": 107
+    },
+    {
+      "id": "B107-S12",
+      "name": "desktop-and-mobile-screenshot-capture",
+      "batch": 107
+    },
+    {
+      "id": "B107-S13",
+      "name": "frontend-runtime-differential-verifier",
+      "batch": 107
+    },
+    {
+      "id": "B107-S14",
+      "name": "websocket-sse-and-streaming-verifier",
+      "batch": 107
+    },
+    {
+      "id": "B107-S15",
+      "name": "runtime-service-validation-evidence-assembler",
+      "batch": 107
+    },
+    {
+      "id": "B107-S16",
+      "name": "live-service-equivalence-gate",
+      "batch": 107
+    },
+    {
+      "id": "B108-S01",
+      "name": "migration-evidence-directory-scaffolder",
+      "batch": 108
+    },
+    {
+      "id": "B108-S02",
+      "name": "baseline-candidate-evidence-linker",
+      "batch": 108
+    },
+    {
+      "id": "B108-S03",
+      "name": "rewrite-datatable-evidence-collector",
+      "batch": 108
+    },
+    {
+      "id": "B108-S04",
+      "name": "coding-agent-change-ledger",
+      "batch": 108
+    },
+    {
+      "id": "B108-S05",
+      "name": "manual-intervention-ledger",
+      "batch": 108
+    },
+    {
+      "id": "B108-S06",
+      "name": "runtime-preview-evidence-schema",
+      "batch": 108
+    },
+    {
+      "id": "B108-S07",
+      "name": "preview-expiration-attestation",
+      "batch": 108
+    },
+    {
+      "id": "B108-S08",
+      "name": "test-and-coverage-before-after-summarizer",
+      "batch": 108
+    },
+    {
+      "id": "B108-S09",
+      "name": "automation-ratio-calculator",
+      "batch": 108
+    },
+    {
+      "id": "B108-S10",
+      "name": "migration-risk-register-generator",
+      "batch": 108
+    },
+    {
+      "id": "B108-S11",
+      "name": "executive-modernization-report-generator",
+      "batch": 108
+    },
+    {
+      "id": "B108-S12",
+      "name": "evidence-rich-pull-request-generator",
+      "batch": 108
+    },
+    {
+      "id": "B108-S13",
+      "name": "required-check-policy-generator",
+      "batch": 108
+    },
+    {
+      "id": "B108-S14",
+      "name": "temporary-preview-access-governor",
+      "batch": 108
+    },
+    {
+      "id": "B108-S15",
+      "name": "commercial-demo-package-builder",
+      "batch": 108
+    },
+    {
+      "id": "B108-S16",
+      "name": "customer-ready-modernization-certificate",
+      "batch": 108
+    }
+  ],
+  "edges": [
+    {
+      "from": "B104-S16",
+      "to": "B105-S01",
+      "blocking": true
+    },
+    {
+      "from": "B105-S01",
+      "to": "B105-S02",
+      "blocking": true
+    },
+    {
+      "from": "B105-S02",
+      "to": "B105-S03",
+      "blocking": true
+    },
+    {
+      "from": "B105-S03",
+      "to": "B105-S04",
+      "blocking": true
+    },
+    {
+      "from": "B105-S03",
+      "to": "B105-S05",
+      "blocking": true
+    },
+    {
+      "from": "B105-S04",
+      "to": "B105-S05",
+      "blocking": true
+    },
+    {
+      "from": "B105-S05",
+      "to": "B105-S06",
+      "blocking": true
+    },
+    {
+      "from": "B105-S06",
+      "to": "B105-S07",
+      "blocking": true
+    },
+    {
+      "from": "B105-S03",
+      "to": "B105-S08",
+      "blocking": true
+    },
+    {
+      "from": "B105-S08",
+      "to": "B105-S09",
+      "blocking": true
+    },
+    {
+      "from": "B105-S06",
+      "to": "B105-S10",
+      "blocking": true
+    },
+    {
+      "from": "B105-S09",
+      "to": "B105-S10",
+      "blocking": true
+    },
+    {
+      "from": "B105-S10",
+      "to": "B105-S11",
+      "blocking": true
+    },
+    {
+      "from": "B105-S03",
+      "to": "B105-S12",
+      "blocking": true
+    },
+    {
+      "from": "B105-S11",
+      "to": "B105-S12",
+      "blocking": true
+    },
+    {
+      "from": "B105-S12",
+      "to": "B105-S13",
+      "blocking": true
+    },
+    {
+      "from": "B105-S07",
+      "to": "B105-S14",
+      "blocking": true
+    },
+    {
+      "from": "B105-S12",
+      "to": "B105-S14",
+      "blocking": true
+    },
+    {
+      "from": "B105-S13",
+      "to": "B105-S14",
+      "blocking": true
+    },
+    {
+      "from": "B105-S14",
+      "to": "B105-S15",
+      "blocking": true
+    },
+    {
+      "from": "B105-S15",
+      "to": "B105-S16",
+      "blocking": true
+    },
+    {
+      "from": "B105-S16",
+      "to": "B106-S01",
+      "blocking": true
+    },
+    {
+      "from": "B106-S01",
+      "to": "B106-S02",
+      "blocking": true
+    },
+    {
+      "from": "B106-S02",
+      "to": "B106-S03",
+      "blocking": true
+    },
+    {
+      "from": "B106-S03",
+      "to": "B106-S04",
+      "blocking": true
+    },
+    {
+      "from": "B106-S03",
+      "to": "B106-S05",
+      "blocking": true
+    },
+    {
+      "from": "B106-S03",
+      "to": "B106-S06",
+      "blocking": true
+    },
+    {
+      "from": "B106-S03",
+      "to": "B106-S07",
+      "blocking": true
+    },
+    {
+      "from": "B106-S04",
+      "to": "B106-S08",
+      "blocking": true
+    },
+    {
+      "from": "B106-S05",
+      "to": "B106-S08",
+      "blocking": true
+    },
+    {
+      "from": "B106-S06",
+      "to": "B106-S08",
+      "blocking": true
+    },
+    {
+      "from": "B106-S07",
+      "to": "B106-S08",
+      "blocking": true
+    },
+    {
+      "from": "B106-S08",
+      "to": "B106-S09",
+      "blocking": true
+    },
+    {
+      "from": "B106-S08",
+      "to": "B106-S10",
+      "blocking": true
+    },
+    {
+      "from": "B106-S09",
+      "to": "B106-S10",
+      "blocking": true
+    },
+    {
+      "from": "B106-S10",
+      "to": "B106-S11",
+      "blocking": true
+    },
+    {
+      "from": "B106-S10",
+      "to": "B106-S12",
+      "blocking": true
+    },
+    {
+      "from": "B106-S11",
+      "to": "B106-S12",
+      "blocking": true
+    },
+    {
+      "from": "B106-S12",
+      "to": "B106-S13",
+      "blocking": true
+    },
+    {
+      "from": "B106-S12",
+      "to": "B106-S14",
+      "blocking": true
+    },
+    {
+      "from": "B106-S13",
+      "to": "B106-S15",
+      "blocking": true
+    },
+    {
+      "from": "B106-S14",
+      "to": "B106-S15",
+      "blocking": true
+    },
+    {
+      "from": "B106-S10",
+      "to": "B106-S16",
+      "blocking": true
+    },
+    {
+      "from": "B106-S11",
+      "to": "B106-S16",
+      "blocking": true
+    },
+    {
+      "from": "B106-S15",
+      "to": "B106-S16",
+      "blocking": true
+    },
+    {
+      "from": "B106-S16",
+      "to": "B107-S01",
+      "blocking": true
+    },
+    {
+      "from": "B107-S01",
+      "to": "B107-S02",
+      "blocking": true
+    },
+    {
+      "from": "B107-S02",
+      "to": "B107-S03",
+      "blocking": true
+    },
+    {
+      "from": "B107-S01",
+      "to": "B107-S04",
+      "blocking": true
+    },
+    {
+      "from": "B107-S03",
+      "to": "B107-S04",
+      "blocking": true
+    },
+    {
+      "from": "B107-S02",
+      "to": "B107-S05",
+      "blocking": true
+    },
+    {
+      "from": "B107-S05",
+      "to": "B107-S06",
+      "blocking": true
+    },
+    {
+      "from": "B107-S04",
+      "to": "B107-S07",
+      "blocking": true
+    },
+    {
+      "from": "B107-S06",
+      "to": "B107-S07",
+      "blocking": true
+    },
+    {
+      "from": "B107-S04",
+      "to": "B107-S08",
+      "blocking": true
+    },
+    {
+      "from": "B107-S01",
+      "to": "B107-S09",
+      "blocking": true
+    },
+    {
+      "from": "B107-S09",
+      "to": "B107-S10",
+      "blocking": true
+    },
+    {
+      "from": "B107-S09",
+      "to": "B107-S11",
+      "blocking": true
+    },
+    {
+      "from": "B107-S09",
+      "to": "B107-S12",
+      "blocking": true
+    },
+    {
+      "from": "B107-S10",
+      "to": "B107-S13",
+      "blocking": true
+    },
+    {
+      "from": "B107-S11",
+      "to": "B107-S13",
+      "blocking": true
+    },
+    {
+      "from": "B107-S12",
+      "to": "B107-S13",
+      "blocking": true
+    },
+    {
+      "from": "B107-S01",
+      "to": "B107-S14",
+      "blocking": true
+    },
+    {
+      "from": "B107-S03",
+      "to": "B107-S15",
+      "blocking": true
+    },
+    {
+      "from": "B107-S07",
+      "to": "B107-S15",
+      "blocking": true
+    },
+    {
+      "from": "B107-S08",
+      "to": "B107-S15",
+      "blocking": true
+    },
+    {
+      "from": "B107-S13",
+      "to": "B107-S15",
+      "blocking": true
+    },
+    {
+      "from": "B107-S14",
+      "to": "B107-S15",
+      "blocking": true
+    },
+    {
+      "from": "B107-S15",
+      "to": "B107-S16",
+      "blocking": true
+    },
+    {
+      "from": "B107-S16",
+      "to": "B108-S01",
+      "blocking": true
+    },
+    {
+      "from": "B108-S01",
+      "to": "B108-S02",
+      "blocking": true
+    },
+    {
+      "from": "B105-S06",
+      "to": "B108-S03",
+      "blocking": true
+    },
+    {
+      "from": "B108-S01",
+      "to": "B108-S03",
+      "blocking": true
+    },
+    {
+      "from": "B105-S10",
+      "to": "B108-S04",
+      "blocking": true
+    },
+    {
+      "from": "B108-S01",
+      "to": "B108-S04",
+      "blocking": true
+    },
+    {
+      "from": "B105-S11",
+      "to": "B108-S05",
+      "blocking": true
+    },
+    {
+      "from": "B108-S01",
+      "to": "B108-S05",
+      "blocking": true
+    },
+    {
+      "from": "B107-S15",
+      "to": "B108-S06",
+      "blocking": true
+    },
+    {
+      "from": "B108-S01",
+      "to": "B108-S06",
+      "blocking": true
+    },
+    {
+      "from": "B106-S15",
+      "to": "B108-S07",
+      "blocking": true
+    },
+    {
+      "from": "B108-S06",
+      "to": "B108-S07",
+      "blocking": true
+    },
+    {
+      "from": "B105-S12",
+      "to": "B108-S08",
+      "blocking": true
+    },
+    {
+      "from": "B108-S02",
+      "to": "B108-S08",
+      "blocking": true
+    },
+    {
+      "from": "B105-S07",
+      "to": "B108-S09",
+      "blocking": true
+    },
+    {
+      "from": "B108-S02",
+      "to": "B108-S09",
+      "blocking": true
+    },
+    {
+      "from": "B105-S14",
+      "to": "B108-S10",
+      "blocking": true
+    },
+    {
+      "from": "B107-S16",
+      "to": "B108-S10",
+      "blocking": true
+    },
+    {
+      "from": "B108-S02",
+      "to": "B108-S10",
+      "blocking": true
+    },
+    {
+      "from": "B108-S08",
+      "to": "B108-S11",
+      "blocking": true
+    },
+    {
+      "from": "B108-S09",
+      "to": "B108-S11",
+      "blocking": true
+    },
+    {
+      "from": "B108-S10",
+      "to": "B108-S11",
+      "blocking": true
+    },
+    {
+      "from": "B108-S02",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S03",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S04",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S05",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S06",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S07",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S11",
+      "to": "B108-S12",
+      "blocking": true
+    },
+    {
+      "from": "B108-S12",
+      "to": "B108-S13",
+      "blocking": true
+    },
+    {
+      "from": "B106-S11",
+      "to": "B108-S14",
+      "blocking": true
+    },
+    {
+      "from": "B108-S13",
+      "to": "B108-S14",
+      "blocking": true
+    },
+    {
+      "from": "B108-S11",
+      "to": "B108-S15",
+      "blocking": true
+    },
+    {
+      "from": "B108-S12",
+      "to": "B108-S15",
+      "blocking": true
+    },
+    {
+      "from": "B108-S14",
+      "to": "B108-S15",
+      "blocking": true
+    },
+    {
+      "from": "B108-S13",
+      "to": "B108-S16",
+      "blocking": true
+    },
+    {
+      "from": "B108-S15",
+      "to": "B108-S16",
+      "blocking": true
+    }
+  ]
+}

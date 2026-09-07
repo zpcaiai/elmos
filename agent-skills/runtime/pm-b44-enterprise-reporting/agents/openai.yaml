@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B44: Enterprise Reporting"
+  short_description: "Run Precision Migration B44 with evidence controls"
+  default_prompt: "Use $pm-b44-enterprise-reporting to execute this Precision Migration contract with fail-closed evidence."

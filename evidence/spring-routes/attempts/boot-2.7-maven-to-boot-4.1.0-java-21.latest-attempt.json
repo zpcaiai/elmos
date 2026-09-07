@@ -1,0 +1,19 @@
+{
+  "attempted_at": "2026-08-26T11:01:17Z",
+  "authorized_customer_repository": "NOT_RUN",
+  "canonical_evidence": {
+    "execution_status_at_attempt": "ABSENT",
+    "path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
+    "updated": false
+  },
+  "certification_eligible": false,
+  "certification_status": "NOT_CERTIFIED",
+  "evidence_scope": "LOCAL_ATTEMPT_AUDIT_ONLY",
+  "execution_status": "FAILED",
+  "external_evidence_status": "NOT_RUN",
+  "failure": "JAVA_HOME_INVALID:ELMOS_JAVA_17_HOME -> /Users/stephen/.sdkman/candidates/java/17.0.11-tem has no bin/java",
+  "independent_verification": "NOT_RUN",
+  "record_type": "NON_CERTIFYING_ROUTE_ATTEMPT",
+  "route_id": "boot-2.7-maven-to-boot-4.1.0-java-21",
+  "schema_version": 1
+}

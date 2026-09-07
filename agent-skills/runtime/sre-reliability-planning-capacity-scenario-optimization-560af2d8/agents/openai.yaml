@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Sre Reliability Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-planning-capacity-scenario-optimization-560af2d8 to implement its fail-closed ELMOS Product B47 contract."

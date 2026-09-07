@@ -1,0 +1,45 @@
+apiVersion: elmos.ai/v3alpha1
+kind: FixtureManifest
+metadata:
+  packageRole: capability
+  version: 4.1.0
+spec:
+  files:
+  - a2a-v1/agent-card.json
+  - a2ui-v1/surface.jsonl
+  - data-v4/cdc.yaml
+  - data-v4/lakehouse.yaml
+  - data-v4/nosql-document.json
+  - data-v4/vector-index.json
+  - database/oracle-postgresql/empty-string-null.json
+  - database/sqlserver-postgresql/transaction.yaml
+  - dify/app.yml
+  - event-v4/saga.yaml
+  - event-v4/schema-evolution.yaml
+  - formal-v4/obligation.yaml
+  - governance-v4/material-change.json
+  - knowledge-v4/temporal-conflict.json
+  - langgraph-python/graph.py
+  - learning-v4/promotion.yaml
+  - managed-agent/deployment.yaml
+  - mcp-2026/profile.yaml
+  - mcp-2026/task-sequence.json
+  - model-v4/canary.yaml
+  - model-v4/quantization.json
+  - openai-plugin/plugin.yaml
+  - openclaw/openclaw.json
+  - platform-v4/multiregion.yaml
+  - polyglot-v4/concurrency-litmus.yaml
+  - polyglot-v4/ffi-layout.json
+  - polyglot/java-to-python/profile.yaml
+  - polyglot/langgraph-to-spring-ai/scenario.json
+  - portable-skill/SKILL.md
+  - portable-skill/scripts/check.py
+  - qa-v4/protocol-fuzz.json
+  - qa-v4/record-replay.yaml
+  - qa/counterexample/minimal.json
+  - qa/validation-dag/example.yaml
+  - realtime-v4/interruption.yaml
+  - security-v4/attestation.json
+  - security-v4/egress.yaml
+  - spring-ai/pom.xml

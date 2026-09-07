@@ -1,0 +1,26 @@
+version: 1
+classes:
+  ephemeral:
+    days: 7
+    examples: [worker_debug_log, temporary_container_snapshot]
+  standard:
+    days: 90
+    examples: [test_log, screenshot, trace, metric, har]
+  extended:
+    days: 365
+    examples: [release_report, patch_diff, performance_baseline, certificate]
+  legal_hold:
+    days: null
+    examples: [security_incident, compliance_investigation]
+
+redaction:
+  secrets: mandatory
+  personal_data: mandatory_unless_approved_fixture
+  authentication_tokens: mandatory
+  production_identifiers: hash_or_remove
+
+integrity:
+  content_hash: sha256
+  manifest_signature_required_for_certification: true
+  immutable_after_certification: true
+

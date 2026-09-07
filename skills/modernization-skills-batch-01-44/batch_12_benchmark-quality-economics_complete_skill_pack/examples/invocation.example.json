@@ -1,0 +1,12 @@
+{
+  "request_id": "b12-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Benchmark, Quality Scoring and Migration Economics",
+  "upstream_certificate_refs": [
+    "batch-11-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

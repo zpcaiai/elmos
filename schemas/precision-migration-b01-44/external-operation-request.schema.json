@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/external-operation-request.schema.json",
+  "title": "Precision Migration External Operation Request",
+  "type": "object",
+  "required": ["schema_version", "operation_id", "campaign_id", "adapter_id", "stage", "parameters", "input_refs", "idempotency_key", "fencing_token", "compensates_idempotency_key", "authorization"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "operation_id": { "$ref": "#/$defs/id" },
+    "campaign_id": { "$ref": "#/$defs/id" },
+    "adapter_id": { "$ref": "#/$defs/id" },
+    "stage": { "enum": ["native_source_execution", "native_target_execution", "independent_holdout", "representative_customer_workload", "production_hsm", "authorized_canary", "verified_rollback"] },
+    "parameters": { "type": "object" },
+    "input_refs": { "type": "array", "items": { "$ref": "#/$defs/contentRef" } },
+    "idempotency_key": { "$ref": "#/$defs/id" },
+    "fencing_token": { "type": "integer", "minimum": 1 },
+    "compensates_idempotency_key": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+    "authorization": { "type": "object", "minProperties": 4 }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "contentRef": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

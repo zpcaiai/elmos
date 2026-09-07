@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-fixture-minimizer-deduplicator"
+  short_description: "Reduce failing fixtures while preserving the failure oracle and deduplicate semantically equivale..."
+  default_prompt: "Use $elmos-fixture-minimizer-deduplicator through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-fixture-minimizer-deduplicator"
+  handler_id: "execute_elmos_fixture_minimizer_deduplicator"
+  operation: "CORPUS_GOVERNANCE"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

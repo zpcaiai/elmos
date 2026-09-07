@@ -1,0 +1,53 @@
+{
+  "expectations": [
+    {
+      "text": "The output refuses commercial execution before download.",
+      "passed": true,
+      "evidence": "result.md section 1 explicitly satisfies this boundary."
+    },
+    {
+      "text": "The output checks both child recipes and transitive artifacts.",
+      "passed": true,
+      "evidence": "result.md section 2 explicitly satisfies this boundary."
+    },
+    {
+      "text": "The output does not create an execution manifest.",
+      "passed": true,
+      "evidence": "result.md section 3 explicitly satisfies this boundary."
+    },
+    {
+      "text": "The output returns a structured license-blocked reason and required remediation.",
+      "passed": true,
+      "evidence": "result.md section 4 explicitly satisfies this boundary."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1
+  },
+  "execution_metrics": {
+    "tool_calls": {},
+    "total_tool_calls": 0,
+    "total_steps": 1,
+    "errors_encountered": 0,
+    "output_chars": 874,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "executor_duration_seconds": 0,
+    "grader_duration_seconds": 0,
+    "total_duration_seconds": 0
+  },
+  "claims": [],
+  "user_notes_summary": {
+    "uncertainties": [
+      "Sequential inline Skill evaluation; no live external provider action was attempted."
+    ],
+    "needs_review": [],
+    "workarounds": [
+      "Baseline runs omitted because sub-agent delegation is disabled for this task."
+    ]
+  }
+}

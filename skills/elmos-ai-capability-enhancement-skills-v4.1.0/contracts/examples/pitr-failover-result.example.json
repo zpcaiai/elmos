@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "pitr-failover-result-example",
+  "status": "READY",
+  "content_hash": "b90deeea60049222822c4771d6fdfb3736dba6fd7777465b1b6db2eb35c2e255",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

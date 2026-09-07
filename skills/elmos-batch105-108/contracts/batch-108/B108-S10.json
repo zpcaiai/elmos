@@ -1,0 +1,68 @@
+{
+  "id": "B108-S10",
+  "batch": 108,
+  "name": "migration-risk-register-generator",
+  "dependencies": [
+    "B105-S14",
+    "B107-S16",
+    "B108-S02"
+  ],
+  "inputs": [
+    "all gate decisions",
+    "unverified scope",
+    "known failures"
+  ],
+  "outputs": [
+    "MigrationRiskRegister",
+    "risk heatmap",
+    "mitigation plan"
+  ],
+  "implementation": {
+    "modules": [
+      "reporting/risk/MigrationRiskService.java",
+      "apps/web/src/features/risk-register/"
+    ],
+    "interfaces": [
+      "GET /api/projects/{id}/risk-register",
+      "event risk-register.generated"
+    ],
+    "data": [
+      "migration_risk",
+      "risk_mitigation",
+      "risk_acceptance"
+    ]
+  },
+  "workflow": [
+    "从阻断/警告/UNKNOWN提取风险",
+    "按影响、可能性、可检测性评分",
+    "区分已验证与未验证范围",
+    "指定Owner、缓解、截止和证据",
+    "风险接受需审批且有期限",
+    "生成热图和上线前清单"
+  ],
+  "tests": [
+    "未验证数据库形成风险",
+    "API WARN不能消失",
+    "已缓解风险需证据",
+    "过期接受重新打开",
+    "P0风险阻止生产建议"
+  ],
+  "evidence": [
+    "risk-register.json",
+    "risk-register.md",
+    "risk-heatmap.json",
+    "mitigation-plan.json"
+  ],
+  "definition_of_done": [
+    "风险无静默丢失",
+    "Owner/期限完整",
+    "接受可审计",
+    "P0/P1规则明确",
+    "链接原始Gate"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

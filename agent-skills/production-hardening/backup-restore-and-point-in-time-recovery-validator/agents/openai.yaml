@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backup Restore and Point In Time Recovery Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $backup-restore-and-point-in-time-recovery-validator to perform this Batch 10 production-hardening task."

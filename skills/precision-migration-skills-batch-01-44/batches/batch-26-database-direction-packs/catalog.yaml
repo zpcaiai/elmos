@@ -1,0 +1,29 @@
+batch: 26
+slug: database-direction-packs
+title: "数据库12条有方向互转包"
+phase: "G 数据库精密互转"
+skills:
+  - name: oracle-to-sqlserver-database-direction-pack
+    description: "提供从 Oracle 到 SQL Server 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: oracle-to-mysql-database-direction-pack
+    description: "提供从 Oracle 到 MySQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: oracle-to-postgresql-database-direction-pack
+    description: "提供从 Oracle 到 PostgreSQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: sqlserver-to-oracle-database-direction-pack
+    description: "提供从 SQL Server 到 Oracle 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: sqlserver-to-mysql-database-direction-pack
+    description: "提供从 SQL Server 到 MySQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: sqlserver-to-postgresql-database-direction-pack
+    description: "提供从 SQL Server 到 PostgreSQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: mysql-to-oracle-database-direction-pack
+    description: "提供从 MySQL 到 Oracle 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: mysql-to-sqlserver-database-direction-pack
+    description: "提供从 MySQL 到 SQL Server 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: mysql-to-postgresql-database-direction-pack
+    description: "提供从 MySQL 到 PostgreSQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: postgresql-to-oracle-database-direction-pack
+    description: "提供从 PostgreSQL 到 Oracle 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: postgresql-to-sqlserver-database-direction-pack
+    description: "提供从 PostgreSQL 到 SQL Server 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"
+  - name: postgresql-to-mysql-database-direction-pack
+    description: "提供从 PostgreSQL 到 MySQL 的数据库专用迁移包，覆盖 DDL、DML、过程代码、专有能力、数据迁移、性能、切换和回滚。"

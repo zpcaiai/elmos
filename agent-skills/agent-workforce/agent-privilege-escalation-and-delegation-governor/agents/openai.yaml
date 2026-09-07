@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 566: agent privilege escalation and delegation governor"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-privilege-escalation-and-delegation-governor to evaluate this capability with evidence."

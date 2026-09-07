@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 006"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $artifact-registry-package-promotion-and-retention-modernizer to apply its fail-closed ELMOS runtime contract."

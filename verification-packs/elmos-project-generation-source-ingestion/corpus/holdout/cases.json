@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "selection": "authored after the development corpus and not used to tune implementation",
+  "addresses": [
+    {"id": "documentation-ipv4", "address": "192.0.2.9", "family": 4, "public": false},
+    {"id": "reserved-future-ipv4", "address": "240.0.0.1", "family": 4, "public": false},
+    {"id": "documentation-ipv6", "address": "2001:db8::9", "family": 6, "public": false},
+    {"id": "public-dns-ipv4", "address": "1.1.1.1", "family": 4, "public": true}
+  ],
+  "labels": [
+    {"input": "../../architecture.markdown", "expected": "architecture.markdown"},
+    {"input": "需求说明.txt", "expected": "需求说明.txt"}
+  ]
+}

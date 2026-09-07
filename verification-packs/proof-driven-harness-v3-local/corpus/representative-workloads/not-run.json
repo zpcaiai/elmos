@@ -1,0 +1,6 @@
+{
+  "kind": "elmos.proof-driven-harness-v3.representative-workload-obligation",
+  "reason": "No authorized production-derived representative workload is available.",
+  "schema_version": 1,
+  "status": "NOT_RUN"
+}

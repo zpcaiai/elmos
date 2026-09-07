@@ -1,0 +1,6 @@
+interface:
+  display_name: "Repository Semantic Intelligence"
+  short_description: "Build bounded, provenance-bearing repository semantic models."
+  default_prompt: "Use $elmos-repository-semantic-intelligence through the exact PDHI v1 K1 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

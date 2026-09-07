@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/behavior-equivalence/observation-point.schema.json",
+  "title": "OBM observation point",
+  "type": "object",
+  "required": ["point_id", "module_id", "type", "required", "sensitivity", "collector_id"],
+  "properties": {
+    "point_id": {"type": "string", "minLength": 1},
+    "module_id": {"type": "string", "minLength": 1},
+    "type": {"type": "string", "minLength": 1},
+    "required": {"type": "boolean"},
+    "sensitivity": {"enum": ["public", "internal", "confidential", "personal", "sensitive-personal", "credential", "financial", "medical", "security", "regulated"]},
+    "collector_id": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

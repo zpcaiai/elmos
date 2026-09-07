@@ -1,0 +1,4 @@
+interface:
+  display_name: "B73 Swift Package Dependency Reproducer"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b73-swift-package-dependency-reproducer to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,16 @@
+id: PG-SMOKE-CRUD
+actors:
+  - id: operator
+functional_requirements:
+  - create a product using an idempotency key
+  - read and update inventory
+  - reject purchases above available stock without partial state
+quality_attributes:
+  - deterministic tests
+  - SQL injection safe parameters
+  - explicit transaction boundaries
+acceptance_tests:
+  - duplicate idempotency key returns the original product
+  - failed purchase leaves inventory unchanged
+assumptions:
+  - single SQLite database is sufficient for the smoke profile

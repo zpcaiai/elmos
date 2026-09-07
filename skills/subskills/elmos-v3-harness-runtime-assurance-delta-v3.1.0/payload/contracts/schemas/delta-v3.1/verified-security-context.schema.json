@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/verified-security-context.schema.json",
+  "title": "Host Minted Verified Security Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contextId",
+    "issuer",
+    "bindings",
+    "status"
+  ],
+  "properties": {
+    "contextId": {
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "bindings": {
+      "type": "object",
+      "required": [
+        "pluginId",
+        "toolId",
+        "accountId",
+        "tenantId",
+        "environmentId",
+        "invocationId",
+        "policyVersion"
+      ],
+      "properties": {
+        "pluginId": {
+          "type": "string"
+        },
+        "toolId": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": "string"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "invocationId": {
+          "type": "string"
+        },
+        "policyVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "entitlements": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "VERIFIED",
+        "UNKNOWN",
+        "DENIED"
+      ]
+    },
+    "signature": {
+      "type": "string"
+    }
+  }
+}

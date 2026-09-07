@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic Model Conformance Validator"
+  short_description: "Apply integrity checks and per-module Batch 3 gates"
+  default_prompt: "Use $semantic-model-conformance-validator to validate PSP and decide module eligibility."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B09 Concurrency Memory Native Semantics"
+  short_description: "Help with B09 Concurrency Memory Native Semantics tasks"
+  default_prompt: "Use $b09-concurrency-memory-native-semantics to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

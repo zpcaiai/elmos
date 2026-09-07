@@ -1,0 +1,10 @@
+registry_version: "1.0"
+packages:
+  P00: {version: "1.0.0", enabled: true}
+  P01: {version: "1.0.0", enabled: true, dependencies: [P00]}
+  P02: {version: "1.0.0", enabled: true, dependencies: [P00, P01]}
+  P03: {version: "1.0.0", enabled: true, dependencies: [P00, P01, P02, P05]}
+  P04: {version: "1.0.0", enabled: true, dependencies: [P00, P01, P02, P03, P05, P06]}
+  P05: {version: "1.0.0", enabled: true, dependencies: [P00, P01, P02]}
+  P06: {version: "1.0.0", enabled: true, dependencies: [P00, P01, P05]}
+  P07: {version: "1.0.0", enabled: true, dependencies: [P00, P02, P03, P05, P06]}

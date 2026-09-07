@@ -1,0 +1,14 @@
+{
+  "corpus": "development",
+  "dataset_class": "local-development",
+  "dataset_digest": "sha256:09b43a2675bd4507d4dfd234be807ee6a4fd4f4e7cd6cc06ad41bf04217793a9",
+  "evidence_refs": [
+    "evidence/route-set.json"
+  ],
+  "notes": [
+    "Local development fixtures from all 30 routes."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:c1fd6ae6d02b401ca9dff0dcd7ff864f2cc44421e2065a1f1624f73a7167a4ff",
+  "status": "passed"
+}

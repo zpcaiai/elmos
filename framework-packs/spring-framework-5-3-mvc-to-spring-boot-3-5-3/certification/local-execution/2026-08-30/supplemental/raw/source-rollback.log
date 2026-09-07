@@ -1,0 +1,49 @@
+NOTE: Picked up JDK_JAVA_OPTIONS:  --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+30-Aug-2026 17:26:48.403 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.120
+30-Aug-2026 17:26:48.404 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Jul 3 2026 07:49:53 UTC
+30-Aug-2026 17:26:48.404 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.120.0
+30-Aug-2026 17:26:48.404 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Mac OS X
+30-Aug-2026 17:26:48.404 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            26.6.2
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          aarch64
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /Users/stephen/Library/Java/JavaVirtualMachines/corretto-11.0.26/Contents/Home
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           11.0.26+4-LTS
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Amazon.com Inc.
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4
+30-Aug-2026 17:26:48.405 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /private/tmp/elmos-mvc-exact-runtime.RXogV6/apache-tomcat-9.0.120
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4/conf/logging.properties
+30-Aug-2026 17:26:48.419 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.io.useCanonCaches=false
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/private/tmp/elmos-mvc-exact-runtime.RXogV6/apache-tomcat-9.0.120
+30-Aug-2026 17:26:48.420 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4/temp
+30-Aug-2026 17:26:48.425 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The Apache Tomcat Native library which allows using OpenSSL was not found on the java.library.path: [/Users/stephen/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.]
+30-Aug-2026 17:26:48.552 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-60911"]
+30-Aug-2026 17:26:48.571 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [263] milliseconds
+30-Aug-2026 17:26:48.598 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+30-Aug-2026 17:26:48.598 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.120]
+30-Aug-2026 17:26:48.605 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4/webapps/ROOT.war]
+30-Aug-2026 17:26:49.166 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+30-Aug-2026 17:26:49.173 INFO [main] org.springframework.web.context.ContextLoader.initWebApplicationContext Root WebApplicationContext: initialization started
+30-Aug-2026 17:26:49.386 INFO [main] org.springframework.web.context.ContextLoader.initWebApplicationContext Root WebApplicationContext initialized in 213 ms
+30-Aug-2026 17:26:49.412 INFO [main] org.springframework.web.servlet.FrameworkServlet.initServletBean Initializing Servlet 'legacy'
+30-Aug-2026 17:26:49.701 INFO [main] org.hibernate.validator.internal.util.Version.<clinit> HV000001: Hibernate Validator 6.2.5.Final
+30-Aug-2026 17:26:49.874 INFO [main] org.springframework.web.servlet.FrameworkServlet.initServletBean Completed initialization in 462 ms
+30-Aug-2026 17:26:49.880 INFO [main] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/spring-source-rollback-9z5754d4/webapps/ROOT.war] has finished in [1,275] ms
+30-Aug-2026 17:26:49.882 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-60911"]
+30-Aug-2026 17:26:49.886 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [1314] milliseconds
+30-Aug-2026 17:26:49.964 INFO [Thread-1] org.apache.coyote.AbstractProtocol.pause Pausing ProtocolHandler ["http-nio-60911"]
+30-Aug-2026 17:26:50.970 INFO [Thread-1] org.apache.catalina.core.StandardService.stopInternal Stopping service [Catalina]
+30-Aug-2026 17:26:50.998 INFO [Thread-1] org.apache.coyote.AbstractProtocol.stop Stopping ProtocolHandler ["http-nio-60911"]
+30-Aug-2026 17:26:51.608 WARNING [Thread-1] org.apache.tomcat.util.net.Acceptor.stopMillis The acceptor thread [http-nio-60911-Acceptor] did not stop cleanly
+30-Aug-2026 17:26:51.611 INFO [Thread-1] org.apache.coyote.AbstractProtocol.destroy Destroying ProtocolHandler ["http-nio-60911"]

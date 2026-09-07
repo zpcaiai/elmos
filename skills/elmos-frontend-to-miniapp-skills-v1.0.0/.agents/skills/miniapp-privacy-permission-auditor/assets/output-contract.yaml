@@ -1,0 +1,32 @@
+skill: miniapp-privacy-permission-auditor
+version: 1.0.0
+task_ids:
+- MAPP-029
+- MAPP-030
+required_outputs:
+- path: privacy-report.json
+  required: true
+- path: permission-manifest.json
+  required: true
+- path: secret-scan.json
+  required: true
+- path: review-disclosure-checklist.md
+  required: true
+gates:
+- name: 严重/高危 secret=0
+  required: true
+- name: 敏感数据流 100% 可追踪
+  required: true
+- name: 权限与声明一致
+  required: true
+- name: 第三方 SDK 已披露
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

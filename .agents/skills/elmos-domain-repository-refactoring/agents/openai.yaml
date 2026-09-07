@@ -1,0 +1,6 @@
+interface:
+  display_name: "Repository Refactoring Domain Pack"
+  short_description: "Run ELMOS-V3-013 with proof-driven controls"
+  default_prompt: "Use $elmos-domain-repository-refactoring through the proof-driven harness runtime with exact source identity, least privilege, replayable evidence, and fail-closed gates."
+policy:
+  allow_implicit_invocation: true

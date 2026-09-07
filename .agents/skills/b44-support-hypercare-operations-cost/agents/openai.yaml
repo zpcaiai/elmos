@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Support Hypercare Operations Cost"
+  short_description: "Run evidence-bound Batch 44 support hypercare operations cost wo"
+  default_prompt: "Use $b44-support-hypercare-operations-cost to implement and verify this capability with fail-closed evidence."

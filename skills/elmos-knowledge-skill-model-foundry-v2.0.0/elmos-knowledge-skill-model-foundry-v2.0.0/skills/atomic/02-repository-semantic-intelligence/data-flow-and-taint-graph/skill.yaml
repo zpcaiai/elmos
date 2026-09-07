@@ -1,0 +1,69 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: data-flow-and-taint-graph
+  version: 2.0.0
+  pack: 02-repository-semantic-intelligence
+  priority: P0
+  owner: TBD
+spec:
+  description: 跟踪变量、字段、对象、请求、数据库和消息中的数据流与污点传播。
+  kernel: K2 Repository Semantic Compiler
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: normalized repository artifact
+    required: true
+  - name: build metadata
+    required: true
+  - name: runtime trace
+    required: true
+  - name: test result
+    required: true
+  outputs:
+  - name: semantic graph
+    contentAddressed: true
+  - name: architecture model
+    contentAddressed: true
+  - name: semantic diff
+    contentAddressed: true
+  - name: confidence report
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - parser.run
+    - compiler.query
+    - graph.write
+    - symbol.resolve
+    - trace.correlate
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - parse-coverage
+    - symbol-resolution-threshold
+    - graph-consistency
+    - source-map-complete
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

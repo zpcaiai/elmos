@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pack Signature and Permission Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1812-pack-signature-and-permission-validator to run FRT-1812 through the governed FRT runtime with exact scope and fail-closed evidence."

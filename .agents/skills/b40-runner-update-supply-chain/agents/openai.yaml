@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Runner Update Supply Chain"
+  short_description: "Run evidence-bound Batch 40 runner update supply chain work"
+  default_prompt: "Use $b40-runner-update-supply-chain to implement and verify this capability with fail-closed evidence."

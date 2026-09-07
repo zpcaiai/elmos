@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inventory Procure-to-Availability Closure Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2211-inventory-procure-to-availability-closure-pack to run FRT-2211 through the governed FRT runtime with exact scope and fail-closed evidence."

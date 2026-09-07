@@ -1,0 +1,56 @@
+version: 1
+functional_dimensions:
+  - happy_path
+  - negative_validation
+  - boundary
+  - state_transition
+  - role_permission
+  - tenant_isolation
+  - idempotency
+  - concurrency
+  - retry_recovery
+  - auditability
+  - localization_timezone
+  - compatibility
+non_functional_dimensions:
+  - latency
+  - throughput
+  - error_rate
+  - capacity
+  - scalability
+  - resource_efficiency
+  - security
+  - privacy
+  - accessibility
+  - resilience
+  - recovery
+  - maintainability_observability
+load_profiles:
+  - baseline
+  - load
+  - stress
+  - spike
+  - soak
+  - volume
+  - capacity
+  - scalability
+ui_dimensions:
+  - semantic_interaction
+  - visual_regression
+  - responsive_layout
+  - keyboard_focus
+  - accessibility_rules
+  - browser_device
+  - weak_network
+  - error_and_empty_states
+
+artifact_coverage_dimensions:
+
+- required_test_materialized
+- native_test_target_discoverable
+- test_file_buildable
+- test_file_requirement_mapped
+- fixture_and_data_reproducible
+- replay_entrypoint_available
+- artifact_manifest_complete
+- bundle_integrity_verified

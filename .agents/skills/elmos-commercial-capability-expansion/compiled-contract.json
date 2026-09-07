@@ -1,0 +1,75 @@
+{
+  "gates": {
+    "independent_evidence_required_for_certification": true,
+    "self_certification_allowed": false,
+    "unknown_is_success": false
+  },
+  "kind": "elmos.commercial-capability-expansion.compiled-skill-contract",
+  "package": {
+    "name": "elmos-commercial-capability-expansion-skills",
+    "version": "2.0.0"
+  },
+  "provenance": {
+    "archive_rego_executed": false,
+    "archive_scripts_executed": false,
+    "compiler": "tooling/integrate_commercial_capability_expansion_skills.py",
+    "dual_roots_required_byte_identical": [
+      ".agents/skills",
+      "agent-skills/runtime"
+    ],
+    "wrapper_ownership": "REPOSITORY_OWNED"
+  },
+  "runtime": {
+    "authentication_required": null,
+    "binding_mode": "GUIDANCE_ONLY_NOT_EXECUTABLE",
+    "entrypoint": null,
+    "execute_fields": [],
+    "input_contract_catalog_entrypoint": null,
+    "input_contract_policy": null,
+    "module": null,
+    "orchestrates_exact_skill_count": 85,
+    "preparation_entrypoint": null,
+    "preparation_fields": [],
+    "preparation_module": null,
+    "scope_fields": [],
+    "service": null
+  },
+  "schema_version": "2.0.0",
+  "skill": {
+    "dependencies": [
+      "policy-as-code-kernel",
+      "universal-agent-skill-runtime",
+      "repository-semantic-code-graph",
+      "change-risk-classifier",
+      "multi-engine-rewrite-router",
+      "hermetic-build-environment",
+      "evidence-gate-orchestrator",
+      "slsa-in-toto-provenance",
+      "otel-agent-execution-tracing",
+      "trajectory-dataset-versioning"
+    ],
+    "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+    "kernel": "K0-commercial-orchestration",
+    "name": "elmos-commercial-capability-expansion",
+    "objective": "Orchestrate the repository-owned eight-kernel commercial capability lifecycle with fail-closed evidence boundaries.",
+    "priority": "P0",
+    "source_dependency_gap": true
+  },
+  "source": {
+    "archive_bytes": 161254,
+    "archive_path": "skills/subskills/elmos-commercial-capability-expansion-skills-v2.0.0.zip",
+    "archive_sha256": "7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380",
+    "member": "SKILL.md",
+    "member_sha256": "5a226ca61c74d310373fe97e2bcb2316590a48109bd6a1c025beb385d3d6c165",
+    "source_content_executed": false,
+    "source_dependency_declarations_present": false,
+    "source_instructions_installed": false
+  },
+  "status": {
+    "certification": "NOT_CERTIFIED",
+    "external_runtime_evidence": "NOT_RUN",
+    "implementation": "GUIDANCE_ONLY_NOT_EXECUTABLE",
+    "independent_verification": "NOT_RUN",
+    "local_execution_evidence": "NOT_RUN"
+  }
+}

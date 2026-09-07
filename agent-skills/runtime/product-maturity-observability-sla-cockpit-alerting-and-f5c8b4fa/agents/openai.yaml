@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Product Maturity Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $product-maturity-observability-sla-cockpit-alerting-and-f5c8b4fa to implement its fail-closed ELMOS Product B55 contract."

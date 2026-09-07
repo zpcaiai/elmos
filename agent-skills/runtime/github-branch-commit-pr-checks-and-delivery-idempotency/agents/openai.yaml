@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 016"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $github-branch-commit-pr-checks-and-delivery-idempotency to implement its fail-closed ELMOS Product Batch 33-mature contract."

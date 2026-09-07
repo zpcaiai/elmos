@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 2
+name: elmos-secure-resumable-upload
+title: 安全断点续传
+objective: 提供面向单文件、多文件和大型项目包的安全上传协议，客户端断线后可继续，服务端可验证完整性并避免重复存储。
+dependencies: []
+inputs:
+- 文件元数据、分片、校验和、租户配额
+outputs:
+- 已验证 Asset、上传审计记录
+responsibilities:
+- 设计 upload session、part、commit 三阶段协议
+- 使用内容哈希、分片校验和和幂等键防止重复或损坏
+- 实施配额、速率、并发、文件大小和租户隔离控制
+- 在提交完成前禁止解析器读取未验证对象
+deliverables:
+- 上传 API/SDK 与状态迁移
+- 对象存储适配器和数据库迁移
+- 断网、乱序、重复分片和校验失败测试
+acceptance:
+- 任意分片重复上传不产生重复字节计费
+- 页面关闭重连后从已确认分片继续
+- 最终对象哈希不一致时不得进入解析
+- 跨租户无法猜测、读取或覆盖上传对象
+data_entities:
+- upload_sessions
+- upload_parts
+- object_blobs
+events:
+- upload.part.accepted
+- upload.completed
+- upload.integrity_failed
+metrics:
+- upload_throughput_bytes
+- resume_success_rate
+- hash_mismatch_rate
+failure_modes:
+- 网络中断
+- 对象存储超时
+- 分片乱序
+- 配额超限
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

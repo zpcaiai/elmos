@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 005"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $application-portfolio-inventory-health-fit-and-lifecycle-manager to apply its fail-closed ELMOS runtime contract."

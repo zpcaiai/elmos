@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "version": "0.6.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "elmos-web-console",
+  "maintenance_owner": "elmos-web-console-maintainers",
+  "ux_owner": "elmos-product-design",
+  "accessibility_owner": "elmos-accessibility-review",
+  "source": {
+    "stack": "nextjs-app-router",
+    "versions": [
+      "16.2.10"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "24.14.0"
+    ],
+    "build_tool": "next-16.2.10",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["next-app-router-16.2.10"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-use-state-19.2.7"],
+    "forms": ["native-formdata-memory-only"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-0.3.0"],
+    "api_client": [],
+    "identity": [],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-1.61.1"],
+    "browsers": [
+      "chromium-revision-1228",
+      "firefox-revision-1532",
+      "webkit-revision-2311"
+    ],
+    "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
+  },
+  "target": {
+    "stack": "nextjs-app-router",
+    "versions": [
+      "16.2.10"
+    ],
+    "language": "typescript",
+    "language_versions": [
+      "5.9.2"
+    ],
+    "runtime": "nodejs",
+    "runtime_versions": [
+      "24.14.0"
+    ],
+    "build_tool": "next-16.2.10",
+    "package_manager": "pnpm-10.12.4",
+    "router": ["next-app-router-16.2.10"],
+    "renderer": ["react-19.2.7-client-hydration"],
+    "state": ["react-use-state-19.2.7"],
+    "forms": ["react-controlled-native-validation-memory-only"],
+    "styling": ["css-custom-properties"],
+    "design_system": ["elmos-console-0.5.0"],
+    "api_client": ["next-server-bound-java-engine-proxy"],
+    "identity": ["server-bound-local-organization-context"],
+    "i18n": ["zh-CN-visible-copy"],
+    "test_tools": ["playwright-1.61.1"],
+    "browsers": [
+      "chromium-revision-1228",
+      "firefox-revision-1532",
+      "webkit-revision-2311"
+    ],
+    "devices": ["desktop-1440x900", "mobile-chromium-390x844", "mobile-webkit-393x852"]
+  },
+  "scope": {
+    "journeys": ["workspace-navigation", "real-spring-upgrade-lifecycle", "trust-chain-review", "skills-qualification", "project-generation-draft", "global-command-navigation", "mobile-bottom-navigation"],
+    "routes": ["/", "/spring", "/migration", "/commercialization", "/generation", "/skills"],
+    "component_roots": ["apps/web-console/app"],
+    "excluded": ["external certification", "production mutation", "customer data"]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "startup_or_launch": "required",
+    "p0_journeys": "required",
+    "visual": "required",
+    "accessibility": "required",
+    "security": "required",
+    "holdout": "required"
+  }
+}

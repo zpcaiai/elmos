@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:provenance-edge",
+  "title": "ProvenanceEdge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "derived_node",
+    "lossless",
+    "origin_node",
+    "record_id",
+    "schema_version",
+    "scope",
+    "transform"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "derived_node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin_node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transform": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lossless": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: wcag-2.2
+  ecosystem: W3C WCAG 2.2
+  version: 4.0.0
+spec:
+  adapterKind: quality-standard
+  maturity: P1
+  modes:
+  - profile
+  - test
+  - manual-review
+  - report
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - web accessibility criteria, techniques and conformance evidence
+  releaseBoundary: adapter package presence is not native conformance

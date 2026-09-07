@@ -1,0 +1,38 @@
+{
+  "status": "not-run",
+  "owners": {
+    "product": "TBD",
+    "engineering": "TBD",
+    "security": "TBD",
+    "operations": "TBD",
+    "commercial": "TBD",
+    "customer_success": "TBD"
+  },
+  "kernel": {
+    "single_workflow_runtime": false,
+    "single_policy_engine": false,
+    "single_evidence_graph": false,
+    "capability_registry": false
+  },
+  "reference_route": {
+    "certified": false
+  },
+  "private_runner": {
+    "certified": false
+  },
+  "design_partners": {
+    "accepted_count": 0
+  },
+  "handoff": {
+    "passed": false
+  },
+  "verified_workloads": [],
+  "delivery_model": {
+    "passed": false
+  },
+  "sla_proof": {
+    "passed": false
+  },
+  "evidence_manifests": [],
+  "zero_tolerance_findings": []
+}

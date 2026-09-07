@@ -1,0 +1,5 @@
+interface:
+  display_name: "Multi Currency Tax And Regional Pricing Manager"
+  short_description: "Authoritative Batch 14 Skill 449 workflow"
+  default_prompt: "Use $multi-currency-tax-and-regional-pricing-manager to execute its evidence-bound Batch 14 workflow."
+

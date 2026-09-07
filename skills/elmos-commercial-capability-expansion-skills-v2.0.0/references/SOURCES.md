@@ -1,0 +1,47 @@
+# Upstream Inspiration Map
+
+This package extracts architectural patterns; it does not vendor upstream code.
+
+- Microsoft Agent Framework Skills: https://learn.microsoft.com/en-us/agent-framework/agents/skills
+- Microsoft Agent Framework: https://github.com/microsoft/agent-framework
+- Agent Skills specification: https://agentskills.io/
+- SCIP: https://github.com/scip-code/scip
+- Tree-sitter: https://github.com/tree-sitter/tree-sitter
+- OpenRewrite: https://github.com/openrewrite/rewrite
+- ast-grep: https://github.com/ast-grep/ast-grep
+- Semgrep: https://github.com/semgrep/semgrep
+- GritQL: https://github.com/getgrit/gritql
+- Bazel: https://github.com/bazelbuild/bazel
+- Buck2: https://github.com/facebook/buck2
+- Pants: https://github.com/pantsbuild/pants
+- Nix: https://github.com/NixOS/nix
+- Firecracker: https://github.com/firecracker-microvm/firecracker
+- gVisor: https://github.com/google/gvisor
+- OSS-Fuzz: https://github.com/google/oss-fuzz
+- ClusterFuzz: https://github.com/google/clusterfuzz
+- OPA: https://github.com/open-policy-agent/opa
+- Cedar: https://github.com/cedar-policy/cedar
+- SLSA: https://slsa.dev/
+- in-toto: https://in-toto.io/
+- Sigstore: https://www.sigstore.dev/
+- Tekton Chains: https://github.com/tektoncd/chains
+- Syft: https://github.com/anchore/syft
+- Grype: https://github.com/anchore/grype
+- SQLGlot: https://github.com/tobymao/sqlglot
+- jOOQ: https://github.com/jOOQ/jOOQ
+- SchemaCrawler: https://github.com/schemacrawler/SchemaCrawler
+- Playwright: https://github.com/microsoft/playwright
+- Schemathesis: https://github.com/schemathesis/schemathesis
+- Pact: https://github.com/pact-foundation
+- OpenTelemetry: https://github.com/open-telemetry
+- Phoenix: https://github.com/Arize-ai/phoenix
+- OpenLineage: https://github.com/OpenLineage/OpenLineage
+- Backstage: https://github.com/backstage/backstage
+- Temporal: https://github.com/temporalio/temporal
+- OpenFeature: https://github.com/open-feature
+- Kyverno: https://github.com/kyverno/kyverno
+- TLA+: https://github.com/tlaplus/tlaplus
+- Lean 4: https://github.com/leanprover/lean4
+- AgentEvolver: https://github.com/modelscope/AgentEvolver
+- OpenHarmony ArkCompiler Runtime Core: https://gitee.com/openharmony/arkcompiler_runtime_core
+- openEuler docs (legacy Gitee entry points to newer hosting): https://gitee.com/openeuler/docs

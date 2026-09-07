@@ -1,0 +1,439 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Cache SLO Control Plane Supplement
+  version: 1.2.0
+  description: >-
+    Authenticated operator and scheduler access to one durable cache-SLO
+    controller. This supplement can propose and roll out performance tuning,
+    but it never turns local evidence into external evidence or certification.
+servers:
+  - url: /v1
+security:
+  - gatewayMutualTLS: []
+components:
+  securitySchemes:
+    gatewayMutualTLS:
+      type: mutualTLS
+      description: >-
+        A trusted gateway authenticates tenant and principal and injects the
+        server-only WSGI identity context. HTTP identity headers are ignored.
+  parameters:
+    ProjectId:
+      in: path
+      name: projectId
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,127}$'
+    ControllerId:
+      in: path
+      name: controllerId
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+    JobId:
+      in: path
+      name: jobId
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$'
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,127}$'
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: true
+      description: >-
+        Bounded tenant-scoped mutation identity. A byte-equivalent replay
+        returns the original durable response; semantic drift is a conflict.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$'
+  schemas:
+    Digest:
+      type: string
+      pattern: '^sha256:[0-9a-f]{64}$'
+    NullableDigest:
+      oneOf:
+        - $ref: '#/components/schemas/Digest'
+        - type: 'null'
+    EmptyMutationRequest:
+      type: object
+      additionalProperties: false
+      maxProperties: 0
+    InstallRequest:
+      type: object
+      additionalProperties: false
+      required: [proposal_digest]
+      properties:
+        proposal_digest:
+          $ref: '#/components/schemas/Digest'
+    RollbackRequest:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          enum:
+            - FALSE_HIT
+            - CROSS_TENANT_HIT
+            - CORRUPT_EXECUTION
+            - UNDER_VALIDATED_PUBLICATION
+            - SLO_BREACH
+            - PROVIDER_ACCOUNTING_MISMATCH
+            - FAIRNESS_REGRESSION
+            - UNKNOWN_OUTCOME_BUDGET
+            - OUT_OF_DISTRIBUTION
+            - COST_GUARDRAIL
+            - CLEAN_FALLBACK_UNAVAILABLE
+            - APPROVAL_INVALID
+    CacheTuningParameters:
+      type: object
+      additionalProperties: false
+      required:
+        - capacity_bytes
+        - provider_prefix_ttl_seconds
+        - environment_ttl_seconds
+        - affinity_locality_weight
+        - prefetch_max_bytes
+        - context_compaction_soft_ratio
+        - restore_cost_bias
+      properties:
+        capacity_bytes: { type: integer, minimum: 1 }
+        provider_prefix_ttl_seconds: { type: integer, minimum: 30, maximum: 86400 }
+        environment_ttl_seconds: { type: integer, minimum: 300, maximum: 2592000 }
+        affinity_locality_weight: { type: number, minimum: 0, maximum: 4 }
+        prefetch_max_bytes: { type: integer, minimum: 0, maximum: 8589934592 }
+        context_compaction_soft_ratio: { type: number, minimum: 0.5, exclusiveMaximum: 0.9 }
+        restore_cost_bias: { type: number, minimum: 0.5, maximum: 2 }
+    RolloutState:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - baseline_digest
+        - candidate_digest
+        - serving_digest
+        - phase
+        - consecutive_passes
+        - epoch
+        - rollback_reason
+      properties:
+        schema_version: { type: string, const: '1.2.0' }
+        baseline_digest: { $ref: '#/components/schemas/Digest' }
+        candidate_digest: { $ref: '#/components/schemas/NullableDigest' }
+        serving_digest: { $ref: '#/components/schemas/Digest' }
+        phase:
+          enum: [OBSERVE, SHADOW, INTERNAL, CANARY, FIVE_PERCENT, TWENTY_FIVE_PERCENT, FIFTY_PERCENT, FULL]
+        consecutive_passes: { type: integer, minimum: 0 }
+        epoch: { type: integer, minimum: 1 }
+        rollback_reason:
+          oneOf:
+            - $ref: '#/components/schemas/RollbackRequest/properties/reason'
+            - type: 'null'
+    SloStatus:
+      type: object
+      additionalProperties: false
+      required:
+        - tenant_id
+        - project_id
+        - controller_id
+        - principal_digest
+        - sequence
+        - event_digest
+        - state
+        - last_action
+        - proposal_digest
+        - approval_digest
+        - evidence_digest
+        - external_evidence_state
+        - certified
+      properties:
+        tenant_id: { type: string, minLength: 1, maxLength: 256 }
+        project_id: { type: string, minLength: 1, maxLength: 256 }
+        controller_id: { type: string, minLength: 1, maxLength: 256 }
+        principal_digest: { $ref: '#/components/schemas/Digest' }
+        sequence: { type: integer, minimum: 1 }
+        event_digest: { $ref: '#/components/schemas/Digest' }
+        state: { $ref: '#/components/schemas/RolloutState' }
+        last_action: { type: string, minLength: 1 }
+        proposal_digest: { $ref: '#/components/schemas/NullableDigest' }
+        approval_digest: { $ref: '#/components/schemas/NullableDigest' }
+        evidence_digest: { $ref: '#/components/schemas/NullableDigest' }
+        external_evidence_state:
+          enum: [NOT_RUN, LOCAL_ENGINEERING_ONLY, EXTERNAL_VERIFIED]
+        certified: { type: boolean, const: false }
+    SloProposal:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - kind
+        - tenant_id
+        - project_id
+        - controller_id
+        - principal_digest
+        - proposal_digest
+        - baseline_digest
+        - candidate_digest
+        - candidate
+        - reason_codes
+        - shadow_only
+        - observation_artifact_digest
+        - observation_digest
+        - artifact_digest
+      properties:
+        schema_version: { type: string, const: '1.2.0' }
+        kind: { type: string, const: 'elmos.cache-slo-proposal/v1.2' }
+        tenant_id: { type: string, minLength: 1, maxLength: 256 }
+        project_id: { type: string, minLength: 1, maxLength: 256 }
+        controller_id: { type: string, minLength: 1, maxLength: 256 }
+        principal_digest: { $ref: '#/components/schemas/Digest' }
+        proposal_digest: { $ref: '#/components/schemas/Digest' }
+        baseline_digest: { $ref: '#/components/schemas/Digest' }
+        candidate_digest: { $ref: '#/components/schemas/Digest' }
+        candidate: { $ref: '#/components/schemas/CacheTuningParameters' }
+        reason_codes:
+          type: array
+          items: { type: string, minLength: 1 }
+        shadow_only: { type: boolean, const: true }
+        observation_artifact_digest: { $ref: '#/components/schemas/Digest' }
+        observation_digest: { $ref: '#/components/schemas/Digest' }
+        artifact_digest: { $ref: '#/components/schemas/Digest' }
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message, details]
+      properties:
+        code: { type: string, minLength: 1 }
+        message: { type: string }
+        details: { type: object }
+    ParityHarnessJobRequest:
+      type: object
+      additionalProperties: false
+      required: [runner_id, report_id]
+      properties:
+        runner_id: { type: string, minLength: 1, maxLength: 256, pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$' }
+        report_id: { type: string, minLength: 1, maxLength: 256, pattern: '^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$' }
+    ParityJobResult:
+      type: object
+      description: >-
+        Content-addressed local engineering receipt. External provider
+        execution and certification remain NOT_RUN and NOT_CERTIFIED.
+      required: [schema_version, kind, tenant_id, project_id, job_id, principal_digest,
+        source_event_digest, maximum_local_decision, external_evidence_state, certification_state]
+      properties:
+        schema_version: { type: string, const: '1.2.0' }
+        kind: { type: string, const: 'elmos.cache-parity-local-job-receipt/v1.2' }
+        tenant_id: { type: string, minLength: 1, maxLength: 256 }
+        project_id: { type: string, minLength: 1, maxLength: 256 }
+        job_id: { type: string, minLength: 1, maxLength: 256 }
+        principal_digest: { $ref: '#/components/schemas/Digest' }
+        source_event_digest: { $ref: '#/components/schemas/Digest' }
+        maximum_local_decision: { type: string, const: READY_FOR_EXTERNAL_GATE }
+        external_evidence_state: { type: string, const: NOT_RUN }
+        certification_state: { type: string, const: NOT_CERTIFIED }
+      additionalProperties: true
+paths:
+  /cache/slo/projects/{projectId}/controllers/{controllerId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    get:
+      operationId: getCacheSloStatus
+      description: Returns the durable controller head without consuming evidence.
+      responses:
+        '200':
+          description: Exact durable SLO controller status.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloStatus' }
+        '401': { description: Trusted authenticated context is absent. }
+        '403': { description: Authenticated tenant is not bound to this control plane. }
+        '404': { description: Controller scope is absent or not visible to this principal. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/proposals:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    post:
+      operationId: proposeCacheSloPolicy
+      description: Produces an immutable shadow-only proposal from trusted observation input.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmptyMutationRequest' }
+      responses:
+        '201':
+          description: Content-addressed shadow proposal; no serving state changed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloProposal' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Controller scope is absent or not visible to this principal. }
+        '409': { description: Idempotency or semantic proposal identity conflict. }
+        '422': { description: Body, signed observation, or proposal contract is invalid. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/install:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    post:
+      operationId: installCacheSloProposal
+      description: Installs only a proposal carrying durable operator approval.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InstallRequest' }
+      responses:
+        '200':
+          description: Durable status after installation.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloStatus' }
+        '400': { description: Missing or invalid idempotency key. }
+        '403': { description: Durable operator approval is missing or invalid. }
+        '404': { description: Controller or proposal is absent or not visible. }
+        '409': { description: Idempotency conflict or another candidate is installed. }
+        '422': { description: Body or durable proposal contract is invalid. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/advance:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    post:
+      operationId: advanceCacheSloRollout
+      description: Consumes at most one new trusted rollout evidence window.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmptyMutationRequest' }
+      responses:
+        '200':
+          description: Durable status after evidence acceptance, hold, advance, or rollback.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloStatus' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Controller scope is absent or not visible to this principal. }
+        '409': { description: Idempotency or concurrent-head conflict. }
+        '422': { description: Body or evidence contract is invalid. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/reconcile:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    post:
+      operationId: reconcileCacheSloRollout
+      description: Revalidates durable approval after restart without consuming evidence.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmptyMutationRequest' }
+      responses:
+        '200':
+          description: Durable status after approval reconciliation.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloStatus' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Controller scope is absent or not visible to this principal. }
+        '409': { description: Idempotency or concurrent-head conflict. }
+        '422': { description: Body or durable authority is malformed. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/rollback:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+    post:
+      operationId: rollbackCacheSloRollout
+      description: Explicitly rolls serving back to the pinned baseline.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RollbackRequest' }
+      responses:
+        '200':
+          description: Durable baseline status after rollback.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SloStatus' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Controller scope is absent or not visible to this principal. }
+        '409': { description: Idempotency or concurrent-head conflict. }
+        '422': { description: Body or rollback reason is invalid. }
+        '503': { description: Trusted SLO runtime registry is not wired. }
+  /cache/parity/projects/{projectId}/jobs/{jobId}/harness:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/JobId'
+    post:
+      operationId: runLocalParityHarnessJob
+      description: Runs one server-registered local harness at most once and replays its receipt.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ParityHarnessJobRequest' }
+      responses:
+        '200':
+          description: Durable local engineering receipt.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ParityJobResult' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Job scope or runner is absent or not visible. }
+        '409': { description: Idempotency or concurrent job conflict. }
+        '422': { description: Body or trusted runner contract is invalid. }
+        '503': { description: Local parity job service is not wired. }
+  /cache/slo/projects/{projectId}/controllers/{controllerId}/jobs/{jobId}/reconcile:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+      - $ref: '#/components/parameters/ControllerId'
+      - $ref: '#/components/parameters/JobId'
+    post:
+      operationId: reconcileLocalSloJob
+      description: Reconciles one registered SLO controller without consuming new evidence.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EmptyMutationRequest' }
+      responses:
+        '200':
+          description: Durable local reconciliation receipt.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ParityJobResult' }
+        '400': { description: Missing or invalid idempotency key. }
+        '404': { description: Controller or job scope is absent or not visible. }
+        '409': { description: Idempotency or concurrent job conflict. }
+        '422': { description: Body or durable SLO contract is invalid. }
+        '503': { description: Local parity job service is not wired. }

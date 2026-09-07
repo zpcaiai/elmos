@@ -1,0 +1,18 @@
+{
+  "datasetId": "agent-regression",
+  "version": "1",
+  "sourceTypes": [
+    "manual",
+    "production-counterexample"
+  ],
+  "caseCount": 500,
+  "splits": {
+    "development": 350,
+    "regression": 100,
+    "holdout": 50
+  },
+  "piiClass": "redacted",
+  "consentStatus": "approved",
+  "lineageHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "holdoutIsolated": true
+}

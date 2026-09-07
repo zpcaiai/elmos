@@ -1,0 +1,5 @@
+interface:
+  display_name: "Comparison Migration Guide And Solution Page Factory"
+  short_description: "Authoritative Batch 14 Skill 419 workflow"
+  default_prompt: "Use $comparison-migration-guide-and-solution-page-factory to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.normalization-seeded-v1",
+  "owner": "elmos-project-synthesis-engineering",
+  "targets": [
+    "generationSourceIngestion.normalizeText"
+  ],
+  "seed_corpus": [
+    "corpus/development/seed.json"
+  ],
+  "coverage_signal": "metamorphic-idempotence-and-prohibited-control-absence",
+  "budgets": {
+    "max_cases": 256,
+    "max_input_bytes": 2048,
+    "seed": 1592594996
+  },
+  "sanitizers": [
+    "playwright-process-isolation"
+  ],
+  "dictionary_refs": []
+}

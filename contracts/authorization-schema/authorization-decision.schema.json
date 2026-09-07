@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.authorization-decision.v1",
+  "title": "ELMOS Authorization Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision",
+    "actorId",
+    "organizationId",
+    "resourceId",
+    "action",
+    "policyVersion",
+    "reasonCodes"
+  ],
+  "properties": {
+    "decision": {
+      "enum": [
+        "ALLOW",
+        "DENY",
+        "ALLOW_WITH_CONDITIONS",
+        "REQUIRE_APPROVAL",
+        "REQUIRE_STEP_UP"
+      ]
+    },
+    "actorId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "resourceId": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z]+:[a-z-]+$"
+    },
+    "policyVersion": {
+      "type": "string"
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

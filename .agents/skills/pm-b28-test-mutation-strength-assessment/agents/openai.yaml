@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B28: Test Mutation Strength Assessment"
+  short_description: "Run Precision Migration B28 with evidence controls"
+  default_prompt: "Use $pm-b28-test-mutation-strength-assessment to execute this Precision Migration contract with fail-closed evidence."

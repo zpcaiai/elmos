@@ -1,0 +1,4 @@
+interface:
+  display_name: "deliverable-and-evidence-pack-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $deliverable-and-evidence-pack-manager to evaluate this Batch 13 commercial capability with evidence."

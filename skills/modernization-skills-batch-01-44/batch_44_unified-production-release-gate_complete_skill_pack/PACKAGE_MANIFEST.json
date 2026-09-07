@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-44-unified-production-release-gate-complete-skill-pack",
+  "batch": 44,
+  "title": "Unified Production Release Gate and Continuous Recertification",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b44-unified-production-release-gate-orchestrator",
+    "b44-unified-production-release-gate-domain-model",
+    "b44-unified-production-release-gate-discovery-inventory",
+    "b44-unified-production-release-gate-capability-planning",
+    "b44-unified-production-release-gate-deterministic-engine",
+    "b44-unified-production-release-gate-adapter-provider",
+    "b44-unified-production-release-gate-workflow-runtime",
+    "b44-unified-production-release-gate-lineage-reconciliation",
+    "b44-unified-production-release-gate-security-policy",
+    "b44-unified-production-release-gate-human-approval",
+    "b44-unified-production-release-gate-observability-economics",
+    "b44-unified-production-release-gate-corpus-benchmark",
+    "b44-unified-production-release-gate-failure-recovery",
+    "b44-unified-production-release-gate-integration-api",
+    "b44-unified-production-release-gate-lifecycle-recertification",
+    "b44-unified-production-release-gate-certification-gate"
+  ],
+  "upstream_batch": 43,
+  "files": [
+    {
+      "path": "BATCH43_COMPATIBILITY.md",
+      "sha256": "4957e16dffe9b149190526825024decdd786d36f6ea3a98eccf7afae728529e6",
+      "size": 2233
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "1dd5fa68bf2f437ffae6642bee8997747ef2916643c24283f7dad2762734d093",
+      "size": 2452
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "acfd16edbed0c88a35a17fe361ee805dd38695d29b47598b8067a5bf44fa8980",
+      "size": 1904
+    },
+    {
+      "path": "README.md",
+      "sha256": "9bd50d120e7d1abe3f8e59750205eae6008718da8e71f52dbabd5ab7414259ce",
+      "size": 1120
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "81097366e6a10c114e4b139ca401b695e6cf67d6b571402f21c1589e56fc7141",
+      "size": 3747
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "ded7148524d2105896170e081ce58ec9f349d1a0fa134b60c6a1c0166b3753ba",
+      "size": 3127
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "197150d04683dd4af8d9e560ec2db409335a0f1549be5ef0581a3cc81f1f04e2",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "fd004952fc19a3bdf0674207a2569ed485fac0a9b1db0e90cab19d56cf50c00c",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "ac0a7cdc4750a759f902de5a8bc39584b2197e320ac827534868475f71fb5a52",
+      "size": 296
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "9743721109efa9d63420cd4a1919b7370e0f7caaa633093b79f4c49163bdf92c",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "6fb023f083d6d3fcd5e324f676ad08b4772aa6ef06ad40f0cf50656ea1907c72",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "48c4f60720b9c7cc310997e43e2c80ae202e5524793112d9e65ea594f2de608b",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "fa7c3b34342e69d934a5c6c3728f8ce3458f33e6808fdab7c4267072f087ac6e",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "80b04574e1a7cddcf6cae7ec5a352702ce30ed3f4271538e1f41ff085d4faf5a",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "df5efe04ebdc11144f4d5c129178de2227cf7b0b965e1feb23bf84bfdd083e66",
+      "size": 848
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-adapter-provider/SKILL.md",
+      "sha256": "fe6d9764639c3400abe3da5b0b7bab5ac456ba6d5b4e455991ca09bba5de2e81",
+      "size": 4055
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-capability-planning/SKILL.md",
+      "sha256": "e036f1d9a42752db8dea75aeeac1a5cbcb50b5d7c2cf1f134180f702841eb148",
+      "size": 3957
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-certification-gate/SKILL.md",
+      "sha256": "77282379bee793d28547d0bc0b9b40ee6bfd046aefb4c2076c13c20049cfb827",
+      "size": 4086
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-corpus-benchmark/SKILL.md",
+      "sha256": "0fe51a5529b6eac2b35cc54e50c9b36cd9a147c1547aa1b3580c25b0db4c5ccd",
+      "size": 3996
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-deterministic-engine/SKILL.md",
+      "sha256": "18a83554a935cc8968fe3ce8e0eaae12d158410efa6c6f52471145ddeccf3f68",
+      "size": 3973
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-discovery-inventory/SKILL.md",
+      "sha256": "b5440c48d9a84b57e1f5f43ff61d7e272e7987e62e738c18b416ef981aef6efa",
+      "size": 4000
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-domain-model/SKILL.md",
+      "sha256": "66f8c31e71d13c01f01e6f741c89db0ed095ade61d0ef5f29b9a3ebd1bb89bbb",
+      "size": 4027
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-failure-recovery/SKILL.md",
+      "sha256": "44f228b836f75f35f12ac2e12be19bcab4115c41d51ed8ff06d5fa1269ed4b4d",
+      "size": 4004
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-human-approval/SKILL.md",
+      "sha256": "91dc33da6814c519421c8842d143ccddbb76e43ec231b385824d3d239cc56f5e",
+      "size": 3989
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-integration-api/SKILL.md",
+      "sha256": "e0529ca576a37bdcc14c9b3cf3cd5a2b0cfc93c4cbb51aba8faf525a3cb57275",
+      "size": 3974
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-lifecycle-recertification/SKILL.md",
+      "sha256": "1bc892b7aa5d4c6a9b41702a8d4e7d96c0debd5146f82429cede982d7a2a6606",
+      "size": 4064
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-lineage-reconciliation/SKILL.md",
+      "sha256": "9c2d2f4737de3883973e85ee1a1796ab3bde58c19844db16875bf4af1c48fd64",
+      "size": 4015
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-observability-economics/SKILL.md",
+      "sha256": "81c369174e0c6581cfc8db79ebcfd4560727da8a8f474b9b5435245f46fabf29",
+      "size": 4030
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-orchestrator/SKILL.md",
+      "sha256": "0a771c2c746134c408cb550a5b9b994a5461aa892cbd10b55fec6d6efa165634",
+      "size": 4052
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-security-policy/SKILL.md",
+      "sha256": "4be913f6be819af69e8122dea6d0af99b745f7b7413a7254e59f6c7487dccc4c",
+      "size": 4009
+    },
+    {
+      "path": "skills/b44-unified-production-release-gate-workflow-runtime/SKILL.md",
+      "sha256": "2140b905e6783d0fd55fa26628092d33c7fcf86f979e682af6328c0f30287037",
+      "size": 4018
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "ebaa33b3ef3aa4aa1934f0c4551e1bb82c1af9f9de813011dd8d87b31a40b252",
+      "size": 496
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "ae10d6dd5f6cba619ad1cdc61543c8fd2725397ee371d067c8c71090bc4fbbf4",
+      "size": 1940
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

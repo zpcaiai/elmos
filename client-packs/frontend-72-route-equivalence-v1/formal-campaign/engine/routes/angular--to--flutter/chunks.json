@@ -1,0 +1,733 @@
+{
+  "schema_version": "1.0",
+  "route_id": "angular--to--flutter",
+  "chunks": [
+    {
+      "pointer": "",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 106,
+        "end_byte": 948,
+        "content_hash": "sha256:ef39913ff1cc21158c9e7c45cfcb4561a33db17cfccbeabd4aedc092951490bf",
+        "subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+      },
+      "canonical_subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+      "source_subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+      "target_subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+      "equivalent": true
+    },
+    {
+      "pointer": "/fallback",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 348,
+        "end_byte": 392,
+        "content_hash": "sha256:1385825eacc4888b8179d89764961b4d0052f5c74527d3d58630f4c33383bed5",
+        "subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2"
+      },
+      "canonical_subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2",
+      "source_subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2",
+      "target_subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2",
+      "equivalent": true
+    },
+    {
+      "pointer": "/fallback/strategy",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 366,
+        "end_byte": 388,
+        "content_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07",
+        "subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07"
+      },
+      "canonical_subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07",
+      "source_subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07",
+      "target_subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07",
+      "equivalent": true
+    },
+    {
+      "pointer": "/navigation",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 234,
+        "end_byte": 267,
+        "content_hash": "sha256:e767673e29cf4c3c8edb0182088a0056b80bc20f82085d2a7fbdd91edb76a2cc",
+        "subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801"
+      },
+      "canonical_subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801",
+      "source_subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801",
+      "target_subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801",
+      "equivalent": true
+    },
+    {
+      "pointer": "/navigation/label",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 249,
+        "end_byte": 263,
+        "content_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b",
+        "subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b"
+      },
+      "canonical_subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b",
+      "source_subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b",
+      "target_subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b",
+      "equivalent": true
+    },
+    {
+      "pointer": "/profile",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 147,
+        "end_byte": 170,
+        "content_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41",
+        "subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41"
+      },
+      "canonical_subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41",
+      "source_subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41",
+      "target_subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41",
+      "equivalent": true
+    },
+    {
+      "pointer": "/projectTitle",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 190,
+        "end_byte": 216,
+        "content_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39",
+        "subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39"
+      },
+      "canonical_subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39",
+      "source_subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39",
+      "target_subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39",
+      "equivalent": true
+    },
+    {
+      "pointer": "/render",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 281,
+        "end_byte": 332,
+        "content_hash": "sha256:059eab4ab794d94d536a7ab4a4d74105fa0a0f374d751934ffa95e931d966d43",
+        "subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4"
+      },
+      "canonical_subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4",
+      "source_subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4",
+      "target_subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4",
+      "equivalent": true
+    },
+    {
+      "pointer": "/render/headingLevel",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 327,
+        "end_byte": 328,
+        "content_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      "canonical_subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "source_subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "target_subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "equivalent": true
+    },
+    {
+      "pointer": "/render/mainRole",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 299,
+        "end_byte": 305,
+        "content_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30",
+        "subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30"
+      },
+      "canonical_subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30",
+      "source_subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30",
+      "target_subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 406,
+        "end_byte": 946,
+        "content_hash": "sha256:57bdeae7d66f0c67018deda670184991e52b71296c2e69e69d751eaef2044693",
+        "subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2"
+      },
+      "canonical_subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2",
+      "source_subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2",
+      "target_subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 412,
+        "end_byte": 579,
+        "content_hash": "sha256:e6b20d7191ecd57734d116833f2e8e5929769d861ce0340563320c9d9f12c6c9",
+        "subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff"
+      },
+      "canonical_subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff",
+      "source_subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff",
+      "target_subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/deepLink",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 569,
+        "end_byte": 573,
+        "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "canonical_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "source_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "target_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/id",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 426,
+        "end_byte": 438,
+        "content_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35",
+        "subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35"
+      },
+      "canonical_subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35",
+      "source_subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35",
+      "target_subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/path",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 454,
+        "end_byte": 457,
+        "content_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952",
+        "subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952"
+      },
+      "canonical_subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952",
+      "source_subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952",
+      "target_subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/requiresAuth",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 544,
+        "end_byte": 549,
+        "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "canonical_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "source_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "target_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/text",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 506,
+        "end_byte": 520,
+        "content_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9",
+        "subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9"
+      },
+      "canonical_subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9",
+      "source_subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9",
+      "target_subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/0/title",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 474,
+        "end_byte": 490,
+        "content_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c",
+        "subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c"
+      },
+      "canonical_subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c",
+      "source_subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c",
+      "target_subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 585,
+        "end_byte": 764,
+        "content_hash": "sha256:53425a2830437144cca7c149851eff26942adbfb8f025cc8ebd1687f592731e2",
+        "subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2"
+      },
+      "canonical_subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2",
+      "source_subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2",
+      "target_subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/deepLink",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 754,
+        "end_byte": 758,
+        "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "canonical_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "source_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "target_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/id",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 599,
+        "end_byte": 614,
+        "content_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d",
+        "subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d"
+      },
+      "canonical_subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d",
+      "source_subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d",
+      "target_subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/path",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 630,
+        "end_byte": 640,
+        "content_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051",
+        "subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051"
+      },
+      "canonical_subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051",
+      "source_subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051",
+      "target_subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/requiresAuth",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 730,
+        "end_byte": 734,
+        "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+      },
+      "canonical_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "source_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "target_subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/text",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 692,
+        "end_byte": 706,
+        "content_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44",
+        "subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44"
+      },
+      "canonical_subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44",
+      "source_subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44",
+      "target_subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/1/title",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 657,
+        "end_byte": 676,
+        "content_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce",
+        "subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce"
+      },
+      "canonical_subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce",
+      "source_subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce",
+      "target_subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 770,
+        "end_byte": 942,
+        "content_hash": "sha256:642c7247612f9ba2969e9c1afa395e14dc47be7cbcb81f79d71c2fe8d175b4f5",
+        "subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7"
+      },
+      "canonical_subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7",
+      "source_subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7",
+      "target_subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/deepLink",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 931,
+        "end_byte": 936,
+        "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "canonical_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "source_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "target_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/id",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 784,
+        "end_byte": 796,
+        "content_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976",
+        "subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976"
+      },
+      "canonical_subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976",
+      "source_subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976",
+      "target_subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/path",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 812,
+        "end_byte": 819,
+        "content_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08",
+        "subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08"
+      },
+      "canonical_subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08",
+      "source_subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08",
+      "target_subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/requiresAuth",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 906,
+        "end_byte": 911,
+        "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+      },
+      "canonical_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "source_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "target_subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/text",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 868,
+        "end_byte": 882,
+        "content_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6",
+        "subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6"
+      },
+      "canonical_subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6",
+      "source_subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6",
+      "target_subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6",
+      "equivalent": true
+    },
+    {
+      "pointer": "/routes/2/title",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 836,
+        "end_byte": 852,
+        "content_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23",
+        "subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23"
+      },
+      "canonical_subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23",
+      "source_subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23",
+      "target_subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23",
+      "equivalent": true
+    },
+    {
+      "pointer": "/schemaVersion",
+      "pointer_standard": "RFC6901",
+      "source": {
+        "path": "src/elmos-bounded-navigation.ts",
+        "start_byte": 127,
+        "end_byte": 132,
+        "content_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc",
+        "subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc"
+      },
+      "target": {
+        "path": "lib/elmos_bounded_navigation.dart",
+        "start_byte": 135,
+        "end_byte": 939,
+        "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+        "subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc"
+      },
+      "canonical_subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc",
+      "source_subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc",
+      "target_subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc",
+      "equivalent": true
+    }
+  ],
+  "equivalent": true
+}

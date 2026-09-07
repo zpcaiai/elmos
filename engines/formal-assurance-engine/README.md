@@ -1,0 +1,126 @@
+# ELMOS Formal Assurance Engine
+
+This repository-owned engine binds all 60 Skills from
+`elmos-formal-assurance-kernel-v1.0.0` to explicit, deterministic handlers.
+It also binds all 481 source acceptance criteria to executable repository-owned
+controls; the generated traceability ledger preserves the exact source IDs,
+handler references and unresolved external-evidence state.
+All 60 exact names are installed as digest-identical, repository-owned wrappers
+under `.agents/skills/` and `agent-skills/runtime/`; those wrappers preserve the
+untrusted-source boundary and route only to allowlisted handlers.
+It provides local contract compilation, bounded analyses, content-addressed
+evidence, tenant-scoped idempotent state, lease/fencing state transitions and
+the conservative release gate.
+
+Version 1.0.0 also exposes the package control/evidence API surface for formal
+specification registration, proof-plan validation, proof-run submission and
+control, artifact/counterexample registration, evidence-bundle requests and
+gate evaluation. Formal specifications, plans, artifacts, counterexamples and
+gate decisions are stored as immutable, digest-bound aggregates. Reads and
+mutations require the full authenticated tenant/account/project/artifact/
+environment/workload scope.
+
+Production lifecycle extensions cover assumption and TCB registration,
+four-eyes waiver approval and revocation, proof-dependency drift invalidation,
+revalidation queues, append-only security audit, and a transactional event
+outbox. Event delivery is explicitly at-least-once with provider idempotency and
+reconciliation; it is never described as exactly once.
+
+Evidence bundles use tenant-scoped content-addressed storage, strict or internal
+redaction, deterministic manifests and offline digest verification. An optional
+private HMAC key can create local self-attested signatures. A requested but
+missing or unverifiable signature fails verification closed. External asymmetric
+signing and independent verification remain separate evidence requirements.
+
+`LocalBoundedExecutor` supplies a repository-owned execution path for exact
+equality, finite predicate samples and finite trace equivalence. It accepts
+data only, never code or commands, and can emit only A1 bounded evidence or a
+replayable counterexample.
+
+Optional production adapters cover digest-pinned native verification
+toolchains and disposable SQLite differential checks. They are disabled unless
+the host supplies an exact toolchain registry and a permit signer. Every
+execution is bound to the authenticated scope, Skill, subject, input bytes,
+options and timeout; its signed permit is short-lived and one-use. Native
+processes use scrubbed environments and resource limits, while adapters that
+execute project/runtime code require a digest-pinned, network-disabled OCI
+sandbox. Receipts and stdout/stderr evidence are immutable and
+content-addressed. The telemetry service stores only bounded, scope-isolated
+labels and allows external export only through an explicitly configured HTTPS
+exporter.
+
+The optional native HMAC/Merkle accelerator is never auto-discovered. A host
+must construct `NativeAttestationBridge` with an absolute library path and its
+exact SHA-256. The bridge rejects unsafe or mutable library identities and
+independently recomputes every payload digest, HMAC and Merkle root before it
+returns a result. Its signer remains `LOCAL_EXECUTED_SELF_ATTESTED`; an absent
+configuration remains `NOT_RUN` and cannot become external attestation.
+
+The runtime binds every request to a trusted tenant/project scope, immutable
+source/target/environment digests, an idempotency key, an append-only event
+chain and (when configured) a tenant-isolated content-addressed artifact store.
+Each source identity has an explicit allowlisted handler; unknown identities
+cannot fall through to a generic dispatcher.
+
+The default runtime never invokes a native verifier, database, provider,
+cluster, signer or customer route. Configured native and disposable-database
+adapters run only under the authorization controls above and produce
+self-attested local engineering receipts. Provider, independent-verifier,
+customer-route and deployment evidence remains `NOT_RUN`; a local bounded or
+native result is never promoted to independent proof or certification.
+
+Run the complete repository qualification target with:
+
+```sh
+make formal-assurance-kernel
+```
+
+Intentional implementation changes require a fresh local receipt before the
+read-only validation target will pass:
+
+```sh
+make formal-assurance-kernel-qualify
+```
+
+For an operator-managed CLI deployment, provide durable state/artifact roots,
+a private (mode `0600`) artifact-encryption key and key identifier, a private
+(mode `0600`) permit key file, and a complete digest-pinned toolchain registry.
+A separate private key may be supplied for local evidence-bundle signing:
+
+```sh
+elmos-formal-assurance \
+  --state /var/lib/elmos/formal-assurance.sqlite3 \
+  --artifact-root /var/lib/elmos/formal-artifacts \
+  --artifact-encryption-key-file /run/secrets/elmos-formal-artifact-encryption-key \
+  --artifact-encryption-key-id local-artifact-kek-v1 \
+  --execution-root /var/lib/elmos/formal-executions \
+  --permit-key-file /run/secrets/elmos-formal-permit-key \
+  --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \
+  --bundle-signing-key-id local-qualification \
+  --toolchain-registry /etc/elmos/formal-toolchains.json \
+  --toolchain-registry-sha256 sha256:<exact-registry-digest> \
+  skills
+```
+
+The CLI never accepts the permit secret directly on the command line. Native
+requests still require an independently issued, short-lived, one-use permit
+bound to the exact authenticated scope and canonical execution request.
+
+Deployments may inject a tenant-aware `ArtifactStore` adapter for S3, GCS or
+MinIO and an idempotent `EventPublisher` for Kafka, NATS or Redpanda. The
+repository includes provider contracts and fault-tested orchestration, not
+provider credentials or fabricated acknowledgements. The authorized
+`Postgres17MigrationManager` applies V005 transactionally, verifies exact
+relations and rolls back on ambiguity; a real PostgreSQL 17 run is still
+external evidence.
+
+The local handlers and any configured native/database adapters provide
+engineering evidence only. External signing, independent replay, exact
+production-provider runs, customer golden routes, deployment evidence and
+certification remain explicit `NOT_RUN` / `NOT_CERTIFIED` states until their
+named evidence actually exists.
+
+Python dependencies for this engine are resolved from the committed
+`engines/formal-assurance-engine/uv.lock`; the Make targets use that project in
+locked mode so a workstation's global site packages cannot satisfy a missing
+runtime dependency implicitly.

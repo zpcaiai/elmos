@@ -1,0 +1,276 @@
+{
+  "schema_version": "1.0",
+  "package": "elmos-multitenant-task-finops-skills",
+  "version": "1.0.0",
+  "generated_at": "2026-08-19T00:00:00+08:00",
+  "language": "zh-CN",
+  "description": "Implementation-ready Elmos multi-tenant task concurrency, progress/recovery, archival, cost, revenue, and analytics Skills package.",
+  "hard_requirements": {
+    "account_active_root_task_limit": 3,
+    "limit_scope": "authenticated account across all tenant memberships",
+    "excess_submission_behavior": "durably queue as WAITING_FOR_SLOT",
+    "authoritative_task_store": "PostgreSQL",
+    "workflow_engine": "Temporal",
+    "large_object_store": "S3-compatible object storage",
+    "tenant_isolation": "OIDC membership plus PostgreSQL FORCE RLS",
+    "financial_model": "append-only usage and revenue ledgers"
+  },
+  "integrates_with_existing_skills": [
+    "elmos-architecture-contract-governance",
+    "elmos-identity-tenant-security",
+    "elmos-temporal-task-reliability",
+    "elmos-runner-scheduler-execution",
+    "elmos-content-addressed-cache",
+    "elmos-observability-finops",
+    "elmos-backup-recovery-replay",
+    "elmos-scale-benchmark-certification",
+    "elmos-production-readiness-gate",
+    "elmos-incremental-analysis-cache",
+    "elmos-runtime-cost-estimator",
+    "elmos-commercial-packaging"
+  ],
+  "skills": [
+    {
+      "id": "ELMOS-MTF-001",
+      "name": "elmos-multitenant-task-finops-orchestrator",
+      "path": ".agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "layer": "orchestration",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-observability-finops"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "implementation-plan.md",
+        "gap-analysis.json",
+        "contract-freeze.json",
+        "migration-plan.md",
+        "execution-report.md",
+        "evidence-bundle.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-002",
+      "name": "elmos-tenant-identity-rls",
+      "path": ".agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "layer": "security",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-multitenant-task-finops-orchestrator"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "identity-context-contract.md",
+        "rls-migration.sql",
+        "role-matrix.csv",
+        "data-classification.yaml",
+        "tenant-isolation-test-report.json",
+        "audit-policy.md"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-003",
+      "name": "elmos-account-concurrency-admission",
+      "path": ".agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "layer": "runtime-control",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-tenant-identity-rls"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "account-slot-schema.sql",
+        "admission-service/",
+        "admission-policy.yaml",
+        "concurrency-api.yaml",
+        "slot-race-test-report.json",
+        "queue-fairness-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-004",
+      "name": "elmos-workload-aware-scheduler",
+      "path": ".agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "layer": "scheduling",
+      "risk": "high",
+      "depends_on": [
+        "elmos-account-concurrency-admission"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "workload-class-catalog.yaml",
+        "scheduler-policy.yaml",
+        "capacity-model.json",
+        "worker-pool-config/",
+        "scheduler-metrics.md",
+        "fairness-benchmark.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-005",
+      "name": "elmos-task-lifecycle-temporal",
+      "path": ".agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "layer": "workflow",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-workload-aware-scheduler"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "task-state-machine.yaml",
+        "workflow-contracts/",
+        "temporal-search-attributes.md",
+        "retry-policy.yaml",
+        "cancellation-contract.md",
+        "workflow-replay-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-006",
+      "name": "elmos-task-progress-journal",
+      "path": ".agents/skills/elmos-task-progress-journal/SKILL.md",
+      "layer": "observability",
+      "risk": "high",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "task-event-schema.json",
+        "progress-aggregator/",
+        "sse-stream-contract.yaml",
+        "node-weight-model.json",
+        "log-segment-policy.md",
+        "progress-rebuild-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-007",
+      "name": "elmos-checkpoint-recovery",
+      "path": ".agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "layer": "reliability",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "checkpoint-schema.json",
+        "side-effect-receipt-schema.json",
+        "runner-lease-protocol.md",
+        "reconciliation-rules.yaml",
+        "recovery-runbook.md",
+        "fault-injection-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-008",
+      "name": "elmos-task-io-artifact-archive",
+      "path": ".agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "layer": "storage",
+      "risk": "high",
+      "depends_on": [
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "input-manifest.schema.json",
+        "artifact-manifest.schema.json",
+        "object-key-policy.md",
+        "retention-policy.yaml",
+        "export-delete-workflows.md",
+        "integrity-verification-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-009",
+      "name": "elmos-usage-metering-cost-ledger",
+      "path": ".agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "layer": "finops",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-task-io-artifact-archive"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "usage-event.schema.json",
+        "price-book.schema.json",
+        "metering-adapters/",
+        "task-cost-summary.sql",
+        "budget-policy.yaml",
+        "provider-reconciliation-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-010",
+      "name": "elmos-revenue-margin-ledger",
+      "path": ".agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "layer": "billing",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "revenue-entry.schema.json",
+        "revenue-allocation.schema.json",
+        "billing-mode-catalog.yaml",
+        "revenue-recognition-policy.md",
+        "task-margin-summary.sql",
+        "settlement-reconciliation-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-011",
+      "name": "elmos-task-financial-analytics",
+      "path": ".agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "layer": "analytics",
+      "risk": "high",
+      "depends_on": [
+        "elmos-usage-metering-cost-ledger",
+        "elmos-revenue-margin-ledger"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "metric-catalog.yaml",
+        "analytics-rollups.sql",
+        "dashboard-spec.md",
+        "financial-export-schema.json",
+        "data-quality-checks.sql",
+        "aggregate-rebuild-report.json"
+      ]
+    },
+    {
+      "id": "ELMOS-MTF-012",
+      "name": "elmos-concurrency-recovery-finops-certification",
+      "path": ".agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "layer": "quality",
+      "risk": "critical",
+      "depends_on": [
+        "elmos-account-concurrency-admission",
+        "elmos-workload-aware-scheduler",
+        "elmos-task-lifecycle-temporal",
+        "elmos-task-progress-journal",
+        "elmos-checkpoint-recovery",
+        "elmos-task-io-artifact-archive",
+        "elmos-task-financial-analytics"
+      ],
+      "task_count": 12,
+      "outputs": [
+        "certification-plan.md",
+        "concurrency-test-report.json",
+        "recovery-test-report.json",
+        "tenant-isolation-report.json",
+        "financial-reconciliation-report.json",
+        "production-readiness-evidence.json"
+      ]
+    }
+  ],
+  "total_skills": 12,
+  "total_tasks": 144
+}

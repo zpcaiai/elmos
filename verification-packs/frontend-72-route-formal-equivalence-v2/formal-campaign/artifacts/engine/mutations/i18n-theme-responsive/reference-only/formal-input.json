@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "i18n-theme-responsive",
+  "obligation_symbol": "diff_i18n_theme_responsive",
+  "variant": "REFERENCE_ONLY",
+  "pointer": "/i18nThemeResponsive/compactBreakpoint",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:c3b288da46c8cb548f0fd61df96b0e97b9e2f5603bd9c1f8d241be3d2613524a",
+  "canonical_block_digest": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+  "mutant_block_digest": "sha256:acfe25ace09c5a1652002299293268628189671a4a44257025fa0989578fbd31",
+  "counterexample_replay": {
+    "block_id": "i18n-theme-responsive",
+    "pointer": "/i18nThemeResponsive/compactBreakpoint",
+    "influence_class": "TRANSITION",
+    "scenario_id": "LOCALE_EN_US_WIDE_721",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "requestedLocale": "en-US",
+      "localeSupported": true,
+      "locale": "en-US",
+      "requestedTheme": "LIGHT",
+      "themeSupported": true,
+      "theme": "LIGHT",
+      "viewportWidth": 721,
+      "columns": 2
+    },
+    "mutant_observation": {
+      "requestedLocale": "en-US",
+      "localeSupported": true,
+      "locale": "en-US",
+      "requestedTheme": "LIGHT",
+      "themeSupported": true,
+      "theme": "LIGHT",
+      "viewportWidth": 721,
+      "columns": 1
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

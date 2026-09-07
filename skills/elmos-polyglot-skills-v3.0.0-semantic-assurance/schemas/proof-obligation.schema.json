@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.proof-obligation/v1",
+  "type": "object",
+  "required": [
+    "obligationId",
+    "statement",
+    "scope",
+    "status",
+    "assumptions"
+  ],
+  "properties": {
+    "obligationId": {
+      "type": "string"
+    },
+    "statement": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "not-run",
+        "unknown",
+        "timeout",
+        "counterexample",
+        "waived",
+        "proved"
+      ]
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tool": {
+      "type": "object"
+    },
+    "artifactHash": {
+      "type": "string"
+    }
+  }
+}

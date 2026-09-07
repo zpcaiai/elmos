@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "property_id": "property.normalization-idempotent-and-bounded",
+  "claim_id": "claim.source-boundaries",
+  "owner": "elmos-project-synthesis-engineering",
+  "generator": {
+    "kind": "seeded-text-generator",
+    "constraints": [
+      "256 deterministic cases",
+      "maximum 512 generated symbols",
+      "includes control characters, CJK, and emoji"
+    ]
+  },
+  "oracle_refs": [
+    "oracle.source-policy",
+    "oracle.playwright-regression"
+  ],
+  "assertion": {
+    "kind": "normalization-is-idempotent-and-removes-prohibited-controls"
+  },
+  "shrinker": {
+    "kind": "prefix-and-symbol-deletion"
+  },
+  "replay": {
+    "seed": "1592594996",
+    "command": "pnpm --dir apps/web-console exec playwright test --project=chromium e2e/generation-source-ingestion.spec.ts"
+  }
+}

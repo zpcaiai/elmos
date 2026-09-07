@@ -1,0 +1,13 @@
+{
+  "corpusRole": "negative",
+  "stack": "Vue 3",
+  "note": "No aria-label or aria-live in the source, so no accessibility contract can be asserted.",
+  "files": {
+    "package.json": "{\n  \"dependencies\": {\n    \"vue\": \"3.5.39\"\n  }\n}\n",
+    "src/App.vue": "<template><main><h1>{{ title }}</h1><button @click=\"apply\">Increment</button><p>{{ count }}</p></main></template><script setup lang=\"ts\">import { ref } from \"vue\"; const title = \"Counter\"; const count = ref(0); function apply() { count.value += 1; }</script><style scoped>button { color: #0057B8; }</style>\n"
+  },
+  "expectedStatus": "BLOCKED",
+  "expectedGapCodes": [
+    "FRT_VUE3_ACCESSIBILITY_CONTRACT_NOT_IN_SOURCE"
+  ]
+}

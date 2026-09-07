@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Elmos Formal Assurance Gate API
+  version: 1.0.0
+paths:
+  /v1/gates/evaluate:
+    post:
+      operationId: evaluateFormalGate
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - subjectId
+              - gate
+              - policyRevision
+              properties:
+                subjectId:
+                  type: string
+                gate:
+                  type: string
+                policyRevision:
+                  type: string
+                deploymentComplete:
+                  type: boolean
+      responses:
+        '200':
+          description: Decision
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/release-gate-decision.schema.json
+  /v1/gates/{subjectId}/latest:
+    get:
+      operationId: getLatestGateDecision
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: subjectId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: gate
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Latest decision
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/release-gate-decision.schema.json
+        '404':
+          description: No decision
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

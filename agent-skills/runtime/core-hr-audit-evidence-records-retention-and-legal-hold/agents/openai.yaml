@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Core Hr Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $core-hr-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B43 contract."

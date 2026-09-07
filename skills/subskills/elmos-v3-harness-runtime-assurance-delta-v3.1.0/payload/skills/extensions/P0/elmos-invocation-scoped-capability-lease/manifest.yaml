@@ -1,0 +1,53 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-004
+  name: elmos-invocation-scoped-capability-lease
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: Host-owned filesystem、sandbox、secret、executor、emitter 等能力以 invocation 借用租约暴露，调用结束或取消立即吊销。
+  ownerKernels:
+  - K7
+  extends:
+  - elmos-harness-runtime-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-environment-attachment-authority
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - CapabilityLeaseBroker
+  - BorrowedHandle
+  - LeaseRevocationCoordinator
+  - UseAfterInvocationGuard
+  invariants:
+  - possession of an object reference is not durable authority
+  - leases are non-transferable unless a typed delegation contract is accepted by the Host
+  - revocation is monotonic
+  - child execution authority is always a subset of the parent effective authority
+  upstreamEvidence:
+  - openai/codex#41020
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

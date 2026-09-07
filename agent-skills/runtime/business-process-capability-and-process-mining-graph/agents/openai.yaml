@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business Process Capability And Process Mining Graph"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $business-process-capability-and-process-mining-graph to govern this enterprise suite modernization task with fail-closed evidence."

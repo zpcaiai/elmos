@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-semantic-golden-master-capture"
+  short_description: "Capture source outputs, traces and state snapshots with normalization and provenance as replayabl..."
+  default_prompt: "Use $elmos-semantic-golden-master-capture through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-semantic-golden-master-capture"
+  handler_id: "execute_elmos_semantic_golden_master_capture"
+  operation: "SEMANTIC_COMPARISON"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

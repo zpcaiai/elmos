@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/message-contract.v1.json",
+  "title": "Message Contract",
+  "type": "object",
+  "required": ["schemaVersion", "contractId", "contractType", "owner", "schemaRef", "deliveryPolicy", "version", "producers", "consumers"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "contractId": {"type": "string"},
+    "contractType": {"enum": ["COMMAND", "DOMAIN_EVENT", "INTEGRATION_EVENT", "NOTIFICATION", "QUERY", "REPLY", "CONTROL_MESSAGE", "FILE_TRANSFER"]},
+    "owner": {"type": "string", "minLength": 1},
+    "schemaRef": {"type": "string", "minLength": 1},
+    "deliveryPolicy": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "producers": {"type": "array", "items": {"type": "string"}},
+    "consumers": {"type": "array", "items": {"type": "string"}},
+    "classification": {"type": "string"},
+    "businessMeaningHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

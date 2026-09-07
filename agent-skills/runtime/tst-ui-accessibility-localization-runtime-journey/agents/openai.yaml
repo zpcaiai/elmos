@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst UI Accessibility Localization Runtime Journey"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-ui-accessibility-localization-runtime-journey to run the exact Batch 66-80 test scope with fail-closed evidence."

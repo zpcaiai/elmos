@@ -1,0 +1,39 @@
+workflow_id: resume-after-interruption
+version: 2
+triggers:
+  - client_disconnect
+  - worker_crash
+  - orchestrator_restart
+  - lease_timeout
+  - transient_dependency_failure
+  - output_publisher_restart
+rules:
+  client_disconnect:
+    server_action: continue
+    client_reconnect_action: attach_to_existing_run
+  worker_crash:
+    server_action: requeue_uncommitted_shard
+    require_idempotency_key: true
+  orchestrator_restart:
+    server_action: replay_from_event_log_and_last_checkpoint
+  lease_timeout:
+    server_action: fence_old_worker_then_reassign
+  transient_dependency_failure:
+    server_action: retry_with_bounded_policy
+    exhausted_action: mark_blocked_and_fail_gate
+  output_publisher_restart:
+    server_action: resume_from_frozen_artifact_inventory_and_temporary_object_keys
+checkpoint_contents:
+  - workflow_state
+  - completed_step_ids
+  - test_shard_commits
+  - environment_leases
+  - data_seed_versions
+  - defect_clusters
+  - repair_iteration
+  - patch_refs
+  - materialized_artifact_refs
+  - artifact_manifest_draft_ref
+  - bundle_build_state
+  - evidence_manifest_ref
+  - budget_usage

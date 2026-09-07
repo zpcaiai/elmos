@@ -1,0 +1,11 @@
+{
+  "classification": "repository-owned-nonsensitive",
+  "schema_version": 1,
+  "tokens": [
+    "PASS",
+    "NOT_RUN",
+    "../",
+    "sha256:",
+    "local-qualification.json"
+  ]
+}

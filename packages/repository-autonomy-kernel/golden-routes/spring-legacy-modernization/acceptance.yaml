@@ -1,0 +1,9 @@
+mandatory:
+  - route-baseline-build
+  - route-api-contract
+  - route-transaction-semantics
+  - route-security
+  - route-database-rehearsal
+  - route-shadow-runtime
+  - route-rollback
+final: P05_DEPLOYMENT_COMPLETE

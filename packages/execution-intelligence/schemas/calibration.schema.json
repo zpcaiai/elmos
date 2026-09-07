@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/calibration.schema.json",
+  "title": "Calibration result",
+  "description": "Runtime and token are calibrated independently. A null multiplier means no measurement existed; it never means 1.0.",
+  "type": "object",
+  "required": ["schema_version", "valid_samples", "global", "groups", "rule"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "valid_samples": { "type": "integer", "minimum": 1 },
+    "runtime_samples": { "type": "integer", "minimum": 0 },
+    "token_samples": { "type": "integer", "minimum": 0 },
+    "dropped_samples": { "type": "integer", "minimum": 0 },
+    "dropped_detail": { "type": "array" },
+    "global": {
+      "type": "object",
+      "required": ["runtime_multiplier", "token_multiplier", "confidence"],
+      "properties": {
+        "runtime_multiplier": {
+          "anyOf": [{ "$ref": "envelope.schema.json" }, { "type": "null" }]
+        },
+        "token_multiplier": {
+          "anyOf": [{ "$ref": "envelope.schema.json" }, { "type": "null" }]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "unavailable": { "type": "array", "items": { "type": "string" } },
+    "groups": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["samples", "confidence", "applicable"],
+        "properties": {
+          "samples": { "type": "integer", "minimum": 1 },
+          "runtime_samples": { "type": "integer", "minimum": 0 },
+          "token_samples": { "type": "integer", "minimum": 0 },
+          "runtime_multiplier": {
+            "anyOf": [{ "$ref": "envelope.schema.json" }, { "type": "null" }]
+          },
+          "token_multiplier": {
+            "anyOf": [{ "$ref": "envelope.schema.json" }, { "type": "null" }]
+          },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "applicable": { "type": "boolean" }
+        }
+      }
+    },
+    "rule": { "type": "string" }
+  }
+}

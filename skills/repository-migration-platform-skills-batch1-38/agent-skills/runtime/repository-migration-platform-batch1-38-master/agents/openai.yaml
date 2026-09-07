@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Migration Platform Batch1 38 Master"
+  short_description: "Help with Repository Migration Platform Batch1 38 Master tasks"
+  default_prompt: "Use $repository-migration-platform-batch1-38-master to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

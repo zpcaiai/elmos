@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 20
+name: elmos-storage-index-and-retrieval
+title: 存储、索引与检索
+objective: 让大规模输入可持久化、可删除、可版本化、可检索，同时避免把模型上下文当作唯一存储。
+dependencies:
+- elmos-unified-multimodal-content-ir
+- elmos-source-anchor-and-provenance
+inputs:
+- 资产、IR、权限、版本
+outputs:
+- 索引文档、检索结果、重建任务
+responsibilities:
+- 区分对象存储、关系数据库、全文索引、向量索引和图关系职责
+- 实现 outbox、CDC 或等效机制保持索引一致性
+- 支持租户、项目、版本、权限和来源过滤
+- 提供混合检索、重排、去重和证据返回
+deliverables:
+- StoragePorts 与索引作业
+- 查询 API 和一致性修复器
+- 索引延迟、删除传播、权限过滤和召回评测
+acceptance:
+- 搜索结果始终返回来源锚点和权限上下文
+- 删除或保留策略能传播到所有派生索引
+- 索引失败可重放且不丢原始数据
+- 跨租户检索结果为零泄露
+data_entities:
+- index_jobs
+- search_documents
+- vector_embeddings
+events:
+- index.completed
+- index.rebuild.requested
+- search.executed
+metrics:
+- index_freshness
+- retrieval_recall
+failure_modes:
+- 索引延迟
+- 向量模型变更
+- 删除传播失败
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

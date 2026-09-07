@@ -1,0 +1,7 @@
+{
+  "agentVersionId": "agentVersionId-fixture",
+  "toolId": "toolId-fixture",
+  "environment": "environment-fixture",
+  "scope": {},
+  "approvalPolicy": "approvalPolicy-fixture"
+}

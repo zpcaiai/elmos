@@ -1,0 +1,21 @@
+{
+  "expected_execution_digest": "sha256:a4c5f79af0ef814f491cb30f994c9a343c61f84cb8bc860f3e4036f83f846728",
+  "expected_manifest_digest": "sha256:168107f4d62b9bedf8fce3e43f6811057f1ac837db54729f23d78a974913cb11",
+  "expected_receipt_digest": "sha256:54d0b3f9c51288695543fd68f5b6bdfea64a150629a2bd212c8ed246fc6bf5a0",
+  "external_states": {
+    "archive_scripts_executed": false,
+    "external_certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_canary": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
+    "production_writes": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "manifest_digest": "sha256:168107f4d62b9bedf8fce3e43f6811057f1ac837db54729f23d78a974913cb11",
+  "observed_execution_digest": "sha256:a4c5f79af0ef814f491cb30f994c9a343c61f84cb8bc860f3e4036f83f846728",
+  "observed_receipt_digest": "sha256:54d0b3f9c51288695543fd68f5b6bdfea64a150629a2bd212c8ed246fc6bf5a0",
+  "reason": null,
+  "schema_version": "1.0",
+  "status": "MATCHED"
+}

@@ -1,0 +1,10 @@
+{
+  "profile": "artifacts",
+  "version": "1.0.0",
+  "skills": [
+    "elmos-data-architecture-adr",
+    "elmos-bigdata-api-dashboard",
+    "elmos-bigdata-evidence-certification"
+  ],
+  "dependency_policy": "installer expands transitive dependencies"
+}

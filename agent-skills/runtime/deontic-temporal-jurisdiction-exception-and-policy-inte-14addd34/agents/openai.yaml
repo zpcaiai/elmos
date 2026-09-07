@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Deontic Temporal Jurisdiction Exception And Policy Intermediate Representation"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $deontic-temporal-jurisdiction-exception-and-policy-inte-14addd34 to implement its fail-closed ELMOS Product B38 contract."

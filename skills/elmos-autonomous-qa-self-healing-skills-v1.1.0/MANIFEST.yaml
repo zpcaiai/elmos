@@ -1,0 +1,134 @@
+package:
+  id: elmos.autonomous-qa-self-healing
+  name: Elmos Autonomous QA & Self-Healing Verification — Project Deliverables Edition
+  version: 1.1.0
+  language: zh-CN
+  compatibility:
+  - Codex
+  - Claude Code
+  - Generic repository coding agents
+  entrypoints:
+    codex: AGENTS.md
+    claude_code: CLAUDE.md
+    architecture: ARCHITECTURE.md
+    project_output_contract: PROJECT_OUTPUT_CONTRACT.md
+    implementation: IMPLEMENTATION_PLAN.md
+    quality_gates: QUALITY_GATES.yaml
+    validation_report: PACKAGE_VALIDATION_REPORT.md
+capabilities:
+- requirement_ingestion
+- traceability_graph
+- risk_based_test_planning
+- executable_test_generation
+- functional_testing
+- api_contract_testing
+- database_and_messaging_testing
+- ui_e2e_visual_accessibility_testing
+- performance_load_stress_spike_soak_testing
+- security_fuzz_mutation_testing
+- resilience_chaos_recovery_testing
+- defect_triage_and_root_cause
+- sandboxed_auto_repair
+- impacted_and_full_regression
+- evidence_reporting_and_release_certification
+- checkpoint_resume_and_runtime_eta
+- first_class_test_file_deliverables
+- native_test_layout_materialization
+- project_with_tests_bundle
+- tests_only_bundle
+- qa_evidence_bundle
+- artifact_manifest_checksums_and_provenance
+- project_output_versioning_retention_and_download
+skill_order:
+- 00-qa-control-plane
+- 01-project-context-ingestion
+- 02-spec-normalization
+- 03-requirement-traceability-graph
+- 04-risk-coverage-planning
+- 05-test-model-dsl
+- 06-functional-test-generation
+- 07-api-contract-testing
+- 08-data-database-testing
+- 09-message-workflow-testing
+- 10-ui-e2e-testing
+- 11-visual-responsive-testing
+- 12-accessibility-compatibility-testing
+- 13-performance-baseline-testing
+- 14-load-stress-spike-soak-testing
+- 15-security-abuse-testing
+- 16-resilience-chaos-recovery-testing
+- 17-test-data-management
+- 18-environment-orchestration
+- 19-distributed-test-execution
+- 20-test-oracle-evidence
+- 21-flaky-test-control
+- 22-defect-triage-rca
+- 23-repair-planning
+- 24-safe-code-auto-fix
+- 25-test-self-healing
+- 26-impact-analysis-regression
+- 27-mutation-property-fuzz-testing
+- 28-quality-gate-release-certification
+- 29-reporting-observability
+- 30-checkpoint-resume-idempotency
+- 31-runtime-cost-eta
+- 32-multilanguage-adapter-sdk
+- 33-ci-cd-pr-integration
+- 34-continuous-learning-knowledge-base
+- 35-governance-approval-audit
+- 36-project-output-contract
+- 37-test-source-materialization
+- 38-project-output-bundle-publishing
+- 39-output-versioning-retention
+required_schemas:
+- schemas/project-context.schema.json
+- schemas/requirement.schema.json
+- schemas/test-case.schema.json
+- schemas/test-run.schema.json
+- schemas/defect.schema.json
+- schemas/repair-plan.schema.json
+- schemas/evidence.schema.json
+- schemas/traceability.schema.json
+- schemas/project-output-manifest.schema.json
+- schemas/test-artifact-set.schema.json
+- schemas/output-bundle.schema.json
+required_workflows:
+- workflows/autonomous-qa-loop.yaml
+- workflows/project-output-publishing.yaml
+- workflows/pull-request-gate.yaml
+- workflows/nightly-full-suite.yaml
+- workflows/release-certification.yaml
+- workflows/resume-after-interruption.yaml
+required_policies:
+- policies/execution-policy.yaml
+- policies/auto-fix-policy.yaml
+- policies/evidence-retention-policy.yaml
+- policies/project-output-policy.yaml
+required_tools:
+- tools/validate_skill_package.py
+- tools/validate_project_output.py
+- tools/build_output_bundles.py
+project_deliverables:
+  default_output_mode: both
+  required_bundles_by_mode:
+    generate:
+    - project-with-tests
+    - tests-only
+    verify:
+    - project-with-tests
+    - tests-only
+    - qa-evidence
+    repair:
+    - project-with-tests
+    - tests-only
+    - qa-evidence
+    certify:
+    - project-with-tests
+    - tests-only
+    - qa-evidence
+    continuous:
+    - project-with-tests
+    - tests-only
+    - qa-evidence
+  partial_output_on_failure: true
+  canonical_contract: PROJECT_OUTPUT_CONTRACT.md

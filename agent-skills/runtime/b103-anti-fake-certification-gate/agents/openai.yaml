@@ -1,0 +1,4 @@
+interface:
+  display_name: "B103 Anti Fake Certification Gate"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b103-anti-fake-certification-gate to execute this ELMOS product-closure Skill with fail-closed evidence."

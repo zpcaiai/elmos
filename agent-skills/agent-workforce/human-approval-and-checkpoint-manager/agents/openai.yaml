@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 544: human approval and checkpoint manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $human-approval-and-checkpoint-manager to evaluate this capability with evidence."

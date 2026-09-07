@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-core Skill 011"
+  short_description: "Run Product Batch 33-core evidence contract safely"
+  default_prompt: "Use $openrewrite-recipe-license-execution-and-idempotency to implement its fail-closed ELMOS Product Batch 33-core contract."

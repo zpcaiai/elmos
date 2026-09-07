@@ -1,0 +1,11 @@
+{
+  "routeId": "angular--to--react",
+  "source": "angular",
+  "target": "react",
+  "sourceProfileVersion": "22.0.8",
+  "targetProfileVersion": "19.2.8",
+  "supportState": "PROJECT_GENERATION_READY",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

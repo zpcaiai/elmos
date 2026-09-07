@@ -1,0 +1,25 @@
+{
+  "platform": "wechat",
+  "profile_version": "2026-08-19.1",
+  "verified_at": "2026-08-19",
+  "file_model": {
+    "app_config": "app.json",
+    "page_config": "<page>.json",
+    "template_extension": ".wxml",
+    "style_extension": ".wxss",
+    "script_extension": ".ts"
+  },
+  "toolchain": {
+    "name": "miniprogram-ci",
+    "version": "pinned-by-lockfile",
+    "build_supported": true,
+    "preview_supported": true,
+    "upload_supported": true
+  },
+  "limits": {
+    "package_limit_source": "dynamic-official-profile"
+  },
+  "source_refs": [
+    "https://developers.weixin.qq.com/miniprogram/dev/devtools/ci.html"
+  ]
+}

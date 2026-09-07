@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "extension_id": "elmos.local.extension",
+  "name": "Sample extension",
+  "kind": "transformation-recipe",
+  "version": "0.1.0",
+  "publisher_id": "elmos-local",
+  "product_compatibility": {
+    "product": "0.1.0",
+    "protocol": "1.x",
+    "sdk": "1.x"
+  },
+  "entrypoints": [
+    {
+      "name": "execute",
+      "operation": "transform",
+      "handler": "sample.extension:execute"
+    }
+  ],
+  "capabilities": [
+    "typed-transform"
+  ],
+  "permissions": [
+    "workspace-read",
+    "artifact-read",
+    "artifact-write",
+    "evidence-write"
+  ],
+  "dependencies": [],
+  "configuration_schema": "schemas/config.schema.json",
+  "lifecycle": {
+    "activate": "activate",
+    "health": "health",
+    "quiesce": "quiesce",
+    "shutdown": "shutdown",
+    "uninstall": "uninstall"
+  },
+  "artifacts": {
+    "package_ref": "releases/sample/package.tgz",
+    "package_digest": "sha256:99e42d6513f44e085288b89cb4916d353412bde111fc89a76a2f50e9e9a51e87",
+    "signature_ref": "releases/sample/signature.sig",
+    "sbom_ref": "releases/sample/sbom.json",
+    "provenance_ref": "releases/sample/provenance.json"
+  },
+  "data_classification": [
+    "source-code"
+  ],
+  "side_effects": [],
+  "local_runtime_class": "io.elmos.marketplace.MarketplaceCli",
+  "field_validation_status": "NOT_RUN"
+}

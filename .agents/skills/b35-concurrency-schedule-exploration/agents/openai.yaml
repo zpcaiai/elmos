@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Concurrency Schedule Exploration"
+  short_description: "Run evidence-bound Batch 35 concurrency schedule exploration wor"
+  default_prompt: "Use $b35-concurrency-schedule-exploration to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,219 @@
+{
+  "capabilities" : [ {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "servlet-initializer",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-root-and-servlet-context-hierarchy", "preserve-servlet-mapping-and-load-on-startup", "preserve-filter-listener-and-initializer-order", "preserve-async-and-multipart-registration" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "observed|source|src/main/webapp/WEB-INF/web.xml:38|dispatcher servlet registration", "observed|source|src/main/webapp/WEB-INF/web.xml:38|web.xml dispatcher servlet" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "build-or-framework",
+    "id" : "spring-framework",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-bean-graph-and-context-ownership", "preserve-component-scan-and-profile-conditions", "preserve-bean-lifecycle-and-proxy-boundaries", "require-source-runtime-entry-point" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/service/LegacyOrderService.java:8|Spring bean declaration" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "spring-mvc",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-route-method-media-and-parameter-contract", "preserve-binding-validation-and-error-contract", "preserve-interceptor-exception-and-view-resolution-order", "preserve-session-async-and-multipart-semantics" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:30|spring-webmvc", "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:11|Spring MVC controller", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:18|Spring MVC controller", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:19|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:27|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:33|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:43|Spring MVC route", "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:7|Spring MVC extension", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|Spring MVC view resolver" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "spring-mvc-xml",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-bean-ids-aliases-and-reference-integrity", "preserve-context-hierarchy-and-load-order", "preserve-namespace-handler-defaults", "preserve-component-scan-includes-and-excludes" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:10|XML component scan", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:10|XML component scan", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC component", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC strategy bean", "observed|source|src/main/webapp/WEB-INF/web.xml:38|XML MVC component" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ "test-scope" ],
+    "confidence" : "medium-static-source",
+    "domain" : "validation",
+    "id" : "validation",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-validation-groups-and-order", "preserve-cascade-and-container-element-validation", "preserve-message-interpolation-and-locale", "preserve-binding-error-shape-and-timing" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:19|validation-api", "declared-only|build-model|pom.xml:20|hibernate-validator", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:35|validation boundary", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:21|validation provider configuration", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:21|validation provider configuration|conditions=test-scope", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:26|validation provider configuration|conditions=test-scope" ],
+    "status" : "observed"
+  }, {
+    "activation_conditions" : [ ],
+    "confidence" : "medium-static-source",
+    "domain" : "web",
+    "id" : "web",
+    "obligations" : [ "target-build", "target-startup", "source-target-behavior-comparison", "conditional-activation-reconciliation", "preserve-cross-capability-ordering", "verify-provider-specific-defaults" ],
+    "runtime_confirmation" : false,
+    "source_traces" : [ "declared-only|build-model|pom.xml:30|spring-webmvc|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:11|Spring MVC controller|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:18|Spring MVC controller|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:19|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:27|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:33|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:43|Spring MVC route|derived-from=spring-mvc", "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:7|Spring MVC extension|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:10|XML component scan|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:10|XML component scan|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:11|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:12|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:14|Spring MVC XML namespace|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|Spring MVC view resolver|derived-from=spring-mvc", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC component|derived-from=spring-mvc-xml", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|XML MVC strategy bean|derived-from=spring-mvc-xml", "observed|source|src/main/webapp/WEB-INF/web.xml:38|XML MVC component|derived-from=spring-mvc-xml", "observed|source|src/main/webapp/WEB-INF/web.xml:38|dispatcher servlet registration|derived-from=servlet-initializer", "observed|source|src/main/webapp/WEB-INF/web.xml:38|web.xml dispatcher servlet|derived-from=servlet-initializer" ],
+    "status" : "observed"
+  } ],
+  "exact_tuple" : {
+    "sourceSpringBoot" : null,
+    "sourceJava" : "11",
+    "sourceBuildTool" : "maven-3.9.11",
+    "targetSpringBoot" : "3.5.3",
+    "targetJava" : "21",
+    "targetBuildTool" : "maven-3.9.11",
+    "rewriteSpring" : "6.35.0",
+    "rewriteMavenPlugin" : "6.44.0",
+    "sourceFrameworkFamily" : "spring-mvc",
+    "sourceFrameworkVersion" : "5.3.39"
+  },
+  "extraction_status" : "STATIC_AND_SOURCE_BASELINE",
+  "language_features" : [ {
+    "component" : "spring-core-context",
+    "domain" : "dependency-injection",
+    "evidence_state" : "observed",
+    "id" : "core-bean-di",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-bean-names-scopes-qualifiers-and-primary-selection", "preserve-lifecycle-and-proxy-boundaries" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/service/LegacyOrderService.java:8|bean declaration" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "Spring BeanFactory/ApplicationContext" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-bean-graph-emitter"
+  }, {
+    "component" : "spring-context",
+    "domain" : "dependency-injection",
+    "evidence_state" : "observed",
+    "id" : "core-component-scan",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-include-exclude-filters-and-scan-order", "preserve-configuration-class-proxying" ],
+    "source_languages" : [ "configuration" ],
+    "source_traces" : [ "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:10|component scan", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:10|component scan" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "@ComponentScan / typed scan configuration" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-component-scan-emitter"
+  }, {
+    "component" : "spring-configuration",
+    "domain" : "language",
+    "evidence_state" : "observed",
+    "id" : "language-configuration",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-XML-properties-YAML-source-format-and-order", "preserve-profile-placeholder-and-secret-boundaries" ],
+    "source_languages" : [ "configuration" ],
+    "source_traces" : [ "observed|source|src/main/resources/WEB-INF/spring/root-context.xml:1|source-language", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:1|source-language", "observed|source|src/main/resources/legacy.properties:1|source-language", "observed|source|src/main/webapp/WEB-INF/web.xml:1|source-language" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "typed-config-and-fcm-emitter" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "typed-config-and-fcm-emitter"
+  }, {
+    "component" : "java",
+    "domain" : "language",
+    "evidence_state" : "observed",
+    "id" : "language-java",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "Java source must compile with the exact Java 21 toolchain", "preserve-public-api-and-reflection-signatures" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/service/LegacyOrderService.java:1|source-language", "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:1|source-language", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:1|source-language", "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderForm.java:1|source-language", "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:1|source-language", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:1|source-language|conditions=test-scope" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "java-21" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "java-toolchain-and-openrewrite"
+  }, {
+    "component" : "spring-webmvc",
+    "domain" : "web",
+    "evidence_state" : "observed",
+    "id" : "mvc-annotated-endpoints",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-path-method-media-type-and-parameter-contract", "preserve-handler-order-and-content-negotiation" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:18|annotated MVC endpoint" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "@Controller/@RequestMapping MVC endpoint" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-mvc-route-emitter"
+  }, {
+    "component" : "spring-webmvc",
+    "domain" : "validation",
+    "evidence_state" : "observed",
+    "id" : "mvc-binding-validation",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-conversion-binding-errors-and-validation-groups", "preserve-400-error-shape-and-message-locale" ],
+    "source_languages" : [ "configuration", "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/web/LegacyOrderController.java:29|MVC binding and validation", "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:21|MVC binding and validation", "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:16|MVC binding and validation|conditions=test-scope" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "WebDataBinder / Jakarta Validation" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-mvc-binding-emitter"
+  }, {
+    "component" : "spring-webmvc",
+    "domain" : "web",
+    "evidence_state" : "observed",
+    "id" : "mvc-error-handling",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-advice-order-status-and-content-type", "preserve-exception-disclosure-and-logging-policy" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/web/ApiExceptionHandler.java:11|MVC error handling" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "ControllerAdvice / HandlerExceptionResolver" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-mvc-error-emitter"
+  }, {
+    "component" : "spring-webmvc",
+    "domain" : "web",
+    "evidence_state" : "observed",
+    "id" : "mvc-filters-interceptors",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-filter-interceptor-order-and-dispatch-types", "preserve-security-cors-encoding-and-body-caching-semantics" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "observed|source|src/main/java/io/elmos/legacy/web/RequestAuditInterceptor.java:5|MVC filters or interceptors" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "Servlet Filter / HandlerInterceptor" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-servlet-order-emitter"
+  }, {
+    "component" : "spring-webmvc",
+    "domain" : "web",
+    "evidence_state" : "observed",
+    "id" : "mvc-view-resources",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-view-resolver-order-prefix-suffix-and-model", "preserve-static-resource-cache-and-welcome-path" ],
+    "source_languages" : [ "configuration" ],
+    "source_traces" : [ "observed|source|src/main/resources/WEB-INF/spring/servlet-context.xml:22|MVC views or resources" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "ViewResolver/JSP/Thymeleaf/static resources" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "fcm-view-emitter-or-blocked-profile"
+  }, {
+    "component" : "spring-test",
+    "domain" : "testing",
+    "evidence_state" : "test-only",
+    "id" : "testing-spring",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-test-scope-context-caching-and-security-test-fixtures", "preserve-test-identities-and-negative-assertions" ],
+    "source_languages" : [ "java" ],
+    "source_traces" : [ "test-only|source|src/test/java/io/elmos/legacy/web/LegacyOrderControllerTest.java:3|Spring test|conditions=test-scope" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "SpringBootTest/MVC/WebFlux test slices" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "upstream-openrewrite-plus-test-integrity"
+  }, {
+    "component" : "spring-unknown",
+    "domain" : "unsupported",
+    "evidence_state" : "unknown",
+    "id" : "unmapped-spring-construct",
+    "obligations" : [ "preserve-source-order-and-conditions", "bind-to-exact-spring-boot-3.5.3-java-21-profile", "run-source-target-contract-before-promotion", "preserve-unmapped-source-bytes-and-provenance", "require-human-or-provider-specific-target-mapping-before-execution" ],
+    "source_languages" : [ "configuration" ],
+    "source_traces" : [ "unknown|source|src/main/webapp/WEB-INF/web.xml:1|unmapped Spring construct" ],
+    "target" : "spring-boot-3.5.3",
+    "target_apis" : [ "source construct retained with explicit blocker" ],
+    "target_applicability" : "applicable",
+    "target_strategy" : "unsupported-preserve-and-report"
+  } ],
+  "ordering_and_defaults" : {
+    "configuration_precedence" : "preserve-and-verify",
+    "security_filter_order" : "preserve-and-verify",
+    "transaction_defaults" : "preserve-and-verify"
+  },
+  "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "route_evidence" : "PASSED_LOCAL",
+  "route_id" : "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+  "schema_version" : "1.0",
+  "source_commit" : "7e1c098541143c96cce7d9a637fffe57d0e2baae",
+  "source_framework" : {
+    "family" : "spring-mvc",
+    "version" : "5.3.39"
+  },
+  "source_snapshot_sha256" : "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
+  "unknowns" : [ ]
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Batch 14 Growth And Ecosystem Conformance Gate"
+  short_description: "Authoritative Batch 14 Skill 460 workflow"
+  default_prompt: "Use $batch-14-growth-and-ecosystem-conformance-gate to execute its evidence-bound Batch 14 workflow."
+

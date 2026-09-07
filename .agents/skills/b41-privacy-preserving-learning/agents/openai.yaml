@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Privacy Preserving Learning"
+  short_description: "Run evidence-bound Batch 41 privacy preserving learning work"
+  default_prompt: "Use $b41-privacy-preserving-learning to implement and verify this capability with fail-closed evidence."

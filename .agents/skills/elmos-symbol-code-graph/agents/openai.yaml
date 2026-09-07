@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 符号、引用与调用图"
+  short_description: "Guide 符号、引用与调用图 with evidence controls"
+  default_prompt: "Use $elmos-symbol-code-graph as guidance for 符号、引用与调用图 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

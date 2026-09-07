@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "matrix_id",
+    "product_versions",
+    "protocol_versions",
+    "sdk_versions",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "matrix_id": {
+      "type": "string"
+    },
+    "product_versions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "protocol_versions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sdk_versions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "product",
+          "protocol",
+          "sdk",
+          "status"
+        ],
+        "properties": {
+          "product": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "sdk": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "supported",
+              "conditional",
+              "unsupported",
+              "deprecated"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/compatibility-matrix.schema.json"
+}

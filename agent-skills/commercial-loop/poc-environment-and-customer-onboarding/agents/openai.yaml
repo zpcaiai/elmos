@@ -1,0 +1,4 @@
+interface:
+  display_name: "poc-environment-and-customer-onboarding"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $poc-environment-and-customer-onboarding to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,147 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G20",
+    "slug": "skill-sdk-productization",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Skill SDK、Runtime、Registry、Marketplace、Worker与一键产品化",
+    "transitionFrom": "完整转换、验证和证明能力集合",
+    "transitionTo": "形成CLI/API/IDE/Web、分布式Worker、企业部署和一键迁移交付产品",
+    "certificateFamily": "PD",
+    "skills": [
+      {
+        "id": "FRT-2000",
+        "name": "Productization Orchestrator",
+        "path": "skills/frt-2000-productization-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2001",
+        "name": "Skill SDK",
+        "path": "skills/frt-2001-skill-sdk/SKILL.md"
+      },
+      {
+        "id": "FRT-2002",
+        "name": "Skill Runtime",
+        "path": "skills/frt-2002-skill-runtime/SKILL.md"
+      },
+      {
+        "id": "FRT-2003",
+        "name": "Skill Registry",
+        "path": "skills/frt-2003-skill-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2004",
+        "name": "Pack Marketplace",
+        "path": "skills/frt-2004-pack-marketplace/SKILL.md"
+      },
+      {
+        "id": "FRT-2005",
+        "name": "Signing Permission and Trust Framework",
+        "path": "skills/frt-2005-signing-permission-and-trust-framework/SKILL.md"
+      },
+      {
+        "id": "FRT-2006",
+        "name": "FRT CLI",
+        "path": "skills/frt-2006-frt-cli/SKILL.md"
+      },
+      {
+        "id": "FRT-2007",
+        "name": "FRT API",
+        "path": "skills/frt-2007-frt-api/SKILL.md"
+      },
+      {
+        "id": "FRT-2008",
+        "name": "IDE Integration",
+        "path": "skills/frt-2008-ide-integration/SKILL.md"
+      },
+      {
+        "id": "FRT-2009",
+        "name": "Web Console",
+        "path": "skills/frt-2009-web-console/SKILL.md"
+      },
+      {
+        "id": "FRT-2010",
+        "name": "Workspace Multi-Tenant Platform",
+        "path": "skills/frt-2010-workspace-multi-tenant-platform/SKILL.md"
+      },
+      {
+        "id": "FRT-2011",
+        "name": "Durable Job Orchestration",
+        "path": "skills/frt-2011-durable-job-orchestration/SKILL.md"
+      },
+      {
+        "id": "FRT-2012",
+        "name": "Distributed Worker Runtime",
+        "path": "skills/frt-2012-distributed-worker-runtime/SKILL.md"
+      },
+      {
+        "id": "FRT-2013",
+        "name": "Model Router and Cost Governor",
+        "path": "skills/frt-2013-model-router-and-cost-governor/SKILL.md"
+      },
+      {
+        "id": "FRT-2014",
+        "name": "Artifact and Evidence Store",
+        "path": "skills/frt-2014-artifact-and-evidence-store/SKILL.md"
+      },
+      {
+        "id": "FRT-2015",
+        "name": "Approval Policy RBAC and Audit",
+        "path": "skills/frt-2015-approval-policy-rbac-and-audit/SKILL.md"
+      },
+      {
+        "id": "FRT-2016",
+        "name": "Enterprise Deployment Pack",
+        "path": "skills/frt-2016-enterprise-deployment-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2017",
+        "name": "Kubernetes Single-Node and Air-Gapped Deployment",
+        "path": "skills/frt-2017-kubernetes-single-node-and-air-gapped-deployment/SKILL.md"
+      },
+      {
+        "id": "FRT-2018",
+        "name": "One-Click Migration",
+        "path": "skills/frt-2018-one-click-migration/SKILL.md"
+      },
+      {
+        "id": "FRT-2019",
+        "name": "One-Click Verification",
+        "path": "skills/frt-2019-one-click-verification/SKILL.md"
+      },
+      {
+        "id": "FRT-2020",
+        "name": "One-Click Delivery",
+        "path": "skills/frt-2020-one-click-delivery/SKILL.md"
+      },
+      {
+        "id": "FRT-2021",
+        "name": "Billing SLO and Observability",
+        "path": "skills/frt-2021-billing-slo-and-observability/SKILL.md"
+      },
+      {
+        "id": "FRT-2022",
+        "name": "Security Red Team Harness",
+        "path": "skills/frt-2022-security-red-team-harness/SKILL.md"
+      },
+      {
+        "id": "FRT-2023",
+        "name": "Productization Certification",
+        "path": "skills/frt-2023-productization-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "Skill安装升级卸载和版本兼容可用",
+      "多租户隔离和RBAC通过",
+      "Job暂停恢复取消幂等",
+      "Worker Lease和Artifact Authority正确",
+      "Air-Gapped可安装验证",
+      "一键流程不绕过Approval和Certificate",
+      "产品化安全红队通过"
+    ]
+  }
+}

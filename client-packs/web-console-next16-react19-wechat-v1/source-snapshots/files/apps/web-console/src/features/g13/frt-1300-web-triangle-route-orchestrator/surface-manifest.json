@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1300",
+  "skill_name": "frt-1300-web-triangle-route-orchestrator",
+  "batch": "G13",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g13/frt-1300-web-triangle-route-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "capability_key": "frt.g13.web-triangle-route-orchestrator",
+  "execution_contract_sha256": "sha256:3425a4ec46d62d73f7e0ede59e49a028d385d3cd18617027943015cb84c29841",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c41708b930b0475d05ea2913a69c106b78846c37608960931f995244f809b5b5",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Data Replication Cdc And Data Ownership Controller"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-data-replication-cdc-and-data-ownership-controller to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,102 @@
+{
+  "planVersion": "1.0.0",
+  "policySnapshotHash": "sha256:policy",
+  "target": {
+    "springBoot": "4.x",
+    "springFramework": "7.x",
+    "jakartaEE": "11",
+    "servlet": "6.1",
+    "java": 21,
+    "packaging": "executable-war"
+  },
+  "strategy": "preserve-first",
+  "allowedDeltas": [],
+  "units": [
+    {
+      "id": "unit:foundation",
+      "modules": [
+        "module:web"
+      ],
+      "routes": [],
+      "risk": "high",
+      "dependsOn": [],
+      "changes": [
+        {
+          "recipe": "org.elmos.legacyweb.PrepareSpringBoot4Baseline"
+        },
+        {
+          "recipe": "org.elmos.legacyweb.MigrateJakartaNamespaces"
+        }
+      ],
+      "verification": [
+        "compile",
+        "startup"
+      ],
+      "rollback": {
+        "type": "git-revert"
+      }
+    },
+    {
+      "id": "unit:orders",
+      "modules": [
+        "module:web"
+      ],
+      "routes": [
+        "endpoint:orders-create"
+      ],
+      "risk": "critical",
+      "dependsOn": [
+        "unit:foundation"
+      ],
+      "changes": [
+        {
+          "recipe": "org.elmos.legacyweb.Struts1ActionToController"
+        },
+        {
+          "recipe": "org.elmos.legacyweb.Struts1FormLifecycle"
+        }
+      ],
+      "verification": [
+        "scenario:create-order-success",
+        "session-db-effect-diff"
+      ],
+      "rollback": {
+        "type": "route-to-legacy"
+      }
+    }
+  ],
+  "compatibilityShims": [
+    {
+      "id": "shim:form-lifecycle",
+      "removalGate": "all ActionForm contracts migrated"
+    }
+  ],
+  "gates": [
+    {
+      "id": "gate:E2",
+      "after": "unit:foundation"
+    },
+    {
+      "id": "gate:E4-orders",
+      "after": "unit:orders"
+    }
+  ],
+  "cutover": {
+    "mode": "route-canary",
+    "route": "endpoint:orders-create",
+    "stages": [
+      0,
+      1,
+      5,
+      25,
+      100
+    ]
+  },
+  "rollback": {
+    "automaticOn": [
+      "critical mismatch",
+      "error rate threshold",
+      "DB effect mismatch"
+    ]
+  }
+}

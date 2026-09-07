@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Capability Ontology Foundation"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-capability-ontology-foundation to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,418 @@
+import type {
+  TranslationDeprecatedExcludedFile,
+  TranslationLanguageId,
+  TranslationRepositoryInventoryLanguageId,
+  TranslationRepositoryPlan,
+  TranslationRepositoryWorkUnit,
+} from "../contracts";
+import { TranslationContractError, readTranslationCapability } from "./translationRoutes";
+
+/**
+ * Repository-scope handoff used to be accepted after browser-only validation,
+ * which any modified client could skip. The authoritative check now runs on the
+ * server against the same route contract the capability endpoint serves, so an
+ * inventory that names an unknown route, a route whose local profile has not
+ * passed, or a plan that claims execution can never be accepted.
+ */
+
+export const MAX_PLAN_BYTES = 8 * 1024 * 1024;
+const MAX_FILE_COUNT = 5_000;
+const MAX_SOURCE_BYTES = 64 * 1024 * 1024;
+const MAX_WORK_UNIT_BYTES = 2 * 1024 * 1024;
+const SHA256 = /^[0-9a-f]{64}$/;
+const REPOSITORY_WORKSPACE_REF = /^repository-workspace:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@[0-9a-f]{40}$/;
+const ACTIVE_LANGUAGE_IDS = [
+  "java",
+  "python",
+  "csharp",
+  "typescript",
+  "go",
+  "rust",
+  "cpp",
+  "objc",
+  "swift",
+  "php",
+  "kotlin",
+  "react",
+  "flutter",
+] as const satisfies readonly TranslationLanguageId[];
+const REPOSITORY_INVENTORY_LANGUAGE_IDS = [
+  ...ACTIVE_LANGUAGE_IDS,
+  "javascript",
+] as const satisfies readonly TranslationRepositoryInventoryLanguageId[];
+
+export class RepositoryPlanError extends Error {
+  readonly errorCode: string;
+
+  constructor(errorCode: string, message: string) {
+    super(message);
+    this.name = "RepositoryPlanError";
+    this.errorCode = errorCode;
+  }
+}
+
+function fail(errorCode: string, message: string): never {
+  throw new RepositoryPlanError(errorCode, message);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function safeRepositoryRelativePath(value: unknown): value is string {
+  return typeof value === "string"
+    && value.length > 0
+    && value.length <= 500
+    && !value.startsWith("/")
+    && !value.includes("\\")
+    && !value.split("/").some((segment) => segment === "" || segment === "." || segment === "..");
+}
+
+function parseDeprecatedExcludedFile(
+  value: unknown,
+  index: number,
+): TranslationDeprecatedExcludedFile {
+  if (!isRecord(value)) {
+    fail("PLAN_DEPRECATED_EXCLUSION_INVALID", `deprecated_excluded_files[${index}] 不是对象。`);
+  }
+  const expectedKeys = ["bytes", "language", "path", "reason", "sha256", "status"];
+  if (Object.keys(value).sort().join(",") !== expectedKeys.join(",")) {
+    fail("PLAN_DEPRECATED_EXCLUSION_SHAPE_INVALID", `deprecated_excluded_files[${index}] 字段不精确。`);
+  }
+  if (
+    !safeRepositoryRelativePath(value.path)
+    || value.language !== "javascript"
+    || typeof value.sha256 !== "string"
+    || !SHA256.test(value.sha256)
+    || !Number.isInteger(value.bytes)
+    || (value.bytes as number) < 0
+    || (value.bytes as number) > MAX_WORK_UNIT_BYTES
+    || value.status !== "EXCLUDED_FROM_ACTIVE_ROUTE"
+    || value.reason !== "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY"
+  ) {
+    fail("PLAN_DEPRECATED_EXCLUSION_INVALID", `deprecated_excluded_files[${index}] 未绑定已废弃 JavaScript 排除证据。`);
+  }
+  return {
+    path: value.path,
+    language: "javascript",
+    sha256: value.sha256,
+    bytes: value.bytes as number,
+    status: "EXCLUDED_FROM_ACTIVE_ROUTE",
+    reason: "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY",
+  };
+}
+
+export function isSafeRepositoryRef(value: string): boolean {
+  if (
+    value.length < 3
+    || value.length > 180
+    || /[\s\\?#]/.test(value)
+    || value.startsWith("/")
+    || value.startsWith("~")
+  ) return false;
+  if (/^local:[a-z0-9][a-z0-9._/-]{2,170}$/i.test(value)) return true;
+  if (REPOSITORY_WORKSPACE_REF.test(value)) return true;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:"
+      && !parsed.username
+      && !parsed.password
+      && Boolean(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function parseWorkUnit(value: unknown, index: number, routeId: string): TranslationRepositoryWorkUnit {
+  if (!isRecord(value)) fail("WORK_UNIT_INVALID", `work_units[${index}] 不是对象。`);
+  const sourcePath = value.source_path;
+  if (typeof sourcePath !== "string" || sourcePath.length === 0 || sourcePath.length > 500) {
+    fail("WORK_UNIT_PATH_INVALID", `work_units[${index}].source_path 长度非法。`);
+  }
+  if (sourcePath.startsWith("/") || sourcePath.split("/").includes("..")) {
+    fail("WORK_UNIT_PATH_ESCAPES_REPOSITORY", `work_units[${index}].source_path 不是仓库内相对路径。`);
+  }
+  if (value.route_id !== routeId) {
+    fail("WORK_UNIT_ROUTE_MISMATCH", `work_units[${index}].route_id 与清单路线不一致。`);
+  }
+  if (typeof value.source_sha256 !== "string" || !SHA256.test(value.source_sha256)) {
+    fail("WORK_UNIT_DIGEST_INVALID", `work_units[${index}].source_sha256 不是 64 位十六进制摘要。`);
+  }
+  if (
+    !Number.isInteger(value.source_bytes)
+    || (value.source_bytes as number) < 0
+    || (value.source_bytes as number) > MAX_WORK_UNIT_BYTES
+  ) {
+    fail("WORK_UNIT_SIZE_INVALID", `work_units[${index}].source_bytes 超出单文件上限。`);
+  }
+  if (value.status !== "DISCOVERY_REQUIRED") {
+    fail("WORK_UNIT_STATUS_INVALID", `work_units[${index}].status 必须是 DISCOVERY_REQUIRED。`);
+  }
+  if (value.execution_status !== "NOT_RUN") {
+    fail("WORK_UNIT_EXECUTION_CLAIMED", `work_units[${index}] 声称已执行；只读清单不得携带执行结果。`);
+  }
+  if (value.declared_profile !== "typed-pure-function-v1") {
+    fail("WORK_UNIT_PROFILE_UNSUPPORTED", `work_units[${index}].declared_profile 超出当前受限 Profile。`);
+  }
+  const unsupported = value.unsupported_until_discovered;
+  if (!Array.isArray(unsupported) || unsupported.length > 20
+    || !unsupported.every((item) => typeof item === "string" && item.length <= 300)) {
+    fail("WORK_UNIT_BLOCKERS_INVALID", `work_units[${index}].unsupported_until_discovered 非法。`);
+  }
+  if (typeof value.id !== "string" || value.id.length === 0 || value.id.length > 200) {
+    fail("WORK_UNIT_ID_INVALID", `work_units[${index}].id 非法。`);
+  }
+  if (
+    !Array.isArray(value.required_inputs)
+    || value.required_inputs.length !== 1
+    || value.required_inputs[0] !== "behavior_cases_json_per_discovered_function"
+  ) {
+    fail(
+      "WORK_UNIT_REQUIRED_INPUTS_INVALID",
+      `work_units[${index}].required_inputs 必须要求每个发现函数独立提供行为用例。`,
+    );
+  }
+  return {
+    id: value.id,
+    route_id: routeId,
+    source_path: sourcePath,
+    source_sha256: value.source_sha256,
+    source_bytes: value.source_bytes as number,
+    status: "DISCOVERY_REQUIRED",
+    execution_status: "NOT_RUN",
+    required_inputs: ["behavior_cases_json_per_discovered_function"],
+    declared_profile: "typed-pure-function-v1",
+    unsupported_until_discovered: unsupported as string[],
+  };
+}
+
+export type RepositoryPlanContext = {
+  repositoryRef: string;
+  routeId: string;
+  sourceLanguage: TranslationLanguageId;
+  targetLanguage: TranslationLanguageId;
+};
+
+export function validateRepositoryPlan(
+  raw: unknown,
+  context: RepositoryPlanContext,
+): TranslationRepositoryPlan {
+  let capability;
+  try {
+    capability = readTranslationCapability();
+  } catch (error) {
+    fail(
+      error instanceof TranslationContractError ? error.errorCode : "TRANSLATION_CONTRACT_UNAVAILABLE",
+      "无法读取路线能力契约，整库清单一律拒绝。",
+    );
+  }
+
+  if (!isRecord(raw)) fail("PLAN_INVALID", "清单顶层不是对象。");
+  if (raw.schema_version !== "1.0.0") fail("PLAN_SCHEMA_VERSION_UNSUPPORTED", "清单 schema_version 不受支持。");
+  if (raw.kind !== "elmos.repository-route-plan") fail("PLAN_KIND_INVALID", "清单 kind 不是 elmos.repository-route-plan。");
+  if (raw.status !== "PLANNED") fail("PLAN_STATUS_INVALID", "清单 status 必须是 PLANNED。");
+  if (raw.snapshot_consistency !== "STABLE_READ_ONLY_SCAN") {
+    fail("PLAN_SNAPSHOT_CONSISTENCY_INVALID", "清单未声明稳定只读扫描。");
+  }
+  for (const field of ["execution_status", "external_verification_status"] as const) {
+    if (raw[field] !== "NOT_RUN") fail("PLAN_EXECUTION_CLAIMED", `清单 ${field} 必须是 NOT_RUN。`);
+  }
+  if (raw.certification_status !== "NOT_CERTIFIED") {
+    fail("PLAN_CERTIFICATION_CLAIMED", "清单 certification_status 必须是 NOT_CERTIFIED。");
+  }
+
+  const repositoryRef = raw.repository_ref;
+  if (typeof repositoryRef !== "string" || !isSafeRepositoryRef(repositoryRef)) {
+    fail("PLAN_REPOSITORY_REF_INVALID", "清单仓库引用含凭证、查询参数或本机路径。");
+  }
+  if (repositoryRef !== context.repositoryRef) {
+    fail("PLAN_REPOSITORY_REF_MISMATCH", "清单仓库引用与当前页面输入不一致。");
+  }
+  if (typeof raw.snapshot_sha256 !== "string" || !SHA256.test(raw.snapshot_sha256)) {
+    fail("PLAN_SNAPSHOT_DIGEST_INVALID", "清单 snapshot_sha256 不是 64 位十六进制摘要。");
+  }
+
+  const route = capability.routes.find((candidate) => candidate.id === raw.route_id);
+  if (!route) fail("PLAN_ROUTE_UNKNOWN", "清单引用的路线不在仓库路线契约中。");
+  if (route.id !== context.routeId) fail("PLAN_ROUTE_MISMATCH", "清单路线与当前选择的路线不一致。");
+  if (raw.source_language !== context.sourceLanguage || raw.target_language !== context.targetLanguage) {
+    fail("PLAN_LANGUAGE_MISMATCH", "清单源语言或目标语言与当前选择不一致。");
+  }
+  if (route.source !== context.sourceLanguage || route.target !== context.targetLanguage) {
+    fail("PLAN_ROUTE_DIRECTION_MISMATCH", "清单路线方向与源/目标语言不一致。");
+  }
+  if (raw.language_lifecycle !== "ACTIVE") {
+    fail(
+      "PLAN_LANGUAGE_LIFECYCLE_INVALID",
+      "Web 仓库入口只接受 13 个活动语言的 ACTIVE 生命周期，不重放已废弃 JavaScript 路线。",
+    );
+  }
+  if (route.localExecution !== "PASSED") {
+    fail(
+      "PLAN_ROUTE_LOCAL_PROFILE_NOT_PASSED",
+      `路线 ${route.id} 的本地受限 Profile 状态为 ${route.localExecution}，不接受整库拆分。`,
+    );
+  }
+
+  const fileCount = raw.file_count;
+  const sourceFileCount = raw.source_file_count;
+  const sourceBytes = raw.source_bytes;
+  if (!Number.isInteger(fileCount) || (fileCount as number) < 1 || (fileCount as number) > MAX_FILE_COUNT) {
+    fail("PLAN_FILE_COUNT_INVALID", "清单 file_count 超出 1–5000 范围。");
+  }
+  if (
+    !Number.isInteger(sourceFileCount)
+    || (sourceFileCount as number) < 1
+    || (sourceFileCount as number) > (fileCount as number)
+  ) {
+    fail("PLAN_SOURCE_FILE_COUNT_INVALID", "清单 source_file_count 非法或超过 file_count。");
+  }
+  if (
+    !Number.isInteger(sourceBytes)
+    || (sourceBytes as number) < 1
+    || (sourceBytes as number) > MAX_SOURCE_BYTES
+  ) {
+    fail("PLAN_SOURCE_BYTES_INVALID", "清单 source_bytes 超出 64 MB 聚合上限。");
+  }
+  const expectedScale = (fileCount as number) <= 500 && (sourceBytes as number) <= 8 * 1024 * 1024
+    ? "small"
+    : "medium";
+  if (raw.repository_scale !== expectedScale) {
+    fail("PLAN_REPOSITORY_SCALE_INVALID", `清单 repository_scale 应为 ${expectedScale}。`);
+  }
+  const repositoryLimits = raw.repository_limits;
+  if (!isRecord(repositoryLimits)) {
+    fail("PLAN_REPOSITORY_LIMITS_INVALID", "清单缺少 repository_limits。");
+  }
+  const expectedLimits = {
+    maximum_source_files: MAX_FILE_COUNT,
+    maximum_source_bytes: MAX_SOURCE_BYTES,
+    maximum_bytes_per_file: MAX_WORK_UNIT_BYTES,
+  } as const;
+  if (
+    Object.keys(repositoryLimits).sort().join(",") !== Object.keys(expectedLimits).sort().join(",")
+    || Object.entries(expectedLimits).some(([key, value]) => repositoryLimits[key] !== value)
+  ) {
+    fail("PLAN_REPOSITORY_LIMITS_INVALID", "清单 repository_limits 与执行器硬上限不一致。");
+  }
+  if (
+    !Number.isInteger(raw.ignored_symlink_count)
+    || (raw.ignored_symlink_count as number) < 0
+  ) {
+    fail("PLAN_SYMLINK_COUNT_INVALID", "清单 ignored_symlink_count 非法。");
+  }
+
+  const counts = raw.language_counts;
+  if (!isRecord(counts)) fail("PLAN_LANGUAGE_COUNTS_INVALID", "清单缺少 language_counts。");
+  const countKeys = Object.keys(counts).sort();
+  const expectedCountKeys = [...REPOSITORY_INVENTORY_LANGUAGE_IDS].sort();
+  if (
+    countKeys.length !== expectedCountKeys.length
+    || countKeys.some((key, index) => key !== expectedCountKeys[index])
+  ) {
+    fail(
+      "PLAN_LANGUAGE_COUNT_KEY_SET_INVALID",
+      "language_counts 必须精确包含 13 个活动语言与只读历史 JavaScript 键。",
+    );
+  }
+  for (const language of REPOSITORY_INVENTORY_LANGUAGE_IDS) {
+    const value = counts[language];
+    if (!Number.isInteger(value) || (value as number) < 0) {
+      fail("PLAN_LANGUAGE_COUNT_INVALID", `清单 language_counts.${language} 非法。`);
+    }
+  }
+  const typedCounts = counts as Record<TranslationRepositoryInventoryLanguageId, number>;
+  const countedFiles = REPOSITORY_INVENTORY_LANGUAGE_IDS.reduce(
+    (total, language) => total + typedCounts[language],
+    0,
+  );
+  if (countedFiles !== fileCount || typedCounts[context.sourceLanguage] !== sourceFileCount) {
+    fail(
+      "PLAN_LANGUAGE_COUNTS_NOT_CLOSED",
+      "language_counts 未与 file_count/source_file_count 闭合。",
+    );
+  }
+
+  if (!Array.isArray(raw.deprecated_excluded_files)) {
+    fail("PLAN_DEPRECATED_EXCLUSIONS_INVALID", "清单缺少 deprecated_excluded_files 数组。");
+  }
+  const deprecatedExcludedFiles = raw.deprecated_excluded_files.map(parseDeprecatedExcludedFile);
+  const deprecatedPaths = new Set<string>();
+  let deprecatedBytes = 0;
+  for (const entry of deprecatedExcludedFiles) {
+    if (deprecatedPaths.has(entry.path)) {
+      fail("PLAN_DEPRECATED_EXCLUSION_DUPLICATED", `已废弃排除重复声明 ${entry.path}。`);
+    }
+    deprecatedPaths.add(entry.path);
+    deprecatedBytes += entry.bytes;
+  }
+  if (
+    deprecatedExcludedFiles.length !== typedCounts.javascript
+    || deprecatedBytes > (sourceBytes as number)
+  ) {
+    fail(
+      "PLAN_DEPRECATED_EXCLUSIONS_NOT_CLOSED",
+      "deprecated_excluded_files 未与 JavaScript 计数或仓库字节上限闭合。",
+    );
+  }
+
+  if (!Array.isArray(raw.work_units)) fail("PLAN_WORK_UNITS_INVALID", "清单缺少 work_units 数组。");
+  if (raw.work_units.length !== sourceFileCount) {
+    fail("PLAN_WORK_UNIT_COUNT_DRIFT", "work_units 数量与 source_file_count 不一致。");
+  }
+  const workUnits = raw.work_units.map((unit, index) => parseWorkUnit(unit, index, route.id));
+  const seenPaths = new Set<string>();
+  let aggregateBytes = 0;
+  for (const unit of workUnits) {
+    if (deprecatedPaths.has(unit.source_path)) {
+      fail(
+        "PLAN_DEPRECATED_EXCLUSION_WORK_UNIT_CONFLICT",
+        `已废弃 JavaScript 排除文件 ${unit.source_path} 不得同时成为活动路线工作单元。`,
+      );
+    }
+    if (seenPaths.has(unit.source_path)) {
+      fail("PLAN_WORK_UNIT_PATH_DUPLICATED", `清单重复声明了源文件 ${unit.source_path}。`);
+    }
+    seenPaths.add(unit.source_path);
+    aggregateBytes += unit.source_bytes;
+  }
+  if (aggregateBytes > (sourceBytes as number)) {
+    fail("PLAN_SOURCE_BYTES_DRIFT", "work_units 字节合计超过清单声明的 source_bytes。");
+  }
+
+  const limitations = raw.limitations;
+  if (
+    !Array.isArray(limitations)
+    || limitations.length === 0
+    || limitations.length > 20
+    || !limitations.every((item) => typeof item === "string" && item.length > 0 && item.length <= 500)
+  ) {
+    fail("PLAN_LIMITATIONS_INVALID", "清单必须显式声明 1–20 条适用边界。");
+  }
+
+  return {
+    schema_version: "1.0.0",
+    kind: "elmos.repository-route-plan",
+    status: "PLANNED",
+    repository_ref: repositoryRef,
+    snapshot_sha256: raw.snapshot_sha256,
+    snapshot_consistency: "STABLE_READ_ONLY_SCAN",
+    route_id: route.id,
+    source_language: context.sourceLanguage,
+    target_language: context.targetLanguage,
+    language_lifecycle: "ACTIVE",
+    file_count: fileCount as number,
+    source_file_count: sourceFileCount as number,
+    source_bytes: sourceBytes as number,
+    repository_scale: expectedScale,
+    repository_limits: expectedLimits,
+    language_counts: typedCounts,
+    deprecated_excluded_files: deprecatedExcludedFiles,
+    ignored_symlink_count: raw.ignored_symlink_count as number,
+    work_units: workUnits,
+    execution_status: "NOT_RUN",
+    external_verification_status: "NOT_RUN",
+    certification_status: "NOT_CERTIFIED",
+    limitations: limitations as string[],
+  };
+}

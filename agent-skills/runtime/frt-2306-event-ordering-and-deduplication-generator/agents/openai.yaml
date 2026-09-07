@@ -1,0 +1,4 @@
+interface:
+  display_name: "Event Ordering and Deduplication Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2306-event-ordering-and-deduplication-generator to run FRT-2306 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Regulatory Obligation Register Source Applicability And Lifecycle"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $regulatory-obligation-register-source-applicability-and-df4707dc to implement its fail-closed ELMOS Product B38 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Worker Prompt Builder"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-worker-prompt-builder to perform its bounded repository workflow with provenance and fail-closed evidence."

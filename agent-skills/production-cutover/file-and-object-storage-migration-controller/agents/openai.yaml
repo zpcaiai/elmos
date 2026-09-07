@@ -1,0 +1,4 @@
+interface:
+  display_name: "File and Object Storage Migration Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $file-and-object-storage-migration-controller to perform this Batch 11 production-cutover task."

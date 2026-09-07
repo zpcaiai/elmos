@@ -1,0 +1,675 @@
+{
+  "certified": false,
+  "external_evidence": "NOT_RUN",
+  "installed_new_semantic_owners": 10,
+  "namespace_policy": {
+    "global_batch46": "Project Synthesis PG001 start; never overwritten",
+    "runtime_namespace": "conv-* Product Convergence overlay",
+    "source_batch_label": "package-local-batch46-product-convergence"
+  },
+  "production_certified": false,
+  "reused_existing_semantic_owners": 30,
+  "schema_version": "1.0",
+  "skills": [
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-product-convergence-orchestrator",
+      "installed_path": ".agents/skills/conv-product-convergence-orchestrator/SKILL.md",
+      "installed_sha256": "sha256:dd59f00d295193976ec85866202f97e133e8eb037d534c207bfc0c65574c6506",
+      "interface_sha256": "sha256:30135ca3cdeda5e73ac98fc80a24177ccb0b1c05934dd4b198af95f6cc48976e",
+      "normalized_prerequisites": [],
+      "source_id": "1497",
+      "source_name": "b46-product-convergence-reference-implementation-factory",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-product-convergence-reference-implementation-factory/SKILL.md",
+      "source_sha256": "sha256:4600eaaafc5e4dc65cfab101d41885bf3d3e3deffb794432460650256046ddb7"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-capability-package-metamodel",
+      "installed_path": ".agents/skills/conv-capability-package-metamodel/SKILL.md",
+      "installed_sha256": "sha256:50f418488acbca7b328dd1eedbf65dfe40ccda1af49308a89a33617b3191f737",
+      "interface_sha256": "sha256:5e8f601ab2dbd76c4bddd4e01e52b18f1f8bac2d3670f0eea2373b660ce3d49d",
+      "normalized_prerequisites": [],
+      "source_id": "1498",
+      "source_name": "b46-unified-capability-package-metamodel",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-unified-capability-package-metamodel/SKILL.md",
+      "source_sha256": "sha256:b4a877e39d4452880b134ac9c3b1bd2c443f119c3c4af61d95fc9cdcb84ab512"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-capability-dependency-graph",
+      "installed_path": ".agents/skills/conv-capability-dependency-graph/SKILL.md",
+      "installed_sha256": "sha256:7a6ac0418e6d8772f2c5af257c01277ff6273341166d3b715ef5fc38e3ffbf54",
+      "interface_sha256": "sha256:59080dc0622531d3175b55b25abce609ea97e6b1c27474a6a750c7fad50512eb",
+      "normalized_prerequisites": [
+        "1498"
+      ],
+      "source_id": "1499",
+      "source_name": "b46-capability-dependency-graph",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-capability-dependency-graph/SKILL.md",
+      "source_sha256": "sha256:dd708d46b60e8340cfc0e66cf7054b8695228d4b4ec473516ae3a92555dca5aa"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-global-project-lifecycle",
+      "installed_path": ".agents/skills/conv-global-project-lifecycle/SKILL.md",
+      "installed_sha256": "sha256:be6c8157129ddd2c0a2bb1dbe8648b9b6bfa8dbbabcb3f2381459254e97d9e33",
+      "interface_sha256": "sha256:29b1d42bfec8a90f41205e9b5d131d7716b42b533def01ab8c4cb6dce54bbdfd",
+      "normalized_prerequisites": [
+        "1498"
+      ],
+      "source_id": "1500",
+      "source_name": "b46-global-migration-lifecycle-state-machine",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-global-migration-lifecycle-state-machine/SKILL.md",
+      "source_sha256": "sha256:58af3df129054365d8559c1c70a0984cd9f6b24d6929b50cff605786bbcb7d41"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-durable-workflow-runtime",
+      "installed_path": ".agents/skills/conv-durable-workflow-runtime/SKILL.md",
+      "installed_sha256": "sha256:3f45d1616b8e92cc503fc7873fa054beae836917b7df794560d53dd80aa63dfb",
+      "interface_sha256": "sha256:4a25e4ea3c2aa99c25dc72dcf04598f6c3fc70db170fef64cb05f0a934b31793",
+      "normalized_prerequisites": [
+        "1498",
+        "1500"
+      ],
+      "source_id": "1501",
+      "source_name": "b46-durable-workflow-runtime-kernel",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-durable-workflow-runtime-kernel/SKILL.md",
+      "source_sha256": "sha256:e4f0bd2f66de9acf72125ff6d0e43cbd1695143a011d8963c3472cca73f4845d"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-unified-policy-engine",
+      "installed_path": ".agents/skills/conv-unified-policy-engine/SKILL.md",
+      "installed_sha256": "sha256:2634c5ddcceb7e1e2ae6804f16c382e64c47bf0097cdf8606eba86d911aba029",
+      "interface_sha256": "sha256:15f7a23b4e0ead9e951cf79e78996dd82b9d4a52cd6889ad14603ce4b932b3ca",
+      "normalized_prerequisites": [
+        "1498",
+        "1501"
+      ],
+      "source_id": "1502",
+      "source_name": "b46-unified-policy-engine",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-unified-policy-engine/SKILL.md",
+      "source_sha256": "sha256:ad0a5e0a51753da74de68afb25c1e81e4aac1e3197348e859a84c6d28ce0812f"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-global-evidence-graph",
+      "installed_path": ".agents/skills/conv-global-evidence-graph/SKILL.md",
+      "installed_sha256": "sha256:d98b4c40fde8d962b8acb0f26395d90e18f9e8d81818c62a966945546eba6218",
+      "interface_sha256": "sha256:4b362e2b2cbf296c004712bbf69ef32df726cef4926452098b3b77196ca8f581",
+      "normalized_prerequisites": [
+        "1498",
+        "1501"
+      ],
+      "source_id": "1503",
+      "source_name": "b46-global-evidence-graph",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-global-evidence-graph/SKILL.md",
+      "source_sha256": "sha256:e4bb2799076a20dde5218866bc53ae335037e643842eb8c205c930969885244a"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-capability-registry-support-matrix",
+      "installed_path": ".agents/skills/conv-capability-registry-support-matrix/SKILL.md",
+      "installed_sha256": "sha256:e3f45178e56bd4fca8be7639e683c8ae378e04975e561d597f9f952c30b3e5ef",
+      "interface_sha256": "sha256:eee64d0d0bf6c07ba7c013e40fb00c1000fc09f40fdfa68c0119883d64abbeb7",
+      "normalized_prerequisites": [
+        "1498",
+        "1499",
+        "1503"
+      ],
+      "source_id": "1504",
+      "source_name": "b46-capability-registry-support-matrix",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-capability-registry-support-matrix/SKILL.md",
+      "source_sha256": "sha256:cb0af9fd853cbe9de6288805398d0540f199fd68433e07915aa74b58c56f3eba"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-pack-lifecycle-certification-unifier",
+      "installed_path": ".agents/skills/conv-pack-lifecycle-certification-unifier/SKILL.md",
+      "installed_sha256": "sha256:a986f4dd24c62a0c5a8ecd0a9918229dbced008854a70e8150efe7726f83e572",
+      "interface_sha256": "sha256:6dc39d4dc32b29c51e44e5ad6f484f6dc9d134b4d2a409d9e21b638ec160d289",
+      "normalized_prerequisites": [
+        "1498",
+        "1499",
+        "1504"
+      ],
+      "source_id": "1505",
+      "source_name": "b46-pack-lifecycle-version-certification",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-pack-lifecycle-version-certification/SKILL.md",
+      "source_sha256": "sha256:686eec27542b4da1779f88360d5ace2d03d069ff1381b2255d776582668acd31"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-core-extension-boundary",
+      "installed_path": ".agents/skills/conv-core-extension-boundary/SKILL.md",
+      "installed_sha256": "sha256:c438d233a14f82da1f7404fbb0780ed2ded28fd9481012e90417ba0d998e84ed",
+      "interface_sha256": "sha256:069ac40dd0f8bae0b234919e63da254fe00ec8caaba7c335a4c006578e274913",
+      "normalized_prerequisites": [
+        "1498",
+        "1504"
+      ],
+      "source_id": "1506",
+      "source_name": "b46-core-extension-boundary-plugin-kernel",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-core-extension-boundary-plugin-kernel/SKILL.md",
+      "source_sha256": "sha256:59b1f8bb22f1de0b8817b47605cfe6e1cbc59fc4359e63716766e5b6be6f03d4"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-skill-layering-routing",
+      "installed_path": ".agents/skills/conv-skill-layering-routing/SKILL.md",
+      "installed_sha256": "sha256:a6522ca1fdacb548ada19823eb7f7e9a3ef793031685d6645c7b400b1e6f4370",
+      "interface_sha256": "sha256:ec4239e5a975e0f7b5a8af56873f4e4bd9c2b2a4273504b5e09287c601c60d99",
+      "normalized_prerequisites": [
+        "1504"
+      ],
+      "source_id": "1507",
+      "source_name": "b46-meta-skill-layering-capability-resolver",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-meta-skill-layering-capability-resolver/SKILL.md",
+      "source_sha256": "sha256:5e07be8d2e9e2dd7887cb32d44db5ec7d5e2140d5c63ab551443f531cc7e57eb"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-skill-registry-compiler",
+      "installed_path": ".agents/skills/conv-skill-registry-compiler/SKILL.md",
+      "installed_sha256": "sha256:eb5d78b0a828e0e8d415dab46d400824afd50bdb710cf106f48373948d4f8361",
+      "interface_sha256": "sha256:72ac9444effe4a91cced620deb4fe7896444a15394c66b7b710b2e35e5bbc669",
+      "normalized_prerequisites": [
+        "1507"
+      ],
+      "source_id": "1508",
+      "source_name": "b46-skill-registry-compiler-governance",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-skill-registry-compiler-governance/SKILL.md",
+      "source_sha256": "sha256:ce52b91d2dce48b1fe4edb844bf5528cf9c0e219188cc603a865c0d6c8f2d5c1"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-duplicate-skill-consolidation",
+      "installed_path": ".agents/skills/conv-duplicate-skill-consolidation/SKILL.md",
+      "installed_sha256": "sha256:bae368f13668b461c9847695ad7131c6c3d281d94cbca36d06eaae48bd197143",
+      "interface_sha256": "sha256:09cd1dfe364d685fe051085963e64aa5b8f90bc668e2e6253518fa2abdfc0570",
+      "normalized_prerequisites": [
+        "1508"
+      ],
+      "source_id": "1509",
+      "source_name": "b46-skill-deduplication-foundation-extraction",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-skill-deduplication-foundation-extraction/SKILL.md",
+      "source_sha256": "sha256:893ad5079bbe8f1c238495cbf2ccce1273a3cd9b968662a4c45fa9030fdd7c04"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-test-pyramid-real-system-classification",
+      "installed_path": ".agents/skills/conv-test-pyramid-real-system-classification/SKILL.md",
+      "installed_sha256": "sha256:6226c8ee2cc8085820dcaca40d6d5216de7dcbb291d7c373b36e9818f4002b3c",
+      "interface_sha256": "sha256:700f4fb93dab260370e3ecdd6fe8c3cd45995d083c8c474d9c92ce8e766a153f",
+      "normalized_prerequisites": [
+        "1503",
+        "1504"
+      ],
+      "source_id": "1510",
+      "source_name": "b46-test-pyramid-real-system-classification",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-test-pyramid-real-system-classification/SKILL.md",
+      "source_sha256": "sha256:6635cb386bc9f67d570c4e7c9c9bbb1179474708fc2506000f0214f074496c75"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-benchmark-corpus-governance",
+      "installed_path": ".agents/skills/conv-benchmark-corpus-governance/SKILL.md",
+      "installed_sha256": "sha256:f0ee562497129feccb15def41c23ce985afa0f4e307649296c3ffd678b716439",
+      "interface_sha256": "sha256:2c7bea795374ab5910a7a7ec51a8878e0a23c6f9f1987f7da30932bba2be7b0f",
+      "normalized_prerequisites": [
+        "1510"
+      ],
+      "source_id": "1511",
+      "source_name": "b46-benchmark-corpus-governance",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-benchmark-corpus-governance/SKILL.md",
+      "source_sha256": "sha256:506118bb14eef9ec5a7293ffaed2f41eac7f3633775b1992b21aa00fff7dafee"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-maintainability-gate",
+      "installed_path": ".agents/skills/conv-maintainability-gate/SKILL.md",
+      "installed_sha256": "sha256:5cf3af055a15011ee1481681df75eebc3fdd5feba7529a2827dbf4dd7b7371af",
+      "interface_sha256": "sha256:7a27e818e732f1119a935850378aa877c4c684e181af59a9b76ba3de1a28332f",
+      "normalized_prerequisites": [
+        "1510",
+        "1511"
+      ],
+      "source_id": "1512",
+      "source_name": "b46-maintainability-idiomaticity-gate",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-maintainability-idiomaticity-gate/SKILL.md",
+      "source_sha256": "sha256:1db52344930e0d39cdf39d507c0623b9c69de1808f5b092ed9850e16b523f561"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-product-information-architecture",
+      "installed_path": ".agents/skills/conv-product-information-architecture/SKILL.md",
+      "installed_sha256": "sha256:58da7c4947b65e263b68aef6b74ca1987620d4e795bace3f1d07dee500e47178",
+      "interface_sha256": "sha256:209d6804a238fac96f67705d1ca813b7ec7f0e8106fb3e4ceaf4e0f2eff655f9",
+      "normalized_prerequisites": [
+        "1500",
+        "1504"
+      ],
+      "source_id": "1513",
+      "source_name": "b46-product-information-architecture-customer-journey",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-product-information-architecture-customer-journey/SKILL.md",
+      "source_sha256": "sha256:a243cd93b6cc65de0bc860625fe31b50164d5fb5913203e9a17657f32ac8e45c"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-migration-design-studio",
+      "installed_path": ".agents/skills/conv-migration-design-studio/SKILL.md",
+      "installed_sha256": "sha256:b1425067915ae886cc9d20390f27137934be148c4751387cbd38e5740767772f",
+      "interface_sha256": "sha256:670a2a03d4af6ce8e65883e5513dd50dc6d99803709bee189bb8532adc8e1808",
+      "normalized_prerequisites": [
+        "1513",
+        "1499"
+      ],
+      "source_id": "1514",
+      "source_name": "b46-migration-design-studio",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-migration-design-studio/SKILL.md",
+      "source_sha256": "sha256:0d69cba3b9262c05bf281e3edb84e1f9120c26eb7cf9d683928f488095deb279"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-customer-handoff-operability",
+      "installed_path": ".agents/skills/conv-customer-handoff-operability/SKILL.md",
+      "installed_sha256": "sha256:44adf6a2106f276eaad5e45fbde941c682d575a668ed1674a099eedaad84ffbf",
+      "interface_sha256": "sha256:5cc6ead4841816d4eff8d2fcf2fd7d13094dbd8c0e8418ae6b05f099ab377947",
+      "normalized_prerequisites": [
+        "1512",
+        "1513"
+      ],
+      "source_id": "1515",
+      "source_name": "b46-customer-handoff-maintenance-acceptance",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-customer-handoff-maintenance-acceptance/SKILL.md",
+      "source_sha256": "sha256:6a6e04848b11443d78402aaf915d67023849a005e1401b2820d36482bc65fee4"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-control-plane-modular-monolith",
+      "installed_path": ".agents/skills/conv-control-plane-modular-monolith/SKILL.md",
+      "installed_sha256": "sha256:9c8e13c028ad15faabd80f9cbac4d990dc346a7d579e707a0b8ac284175dc514",
+      "interface_sha256": "sha256:25f334a763f3eb8de1745eae6055325ac10b13561f08675e06f65e36fe8b042a",
+      "normalized_prerequisites": [
+        "1501",
+        "1502",
+        "1503",
+        "1504"
+      ],
+      "source_id": "1516",
+      "source_name": "b46-control-plane-modular-monolith",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-control-plane-modular-monolith/SKILL.md",
+      "source_sha256": "sha256:26325f7c6fe6c4e1ef1e3d76c874bbeeccd8191f3df5633acae5d8431f234332"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-private-runner-reference-implementation",
+      "installed_path": ".agents/skills/conv-private-runner-reference-implementation/SKILL.md",
+      "installed_sha256": "sha256:70d941f0044dbfc4f9c5f241c94082fa99996cfc96f5b523c9e306dacd2e3495",
+      "interface_sha256": "sha256:cd5ac6cd4cd49efe543807101fad810a8302fb0c2f33421243ddb764318b9bcb",
+      "normalized_prerequisites": [
+        "1501",
+        "1502",
+        "1503"
+      ],
+      "source_id": "1517",
+      "source_name": "b46-private-runner-reference-execution-plane",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-private-runner-reference-execution-plane/SKILL.md",
+      "source_sha256": "sha256:1b388b13ed6ab6d2dc8c4af4631c163e64d62b024dbe7aace72e8a5cf9d6c158"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-deterministic-migration-engine-reference",
+      "installed_path": ".agents/skills/conv-deterministic-migration-engine-reference/SKILL.md",
+      "installed_sha256": "sha256:3bbe1e58c65b65d5645f217e79459373d181589d1b1d0405e814fbbd35515928",
+      "interface_sha256": "sha256:44d9909ba6893867543e91b30ec255c70f906564ed864d9e68d7ca617e24521c",
+      "normalized_prerequisites": [
+        "1502",
+        "1508"
+      ],
+      "source_id": "1518",
+      "source_name": "b46-deterministic-transformation-priority",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-deterministic-transformation-priority/SKILL.md",
+      "source_sha256": "sha256:c22c06ed3244931fb515dcfa831361547c5902fb5909314d914764f460ac9c84"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-java-spring-csharp-reference-route",
+      "installed_path": ".agents/skills/conv-java-spring-csharp-reference-route/SKILL.md",
+      "installed_sha256": "sha256:e10ca3877f69a9b4da529b08719dacbd35b91d909ad6361ddceacff711e59644",
+      "interface_sha256": "sha256:d1dbc2e9ea6b663d1024a3ff63ee61e480f5794948458c595110336ac7e54677",
+      "normalized_prerequisites": [
+        "1516",
+        "1517",
+        "1518"
+      ],
+      "source_id": "1519",
+      "source_name": "b46-reference-route-java-spring-csharp-aspnet",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-reference-route-java-spring-csharp-aspnet/SKILL.md",
+      "source_sha256": "sha256:da6b446856db170dac52604ef3fa49bdcbe0f911f965e3a86efe9bca95137051"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-reference-repository-design-partner-corpus",
+      "installed_path": ".agents/skills/conv-reference-repository-design-partner-corpus/SKILL.md",
+      "installed_sha256": "sha256:17c550198e06b2017641f5216d9f91b070e803379a772318332791206ec6afe2",
+      "interface_sha256": "sha256:87a7fdc1f78f9cf4ae1ca1d090a503396cb8f77c2175a6d74cd4535a4a0341e3",
+      "normalized_prerequisites": [
+        "1511",
+        "1519"
+      ],
+      "source_id": "1520",
+      "source_name": "b46-reference-repository-corpus-design-partner",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-reference-repository-corpus-design-partner/SKILL.md",
+      "source_sha256": "sha256:014fd401721f3631cef8146c77f8007a814c2ecefa42b313ca0d57d488f40c17"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-validation-lab-evidence-store",
+      "installed_path": ".agents/skills/conv-validation-lab-evidence-store/SKILL.md",
+      "installed_sha256": "sha256:6733697082911c9551b6e1a5eaa7415840359f80bf8b188c8914ce7ac649c4f7",
+      "interface_sha256": "sha256:644d396351c174b9b45921b0e577823460418259b562601d67d49f5c2372303f",
+      "normalized_prerequisites": [
+        "1510",
+        "1511",
+        "1503"
+      ],
+      "source_id": "1521",
+      "source_name": "b46-unified-evals-benchmark-platform",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-unified-evals-benchmark-platform/SKILL.md",
+      "source_sha256": "sha256:55a18e6036a9daefad4d0e869de4cf75f0e4e999d5c649e19ea0c1490e6c3018"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-recipe-promotion-knowledge-governance",
+      "installed_path": ".agents/skills/conv-recipe-promotion-knowledge-governance/SKILL.md",
+      "installed_sha256": "sha256:f6fb73e1ae5448c8824bec674461133201eed76b6215e8cddee082ed5369fece",
+      "interface_sha256": "sha256:c9f275898c7773e23cc95b7c550adcef111111a9f9e7c747db716334d6054428",
+      "normalized_prerequisites": [
+        "1511",
+        "1521",
+        "1502"
+      ],
+      "source_id": "1522",
+      "source_name": "b46-recipe-promotion-knowledge-governance",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-recipe-promotion-knowledge-governance/SKILL.md",
+      "source_sha256": "sha256:93a9a1c6eeb081a9ef0726e9c8f4529e488b37343e0f93d13b58f87a9dfb99df"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-edition-commercial-package-simplification",
+      "installed_path": ".agents/skills/conv-edition-commercial-package-simplification/SKILL.md",
+      "installed_sha256": "sha256:685cc5a946a41f0c29da410bb106d13dd24772154cb1f771b05fb286ae451c9e",
+      "interface_sha256": "sha256:d9dc4e584606c06bcc5503ac6e9adbc9a264c25f9a0b3ed8f3dd106ce340af14",
+      "normalized_prerequisites": [
+        "1504",
+        "1505"
+      ],
+      "source_id": "1523",
+      "source_name": "b46-product-edition-scope-rationalization",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-product-edition-scope-rationalization/SKILL.md",
+      "source_sha256": "sha256:73eb8ed880017e253303c4024621f0c607a0216d681da574e5ff924b1698c8c4"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-edition-commercial-package-simplification",
+      "installed_path": ".agents/skills/conv-edition-commercial-package-simplification/SKILL.md",
+      "installed_sha256": "sha256:685cc5a946a41f0c29da410bb106d13dd24772154cb1f771b05fb286ae451c9e",
+      "interface_sha256": "sha256:d9dc4e584606c06bcc5503ac6e9adbc9a264c25f9a0b3ed8f3dd106ce340af14",
+      "normalized_prerequisites": [
+        "1523",
+        "1525"
+      ],
+      "source_id": "1524",
+      "source_name": "b46-standardized-product-packaging-delivery-contract",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-standardized-product-packaging-delivery-contract/SKILL.md",
+      "source_sha256": "sha256:08e4428dbdb9125ead5cf8bad4f27082393c059d6ec2291bcb103dc9b6221ec6"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-verified-migrated-workload-metrics",
+      "installed_path": ".agents/skills/conv-verified-migrated-workload-metrics/SKILL.md",
+      "installed_sha256": "sha256:80d4ff3cb115101f9f4dc82ee81813a6034de4c808a86b3503f1067bb71b4286",
+      "interface_sha256": "sha256:08d616942b506eb5cd5a27b512ad091a6710cf92f2d617894ac97956a5bf06b1",
+      "normalized_prerequisites": [
+        "1512",
+        "1515",
+        "1521"
+      ],
+      "source_id": "1525",
+      "source_name": "b46-verified-migrated-workload-value-metric",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-verified-migrated-workload-value-metric/SKILL.md",
+      "source_sha256": "sha256:e8fa86a7f7cee20aa79294436064c3042c209ec106e25d65fd12dfeb639f97e0"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-architecture-decision-change-control",
+      "installed_path": ".agents/skills/conv-architecture-decision-change-control/SKILL.md",
+      "installed_sha256": "sha256:dcc769ad4fd93b060fdb8ba6654152e0b731cfccd7318a67bede0bdc2552d45f",
+      "interface_sha256": "sha256:572cf8e967ce31905ee2ce23f41ec6c4487b0efe375434b08bc2dacaa8dec05d",
+      "normalized_prerequisites": [
+        "1523",
+        "1525"
+      ],
+      "source_id": "1526",
+      "source_name": "b46-descope-defer-portfolio-governance",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-descope-defer-portfolio-governance/SKILL.md",
+      "source_sha256": "sha256:46518cd13292e5645b9f1b52363d8fa86a40de8d236b0081a4a312a103b39157"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-reference-architecture-blueprint",
+      "installed_path": ".agents/skills/conv-reference-architecture-blueprint/SKILL.md",
+      "installed_sha256": "sha256:dd2ca05ac8c83e4fe3cf9c5840e744da6c2109156c4dbffe14cb4ee0ee1ee46d",
+      "interface_sha256": "sha256:4f6bec7aa55da20617584f1a2ab656238f2358d847b00062016a58afa0c74fcd",
+      "normalized_prerequisites": [
+        "1506",
+        "1516",
+        "1517"
+      ],
+      "source_id": "1527",
+      "source_name": "b46-reference-architecture-blueprint",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-reference-architecture-blueprint/SKILL.md",
+      "source_sha256": "sha256:8b38d0d64659ea62cb9e85dcb9b484157062acda58f4fc9d3428fdd558ea5663"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-convergence-roadmap-p0-p3",
+      "installed_path": ".agents/skills/conv-convergence-roadmap-p0-p3/SKILL.md",
+      "installed_sha256": "sha256:0a372cb3383d58fd8dffa9c9aa8c297520caba948494ffa1790b6a918358c83a",
+      "interface_sha256": "sha256:98ef0e138b49be7a07ba6dae894bdcf6f8ad496c19d04f8d50f5e5beb25aa1b9",
+      "normalized_prerequisites": [
+        "1527",
+        "1526"
+      ],
+      "source_id": "1528",
+      "source_name": "b46-convergence-roadmap-p0-p3",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-convergence-roadmap-p0-p3/SKILL.md",
+      "source_sha256": "sha256:fd6991e74b36dbfd008a5f75a24bf58b93dc8b443d91fe1a1bf0592f24435c0a"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-integration-contract-anti-corruption-layer",
+      "installed_path": ".agents/skills/conv-integration-contract-anti-corruption-layer/SKILL.md",
+      "installed_sha256": "sha256:c5e3420bd77d542c671368c9978c7c192a8c9e02bcad7c48745caabfb7bff059",
+      "interface_sha256": "sha256:e4806d49e3c5b4137baa5bc05c1094fe8799e79d2a6cfa053e3638fc09b8864c",
+      "normalized_prerequisites": [
+        "1498",
+        "1500",
+        "1501",
+        "1506"
+      ],
+      "source_id": "1529",
+      "source_name": "b46-integration-contract-anti-corruption-layer",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-integration-contract-anti-corruption-layer/SKILL.md",
+      "source_sha256": "sha256:8859a5cd8d2046d31a95a85f8057748414fb22785baea18d37b59f57ed58135e"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-reference-implementation-release-train",
+      "installed_path": ".agents/skills/conv-reference-implementation-release-train/SKILL.md",
+      "installed_sha256": "sha256:4a10258ce9696432e65c477315a300344c65059c6c084eaddaec31143af542ab",
+      "interface_sha256": "sha256:f9251bc63fa5d6d87b08f471bee69d9dc54a53d7c7587be14189c16f2344d7df",
+      "normalized_prerequisites": [
+        "1516",
+        "1517",
+        "1519",
+        "1521"
+      ],
+      "source_id": "1530",
+      "source_name": "b46-reference-implementation-release-train",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-reference-implementation-release-train/SKILL.md",
+      "source_sha256": "sha256:0918787825b55785dd7719956b755b8deb7d4f9ca5b26566e116a5adbc58bd41"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-convergence-observability-debt-dashboard",
+      "installed_path": ".agents/skills/conv-convergence-observability-debt-dashboard/SKILL.md",
+      "installed_sha256": "sha256:82b321b128f9b568486abfe31529a8d8308864a3ca7b7e9c9d25bf2f98ae97e2",
+      "interface_sha256": "sha256:8ded002d29963c6a07a02df6cb7c2bfe9d66bc6e0e7baf317f5d51a626130ab2",
+      "normalized_prerequisites": [
+        "1508",
+        "1509",
+        "1528"
+      ],
+      "source_id": "1531",
+      "source_name": "b46-convergence-observability-debt-dashboard",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-convergence-observability-debt-dashboard/SKILL.md",
+      "source_sha256": "sha256:3bd566386c8112e5562578f4888a828c6ecf97ddf7abdfcecd3962d9fd68ab91"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-design-partner-pilot",
+      "installed_path": ".agents/skills/conv-design-partner-pilot/SKILL.md",
+      "installed_sha256": "sha256:3a1efbd282939be59129d7eb146f314401120f19276e123e4faf70d3f312f181",
+      "interface_sha256": "sha256:81654570d5682f3a4b94227d994a25f9c50d550a7aa75770fc764bec1ca3848a",
+      "normalized_prerequisites": [
+        "1520",
+        "1530",
+        "1515"
+      ],
+      "source_id": "1532",
+      "source_name": "b46-design-partner-production-validation",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-design-partner-production-validation/SKILL.md",
+      "source_sha256": "sha256:c4e61449d0e9f561c61bc8bfc2bec8e43bcc9cf617611ef4e2443ea701500496"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-repeatable-profitable-delivery-model",
+      "installed_path": ".agents/skills/conv-repeatable-profitable-delivery-model/SKILL.md",
+      "installed_sha256": "sha256:5f72edd5c50fd383332af9be839f39539ca531140bfa25775a42109313b1e561",
+      "interface_sha256": "sha256:555e3f16f39fd888e1458a4810be52c65cd60d5badb797bb7278d73cc9eed6bb",
+      "normalized_prerequisites": [
+        "1524",
+        "1525",
+        "1532"
+      ],
+      "source_id": "1533",
+      "source_name": "b46-repeatable-profitable-delivery-model",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-repeatable-profitable-delivery-model/SKILL.md",
+      "source_sha256": "sha256:45fd5d95b332adf2a34bd1b6dd11404f7443ef98ab51ca63f0fd62823b78b090"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-customer-success-sla-operations-proof",
+      "installed_path": ".agents/skills/conv-customer-success-sla-operations-proof/SKILL.md",
+      "installed_sha256": "sha256:ab66270e76a28b729105ddff10ad2e826baac824634714fa67f0dfb4faba86ae",
+      "interface_sha256": "sha256:87556a8b290c7d0dec51e144973e6994c0bb4635b61f7977b2a6f34539c8a73d",
+      "normalized_prerequisites": [
+        "1532",
+        "1533"
+      ],
+      "source_id": "1534",
+      "source_name": "b46-customer-success-sla-operations-proof",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-customer-success-sla-operations-proof/SKILL.md",
+      "source_sha256": "sha256:40a58d0eba9c89036453617fdddcc8ada497469dae483325b660cae9055daebf"
+    },
+    {
+      "disposition": "installed_missing_semantic_owner",
+      "installed_alias": "conv-reference-product-acceptance-review",
+      "installed_path": ".agents/skills/conv-reference-product-acceptance-review/SKILL.md",
+      "installed_sha256": "sha256:dbdbc82af54c796678f5e5af1a3a81d6e3ad63d1003d406d89a30f2783287b8b",
+      "interface_sha256": "sha256:45699da5f569d242f98fdb4d915e66c81093c01c4ef92bc4fe08912d0381d6f8",
+      "normalized_prerequisites": [
+        "1498",
+        "1499",
+        "1500",
+        "1501",
+        "1502",
+        "1503",
+        "1504",
+        "1505",
+        "1506",
+        "1507",
+        "1508",
+        "1509",
+        "1510",
+        "1511",
+        "1512",
+        "1513",
+        "1514",
+        "1515",
+        "1516",
+        "1517",
+        "1518",
+        "1519",
+        "1520",
+        "1521",
+        "1522",
+        "1523",
+        "1524",
+        "1525",
+        "1526",
+        "1527",
+        "1528",
+        "1529",
+        "1530",
+        "1531",
+        "1532",
+        "1533",
+        "1534"
+      ],
+      "source_id": "1535",
+      "source_name": "b46-reference-product-acceptance-review",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-reference-product-acceptance-review/SKILL.md",
+      "source_sha256": "sha256:f6a72366638d77cbf6105588aeccec9b10cbdc11e205ab816f690eb0b321312e"
+    },
+    {
+      "disposition": "reused_existing_semantic_owner",
+      "installed_alias": "conv-product-convergence-readiness-gate",
+      "installed_path": ".agents/skills/conv-product-convergence-readiness-gate/SKILL.md",
+      "installed_sha256": "sha256:fad959d32d8637b011710ec2f58b126afcc94d55f9588ba436b715764b193b4a",
+      "interface_sha256": "sha256:4f6bda7f72276c48484ed1b17eef406e5cb3a3ef4756d3c9d127510ea9daeda9",
+      "normalized_prerequisites": [
+        "1535"
+      ],
+      "source_id": "1536",
+      "source_name": "b46-product-convergence-complete-certification-gate",
+      "source_path": "batch46-product-convergence-complete-skills/.agents/skills/b46-product-convergence-complete-certification-gate/SKILL.md",
+      "source_sha256": "sha256:a2e92a794390ea87408e70c78cc5d86e861ad3a1f78ec1ae47bc6beec8863d90"
+    }
+  ],
+  "source_package": "batch46-product-convergence-complete-skills",
+  "source_package_files": 180,
+  "source_package_version": "2.0.0",
+  "source_registry_repairs": {
+    "expanded_range_dependencies": [
+      "1498-1534",
+      "1498-1536"
+    ],
+    "maximum_runtime_decision": "READY_FOR_EXTERNAL_GATE",
+    "repaired_cycles": [
+      "1497<->1498",
+      "1500<->1501"
+    ],
+    "runtime_gate": "scripts/product-convergence/run_repository_convergence_gate.py",
+    "source_gate_authoritative": false,
+    "source_gate_maximum_authority": "LOCAL_ENGINEERING_EVIDENCE",
+    "source_gate_positive_fixture_is_external_evidence": false
+  },
+  "source_schema_count": 29,
+  "source_skill_count": 40,
+  "source_skill_range": "1497-1536"
+}

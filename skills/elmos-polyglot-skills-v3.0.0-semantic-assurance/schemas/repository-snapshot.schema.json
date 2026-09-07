@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repository-snapshot.schema.json",
+  "title": "Repository Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "createdAt",
+    "sources",
+    "contentDigest",
+    "dirtyState",
+    "tool"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.repository-snapshot/v1"
+    },
+    "snapshotId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "revision",
+          "rootDigest"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "rootDigest": {
+            "type": "string"
+          },
+          "submodules": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "contentDigest": {
+      "type": "string"
+    },
+    "dirtyState": {
+      "enum": [
+        "clean",
+        "captured-diff",
+        "forbidden"
+      ]
+    },
+    "tool": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ]
+    }
+  }
+}

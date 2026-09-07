@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 745: batch 18 group integration conformance gate"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $batch-18-group-integration-conformance-gate to evaluate this capability with evidence."

@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 仓库接入与修订冻结
+  short_description: 实现 Git/ZIP/本地目录/多仓库项目的安全接入、修订冻结和内容清单。用于首次导入、同步、分支切换和 Elmos 临时项目接入。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-repository-ingestion 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

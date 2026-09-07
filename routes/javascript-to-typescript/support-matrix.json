@@ -1,0 +1,80 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "certification/local-development-evidence.json",
+        "certification/local-holdout-evidence.json",
+        "certification/local-representative-evidence.json"
+      ],
+      "id": "typed-pure-function-v1",
+      "reason": "Conditionally supported for the route's explicitly declared exact JSDoc/target types inside the Node.js ES2022 ESM safe-integer/finite no-effect domain. Native analysis, concrete chunks, target compilation, behavior replay, and module composition must all pass; async, I/O, imports, dynamic evaluation, independent verification, and external certification remain blocked or NOT_RUN.",
+      "status": "conditional",
+      "strategy": "compiler-backed-semantic-ir"
+    },
+    {
+      "evidence_refs": [
+        "mappings/types.json"
+      ],
+      "id": "primitive-types",
+      "reason": "TypeScript has no explicit canonical integer annotation in this profile; JavaScript/TypeScript is limited to finite binary64 transport/comparison, boolean, and strict ECMAScript string equality/concatenation. Integer is blocked.",
+      "status": "conditional",
+      "strategy": "exact-type-mapping"
+    },
+    {
+      "evidence_refs": [
+        "lowering/profile.json",
+        "certification/local-development-evidence.json",
+        "certification/local-holdout-evidence.json",
+        "certification/local-representative-evidence.json"
+      ],
+      "id": "nodejs-es2022-esm-safe-integer-finite-v1",
+      "reason": "Integer values must satisfy Number.isSafeInteger, number values must be finite binary64, modules are ESM, and all effects are absent.",
+      "status": "conditional",
+      "strategy": "exact-jsdoc-types-and-runtime-domain-guards"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-holdout-evidence.json",
+        "certification/module-equivalence.json"
+      ],
+      "id": "string-semantics",
+      "reason": "JavaScript and TypeScript share the pinned ECMAScript string value, strict equality, and concatenation model; the independent string corpus is still required.",
+      "status": "conditional",
+      "strategy": "strict-ecmascript-string-value-contract"
+    },
+    {
+      "evidence_refs": [],
+      "id": "number-arithmetic",
+      "reason": "Finite inputs can still produce non-finite results and rounding differences; the Node exact route profile currently permits transport/comparison only.",
+      "status": "blocked",
+      "strategy": "separate-floating-point-arithmetic-contract-required"
+    },
+    {
+      "evidence_refs": [
+        "lowering/profile.json"
+      ],
+      "id": "if-return-control-flow",
+      "reason": "If and return statements remain conditional on exact JSDoc types, the ESM closure, concrete spans, and successful native replay for this direction.",
+      "status": "conditional",
+      "strategy": "typed-structured-lowering"
+    },
+    {
+      "evidence_refs": [],
+      "id": "framework-database-async-concurrency",
+      "reason": "Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [
+        "certification/module-equivalence.json"
+      ],
+      "id": "typed-pure-module-v1",
+      "reason": "Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.",
+      "status": "conditional",
+      "strategy": "per-function-proof-plus-module-composition"
+    }
+  ],
+  "route_key": "javascript-to-typescript",
+  "schema_version": 1
+}

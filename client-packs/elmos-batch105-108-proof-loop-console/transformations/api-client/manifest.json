@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "operations": [
+    {"id":"contracts","method":"GET","retry":false,"cache":"no-store","auth":"server-session"},
+    {"id":"subject-digest","method":"POST","retry":false,"idempotency":"pure-derivation","auth":"server-session"},
+    {"id":"create-job","method":"POST","retry":false,"idempotency":"tenant-actor-canonical-body-sha256","auth":"server-session"},
+    {"id":"get-job","method":"GET","retry":"ui-scheduled","cancellation":"AbortController","cache":"no-store","auth":"server-session"},
+    {"id":"cancel-job","method":"DELETE","retry":false,"idempotency":"cancel-intent","auth":"server-session"}
+  ],
+  "serialization": {"dates":"iso-8601","enums":"closed-string-unions","null_missing":"preserved","errors":"machine-code"},
+  "offline": "blocked-no-queue",
+  "optimistic_updates": "none"
+}

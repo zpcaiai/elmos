@@ -1,0 +1,96 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G10",
+    "slug": "application-boundaries",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Routes、Forms、Network、Storage、Identity与Permissions边界",
+    "transitionFrom": "组件与运行时语义",
+    "transitionTo": "形成完整应用导航、表单、API、存储、身份和权限边界",
+    "certificateFamily": "AB",
+    "skills": [
+      {
+        "id": "FRT-1000",
+        "name": "Application Boundary Orchestrator",
+        "path": "skills/frt-1000-application-boundary-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1001",
+        "name": "Route Graph Generator",
+        "path": "skills/frt-1001-route-graph-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1002",
+        "name": "Navigation and History Mapper",
+        "path": "skills/frt-1002-navigation-and-history-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1003",
+        "name": "Route Guard Mapper",
+        "path": "skills/frt-1003-route-guard-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1004",
+        "name": "Form Model Generator",
+        "path": "skills/frt-1004-form-model-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1005",
+        "name": "Validation and Error Contract Mapper",
+        "path": "skills/frt-1005-validation-and-error-contract-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1006",
+        "name": "Network Client Generator",
+        "path": "skills/frt-1006-network-client-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1007",
+        "name": "API Contract Mapper",
+        "path": "skills/frt-1007-api-contract-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1008",
+        "name": "Storage Adapter Generator",
+        "path": "skills/frt-1008-storage-adapter-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-1009",
+        "name": "Identity and Session Mapper",
+        "path": "skills/frt-1009-identity-and-session-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1010",
+        "name": "Authorization and Tenant Scope Mapper",
+        "path": "skills/frt-1010-authorization-and-tenant-scope-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1011",
+        "name": "Realtime Webhook and Subscription Mapper",
+        "path": "skills/frt-1011-realtime-webhook-and-subscription-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1012",
+        "name": "Permission and Capability Mapper",
+        "path": "skills/frt-1012-permission-and-capability-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1013",
+        "name": "Application Boundary Certification",
+        "path": "skills/frt-1013-application-boundary-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键Route和Guard完整",
+      "表单失败不丢Critical输入",
+      "API/Storage字段语义和Scope保持",
+      "UI-only Authorization=0",
+      "账号切换清理旧请求/Store/Cache",
+      "Realtime订阅跨Tenant泄漏=0"
+    ]
+  }
+}

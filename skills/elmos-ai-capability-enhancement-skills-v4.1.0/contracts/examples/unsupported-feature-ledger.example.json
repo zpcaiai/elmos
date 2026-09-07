@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "id": "uf-1",
+      "feature": "visual-node-layout-roundtrip",
+      "target": "dify",
+      "status": "waived",
+      "criticality": "low",
+      "decision": "layout is non-semantic; preserve functional graph",
+      "owner": "product",
+      "expiry": "2026-12-31T00:00:00Z",
+      "evidence": [
+        "diff-1"
+      ]
+    }
+  ]
+}

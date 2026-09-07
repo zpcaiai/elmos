@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 637: healthcare interoperability migration recipe pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $healthcare-interoperability-migration-recipe-pack to evaluate this capability with evidence."

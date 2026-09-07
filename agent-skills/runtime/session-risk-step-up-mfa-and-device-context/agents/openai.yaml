@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 015"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $session-risk-step-up-mfa-and-device-context to implement its fail-closed ELMOS Product Batch 34 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "regression isolation and bisect controller"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $regression-isolation-and-bisect-controller to perform this Batch 8 repair step."

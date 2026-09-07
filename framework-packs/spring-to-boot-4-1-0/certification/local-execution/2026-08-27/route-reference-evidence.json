@@ -1,0 +1,118 @@
+{
+  "authorized_customer_repository": "NOT_RUN",
+  "behavioral_parity": true,
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "PASSED_LOCAL",
+  "external_evidence_status": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "probe_ids": [
+    42,
+    7,
+    1001
+  ],
+  "recorded_tuple": {
+    "source_boot": "3.5.3",
+    "source_java": "21",
+    "target_boot": "4.1.0",
+    "target_java": "21"
+  },
+  "rootless_runner": "NOT_RUN",
+  "route_id": "boot-3.5-maven-to-boot-4.1.0-java-21",
+  "schema_version": 1,
+  "source": {
+    "boot": "3.5.3",
+    "build": "PASSED",
+    "build_tail": "process running for 9.465)\n2026-08-27T06:22:55.232+08:00  WARN 23498 --- [           main] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.02 s -- in io.elmos.reference.OrderControllerSecurityTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ spring-reference-3-5-3 ---\n[INFO] Building jar: /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/source/target/spring-reference-3-5-3-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:3.5.3:repackage (repackage) @ spring-reference-3-5-3 ---\n[INFO] Replacing main artifact /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/source/target/spring-reference-3-5-3-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/source/target/spring-reference-3-5-3-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  18.862 s\n[INFO] Finished at: 2026-08-27T06:22:57+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "status": "UP"
+      },
+      "jar_sha256": "67a0baaa19f5024146c52bffd93df91815e884ba9446d92978ff00b19e9912ba",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      }
+    }
+  },
+  "target": {
+    "boot": "4.1.0",
+    "build": "PASSED",
+    "build_tail": " running for 15.577)\n2026-08-27T06:24:24.783+08:00  WARN 23947 --- [           main] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in java.util.Map<java.lang.String, java.lang.String> io.elmos.reference.OrderController.create(io.elmos.reference.OrderController$CreateOrder): [Field error in object 'createOrder' on field 'customerId': rejected value []; codes [NotBlank.createOrder.customerId,NotBlank.customerId,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createOrder.customerId,customerId]; arguments []; default message [customerId]]; default message [must not be blank]] ]\n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.88 s -- in io.elmos.reference.OrderControllerSecurityTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.5.0:jar (default-jar) @ spring-reference-3-5-3 ---\n[INFO] Building jar: /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/migrated/target/spring-reference-3-5-3-1.0.0.jar\n[INFO] \n[INFO] --- spring-boot:4.1.0:repackage (repackage) @ spring-reference-3-5-3 ---\n[INFO] Replacing main artifact /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/migrated/target/spring-reference-3-5-3-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to /private/tmp/elmos-spring-4-1-local-execution.zyg7zo/workspace/migrated/target/spring-reference-3-5-3-1.0.0.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  28.443 s\n[INFO] Finished at: 2026-08-27T06:24:28+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "health_path": "/actuator/health",
+    "java": "openjdk version \"21.0.11\" 2026-04-21",
+    "runtime": {
+      "health": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      },
+      "jar_sha256": "77f5df21870472a1f2905035f94de86ebb19e0475d7f71ec6f9f9a70ea5f7f22",
+      "persistence": {
+        "count_response": {
+          "count": 0
+        },
+        "count_status": 200,
+        "rollback_status": 500
+      },
+      "responses": {
+        "1001": {
+          "amountCents": 125125,
+          "id": 1001,
+          "status": "REVIEW"
+        },
+        "42": {
+          "amountCents": 5250,
+          "id": 42,
+          "status": "READY"
+        },
+        "7": {
+          "amountCents": 875,
+          "id": 7,
+          "status": "REVIEW"
+        }
+      },
+      "security": {
+        "authenticated_order_status": 200,
+        "unauthenticated_order_status": 401
+      }
+    }
+  },
+  "transformation": {
+    "engine": "OpenRewrite",
+    "maven": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)",
+    "output_tail": "e styles(s) []\n[INFO] Validating active recipes...\n[INFO] Project [spring-reference-3-5-3] Resolving Poms...\n[INFO] Project [spring-reference-3-5-3] Parsing source files\n[INFO] Running recipe(s)...\n[WARNING] Changes have been made to pom.xml by:\n[WARNING]     org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0\n[WARNING]         org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5\n[WARNING]             org.openrewrite.maven.UpgradeParentVersion\n[WARNING]         org.openrewrite.maven.UpgradeParentVersion: {groupId=org.springframework.boot, artifactId=spring-boot-starter-parent, newVersion=4.0.x}\n[WARNING]         org.openrewrite.java.spring.boot4.MigrateToModularStarters\n[WARNING]             org.openrewrite.java.dependencies.ChangeDependency\n[WARNING]             org.openrewrite.java.dependencies.AddDependency\n[WARNING]         org.openrewrite.java.dependencies.ChangeDependency: {oldGroupId=org.springframework.boot, oldArtifactId=spring-boot-starter-web, newArtifactId=spring-boot-starter-webmvc, newVersion=4.0.x}\n[WARNING]         org.openrewrite.maven.UpgradeParentVersion: {groupId=org.springframework.boot, artifactId=spring-boot-starter-parent, newVersion=4.1.0}\n[WARNING] Changes have been made to src/test/java/io/elmos/reference/OrderControllerTest.java by:\n[WARNING]     org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0\n[WARNING]         org.openrewrite.java.spring.boot4.MigrateToModularStarters\n[WARNING]             org.openrewrite.java.spring.boot4.MigrateAutoconfigurePackages\n[WARNING]                 org.openrewrite.java.ChangePackage\n[WARNING] Please review and commit the results.\n[WARNING] Estimate time saved: 35m\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  55.983 s\n[INFO] Finished at: 2026-08-27T06:23:55+08:00\n[INFO] ------------------------------------------------------------------------\n",
+    "recipe_id": "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
+    "recipe_path": "apps/java-engine-worker/src/main/resources/rewrite/spring-to-boot-4.1.0.yml",
+    "recipe_sha256": "75faf8019a3a04fb6aa71e1577542b003ade11b596193b150d61fb813e16f629",
+    "rewrite_maven_plugin": "6.44.0",
+    "rewrite_spring": "6.35.0"
+  }
+}

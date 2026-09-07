@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Support SLA And Operating Model"
+  short_description: "Authoritative Batch 14 Skill 455 workflow"
+  default_prompt: "Use $regional-support-sla-and-operating-model to execute its evidence-bound Batch 14 workflow."
+

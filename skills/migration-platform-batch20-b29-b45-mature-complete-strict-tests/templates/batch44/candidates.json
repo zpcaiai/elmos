@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "example-finops-economics-candidates",
+  "candidates": [
+    {
+      "id": "candidate-a",
+      "score": 0.0,
+      "evidence_refs": []
+    }
+  ]
+}

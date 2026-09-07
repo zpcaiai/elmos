@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 525: batch 15 company operating conformance gate"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $batch-15-company-operating-conformance-gate to evaluate this capability with evidence."

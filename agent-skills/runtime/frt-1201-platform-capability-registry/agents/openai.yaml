@@ -1,0 +1,4 @@
+interface:
+  display_name: "Platform Capability Registry"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1201-platform-capability-registry to run FRT-1201 through the governed FRT runtime with exact scope and fail-closed evidence."

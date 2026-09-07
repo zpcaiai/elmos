@@ -1,0 +1,24 @@
+{
+  "recordType": "provenance",
+  "batch": 43,
+  "check": "batch43-schema-compatibility",
+  "claimIds": [
+    "b43-schema-surface-compatibility"
+  ],
+  "repositoryRevision": "c99a76bedb378af8aa869c4e75b595830209f609",
+  "artifactRootsClean": true,
+  "baselineRevision": "HEAD",
+  "replayCommand": "python3 scripts/batch43_schema_compatibility_check.py --baseline-rev HEAD",
+  "toolDigest": "sha256:93947976959ba080ec5cf2f4b5e2b77524e525ea0268c202fa802ee99ba27737",
+  "runReport": {
+    "path": "evidence/execution/b43-schema-compatibility-run.json",
+    "sha256": "sha256:0101798523513f14eecbb1a18d15142d6396b1f3c23b91283e9cb0b9e0c21b37",
+    "bytes": 139411
+  },
+  "artifactCompositeDigest": "sha256:8d37a69d1662f4cbfc75dfd3fe0e7719d7f2a1c0e56d0ce3997225b003c92dc5",
+  "environmentDigest": "sha256:7dc0f2ad2dfa08fb38685563f3a08ddeedf5860b9cbfc822308c06a5bc7a133a",
+  "startedAt": "2026-08-06T10:23:25.225585Z",
+  "finishedAt": "2026-08-06T10:23:34.789682Z",
+  "reproducible": true,
+  "reproducibilityNote": "no tracked file under ['schemas', 'contracts', 'telemetry'] differs from HEAD (untracked files were not enumerated); this run replays from the recorded revision."
+}

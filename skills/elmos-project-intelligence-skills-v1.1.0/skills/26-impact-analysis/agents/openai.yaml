@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 变更影响与回归范围分析
+  short_description: 分析代码、API、Schema、事件、配置、依赖、架构规则或转换补丁的直接和间接影响。用于修改前评估、PR 检查和测试选择。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-impact-analysis 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

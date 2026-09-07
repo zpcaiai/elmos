@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-abi-calling-convention-semantics"
+  short_description: "Capture platform ABI, calling convention, register/stack classification, symbol mangling and exce..."
+  default_prompt: "Use $elmos-abi-calling-convention-semantics through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-abi-calling-convention-semantics"
+  handler_id: "execute_elmos_abi_calling_convention_semantics"
+  operation: "MODEL_NORMALIZATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

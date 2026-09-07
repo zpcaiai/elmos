@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Energy Asset Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $energy-asset-master-data-identity-hierarchy-and-effective-dating to implement its fail-closed ELMOS Product B53 contract."

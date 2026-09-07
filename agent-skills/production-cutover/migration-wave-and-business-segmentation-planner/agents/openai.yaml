@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Wave and Business Segmentation Planner"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $migration-wave-and-business-segmentation-planner to perform this Batch 11 production-cutover task."

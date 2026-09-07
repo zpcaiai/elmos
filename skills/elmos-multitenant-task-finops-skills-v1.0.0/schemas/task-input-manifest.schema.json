@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/task-input-manifest.schema.json",
+  "title": "Elmos Task Input Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_id",
+    "tenant_id",
+    "account_id",
+    "task_id",
+    "input_role",
+    "content_kind",
+    "content_sha256",
+    "size_bytes",
+    "storage_mode",
+    "classification",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "input_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "account_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "input_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "media_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "storage_mode": {
+      "enum": [
+        "INLINE_JSON",
+        "OBJECT_REFERENCE",
+        "EXTERNAL_REFERENCE",
+        "REDACTED_REFERENCE"
+      ]
+    },
+    "inline_payload": {
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "object_uri": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "external_uri": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "classification": {
+      "enum": [
+        "PUBLIC",
+        "INTERNAL",
+        "CONFIDENTIAL",
+        "RESTRICTED"
+      ]
+    },
+    "encryption_key_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "retention_class": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "storage_mode": {
+            "const": "OBJECT_REFERENCE"
+          }
+        },
+        "required": [
+          "storage_mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "object_uri"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "storage_mode": {
+            "const": "EXTERNAL_REFERENCE"
+          }
+        },
+        "required": [
+          "storage_mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "external_uri"
+        ]
+      }
+    }
+  ]
+}

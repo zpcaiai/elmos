@@ -1,0 +1,4 @@
+interface:
+  display_name: "esb soa flow mapping and adapter modernizer"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $esb-soa-flow-mapping-and-adapter-modernizer to modernize this integration scope safely."

@@ -1,0 +1,41 @@
+policyVersion: 1.0.0
+modes:
+  preserve:
+    description: 尽可能保持 legacy 安全决策与用户可见行为；仍禁止生成已知不安全的扩大绑定或权限。
+    deltasRequireApproval: true
+    compare:
+    - authn
+    - authz
+    - denial
+    - login redirect
+    - session
+    - csrf/token
+    - cookies
+    - headers
+    - binding surface
+  harden:
+    description: 在独立 change set 中实施明确安全增强。
+    requires:
+    - preserve-equivalence-baseline
+    - hardening-delta-register
+    - security-approver
+    examples:
+    - narrow binding allowlist
+    - CSRF modernization
+    - secure cookie
+    - session fixation protection
+    - security headers
+    reportSeparately: true
+nonRegression:
+- no auth bypass
+- no role widening
+- no mass assignment expansion
+- no token weakening
+- no secret exposure
+sensitiveArtifacts:
+- traffic body
+- session state
+- db snapshot
+- trace
+- security config
+- secret references

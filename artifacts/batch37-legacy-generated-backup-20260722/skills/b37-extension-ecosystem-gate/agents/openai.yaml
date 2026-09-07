@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Ecosystem Gate"
+  short_description: "Run evidence-bound Batch 37 extension ecosystem gate work"
+  default_prompt: "Use $b37-extension-ecosystem-gate to implement and verify this capability with fail-closed evidence."

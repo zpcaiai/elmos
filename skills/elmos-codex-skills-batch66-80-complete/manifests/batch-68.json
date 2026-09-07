@@ -1,0 +1,317 @@
+{
+  "batch": 68,
+  "title": "Kotlin JVM Android and Multiplatform Project Pack",
+  "subject": "Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform",
+  "skill_count": 12,
+  "id_range": [
+    "PG247",
+    "PG258"
+  ],
+  "toolchain": [
+    "java",
+    "kotlinc",
+    "gradle/gradlew",
+    "detekt",
+    "ktlint",
+    "JUnit",
+    "Android SDK"
+  ],
+  "source_markers": [
+    "build.gradle.kts",
+    "settings.gradle.kts",
+    "gradle/libs.versions.toml",
+    "src/main/kotlin",
+    "AndroidManifest.xml"
+  ],
+  "skills": [
+    {
+      "id": "PG247",
+      "batch": 68,
+      "name": "b68-kotlin-project-profile-detector",
+      "title": "Kotlin Project Profile Detector",
+      "summary": "Inspect and model Kotlin Project Profile Detector for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-68/PG247-kotlin-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246"
+      ],
+      "outputs": [
+        "kotlin_project_profile_detector.json",
+        "kotlin_project_profile_detector_artifacts/",
+        "kotlin_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG248",
+      "batch": 68,
+      "name": "b68-gradle-kotlin-build-reproducer",
+      "title": "Gradle Kotlin Build Reproducer",
+      "summary": "Reproduce deterministically Gradle Kotlin Build Reproducer for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-gradle-kotlin-build-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-68/PG248-gradle-kotlin-build-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG247"
+      ],
+      "outputs": [
+        "gradle_kotlin_build_reproducer_plan.json",
+        "gradle_kotlin_build_reproducer_artifacts/",
+        "gradle_kotlin_build_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG249",
+      "batch": 68,
+      "name": "b68-spring-kotlin-service-generator",
+      "title": "Spring Kotlin Service Generator",
+      "summary": "Generate runnable and maintainable Spring Kotlin Service Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-spring-kotlin-service-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG249-spring-kotlin-service-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG248"
+      ],
+      "outputs": [
+        "spring_kotlin_service_generator_plan.json",
+        "spring_kotlin_service_generator_artifacts/",
+        "spring_kotlin_service_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG250",
+      "batch": 68,
+      "name": "b68-ktor-service-generator",
+      "title": "Ktor Service Generator",
+      "summary": "Generate runnable and maintainable Ktor Service Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-ktor-service-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG250-ktor-service-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG249"
+      ],
+      "outputs": [
+        "ktor_service_generator_plan.json",
+        "ktor_service_generator_artifacts/",
+        "ktor_service_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG251",
+      "batch": 68,
+      "name": "b68-kotlin-coroutine-structured-concurrency",
+      "title": "Kotlin Coroutine Structured Concurrency",
+      "summary": "Implement and validate Kotlin Coroutine Structured Concurrency for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-coroutine-structured-concurrency/SKILL.md",
+      "catalog_path": "skills/batch-68/PG251-kotlin-coroutine-structured-concurrency.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG250"
+      ],
+      "outputs": [
+        "kotlin_coroutine_structured_concurrency_plan.json",
+        "kotlin_coroutine_structured_concurrency_artifacts/",
+        "kotlin_coroutine_structured_concurrency_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG252",
+      "batch": 68,
+      "name": "b68-kotlin-data-access-generator",
+      "title": "Kotlin Data Access Generator",
+      "summary": "Generate runnable and maintainable Kotlin Data Access Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-data-access-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG252-kotlin-data-access-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG251"
+      ],
+      "outputs": [
+        "kotlin_data_access_generator_plan.json",
+        "kotlin_data_access_generator_artifacts/",
+        "kotlin_data_access_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG253",
+      "batch": 68,
+      "name": "b68-java-kotlin-interop-manager",
+      "title": "Java Kotlin Interop Manager",
+      "summary": "Coordinate and control Java Kotlin Interop Manager for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-java-kotlin-interop-manager/SKILL.md",
+      "catalog_path": "skills/batch-68/PG253-java-kotlin-interop-manager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG252"
+      ],
+      "outputs": [
+        "java_kotlin_interop_manager_plan.json",
+        "java_kotlin_interop_manager_artifacts/",
+        "java_kotlin_interop_manager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG254",
+      "batch": 68,
+      "name": "b68-kotlin-contract-client-generator",
+      "title": "Kotlin Contract Client Generator",
+      "summary": "Generate runnable and maintainable Kotlin Contract Client Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-contract-client-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG254-kotlin-contract-client-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG253"
+      ],
+      "outputs": [
+        "kotlin_contract_client_generator_plan.json",
+        "kotlin_contract_client_generator_artifacts/",
+        "kotlin_contract_client_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG255",
+      "batch": 68,
+      "name": "b68-android-compose-application-generator",
+      "title": "Android Compose Application Generator",
+      "summary": "Generate runnable and maintainable Android Compose Application Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-android-compose-application-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG255-android-compose-application-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG254"
+      ],
+      "outputs": [
+        "android_compose_application_generator_plan.json",
+        "android_compose_application_generator_artifacts/",
+        "android_compose_application_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG256",
+      "batch": 68,
+      "name": "b68-kotlin-multiplatform-library-generator",
+      "title": "Kotlin Multiplatform Library Generator",
+      "summary": "Generate runnable and maintainable Kotlin Multiplatform Library Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-multiplatform-library-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG256-kotlin-multiplatform-library-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG255"
+      ],
+      "outputs": [
+        "kotlin_multiplatform_library_generator_plan.json",
+        "kotlin_multiplatform_library_generator_artifacts/",
+        "kotlin_multiplatform_library_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG257",
+      "batch": 68,
+      "name": "b68-kotlin-test-harness-generator",
+      "title": "Kotlin Test Harness Generator",
+      "summary": "Generate runnable and maintainable Kotlin Test Harness Generator for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-test-harness-generator/SKILL.md",
+      "catalog_path": "skills/batch-68/PG257-kotlin-test-harness-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG256"
+      ],
+      "outputs": [
+        "kotlin_test_harness_generator_plan.json",
+        "kotlin_test_harness_generator_artifacts/",
+        "kotlin_test_harness_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG258",
+      "batch": 68,
+      "name": "b68-kotlin-build-run-repair-certifier",
+      "title": "Kotlin Build Run Repair Certifier",
+      "summary": "Execute and independently verify Kotlin Build Run Repair Certifier for Kotlin JVM, Spring, Ktor, coroutines, data access, Java interoperability, Android Compose, and Kotlin Multiplatform, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b68-kotlin-build-run-repair-certifier/SKILL.md",
+      "catalog_path": "skills/batch-68/PG258-kotlin-build-run-repair-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG246",
+        "PG257"
+      ],
+      "outputs": [
+        "kotlin_build_run_repair_certifier_plan.json",
+        "kotlin_build_run_repair_certifier_artifacts/",
+        "kotlin_build_run_repair_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

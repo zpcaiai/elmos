@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 023"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $git-submodule-recursive-authorization-url-resolution-an-73118db5 to implement its fail-closed ELMOS Product Batch 35 contract."

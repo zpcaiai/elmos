@@ -1,0 +1,13 @@
+scheduler:
+  replicas: 3
+billing:
+  replicas: 3
+projector:
+  replicas: 2
+worker:
+  replicas: 4
+  serviceName: elmos-worker-headless
+database:
+  secretName: elmos-db
+networkPolicy:
+  enabled: true

@@ -1,0 +1,431 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-bounded-interaction-formal-input",
+  "corpus_id": "frontend-bounded-interaction-corpus-v1",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "proof_scope": "typed canonical bounded interaction IR <-> emitted source re-lift <-> emitted target re-lift",
+  "route_id": "jquery--to--svelte",
+  "tuple": {
+    "source_profile": "jquery",
+    "source_framework_version": "4.0.0",
+    "target_profile": "svelte",
+    "target_framework_version": "5.56.8"
+  },
+  "source_project_digest": "sha256:b6f97f365ec00660a6d028964a9c848776c99b4bfa614e159ba57ada1172af1b",
+  "target_project_digest": "sha256:8f4a10ae5d98feefa83392599deb5a8d4398e6a0d41b56df6bfaa02b8562ff7e",
+  "canonical_model": {
+    "schemaVersion": "1.0",
+    "profile": "bounded-frontend-interaction-v1",
+    "projectTitle": "ELMOS 有界前端交互验证",
+    "navigation": {
+      "label": "主要导航",
+      "fallback": "FIRST_DECLARED_ROUTE",
+      "routes": [
+        {
+          "id": "route.home",
+          "path": "/",
+          "title": "首页",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        {
+          "id": "route.account",
+          "path": "/account",
+          "title": "账户",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        {
+          "id": "route.help",
+          "path": "/help",
+          "title": "帮助",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        }
+      ]
+    },
+    "componentTemplate": {
+      "componentId": "interaction.shell",
+      "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+      "keyedBy": "route.id",
+      "titleBinding": "route.title",
+      "textBinding": "route.text"
+    },
+    "stateManagement": {
+      "stateId": "bounded.counter",
+      "initial": 0,
+      "minimum": 0,
+      "maximum": 2,
+      "transition": "SATURATING_INCREMENT"
+    },
+    "actionEvent": {
+      "acceptedEvents": [
+        "BOOT",
+        "NAVIGATE",
+        "AUTHENTICATE",
+        "SUBMIT",
+        "CANCEL",
+        "HYDRATE",
+        "DISPLAY_CHANGE",
+        "NATIVE_DEEPLINK"
+      ],
+      "deniedAction": "BLOCK",
+      "keyboardSubmit": "Enter"
+    },
+    "effectLifecycle": {
+      "mountEffect": "LOAD_ON_MOUNT",
+      "cleanupEffect": "CANCEL_ON_UNMOUNT",
+      "maxExecutionsPerMount": 1,
+      "staleResponsePolicy": "IGNORE_AFTER_CANCEL"
+    },
+    "formBindingValidation": {
+      "formId": "search",
+      "fieldId": "query",
+      "initialValue": "",
+      "required": true,
+      "minimumLength": 2,
+      "validation": "ON_SUBMIT",
+      "invalidCode": "QUERY_TOO_SHORT"
+    },
+    "apiNetwork": {
+      "operationId": "search",
+      "method": "POST",
+      "path": "/api/search",
+      "timeoutMs": 1000,
+      "retry": "NEVER",
+      "cacheScope": "TENANT_QUERY",
+      "cancelOnUnmount": true
+    },
+    "identityPermission": {
+      "anonymousRole": "ANONYMOUS",
+      "authenticatedRole": "MEMBER",
+      "requiredPermission": "search:execute",
+      "deniedBehavior": "HIDE_AND_BLOCK",
+      "tenantIsolation": "EXACT_TENANT_MATCH",
+      "serverAuthorityRequired": true
+    },
+    "renderingHydration": {
+      "mode": "HYDRATABLE_CSR",
+      "hydrationPolicy": "REQUIRE_MATCH",
+      "mismatchBehavior": "RENDER_ERROR",
+      "duplicateEffectsAllowed": false
+    },
+    "accessibilityFocus": {
+      "mainRole": "main",
+      "headingLevel": 1,
+      "formLabel": "搜索",
+      "errorRole": "alert",
+      "liveRegion": "polite",
+      "invalidFocusTarget": "query",
+      "keyboardSubmit": "Enter"
+    },
+    "i18nThemeResponsive": {
+      "supportedLocales": [
+        "zh-CN",
+        "en-US"
+      ],
+      "fallbackLocale": "en-US",
+      "themes": [
+        "LIGHT",
+        "DARK"
+      ],
+      "defaultTheme": "LIGHT",
+      "compactBreakpoint": 720,
+      "compactColumns": 1,
+      "wideColumns": 2
+    },
+    "nativePlatform": {
+      "boundary": "ADAPTER",
+      "capability": "OPEN_DEEP_LINK",
+      "lifecycleStates": [
+        "FOREGROUND",
+        "BACKGROUND"
+      ],
+      "permission": "DEEPLINK_OPEN",
+      "deniedBehavior": "NO_OP_REPORTED",
+      "recovery": "FOREGROUND_RETRY"
+    }
+  },
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "canonical_block_digests": {
+    "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+    "component-template-view": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+    "state-management": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+    "action-event": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+    "effect-lifecycle": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+    "form-binding-validation": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+    "api-network": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+    "identity-permission": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+    "rendering-hydration": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+    "accessibility-focus": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+    "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+    "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+  },
+  "source_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "target_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "source_block_digests": {
+    "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+    "component-template-view": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+    "state-management": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+    "action-event": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+    "effect-lifecycle": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+    "form-binding-validation": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+    "api-network": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+    "identity-permission": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+    "rendering-hydration": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+    "accessibility-focus": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+    "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+    "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+  },
+  "target_block_digests": {
+    "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+    "component-template-view": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+    "state-management": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+    "action-event": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+    "effect-lifecycle": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+    "form-binding-validation": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+    "api-network": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+    "identity-permission": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+    "rendering-hydration": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+    "accessibility-focus": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+    "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+    "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+  },
+  "source_model_artifact_digest": "sha256:ad38da331742230b5c8ef9744a1914fb65d6b55dc810b78f92c8eafb7976a758",
+  "target_model_artifact_digest": "sha256:a8f05f0c121391cd13d1f8e3ffce83d15ffcee4f48bc807ba677649ec07be4ac",
+  "semantic_equal": true,
+  "behavior_digest": "sha256:4b9e302fe8aaad61b795e0b4b69de5a4213cc2f99ec5b6d226ca58fe58a10baf",
+  "behavior_equal": true,
+  "chunk_digest": "sha256:48864e33f36523b2ecf0b0947582435c43aea16135e7a56bb67fb7b4586028bd",
+  "chunk_equal": true,
+  "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
+  "mutation_campaign_digest": "sha256:f257ca11174201035db83dc25ce76715c736c3efbc39989bd3c41236143127fb",
+  "semantic_block_ids": [
+    "route-navigation-deeplink-404",
+    "component-template-view",
+    "state-management",
+    "action-event",
+    "effect-lifecycle",
+    "form-binding-validation",
+    "api-network",
+    "identity-permission",
+    "rendering-hydration",
+    "accessibility-focus",
+    "i18n-theme-responsive",
+    "native-platform"
+  ],
+  "block_symbol_map": {
+    "route-navigation-deeplink-404": "navigation",
+    "component-template-view": "component_template",
+    "state-management": "state_management",
+    "action-event": "action_event",
+    "effect-lifecycle": "effect_lifecycle",
+    "form-binding-validation": "form_binding_validation",
+    "api-network": "api_network",
+    "identity-permission": "identity_permission",
+    "rendering-hydration": "rendering_hydration",
+    "accessibility-focus": "accessibility_focus",
+    "i18n-theme-responsive": "i18n_theme_responsive",
+    "native-platform": "native_platform"
+  },
+  "influence_classes": {
+    "model": {
+      "route-navigation-deeplink-404": {
+        "/navigation/fallback": "TRANSITION",
+        "/navigation/routes": "TRANSITION",
+        "/navigation/label": "DECLARATION_ECHO"
+      },
+      "component-template-view": {
+        "/componentTemplate/keyedBy": "TRANSITION",
+        "/componentTemplate/titleBinding": "TRANSITION",
+        "/componentTemplate/textBinding": "TRANSITION",
+        "/componentTemplate/componentId": "DECLARATION_ECHO",
+        "/componentTemplate/templateKind": "DECLARATION_ECHO"
+      },
+      "state-management": {
+        "/stateManagement/initial": "TRANSITION",
+        "/stateManagement/minimum": "TRANSITION",
+        "/stateManagement/maximum": "TRANSITION",
+        "/stateManagement/transition": "TRANSITION",
+        "/stateManagement/stateId": "DECLARATION_ECHO"
+      },
+      "action-event": {
+        "/actionEvent/acceptedEvents": "TRANSITION",
+        "/actionEvent/deniedAction": "TRANSITION",
+        "/actionEvent/keyboardSubmit": "TRANSITION"
+      },
+      "effect-lifecycle": {
+        "/effectLifecycle/mountEffect": "OBSERVABLE_EFFECT",
+        "/effectLifecycle/cleanupEffect": "OBSERVABLE_EFFECT",
+        "/effectLifecycle/maxExecutionsPerMount": "TRANSITION",
+        "/effectLifecycle/staleResponsePolicy": "TRANSITION"
+      },
+      "form-binding-validation": {
+        "/formBindingValidation/initialValue": "TRANSITION",
+        "/formBindingValidation/required": "TRANSITION",
+        "/formBindingValidation/minimumLength": "TRANSITION",
+        "/formBindingValidation/validation": "TRANSITION",
+        "/formBindingValidation/invalidCode": "TRANSITION",
+        "/formBindingValidation/formId": "DECLARATION_ECHO",
+        "/formBindingValidation/fieldId": "DECLARATION_ECHO"
+      },
+      "api-network": {
+        "/apiNetwork/method": "OBSERVABLE_EFFECT",
+        "/apiNetwork/path": "OBSERVABLE_EFFECT",
+        "/apiNetwork/timeoutMs": "OBSERVABLE_EFFECT",
+        "/apiNetwork/retry": "TRANSITION",
+        "/apiNetwork/cacheScope": "TRANSITION",
+        "/apiNetwork/cancelOnUnmount": "TRANSITION",
+        "/apiNetwork/operationId": "DECLARATION_ECHO"
+      },
+      "identity-permission": {
+        "/identityPermission/anonymousRole": "TRANSITION",
+        "/identityPermission/authenticatedRole": "TRANSITION",
+        "/identityPermission/requiredPermission": "TRANSITION",
+        "/identityPermission/deniedBehavior": "TRANSITION",
+        "/identityPermission/tenantIsolation": "TRANSITION",
+        "/identityPermission/serverAuthorityRequired": "OBSERVABLE_EFFECT"
+      },
+      "rendering-hydration": {
+        "/renderingHydration/mode": "DECLARATION_ECHO",
+        "/renderingHydration/hydrationPolicy": "TRANSITION",
+        "/renderingHydration/mismatchBehavior": "TRANSITION",
+        "/renderingHydration/duplicateEffectsAllowed": "TRANSITION"
+      },
+      "accessibility-focus": {
+        "/accessibilityFocus/mainRole": "OBSERVABLE_EFFECT",
+        "/accessibilityFocus/headingLevel": "OBSERVABLE_EFFECT",
+        "/accessibilityFocus/formLabel": "OBSERVABLE_EFFECT",
+        "/accessibilityFocus/errorRole": "OBSERVABLE_EFFECT",
+        "/accessibilityFocus/liveRegion": "OBSERVABLE_EFFECT",
+        "/accessibilityFocus/invalidFocusTarget": "TRANSITION",
+        "/accessibilityFocus/keyboardSubmit": "TRANSITION"
+      },
+      "i18n-theme-responsive": {
+        "/i18nThemeResponsive/supportedLocales": "TRANSITION",
+        "/i18nThemeResponsive/fallbackLocale": "TRANSITION",
+        "/i18nThemeResponsive/themes": "TRANSITION",
+        "/i18nThemeResponsive/defaultTheme": "TRANSITION",
+        "/i18nThemeResponsive/compactBreakpoint": "TRANSITION",
+        "/i18nThemeResponsive/compactColumns": "TRANSITION",
+        "/i18nThemeResponsive/wideColumns": "TRANSITION"
+      },
+      "native-platform": {
+        "/nativePlatform/boundary": "DECLARATION_ECHO",
+        "/nativePlatform/capability": "TRANSITION",
+        "/nativePlatform/lifecycleStates": "TRANSITION",
+        "/nativePlatform/permission": "OBSERVABLE_EFFECT",
+        "/nativePlatform/deniedBehavior": "TRANSITION",
+        "/nativePlatform/recovery": "TRANSITION"
+      }
+    },
+    "runtime": {
+      "route-navigation-deeplink-404": {
+        "/navigation/fallback": "MODEL_ONLY_NOT_RUNTIME",
+        "/navigation/routes": "FRAMEWORK_OBSERVABLE",
+        "/navigation/label": "DECLARATION_ECHO"
+      },
+      "component-template-view": {
+        "/componentTemplate/keyedBy": "MODEL_ONLY_NOT_RUNTIME",
+        "/componentTemplate/titleBinding": "MODEL_ONLY_NOT_RUNTIME",
+        "/componentTemplate/textBinding": "MODEL_ONLY_NOT_RUNTIME",
+        "/componentTemplate/componentId": "DECLARATION_ECHO",
+        "/componentTemplate/templateKind": "DECLARATION_ECHO"
+      },
+      "state-management": {
+        "/stateManagement/initial": "MODEL_ONLY_NOT_RUNTIME",
+        "/stateManagement/minimum": "MODEL_ONLY_NOT_RUNTIME",
+        "/stateManagement/maximum": "MODEL_ONLY_NOT_RUNTIME",
+        "/stateManagement/transition": "MODEL_ONLY_NOT_RUNTIME",
+        "/stateManagement/stateId": "DECLARATION_ECHO"
+      },
+      "action-event": {
+        "/actionEvent/acceptedEvents": "MODEL_ONLY_NOT_RUNTIME",
+        "/actionEvent/deniedAction": "MODEL_ONLY_NOT_RUNTIME",
+        "/actionEvent/keyboardSubmit": "MODEL_ONLY_NOT_RUNTIME"
+      },
+      "effect-lifecycle": {
+        "/effectLifecycle/mountEffect": "ADAPTER_SEAM_NOT_RUN",
+        "/effectLifecycle/cleanupEffect": "ADAPTER_SEAM_NOT_RUN",
+        "/effectLifecycle/maxExecutionsPerMount": "MODEL_ONLY_NOT_RUNTIME",
+        "/effectLifecycle/staleResponsePolicy": "MODEL_ONLY_NOT_RUNTIME"
+      },
+      "form-binding-validation": {
+        "/formBindingValidation/initialValue": "MODEL_ONLY_NOT_RUNTIME",
+        "/formBindingValidation/required": "MODEL_ONLY_NOT_RUNTIME",
+        "/formBindingValidation/minimumLength": "MODEL_ONLY_NOT_RUNTIME",
+        "/formBindingValidation/validation": "MODEL_ONLY_NOT_RUNTIME",
+        "/formBindingValidation/invalidCode": "MODEL_ONLY_NOT_RUNTIME",
+        "/formBindingValidation/formId": "DECLARATION_ECHO",
+        "/formBindingValidation/fieldId": "DECLARATION_ECHO"
+      },
+      "api-network": {
+        "/apiNetwork/method": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/path": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/timeoutMs": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/retry": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/cacheScope": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/cancelOnUnmount": "ADAPTER_SEAM_NOT_RUN",
+        "/apiNetwork/operationId": "DECLARATION_ECHO"
+      },
+      "identity-permission": {
+        "/identityPermission/anonymousRole": "MODEL_ONLY_NOT_RUNTIME",
+        "/identityPermission/authenticatedRole": "MODEL_ONLY_NOT_RUNTIME",
+        "/identityPermission/requiredPermission": "MODEL_ONLY_NOT_RUNTIME",
+        "/identityPermission/deniedBehavior": "MODEL_ONLY_NOT_RUNTIME",
+        "/identityPermission/tenantIsolation": "MODEL_ONLY_NOT_RUNTIME",
+        "/identityPermission/serverAuthorityRequired": "ADAPTER_SEAM_NOT_RUN"
+      },
+      "rendering-hydration": {
+        "/renderingHydration/mode": "DECLARATION_ECHO",
+        "/renderingHydration/hydrationPolicy": "MODEL_ONLY_NOT_RUNTIME",
+        "/renderingHydration/mismatchBehavior": "MODEL_ONLY_NOT_RUNTIME",
+        "/renderingHydration/duplicateEffectsAllowed": "MODEL_ONLY_NOT_RUNTIME"
+      },
+      "accessibility-focus": {
+        "/accessibilityFocus/mainRole": "ADAPTER_SEAM_NOT_RUN",
+        "/accessibilityFocus/headingLevel": "ADAPTER_SEAM_NOT_RUN",
+        "/accessibilityFocus/formLabel": "ADAPTER_SEAM_NOT_RUN",
+        "/accessibilityFocus/errorRole": "ADAPTER_SEAM_NOT_RUN",
+        "/accessibilityFocus/liveRegion": "ADAPTER_SEAM_NOT_RUN",
+        "/accessibilityFocus/invalidFocusTarget": "MODEL_ONLY_NOT_RUNTIME",
+        "/accessibilityFocus/keyboardSubmit": "MODEL_ONLY_NOT_RUNTIME"
+      },
+      "i18n-theme-responsive": {
+        "/i18nThemeResponsive/supportedLocales": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/fallbackLocale": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/themes": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/defaultTheme": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/compactBreakpoint": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/compactColumns": "MODEL_ONLY_NOT_RUNTIME",
+        "/i18nThemeResponsive/wideColumns": "MODEL_ONLY_NOT_RUNTIME"
+      },
+      "native-platform": {
+        "/nativePlatform/boundary": "DECLARATION_ECHO",
+        "/nativePlatform/capability": "ADAPTER_SEAM_NOT_RUN",
+        "/nativePlatform/lifecycleStates": "ADAPTER_SEAM_NOT_RUN",
+        "/nativePlatform/permission": "ADAPTER_SEAM_NOT_RUN",
+        "/nativePlatform/deniedBehavior": "ADAPTER_SEAM_NOT_RUN",
+        "/nativePlatform/recovery": "ADAPTER_SEAM_NOT_RUN"
+      }
+    }
+  },
+  "assumptions": [
+    "The proof is bounded to the typed bounded-frontend-interaction-v1 model, its finite input domains, and ELMOS-emitted strict grammar; arbitrary customer source is NOT_PROVED.",
+    "The authoritative model, source emitters, re-lifters, reference reducer, and SMT encoder are produced by one engine; this is self-consistency evidence and NOT_INDEPENDENT_SINGLE_ENGINE.",
+    "Strict expected consumer bytes establish generated-grammar reachability, not general compiler, framework, browser, operating-system, or device soundness.",
+    "Real SSR hydration, network servers, identity authority, tenant isolation enforcement, native adapters, browser journeys, and device journeys remain NOT_RUN unless independent channel evidence is attached.",
+    "Z3 UNSAT establishes only the encoded bounded transition obligations under these assumptions and therefore yields PROVED_UNDER_ASSUMPTIONS, never unconditional proof or certification."
+  ],
+  "oracle_provenance": {
+    "independence": "NOT_INDEPENDENT_SINGLE_ENGINE",
+    "formal_input_from_solver_result": false,
+    "oracle_from_solver_result": false
+  },
+  "arbitrary_customer_source": "NOT_PROVED",
+  "compiler_framework_runtime_soundness": "ASSUMED_NOT_PROVED",
+  "runtime_evidence_eligibility": "INELIGIBLE_SAME_PRODUCER"
+}

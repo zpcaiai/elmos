@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: Elmos Online Debug API
+  version: 1.1.0
+  description: Versioned control API for isolated debug sessions, breakpoints, commands, variables, learning missions and replay.
+servers:
+  - url: /api/v1
+paths:
+  /debug/sessions:
+    post:
+      operationId: createDebugSession
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateDebugSessionRequest'}
+      responses:
+        '202': {description: Session provisioning accepted, content: {application/json: {schema: {$ref: '#/components/schemas/DebugSessionRef'}}}}
+  /debug/sessions/{sessionId}:
+    get:
+      operationId: getDebugSession
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Debug session, content: {application/json: {schema: {$ref: '#/components/schemas/DebugSession'}}}}
+    delete:
+      operationId: terminateDebugSession
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      responses:
+        '202': {description: Termination requested}
+  /debug/sessions/{sessionId}/commands:
+    post:
+      operationId: issueDebugCommand
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DebugCommand'}
+      responses:
+        '202': {description: Command accepted}
+  /debug/sessions/{sessionId}/breakpoints:
+    put:
+      operationId: replaceDebugBreakpoints
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: array, items: {$ref: '#/components/schemas/Breakpoint'}}
+      responses:
+        '200': {description: Validated breakpoint set}
+  /debug/sessions/{sessionId}/variables:
+    get:
+      operationId: getDebugVariables
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+        - {name: variables_reference, in: query, required: true, schema: {type: integer}}
+        - {name: cursor, in: query, required: false, schema: {type: string}}
+      responses:
+        '200': {description: Paged and redacted variables}
+  /debug/sessions/{sessionId}/timeline:
+    get:
+      operationId: getDebugTimeline
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+        - {name: cursor, in: query, required: false, schema: {type: string}}
+      responses:
+        '200': {description: Paged runtime events}
+  /debug/sessions/{sessionId}/replay-bundles:
+    post:
+      operationId: createReplayBundle
+      parameters:
+        - {name: sessionId, in: path, required: true, schema: {type: string}}
+      responses:
+        '202': {description: Replay bundle job accepted}
+  /debug/replays:
+    post:
+      operationId: startDebugReplay
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, required: [replay_bundle_id], properties: {replay_bundle_id: {type: string}, requested_level: {type: string, enum: [R0, R1, R2, R3]}}}
+      responses:
+        '202': {description: Replay accepted}
+  /debug/learning/missions:
+    post:
+      operationId: createLearningMission
+      responses:
+        '202': {description: Mission generation accepted}
+components:
+  schemas:
+    CreateDebugSessionRequest:
+      type: object
+      required: [tenant_id, project_id, revision_id, runtime_profile_id, target, mode]
+      properties:
+        tenant_id: {type: string}
+        project_id: {type: string}
+        revision_id: {type: string}
+        runtime_profile_id: {type: string}
+        target: {type: object}
+        mode: {type: string, enum: [observe, guided, challenge, free, compare]}
+        dataset_ref: {type: [string, 'null']}
+        requested_ttl_seconds: {type: integer, minimum: 60, maximum: 14400}
+    DebugSessionRef:
+      type: object
+      required: [debug_session_id, state, status_url]
+      properties:
+        debug_session_id: {type: string}
+        state: {type: string}
+        status_url: {type: string}
+    DebugSession:
+      type: object
+      required: [debug_session_id, tenant_id, project_id, revision_id, state, capabilities, policy_mode]
+      properties:
+        debug_session_id: {type: string}
+        tenant_id: {type: string}
+        project_id: {type: string}
+        revision_id: {type: string}
+        state: {type: string}
+        capabilities: {type: array, items: {type: string}}
+        policy_mode: {type: string}
+        expires_at: {type: string, format: date-time}
+    DebugCommand:
+      type: object
+      required: [command_id, sequence, command]
+      properties:
+        command_id: {type: string}
+        sequence: {type: integer, minimum: 1}
+        command: {type: string, enum: [continue, pause, next, step_in, step_out, run_to_cursor, restart, terminate, evaluate]}
+        arguments: {type: object}
+    Breakpoint:
+      type: object
+      required: [breakpoint_id, source_ref, line, kind]
+      properties:
+        breakpoint_id: {type: string}
+        source_ref: {type: string}
+        line: {type: integer, minimum: 1}
+        kind: {type: string, enum: [line, conditional, logpoint, exception, function, data, instruction]}
+        condition: {type: [string, 'null']}
+        enabled: {type: boolean}

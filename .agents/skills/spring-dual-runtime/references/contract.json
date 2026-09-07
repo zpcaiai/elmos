@@ -1,0 +1,71 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-057",
+  "name": "spring-dual-runtime",
+  "title": "Source / Target Runtime Harness",
+  "description": "在隔离环境同时运行旧系统和目标系统，并对同一场景提供可比较端点。",
+  "batch": "18",
+  "batch_slug": "differential-verification-proof",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-dual-runtime/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-sandbox",
+    "spring-characterization"
+  ],
+  "outputs": [
+    "runtime-manifest.json",
+    "health-evidence.json",
+    "scenario-endpoints.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "独立 DB/broker/cache",
+    "Deterministic seed",
+    "Health/readiness",
+    "Trace correlation",
+    "State reset proof"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "额外授权放行必须 fail",
+    "事务 commit/rollback/写集合差异必须 fail",
+    "事件重复/丢失必须 fail",
+    "无 Evidence 的 PASS 变 unknown"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: runtime-manifest.json, health-evidence.json, scenario-endpoints.json"
+  ],
+  "stop_conditions": [
+    "任一环境不健康/未冻结",
+    "P0 behavior unresolved/unknown",
+    "新 critical/high 安全问题",
+    "rollback/clean-room 未通过"
+  ],
+  "definition_of_done": [
+    "mandatory violations=0 且 unknown=0",
+    "最后全量验证无回归",
+    "独立工具可离线验证 Completion Proof"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

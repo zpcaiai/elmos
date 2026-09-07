@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multi Cloud Hybrid Cloud And Workload Portability Planner"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $multi-cloud-hybrid-cloud-and-workload-portability-planner to produce a governed infrastructure modernization artifact."

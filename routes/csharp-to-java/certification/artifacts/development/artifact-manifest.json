@@ -1,0 +1,178 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/csharp-to-java/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class",
+    "source-runtime/bin/Release/net10.0/SourceHarness",
+    "source-runtime/bin/Release/net10.0/SourceHarness.deps.json",
+    "source-runtime/bin/Release/net10.0/SourceHarness.dll",
+    "source-runtime/bin/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/bin/Release/net10.0/SourceHarness.runtimeconfig.json",
+    "source-runtime/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfo.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfoInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GlobalUsings.g.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.assets.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.CoreCompileInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.FileListAbsolute.txt",
+    "source-runtime/obj/Release/net10.0/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/SourceHarness.genruntimeconfig.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/obj/Release/net10.0/apphost",
+    "source-runtime/obj/Release/net10.0/ref/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/refint/SourceHarness.dll",
+    "source-runtime/obj/SourceHarness.csproj.nuget.dgspec.json",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.props",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.targets",
+    "source-runtime/obj/project.assets.json",
+    "source-runtime/obj/project.nuget.cache"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 205,
+      "path": "Migrated.java",
+      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+    },
+    {
+      "bytes": 967,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:a520c7d1458d2e39d500d51d2375dfa043341270bc3a157f344a4e62fde22182"
+    },
+    {
+      "bytes": 1482,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:22ffddd938e01a1f7da1bfd1efd616a4e70051da06d215ac43da475674903346"
+    },
+    {
+      "bytes": 8193,
+      "path": "chunk-map.json",
+      "sha256": "sha256:3292189c0dd1aab2e5e5298450ecd94879e09edc84a097ea19bbb80d9805589f"
+    },
+    {
+      "bytes": 2956,
+      "path": "formal-composition.json",
+      "sha256": "sha256:531729c370f7f6e802c925e82abcd0e8d1cfa6ec7e3dbdb1d2083836fa288f3e"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:0d0eb716d88e5efe14bf4892c1665321c755464b7bde3e32b4665ca4b4f92553"
+    },
+    {
+      "bytes": 6640,
+      "path": "formal-input.json",
+      "sha256": "sha256:97f9c8385381d3fbfa8550b3f64fe6a0efc98e6ec699a47dc85ae6c6ebf04cdd"
+    },
+    {
+      "bytes": 2334,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:5f060513bde4d1f9527bf6bdf887fda30410f64e84de050d7d5f835ba503fa77"
+    },
+    {
+      "bytes": 201,
+      "path": "inputs/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 3462,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:be1a2c83d03051038bbd60eaaff892ef2bf5d97c3260a2cde9e9fcbd26bfbe80"
+    },
+    {
+      "bytes": 7361,
+      "path": "route-evidence.json",
+      "sha256": "sha256:eea6e920d8f5e9d3b22d5dbe497201da5b28137324e3c440706ef8dcd5a60542"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 683,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:e3965d2c4127551fb6fbc163434181115e9187ca3cc4435b7f3e1372d296571b"
+    },
+    {
+      "bytes": 201,
+      "path": "source-runtime/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 886,
+      "path": "source-runtime/Program.cs",
+      "sha256": "sha256:03b394e85ed4348a801af9560d1564c78b46a6b4b91c2ba75812761c95fb3c5c"
+    },
+    {
+      "bytes": 262,
+      "path": "source-runtime/SourceHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 683,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:e3965d2c4127551fb6fbc163434181115e9187ca3cc4435b7f3e1372d296571b"
+    },
+    {
+      "bytes": 677,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:6eeace3446cfa818fdc03e1e3f4e05f76fe74488101641858ace58e74b14d306"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "csharp-to-java",
+  "schema_version": 1,
+  "total_bytes": 38634
+}

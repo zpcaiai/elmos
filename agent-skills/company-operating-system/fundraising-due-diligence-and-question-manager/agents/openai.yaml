@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 509: fundraising due diligence and question manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $fundraising-due-diligence-and-question-manager to evaluate this capability with evidence."

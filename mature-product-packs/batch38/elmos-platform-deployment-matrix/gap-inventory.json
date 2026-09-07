@@ -1,0 +1,279 @@
+{
+  "batch": 38,
+  "packKey": "elmos-platform-deployment-matrix",
+  "generatedBy": "scripts/mature_product_toolkit.py gaps",
+  "expectedArtifacts": [
+    "candidates",
+    "certification",
+    "claims",
+    "dr-plan",
+    "edition-matrix",
+    "evidence",
+    "gate-result",
+    "metrics",
+    "offline-bundle-manifest",
+    "pack",
+    "profile",
+    "program",
+    "support-matrix",
+    "topology-contract",
+    "upgrade-plan",
+    "zero-tolerance"
+  ],
+  "skillCount": 22,
+  "blockingCount": 27,
+  "openCount": 23,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence-manifest.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json artifactDigest is still the zero digest"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json environmentDigest is still the zero digest"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-air-gapped-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-customer-vpc-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-database-expand-contract-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-dedicated-saas-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-deployment-upgrade-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-edge-plant-restricted-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-edition-responsibility-matrix is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-enterprise-deployment-upgrade-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-multiregion-active-active-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-multitenant-saas-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-offline-signed-update-bundle is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-plane-topology-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-platform-version-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-portable-control-plane is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-private-sovereign-cloud-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-recipe-pack-extension-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-runner-version-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-self-hosted-edition is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-tenant-edition-migration is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-upgrade-rollback-disaster-recovery is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-workflow-version-long-run-recovery is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b38-zero-downtime-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "airgapUpdatePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "drRecoveryPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "editionCoverage has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "mixedVersionCompatibilityPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "portableControlPlanePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "rollbackPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "tenantMigrationPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "zeroDowntimeUpgradePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "criticalDataLoss has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "crossTenantAccess has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unsignedUpdatesAccepted has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unresolvedSchemaIncompatibilities has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "incompatibleRunnerLeases has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "orphanedWorkflows has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "residencyViolations has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "testIntegrityViolations has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence directory holds no artefacts"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence.json declares no claims"
+    }
+  ]
+}

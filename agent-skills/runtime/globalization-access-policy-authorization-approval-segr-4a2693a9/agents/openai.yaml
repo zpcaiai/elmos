@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Globalization Access Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $globalization-access-policy-authorization-approval-segr-4a2693a9 to implement its fail-closed ELMOS Product B55 contract."

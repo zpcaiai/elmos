@@ -1,0 +1,97 @@
+{
+  "package_id": "P04",
+  "name": "elmos-agent-orchestration-software-factory",
+  "version": "1.0.0",
+  "phase": "Phase 2（商业软件工厂）",
+  "dependencies": [
+    "P00",
+    "P01",
+    "P02",
+    "P03",
+    "P05",
+    "P06"
+  ],
+  "capabilities": [
+    {
+      "id": "P04-C01",
+      "name": "Workflow & Tracker Adapters",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C02",
+      "name": "Reconciliation Scheduler",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C03",
+      "name": "Task DAG Orchestrator",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C04",
+      "name": "Workspace/Worktree Manager",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C05",
+      "name": "Specialized Agent Registry",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C06",
+      "name": "Continuable Collaboration Manager",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C07",
+      "name": "Admission & Concurrency Controller",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C08",
+      "name": "Recovery & Doom-loop Controller",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C09",
+      "name": "Workpad & Progress Journal",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C10",
+      "name": "Review & Feedback Coordinator",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C11",
+      "name": "Proof-of-Work Assembler",
+      "maturity": "design"
+    },
+    {
+      "id": "P04-C12",
+      "name": "Operations Dashboard",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenAI Symphony",
+    "DeepSeek Harness",
+    "HKUDS OpenHarness",
+    "OpenCode",
+    "OpenRouter TypeScript Agent"
+  ],
+  "subskills": [
+    "workflow-tracker-adapter",
+    "reconciliation-scheduler",
+    "task-dag-orchestrator",
+    "workspace-worktree-manager",
+    "specialized-agent-registry",
+    "continuable-collaboration-manager",
+    "admission-concurrency-controller",
+    "retry-stall-doomloop-controller",
+    "workpad-progress-journal",
+    "review-feedback-coordinator",
+    "proof-of-work-assembler",
+    "human-review-handoff"
+  ]
+}

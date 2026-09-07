@@ -1,0 +1,4 @@
+interface:
+  display_name: "Infrastructure Elmos Unified Evidence Integration"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $infrastructure-elmos-unified-evidence-integration to produce a governed infrastructure modernization artifact."

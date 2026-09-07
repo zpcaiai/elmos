@@ -1,0 +1,4 @@
+interface:
+  display_name: "B70 Qt Industrial Hmi Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b70-qt-industrial-hmi-generator to execute this ELMOS project Skill with fail-closed evidence."

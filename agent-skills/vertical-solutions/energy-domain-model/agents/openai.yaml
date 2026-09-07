@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 627: energy domain model"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $energy-domain-model to evaluate this capability with evidence."

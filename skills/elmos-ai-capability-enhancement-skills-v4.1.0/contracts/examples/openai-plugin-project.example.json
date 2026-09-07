@@ -1,0 +1,20 @@
+{
+  "name": "enterprise-knowledge-plugin",
+  "skills": [
+    "knowledge-search"
+  ],
+  "mcpServer": {
+    "transport": "remote-http"
+  },
+  "uiResources": [
+    "search-results-widget"
+  ],
+  "starterPrompts": [
+    "Search approved policies"
+  ],
+  "testCases": [
+    "authorized search",
+    "unauthorized document"
+  ],
+  "submissionStatus": "draft"
+}

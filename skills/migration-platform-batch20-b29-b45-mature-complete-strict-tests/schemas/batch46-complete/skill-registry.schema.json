@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "skills"
+  ],
+  "properties": {
+    "skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "skill_id",
+          "name",
+          "version",
+          "layer",
+          "owner",
+          "triggers",
+          "prerequisites",
+          "allowed_tools",
+          "required_inputs",
+          "outputs",
+          "risks",
+          "evidence",
+          "tests"
+        ],
+        "properties": {
+          "skill_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "layer": {
+            "enum": [
+              "meta",
+              "orchestrator",
+              "implementation",
+              "test",
+              "operations"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "triggers": {
+            "type": "array"
+          },
+          "prerequisites": {
+            "type": "array"
+          },
+          "allowed_tools": {
+            "type": "array"
+          },
+          "required_inputs": {
+            "type": "array"
+          },
+          "outputs": {
+            "type": "array"
+          },
+          "risks": {
+            "type": "array"
+          },
+          "evidence": {
+            "type": "array"
+          },
+          "tests": {
+            "type": "array"
+          },
+          "deprecated_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

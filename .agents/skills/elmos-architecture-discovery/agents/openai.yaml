@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 架构自动发现与多视角讲解"
+  short_description: "Guide 架构自动发现与多视角讲解 with evidence controls"
+  default_prompt: "Use $elmos-architecture-discovery as guidance for 架构自动发现与多视角讲解 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

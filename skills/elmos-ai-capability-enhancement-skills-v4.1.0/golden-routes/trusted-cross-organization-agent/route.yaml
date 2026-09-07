@@ -1,0 +1,50 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: trusted-cross-organization-agent
+  version: 4.0.0
+  status: not-certified
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-a2a-v1-agent-card-trust-compiler
+  workflow: workflows/trusted-a2a-delegation.yaml
+  source: Enterprise agent requiring cross-organization discovery, delegated execution and auditable revocation
+  targets:
+  - a2a-v1
+  - agentic-resource-discovery
+  - spiffe-spire
+  eligibility:
+  - trust domains and accountable owners are named
+  - delegation scope is finite
+  - revocation and audit endpoints exist
+  requiredEvidence:
+  - signed Agent Card verification
+  - workload attestation
+  - scope-reducing token exchange
+  - cross-tenant isolation
+  - revocation propagation
+  - task and side-effect audit
+  holdoutScenarios:
+  - expired Agent Card
+  - untrusted federation
+  - scope expansion request
+  - revoked workload identity
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+    faultInjectionRequired: true
+    upgradeAndRollbackRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route remains a production implementation contract until exact source/target revisions execute with sealed
+    independent evidence.

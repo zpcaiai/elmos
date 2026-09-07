@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.runner-job-lease.v1",
+  "title": "ELMOS Runner Job Lease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "leaseId",
+    "jobId",
+    "runnerId",
+    "organizationId",
+    "attempt",
+    "issuedAt",
+    "expiresAt",
+    "jobTokenHash"
+  ],
+  "properties": {
+    "leaseId": {
+      "type": "string"
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "runnerId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "jobTokenHash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
+

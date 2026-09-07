@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/conversion-mapping.schema.json",
+  "title": "Elmos Source-SemanticIR-Target Mapping",
+  "type": "object",
+  "required": [
+    "mapping_id",
+    "source_revision_id",
+    "target_revision_id",
+    "entries"
+  ],
+  "properties": {
+    "mapping_id": {
+      "type": "string"
+    },
+    "source_revision_id": {
+      "type": "string"
+    },
+    "target_revision_id": {
+      "type": "string"
+    },
+    "semantic_ir_version": {
+      "type": "string"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entry_id",
+          "source_ref",
+          "status",
+          "confidence"
+        ],
+        "properties": {
+          "entry_id": {
+            "type": "string"
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "semantic_ir_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "target_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rule_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repair_attempt_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "mapped",
+              "partial",
+              "unsupported",
+              "manual"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

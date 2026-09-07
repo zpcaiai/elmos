@@ -1,0 +1,35 @@
+{
+  "caseId": "04-transform-cross-file-rename",
+  "description": "The proof case: a scope-correct rename that follows importers and is idempotent.",
+  "evidence": {
+    "patchDigest": "sha256:9de232f87488d26e5b172c1f3db74880daede40845c40a481f0fbf50f61f764b",
+    "resultTreeDigest": "sha256:6704768d62d0d007a9097eb52d366e350142326d0b0062f571a7824a0f28461d",
+    "transformEvidenceDigest": "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:ddf0eeac8af397b3fb06669f446da10d7a65425d6f832d728052a20cfbbcc5d5",
+  "outputDigest": "sha256:431dfa5f9101a653ca1c36dc46566a37cdf0f06e3e60ff173d2b15944433b33c",
+  "projections": {
+    "output.changedSymbolSet": [
+      "acme.ledger.post_entry"
+    ],
+    "output.patchSet.changedFiles": 4,
+    "output.patchSet.changedLines": 14,
+    "output.transformEvidence.changedPaths": [
+      "src/acme/api.py",
+      "src/acme/billing.py",
+      "src/acme/ledger.py",
+      "tests/test_billing.py"
+    ],
+    "output.transformEvidence.idempotent": true,
+    "output.transformEvidence.roundTripFailures": [],
+    "output.transformEvidence.scopeExpansions": [],
+    "output.unifiedDiff": "--- a/src/acme/api.py\n+++ b/src/acme/api.py\n@@ -1,4 +1,4 @@\n-from acme.ledger import post_entry\n+from acme.ledger import record_entry\n \n \n def handle(customer_id, amount, currency):\n@@ -5,4 +5,4 @@\n \n \n def handle(customer_id, amount, currency):\n-    return post_entry(customer_id, amount, currency)\n+    return record_entry(customer_id, amount, currency)\n--- a/src/acme/billing.py\n+++ b/src/acme/billing.py\n@@ -3,6 +3,6 @@\n from decimal import Decimal\n \n-from acme.ledger import post_entry\n+from acme.ledger import record_entry\n \n DEFAULT_CURRENCY = 'USD'\n \n@@ -13,5 +13,5 @@\n         self._ledger = ledger\n \n     def charge(self, customer_id: str, amount: Decimal, *, currency: str = DEFAULT_CURRENCY) -> str:\n-        entry = post_entry(customer_id, amount, currency)\n+        entry = record_entry(customer_id, amount, currency)\n         return entry\n--- a/src/acme/ledger.py\n+++ b/src/acme/ledger.py\n@@ -4,7 +4,7 @@\n from decimal import Decimal\n \n \n-def post_entry(customer_id: str, amount: Decimal, currency: str) -> str:\n+def record_entry(customer_id: str, amount: Decimal, currency: str) -> str:\n     return f'{customer_id}:{amount}:{currency}'\n \n \n--- a/tests/test_billing.py\n+++ b/tests/test_billing.py\n@@ -1,4 +1,4 @@\n-from acme.ledger import post_entry\n+from acme.ledger import record_entry\n \n \n def test_post_entry():\n@@ -5,4 +5,4 @@\n \n \n def test_post_entry():\n-    assert post_entry('c1', 1, 'USD') == 'c1:1:USD'\n+    assert record_entry('c1', 1, 'USD') == 'c1:1:USD'",
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R3",
+  "sideEffectsPerformed": false,
+  "skill": "deterministic-transform-executor",
+  "status": "succeeded"
+}

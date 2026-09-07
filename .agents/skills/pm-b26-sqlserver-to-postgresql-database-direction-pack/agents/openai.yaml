@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B26: Sqlserver To Postgresql Database Direction Pack"
+  short_description: "Run Precision Migration B26 with evidence controls"
+  default_prompt: "Use $pm-b26-sqlserver-to-postgresql-database-direction-pack to execute this Precision Migration contract with fail-closed evidence."

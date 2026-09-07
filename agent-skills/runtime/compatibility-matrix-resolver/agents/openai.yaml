@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compatibility Matrix Resolver"
+  short_description: "Resolve versioned compatibility evidence"
+  default_prompt: "Use $compatibility-matrix-resolver for ELMOS Batch 4 compatibility."

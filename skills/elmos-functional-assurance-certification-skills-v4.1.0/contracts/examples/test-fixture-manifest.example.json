@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "TestFixtureManifest",
+  "metadata": {
+    "id": "test-fixture-manifest-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "fixtureId": "example-fixtureId",
+    "source": "example-source",
+    "privacyClass": "example-privacyClass",
+    "contentHash": "example-contentHash"
+  }
+}

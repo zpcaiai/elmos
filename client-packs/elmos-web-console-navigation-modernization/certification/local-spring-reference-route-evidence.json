@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-27T03:23:32Z",
+  "scope": "local Spring reference-route browser engineering evidence only",
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "route": "/spring",
+  "runtime": {
+    "node": "24.14.0",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "typescript": "5.9.2",
+    "playwright": "1.61.1"
+  },
+  "checks": {
+    "typescript_strict": "PASSED_LOCAL",
+    "next_production_build": "PASSED_LOCAL",
+    "playwright_total": 10,
+    "playwright_passed": 10,
+    "playwright_failed": 0,
+    "browser_profiles": [
+      "chromium",
+      "mobile-chromium"
+    ],
+    "axe_violations": 0,
+    "public_git_import_to_download_journey": "PASSED_LOCAL_ENGINEERING",
+    "github_app_install_url_validation": "PASSED_LOCAL_UI",
+    "refresh_resume_by_run_id": "PASSED_LOCAL",
+    "failure_state_remains_visible": "PASSED_LOCAL",
+    "rootless_block_reason_remains_visible": "PASSED_LOCAL",
+    "download_digest_recomputed_in_browser": "PASSED_LOCAL",
+    "rootless_runtime_execution": "NOT_RUN",
+    "github_app_private_repository_execution": "NOT_RUN",
+    "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "assistive_technology_manual_review": "NOT_RUN",
+    "external_independent_review": "NOT_RUN"
+  },
+  "target_files": [
+    {
+      "path": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+      "sha256": "39aa2952bff693e1ff213180ee19eebb18068b3b9f208080ba32f91fe166632c"
+    },
+    {
+      "path": "apps/web-console/app/styles.css",
+      "sha256": "ac9cfc963b1a45747b26de0aedc252adeadbd4bd15c089f8243c04be7a489faa"
+    },
+    {
+      "path": "apps/web-console/app/api/github-installation/route.ts",
+      "sha256": "b287dc4311da49c3337dd38f5b71bae43c43f718e79262a8387bd47d618b0911"
+    },
+    {
+      "path": "apps/web-console/e2e/spring-real-journey-ui.spec.ts",
+      "sha256": "65f89a8d3ef4f68681ee413f1cfbc6def0be21a39ccffded73dee7d65829c940"
+    }
+  ],
+  "route_evidence_ref": "../../../framework-packs/spring-boot-2-7-18-to-3-5-3/certification/public-reference-route-evidence.json",
+  "client_gate_status": "experimental",
+  "certification_claim": false
+}

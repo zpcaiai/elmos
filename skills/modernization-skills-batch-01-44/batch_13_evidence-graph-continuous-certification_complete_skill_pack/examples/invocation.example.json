@@ -1,0 +1,12 @@
+{
+  "request_id": "b13-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Evidence Graph, Independent Oracle and Continuous Certification",
+  "upstream_certificate_refs": [
+    "batch-12-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

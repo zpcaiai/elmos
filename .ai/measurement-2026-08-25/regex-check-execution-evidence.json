@@ -1,0 +1,119 @@
+{
+  "kind": "elmos.sql-dialect.regex-check-execution-evidence",
+  "date": "2026-08-26",
+  "servers": {
+    "postgres": "PostgreSQL 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+    "mysql": "8.0.46-0ubuntu0.24.04.3 / utf8mb4_0900_ai_ci"
+  },
+  "emitted": {
+    "mysql": {
+      "status": "PASSED",
+      "reasonCode": null,
+      "sql": "CREATE TABLE artifact_digest (\n    h VARCHAR(64),\n    CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c'))\n)"
+    },
+    "oracle": {
+      "status": "PASSED",
+      "reasonCode": null,
+      "sql": "CREATE TABLE artifact_digest (\n    h VARCHAR2(64 CHAR),\n    CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c'))\n)"
+    },
+    "tsql": {
+      "status": "BLOCKED",
+      "reasonCode": "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET",
+      "sql": null
+    }
+  },
+  "results": [
+    {
+      "claim": "C1 naive REGEXP / lowercase",
+      "engine": "mysql",
+      "statement": "CREATE TABLE naive (h VARCHAR(64), CHECK (h REGEXP '^[0-9a-f]{64}$'))",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "claim": "C1 naive REGEXP / UPPERCASE",
+      "engine": "mysql",
+      "statement": "CREATE TABLE naive (h VARCHAR(64), CHECK (h REGEXP '^[0-9a-f]{64}$'))",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "claim": "C2 emitted 'c' / lowercase",
+      "engine": "mysql",
+      "statement": "CREATE TABLE artifact_digest (\n    h VARCHAR(64),\n    CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c'))\n)",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "claim": "C2 emitted 'c' / UPPERCASE",
+      "engine": "mysql",
+      "statement": "CREATE TABLE artifact_digest (\n    h VARCHAR(64),\n    CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c'))\n)",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "pass": true,
+      "detail": "ERROR 3819 (HY000) at line 1: Check constraint 'artifact_digest_chk_1' is violated."
+    },
+    {
+      "claim": "C2 emitted 'c' / wrong length",
+      "engine": "mysql",
+      "statement": "CREATE TABLE artifact_digest (\n    h VARCHAR(64),\n    CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c'))\n)",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "pass": true,
+      "detail": "ERROR 3819 (HY000) at line 1: Check constraint 'artifact_digest_chk_1' is violated."
+    },
+    {
+      "claim": "C3 source ~ / lowercase",
+      "engine": "postgres",
+      "statement": "CREATE TABLE artifact_digest (h VARCHAR(64), CHECK (h ~ '^[0-9a-f]{64}$'))",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "claim": "C3 source ~ / UPPERCASE",
+      "engine": "postgres",
+      "statement": "CREATE TABLE artifact_digest (h VARCHAR(64), CHECK (h ~ '^[0-9a-f]{64}$'))",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "pass": true,
+      "detail": "ERROR:  new row for relation \"artifact_digest\" violates check constraint \"artifact_digest_h_check\"\nDETAIL:  Failing row contains (AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA)."
+    },
+    {
+      "claim": "C3 source ~ / wrong length",
+      "engine": "postgres",
+      "statement": "CREATE TABLE artifact_digest (h VARCHAR(64), CHECK (h ~ '^[0-9a-f]{64}$'))",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "pass": true,
+      "detail": "ERROR:  new row for relation \"artifact_digest\" violates check constraint \"artifact_digest_h_check\"\nDETAIL:  Failing row contains (abc)."
+    },
+    {
+      "claim": "DROP emitted executes",
+      "engine": "mysql",
+      "statement": "DROP TABLE artifact_digest",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "claim": "DROP emitted executes",
+      "engine": "postgres",
+      "statement": "DROP TABLE artifact_digest",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "passed": 10,
+  "total": 10
+}

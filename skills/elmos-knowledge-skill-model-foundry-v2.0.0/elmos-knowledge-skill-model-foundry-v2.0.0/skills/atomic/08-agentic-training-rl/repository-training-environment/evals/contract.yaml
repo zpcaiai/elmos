@@ -1,0 +1,29 @@
+activation:
+  positiveRequired: 8
+  negativeRequired: 8
+  split: train-validation
+outcome:
+- gate: environment-reproducible
+  type: deterministic-first
+- gate: reward-non-gameable
+  type: deterministic-first
+- gate: terminal-state-verified
+  type: deterministic-first
+- gate: safety-constraints
+  type: deterministic-first
+process:
+- authorized-tools-only
+- checkpoint-created
+- independent-verification
+- rollback-on-hard-failure
+efficiency:
+- wall_clock_ms
+- input_tokens
+- output_tokens
+- tool_calls
+- cost
+security:
+- tenant-isolation
+- prompt-injection
+- secret-leakage
+- artifact-integrity

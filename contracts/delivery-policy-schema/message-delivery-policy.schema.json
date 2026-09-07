@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/message-delivery-policy.v1.json",
+  "title": "Message Delivery Policy",
+  "type": "object",
+  "required": ["schemaVersion", "policyId", "deliverySemantics", "ordering", "retry", "deadLetter", "idempotency"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "policyId": {"type": "string"},
+    "deliverySemantics": {"enum": ["AT_MOST_ONCE", "AT_LEAST_ONCE", "BROKER_TRANSACTIONAL", "EXACTLY_ONCE_WITHIN_PLATFORM", "EFFECTIVELY_ONCE_WITH_IDEMPOTENCY", "END_TO_END_VERIFIED", "UNKNOWN"]},
+    "ordering": {"type": "object", "required": ["scope"], "properties": {"scope": {"enum": ["NONE", "KEY", "PARTITION", "QUEUE", "GLOBAL", "UNKNOWN"]}, "keyRef": {"type": "string"}}, "additionalProperties": true},
+    "retry": {"type": "object", "required": ["maximumAttempts"], "properties": {"maximumAttempts": {"type": "integer", "minimum": 0}}, "additionalProperties": true},
+    "deadLetter": {"type": "object", "required": ["owner", "retentionDays", "replayRequiresApproval"], "properties": {"owner": {"type": "string"}, "retentionDays": {"type": "integer", "minimum": 1}, "replayRequiresApproval": {"const": true}}, "additionalProperties": true},
+    "idempotency": {"type": "object", "required": ["boundary", "keyRef"], "properties": {"boundary": {"type": "string"}, "keyRef": {"type": "string"}}, "additionalProperties": true}
+  },
+  "additionalProperties": false
+}

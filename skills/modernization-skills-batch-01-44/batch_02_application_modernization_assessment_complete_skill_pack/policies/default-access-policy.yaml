@@ -1,0 +1,5 @@
+access:
+  least_privilege: true
+  read_only_by_default: true
+  cross_tenant: forbidden
+  credential_reuse: forbidden

@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-harness-transport-version-negotiation
+  version: 3.1.0
+spec:
+  hardGates:
+  - adapter negotiates transport, auth, history, typed result, schema dialect and consistency semantics
+  - unsupported required capability fails closed before execution
+  - upstream type names and enums never escape the adapter boundary
+  - DeepSeek ApiProxy is not used for alpha.1 and later Remote-gateway profiles
+  - Codex main/alpha features are not advertised by the stable 0.150.1 profile
+  scenarios:
+  - id: ELMOS-V3D-009-A01
+    title: adapter negotiates transport, auth, history, typed result, schema dialect and consistency semantics
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-harness-transport-version-negotiation processes a production lifecycle transition
+    then:
+    - adapter negotiates transport, auth, history, typed result, schema dialect and consistency semantics is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-009-A02
+    title: unsupported required capability fails closed before execution
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-harness-transport-version-negotiation processes a production lifecycle transition
+    then:
+    - unsupported required capability fails closed before execution is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-009-A03
+    title: upstream type names and enums never escape the adapter boundary
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-harness-transport-version-negotiation processes a production lifecycle transition
+    then:
+    - upstream type names and enums never escape the adapter boundary is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-009-A04
+    title: DeepSeek ApiProxy is not used for alpha.1 and later Remote-gateway profiles
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-harness-transport-version-negotiation processes a production lifecycle transition
+    then:
+    - DeepSeek ApiProxy is not used for alpha.1 and later Remote-gateway profiles is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-009-A05
+    title: Codex main/alpha features are not advertised by the stable 0.150.1 profile
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-harness-transport-version-negotiation processes a production lifecycle transition
+    then:
+    - Codex main/alpha features are not advertised by the stable 0.150.1 profile is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-009-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-009-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-009-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

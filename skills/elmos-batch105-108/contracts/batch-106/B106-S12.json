@@ -1,0 +1,68 @@
+{
+  "id": "B106-S12",
+  "batch": 106,
+  "name": "readiness-and-startup-state-machine",
+  "dependencies": [
+    "B106-S10",
+    "B106-S11"
+  ],
+  "inputs": [
+    "runtime run",
+    "health policy",
+    "workflow engine"
+  ],
+  "outputs": [
+    "RunStateTransitions",
+    "ready decision",
+    "failure reason"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/workflow/PreviewRunWorkflow.java",
+      "runtime/state/RuntimeRunStateMachine.java",
+      "apps/web/src/features/runtime-run/"
+    ],
+    "interfaces": [
+      "GET /api/runtime-runs/{id}",
+      "event runtime-run.state-changed"
+    ],
+    "data": [
+      "runtime_run_state",
+      "runtime_event",
+      "readiness_probe"
+    ]
+  },
+  "workflow": [
+    "创建带版本号的状态记录",
+    "流转BUILDING/IMAGE_READY/STARTING",
+    "按策略执行readiness探针与退避",
+    "READY后创建或确认Endpoint",
+    "失败进入BUILD_FAILED/START_FAILED/HEALTH_FAILED/POLICY_BLOCKED",
+    "重放时以事件和幂等receipt恢复"
+  ],
+  "tests": [
+    "非法状态跳转拒绝",
+    "重复事件不重复副作用",
+    "工作流重放保持终态",
+    "探针超时进入HEALTH_FAILED",
+    "取消在任意非终态可补偿"
+  ],
+  "evidence": [
+    "state-history.json",
+    "readiness-probes.json",
+    "workflow-replay-test.json",
+    "failure-reason.json"
+  ],
+  "definition_of_done": [
+    "状态机封闭",
+    "所有副作用幂等",
+    "失败原因结构化",
+    "可取消/恢复/重放",
+    "READY必须有健康证据"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Deterministic Variable Resolver"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-deterministic-variable-resolver to execute this ELMOS product-closure Skill with fail-closed evidence."

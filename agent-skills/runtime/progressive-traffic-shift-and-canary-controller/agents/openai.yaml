@@ -1,0 +1,4 @@
+interface:
+  display_name: "progressive-traffic-shift-and-canary-controller"
+  short_description: "ELMOS Batch 13 composite modernization control"
+  default_prompt: "Use $progressive-traffic-shift-and-canary-controller to evaluate this Batch 13 composite modernization task with fail-closed evidence gates."

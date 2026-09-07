@@ -1,0 +1,91 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ObservabilityContract
+metadata:
+  name: elmos-mcp-enterprise-authorization-controller
+  version: 4.0.0
+spec:
+  traces:
+    requiredSpans:
+    - skill.run
+    - skill.phase
+    - adapter.call
+    - tool.call
+    - proof.verify
+    - evidence.seal
+    - gate.evaluate
+    correlation:
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - execution_epoch
+    - trace_id
+    redaction: server-side before export
+  metrics:
+  - name: skill_runs_total
+    type: counter
+    labels:
+    - tenant
+    - skill
+    - status
+  - name: skill_run_wall_clock_seconds
+    type: histogram
+    labels:
+    - skill
+    - phase
+    - status
+  - name: skill_proof_obligation_status_total
+    type: counter
+    labels:
+    - skill
+    - status
+    - assurance
+  - name: skill_native_test_failures_total
+    type: counter
+    labels:
+    - skill
+    - suite
+    - reason
+  - name: skill_cost_amount
+    type: counter
+    labels:
+    - tenant
+    - skill
+    - provider
+    - cost_type
+    - currency
+  - name: skill_side_effect_unsettled
+    type: gauge
+    labels:
+    - tenant
+    - skill
+    - effect_type
+  logs:
+    structured: true
+    requiredFields:
+    - timestamp
+    - severity
+    - tenant_id
+    - run_id
+    - event
+    - status
+    - reason_code
+    - evidence_ref
+    forbidden:
+    - raw secret
+    - unapproved prompt/document content
+    - cross-tenant identifiers
+  dashboards:
+  - success/blocked/failure by Skill
+  - machine ETA and cost accuracy
+  - proof closure and native conformance
+  - security/authority denials
+  - recovery and unsettled side effects
+  alerts:
+  - critical proof refuted
+  - stale worker write attempted
+  - unsettled side effect
+  - tenant isolation failure
+  - budget overdrawn
+  - evidence tamper
+  sloReporting: separate orchestration overhead from external model/tool wall-clock

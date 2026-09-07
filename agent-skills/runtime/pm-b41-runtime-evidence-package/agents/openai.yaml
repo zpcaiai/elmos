@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B41: Runtime Evidence Package"
+  short_description: "Run Precision Migration B41 with evidence controls"
+  default_prompt: "Use $pm-b41-runtime-evidence-package to execute this Precision Migration contract with fail-closed evidence."

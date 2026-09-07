@@ -1,0 +1,29 @@
+batch: 19
+slug: database-semantic-ir
+title: "Database Semantic IR"
+phase: "G 数据库精密互转"
+skills:
+  - name: database-schema-ir
+    description: "表达 Schema、表、列、类型、默认值、约束、注释和依赖。"
+  - name: sql-expression-ir
+    description: "表达查询、DML、表达式、函数、窗口、层级、JSON、空间和方言扩展。"
+  - name: query-plan-ir
+    description: "表达访问路径、Join、排序、聚合、并行、统计、代价和运行时指标。"
+  - name: database-type-system
+    description: "统一数据库数值、字符、日期、布尔、LOB、JSON、数组、空间和自定义类型。"
+  - name: constraint-and-index-ir
+    description: "表达主外键、唯一、检查、索引、分区、聚簇、部分和表达式索引。"
+  - name: transaction-isolation-ir
+    description: "表达隔离级别、锁、MVCC、保存点、死锁、重试和可见性。"
+  - name: procedure-control-flow-ir
+    description: "表达存储过程、函数、游标、异常、动态 SQL、临时对象和事务控制流。"
+  - name: trigger-and-event-ir
+    description: "表达行级/语句级、前/后触发器、事件调度、执行顺序和递归。"
+  - name: sequence-identity-ir
+    description: "表达 Sequence、Identity、Auto Increment、缓存、回退和并发生成。"
+  - name: database-security-ir
+    description: "表达用户、角色、授权、RLS、加密、审计和安全上下文。"
+  - name: replication-and-cdc-ir
+    description: "表达日志、位点、快照、增量、顺序、冲突、Exactly-once 和切换。"
+  - name: database-effect-ir
+    description: "表达 SQL 和过程代码对数据、事务、序列、外部系统和审计的副作用。"

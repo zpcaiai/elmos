@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "openapi-arazzo-workflow-example",
+  "status": "READY",
+  "content_hash": "39f93506ce14441ee03e7e9166942ac4ae8c1a3dd18e4ae220ecb0cbe59e555a",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

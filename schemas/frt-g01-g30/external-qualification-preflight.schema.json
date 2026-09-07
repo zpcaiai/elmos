@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/external-qualification-preflight.v1.schema.json",
+  "title": "FRT external qualification preflight",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "generated_at", "plan_sha256", "plan_file_ref", "case_count", "tools", "cases", "external_state_counts", "production_operation_authorized", "production_certification", "note"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "FRT_EXTERNAL_QUALIFICATION_PREFLIGHT" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "plan_sha256": { "$ref": "#/$defs/digest" },
+    "plan_file_ref": { "$ref": "#/$defs/reference" },
+    "case_count": { "const": 15 },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["browser_runtimes", "arkui_hvigor", "approved_visual_baselines", "assistive_technology", "physical_devices", "customer_repositories", "independent_holdout", "external_runner", "production"],
+      "properties": {
+        "browser_runtimes": { "$ref": "#/$defs/browserPreflight" },
+        "arkui_hvigor": { "$ref": "#/$defs/hvigorPreflight" },
+        "approved_visual_baselines": { "$ref": "#/$defs/visualPreflight" },
+        "assistive_technology": { "$ref": "#/$defs/assistiveTechnologyPreflight" },
+        "physical_devices": { "$ref": "#/$defs/physicalDevicePreflight" },
+        "customer_repositories": { "$ref": "#/$defs/customerRepositoryPreflight" },
+        "independent_holdout": { "$ref": "#/$defs/holdoutPreflight" },
+        "external_runner": { "$ref": "#/$defs/externalRunnerPreflight" },
+        "production": { "$ref": "#/$defs/productionPreflight" }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 15,
+      "maxItems": 15,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "adapter_id", "harness_state", "blockers", "external_state", "production_operation_authorized", "certification"],
+        "properties": {
+          "case_id": { "type": "string", "pattern": "^FRT-EXT-[0-9]{3}-[A-Z0-9-]+$" },
+          "adapter_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+          "harness_state": { "enum": ["READY_FOR_AUTHORIZED_EXECUTION", "BLOCKED_PRECONDITION"] },
+          "blockers": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+          "external_state": { "const": "NOT_RUN" },
+          "production_operation_authorized": { "const": false },
+          "certification": { "const": "NOT_CERTIFIED" }
+        }
+      }
+    },
+    "external_state_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["NOT_RUN"],
+      "properties": { "NOT_RUN": { "const": 15 } }
+    },
+    "production_operation_authorized": { "const": false },
+    "production_certification": { "const": "NOT_CERTIFIED" },
+    "note": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "bytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "browserRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "executable_present", "executable_sha256", "launch_attempted", "launch_available", "detected_version", "reason"],
+      "properties": {
+        "name": { "enum": ["firefox", "webkit"] },
+        "executable_present": { "type": "boolean" },
+        "executable_sha256": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+        "launch_attempted": { "type": "boolean" },
+        "launch_available": { "type": "boolean" },
+        "detected_version": { "type": ["string", "null"] },
+        "reason": { "type": ["string", "null"] },
+        "launch_error_sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "browserPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "runtimes"],
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "PASSED" } }, "required": ["state"] },
+          "then": {
+            "required": ["schema_version", "kind", "playwright_version", "boundaries"],
+            "properties": { "runtimes": { "required": ["firefox", "webkit"] } }
+          }
+        },
+        {
+          "if": { "properties": { "state": { "const": "FAILED" } }, "required": ["state"] },
+          "then": { "required": ["reason"] }
+        }
+      ],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "kind": { "const": "FRT_PLAYWRIGHT_RUNTIME_PREFLIGHT" },
+        "playwright_version": { "type": ["string", "null"] },
+        "runtimes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "firefox": { "$ref": "#/$defs/browserRuntime" },
+            "webkit": { "$ref": "#/$defs/browserRuntime" }
+          }
+        },
+        "boundaries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["downloads_attempted", "browser_journeys_executed", "external_state", "certification"],
+          "properties": {
+            "downloads_attempted": { "const": false },
+            "browser_journeys_executed": { "const": false },
+            "external_state": { "const": "NOT_RUN" },
+            "certification": { "const": "NOT_CERTIFIED" }
+          }
+        },
+        "state": { "enum": ["PASSED", "FAILED"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "stdout_sha256": { "$ref": "#/$defs/digest" },
+        "stderr_sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "hvigorPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available", "source"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "source": { "enum": ["ELMOS_HVIGORW", "PATH", "UNAVAILABLE"] }
+      }
+    },
+    "visualPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "approval_required"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0 },
+        "approval_required": { "const": true }
+      }
+    },
+    "assistiveTechnologyPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template_present", "template_only", "session_executed"],
+      "properties": {
+        "template_present": { "type": "boolean" },
+        "template_only": { "type": "boolean" },
+        "session_executed": { "const": false }
+      }
+    },
+    "physicalDevicePreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_present", "candidate_count", "manual_acceptance_executed"],
+      "properties": {
+        "candidate_present": { "type": "boolean" },
+        "candidate_count": { "type": "integer", "minimum": 0 },
+        "manual_acceptance_executed": { "const": false }
+      }
+    },
+    "customerRepositoryPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_configured", "authorized_campaign_executed"],
+      "properties": {
+        "root_configured": { "type": "boolean" },
+        "authorized_campaign_executed": { "const": false }
+      }
+    },
+    "holdoutPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["non_placeholder_file_count", "independence_attested"],
+      "properties": {
+        "non_placeholder_file_count": { "type": "integer", "minimum": 0 },
+        "independence_attested": { "const": false }
+      }
+    },
+    "externalRunnerPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configured"],
+      "properties": { "configured": { "type": "boolean" } }
+    },
+    "productionPreflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_authorized", "customer_acceptance_executed"],
+      "properties": {
+        "observation_authorized": { "const": false },
+        "customer_acceptance_executed": { "const": false }
+      }
+    }
+  }
+}

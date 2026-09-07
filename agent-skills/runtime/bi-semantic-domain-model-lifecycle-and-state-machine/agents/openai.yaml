@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Bi Semantic Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $bi-semantic-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B44 contract."

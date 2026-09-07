@@ -1,0 +1,6 @@
+interface:
+  display_name: "Deterministic Toolchain Lock"
+  short_description: "Run deterministic-toolchain-lock with bounded commercial controls"
+  default_prompt: "Use $deterministic-toolchain-lock through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

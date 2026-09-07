@@ -1,0 +1,1682 @@
+{
+  "kind": "elmos.sql-dialect.schema-blocker-table",
+  "schema_statements": 2460,
+  "schema_in_subset": 956,
+  "coverage_schema_only": 0.3886,
+  "schema_blocked": 1504,
+  "blocked_by_statement_kind": {
+    "Create": 1206,
+    "Alter": 132,
+    "Comment": 91,
+    "Drop": 75
+  },
+  "by_reason_code": [
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "schema_statements_blocked": 600,
+      "distinct_reasons": 2,
+      "leverage": 300.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "schema_statements_blocked": 439,
+      "distinct_reasons": 7,
+      "leverage": 62.7
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
+      "schema_statements_blocked": 160,
+      "distinct_reasons": 3,
+      "leverage": 53.3
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "schema_statements_blocked": 137,
+      "distinct_reasons": 69,
+      "leverage": 2.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "schema_statements_blocked": 92,
+      "distinct_reasons": 9,
+      "leverage": 10.2
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+      "schema_statements_blocked": 24,
+      "distinct_reasons": 3,
+      "leverage": 8.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "schema_statements_blocked": 20,
+      "distinct_reasons": 4,
+      "leverage": 5.0
+    },
+    {
+      "reason_code": "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+      "schema_statements_blocked": 20,
+      "distinct_reasons": 1,
+      "leverage": 20.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT",
+      "schema_statements_blocked": 9,
+      "distinct_reasons": 1,
+      "leverage": 9.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_MULTI_LEVEL_CHECK",
+      "schema_statements_blocked": 2,
+      "distinct_reasons": 1,
+      "leverage": 2.0
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TABLE_ITEM",
+      "schema_statements_blocked": 1,
+      "distinct_reasons": 1,
+      "leverage": 1.0
+    }
+  ],
+  "by_distinct_reason": [
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "reason": "certified-ddl-v1 only accepts a single CREATE TABLE statement",
+      "count": 599,
+      "statement_kinds": {
+        "Create": 498,
+        "Comment": 91,
+        "Drop": 10
+      },
+      "corpora": {
+        "elmos-persistence": 421,
+        "elmos-build-cache": 14,
+        "elmos-p0": 56,
+        "ext-postgres": 96,
+        "ext-mysql": 12
+      },
+      "examples": [
+        "CREATE TRIGGER commercial_events_append_only BEFORE UPDATE OR DELETE ON commercial_events FOR EACH ROW EXECUTE...",
+        "CREATE TRIGGER dotnet_build_runs_append_only BEFORE UPDATE OR DELETE ON dotnet_build_runs FOR EACH ROW EXECUTE..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator RegexpLike is outside certified-ddl-v1",
+      "count": 389,
+      "statement_kinds": {
+        "Create": 383,
+        "Alter": 6
+      },
+      "corpora": {
+        "elmos-persistence": 378,
+        "elmos-p0": 11
+      },
+      "examples": [
+        "/* ELMOS Batch 10: commercial fulfillment, delivery operations and reusable asset lifecycle. */ /* This is not...",
+        "CREATE TABLE product_editions (product_edition_id VARCHAR(96) PRIMARY KEY, organization_id VARCHAR(96) NOT NUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
+      "reason": "certified-ddl-v1 requires an unqualified table name (no schema/catalog prefix)",
+      "count": 70,
+      "statement_kinds": {
+        "Create": 70
+      },
+      "corpora": {
+        "ext-postgres": 70
+      },
+      "examples": [
+        "/* Name: customer; Type: TABLE; Schema: public; Owner: postgres */ CREATE TABLE public.customer (customer_id I...",
+        "/* Name: actor; Type: TABLE; Schema: public; Owner: postgres */ CREATE TABLE public.actor (actor_id INT DEFAUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.JSONB is outside certified-ddl-v1's type allowlist",
+      "count": 60,
+      "statement_kinds": {
+        "Alter": 30,
+        "Create": 30
+      },
+      "corpora": {
+        "elmos-persistence": 45,
+        "elmos-build-cache": 13,
+        "elmos-p0": 2
+      },
+      "examples": [
+        "ALTER TABLE service_level_objectives ADD COLUMN IF NOT EXISTS infrastructure_estate_ref VARCHAR(255), ADD COLU...",
+        "ALTER TABLE backup_runs ADD COLUMN IF NOT EXISTS infrastructure_estate_ref VARCHAR(255), ADD COLUMN IF NOT EXI..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
+      "reason": "certified-alter-v1 requires an unqualified table name (no schema/catalog prefix)",
+      "count": 52,
+      "statement_kinds": {
+        "Alter": 52
+      },
+      "corpora": {
+        "ext-postgres": 52
+      },
+      "examples": [
+        "ALTER TABLE ONLY public.actor ADD CONSTRAINT actor_pkey PRIMARY KEY (actor_id) /* Name: actor actor_pkey; Type...",
+        "ALTER TABLE ONLY public.address ADD CONSTRAINT address_pkey PRIMARY KEY (address_id) /* Name: address address_..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
+      "reason": "certified-ddl-v1 requires an unqualified table name",
+      "count": 38,
+      "statement_kinds": {
+        "Create": 38
+      },
+      "corpora": {
+        "ext-postgres": 38
+      },
+      "examples": [
+        "/* Name: film_fulltext_idx; Type: INDEX; Schema: public; Owner: postgres */ CREATE INDEX film_fulltext_idx ON ...",
+        "/* Name: idx_actor_last_name; Type: INDEX; Schema: public; Owner: postgres */ CREATE INDEX idx_actor_last_name..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator And is outside certified-ddl-v1",
+      "count": 25,
+      "statement_kinds": {
+        "Alter": 15,
+        "Create": 10
+      },
+      "corpora": {
+        "elmos-persistence": 18,
+        "elmos-p0": 7
+      },
+      "examples": [
+        "ALTER TABLE cobol_calls ADD COLUMN call_type VARCHAR(64), ADD COLUMN target_name VARCHAR(255), ADD COLUMN conf...",
+        "ALTER TABLE commercial_leads ADD COLUMN qualification_stage VARCHAR(64), ADD COLUMN fit_score DECIMAL(6, 5), A..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+      "reason": "ALTER TABLE action AlterColumn is outside certified-alter-v1 (column type/nullability/default changes need the column's full type, which a single ALTER statement does not carry)",
+      "count": 20,
+      "statement_kinds": {
+        "Alter": 20
+      },
+      "corpora": {
+        "elmos-build-cache": 19,
+        "ext-postgres": 1
+      },
+      "examples": [
+        "ALTER TABLE snapshots ALTER COLUMN snapshot_id SET DATA TYPE TEXT USING CAST(snapshot_id AS TEXT)",
+        "ALTER TABLE snapshots ALTER COLUMN snapshot_id DROP DEFAULT"
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK right-hand side must be a plain literal",
+      "count": 18,
+      "statement_kinds": {
+        "Create": 17,
+        "Alter": 1
+      },
+      "corpora": {
+        "elmos-persistence": 10,
+        "elmos-build-cache": 1,
+        "elmos-p0": 1,
+        "ext-postgres": 6
+      },
+      "examples": [
+        "CREATE TABLE secret_leases (lease_id VARCHAR(64) PRIMARY KEY, provider_lease_id VARCHAR(128) NOT NULL UNIQUE, ...",
+        "/* ELMOS self-service billing and usage closure. */ /* PostgreSQL 17.5 / Flyway-owned schema. Existing V9/V10 ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+      "reason": "DEFAULT expression of kind Anonymous is outside certified-ddl-v1 (only literals and CURRENT_TIMESTAMP are supported)",
+      "count": 13,
+      "statement_kinds": {
+        "Create": 13
+      },
+      "corpora": {
+        "ext-postgres": 13
+      },
+      "examples": [
+        "/* Name: actor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: */ CREATE TABLE actor (actor_id INT ...",
+        "/* Name: category; Type: TABLE; Schema: public; Owner: postgres; Tablespace: */ CREATE TABLE category (categor..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "reason": "index column is not a plain identifier (Paren)",
+      "count": 12,
+      "statement_kinds": {
+        "Create": 12
+      },
+      "corpora": {
+        "elmos-persistence": 12
+      },
+      "examples": [
+        "CREATE UNIQUE INDEX recipe_definitions_name_unique ON recipe_definitions((JSON_EXTRACT_SCALAR(payload, '$.reci...",
+        "CREATE UNIQUE INDEX recipe_run_manifest_attempt_unique ON recipe_runs(migration_run_id NULLS LAST, (JSON_EXTRA..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT",
+      "reason": "column constraint OnUpdateColumnConstraint is outside certified-ddl-v1",
+      "count": 9,
+      "statement_kinds": {
+        "Create": 9
+      },
+      "corpora": {
+        "ext-mysql": 9
+      },
+      "examples": [
+        "/* Table structure for table `actor` */ CREATE TABLE actor (actor_id UINT NOT NULL AUTO_INCREMENT, first_name ...",
+        "/* Table structure for table `category` */ CREATE TABLE category (category_id UINT NOT NULL AUTO_INCREMENT, na..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.DOUBLE is outside certified-ddl-v1's type allowlist",
+      "count": 7,
+      "statement_kinds": {
+        "Alter": 3,
+        "Create": 4
+      },
+      "corpora": {
+        "elmos-persistence": 2,
+        "elmos-build-cache": 5
+      },
+      "examples": [
+        "ALTER TABLE audit_events ADD COLUMN IF NOT EXISTS event_kind VARCHAR(32) NOT NULL DEFAULT 'BUSINESS_ACTION', A...",
+        "/* Production operations control plane. */ /* Security audit and product telemetry have intentionally differen..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.VARBINARY is outside certified-ddl-v1's type allowlist",
+      "count": 7,
+      "statement_kinds": {
+        "Alter": 1,
+        "Create": 6
+      },
+      "corpora": {
+        "elmos-persistence": 1,
+        "ext-postgres": 6
+      },
+      "examples": [
+        "ALTER TABLE cas_action_cache_entries ADD COLUMN attestation_signature_value VARBINARY",
+        "/* Name: categories; Type: TABLE; Schema: public; Owner: -; Tablespace: */ CREATE TABLE categories (category_i..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+      "reason": "DEFAULT expression of kind Cast is outside certified-ddl-v1 (only literals and CURRENT_TIMESTAMP are supported)",
+      "count": 6,
+      "statement_kinds": {
+        "Create": 6
+      },
+      "corpora": {
+        "ext-postgres": 6
+      },
+      "examples": [
+        "CREATE TABLE appservice_stream_position (lock CHAR(1) DEFAULT CAST('X' AS BPCHAR) NOT NULL, stream_ordering BI...",
+        "CREATE TABLE event_push_summary_last_receipt_stream_id (lock CHAR(1) DEFAULT CAST('X' AS BPCHAR) NOT NULL, str..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "reason": "index column is not a plain identifier (Lower)",
+      "count": 6,
+      "statement_kinds": {
+        "Create": 6
+      },
+      "corpora": {
+        "elmos-persistence": 3,
+        "elmos-p0": 3
+      },
+      "examples": [
+        "CREATE UNIQUE INDEX accounts_primary_email_uq ON accounts(LOWER(primary_email) NULLS LAST) WHERE primary_email...",
+        "CREATE UNIQUE INDEX organization_api_keys_name_uq ON organization_api_keys(organization_id NULLS LAST, LOWER(k..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.UUID is outside certified-ddl-v1's type allowlist",
+      "count": 6,
+      "statement_kinds": {
+        "Create": 6
+      },
+      "corpora": {
+        "elmos-build-cache": 6
+      },
+      "examples": [
+        "CREATE TABLE snapshots (snapshot_id UUID PRIMARY KEY DEFAULT UUID(), tenant_id TEXT NOT NULL REFERENCES tenant...",
+        "CREATE TABLE runs (run_id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL REFERENCES tenants (tenant_id), project_id..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_DEFAULT",
+      "reason": "DEFAULT expression of kind Null is outside certified-ddl-v1 (only literals and CURRENT_TIMESTAMP are supported)",
+      "count": 5,
+      "statement_kinds": {
+        "Create": 5
+      },
+      "corpora": {
+        "ext-mysql": 5
+      },
+      "examples": [
+        "/* Table structure for table `address` */ CREATE TABLE address (address_id UINT NOT NULL AUTO_INCREMENT, addre...",
+        "/* Table structure for table `customer` */ CREATE TABLE customer (customer_id UINT NOT NULL AUTO_INCREMENT, st..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "index column 'timestamp' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 3,
+      "statement_kinds": {
+        "Create": 3
+      },
+      "corpora": {
+        "ext-postgres": 3
+      },
+      "examples": [
+        "CREATE INDEX monthly_active_users_time_stamp ON monthly_active_users USING btree(\"timestamp\" NULLS LAST)",
+        "CREATE INDEX user_daily_visits_ts_idx ON user_daily_visits USING btree(\"timestamp\" NULLS LAST)"
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator Not is outside certified-ddl-v1",
+      "count": 3,
+      "statement_kinds": {
+        "Create": 3
+      },
+      "corpora": {
+        "elmos-persistence": 2,
+        "elmos-p0": 1
+      },
+      "examples": [
+        "/* --------------------------------------------------------------------------- */ /* 3. Artifacts published by...",
+        "/* --------------------------------------------------------------------------- */ /* 5. Top-up orders */ /* --..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.ARRAY is outside certified-ddl-v1's type allowlist",
+      "count": 3,
+      "statement_kinds": {
+        "Create": 2,
+        "Alter": 1
+      },
+      "corpora": {
+        "elmos-persistence": 2,
+        "ext-postgres": 1
+      },
+      "examples": [
+        "CREATE TABLE usage_alert_preferences (usage_alert_preference_id VARCHAR(96) PRIMARY KEY, organization_id VARCH...",
+        "ALTER TABLE cas_action_cache_entries ADD COLUMN action_key_bytes BIGINT, ADD COLUMN action_component_names ARR..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.BIGSERIAL is outside certified-ddl-v1's type allowlist",
+      "count": 3,
+      "statement_kinds": {
+        "Create": 3
+      },
+      "corpora": {
+        "elmos-persistence": 2,
+        "elmos-build-cache": 1
+      },
+      "examples": [
+        "CREATE TABLE workspace_resource_samples (sample_id BIGSERIAL PRIMARY KEY, workspace_id VARCHAR(64) NOT NULL RE...",
+        "/* --------------------------------------------------------------------------- */ /* 3. 无主回调滞留表 */ /* --------..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.FLOAT is outside certified-ddl-v1's type allowlist",
+      "count": 3,
+      "statement_kinds": {
+        "Create": 3
+      },
+      "corpora": {
+        "ext-postgres": 3
+      },
+      "examples": [
+        "/* Name: order_details; Type: TABLE; Schema: public; Owner: -; Tablespace: */ CREATE TABLE order_details (orde...",
+        "/* Name: orders; Type: TABLE; Schema: public; Owner: -; Tablespace: */ CREATE TABLE orders (order_id SMALLINT ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_MULTI_LEVEL_CHECK",
+      "reason": "certified-ddl-v1 supports only a single flat AND/OR of two plain comparisons, not nested boolean expressions",
+      "count": 2,
+      "statement_kinds": {
+        "Alter": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "elmos-persistence": 2
+      },
+      "examples": [
+        "ALTER TABLE cas_action_cache_entries ADD CONSTRAINT cas_action_attestation_write_presentation_window CHECK (in...",
+        "/* --------------------------------------------------------------------------- */ /* 3. Ledger (append-only, t..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "column name 'timestamp' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Create": 2
+      },
+      "corpora": {
+        "ext-postgres": 2
+      },
+      "examples": [
+        "CREATE TABLE monthly_active_users (user_id TEXT NOT NULL, \"timestamp\" BIGINT NOT NULL)",
+        "CREATE TABLE user_daily_visits (user_id TEXT NOT NULL, device_id TEXT, \"timestamp\" BIGINT NOT NULL, user_agent..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%api_key' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%api_key\"",
+        "CREATE TABLE \"%TABLE_PREFIX%api_key\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"isactive\" TINYINT(1) NOT NULL DE..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%attachment' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%attachment\"",
+        "CREATE TABLE \"%TABLE_PREFIX%attachment\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"object_id\" UINT(11) NOT NULL,..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%canned_response' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%canned_response\"",
+        "CREATE TABLE \"%TABLE_PREFIX%canned_response\" (\"canned_id\" UINT(10) NOT NULL AUTO_INCREMENT, \"dept_id\" UINT(10)..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%config' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%config\"",
+        "CREATE TABLE \"%TABLE_PREFIX%config\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"namespace\" VARCHAR(64) NOT NULL, ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%department' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%department\"",
+        "CREATE TABLE \"%TABLE_PREFIX%department\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"pid\" UINT(11) DEFAULT NULL, \"..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%draft' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%draft\"",
+        "CREATE TABLE \"%TABLE_PREFIX%draft\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"staff_id\" UINT(11) NOT NULL, \"name..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%email' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%email\"",
+        "CREATE TABLE \"%TABLE_PREFIX%email\" (\"email_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"noautoresp\" UTINYINT(1) NOT ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%email_account' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%email_account\"",
+        "CREATE TABLE \"%TABLE_PREFIX%email_account\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"email_id\" UINT(11) NOT NUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%email_template' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%email_template\"",
+        "CREATE TABLE \"%TABLE_PREFIX%email_template\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"tpl_id\" UINT(11) NOT NULL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%email_template_group' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%email_template_group\"",
+        "CREATE TABLE \"%TABLE_PREFIX%email_template_group\" (\"tpl_id\" INT(11) NOT NULL AUTO_INCREMENT, \"isactive\" UTINYI..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%event' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%event\"",
+        "CREATE TABLE \"%TABLE_PREFIX%event\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR(60) NOT NULL, \"descr..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%faq' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%faq\"",
+        "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%faq\" (\"faq_id\" UINT(10) NOT NULL AUTO_INCREMENT, \"category_id\" UINT(..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%faq_category' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%faq_category\"",
+        "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%faq_category\" (\"category_id\" UINT(10) NOT NULL AUTO_INCREMENT, \"cate..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%faq_topic' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%faq_topic\"",
+        "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%faq_topic\" (\"faq_id\" UINT(10) NOT NULL, \"topic_id\" UINT(10) NOT NULL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%file' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%file\"",
+        "CREATE TABLE \"%TABLE_PREFIX%file\" (\"id\" INT(11) NOT NULL AUTO_INCREMENT, \"ft\" CHAR(1) NOT NULL DEFAULT 'T', \"b..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%file_chunk' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%file_chunk\"",
+        "CREATE TABLE \"%TABLE_PREFIX%file_chunk\" (\"file_id\" INT(11) NOT NULL, \"chunk_id\" INT(11) NOT NULL, \"filedata\" B..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%filter' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%filter\"",
+        "CREATE TABLE \"%TABLE_PREFIX%filter\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"execorder\" UINT(10) NOT NULL DEFA..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%filter_action' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%filter_action\"",
+        "CREATE TABLE \"%TABLE_PREFIX%filter_action\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"filter_id\" UINT(10) NOT NU..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%filter_rule' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%filter_rule\"",
+        "CREATE TABLE \"%TABLE_PREFIX%filter_rule\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"filter_id\" UINT(10) NOT NULL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%form' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%form\"",
+        "CREATE TABLE \"%TABLE_PREFIX%form\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"pid\" UINT(10) DEFAULT NULL, \"type\" ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%form_entry' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%form_entry\"",
+        "CREATE TABLE \"%TABLE_PREFIX%form_entry\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"form_id\" UINT(11) NOT NULL, \"..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%form_entry_values' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%form_entry_values\"",
+        "CREATE TABLE \"%TABLE_PREFIX%form_entry_values\" (\"entry_id\" /* references form_entry.id */ UINT(11) NOT NULL, \"..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%form_field' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%form_field\"",
+        "CREATE TABLE \"%TABLE_PREFIX%form_field\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"form_id\" UINT(11) NOT NULL, \"..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%group' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%group\"",
+        "CREATE TABLE \"%TABLE_PREFIX%group\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"role_id\" UINT(11) NOT NULL, \"flags..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%help_topic' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%help_topic\"",
+        "CREATE TABLE \"%TABLE_PREFIX%help_topic\" (\"topic_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"topic_pid\" UINT(10) NOT..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%help_topic_form' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%help_topic_form\"",
+        "CREATE TABLE \"%TABLE_PREFIX%help_topic_form\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"topic_id\" UINT(11) NOT N..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%list' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%list\"",
+        "CREATE TABLE \"%TABLE_PREFIX%list\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR(255) NOT NULL, \"name_..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%list_items' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%list_items\"",
+        "CREATE TABLE \"%TABLE_PREFIX%list_items\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"list_id\" INT(11), \"status\" UI..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%lock' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%lock\"",
+        "CREATE TABLE \"%TABLE_PREFIX%lock\" (\"lock_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"staff_id\" UINT(10) NOT NULL DE..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%note' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%note\"",
+        "CREATE TABLE \"%TABLE_PREFIX%note\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"pid\" UINT(11), \"staff_id\" UINT(11) ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%organization' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%organization\"",
+        "CREATE TABLE \"%TABLE_PREFIX%organization\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR(128) NOT NULL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%plugin' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "/* Plugins */ DROP TABLE IF EXISTS \"%TABLE_PREFIX%plugin\"",
+        "CREATE TABLE \"%TABLE_PREFIX%plugin\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR(255) NOT NULL, \"ins..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%plugin_instance' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%plugin_instance\"",
+        "CREATE TABLE \"%TABLE_PREFIX%plugin_instance\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"plugin_id\" UINT(11) NOT ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"parent_id\" UINT(11) NOT NULL DEFAU..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_column' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_column\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_column\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"flags\" UINT(10) NOT NULL DE..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_columns' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_columns\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_columns\" (\"queue_id\" UINT(11) NOT NULL, \"column_id\" UINT(11) NOT NULL, \"staf..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_config' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_config\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_config\" (\"queue_id\" UINT(11) NOT NULL, \"staff_id\" UINT(11) NOT NULL, \"settin..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_export' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_export\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_export\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"queue_id\" UINT(11) NOT NULL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_sort' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_sort\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_sort\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"root\" VARCHAR(32) DEFAULT NUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%queue_sorts' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%queue_sorts\"",
+        "CREATE TABLE \"%TABLE_PREFIX%queue_sorts\" (\"queue_id\" UINT(11) NOT NULL, \"sort_id\" UINT(11) NOT NULL, \"bits\" UI..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%role' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%role\"",
+        "CREATE TABLE \"%TABLE_PREFIX%role\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"flags\" UINT(10) NOT NULL DEFAULT '1..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%schedule' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%schedule\"",
+        "CREATE TABLE \"%TABLE_PREFIX%schedule\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"flags\" UINT(11) NOT NULL DEFAUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%schedule_entry' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%schedule_entry\"",
+        "CREATE TABLE \"%TABLE_PREFIX%schedule_entry\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"schedule_id\" UINT(11) NOT..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%sequence' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%sequence\"",
+        "CREATE TABLE \"%TABLE_PREFIX%sequence\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR(64) DEFAULT NULL,..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%session' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%session\"",
+        "CREATE TABLE \"%TABLE_PREFIX%session\" (\"session_id\" VARCHAR(255) COLLATE ascii_general_ci NOT NULL DEFAULT '', ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%sla' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%sla\"",
+        "CREATE TABLE \"%TABLE_PREFIX%sla\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"schedule_id\" UINT(10) NOT NULL DEFAU..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%staff' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%staff\"",
+        "CREATE TABLE \"%TABLE_PREFIX%staff\" (\"staff_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"dept_id\" UINT(10) NOT NULL D..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%staff_dept_access' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%staff_dept_access\"",
+        "CREATE TABLE \"%TABLE_PREFIX%staff_dept_access\" (\"staff_id\" UINT(10) NOT NULL DEFAULT '0', \"dept_id\" UINT(10) N..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%syslog' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%syslog\"",
+        "CREATE TABLE \"%TABLE_PREFIX%syslog\" (\"log_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"log_type\" ENUM('Debug', 'Warn..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%task' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%task\"",
+        "CREATE TABLE \"%TABLE_PREFIX%task\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"object_id\" INT(11) NOT NULL DEFAULT..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%team' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%team\"",
+        "CREATE TABLE \"%TABLE_PREFIX%team\" (\"team_id\" UINT(10) NOT NULL AUTO_INCREMENT, \"lead_id\" UINT(10) NOT NULL DEF..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%team_member' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%team_member\"",
+        "CREATE TABLE \"%TABLE_PREFIX%team_member\" (\"team_id\" UINT(10) NOT NULL DEFAULT '0', \"staff_id\" UINT(10) NOT NUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread\"",
+        "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%thread\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"object_id\" UINT(11)..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_entry' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread_entry\"",
+        "CREATE TABLE \"%TABLE_PREFIX%thread_entry\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"pid\" UINT(11) NOT NULL DEFA..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_entry_email' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread_entry_email\"",
+        "CREATE TABLE \"%TABLE_PREFIX%thread_entry_email\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"thread_entry_id\" UINT..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_entry_merge' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread_entry_merge\"",
+        "CREATE TABLE \"%TABLE_PREFIX%thread_entry_merge\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"thread_entry_id\" UINT..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_event' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread_event\"",
+        "CREATE TABLE \"%TABLE_PREFIX%thread_event\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"thread_id\" UINT(11) NOT NUL..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_referral' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%thread_referral\"",
+        "CREATE TABLE \"%TABLE_PREFIX%thread_referral\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"thread_id\" UINT(11) NOT ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%ticket' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%ticket\"",
+        "CREATE TABLE \"%TABLE_PREFIX%ticket\" (\"ticket_id\" UINT(11) NOT NULL AUTO_INCREMENT, \"ticket_pid\" UINT(11) DEFAU..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%ticket_priority' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%ticket_priority\"",
+        "CREATE TABLE \"%TABLE_PREFIX%ticket_priority\" (\"priority_id\" TINYINT(4) NOT NULL AUTO_INCREMENT, \"priority\" VAR..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%ticket_status' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%ticket_status\"",
+        "CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%ticket_status\" (\"id\" INT(11) NOT NULL AUTO_INCREMENT, \"name\" VARCHAR..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%translation' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%translation\"",
+        "CREATE TABLE \"%TABLE_PREFIX%translation\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"object_hash\" CHAR(16) CHARAC..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%user' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%user\"",
+        "CREATE TABLE \"%TABLE_PREFIX%user\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"org_id\" UINT(10) NOT NULL, \"default..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%user_account' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%user_account\"",
+        "CREATE TABLE \"%TABLE_PREFIX%user_account\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"user_id\" UINT(10) NOT NULL,..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%user_email' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Drop": 1,
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 2
+      },
+      "examples": [
+        "DROP TABLE IF EXISTS \"%TABLE_PREFIX%user_email\"",
+        "CREATE TABLE \"%TABLE_PREFIX%user_email\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"user_id\" UINT(10) NOT NULL, \"..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator Like is outside certified-ddl-v1",
+      "count": 2,
+      "statement_kinds": {
+        "Create": 2
+      },
+      "corpora": {
+        "elmos-persistence": 2
+      },
+      "examples": [
+        "CREATE TABLE workspace_mounts (mount_id VARCHAR(64) PRIMARY KEY, workspace_id VARCHAR(64) NOT NULL REFERENCES ...",
+        "CREATE TABLE network_policy_rules (network_policy_id VARCHAR(64) NOT NULL, policy_version INT NOT NULL, rule_o..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.USERDEFINED is outside certified-ddl-v1's type allowlist",
+      "count": 2,
+      "statement_kinds": {
+        "Create": 2
+      },
+      "corpora": {
+        "ext-postgres": 2
+      },
+      "examples": [
+        "CREATE TABLE event_search (event_id TEXT, room_id TEXT, sender TEXT, key TEXT, vector tsvector, origin_server_...",
+        "CREATE TABLE user_directory_search (user_id TEXT NOT NULL, vector tsvector)"
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%content' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 1
+      },
+      "examples": [
+        "/* pages */ CREATE TABLE IF NOT EXISTS \"%TABLE_PREFIX%content\" (\"id\" UINT(10) NOT NULL AUTO_INCREMENT, \"isacti..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_QUOTED_IDENTIFIER",
+      "reason": "table name '%TABLE_PREFIX%thread_collaborator' uses a quoted/escaped identifier, which is outside certified-ddl-v1",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 1
+      },
+      "examples": [
+        "CREATE TABLE \"%TABLE_PREFIX%thread_collaborator\" (\"id\" UINT(11) NOT NULL AUTO_INCREMENT, \"flags\" UINT(10) NOT ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator Column is outside certified-ddl-v1",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "elmos-persistence": 1
+      },
+      "examples": [
+        "/* ELMOS V74: charge execution jobs against the prepaid wallet. */ /* Why this migration exists */ /* --------..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+      "reason": "CHECK comparison operator NullSafeNEQ is outside certified-ddl-v1",
+      "count": 1,
+      "statement_kinds": {
+        "Alter": 1
+      },
+      "corpora": {
+        "elmos-persistence": 1
+      },
+      "examples": [
+        "ALTER TABLE subscription_events ADD CONSTRAINT subscription_events_quota_adjustment_payload CHECK (event_type ..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "reason": "CHECK left-hand column is not a plain identifier (Anonymous)",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "elmos-persistence": 1
+      },
+      "examples": [
+        "CREATE TABLE cas_resource_bindings (organization_id VARCHAR(64) NOT NULL, resource_kind VARCHAR(16) NOT NULL C..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
+      "reason": "CHECK left-hand column is not a plain identifier (Paren)",
+      "count": 1,
+      "statement_kinds": {
+        "Alter": 1
+      },
+      "corpora": {
+        "elmos-persistence": 1
+      },
+      "examples": [
+        "ALTER TABLE cas_object_catalog ADD CONSTRAINT cas_object_catalog_provenance_digest_complete CHECK ((provenance..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+      "reason": "malformed CREATE TABLE",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "elmos-p0": 1
+      },
+      "examples": [
+        "/* --------------------------------------------------------------------------- */ /* Claim: per-tenant concurr..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TABLE_ITEM",
+      "reason": "table-level item IndexColumnConstraint is outside certified-ddl-v1 (no partitioning, triggers, storage options, generated columns, or inheritance)",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 1
+      },
+      "examples": [
+        "/* Table structure for table `film_text` */ CREATE TABLE film_text (film_id INT NOT NULL, title VARCHAR(255) N..."
+      ]
+    },
+    {
+      "reason_code": "CERTIFIED_DDL_UNSUPPORTED_TYPE",
+      "reason": "column type DType.ENUM is outside certified-ddl-v1's type allowlist",
+      "count": 1,
+      "statement_kinds": {
+        "Create": 1
+      },
+      "corpora": {
+        "ext-mysql": 1
+      },
+      "examples": [
+        "CREATE TABLE employees (emp_no INT NOT NULL, birth_date DATE NOT NULL, first_name VARCHAR(14) NOT NULL, last_n..."
+      ]
+    }
+  ]
+}

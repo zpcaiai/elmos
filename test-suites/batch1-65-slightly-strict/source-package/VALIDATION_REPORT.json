@@ -1,0 +1,8 @@
+{
+  "status": "PASSED",
+  "testSkillCount": 88,
+  "caseCount": 750,
+  "sourceSkillCoverage": 1296,
+  "batchCoverage": "1-65",
+  "errors": []
+}

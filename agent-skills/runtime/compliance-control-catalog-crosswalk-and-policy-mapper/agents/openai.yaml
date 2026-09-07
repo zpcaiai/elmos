@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compliance Control Catalog Crosswalk and Policy Mapper"
+  short_description: "Help with Compliance Control Catalog Crosswalk and Policy Mapper"
+  default_prompt: "Use $compliance-control-catalog-crosswalk-and-policy-mapper to execute its ELMOS Batch 17 workflow safely."

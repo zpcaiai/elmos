@@ -1,0 +1,5 @@
+scenario negative_balance_after_retry
+obligation billing-balance-nonnegative
+kind SCHEDULE
+given {"initialBalance": 10, "events": [{"id":"u1","amount":7},{"id":"u1","amount":7}]}
+expect_violation "same usage_event_id is charged at most once"

@@ -1,0 +1,43 @@
+version: 1
+policy_id: elmos.autonomous-qa.execution.strict
+
+required_test_semantics:
+  legal_terminal_statuses: [PASSED, FAILED, BLOCKED, FLAKY_CONFIRMED, NOT_APPLICABLE]
+  skipped_is_release_legal: false
+  blocked_is_gate_pass: false
+  flaky_is_gate_pass: false
+  not_applicable_requires_rule_and_approval: true
+
+retry:
+  purpose: classify_flakiness_only
+  retain_first_failure: true
+  max_default_attempts: 2
+  exponential_backoff: false
+  silent_retry: false
+
+isolation:
+  per_run_namespace: true
+  per_test_data_scope: true
+  cleanup_required: true
+  leaked_resource_reaper: true
+  production_network_default: deny
+
+side_effects:
+  idempotency_key_required: true
+  irreversible_operations_default: deny
+  compensation_required_when_reversible: true
+  external_test_accounts_only: true
+
+resource_governance:
+  cpu_memory_quota_required: true
+  browser_session_quota_required: true
+  performance_worker_isolation_required: true
+  queue_backpressure_required: true
+
+test_artifact_execution:
+
+manifest_only_execution: true
+materialization_required_before_execution: true
+verify_artifact_hash_before_shard_start: true
+execute_temporary_unmanifested_code: false
+record_artifact_refs_per_attempt: true

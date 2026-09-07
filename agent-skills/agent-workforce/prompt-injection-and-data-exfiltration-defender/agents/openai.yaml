@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 565: prompt injection and data exfiltration defender"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $prompt-injection-and-data-exfiltration-defender to evaluate this capability with evidence."

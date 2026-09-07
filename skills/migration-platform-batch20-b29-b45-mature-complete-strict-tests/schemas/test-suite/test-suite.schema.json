@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "suite_id",
+    "version",
+    "scope",
+    "status",
+    "profile",
+    "case_catalog",
+    "coverage_matrix"
+  ],
+  "properties": {
+    "suite_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "active",
+        "certified",
+        "deprecated"
+      ]
+    },
+    "profile": {
+      "type": "string"
+    },
+    "case_catalog": {
+      "type": "string"
+    },
+    "coverage_matrix": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

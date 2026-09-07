@@ -1,0 +1,5 @@
+cache_invalidation:
+  key_includes_toolchain_version: true
+  key_includes_source_digest: true
+  schema_major_change_invalidates: true
+  partial_hit_must_recompute: true

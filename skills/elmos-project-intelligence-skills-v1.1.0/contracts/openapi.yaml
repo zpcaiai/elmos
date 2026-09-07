@@ -1,0 +1,215 @@
+openapi: 3.1.0
+info:
+  title: Elmos Project Intelligence API
+  version: 1.1.0
+  description: Reference contract for project ingestion, code reading, intelligence graph, artifacts, jobs and certification.
+servers:
+  - url: /api/v1
+paths:
+  /projects:
+    post:
+      operationId: createProject
+      responses:
+        "201":
+          description: Created
+  /repositories/{repositoryId}/imports:
+    post:
+      operationId: importRepository
+      parameters:
+        - name: repositoryId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string}
+      responses:
+        "202":
+          description: Import job accepted
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/JobRef"}
+  /revisions/{revisionId}/analysis-runs:
+    post:
+      operationId: startAnalysis
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string}
+      responses:
+        "202":
+          description: Analysis accepted
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/JobRef"}
+  /files/{fileId}/content:
+    get:
+      operationId: getFileContent
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: revision_id
+          in: query
+          required: true
+          schema: {type: string}
+      responses:
+        "200": {description: File content or stream metadata}
+        "403": {$ref: "#/components/responses/Forbidden"}
+  /navigation/definition:
+    get:
+      operationId: findDefinition
+      parameters:
+        - name: symbol_id
+          in: query
+          required: true
+          schema: {type: string}
+        - name: revision_id
+          in: query
+          required: true
+          schema: {type: string}
+      responses:
+        "200": {description: Definition result}
+  /qa:
+    post:
+      operationId: askProjectQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/QaRequest"}
+      responses:
+        "202": {description: Accepted or immediate answer}
+  /diagram-specs/validate:
+    post:
+      operationId: validateDiagramSpec
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        "200": {description: Validation result}
+  /diagrams/render:
+    post:
+      operationId: renderDiagram
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string}
+      responses:
+        "202": {description: Render job}
+  /documents/generate:
+    post:
+      operationId: generateDocument
+      responses:
+        "202": {description: Document job}
+  /presentations/generate:
+    post:
+      operationId: generatePresentation
+      responses:
+        "202": {description: Presentation job}
+  /impact-analysis:
+    post:
+      operationId: analyzeImpact
+      responses:
+        "202": {description: Impact analysis job}
+  /jobs/{jobId}:
+    get:
+      operationId: getJob
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Job status
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Job"}
+  /jobs/{jobId}/pause:
+    post:
+      operationId: pauseJob
+      responses:
+        "202": {description: Pause requested}
+  /jobs/{jobId}/resume:
+    post:
+      operationId: resumeJob
+      responses:
+        "202": {description: Resume requested}
+  /jobs/{jobId}/cancel:
+    post:
+      operationId: cancelJob
+      responses:
+        "202": {description: Cancel requested}
+  /estimates:
+    post:
+      operationId: createEstimate
+      responses:
+        "200":
+          description: Estimate
+          content:
+            application/json:
+              schema: {type: object}
+  /certifications:
+    post:
+      operationId: startCertification
+      responses:
+        "202": {description: Certification job}
+components:
+  schemas:
+    JobRef:
+      type: object
+      required: [job_id, state]
+      properties:
+        job_id: {type: string}
+        state: {type: string}
+        status_url: {type: string}
+    Job:
+      type: object
+      required: [job_id, state]
+      properties:
+        job_id: {type: string}
+        state: {type: string}
+        stages:
+          type: array
+          items: {type: object}
+        estimate:
+          type: [object, "null"]
+        error:
+          type: [object, "null"]
+    QaRequest:
+      type: object
+      required: [project_id, revision_id, question]
+      properties:
+        project_id: {type: string}
+        revision_id: {type: string}
+        question: {type: string}
+        mode:
+          type: string
+          enum: [answer, navigation, impact, compare]
+        language: {type: string}
+    Error:
+      type: object
+      required: [code, message, trace_id]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        retryable: {type: boolean}
+        trace_id: {type: string}
+        details: {type: object}
+  responses:
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/Error"}

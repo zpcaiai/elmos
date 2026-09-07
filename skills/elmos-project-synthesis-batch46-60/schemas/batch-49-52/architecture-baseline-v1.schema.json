@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.architecture-baseline.v1",
+  "title": "ELMOS Architecture Baseline",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_id",
+    "style",
+    "containers",
+    "modules",
+    "decisions",
+    "quality_tactics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "containers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "data_ownership": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "communications": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "resilience": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "security": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "multitenancy": {
+      "type": "object"
+    },
+    "observability": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "deployment": {
+      "type": "object"
+    },
+    "quality_tactics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

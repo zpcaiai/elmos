@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Build Buy Partner"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $elmos-build-buy-partner for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

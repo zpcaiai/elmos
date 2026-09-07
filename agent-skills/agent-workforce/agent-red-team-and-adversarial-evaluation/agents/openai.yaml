@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 569: agent red team and adversarial evaluation"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-red-team-and-adversarial-evaluation to evaluate this capability with evidence."

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-knowledge-flywheel-claims",
+  "batch": 41,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "NOT_RUN",
+  "claims": [],
+  "packKey": "elmos-platform-knowledge-flywheel"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-product-lifecycle-metrics",
+  "batch": 43,
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "PARTIAL",
+  "metrics": [
+    {
+      "name": "backportValidationRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "compatibilityMatrixPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "deprecationOwnerCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "evidenceTraceCoverage",
+      "threshold": 0.98,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "migrationGuideAccuracyRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "mixedVersionPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "rollbackPassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "unsupportedBreakingChangeCount",
+      "threshold": 0.0,
+      "comparator": "max",
+      "measured": true,
+      "value": 0.0,
+      "evidenceRefs": [
+        "b43-schema-compatibility-run"
+      ],
+      "note": "declarative schema surface only"
+    },
+    {
+      "name": "upgradePassRate",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": false,
+      "value": null,
+      "evidenceRefs": [],
+      "note": "not measured"
+    },
+    {
+      "name": "versionedSurfaceCoverage",
+      "threshold": 1.0,
+      "comparator": "min",
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b43-schema-compatibility-run"
+      ],
+      "note": "declarative schema surface only; runtime API, SDK and runner protocol are NOT_RUN"
+    }
+  ],
+  "packKey": "elmos-platform-product-lifecycle"
+}

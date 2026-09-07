@@ -1,0 +1,7 @@
+app:
+  name: contract-assistant
+  mode: workflow
+workflow:
+  graph:
+    nodes: []
+    edges: []

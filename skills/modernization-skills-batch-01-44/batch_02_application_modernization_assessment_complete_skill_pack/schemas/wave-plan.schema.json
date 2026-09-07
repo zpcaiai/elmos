@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:wave-plan",
+  "title": "WavePlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ordering_rationale",
+    "record_id",
+    "schema_version",
+    "scope",
+    "waves"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "waves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wave_index",
+          "asset_refs"
+        ],
+        "properties": {
+          "wave_index": {
+            "type": "integer"
+          },
+          "asset_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocked_by_waves": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "ordering_rationale": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "corpus": "representative-workloads",
+  "contains_customer_data": false,
+  "execution_status": "PASSED_LOCAL",
+  "workloads": [
+    {"id":"REP-30-DAY-001","description":"Synthetic 30-day mixed token and credit ledger with pending reservations, alert update and CSV export","source":"repository-local-e2e-fixture","expected_journeys":["current-usage","reserved-usage","usage-history","usage-forecast","alert-preferences","csv-export"]}
+  ],
+  "customer_acceptance_status": "NOT_RUN"
+}

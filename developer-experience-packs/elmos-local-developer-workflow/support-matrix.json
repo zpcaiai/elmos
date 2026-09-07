@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-developer-workflow",
+  "capabilities": [
+    {
+      "capability": "ide-protocol",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "intellij",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "visual-studio",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "vscode",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "cli",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "pr-bot",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "local-preview",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "source-target-navigation",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "explainability",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "quick-fix",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "semantic-conflict",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "ownership",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "local-eval",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "recipe-authoring",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    },
+    {
+      "capability": "review",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "offline",
+      "status": "blocked",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [],
+      "constraints": [
+        "Real host, SCM, review, or air-gapped evidence is NOT_RUN."
+      ]
+    },
+    {
+      "capability": "telemetry",
+      "status": "experimental",
+      "owner": "elmos-developer-experience",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/local-cli-result.json",
+        "certification/source-manifest.json"
+      ],
+      "constraints": [
+        "Validated only in the local Java core and CLI rehearsal."
+      ]
+    }
+  ]
+}

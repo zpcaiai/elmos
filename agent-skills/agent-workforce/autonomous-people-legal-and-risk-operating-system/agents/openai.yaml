@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 584: autonomous people legal and risk operating system"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $autonomous-people-legal-and-risk-operating-system to evaluate this capability with evidence."

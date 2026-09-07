@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Escalation And Repair Workbench"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $human-escalation-and-repair-workbench to execute this ELMOS Runtime Skill with fail-closed evidence."

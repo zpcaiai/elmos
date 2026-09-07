@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/traffic-segment.schema.json",
+  "title": "Stable Traffic Segment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["segment_id", "wave_id", "routing_key", "stable", "read_percent_target", "write_percent_target", "client_can_override", "data_partition_refs"],
+  "properties": {
+    "segment_id": {"type": "string", "minLength": 1},
+    "wave_id": {"type": "string", "minLength": 1},
+    "routing_key": {"type": "string", "minLength": 1},
+    "stable": {"const": true},
+    "read_percent_target": {"type": "number", "minimum": 0, "maximum": 100},
+    "write_percent_target": {"type": "number", "minimum": 0, "maximum": 100},
+    "client_can_override": {"const": false},
+    "data_partition_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "tenant_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "region_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  }
+}

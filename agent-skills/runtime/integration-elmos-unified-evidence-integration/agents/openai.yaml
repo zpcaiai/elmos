@@ -1,0 +1,4 @@
+interface:
+  display_name: "integration elmos unified evidence integration"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $integration-elmos-unified-evidence-integration to modernize this integration scope safely."

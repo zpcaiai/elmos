@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Security Data Certification"
+  short_description: "Run evidence-bound Batch 45 security data certification work"
+  default_prompt: "Use $b45-security-data-certification to implement and verify this capability with fail-closed evidence."

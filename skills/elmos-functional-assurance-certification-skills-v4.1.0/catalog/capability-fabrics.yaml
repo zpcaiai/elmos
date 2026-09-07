@@ -1,0 +1,63 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CapabilityFabricRegistry
+metadata:
+  name: elmos-functional-assurance-certification-skills
+  version: 4.1.0
+spec:
+  preservesRoutableEntryCount: 16
+  packageRole: certification
+  fabrics:
+  - id: FABRIC-13
+    name: Independent E0-E5/P05 Production Certification Authority
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-14
+    name: Conformity Assessment Scheme, Accreditation and Mutual Recognition Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-15
+    name: AI Laboratory Competence, Digital Metrology and Proficiency Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-16
+    name: AI TEVV, Fairness, Robustness and Human Factors Measurement Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-17
+    name: Formal Proof, Tool Qualification and Trusted Computing Base Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-18
+    name: Security Evaluation, Cryptographic Validation, PQC and Attestation Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-19
+    name: Audit, CAPA, Surveillance and Post-market Certification Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-20
+    name: Machine-verifiable Certificate, Status, Transparency and Relying-party Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8
+  - id: FABRIC-21
+    name: Safety-critical and Regulated-sector Assurance Profile Fabric
+    routeOwner: domain-pack.project-generation
+    routable: false
+    status: production-contract
+    completionAuthority: K8

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Workload Aware Scheduler"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-workload-aware-scheduler to execute its scoped workflow with fail-closed evidence."

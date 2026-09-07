@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 502: operating financial variance diagnostic"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $operating-financial-variance-diagnostic to evaluate this capability with evidence."

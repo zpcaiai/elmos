@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/sql-runtime-gate-result.schema.json",
+  "title": "ELMOS SQL runtime route gate result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "routeId",
+    "fixtureDigest",
+    "fixtureRows",
+    "checks",
+    "sourceExecution",
+    "targetExecution",
+    "resultEquivalence",
+    "localDecision",
+    "independentHoldoutExecution",
+    "representativeProductionLikeExecution",
+    "independentVerification",
+    "certification"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "routeId": {
+      "type": "string",
+      "pattern": "^[a-z0-9.-]+--to--[a-z0-9.-]+$"
+    },
+    "fixtureDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "fixtureRows": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowValueTypeOrderAndDuplicateEquivalence",
+        "errorEquivalence",
+        "transactionAndLockingEquivalence",
+        "localPerformanceSlo"
+      ],
+      "properties": {
+        "rowValueTypeOrderAndDuplicateEquivalence": {
+          "enum": ["PASSED", "FAILED"]
+        },
+        "errorEquivalence": {
+          "enum": ["PASSED", "FAILED"]
+        },
+        "transactionAndLockingEquivalence": {
+          "enum": ["PASSED", "FAILED"]
+        },
+        "localPerformanceSlo": {
+          "enum": ["PASSED", "FAILED"]
+        }
+      }
+    },
+    "sourceExecution": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN"]
+    },
+    "targetExecution": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN"]
+    },
+    "resultEquivalence": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN"]
+    },
+    "localDecision": {
+      "enum": ["READY_FOR_EXTERNAL_GATE", "FAILED", "BLOCKED"]
+    },
+    "independentHoldoutExecution": {
+      "const": "NOT_RUN"
+    },
+    "representativeProductionLikeExecution": {
+      "const": "NOT_RUN"
+    },
+    "independentVerification": {
+      "const": "NOT_RUN"
+    },
+    "certification": {
+      "const": "NOT_CERTIFIED"
+    }
+  }
+}

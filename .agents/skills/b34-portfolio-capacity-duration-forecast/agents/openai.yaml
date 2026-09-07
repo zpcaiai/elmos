@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Portfolio Capacity Duration Forecast"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-portfolio-capacity-duration-forecast to execute this ELMOS Runtime Skill with fail-closed evidence."

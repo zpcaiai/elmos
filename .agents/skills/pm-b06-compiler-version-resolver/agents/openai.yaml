@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B06: Compiler Version Resolver"
+  short_description: "Run Precision Migration B06 with evidence controls"
+  default_prompt: "Use $pm-b06-compiler-version-resolver to execute this Precision Migration contract with fail-closed evidence."

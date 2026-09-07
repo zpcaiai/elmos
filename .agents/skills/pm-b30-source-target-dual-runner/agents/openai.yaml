@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B30: Source Target Dual Runner"
+  short_description: "Run Precision Migration B30 with evidence controls"
+  default_prompt: "Use $pm-b30-source-target-dual-runner to execute this Precision Migration contract with fail-closed evidence."

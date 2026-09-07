@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B32: Batch 32 Advanced Dynamic Validation"
+  short_description: "Run Precision Migration B32 with evidence controls"
+  default_prompt: "Use $pm-b32-advanced-dynamic-validation to execute this Precision Migration contract with fail-closed evidence."

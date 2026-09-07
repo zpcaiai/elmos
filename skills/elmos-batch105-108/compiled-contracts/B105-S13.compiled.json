@@ -1,0 +1,73 @@
+{
+  "contract": {
+    "id": "B105-S13",
+    "batch": 105,
+    "name": "profile-and-database-matrix-verifier",
+    "dependencies": [
+      "B105-S12"
+    ],
+    "inputs": [
+      "project profile inventory",
+      "approved matrix",
+      "candidate commit"
+    ],
+    "outputs": [
+      "MatrixRunResults",
+      "coverage map",
+      "unverified-scope register"
+    ],
+    "implementation": {
+      "modules": [
+        "quality/matrix/ProfileDatabaseMatrixService.java",
+        "private-runner/internal/matrix/executor.go",
+        "adapters/databases/"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/matrix-runs",
+        "GET /api/matrix-runs/{id}",
+        "event matrix.completed"
+      ],
+      "data": [
+        "matrix_definition",
+        "matrix_cell_run",
+        "unverified_scope"
+      ]
+    },
+    "workflow": [
+      "\u53d1\u73b0Maven/Gradle/Spring/.NET/Python/Go\u73af\u5883\u53d8\u4f53",
+      "\u6839\u636e\u98ce\u9669\u9009\u62e9\u6700\u5c0f\u8986\u76d6\u77e9\u9635",
+      "\u4e3a\u6bcf\u4e2a\u5355\u5143\u914d\u7f6e\u4e34\u65f6\u6570\u636e\u5e93\u548cSecret",
+      "\u5e76\u884c\u6267\u884c\u6784\u5efa\u3001\u6d4b\u8bd5\u3001\u542f\u52a8\u548c\u8fc1\u79fb",
+      "\u805a\u5408\u5355\u5143\u7ed3\u679c\u5e76\u533a\u5206NOT_RUN/UNSUPPORTED/FAIL",
+      "\u751f\u6210\u5df2\u9a8c\u8bc1\u8303\u56f4\u548c\u5269\u4f59\u98ce\u9669"
+    ],
+    "tests": [
+      "\u9ed8\u8ba4Profile\u901a\u8fc7\u4e0d\u4ee3\u8868\u5168\u90e8\u901a\u8fc7",
+      "\u6570\u636e\u5e93\u521d\u59cb\u5316\u5931\u8d25\u7cbe\u786e\u5f52\u5355\u5143",
+      "\u672a\u8fd0\u884c\u5355\u5143\u663e\u793aNOT_RUN",
+      "\u8de8\u79df\u6237\u6570\u636e\u5e93\u51ed\u8bc1\u9694\u79bb",
+      "\u77e9\u9635\u53d6\u6d88\u540e\u6e05\u7406\u6240\u6709\u8d44\u6e90"
+    ],
+    "evidence": [
+      "matrix-definition.json",
+      "matrix-results.json",
+      "database-logs/",
+      "unverified-scope.json",
+      "cleanup-receipts.json"
+    ],
+    "definition_of_done": [
+      "\u6bcf\u4e2a\u58f0\u660e\u5355\u5143\u6709\u7ec8\u6001",
+      "NOT_RUN\u4e0d\u8ba1PASS",
+      "\u4e34\u65f6\u8d44\u6e90\u5df2\u6e05\u7406",
+      "\u5931\u8d25\u53ef\u91cd\u653e",
+      "\u62a5\u544a\u660e\u786e\u9a8c\u8bc1\u8fb9\u754c"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:f27a0cb0aeba4510d626ccba52817d7efb1ad4f5fa9aba6e12d46493926fc68f",
+  "compiledVersion": 1
+}

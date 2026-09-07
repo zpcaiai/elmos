@@ -1,0 +1,94 @@
+{
+  "package_id": "P05",
+  "name": "elmos-conversion-reliability-verification-harness",
+  "version": "1.0.0",
+  "phase": "Phase 1（P0 最高优先级）",
+  "dependencies": [
+    "P00",
+    "P01",
+    "P02"
+  ],
+  "capabilities": [
+    {
+      "id": "P05-C01",
+      "name": "Requirement Coverage Ledger",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C02",
+      "name": "Capability Coverage Ledger",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C03",
+      "name": "Mechanical Completion Gate",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C04",
+      "name": "Verification Planner",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C05",
+      "name": "Compiler & Static Pipeline",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C06",
+      "name": "Contract & Integration Pipeline",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C07",
+      "name": "Differential Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C08",
+      "name": "Generative Testing",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C09",
+      "name": "UI & Multimodal Verifier",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C10",
+      "name": "Nonfunctional Verification",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C11",
+      "name": "Diagnosis & Repair Loop",
+      "maturity": "design"
+    },
+    {
+      "id": "P05-C12",
+      "name": "Evidence & Certification Engine",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenAI Harness Engineering",
+    "OpenAI Symphony",
+    "HKUDS OpenHarness",
+    "OpenRouter Skills",
+    "OpenRouter TypeScript Agent"
+  ],
+  "subskills": [
+    "requirement-coverage-ledger",
+    "capability-coverage-ledger",
+    "mechanical-completion-gate",
+    "verification-planner",
+    "compiler-static-pipeline",
+    "contract-integration-pipeline",
+    "differential-runtime",
+    "generative-testing",
+    "ui-multimodal-verifier",
+    "nonfunctional-verifier",
+    "diagnosis-repair-loop",
+    "evidence-certification-engine"
+  ]
+}

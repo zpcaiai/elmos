@@ -1,0 +1,29 @@
+batch: 10
+slug: backend-frontend-semantic-ir
+title: "Backend与Frontend Semantic IR"
+phase: "C 精密语义表示"
+skills:
+  - name: backend-application-ir
+    description: "定义应用、模块、端口、服务、命令、查询、实体和部署边界。"
+  - name: controller-endpoint-ir
+    description: "统一路由、参数、校验、鉴权、响应、错误、流式接口和协议契约。"
+  - name: domain-and-service-ir
+    description: "表达领域规则、应用服务、领域服务、工作流、不变量和用例边界。"
+  - name: repository-and-orm-ir
+    description: "表达实体、映射、查询、Tracking、Lazy load、事务、并发控制和迁移。"
+  - name: dependency-injection-ir
+    description: "表达生命周期、Scope、绑定、工厂、拦截器、代理和条件注册。"
+  - name: message-consumer-ir
+    description: "表达消费者、订阅、批量、顺序、重试、幂等、ACK 和死信行为。"
+  - name: scheduled-job-ir
+    description: "表达调度、并发策略、补偿、重跑、锁和失败恢复。"
+  - name: frontend-component-ir
+    description: "表达组件输入、输出、状态、派生状态、子内容、事件和渲染语义。"
+  - name: ui-layout-constraint-ir
+    description: "表达约束布局、Flex/Grid、尺寸、间距、滚动、响应式和主题。"
+  - name: event-and-lifecycle-ir
+    description: "表达挂载、更新、销毁、Effect、订阅、焦点、键盘和前后台生命周期。"
+  - name: route-navigation-ir
+    description: "表达路由、参数、守卫、返回栈、深链接、Tab、恢复和导航结果。"
+  - name: platform-capability-ir
+    description: "表达支付、分享、通知、相机、定位、蓝牙、文件、设备和权限能力。"

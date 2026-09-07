@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Release Gate",
+  "type": "object",
+  "required": [
+    "gates",
+    "decision"
+  ],
+  "properties": {
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "required",
+          "result"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "result": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NOT_RUN",
+              "WAIVED"
+            ]
+          }
+        }
+      }
+    },
+    "decision": {
+      "enum": [
+        "RELEASE",
+        "SHADOW_ONLY",
+        "CANARY_ONLY",
+        "BLOCK",
+        "ROLLBACK"
+      ]
+    },
+    "unresolved": {
+      "type": "array"
+    },
+    "approvals": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Clinical Ops Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $clinical-ops-policy-authorization-approval-segregation-8bb26d4f to implement its fail-closed ELMOS Product B52 contract."

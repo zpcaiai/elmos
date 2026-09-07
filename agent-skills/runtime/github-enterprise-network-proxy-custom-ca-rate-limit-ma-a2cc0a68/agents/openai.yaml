@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 008"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $github-enterprise-network-proxy-custom-ca-rate-limit-ma-a2cc0a68 to implement its fail-closed ELMOS Product Batch 35 contract."

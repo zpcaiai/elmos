@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "model_key": "model.precision-maturity-v1",
+  "owner": "elmos-migration-platform-engineering",
+  "states": ["spec-only", "installed", "adapter-declared", "adapter-contract-passed", "local-executed", "holdout-passed", "external-verified", "certified", "failed"],
+  "initial_state": "spec-only",
+  "commands": [
+    { "command": "install", "from": ["spec-only"], "to": "installed", "guard": "source-and-interface-digests-match", "effects": ["record-installed-identity"] },
+    { "command": "declare-adapter", "from": ["installed"], "to": "adapter-declared", "guard": "allowlisted-handler-contract-exists", "effects": ["record-permissions-and-supported-modes"] },
+    { "command": "pass-local-contract", "from": ["adapter-declared"], "to": "adapter-contract-passed", "guard": "negative-and-conformance-evidence-resolves", "effects": ["record-local-evidence"] },
+    { "command": "fail", "from": ["spec-only", "installed", "adapter-declared", "adapter-contract-passed", "local-executed", "holdout-passed", "external-verified"], "to": "failed", "guard": "required-check-failed", "effects": ["block-release"] }
+  ],
+  "invariants": ["no-skipped-maturity-transition", "not-run-never-passes", "certified-requires-external-verified", "p0-unknown-blocks"],
+  "forbidden_transitions": [
+    { "from": "installed", "event": "certify" },
+    { "from": "adapter-declared", "event": "external-verify" },
+    { "from": "failed", "event": "promote-without-new-evidence" }
+  ],
+  "timeouts": []
+}

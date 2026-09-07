@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Risk Scanner"
+  short_description: "Scan architecture and complexity risks"
+  default_prompt: "Use $architecture-risk-scanner for ELMOS Batch 3 source risks."

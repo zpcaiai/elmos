@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Platform Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-platform-planning-capacity-scenario-optimization-a-d2917a53 to implement its fail-closed ELMOS Product B44 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-policy-authorization-approval-segrega-b676ba9f to implement its fail-closed ELMOS Product B41 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 643: government security privacy sovereignty control pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $government-security-privacy-sovereignty-control-pack to evaluate this capability with evidence."

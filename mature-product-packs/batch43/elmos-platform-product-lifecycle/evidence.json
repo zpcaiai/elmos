@@ -1,0 +1,18 @@
+{
+  "batch": 43,
+  "packKey": "elmos-platform-product-lifecycle",
+  "claims": [
+    {
+      "claimId": "b43-schema-surface-compatibility",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b43-schema-compatibility-run"
+      ],
+      "provenanceRefs": [
+        "batch43-schema-compatibility-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
+}

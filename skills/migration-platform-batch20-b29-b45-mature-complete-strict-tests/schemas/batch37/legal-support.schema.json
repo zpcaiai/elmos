@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "legal_owner",
+    "support_owner",
+    "legal",
+    "support",
+    "open_blocking_legal_cases",
+    "open_p0_sla_breaches"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "legal_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "support_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "legal": {
+      "type": "object",
+      "required": [
+        "evidence_preservation",
+        "appeal_enabled",
+        "export_controls",
+        "sanctions_screening"
+      ],
+      "properties": {
+        "evidence_preservation": {
+          "const": true
+        },
+        "appeal_enabled": {
+          "const": true
+        },
+        "export_controls": {
+          "const": true
+        },
+        "sanctions_screening": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "support": {
+      "type": "object",
+      "required": [
+        "tier_ownership",
+        "jit_access",
+        "publisher_no_response_takeover",
+        "diagnostic_redaction"
+      ],
+      "properties": {
+        "tier_ownership": {
+          "const": true
+        },
+        "jit_access": {
+          "const": true
+        },
+        "publisher_no_response_takeover": {
+          "const": true
+        },
+        "diagnostic_redaction": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "open_blocking_legal_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "open_p0_sla_breaches": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/legal-support.schema.json"
+}

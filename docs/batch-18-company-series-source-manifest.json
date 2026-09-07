@@ -1,0 +1,17 @@
+{
+  "batch": 18,
+  "skill_range": [
+    669,
+    745
+  ],
+  "skill_count": 77,
+  "source_file": "pasted-text.txt",
+  "source_sha256": "b94f20dfc4901a4bdb1c0d3ada77d2051f9a1b78be2ab246a30495ec94d77564",
+  "generated_groups": [
+    "agent-skills/group-integration",
+    "docs/batch-18-group-integration-acceptance-checklist.md",
+    "contracts/group-integration-schema",
+    "modules/persistence/src/main/resources/db/migration/V27__group_integration_factory.sql"
+  ],
+  "external_operation_executed": false
+}

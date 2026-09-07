@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2106",
+  "skill_name": "frt-2106-critical-user-journey-registry",
+  "batch": "G21",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g21/frt-2106-critical-user-journey-registry/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.critical-user-journey-registry",
+  "execution_contract_sha256": "sha256:71c7db61634a095fc2fdfd80d090c805b8df427eb8d4d2d5ed5c7302b3a8f3bd",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f307d05a06a65491f6685d5bdc687a972d02027dd99233d45cae9ae618f5cbd5",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

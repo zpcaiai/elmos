@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-observability-sla-cockpit-alerting-and-a3e014d1 to implement its fail-closed ELMOS Product B42 contract."

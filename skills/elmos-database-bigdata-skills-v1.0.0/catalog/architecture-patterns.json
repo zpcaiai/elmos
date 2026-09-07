@@ -1,0 +1,252 @@
+{
+  "catalog_version": "2026-08-19.1",
+  "patterns": [
+    {
+      "id": "batch-warehouse",
+      "name": "Batch-first Warehouse",
+      "type": "primary",
+      "best_when": [
+        "freshness is minutes to days",
+        "historical recomputation dominates",
+        "stable BI and finance reconciliation"
+      ],
+      "avoid_when": [
+        "sub-second reaction is required",
+        "continuous stateful event processing dominates"
+      ],
+      "requires": [
+        "bounded sources",
+        "incremental/full strategy",
+        "idempotent commits",
+        "orchestration",
+        "data quality"
+      ],
+      "risks": [
+        "batch window growth",
+        "late source arrival",
+        "full-refresh cost"
+      ]
+    },
+    {
+      "id": "streaming-kappa",
+      "name": "Kappa / Streaming-first",
+      "type": "primary",
+      "best_when": [
+        "durable replayable event log exists",
+        "same streaming logic can rebuild history",
+        "seconds or lower freshness"
+      ],
+      "avoid_when": [
+        "long history cannot be retained or replayed",
+        "complex batch-only algorithms dominate",
+        "stream replay cost is prohibitive"
+      ],
+      "requires": [
+        "replayable log",
+        "schema registry",
+        "state/checkpoint strategy",
+        "idempotent or transactional sinks"
+      ],
+      "risks": [
+        "state growth",
+        "replay duration",
+        "stream code operational complexity"
+      ]
+    },
+    {
+      "id": "lambda",
+      "name": "Lambda",
+      "type": "primary",
+      "best_when": [
+        "batch and speed layers require materially different semantics or engines",
+        "strict historical reconciliation plus ultra-low latency is mandatory"
+      ],
+      "avoid_when": [
+        "same logic can run in a unified engine",
+        "team cannot maintain duplicate paths"
+      ],
+      "requires": [
+        "batch layer",
+        "speed layer",
+        "serving reconciliation",
+        "parity tests"
+      ],
+      "risks": [
+        "duplicate logic",
+        "inconsistent outputs",
+        "high operations cost"
+      ]
+    },
+    {
+      "id": "unified-batch-stream",
+      "name": "Unified Bounded/Unbounded Processing",
+      "type": "primary",
+      "best_when": [
+        "one dataflow model can express batch and stream",
+        "engine supports bounded and unbounded execution",
+        "parity is valuable"
+      ],
+      "avoid_when": [
+        "sink semantics differ irreconcilably",
+        "legacy batch and realtime constraints require separate stacks"
+      ],
+      "requires": [
+        "event-time model",
+        "bounded/unbounded sources",
+        "runtime mode policy",
+        "batch-stream parity tests"
+      ],
+      "risks": [
+        "unified branding hiding different runtime behavior",
+        "state and sink incompatibility"
+      ]
+    },
+    {
+      "id": "lakehouse",
+      "name": "Lakehouse",
+      "type": "primary-or-secondary",
+      "best_when": [
+        "large historical datasets",
+        "open table format and multi-engine access",
+        "schema/partition evolution",
+        "time travel and backfill"
+      ],
+      "avoid_when": [
+        "only small OLTP workload",
+        "sub-millisecond serving is the main requirement"
+      ],
+      "requires": [
+        "object storage",
+        "open table format",
+        "catalog",
+        "maintenance jobs",
+        "query engine"
+      ],
+      "risks": [
+        "small files",
+        "catalog bottleneck",
+        "multi-writer incompatibility",
+        "data swamp without governance"
+      ]
+    },
+    {
+      "id": "federated-query",
+      "name": "Federated Query / Virtualization",
+      "type": "secondary",
+      "best_when": [
+        "data cannot or should not be centralized",
+        "cross-source discovery",
+        "migration transition"
+      ],
+      "avoid_when": [
+        "source systems cannot tolerate scans",
+        "high-frequency low-latency joins across sources"
+      ],
+      "requires": [
+        "connectors",
+        "pushdown verification",
+        "identity propagation",
+        "workload governance"
+      ],
+      "risks": [
+        "data movement",
+        "source overload",
+        "inconsistent semantics",
+        "network cost"
+      ]
+    },
+    {
+      "id": "data-fabric-overlay",
+      "name": "Data Fabric Overlay",
+      "type": "overlay",
+      "best_when": [
+        "heterogeneous platforms need common metadata, policy, discovery, lineage and automation"
+      ],
+      "avoid_when": [
+        "treated as a replacement for physical data architecture"
+      ],
+      "requires": [
+        "metadata standard",
+        "catalog",
+        "lineage",
+        "policy engine",
+        "automation"
+      ],
+      "risks": [
+        "marketing-only architecture",
+        "metadata without ownership",
+        "policy drift"
+      ]
+    },
+    {
+      "id": "data-mesh-operating-model",
+      "name": "Data Mesh Operating Model",
+      "type": "overlay",
+      "best_when": [
+        "many domains own data products",
+        "central team is bottleneck",
+        "federated governance is feasible"
+      ],
+      "avoid_when": [
+        "small organization",
+        "domains lack engineering and ownership maturity"
+      ],
+      "requires": [
+        "domain ownership",
+        "data product contracts",
+        "self-service platform",
+        "federated governance"
+      ],
+      "risks": [
+        "duplicated platforms",
+        "inconsistent standards",
+        "ownership without accountability"
+      ]
+    },
+    {
+      "id": "htap",
+      "name": "HTAP",
+      "type": "primary-or-secondary",
+      "best_when": [
+        "operational data must be analyzed with low replication delay",
+        "one platform can satisfy both workloads after benchmark"
+      ],
+      "avoid_when": [
+        "OLTP and OLAP isolation or cost requirements strongly diverge"
+      ],
+      "requires": [
+        "workload isolation",
+        "row/column path",
+        "resource governance",
+        "benchmark"
+      ],
+      "risks": [
+        "analytics harming transactions",
+        "vendor-specific behavior",
+        "cost"
+      ]
+    },
+    {
+      "id": "polyglot-serving",
+      "name": "Polyglot Persistence and CQRS Serving",
+      "type": "secondary",
+      "best_when": [
+        "different bounded contexts and read models have distinct data models and SLOs"
+      ],
+      "avoid_when": [
+        "additional stores are not justified by measurable requirements"
+      ],
+      "requires": [
+        "single source of truth",
+        "CDC/outbox",
+        "rebuildability",
+        "idempotency"
+      ],
+      "risks": [
+        "consistency lag",
+        "operational sprawl",
+        "unclear ownership"
+      ]
+    }
+  ]
+}

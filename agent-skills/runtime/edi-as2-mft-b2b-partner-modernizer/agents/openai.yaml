@@ -1,0 +1,4 @@
+interface:
+  display_name: "edi as2 mft b2b partner modernizer"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $edi-as2-mft-b2b-partner-modernizer to modernize this integration scope safely."

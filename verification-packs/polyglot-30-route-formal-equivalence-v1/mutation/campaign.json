@@ -1,0 +1,38 @@
+{
+  "budgets": {
+    "max_minutes": 120,
+    "max_mutants": 500
+  },
+  "campaign_key": "mutation.formal-route-evidence-gates",
+  "equivalent_mutant_policy": "explicit-review-no-score-credit",
+  "operators": [
+    {
+      "key": "flip-operator",
+      "risk": "P0"
+    },
+    {
+      "key": "drop-semantic-chunk",
+      "risk": "P0"
+    },
+    {
+      "key": "forge-evidence-digest",
+      "risk": "P0"
+    },
+    {
+      "key": "promote-unknown-to-proved",
+      "risk": "P0"
+    }
+  ],
+  "owner": "elmos-polyglot-verification-engineering",
+  "required_tests": [
+    "engines/polyglot-route-engine/tests/test_layered_equivalence.py",
+    "tests/batch29/test_toolkit.py",
+    "tests/batch35/test_formal_route_campaign.py"
+  ],
+  "schema_version": 1,
+  "target_scope": [
+    "engines/polyglot-route-engine",
+    "scripts/batch29",
+    "scripts/batch35"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "source_architecture",
+    "target_architecture",
+    "mappings",
+    "waves",
+    "risks",
+    "cost_estimate",
+    "cutover_plan",
+    "decisions"
+  ],
+  "properties": {
+    "source_architecture": {
+      "type": "object"
+    },
+    "target_architecture": {
+      "type": "object"
+    },
+    "mappings": {
+      "type": "array"
+    },
+    "waves": {
+      "type": "array"
+    },
+    "risks": {
+      "type": "array"
+    },
+    "cost_estimate": {
+      "type": "object"
+    },
+    "cutover_plan": {
+      "type": "object"
+    },
+    "decisions": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

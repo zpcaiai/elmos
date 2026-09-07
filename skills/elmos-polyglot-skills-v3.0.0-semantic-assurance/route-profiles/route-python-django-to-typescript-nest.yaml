@@ -1,0 +1,55 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-python-django-to-typescript-nest
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: python
+  target: typescript
+  mode: cross-stack
+  intent: Convert Django applications to NestJS through bounded domains while preserving
+    ORM, admin/workflow, auth, jobs, and API behavior.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-python
+  - elmos-adapter-typescript
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Django app inventory
+  - NestJS target architecture
+  - schema and workflow baselines
+  preservationPriorities:
+  - model constraints
+  - transactions
+  - auth/permissions
+  - signals/jobs
+  - templates or APIs
+  stages:
+  - Define migration units by Django app
+  - Freeze database/API contracts
+  - Map models and migrations
+  - Replace signals with explicit events
+  - Rebuild admin or operator UI intentionally
+  - Strangler cutover
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

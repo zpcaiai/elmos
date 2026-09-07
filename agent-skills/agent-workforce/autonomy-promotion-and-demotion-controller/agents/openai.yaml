@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 554: autonomy promotion and demotion controller"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $autonomy-promotion-and-demotion-controller to evaluate this capability with evidence."

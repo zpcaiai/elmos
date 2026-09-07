@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/tenancy-identity-evidence.schema.json",
+  "title": "T-A Tenancy and Identity Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "tenant_ownership_coverage", "cross_tenant_data_leaks", "cross_tenant_artifact_contamination", "cross_tenant_cache_contamination", "tenant_key_isolation_coverage", "noisy_neighbor_controls_passed", "oidc_passed", "saml_passed", "scim_required", "scim_passed", "scim_idempotent", "session_revocation_passed", "deprovision_latency_seconds", "mfa_for_sensitive_roles", "wrong_tenant_identity_bindings", "idp_tenant_binding_complete", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1}, "status": {"const": "PASSED"},
+    "tenant_ownership_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "cross_tenant_data_leaks": {"const": 0}, "cross_tenant_artifact_contamination": {"const": 0}, "cross_tenant_cache_contamination": {"const": 0},
+    "tenant_key_isolation_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "noisy_neighbor_controls_passed": {"const": true},
+    "oidc_passed": {"type": "boolean"}, "saml_passed": {"type": "boolean"}, "scim_required": {"type": "boolean"}, "scim_passed": {"type": "boolean"}, "scim_idempotent": {"type": "boolean"},
+    "session_revocation_passed": {"const": true}, "deprovision_latency_seconds": {"type": "integer", "minimum": 0}, "mfa_for_sensitive_roles": {"const": true},
+    "wrong_tenant_identity_bindings": {"const": 0}, "idp_tenant_binding_complete": {"const": true}, "authority_id": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"}, "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "anyOf": [{"properties": {"oidc_passed": {"const": true}}}, {"properties": {"saml_passed": {"const": true}}}],
+  "allOf": [{"if": {"properties": {"scim_required": {"const": true}}, "required": ["scim_required"]}, "then": {"properties": {"scim_passed": {"const": true}, "scim_idempotent": {"const": true}}}}]
+}

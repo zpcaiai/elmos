@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Responsible Ai Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-master-data-identity-hierarchy-and-effec-3686a3ef to implement its fail-closed ELMOS Product B45 contract."

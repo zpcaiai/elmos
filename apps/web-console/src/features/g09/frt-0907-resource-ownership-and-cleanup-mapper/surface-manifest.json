@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0907",
+  "skill_name": "frt-0907-resource-ownership-and-cleanup-mapper",
+  "batch": "G09",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g09/frt-0907-resource-ownership-and-cleanup-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "delivery_pipeline",
+  "capability_key": "frt.g09.resource-ownership-and-cleanup-mapper",
+  "execution_contract_sha256": "sha256:b1721e1ddc1e35fae822e7ddf72c612f71ae621138c70a0ac86558d7b529ffa4",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "states"
+    ],
+    "optional": [
+      "effects",
+      "asyncOperations"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cff7702f6b4cc7109021e2dc355b32b72e978c16fac6a7cde9b6c019c1d9361f",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

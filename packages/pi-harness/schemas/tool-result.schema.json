@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["call_id", "items", "status", "metadata"],
+  "properties": {
+    "call_id": {"type": "string", "format": "uuid"},
+    "items": {"type": "array", "items": {"type": "object"}},
+    "status": {"enum": ["completed", "failed", "cancelled", "timed_out", "authentication_required", "stale"]},
+    "metadata": {"type": "object"}
+  }
+}

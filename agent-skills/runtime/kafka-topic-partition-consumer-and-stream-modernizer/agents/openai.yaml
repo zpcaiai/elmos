@@ -1,0 +1,4 @@
+interface:
+  display_name: "kafka topic partition consumer and stream modernizer"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $kafka-topic-partition-consumer-and-stream-modernizer to modernize this integration scope safely."

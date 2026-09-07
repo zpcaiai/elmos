@@ -1,0 +1,94 @@
+{
+  "package_id": "P07",
+  "name": "elmos-transformation-learning-evolution",
+  "version": "1.0.0",
+  "phase": "Phase 3（长期复利护城河）",
+  "dependencies": [
+    "P00",
+    "P02",
+    "P03",
+    "P05",
+    "P06"
+  ],
+  "capabilities": [
+    {
+      "id": "P07-C01",
+      "name": "Transformation Knowledge Base",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C02",
+      "name": "Project Archetype Knowledge Base",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C03",
+      "name": "Failure & Repair Corpus",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C04",
+      "name": "Rule Promotion & Governance",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C05",
+      "name": "Benchmark Corpus",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C06",
+      "name": "Evidence Corpus",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C07",
+      "name": "Retrieval & Repair Ranker",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C08",
+      "name": "Drift & Regression Detector",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C09",
+      "name": "Active Learning Queue",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C10",
+      "name": "Specialized Model Pipeline",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C11",
+      "name": "Tenant/IP Isolation & Consent",
+      "maturity": "design"
+    },
+    {
+      "id": "P07-C12",
+      "name": "Knowledge Quality Auditor",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenAI Harness Engineering",
+    "OpenRouter Skills",
+    "Elmos proprietary transformation architecture"
+  ],
+  "subskills": [
+    "transformation-knowledge-base",
+    "project-archetype-knowledge-base",
+    "failure-repair-corpus",
+    "rule-promotion-governance",
+    "benchmark-corpus",
+    "evidence-corpus",
+    "repair-retrieval-ranker",
+    "drift-regression-detector",
+    "active-learning-queue",
+    "specialized-model-training",
+    "tenant-ip-isolation",
+    "knowledge-quality-auditor"
+  ]
+}

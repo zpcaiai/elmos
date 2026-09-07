@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Agentic Runtime Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $agentic-runtime-planning-capacity-scenario-optimization-306b1067 to implement its fail-closed ELMOS Product B45 contract."

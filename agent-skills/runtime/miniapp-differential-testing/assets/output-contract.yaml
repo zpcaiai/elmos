@@ -1,0 +1,30 @@
+skill: miniapp-differential-testing
+version: 1.0.0
+task_ids:
+- MAPP-031
+- MAPP-032
+required_outputs:
+- path: differential-result.json
+  required: true
+- path: flow-traces/**
+  required: true
+- path: semantic-diff-report.html
+  required: true
+- path: repair-candidates.json
+  required: true
+gates:
+- name: 关键流程 100% 通过
+  required: true
+- name: 无未分类差异
+  required: true
+- name: 失败可重复或明确标记 flaky 并阻断
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

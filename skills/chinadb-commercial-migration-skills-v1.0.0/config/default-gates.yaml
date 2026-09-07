@@ -1,0 +1,29 @@
+version: 1
+# Defaults are starting points. Route contracts may tighten them; loosening requires an explicit waiver.
+E1_static_conversion:
+  unsupported_critical_objects: 0
+  unresolved_high_risk_objects: 0
+  compilation_success_rate: 1.0
+E2_data_integrity:
+  row_count_exact_for_transactional_tables: true
+  checksum_mismatch_rate: 0.0
+  sequence_identity_alignment_required: true
+  cdc_gap_events_allowed: 0
+E3_behavior_equivalence:
+  p0_p1_mismatches: 0
+  critical_test_pass_rate: 1.0
+  error_contract_equivalence_required: true
+  transaction_outcome_equivalence_required: true
+E4_performance_equivalence:
+  # Defaults; override per workload/SLO.
+  p95_latency_ratio_max: 1.15
+  p99_latency_ratio_max: 1.20
+  throughput_ratio_min: 0.95
+  error_rate_regression_max_absolute: 0.001
+E5_operations_cutover:
+  rehearsal_success_required: true
+  rollback_rehearsal_success_required: true
+  backup_restore_test_required: true
+  observability_ready_required: true
+  security_review_required: true
+  no_unexpired_critical_waiver: true

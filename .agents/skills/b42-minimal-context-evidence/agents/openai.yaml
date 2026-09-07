@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Minimal Context Evidence"
+  short_description: "Run evidence-bound Batch 42 minimal context evidence work"
+  default_prompt: "Use $b42-minimal-context-evidence to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,39 @@
+<view class="{{ "controlCard" }}">
+  <view>
+    <text class="{{ "kind" }}">
+      {{ proposal.remediationKind }}
+    </text>
+    <text class="cc-strong">
+      {{ proposal.titleCode }}
+    </text>
+  </view>
+  <text class="cc-code">
+    {{ proposal.recipeId }}
+  </text>
+  <view class="cc-p">
+    {{ proposal.status }}
+    · 风险
+    {{ proposal.riskLevel }}
+  </view>
+  <text class="cc-small" aria-label="{{ &quot;前置摘要：&quot; + proposal.preconditionDigest }}">
+    前置摘要：
+    {{ proposal.preconditionDigest.slice(0, 24) }}
+    …
+  </text>
+  <view wx:if="{{ proposal.status === &quot;PROPOSED&quot; }}" class="{{ "inlineActions" }}">
+    <button class="primary-button" type="button" disabled="{{ disabled }}" bindtap="handleClickButton0">
+      批准
+    </button>
+    <button class="secondary-button" type="button" disabled="{{ disabled }}" bindtap="handleClickButton1">
+      拒绝
+    </button>
+  </view>
+  <button wx:if="{{ proposal.status === &quot;APPROVED&quot; }}" class="primary-button" type="button" disabled="{{ disabled }}" bindtap="handleClickButton2">
+    生成摘要绑定 SCM 计划
+  </button>
+  <text wx:if="{{ proposal.artifactDigest }}" class="cc-small" aria-label="{{ &quot;产物摘要：&quot; + proposal.artifactDigest }}">
+    产物摘要：
+    {{ proposal.artifactDigest.slice(0, 24) }}
+    …
+  </text>
+</view>

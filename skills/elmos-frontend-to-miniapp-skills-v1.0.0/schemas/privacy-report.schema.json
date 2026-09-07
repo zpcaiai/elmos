@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/privacy-report.schema.json",
+  "title": "MiniApp Privacy and Permission Report",
+  "type": "object",
+  "required": [
+    "report_id",
+    "platform",
+    "verdict",
+    "data_flows",
+    "permissions",
+    "secret_findings",
+    "findings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "report_id": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "wechat",
+        "alipay",
+        "douyin",
+        "xiaohongshu"
+      ]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "blocked",
+        "unknown"
+      ]
+    },
+    "data_flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "data_type",
+          "source",
+          "purpose",
+          "destination",
+          "consent"
+        ],
+        "properties": {
+          "data_type": {
+            "type": "string"
+          },
+          "sensitive": {
+            "type": "boolean"
+          },
+          "source": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "consent": {
+            "type": "string",
+            "enum": [
+              "not-required",
+              "required-present",
+              "required-missing",
+              "unknown"
+            ]
+          },
+          "retention": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "permission",
+          "trigger",
+          "purpose",
+          "status"
+        ],
+        "properties": {
+          "permission": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "valid",
+              "invalid",
+              "unknown"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "secret_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "fingerprint",
+          "severity",
+          "path"
+        ],
+        "properties": {
+          "fingerprint": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "severity",
+          "message",
+          "blocking"
+        ],
+        "properties": {
+          "finding_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

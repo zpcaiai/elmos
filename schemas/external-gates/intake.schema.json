@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/external-gates/intake.schema.json",
+  "title": "ELMOS Batch 29 and Batch 35 external gate intake",
+  "type": "object",
+  "required": ["schema_version", "namespace", "intake_id", "batch", "subject", "stages", "policy"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "elmos.external-gate-intake" },
+    "intake_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,128}$" },
+    "batch": { "enum": [29, 35] },
+    "subject": {
+      "type": "object",
+      "required": ["kind", "key", "version", "producer", "snapshot"],
+      "properties": {
+        "kind": { "enum": ["batch29-route", "batch35-verification-pack"] },
+        "key": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,160}$" },
+        "version": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "producer": { "$ref": "#/$defs/identity" },
+        "snapshot": { "$ref": "#/$defs/contentReference" }
+      },
+      "additionalProperties": false
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/stage" }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["repository_status_update", "production_operation_authorized", "maximum_local_decision"],
+      "properties": {
+        "repository_status_update": { "const": false },
+        "production_operation_authorized": { "const": false },
+        "maximum_local_decision": { "const": "ACCEPTED_FOR_REPOSITORY_GATE" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "required": ["actor_id", "organization_id"],
+      "properties": {
+        "actor_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "organization_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" }
+      },
+      "additionalProperties": false
+    },
+    "contentReference": {
+      "type": "object",
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": { "type": "string", "pattern": "^(file|workspace|cas):" },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string", "minLength": 1, "maxLength": 128 }
+      },
+      "additionalProperties": false
+    },
+    "signedPayload": {
+      "type": "object",
+      "required": [
+        "record_id", "namespace", "intake_id", "batch", "subject_digest",
+        "subject_key", "subject_version", "producer_actor_id", "producer_organization_id",
+        "stage", "stage_binding_digest",
+        "actor_id", "organization_id", "issued_at", "expires_at"
+      ],
+      "properties": {
+        "record_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,160}$" },
+        "namespace": { "const": "elmos.external-gate-intake" },
+        "intake_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{3,128}$" },
+        "batch": { "enum": [29, 35] },
+        "subject_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "subject_key": { "type": "string", "minLength": 2 },
+        "subject_version": { "type": "string", "minLength": 1 },
+        "producer_actor_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "producer_organization_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "stage": {
+          "enum": [
+            "independent_holdout", "representative_repository", "external_execution",
+            "representative_production_workload"
+          ]
+        },
+        "stage_binding_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "actor_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "organization_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "issued_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "envelope": {
+      "type": "object",
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": { "const": "ed25519" },
+        "key_id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{2,128}$" },
+        "payload": { "$ref": "#/$defs/signedPayload" },
+        "signature": { "type": "string", "minLength": 16 }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["role", "artifact"],
+      "properties": {
+        "role": {
+          "enum": [
+            "corpus-manifest", "repository-manifest", "workload-manifest",
+            "source-build-result", "target-build-result", "behavior-comparison",
+            "execution-result", "oracle-result", "environment-manifest",
+            "production-provenance", "data-authorization", "redaction-report"
+          ]
+        },
+        "artifact": { "$ref": "#/$defs/contentReference" }
+      },
+      "additionalProperties": false
+    },
+    "stage": {
+      "type": "object",
+      "required": ["stage", "status", "metrics", "evidence"],
+      "properties": {
+        "stage": {
+          "enum": [
+            "independent_holdout", "representative_repository", "external_execution",
+            "representative_production_workload"
+          ]
+        },
+        "status": { "enum": ["PASSED", "FAILED", "NOT_RUN"] },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "provenance": { "enum": ["production-derived", "NOT_RUN"] },
+            "authorized_use": { "enum": ["verification-only", "NOT_RUN"] },
+            "data_handling": { "enum": ["deidentified", "NOT_RUN"] },
+            "production_mutation": { "const": false }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/evidence" }
+        },
+        "execution": { "$ref": "#/$defs/envelope" },
+        "verification": { "$ref": "#/$defs/envelope" },
+        "authorization": { "$ref": "#/$defs/envelope" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "PASSED" } }, "required": ["status"] },
+          "then": { "required": ["execution", "verification"] }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

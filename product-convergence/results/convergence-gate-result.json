@@ -1,0 +1,16 @@
+{
+  "status": "failed",
+  "criteria": {
+    "unified_core": false,
+    "private_runner": false,
+    "reference_engine": false,
+    "reference_route": false,
+    "validation_lab": false,
+    "maintainability": false,
+    "customer_handoff": false,
+    "unit_economics": false
+  },
+  "design_partner_organizations": 0,
+  "independent_reviews": 0,
+  "zero_tolerance_findings": []
+}

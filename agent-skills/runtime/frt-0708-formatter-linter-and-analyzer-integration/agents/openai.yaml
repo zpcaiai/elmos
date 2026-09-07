@@ -1,0 +1,4 @@
+interface:
+  display_name: "Formatter Linter and Analyzer Integration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0708-formatter-linter-and-analyzer-integration to run FRT-0708 through the governed FRT runtime with exact scope and fail-closed evidence."

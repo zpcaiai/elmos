@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Itsm Service Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $itsm-service-data-quality-dedup-reconciliation-and-certification to implement its fail-closed ELMOS Product B47 contract."

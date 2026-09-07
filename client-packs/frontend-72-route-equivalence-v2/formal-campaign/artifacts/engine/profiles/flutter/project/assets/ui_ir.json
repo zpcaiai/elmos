@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "1.0",
+  "sourceSnapshotDigest": "sha256:0a4e9ccf6c6b6769a1304521d1f2cad8078a0216d57ae289746ee2989434aef8",
+  "routes": [
+    {
+      "id": "route.home",
+      "name": "route.home",
+      "kind": "bounded-interaction-route",
+      "references": [
+        "component.home",
+        "block.identity"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:12"
+      ],
+      "path": "/",
+      "componentId": "component.home",
+      "requiresAuth": false,
+      "deepLink": true
+    },
+    {
+      "id": "route.account",
+      "name": "route.account",
+      "kind": "bounded-interaction-route",
+      "references": [
+        "component.account",
+        "block.identity"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:28"
+      ],
+      "path": "/account",
+      "componentId": "component.account",
+      "requiresAuth": true,
+      "deepLink": true
+    },
+    {
+      "id": "route.help",
+      "name": "route.help",
+      "kind": "bounded-interaction-route",
+      "references": [
+        "component.help",
+        "block.identity"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:44"
+      ],
+      "path": "/help",
+      "componentId": "component.help",
+      "requiresAuth": false,
+      "deepLink": false
+    }
+  ],
+  "views": [
+    {
+      "id": "view.shell",
+      "name": "shell",
+      "kind": "bounded-interaction-view",
+      "references": [
+        "block.component"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:62"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "component.home",
+      "name": "首页",
+      "kind": "bounded-interaction-component",
+      "references": [
+        "block.component",
+        "block.a11y",
+        "block.display"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:75"
+      ],
+      "text": "首页内容",
+      "accessibilityRole": "main"
+    },
+    {
+      "id": "component.account",
+      "name": "账户",
+      "kind": "bounded-interaction-component",
+      "references": [
+        "block.component",
+        "block.a11y",
+        "block.display"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:90"
+      ],
+      "text": "账户内容",
+      "accessibilityRole": "main"
+    },
+    {
+      "id": "component.help",
+      "name": "帮助",
+      "kind": "bounded-interaction-component",
+      "references": [
+        "block.component",
+        "block.a11y",
+        "block.display"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:105"
+      ],
+      "text": "帮助内容",
+      "accessibilityRole": "main"
+    }
+  ],
+  "states": [
+    {
+      "id": "block.state",
+      "name": "stateManagement",
+      "kind": "bounded-interaction-stateManagement",
+      "references": [
+        "block.component"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:137"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "block.action",
+      "name": "actionEvent",
+      "kind": "bounded-interaction-actionEvent",
+      "references": [
+        "block.state",
+        "block.form"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:151"
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "id": "block.effect",
+      "name": "effectLifecycle",
+      "kind": "bounded-interaction-effectLifecycle",
+      "references": [
+        "block.action",
+        "block.api"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:173"
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "id": "block.form",
+      "name": "formBindingValidation",
+      "kind": "bounded-interaction-formBindingValidation",
+      "references": [
+        "block.a11y"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:187"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "block.component",
+      "name": "componentTemplate",
+      "kind": "bounded-interaction-componentTemplate",
+      "references": [
+        "route.home",
+        "route.account",
+        "route.help"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:121"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "id": "block.identity",
+      "name": "identityPermission",
+      "kind": "bounded-interaction-identityPermission",
+      "references": [
+        "block.action"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:221"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "block.api",
+      "name": "apiNetwork",
+      "kind": "bounded-interaction-apiNetwork",
+      "references": [
+        "block.form",
+        "block.identity",
+        "block.effect"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:203"
+      ]
+    },
+    {
+      "id": "block.render",
+      "name": "renderingHydration",
+      "kind": "bounded-interaction-renderingHydration",
+      "references": [
+        "block.component",
+        "block.effect"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:236"
+      ]
+    }
+  ],
+  "designTokens": [
+    {
+      "id": "block.display",
+      "name": "i18nThemeResponsive",
+      "kind": "bounded-interaction-i18nThemeResponsive",
+      "references": [
+        "block.component"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:269"
+      ]
+    }
+  ],
+  "accessibility": [
+    {
+      "id": "block.a11y",
+      "name": "accessibilityFocus",
+      "kind": "bounded-interaction-accessibilityFocus",
+      "references": [
+        "block.component",
+        "block.form",
+        "block.action"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:250"
+      ]
+    }
+  ],
+  "nativeBoundaries": [
+    {
+      "id": "block.native",
+      "name": "nativePlatform",
+      "kind": "bounded-interaction-nativePlatform",
+      "references": [
+        "block.identity",
+        "block.effect"
+      ],
+      "sourceRefs": [
+        "generated-fixtures/flutter/typed-ui-interaction-ir.json:291"
+      ]
+    }
+  ],
+  "unknowns": []
+}

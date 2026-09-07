@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "owner",
+    "security_precedes_ranking",
+    "paid_placement_disclosed",
+    "verified_reviews_required",
+    "anti_abuse",
+    "appeal"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "security_precedes_ranking": {
+      "const": true
+    },
+    "paid_placement_disclosed": {
+      "const": true
+    },
+    "verified_reviews_required": {
+      "const": true
+    },
+    "anti_abuse": {
+      "type": "object",
+      "required": [
+        "self_review_blocked",
+        "sybil_detection",
+        "impersonation_detection"
+      ],
+      "properties": {
+        "self_review_blocked": {
+          "const": true
+        },
+        "sybil_detection": {
+          "const": true
+        },
+        "impersonation_detection": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "appeal": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "independent_reviewer"
+      ],
+      "properties": {
+        "enabled": {
+          "const": true
+        },
+        "independent_reviewer": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "open_critical_abuse_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/ranking-policy.schema.json"
+}

@@ -1,0 +1,72 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: tenant-key-and-cache-isolation
+  version: 2.0.0
+  pack: 11-security-privacy-compliance
+  priority: P0
+  owner: TBD
+spec:
+  description: 确保对象、向量、缓存、Adapter、Checkpoint 和备份按租户隔离。
+  kernel: Cross-Cutting Trust Plane
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: identity
+    required: true
+  - name: request context
+    required: true
+  - name: artifact provenance
+    required: true
+  - name: data classification
+    required: true
+  - name: policy profile
+    required: true
+  outputs:
+  - name: policy decision
+    contentAddressed: true
+  - name: audit event
+    contentAddressed: true
+  - name: security evidence
+    contentAddressed: true
+  - name: incident action
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - identity.verify
+    - policy.evaluate
+    - sandbox.enforce
+    - artifact.verify
+    - audit.write
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - least-privilege
+    - tenant-isolation
+    - signed-artifact
+    - audit-complete
+    - critical-risk-zero
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

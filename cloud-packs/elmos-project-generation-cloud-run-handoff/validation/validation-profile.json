@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-project-generation-cloud-run-handoff-validation",
+  "owner": "elmos-cloud-platform-engineering",
+  "plan": {
+    "commands": [
+      "validate runtime architecture and provider-neutral IaC IR",
+      "review generated docs/CLOUD_DEPLOYMENT.md and deploy/deployment-options.json"
+    ],
+    "destructive_change_limit": 0
+  },
+  "apply": {
+    "mode": "ephemeral-sandbox",
+    "commands": [],
+    "status": "NOT_RUN_NO_APPROVED_PROVIDER_ACCOUNT"
+  },
+  "p0_workloads": [
+    {
+      "id": "cloud-run-authenticated-health",
+      "status": "NOT_RUN",
+      "reason": "gcloud and approved project unavailable"
+    }
+  ],
+  "security": {
+    "critical_findings": 0,
+    "public_exposure": 0,
+    "privilege_expansion": 0
+  },
+  "drift": {
+    "allowed": false,
+    "unknown_resources": 0
+  },
+  "cost": {
+    "currency": "USD",
+    "max_estimated_monthly": 50,
+    "max_test_cost": 0
+  },
+  "rollback": {
+    "commands": [
+      "shift traffic to exact previous immutable revision",
+      "delete failed revision and verify no orphan images, secrets, identities, or billable services"
+    ],
+    "destroy_required": true
+  },
+  "representative_workloads": [
+    "generated-python-fastapi-health: local passed; cloud NOT_RUN"
+  ],
+  "evidence_refs": [
+    "certification/local-container-evidence.json",
+    "certification/external-tooling-status.json"
+  ]
+}

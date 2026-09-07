@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/repository-conversion-preflight.schema.json",
+  "title": "ELMOS repository conversion non-executing preflight",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "preflight_id", "status", "reason_code",
+    "repository_ref", "snapshot_sha256", "route_id", "source_language", "target_language",
+    "obligation_count", "reported_obligation_lower_bound", "obligation_count_semantics",
+    "actual_obligation_count", "actual_obligation_count_status", "obligation_limit",
+    "count_complete", "execution_status", "certification_status"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "kind": { "const": "elmos.repository-conversion-preflight" },
+    "preflight_id": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "status": { "enum": ["PASSED", "PASSED_WITH_INCOMPLETE_INVENTORY", "REJECTED"] },
+    "reason_code": { "type": ["string", "null"] },
+    "repository_ref": { "type": "string", "minLength": 3, "maxLength": 180 },
+    "snapshot_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "route_id": { "type": "string", "pattern": "^[a-z]+-to-[a-z]+$" },
+    "source_language": { "enum": ["java", "python", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"] },
+    "target_language": { "enum": ["java", "python", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"] },
+    "obligation_count": { "type": "integer", "minimum": 0, "maximum": 10001 },
+    "reported_obligation_lower_bound": { "type": "integer", "minimum": 0, "maximum": 10001 },
+    "obligation_count_semantics": { "enum": ["EXACT_REPORTED_ROWS", "REPORTED_ROW_LOWER_BOUND"] },
+    "actual_obligation_count": { "type": ["integer", "null"], "minimum": 0, "maximum": 10000 },
+    "actual_obligation_count_status": { "enum": ["EXACT", "UNKNOWN"] },
+    "obligation_limit": { "const": 10000 },
+    "count_complete": { "type": "boolean" },
+    "execution_status": { "const": "NOT_RUN" },
+    "certification_status": { "const": "NOT_CERTIFIED" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "PASSED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "reason_code": { "type": "null" },
+          "obligation_count": { "maximum": 10000 },
+          "obligation_count_semantics": { "const": "EXACT_REPORTED_ROWS" },
+          "actual_obligation_count": { "type": "integer" },
+          "actual_obligation_count_status": { "const": "EXACT" },
+          "count_complete": { "const": true }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "PASSED_WITH_INCOMPLETE_INVENTORY" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "reason_code": { "type": "null" },
+          "obligation_count": { "maximum": 10000 },
+          "obligation_count_semantics": { "const": "REPORTED_ROW_LOWER_BOUND" },
+          "actual_obligation_count": { "type": "null" },
+          "actual_obligation_count_status": { "const": "UNKNOWN" },
+          "count_complete": { "const": false }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "REJECTED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "reason_code": { "const": "FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED" },
+          "obligation_count": { "const": 10001 },
+          "reported_obligation_lower_bound": { "const": 10001 },
+          "obligation_count_semantics": { "const": "REPORTED_ROW_LOWER_BOUND" },
+          "actual_obligation_count": { "type": "null" },
+          "actual_obligation_count_status": { "const": "UNKNOWN" },
+          "count_complete": { "const": false }
+        }
+      }
+    }
+  ]
+}

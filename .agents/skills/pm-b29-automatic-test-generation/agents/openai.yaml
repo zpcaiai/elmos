@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B29: Batch 29 Automatic Test Generation"
+  short_description: "Run Precision Migration B29 with evidence controls"
+  default_prompt: "Use $pm-b29-automatic-test-generation to execute this Precision Migration contract with fail-closed evidence."

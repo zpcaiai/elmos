@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unsupported Capability UX Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1211-unsupported-capability-ux-generator to run FRT-1211 through the governed FRT runtime with exact scope and fail-closed evidence."

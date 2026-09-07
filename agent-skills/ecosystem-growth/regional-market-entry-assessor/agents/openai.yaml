@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Market Entry Assessor"
+  short_description: "Authoritative Batch 14 Skill 450 workflow"
+  default_prompt: "Use $regional-market-entry-assessor to execute its evidence-bound Batch 14 workflow."
+

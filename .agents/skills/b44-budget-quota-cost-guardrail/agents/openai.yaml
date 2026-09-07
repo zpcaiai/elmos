@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Budget Quota Cost Guardrail"
+  short_description: "Run evidence-bound Batch 44 budget quota cost guardrail work"
+  default_prompt: "Use $b44-budget-quota-cost-guardrail to implement and verify this capability with fail-closed evidence."

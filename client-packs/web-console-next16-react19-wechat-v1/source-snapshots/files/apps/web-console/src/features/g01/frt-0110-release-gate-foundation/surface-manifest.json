@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0110",
+  "skill_name": "frt-0110-release-gate-foundation",
+  "batch": "G01",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g01/frt-0110-release-gate-foundation/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "capability_key": "frt.g01.release-gate-foundation",
+  "execution_contract_sha256": "sha256:f8ed537f12104d65c6ef2b9dc59e271dc679ff66ec9fa143412ba01ec406a52e",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:19fc7411af178d705f2523fa6e378241f7028a279c54941e6b8a5942ec153888",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

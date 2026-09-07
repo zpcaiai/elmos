@@ -1,0 +1,4 @@
+interface:
+  display_name: "B26 Admin Control Plane Closure"
+  short_description: "Help with B26 Admin Control Plane Closure tasks"
+  default_prompt: "Use $b26-admin-control-plane-closure to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

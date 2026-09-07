@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloud Kubernetes Runtime Posture and Workload Protection"
+  short_description: "Cloud Kubernetes Runtime Posture and Workload Protection helper"
+  default_prompt: "Use $cloud-kubernetes-runtime-posture-and-workload-protection to execute its ELMOS Batch 17 workflow safely."

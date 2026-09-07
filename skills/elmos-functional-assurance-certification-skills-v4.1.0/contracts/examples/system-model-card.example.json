@@ -1,0 +1,27 @@
+{
+  "systemId": "contract-assistant",
+  "revisionSetId": "rev-1",
+  "intendedUses": [
+    "internal contract retrieval"
+  ],
+  "prohibitedUses": [
+    "final legal advice"
+  ],
+  "limitations": [
+    "requires approved corpus"
+  ],
+  "evaluationClaims": [
+    {
+      "metric": "citation_precision",
+      "value": 0.98,
+      "evidence": "ev-1"
+    }
+  ],
+  "riskControls": [
+    {
+      "risk": "unsupported conclusion",
+      "control": "human approval"
+    }
+  ],
+  "evidenceRoot": "5555555555555555555555555555555555555555555555555555555555555555"
+}

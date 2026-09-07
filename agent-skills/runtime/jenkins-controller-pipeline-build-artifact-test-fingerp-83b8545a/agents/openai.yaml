@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Jenkins Controller Pipeline Build Artifact Test Fingerprint And Plugin Connector"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $jenkins-controller-pipeline-build-artifact-test-fingerp-83b8545a to implement its fail-closed ELMOS Product B37 contract."

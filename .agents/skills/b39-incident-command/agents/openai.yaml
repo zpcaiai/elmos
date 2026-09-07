@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Incident Command"
+  short_description: "Run evidence-bound Batch 39 incident command work"
+  default_prompt: "Use $b39-incident-command to implement and verify this capability with fail-closed evidence."

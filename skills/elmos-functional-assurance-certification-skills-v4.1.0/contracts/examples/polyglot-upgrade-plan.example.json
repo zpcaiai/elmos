@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "PolyglotUpgradePlan",
+  "metadata": {
+    "id": "polyglot-upgrade-plan-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "fromEnvelope": "example-fromEnvelope",
+    "toEnvelope": "example-toEnvelope",
+    "affectedObligations": [],
+    "rollback": {}
+  }
+}

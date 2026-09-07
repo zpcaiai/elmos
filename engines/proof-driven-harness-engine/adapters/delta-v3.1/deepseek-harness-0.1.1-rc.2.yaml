@@ -1,0 +1,17 @@
+apiVersion: elmos.ai/v3delta1
+kind: HarnessAdapterProfile
+metadata:
+  name: deepseek-harness-0.1.1-rc.2
+  version: 3.1.0
+spec:
+  provider: deepseek-harness
+  versionRange: =0.1.1-rc.2
+  stability: legacy-prerelease
+  capabilities:
+    transport: legacy-version-specific
+    presentationMode: CODE_MODE
+    subagentModelSelection: limited
+    runtimeCallIdExport: CallId
+  policy:
+    doNotShareUpstreamTypes: true
+    upgradeRequiresNegotiation: true

@@ -1,0 +1,148 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/go-to-rust/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1491,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:2e04a6724192b79bd5a7a22d8129c1d8638ef28049a35e7ba3dff048de4768bb"
+    },
+    {
+      "bytes": 8224,
+      "path": "chunk-map.json",
+      "sha256": "sha256:3b2112b7d524278c137532dbdb615a69a7bebf82bc77621bd4d284cf6813d412"
+    },
+    {
+      "bytes": 2944,
+      "path": "formal-composition.json",
+      "sha256": "sha256:e40ae2205122892c28985b0076e69097016d0f0de88cd556f6516a57ee5f4f8a"
+    },
+    {
+      "bytes": 973,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:7ced1f18a8392c4c17a751c9a0f7569928180fecc5e328a1c32ef52320b5ed3c"
+    },
+    {
+      "bytes": 6456,
+      "path": "formal-input.json",
+      "sha256": "sha256:9be4d1855cce15950ab3815b78971d0c20f1909a758e64dc4ed1df705d96b34d"
+    },
+    {
+      "bytes": 2322,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:8e7fadbbd5a3d5f5b34cefc0ba7d58193135ad682d69bccf97a564bf0d764ae4"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 129,
+      "path": "inputs/difference.go",
+      "sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a"
+    },
+    {
+      "bytes": 3427,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:c69218c19fba7f0fab14a625077247c0cfebbd8c250e3d1ed339118d27319c40"
+    },
+    {
+      "bytes": 165,
+      "path": "migrated.rs",
+      "sha256": "sha256:e1ed2f573427cf79c1aa23b4408c65800c23c5db68fe57a12621aad1d5cf0f4f"
+    },
+    {
+      "bytes": 6768,
+      "path": "route-evidence.json",
+      "sha256": "sha256:0b94d097a010424cfbd43da3809a5bc4efc411f271a16ad16b620017eb6dea57"
+    },
+    {
+      "bytes": 465,
+      "path": "route_harness.rs",
+      "sha256": "sha256:ec2aed06425c0a96803d8069389834c024295ce96bc677441baed88bb6e8f38a"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 663,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8"
+    },
+    {
+      "bytes": 129,
+      "path": "source-runtime/difference.go",
+      "sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a"
+    },
+    {
+      "bytes": 698,
+      "path": "source-runtime/source_behavior_test.go",
+      "sha256": "sha256:eacc0cfecbd6ab53403b4d9d401b37330e127a8af5399edc066ed2145e946a7c"
+    },
+    {
+      "bytes": 663,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8"
+    },
+    {
+      "bytes": 671,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:e39748928f7d10a36a1e5cb7de576ce528f999abf0b0df9d785461f01fc546b7"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "go-to-rust",
+  "schema_version": 1,
+  "total_bytes": 36643
+}

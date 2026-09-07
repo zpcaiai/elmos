@@ -1,0 +1,22 @@
+{
+  "fixtureId": "FIXTURE-ID",
+  "route": "route-id",
+  "source": {
+    "repository": "ref",
+    "commit": "sha"
+  },
+  "provenance": {
+    "origin": "open|customer|generated",
+    "capturedAt": "ISO-8601"
+  },
+  "license": "SPDX-or-restricted",
+  "sensitivity": "public|internal|confidential",
+  "semanticTags": [
+    "type.nullability"
+  ],
+  "hash": "sha256:...",
+  "expectedOracles": [
+    "return",
+    "db-state"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Economics Profitability Certification"
+  short_description: "Run evidence-bound Batch 45 economics profitability certificatio"
+  default_prompt: "Use $b45-economics-profitability-certification to implement and verify this capability with fail-closed evidence."

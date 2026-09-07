@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Checkpointable Task Download Build Test Agent And Upload Resume Providers"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $checkpointable-task-download-build-test-agent-and-uploa-cda1a0f8 to implement its fail-closed ELMOS Product B36 contract."

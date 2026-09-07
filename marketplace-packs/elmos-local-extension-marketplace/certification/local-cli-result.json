@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "execution_kind": "real-local-java-cli",
+  "inspect": {
+    "schema_version": 1,
+    "command": "inspect",
+    "status": "READY",
+    "external_operation_executed": false,
+    "network_access": false,
+    "runtime_digest": "sha256:0c431618d86930fec2aa1e84152f5f84b96b795209a3d904859118783208b99a"
+  },
+  "evaluate": {
+    "schema_version": 1,
+    "command": "evaluate",
+    "decision": "ALLOW",
+    "code": "MANIFEST_VALID",
+    "certified": false,
+    "production_operation_executed": false,
+    "release_digest": "sha256:0c431618d86930fec2aa1e84152f5f84b96b795209a3d904859118783208b99a"
+  }
+}

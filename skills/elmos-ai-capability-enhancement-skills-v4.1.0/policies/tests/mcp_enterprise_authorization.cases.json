@@ -1,0 +1,32 @@
+{
+  "allow": [
+    {
+      "token": {
+        "active": true,
+        "audience": "r",
+        "scopes": [
+          "read"
+        ]
+      },
+      "resource": "r",
+      "required_scopes": [
+        "read"
+      ]
+    }
+  ],
+  "deny": [
+    {
+      "token": {
+        "active": true,
+        "audience": "other",
+        "scopes": [
+          "read"
+        ]
+      },
+      "resource": "r",
+      "required_scopes": [
+        "read"
+      ]
+    }
+  ]
+}

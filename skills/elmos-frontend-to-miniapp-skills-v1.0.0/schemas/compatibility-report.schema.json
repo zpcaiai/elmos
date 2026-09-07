@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/compatibility-report.schema.json",
+  "title": "Compatibility Report",
+  "type": "object",
+  "required": [
+    "report_id",
+    "request_id",
+    "targets",
+    "summary",
+    "findings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "report_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "wechat",
+          "alipay",
+          "douyin",
+          "xiaohongshu"
+        ]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "properties": {
+        "A": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "B": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "C": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "D": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "E": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "feature",
+          "classification",
+          "platform",
+          "impact",
+          "blocking"
+        ],
+        "properties": {
+          "finding_id": {
+            "type": "string"
+          },
+          "feature": {
+            "type": "string"
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ]
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "wechat",
+              "alipay",
+              "douyin",
+              "xiaohongshu"
+            ]
+          },
+          "source_ref": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "decision_owner": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

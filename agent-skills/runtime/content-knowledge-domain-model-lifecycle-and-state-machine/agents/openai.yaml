@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B54: Content Knowledge Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B54 contract with fail-closed evidence"
+  default_prompt: "Use $content-knowledge-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B54 contract."

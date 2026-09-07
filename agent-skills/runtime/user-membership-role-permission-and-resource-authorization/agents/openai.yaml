@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: User Membership Role Permission And Resource Authorization"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $user-membership-role-permission-and-resource-authorization to implement its fail-closed ELMOS Product B34 contract."

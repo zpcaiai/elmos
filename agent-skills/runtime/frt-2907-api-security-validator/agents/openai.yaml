@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Security Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2907-api-security-validator to run FRT-2907 through the governed FRT runtime with exact scope and fail-closed evidence."

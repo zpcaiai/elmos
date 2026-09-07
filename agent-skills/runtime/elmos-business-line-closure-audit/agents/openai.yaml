@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Business Line Closure Audit"
+  short_description: "Audit business journeys and close verified gaps"
+  default_prompt: "Use $elmos-business-line-closure-audit to audit every ELMOS business line and close verified gaps."

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Adapter Profile",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "versions",
+    "capabilities",
+    "limitations",
+    "conformance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "versions": {
+      "type": "array"
+    },
+    "capabilities": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    },
+    "conformance": {
+      "type": "object"
+    }
+  }
+}

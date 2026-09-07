@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 510: cap table and equity administration manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $cap-table-and-equity-administration-manager to evaluate this capability with evidence."

@@ -1,0 +1,23 @@
+{
+  "runId": "run-demo-001",
+  "obligationId": "obl-demo-001",
+  "status": "PROVED_SOLVER_TRUSTED",
+  "assuranceLevel": "A2_SOLVER_PROVED",
+  "engine": "z3",
+  "mode": "SMT",
+  "assumptionHash": "30d66eeebf87f60acf1a17651d26dad89fae8fe124117446d4f2d6eb07e2f371",
+  "tcbHash": "d25f9d29997f1d0529c490cee2d14b808c235f5e94631416de387f8742cf0a57",
+  "formulaHash": "7374df08a7a6cf109af41565ca431fc53c9c1b9207294cd5f584cdc568b997ed",
+  "artifacts": [
+    {
+      "uri": "s3://elmos-proof/tenant-demo/artifact.bin",
+      "sha256": "c7c5c1d70c5dec4416ab6158afd0b223ef40c29b1dc1f97ed9428b94d4cadb1c",
+      "mediaType": "application/octet-stream",
+      "sizeBytes": 128,
+      "redacted": false
+    }
+  ],
+  "diagnostics": [],
+  "createdAt": "2026-08-27T00:00:02Z",
+  "stale": false
+}

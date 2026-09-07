@@ -1,0 +1,103 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Enterprise Integration Engine API
+  version: 1.0.0
+  description: Fail-closed worker and independent integration cutover evaluation contracts.
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: integrationCapabilities
+      responses:
+        "200": {description: Capabilities, content: {application/json: {schema: {$ref: "#/components/schemas/Capabilities"}}}}
+  /engine/v1/scan:
+    post:
+      operationId: scanIntegrationEstate
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {$ref: "#/components/responses/JobResponse"}}
+  /engine/v1/plan:
+    post:
+      operationId: planIntegrationModernization
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {$ref: "#/components/responses/JobResponse"}}
+  /engine/v1/execute-step:
+    post:
+      operationId: executeIntegrationStep
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "#/components/schemas/ExecuteStepRequest"}}}}
+      responses: {"202": {$ref: "#/components/responses/JobResponse"}}
+  /engine/v1/validate:
+    post:
+      operationId: validateIntegration
+      requestBody: {$ref: "#/components/requestBodies/JobRequest"}
+      responses: {"202": {$ref: "#/components/responses/JobResponse"}}
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: getIntegrationJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses: {"200": {$ref: "#/components/responses/JobResponse"}}
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelIntegrationJob
+      parameters:
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {name: organizationId, in: query, required: true, schema: {type: string}}
+      responses: {"200": {$ref: "#/components/responses/JobResponse"}}
+  /api/v1/integration/cutover/evaluate:
+    post:
+      operationId: evaluateIntegrationCutover
+      requestBody: {required: true, content: {application/json: {schema: {type: object}}}}
+      responses: {"200": {description: Independent decision}}
+  /api/v1/integration/decommission/evaluate:
+    post:
+      operationId: evaluateIntegrationDecommission
+      requestBody: {required: true, content: {application/json: {schema: {type: object}}}}
+      responses: {"200": {description: Independent decision}}
+components:
+  requestBodies:
+    JobRequest:
+      required: true
+      content: {application/json: {schema: {$ref: "#/components/schemas/JobRequest"}}}
+  responses:
+    JobResponse:
+      description: Accepted or fail-closed job result
+      content: {application/json: {schema: {$ref: "#/components/schemas/JobResponse"}}}
+  schemas:
+    Capabilities:
+      type: object
+      required: [schemaVersion, engineName, engineVersion]
+      properties: {schemaVersion: {type: string}, engineName: {const: ELMOS_ENTERPRISE_INTEGRATION}, engineVersion: {type: string}}
+      additionalProperties: true
+    JobRequest:
+      type: object
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: {type: string}
+        repositorySnapshotRef: {type: string}
+        workspaceRef: {type: string}
+        profile: {type: string}
+        correlationId: {type: string}
+        idempotencyKey: {type: string}
+    ExecuteStepRequest:
+      type: object
+      required: [organizationId, migrationRunId, stepDefinition, workspaceRef, sourceCommit, executionBudget, correlationId, idempotencyKey]
+      properties:
+        organizationId: {type: string}
+        migrationRunId: {type: string}
+        stepDefinition: {type: object}
+        workspaceRef: {type: string}
+        sourceCommit: {type: string}
+        executionBudget: {type: object}
+        policy: {type: object}
+        correlationId: {type: string}
+        idempotencyKey: {type: string}
+    JobResponse:
+      type: object
+      required: [schemaVersion, jobId, status, evidenceRefs, result]
+      properties:
+        schemaVersion: {type: string}
+        jobId: {type: string}
+        status: {enum: [ACCEPTED, RUNNING, SUCCEEDED, FAILED, CANCELLED]}
+        evidenceRefs: {type: array, items: {type: string}}
+        result: {type: object}
+        error: {type: [object, "null"]}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 481: competency career level and job architecture"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $competency-career-level-and-job-architecture to evaluate this capability with evidence."

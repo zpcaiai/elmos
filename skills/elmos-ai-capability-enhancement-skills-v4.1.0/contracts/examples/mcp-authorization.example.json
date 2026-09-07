@@ -1,0 +1,15 @@
+{
+  "issuer": "https://identity.example",
+  "audience": "mcp://contracts",
+  "scopes": [
+    "contracts.read"
+  ],
+  "resourceIndicators": [
+    "contracts-api"
+  ],
+  "consentRequired": true,
+  "tokenTtlSeconds": 600,
+  "revocation": {
+    "supported": true
+  }
+}

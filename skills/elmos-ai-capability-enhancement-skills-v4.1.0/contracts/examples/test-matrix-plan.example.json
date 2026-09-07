@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "TestMatrixPlan",
+  "metadata": {
+    "id": "test-matrix-plan-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "dimensions": [],
+    "mandatoryCells": [],
+    "coveringArray": [],
+    "cadence": "example-cadence"
+  }
+}

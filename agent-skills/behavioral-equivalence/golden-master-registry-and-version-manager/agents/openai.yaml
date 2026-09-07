@@ -1,0 +1,4 @@
+interface:
+  display_name: "Golden Master Registry And Version Manager"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $golden-master-registry-and-version-manager to perform this Batch 9 behavioral-equivalence task."

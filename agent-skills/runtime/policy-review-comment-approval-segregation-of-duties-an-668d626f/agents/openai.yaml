@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Review Comment Approval Segregation Of Duties And Publication"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-review-comment-approval-segregation-of-duties-an-668d626f to implement its fail-closed ELMOS Product B38 contract."

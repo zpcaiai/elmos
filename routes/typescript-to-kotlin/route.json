@@ -1,0 +1,44 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "",
+    "target_profile": ""
+  },
+  "review_date": "2026-11-24",
+  "route_key": "typescript-to-kotlin",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/frontend-client-engine/src/polyglot.ts",
+    "language": "typescript",
+    "versions": [
+      "TypeScript 5.9.2",
+      "Node.js 26.0.0"
+    ]
+  },
+  "status": "research",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "kotlin",
+    "versions": [
+      "Kotlin 2.2.20",
+      "JDK 21.0.11",
+      "Kotlin compiler PSI"
+    ]
+  },
+  "version": "0.1.0"
+}

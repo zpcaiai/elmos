@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Fidelity Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1113-ui-fidelity-certification to run FRT-1113 through the governed FRT runtime with exact scope and fail-closed evidence."

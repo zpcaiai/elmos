@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B16: Batch 16 Backend Direction Packs"
+  short_description: "Run Precision Migration B16 with evidence controls"
+  default_prompt: "Use $pm-b16-backend-direction-packs to execute this Precision Migration contract with fail-closed evidence."

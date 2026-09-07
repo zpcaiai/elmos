@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-demo",
+  "project_id": "project-demo",
+  "run_id": "run_20260819_001",
+  "source_snapshot": "cas://sha256/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "pipeline_version": "elmos-2.1.0",
+  "source_profile": {
+    "language": "java",
+    "framework": "spring"
+  },
+  "target_profile": {
+    "language": "csharp",
+    "framework": "aspnet-core"
+  },
+  "status": "RUNNING",
+  "nodes": [
+    {
+      "node_id": "parse:user-module",
+      "status": "SUCCEEDED",
+      "action_key": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "outputs": [
+        "cas://sha256/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      ]
+    },
+    {
+      "node_id": "generate:user-service",
+      "status": "CHECKPOINTED",
+      "action_key": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "checkpoint_ref": "cas://sha256/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  ],
+  "published_tree_ref": null,
+  "evidence_bundle_ref": null
+}

@@ -1,0 +1,21 @@
+{
+  "batch": 3,
+  "archetypes": {
+    "orchestrator": "b03-ir-foundation-orchestrator",
+    "domain-model": "b03-canonical-semantic-ir-schema-and-lowering",
+    "discovery-inventory": "b03-ir-foundation-orchestrator",
+    "capability-planning": "b03-ir-foundation-orchestrator",
+    "deterministic-engine": "b03-source-artifact-normalizer",
+    "adapter-provider": "b03-frontend-adapter-sdk-and-registry",
+    "integration-api": "b03-api-message-and-contract-ir-builder",
+    "workflow-runtime": "b03-ir-foundation-orchestrator",
+    "certification-gate": "b03-frontend-conformance-and-ir-certification-gate",
+    "security-policy": "b03-ir-foundation-orchestrator",
+    "human-approval": "b03-ir-foundation-orchestrator",
+    "failure-recovery": "b03-ir-foundation-orchestrator",
+    "lineage-reconciliation": "b03-source-map-provenance-and-semantic-fingerprint",
+    "lifecycle-recertification": "b03-incremental-ir-cache-and-chunk-store",
+    "observability-economics": "b03-ir-foundation-orchestrator",
+    "corpus-benchmark": "b03-ir-foundation-orchestrator"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.infrastructure-estate.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estateId", "organizationId", "observationWindow", "coverage", "hosts", "virtualMachines", "workloads", "secretValuesCaptured", "privateKeysCaptured", "evidenceRefs"],
+  "properties": {
+    "estateId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "observationWindow": {"type": "object", "required": ["start", "end"], "properties": {"start": {"type": "string", "format": "date-time"}, "end": {"type": "string", "format": "date-time"}}},
+    "coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "hosts": {"type": "array", "items": {"type": "string"}},
+    "virtualMachines": {"type": "array", "items": {"type": "string"}},
+    "workloads": {"type": "array", "items": {"type": "string"}},
+    "secretValuesCaptured": {"const": false},
+    "privateKeysCaptured": {"const": false},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

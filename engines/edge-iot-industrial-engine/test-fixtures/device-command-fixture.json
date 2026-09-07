@@ -1,0 +1,9 @@
+{
+  "commandId": "commandId-fixture",
+  "targetDeviceId": "targetDeviceId-fixture",
+  "commandType": "commandType-fixture",
+  "parameters": {},
+  "deadline": "deadline-fixture",
+  "approvalPolicy": "approvalPolicy-fixture",
+  "status": "status-fixture"
+}

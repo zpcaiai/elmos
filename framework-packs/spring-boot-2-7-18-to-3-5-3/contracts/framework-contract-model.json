@@ -1,0 +1,76 @@
+{
+  "capabilities": [
+    {
+      "id": "web-json-contract",
+      "obligations": [
+        "GET /api/orders/{id}",
+        "stable JSON field and value semantics"
+      ],
+      "source_traces": [
+        "OrderController.java"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "health-lifecycle",
+      "obligations": [
+        "GET /actuator/health returns UP after startup"
+      ],
+      "source_traces": [
+        "application.properties"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "configuration-runtime-contract",
+      "obligations": [
+        "management health endpoint exposure remains enabled",
+        "health details remain hidden",
+        "graceful shutdown remains enabled"
+      ],
+      "source_traces": [
+        "application.properties"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "validation-contract",
+      "obligations": [
+        "POST /api/orders with blank customerId returns HTTP 400",
+        "POST /api/orders with a non-blank customerId returns HTTP 200"
+      ],
+      "source_traces": [
+        "OrderController.java"
+      ],
+      "status": "captured"
+    },
+    {
+      "id": "security-contract",
+      "obligations": [
+        "GET /api/orders/{id} without HTTP Basic credentials returns HTTP 401",
+        "GET /api/orders/{id} with fixture operator credentials returns HTTP 200",
+        "the actuator health endpoint remains publicly readable"
+      ],
+      "source_traces": [
+        "SecurityConfiguration.java"
+      ],
+      "status": "captured"
+    }
+  ],
+  "exact_tuple": {
+    "framework": "spring-boot",
+    "runtime": "java",
+    "runtime_version": "17",
+    "version": "2.7.18"
+  },
+  "extraction_status": "STATIC_AND_SOURCE_BASELINE",
+  "ordering_and_defaults": {
+    "error_mapping": "spring-default-not-certified",
+    "json_property_order": "not-contractual"
+  },
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "schema_version": "1.0",
+  "source_commit": "0000000000000000000000000000000000000000",
+  "source_snapshot_sha256": "3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+  "unknowns": []
+}

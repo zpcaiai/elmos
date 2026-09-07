@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: multimodal-artifact-ingestion
+  version: 2.0.0
+  pack: 01-knowledge-ingestion-governance
+  priority: P1
+  owner: TBD
+spec:
+  description: 解析架构图、流程图、UI 截图、日志截图、音视频说明和代码演示。
+  kernel: K1 Knowledge Fabric
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: repository
+    required: true
+  - name: document
+    required: true
+  - name: API schema
+    required: true
+  - name: database metadata
+    required: true
+  - name: runtime trace
+    required: true
+  - name: ticket or incident
+    required: true
+  outputs:
+  - name: normalized artifact
+    contentAddressed: true
+  - name: source provenance
+    contentAddressed: true
+  - name: rights classification
+    contentAddressed: true
+  - name: freshness status
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - source.connect
+    - artifact.parse
+    - secret.scan
+    - license.scan
+    - object.store
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - source-authorized
+    - provenance-complete
+    - sensitive-data-classified
+    - parse-quality-pass
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

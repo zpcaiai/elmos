@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-028",
+  "name": "spring-legacy-risk",
+  "title": "Legacy Risk Detector",
+  "description": "识别 XML-heavy、JSP、EJB、SOAP/RMI、JNI、反射、字节码、旧驱动和私有框架。",
+  "batch": "14",
+  "batch_slug": "intake-eligibility-estimation",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-legacy-risk/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-baseline-preflight"
+  ],
+  "outputs": [
+    "legacy-risk-register.json",
+    "risk-heatmap.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "静态+运行检测",
+    "criticality/likelihood/verification difficulty",
+    "处理路线映射",
+    "未知默认不按低风险"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "同一 commit 接入产生相同 tree hash",
+    "两次 Baseline 结果不稳定时必须阻断",
+    "固定价项目在低置信度时被拒绝"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: legacy-risk-register.json, risk-heatmap.json"
+  ],
+  "stop_conditions": [
+    "仓库来源/授权/完整性失败",
+    "Baseline 不可重复",
+    "关键 artifact/凭据/环境缺失",
+    "P0 unsupported 无处理方案"
+  ],
+  "definition_of_done": [
+    "客户在修改源码前获得可审计 Go/No-go",
+    "历史失败与迁移回归边界冻结",
+    "报价、ETA、假设和风险进入 SOW"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

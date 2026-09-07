@@ -1,0 +1,28 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: ai-agent-rag-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: define-ai-contract
+    emitEvidence: true
+  - id: build-rag-tools-memory
+    emitEvidence: true
+  - id: generate-agent
+    emitEvidence: true
+  - id: offline-eval
+    emitEvidence: true
+  - id: redteam
+    emitEvidence: true
+  - id: shadow
+    emitEvidence: true
+  - id: canary
+    emitEvidence: true
+  - id: whole-release-rollback-or-promote
+    emitEvidence: true

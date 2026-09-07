@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1303",
+  "skill_name": "frt-1303-vue-2-to-react-route-pack",
+  "batch": "G13",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g13/frt-1303-vue-2-to-react-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "capability_key": "frt.g13.vue-2-to-react-route-pack",
+  "execution_contract_sha256": "sha256:b0185fb286e6e3fcb362f91c3d93ad9777a875ed1ca4151d73f4ddf230461456",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:97776b300eedf33a6ed34f7b8c41cf7f16750b3fb31eaf272cc2e22d61dd6c06",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

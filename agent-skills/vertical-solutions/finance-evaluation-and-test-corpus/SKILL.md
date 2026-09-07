@@ -1,0 +1,52 @@
+---
+name: finance-evaluation-and-test-corpus
+description: "Execute authoritative Batch 17 Skill 617 for finance evaluation and test corpus. Use when Codex must design, operate, review, or verify this Vertical Solution Factory capability."
+---
+
+# Finance Evaluation And Test Corpus
+
+## Operating contract
+
+Apply authoritative Batch 17 Skill 617. Read [the shared Batch 17 evidence boundary](../references/batch-17-vertical-solution-evidence-boundary.md) before acting.
+
+1. Pin tenant/company, legal entity, region, jurisdiction, period, source version, policy version, owner, approval authority, confidentiality, and evidence window.
+2. Confirm systems of record and required inputs. Treat missing, stale, conflicting, unauthorized, or cross-boundary evidence as `NOT_RUN`, `INCONCLUSIVE`, or blocking.
+3. Execute or evaluate the capability using the authoritative specification below; keep safety, security, privacy, legal, financial, human-accountability, quality, and evidence gates non-compensating.
+4. Preserve failed, negative, delayed, and partially observed outcomes. Do not convert plans, generated artifacts, simulations, repository tests, or fluent model output into field success.
+5. Record assumptions, costs, risks, decisions, approvals, evidence references, stop conditions, and the responsible human owner.
+6. Return acceptance as `PASSED`, `FAILED`, `NOT_RUN`, `INCONCLUSIVE`, `NOT_APPLICABLE`, or `BLOCKED`; do not claim `V17-G` from local implementation evidence.
+
+## Authoritative specification
+
+## Test Corpus
+
+```text
+Rounding
+Multi-currency
+Leap Year
+Cut-off
+Reversal
+Duplicate Payment
+Partial Settlement
+Deadlock
+Failover
+Reconciliation Difference
+Unauthorized Trade
+Limit Breach
+```
+
+## Critical Gate
+
+```text
+金额差异 = 0
+未授权交易 = 0
+未对账交易 = 0
+重复账务Effect = 0
+Partial Commit = 0
+```
+
+---
+
+## Required result
+
+Return a version-bound, evidence-linked decision with blockers, non-blocking items, open risks, approval state, and `external_operation_executed=false` for control-plane-only evaluation.

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.route-registry/v2"
+    },
+    "kind": {
+      "const": "RouteRegistry"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "profiles",
+        "genericRouting"
+      ]
+    }
+  }
+}

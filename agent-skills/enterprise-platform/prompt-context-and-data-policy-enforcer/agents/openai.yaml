@@ -1,0 +1,4 @@
+interface:
+  display_name: "prompt-context-and-data-policy-enforcer"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $prompt-context-and-data-policy-enforcer to evaluate this enterprise platform capability with evidence."

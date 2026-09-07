@@ -1,0 +1,4 @@
+interface:
+  display_name: "Authentication Authorization Abuse Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $authentication-authorization-abuse-validator to perform this Batch 10 production-hardening task."

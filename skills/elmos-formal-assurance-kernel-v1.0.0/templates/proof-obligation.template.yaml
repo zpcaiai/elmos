@@ -1,0 +1,13 @@
+apiVersion: elmos.ai/v2alpha1
+kind: ProofObligationTemplate
+metadata: {name: replace-me}
+spec:
+  subjectUri: repo://replace-me#symbol
+  propertyKind: STATE_INVARIANT
+  criticality: P0
+  requiredAssurance: A2_SOLVER_PROVED
+  allowBounded: false
+  formula: REPLACE_WITH_FORMULA
+  assumptions: []
+  dependencies: []
+  failurePolicy: fail-closed

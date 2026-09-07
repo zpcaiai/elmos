@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B09: Database Effect Model"
+  short_description: "Run Precision Migration B09 with evidence controls"
+  default_prompt: "Use $pm-b09-database-effect-model to execute this Precision Migration contract with fail-closed evidence."

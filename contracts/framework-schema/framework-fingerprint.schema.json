@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/framework-fingerprint.schema.json",
+  "title": "Framework Fingerprint",
+  "type": "object",
+  "required": ["frameworkId", "family", "webMode", "programmingModel", "confidence", "complete", "evidence", "components", "diagnostics"],
+  "properties": {
+    "frameworkId": {"type": "string", "minLength": 1},
+    "family": {"enum": ["spring-boot", "fastapi", "aspnet-core", "nestjs", "express", "unknown"]},
+    "webMode": {"type": "string", "minLength": 1},
+    "programmingModel": {"type": "string", "minLength": 1},
+    "adapter": {"type": ["string", "null"]},
+    "version": {"type": ["string", "null"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "complete": {"type": "boolean"},
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/signal"}},
+    "components": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "diagnostics": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "signal": {
+      "type": "object",
+      "required": ["kind", "value", "sourceRef"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1},
+        "sourceRef": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

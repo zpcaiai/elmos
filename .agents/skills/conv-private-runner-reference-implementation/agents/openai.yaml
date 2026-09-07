@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Private Runner Reference Implementation"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-private-runner-reference-implementation to execute this ELMOS product-convergence Skill with fail-closed evidence."

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.order.v1",
+  "title": "ELMOS Commercial Order",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "orderId",
+    "organizationId",
+    "quoteVersionId",
+    "status",
+    "lines",
+    "contractReference",
+    "fulfillmentIdempotencyKey"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "quoteVersionId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "QUOTED",
+        "APPROVED",
+        "ACCEPTED",
+        "FULFILLMENT_PENDING",
+        "FULFILLING",
+        "FULFILLED",
+        "CLOSED",
+        "REJECTED",
+        "EXPIRED",
+        "CANCELLED",
+        "FULFILLMENT_BLOCKED",
+        "PARTIALLY_FULFILLED"
+      ]
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "contractReference": {
+      "type": "string"
+    },
+    "fulfillmentIdempotencyKey": {
+      "type": "string"
+    }
+  }
+}
+

@@ -1,0 +1,20 @@
+project:
+  name: enterprise-modernization
+jobs:
+  - type: SPRING_MODERNIZATION
+  - type: LANGUAGE_CONVERSION
+    source_language: java
+    target_language: csharp
+  - type: PROJECT_GENERATION
+    backend_language: go
+    frontend_language: typescript
+  - type: SQL_CONVERSION
+    source_dialect: oracle
+    target_dialect: postgresql
+execution:
+  project_parallelism: 96
+  model_call_slots: 48
+billing:
+  mode: PREPAID
+  meter_streaming_usage: true
+  reserve_before_call: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Regression And Promotion Gate"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $recipe-regression-and-promotion-gate to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,56 @@
+{
+  "input_manifest_version": 1,
+  "declared_inputs": 10,
+  "files": [
+    {
+      "path": "routes/java-to-csharp/route.json",
+      "sha256": "c252f34dbe9d3f64330ff5d792a17c01df960188b2b1fa0d9d3125f2aea0a93c",
+      "bytes": 1166
+    },
+    {
+      "path": "routes/java-to-csharp/support-matrix.json",
+      "sha256": "fe622d643d758d04008cf4c250d317550709b5cbc8057f22915daa3d08e13dff",
+      "bytes": 1468
+    },
+    {
+      "path": "routes/java-to-csharp/certification/certification.json",
+      "sha256": "9fd3cca306560b5ba0cdfbcb9c990dbb98aed773d70c9964ff3948d2e8dea227",
+      "bytes": 1090
+    },
+    {
+      "path": "routes/java-to-csharp/corpus/development/manifest.json",
+      "sha256": "4dd1ccc221f44c7ac9a8d15c11cefd9628f309fa96981f0dbe24a2f6308e7b0b",
+      "bytes": 276
+    },
+    {
+      "path": "routes/java-to-csharp/corpus/holdout/manifest.json",
+      "sha256": "b27e05b0756007f2b2f166ab5a2d29b7d3f1246170ec5a4630e0e4c5812826dc",
+      "bytes": 270
+    },
+    {
+      "path": "routes/java-to-csharp/corpus/real-repository/manifest.json",
+      "sha256": "a2b6353cfbc9b059af63e11add914144238a4d7178dd83b9dc37b721906fec6e",
+      "bytes": 294
+    },
+    {
+      "path": "routes/inventory.json",
+      "sha256": "3417dec0915093770c36e1f690beef650618750973571c6e2de4b8fcd4439339",
+      "bytes": 151599
+    },
+    {
+      "path": "templates/batch29/route-candidates.json",
+      "sha256": "6e1dc00c0de50a1bdd1bbe9a7550f5c4f53b7819bfced0112d13611843934667",
+      "bytes": 549
+    },
+    {
+      "path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+      "sha256": "de1727f89f3003ab495fadc3f1bf3b65fc5ef1e641c102e03bab53f8374f9d35",
+      "bytes": 74630
+    },
+    {
+      "path": "engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+      "sha256": "32d83389d9b4145243f657ea2df666afaed8a22540c8129068259faa51f8c811",
+      "bytes": 211916
+    }
+  ]
+}

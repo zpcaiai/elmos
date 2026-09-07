@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-plan.schema.json",
+  "title": "Proof Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "businessLine",
+    "obligationIds",
+    "dag",
+    "budget",
+    "createdAt"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "businessLine": {
+      "$ref": "common.schema.json#/$defs/businessLine"
+    },
+    "obligationIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "dag": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "to": {
+            "$ref": "common.schema.json#/$defs/id"
+          }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "wallClockSeconds",
+        "cpuSeconds",
+        "memoryMb",
+        "creditMicros"
+      ],
+      "properties": {
+        "wallClockSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cpuSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memoryMb": {
+          "type": "integer",
+          "minimum": 128
+        },
+        "creditMicros": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "estimatedWallClockSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "modelVersion": {
+      "type": "string"
+    },
+    "policyRevision": {
+      "type": "string"
+    }
+  }
+}

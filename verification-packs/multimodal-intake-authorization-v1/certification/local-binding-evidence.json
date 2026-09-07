@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "pack_key": "multimodal-intake-authorization-v1",
+  "status": "LOCAL_CAPTURED_SELF_ATTESTED",
+  "source_artifact": {
+    "path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "bytes": 664179,
+    "sha256": "sha256:23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b"
+  },
+  "target_artifact": {
+    "manifest_path": "artifacts/local-target-artifact.json",
+    "manifest_bytes": 13818,
+    "manifest_sha256": "sha256:cf38203cd0e4ac12b1e154f81b6eb8ec14a7973d752d0dae3f16656fb46e08f7",
+    "artifact_digest": "sha256:2ed935793e08ed399f1fc8640c546cb99afa8a529bf39e1f9394dfd0fbf72433",
+    "file_count": 63,
+    "total_bytes": 2491705
+  },
+  "environment": {
+    "manifest_path": "environment/local-validation-environment.json",
+    "manifest_bytes": 3321,
+    "manifest_sha256": "sha256:52c850bd5885a89fad0003228c8dc5b13fecd502ac869a137a659505ce0a8ca4",
+    "environment_digest": "sha256:e7f91fd09ed5470ea35bb13feb134a8d7e323243630932c1ecde3a920225efe7"
+  },
+  "local_assertions": [
+    "The source archive byte count and SHA-256 were recomputed from the repository file.",
+    "Every target inventory path, byte count, and SHA-256 was recomputed from the bounded engine runtime tree.",
+    "The target artifact and environment digests were recomputed from each manifest's explicit canonical digest_input object.",
+    "Local tool executable or module byte counts and SHA-256 values were captured from the declared workstation environment."
+  ],
+  "external_provider_evidence": "NOT_RUN",
+  "browser_device_evidence": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "limitations": [
+    "This receipt records local byte identity only and is not an independent attestation.",
+    "It does not prove runtime behavior, provider behavior, browser/device behavior, deployment, production equivalence, or certification."
+  ]
+}

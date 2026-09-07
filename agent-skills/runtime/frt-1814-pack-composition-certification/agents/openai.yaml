@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pack Composition Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1814-pack-composition-certification to run FRT-1814 through the governed FRT runtime with exact scope and fail-closed evidence."

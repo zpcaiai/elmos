@@ -1,0 +1,69 @@
+{
+  "id": "B108-S14",
+  "batch": 108,
+  "name": "temporary-preview-access-governor",
+  "dependencies": [
+    "B106-S11",
+    "B108-S13"
+  ],
+  "inputs": [
+    "Preview endpoint",
+    "user/tenant identity",
+    "access request"
+  ],
+  "outputs": [
+    "AccessDecision",
+    "short-lived token",
+    "audit trail"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/gateway/PreviewAccessGovernor.java",
+      "apps/web/src/features/preview-access/",
+      "policies/preview-access.rego"
+    ],
+    "interfaces": [
+      "POST /api/runtime-runs/{id}/access-tokens",
+      "POST /api/runtime-runs/{id}:share",
+      "event preview.access.decided"
+    ],
+    "data": [
+      "preview_access_policy",
+      "preview_access_token",
+      "preview_access_audit"
+    ]
+  },
+  "workflow": [
+    "解析用户、租户、项目和PR权限",
+    "决定私有/组织/指定Reviewer可见性",
+    "签发路径/方法/时长受限Token",
+    "控制下载、写操作和延期权限",
+    "记录访问但最小化请求内容",
+    "到期/PR关闭/Run销毁时统一撤销"
+  ],
+  "tests": [
+    "未授权用户拒绝",
+    "Token跨Run不可用",
+    "只读Token阻止写请求",
+    "PR关闭触发撤销",
+    "审计不记录Secret/body"
+  ],
+  "evidence": [
+    "access-decision.json",
+    "token-metadata.json",
+    "access-audit.json",
+    "revocation.json"
+  ],
+  "definition_of_done": [
+    "默认私有",
+    "最小权限",
+    "Token短期",
+    "撤销联动",
+    "访问可审计"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

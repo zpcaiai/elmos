@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.certification-run/v1",
+  "type": "object",
+  "required": [
+    "runId",
+    "route",
+    "snapshotId",
+    "level",
+    "gates",
+    "status"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "level": {
+      "enum": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "status": {
+      "enum": [
+        "not-run",
+        "blocked",
+        "fail",
+        "waived",
+        "pass"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

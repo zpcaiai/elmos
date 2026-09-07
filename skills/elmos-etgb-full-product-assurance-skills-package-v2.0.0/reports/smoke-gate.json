@@ -1,0 +1,296 @@
+{
+  "schema_version": "1.1",
+  "decision": "REJECT",
+  "run_complete": true,
+  "evaluated_at": "2026-08-28T10:54:33.854279+00:00",
+  "gate_results": [
+    {
+      "id": "G-P0-PASS",
+      "scope": "P0",
+      "metric": "p0_critical_oracle_pass_rate",
+      "operator": "==",
+      "threshold": 1.0,
+      "state": "PASS",
+      "actual": 1.0
+    },
+    {
+      "id": "G-P0-SSER",
+      "scope": "P0",
+      "metric": "p0_silent_semantic_error_rate",
+      "operator": "==",
+      "threshold": 0.0,
+      "state": "PASS",
+      "actual": 0.0
+    },
+    {
+      "id": "G-DATA",
+      "scope": "all",
+      "metric": "data_corruption_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-SEC",
+      "scope": "all",
+      "metric": "security_regression_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-TX",
+      "scope": "P0",
+      "metric": "transaction_mismatch_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-AUTHORITY",
+      "scope": "all",
+      "metric": "authority_violation_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-EVIDENCE-INTEGRITY",
+      "scope": "all",
+      "metric": "evidence_integrity_failure_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-INTEGRITY-DRIFT",
+      "scope": "release",
+      "metric": "integrity_drift_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-UNSUPPORTED",
+      "scope": "success-claims",
+      "metric": "unsupported_undisclosed_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-RECOVERY",
+      "scope": "P0",
+      "metric": "recovery_failure_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-BUDGET",
+      "scope": "release",
+      "metric": "budget_overrun_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-SUPPLY-CHAIN",
+      "scope": "release",
+      "metric": "supply_chain_failure_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-PERFORMANCE",
+      "scope": "release",
+      "metric": "performance_regression_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-FLAKE",
+      "scope": "P0",
+      "metric": "flaky_case_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-SEEDS",
+      "scope": "probabilistic-cases",
+      "metric": "insufficient_seed_case_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-P1",
+      "scope": "P1",
+      "metric": "p1_weighted_pass_rate",
+      "operator": ">=",
+      "threshold": 0.985,
+      "state": "BLOCKED",
+      "actual": null,
+      "reason": "metric unavailable"
+    },
+    {
+      "id": "G-P2",
+      "scope": "P2",
+      "metric": "p2_weighted_pass_rate",
+      "operator": ">=",
+      "threshold": 0.95,
+      "state": "BLOCKED",
+      "actual": null,
+      "reason": "metric unavailable"
+    },
+    {
+      "id": "G-CORPUS",
+      "scope": "release",
+      "metric": "unapproved_corpus_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "FAIL",
+      "actual": 17
+    },
+    {
+      "id": "G-EVIDENCE",
+      "scope": "success-claims",
+      "metric": "evidence_completeness",
+      "operator": "==",
+      "threshold": 1.0,
+      "state": "PASS",
+      "actual": 1.0
+    },
+    {
+      "id": "G-FEATURE-COVERAGE",
+      "scope": "release",
+      "metric": "feature_coverage_ratio",
+      "operator": "==",
+      "threshold": 1.0,
+      "state": "PASS",
+      "actual": 1.0
+    },
+    {
+      "id": "G-UNDECLARED-FEATURE",
+      "scope": "release",
+      "metric": "undeclared_feature_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-ADAPTER-AVAILABLE",
+      "scope": "release",
+      "metric": "unavailable_adapter_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-UNAVAILABLE-CASES",
+      "scope": "release",
+      "metric": "unavailable_case_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-TENANT-ISOLATION",
+      "scope": "all",
+      "metric": "cross_tenant_leak_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-FINANCIAL-RECONCILIATION",
+      "scope": "all",
+      "metric": "unexplained_financial_delta_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-DUPLICATE-CHARGE",
+      "scope": "all",
+      "metric": "duplicate_charge_or_credit_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-JOURNEY-P0",
+      "scope": "P0-journey",
+      "metric": "p0_journey_pass_rate",
+      "operator": "==",
+      "threshold": 1.0,
+      "state": "BLOCKED",
+      "actual": null,
+      "reason": "metric unavailable"
+    },
+    {
+      "id": "G-MANDATORY-CONTROLS",
+      "scope": "release",
+      "metric": "failed_mandatory_control_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-ACCESSIBILITY-CRITICAL",
+      "scope": "release",
+      "metric": "critical_accessibility_failure_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-HIDDEN-AUTHORITY",
+      "scope": "release",
+      "metric": "hidden_test_authority_violation_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    },
+    {
+      "id": "G-STALE-EVIDENCE",
+      "scope": "release",
+      "metric": "stale_evidence_count",
+      "operator": "==",
+      "threshold": 0,
+      "state": "PASS",
+      "actual": 0
+    }
+  ],
+  "summary": {
+    "passed": 27,
+    "failed": 1,
+    "blocked": 3,
+    "waived": 0
+  }
+}

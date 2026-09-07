@@ -1,0 +1,45 @@
+schema_version: 1
+adapters:
+  - runtime: jvm
+    protocol: DAP
+    priority: P0
+    capabilities: [launch, attach_nonprod, line_breakpoints, conditional_breakpoints, exception_breakpoints, threads, stack, scopes, variables, evaluate_readonly, step]
+  - runtime: python
+    protocol: DAP
+    priority: P0
+    capabilities: [launch, attach_nonprod, line_breakpoints, conditional_breakpoints, exception_breakpoints, threads, stack, scopes, variables, evaluate_readonly, step]
+  - runtime: node-typescript
+    protocol: DAP
+    priority: P0
+    capabilities: [launch, attach_nonprod, line_breakpoints, conditional_breakpoints, logpoints, exception_breakpoints, source_maps, threads, stack, scopes, variables, evaluate_readonly, step]
+  - runtime: dotnet
+    protocol: DAP
+    priority: P0
+    capabilities: [launch, attach_nonprod, line_breakpoints, conditional_breakpoints, exception_breakpoints, threads, stack, scopes, variables, evaluate_readonly, step]
+  - runtime: browser
+    protocol: CDP-bridge
+    priority: P0
+    capabilities: [page_target, source_maps, line_breakpoints, network_timeline, console, stack, scopes, variables, step]
+  - runtime: go
+    protocol: DAP
+    priority: P1
+    capabilities: [launch, attach_nonprod, line_breakpoints, conditional_breakpoints, goroutines, stack, scopes, variables, step]
+  - runtime: rust-cpp
+    protocol: DAP
+    priority: P1
+    capabilities: [launch, attach_nonprod, line_breakpoints, threads, stack, scopes, variables, memory_optional, disassembly_optional, step]
+  - runtime: php
+    protocol: DAP
+    priority: P1
+    capabilities: [launch, line_breakpoints, exception_breakpoints, stack, scopes, variables, step]
+  - runtime: dart-flutter
+    protocol: DAP
+    priority: P1
+    capabilities: [launch, line_breakpoints, isolate_threads, stack, scopes, variables, hot_reload_optional, step]
+  - runtime: swift-objc
+    protocol: DAP-or-native-bridge
+    priority: P2
+    capabilities: [launch_controlled, line_breakpoints, threads, stack, scopes, variables, step]
+notes:
+  - Every deployed adapter must report capabilities at runtime.
+  - Reverse debugging is never assumed; it is exposed only when the adapter declares and passes conformance tests.

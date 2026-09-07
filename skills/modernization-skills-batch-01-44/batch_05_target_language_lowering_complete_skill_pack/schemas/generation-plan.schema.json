@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:generation-plan",
+  "title": "GenerationPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intent_refs",
+    "passes",
+    "plan_digest",
+    "plan_id",
+    "profile_id",
+    "record_id",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "plan_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "passes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "intent_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

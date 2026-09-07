@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B14: Java Parser Adapter"
+  short_description: "Run Precision Migration B14 with evidence controls"
+  default_prompt: "Use $pm-b14-java-parser-adapter to execute this Precision Migration contract with fail-closed evidence."

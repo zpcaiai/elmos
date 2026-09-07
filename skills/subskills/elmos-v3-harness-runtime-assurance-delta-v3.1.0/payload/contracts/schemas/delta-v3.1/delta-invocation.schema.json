@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/delta-invocation.schema.json",
+  "title": "Elmos v3.1 Delta Invocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenantId",
+    "goalId",
+    "runId",
+    "executionEpoch",
+    "stepId",
+    "invocationId",
+    "revisionSetId"
+  ],
+  "properties": {
+    "tenantId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goalId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executionEpoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stepId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisionSetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "extensionSkill": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

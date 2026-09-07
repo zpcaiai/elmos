@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0712",
+  "skill_name": "frt-0712-incremental-regeneration-and-three-way-merge",
+  "batch": "G07",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g07/frt-0712-incremental-regeneration-and-three-way-merge/",
+  "status": "shared_implementation",
+  "handler_kind": "build_toolchain",
+  "capability_key": "frt.g07.incremental-regeneration-and-three-way-merge",
+  "execution_contract_sha256": "sha256:eea2f9e00cc6074c8030effdfa5034a44d303cbf85bdaedb94640e049cd61a14",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "astNodes"
+    ],
+    "optional": [
+      "imports",
+      "diagnostics",
+      "unsupportedSemantics",
+      "repairPasses"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cb02e691c62a306aaa756198e55958178ea335bf14a47471367c62f514449329",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

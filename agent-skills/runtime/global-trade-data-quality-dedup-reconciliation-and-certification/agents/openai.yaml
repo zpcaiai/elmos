@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Global Trade Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $global-trade-data-quality-dedup-reconciliation-and-certification to implement its fail-closed ELMOS Product B51 contract."

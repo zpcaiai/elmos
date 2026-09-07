@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic Diagnostics and Risk Classifier"
+  short_description: "Classify semantic gaps risks and coverage"
+  default_prompt: "Use $semantic-diagnostics-and-risk-classifier to normalize gaps and blocking risks honestly."

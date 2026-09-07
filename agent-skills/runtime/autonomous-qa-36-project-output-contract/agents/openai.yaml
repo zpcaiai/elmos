@@ -1,0 +1,4 @@
+interface:
+  display_name: "Autonomous QA 36-project-output-contract"
+  short_description: "Run this Autonomous QA Skill with fail-closed evidence"
+  default_prompt: "Use $autonomous-qa-36-project-output-contract through the declared bounded runtime binding; preserve immutable provenance and NOT_RUN evidence states."

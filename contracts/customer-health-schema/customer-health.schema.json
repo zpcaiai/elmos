@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.customer-health.v1",
+  "title": "ELMOS Customer Health",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "score",
+    "reasonCodes",
+    "evidenceRefs",
+    "renewalActionRequired",
+    "expansionCandidate"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "HEALTHY",
+        "WATCH",
+        "AT_RISK",
+        "CRITICAL",
+        "UNKNOWN"
+      ]
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "renewalActionRequired": {
+      "type": "boolean"
+    },
+    "expansionCandidate": {
+      "type": "boolean"
+    }
+  }
+}
+

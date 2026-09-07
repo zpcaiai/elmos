@@ -1,0 +1,22 @@
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked pytest
+...............................                                          [100%]
+31 passed in 2.23s
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked ruff check src tests
+All checks passed!
+/opt/homebrew/bin/uv --directory engines/python-engine run --locked mypy src
+Success: no issues found in 19 source files
+Downloading cpython-3.14.5-macos-aarch64-none (download) (24.7MiB)
+ Downloaded cpython-3.14.5-macos-aarch64-none (download)
+Using CPython 3.14.5
+Creating virtual environment at: .venv
+   Building elmos-python-engine @ file:///Users/stephen/DevProjects/AIProjects/elmos/engines/python-engine
+Downloading ruff (10.0MiB)
+Downloading mypy (12.7MiB)
+Downloading pydantic-core (1.9MiB)
+Downloading libcst (2.0MiB)
+      Built elmos-python-engine @ file:///Users/stephen/DevProjects/AIProjects/elmos/engines/python-engine
+ Downloaded libcst
+ Downloaded pydantic-core
+ Downloaded ruff
+ Downloaded mypy
+Installed 31 packages in 219ms

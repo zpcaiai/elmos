@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "policy_key": "vue3-wechat-visual-baseline-v1",
+  "automatic_updates": false,
+  "candidate_and_approved_roots_are_distinct": true,
+  "approved_baseline_count": 0,
+  "masks": [],
+  "tolerances": [],
+  "state": "NOT_RUN",
+  "reason": "No source or target runtime screenshots were captured or approved."
+}

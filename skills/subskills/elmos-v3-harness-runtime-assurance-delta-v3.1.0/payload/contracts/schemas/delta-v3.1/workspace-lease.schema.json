@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/workspace-lease.schema.json",
+  "title": "Workspace Ownership Lease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workspaceId",
+    "ownerExecutionId",
+    "generation",
+    "repositoryId",
+    "baseRevision",
+    "state"
+  ],
+  "properties": {
+    "workspaceId": {
+      "type": "string"
+    },
+    "ownerExecutionId": {
+      "type": "string"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "repositoryId": {
+      "type": "string"
+    },
+    "baseRevision": {
+      "type": "string"
+    },
+    "writeScopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "state": {
+      "enum": [
+        "ACTIVE",
+        "HANDOFF_PENDING",
+        "RETIRED",
+        "TAKEOVER_PENDING"
+      ]
+    }
+  }
+}

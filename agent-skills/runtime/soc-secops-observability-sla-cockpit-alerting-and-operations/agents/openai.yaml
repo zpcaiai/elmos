@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Soc Secops Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $soc-secops-observability-sla-cockpit-alerting-and-operations to implement its fail-closed ELMOS Product B48 contract."

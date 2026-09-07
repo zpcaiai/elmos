@@ -1,0 +1,486 @@
+{
+  "routes": [
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-csharp-to-go"
+      ],
+      "composition_id": "composition-csharp-to-go",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-csharp-to-go",
+        "route-replay-validator-csharp-to-go",
+        "route-replay-schema-csharp-to-go"
+      ],
+      "route_key": "csharp-to-go",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "csharp",
+      "target_language": "go"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-csharp-to-java"
+      ],
+      "composition_id": "composition-csharp-to-java",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-csharp-to-java",
+        "route-replay-validator-csharp-to-java",
+        "route-replay-schema-csharp-to-java"
+      ],
+      "route_key": "csharp-to-java",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "csharp",
+      "target_language": "java"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-csharp-to-python"
+      ],
+      "composition_id": "composition-csharp-to-python",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-csharp-to-python",
+        "route-replay-validator-csharp-to-python",
+        "route-replay-schema-csharp-to-python"
+      ],
+      "route_key": "csharp-to-python",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "csharp",
+      "target_language": "python"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-csharp-to-rust"
+      ],
+      "composition_id": "composition-csharp-to-rust",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-csharp-to-rust",
+        "route-replay-validator-csharp-to-rust",
+        "route-replay-schema-csharp-to-rust"
+      ],
+      "route_key": "csharp-to-rust",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "csharp",
+      "target_language": "rust"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-csharp-to-typescript"
+      ],
+      "composition_id": "composition-csharp-to-typescript",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-csharp-to-typescript",
+        "route-replay-validator-csharp-to-typescript",
+        "route-replay-schema-csharp-to-typescript"
+      ],
+      "route_key": "csharp-to-typescript",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "csharp",
+      "target_language": "typescript"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-go-to-csharp"
+      ],
+      "composition_id": "composition-go-to-csharp",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-go-to-csharp",
+        "route-replay-validator-go-to-csharp",
+        "route-replay-schema-go-to-csharp"
+      ],
+      "route_key": "go-to-csharp",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "go",
+      "target_language": "csharp"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-go-to-java"
+      ],
+      "composition_id": "composition-go-to-java",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-go-to-java",
+        "route-replay-validator-go-to-java",
+        "route-replay-schema-go-to-java"
+      ],
+      "route_key": "go-to-java",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "go",
+      "target_language": "java"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-go-to-python"
+      ],
+      "composition_id": "composition-go-to-python",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-go-to-python",
+        "route-replay-validator-go-to-python",
+        "route-replay-schema-go-to-python"
+      ],
+      "route_key": "go-to-python",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "go",
+      "target_language": "python"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-go-to-rust"
+      ],
+      "composition_id": "composition-go-to-rust",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-go-to-rust",
+        "route-replay-validator-go-to-rust",
+        "route-replay-schema-go-to-rust"
+      ],
+      "route_key": "go-to-rust",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "go",
+      "target_language": "rust"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-go-to-typescript"
+      ],
+      "composition_id": "composition-go-to-typescript",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-go-to-typescript",
+        "route-replay-validator-go-to-typescript",
+        "route-replay-schema-go-to-typescript"
+      ],
+      "route_key": "go-to-typescript",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "go",
+      "target_language": "typescript"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-java-to-csharp"
+      ],
+      "composition_id": "composition-java-to-csharp",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-java-to-csharp",
+        "route-replay-validator-java-to-csharp",
+        "route-replay-schema-java-to-csharp"
+      ],
+      "route_key": "java-to-csharp",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "java",
+      "target_language": "csharp"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-java-to-go"
+      ],
+      "composition_id": "composition-java-to-go",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-java-to-go",
+        "route-replay-validator-java-to-go",
+        "route-replay-schema-java-to-go"
+      ],
+      "route_key": "java-to-go",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "java",
+      "target_language": "go"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-java-to-python"
+      ],
+      "composition_id": "composition-java-to-python",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-java-to-python",
+        "route-replay-validator-java-to-python",
+        "route-replay-schema-java-to-python"
+      ],
+      "route_key": "java-to-python",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "java",
+      "target_language": "python"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-java-to-rust"
+      ],
+      "composition_id": "composition-java-to-rust",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-java-to-rust",
+        "route-replay-validator-java-to-rust",
+        "route-replay-schema-java-to-rust"
+      ],
+      "route_key": "java-to-rust",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "java",
+      "target_language": "rust"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-java-to-typescript"
+      ],
+      "composition_id": "composition-java-to-typescript",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-java-to-typescript",
+        "route-replay-validator-java-to-typescript",
+        "route-replay-schema-java-to-typescript"
+      ],
+      "route_key": "java-to-typescript",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "java",
+      "target_language": "typescript"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-python-to-csharp"
+      ],
+      "composition_id": "composition-python-to-csharp",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-python-to-csharp",
+        "route-replay-validator-python-to-csharp",
+        "route-replay-schema-python-to-csharp"
+      ],
+      "route_key": "python-to-csharp",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "python",
+      "target_language": "csharp"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-python-to-go"
+      ],
+      "composition_id": "composition-python-to-go",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-python-to-go",
+        "route-replay-validator-python-to-go",
+        "route-replay-schema-python-to-go"
+      ],
+      "route_key": "python-to-go",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "python",
+      "target_language": "go"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-python-to-java"
+      ],
+      "composition_id": "composition-python-to-java",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-python-to-java",
+        "route-replay-validator-python-to-java",
+        "route-replay-schema-python-to-java"
+      ],
+      "route_key": "python-to-java",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "python",
+      "target_language": "java"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-python-to-rust"
+      ],
+      "composition_id": "composition-python-to-rust",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-python-to-rust",
+        "route-replay-validator-python-to-rust",
+        "route-replay-schema-python-to-rust"
+      ],
+      "route_key": "python-to-rust",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "python",
+      "target_language": "rust"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-python-to-typescript"
+      ],
+      "composition_id": "composition-python-to-typescript",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-python-to-typescript",
+        "route-replay-validator-python-to-typescript",
+        "route-replay-schema-python-to-typescript"
+      ],
+      "route_key": "python-to-typescript",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "python",
+      "target_language": "typescript"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-rust-to-csharp"
+      ],
+      "composition_id": "composition-rust-to-csharp",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-rust-to-csharp",
+        "route-replay-validator-rust-to-csharp",
+        "route-replay-schema-rust-to-csharp"
+      ],
+      "route_key": "rust-to-csharp",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "rust",
+      "target_language": "csharp"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-rust-to-go"
+      ],
+      "composition_id": "composition-rust-to-go",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-rust-to-go",
+        "route-replay-validator-rust-to-go",
+        "route-replay-schema-rust-to-go"
+      ],
+      "route_key": "rust-to-go",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "rust",
+      "target_language": "go"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-rust-to-java"
+      ],
+      "composition_id": "composition-rust-to-java",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-rust-to-java",
+        "route-replay-validator-rust-to-java",
+        "route-replay-schema-rust-to-java"
+      ],
+      "route_key": "rust-to-java",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "rust",
+      "target_language": "java"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-rust-to-python"
+      ],
+      "composition_id": "composition-rust-to-python",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-rust-to-python",
+        "route-replay-validator-rust-to-python",
+        "route-replay-schema-rust-to-python"
+      ],
+      "route_key": "rust-to-python",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "rust",
+      "target_language": "python"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-rust-to-typescript"
+      ],
+      "composition_id": "composition-rust-to-typescript",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-rust-to-typescript",
+        "route-replay-validator-rust-to-typescript",
+        "route-replay-schema-rust-to-typescript"
+      ],
+      "route_key": "rust-to-typescript",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "rust",
+      "target_language": "typescript"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-typescript-to-csharp"
+      ],
+      "composition_id": "composition-typescript-to-csharp",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-typescript-to-csharp",
+        "route-replay-validator-typescript-to-csharp",
+        "route-replay-schema-typescript-to-csharp"
+      ],
+      "route_key": "typescript-to-csharp",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "typescript",
+      "target_language": "csharp"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-typescript-to-go"
+      ],
+      "composition_id": "composition-typescript-to-go",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-typescript-to-go",
+        "route-replay-validator-typescript-to-go",
+        "route-replay-schema-typescript-to-go"
+      ],
+      "route_key": "typescript-to-go",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "typescript",
+      "target_language": "go"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-typescript-to-java"
+      ],
+      "composition_id": "composition-typescript-to-java",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-typescript-to-java",
+        "route-replay-validator-typescript-to-java",
+        "route-replay-schema-typescript-to-java"
+      ],
+      "route_key": "typescript-to-java",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "typescript",
+      "target_language": "java"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-typescript-to-python"
+      ],
+      "composition_id": "composition-typescript-to-python",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-typescript-to-python",
+        "route-replay-validator-typescript-to-python",
+        "route-replay-schema-typescript-to-python"
+      ],
+      "route_key": "typescript-to-python",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "typescript",
+      "target_language": "python"
+    },
+    {
+      "artifact_evidence_ids": [
+        "route-evidence-typescript-to-rust"
+      ],
+      "composition_id": "composition-typescript-to-rust",
+      "packed_replay_evidence_ids": [
+        "route-replay-launcher-typescript-to-rust",
+        "route-replay-validator-typescript-to-rust",
+        "route-replay-schema-typescript-to-rust"
+      ],
+      "route_key": "typescript-to-rust",
+      "route_version": "1.0.0",
+      "semantic_profile": "typed-pure-function-v1",
+      "source_language": "typescript",
+      "target_language": "rust"
+    }
+  ],
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1"
+}

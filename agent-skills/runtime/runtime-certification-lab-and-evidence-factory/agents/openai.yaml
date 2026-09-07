@@ -1,0 +1,4 @@
+interface:
+  display_name: "Runtime Certification Lab and Evidence Factory"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $runtime-certification-lab-and-evidence-factory to execute this ELMOS product-closure Skill with fail-closed evidence."

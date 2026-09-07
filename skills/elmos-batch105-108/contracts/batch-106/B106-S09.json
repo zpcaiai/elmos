@@ -1,0 +1,68 @@
+{
+  "id": "B106-S09",
+  "batch": 106,
+  "name": "preview-image-cache-and-snapshot-manager",
+  "dependencies": [
+    "B106-S08"
+  ],
+  "inputs": [
+    "OCI build specs",
+    "cache policy",
+    "provider snapshot capabilities"
+  ],
+  "outputs": [
+    "CacheEntry",
+    "SandboxSnapshot",
+    "cache metrics"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/cache/PreviewCacheService.java",
+      "private-runner/internal/cache/manager.go",
+      "infra/cache/"
+    ],
+    "interfaces": [
+      "POST /api/runtime-cache:warm",
+      "DELETE /api/runtime-cache/{id}",
+      "event runtime-cache.updated"
+    ],
+    "data": [
+      "preview_cache_entry",
+      "sandbox_snapshot",
+      "cache_access"
+    ]
+  },
+  "workflow": [
+    "定义JDK/Maven、Python/uv、.NET、Go缓存键",
+    "区分公共只读缓存与租户私有缓存",
+    "构建并签名预热快照",
+    "验证快照无凭证和客户代码",
+    "按TTL/LRU/风险事件失效",
+    "记录命中率、节省时间和成本"
+  ],
+  "tests": [
+    "租户私有依赖不进入公共缓存",
+    "Secret扫描失败的快照拒绝",
+    "基础镜像撤销触发失效",
+    "缓存污染测试被隔离",
+    "冷/热启动指标正确"
+  ],
+  "evidence": [
+    "cache-manifest.json",
+    "snapshot-receipt.json",
+    "sanitization-report.json",
+    "cache-metrics.json"
+  ],
+  "definition_of_done": [
+    "缓存键包含工具链和锁摘要",
+    "公共缓存无客户数据",
+    "快照已签名",
+    "可强制失效",
+    "指标可用于SLO"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

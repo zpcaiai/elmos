@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/evidence.schema.json",
+  "title": "EvidenceArtifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "run_id",
+    "kind",
+    "uri",
+    "content_hash",
+    "created_at",
+    "producer",
+    "redaction_status"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "test_case_id": {
+      "type": "string"
+    },
+    "defect_id": {
+      "type": "string"
+    },
+    "patch_id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "log",
+        "trace",
+        "metric",
+        "screenshot",
+        "video",
+        "har",
+        "database_snapshot",
+        "message_capture",
+        "profile",
+        "coverage",
+        "mutation_report",
+        "diff",
+        "build_artifact",
+        "command_transcript",
+        "environment_manifest",
+        "report",
+        "certificate",
+        "test_source",
+        "test_config",
+        "test_fixture",
+        "test_data",
+        "test_baseline",
+        "replay_script",
+        "output_manifest",
+        "output_bundle"
+      ]
+    },
+    "uri": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "type": "string"
+    },
+    "redaction_status": {
+      "enum": [
+        "not_required",
+        "redacted",
+        "quarantined",
+        "failed"
+      ]
+    },
+    "retention_class": {
+      "enum": [
+        "ephemeral",
+        "standard",
+        "extended",
+        "legal_hold"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

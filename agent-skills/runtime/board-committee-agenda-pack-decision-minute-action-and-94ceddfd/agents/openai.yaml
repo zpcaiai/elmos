@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Board Committee Agenda Pack Decision Minute Action And Attestation"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $board-committee-agenda-pack-decision-minute-action-and-94ceddfd to implement its fail-closed ELMOS Product B38 contract."

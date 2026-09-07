@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 737: compliance audit and regulatory integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $compliance-audit-and-regulatory-integration to evaluate this capability with evidence."

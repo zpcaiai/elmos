@@ -1,0 +1,23 @@
+{
+  "authoritySnapshotId": "auth-s1",
+  "capabilities": [
+    "terminal"
+  ],
+  "environmentSnapshotId": "env-s1",
+  "modelSnapshot": {
+    "model": "example-model",
+    "provider": "openai",
+    "reasoningEffort": "high",
+    "revision": "snapshot-1"
+  },
+  "planHash": "sha256:plan",
+  "planId": "plan-1",
+  "state": "FINALIZED",
+  "toolMode": "NATIVE",
+  "toolPlan": {
+    "tools": [
+      "compile",
+      "test"
+    ]
+  }
+}

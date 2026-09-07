@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "independence": "independent-holdout",
+  "state": "NOT_RUN",
+  "cases": [
+    {
+      "id": "holdout-async-race",
+      "evidence": "NOT_RUN"
+    },
+    {
+      "id": "holdout-complex-collection",
+      "evidence": "NOT_RUN"
+    },
+    {
+      "id": "holdout-platform-accessibility",
+      "evidence": "NOT_RUN"
+    }
+  ]
+}

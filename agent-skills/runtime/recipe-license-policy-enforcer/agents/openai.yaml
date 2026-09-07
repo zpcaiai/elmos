@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe License Policy Enforcer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $recipe-license-policy-enforcer to execute this ELMOS Runtime Skill with fail-closed evidence."

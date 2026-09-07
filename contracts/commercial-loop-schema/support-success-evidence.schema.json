@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/support-success-evidence.schema.json",
+  "title": "B13-D Support and Customer Success Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "sold_service_sla_coverage",
+    "ticket_tenant_binding_coverage",
+    "p1_escalation_tested",
+    "p1_missed_escalations",
+    "customer_health_coverage",
+    "renewal_plan_coverage",
+    "value_realization_coverage",
+    "churn_risks_without_action",
+    "unauthorized_support_access_events",
+    "incident_problem_loop_passed",
+    "safe_non_renewal_lifecycle_passed",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "sold_service_sla_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "ticket_tenant_binding_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "p1_escalation_tested": {
+      "const": true
+    },
+    "p1_missed_escalations": {
+      "const": 0
+    },
+    "customer_health_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "renewal_plan_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "value_realization_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "churn_risks_without_action": {
+      "const": 0
+    },
+    "unauthorized_support_access_events": {
+      "const": 0
+    },
+    "incident_problem_loop_passed": {
+      "const": true
+    },
+    "safe_non_renewal_lifecycle_passed": {
+      "const": true
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

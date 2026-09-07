@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B40: Batch 40 Product Entry Modes"
+  short_description: "Run Precision Migration B40 with evidence controls"
+  default_prompt: "Use $pm-b40-product-entry-modes to execute this Precision Migration contract with fail-closed evidence."

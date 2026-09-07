@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Software Supply Chain Risk Exposure Concentration And Blast Radius Analytics"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $software-supply-chain-risk-exposure-concentration-and-b-c5de6a01 to implement its fail-closed ELMOS Product B37 contract."

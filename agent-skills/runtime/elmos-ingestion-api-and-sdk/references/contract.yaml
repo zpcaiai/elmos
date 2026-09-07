@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 26
+name: elmos-ingestion-api-and-sdk
+title: 接入 API 与 SDK
+objective: 提供一致、幂等、可分页、可取消、可观测的契约，并通过生成 SDK 降低多语言客户端差异。
+dependencies:
+- elmos-multimodal-input-orchestrator
+- elmos-secure-resumable-upload
+inputs:
+- 客户端请求、认证、资产
+outputs:
+- API 响应、事件流、SDK
+responsibilities:
+- 定义 REST、事件和可选 gRPC 契约及错误模型
+- 所有创建、提交接口支持 Idempotency-Key 和异步 task handle
+- 提供 SSE、WebSocket、Webhook 进度机制和签名验证
+- 从 OpenAPI、Schema 生成 TS、Python、Java SDK 与契约测试
+deliverables:
+- OpenAPI、AsyncAPI 规范
+- SDK、示例和鉴权中间件
+- 向后兼容、幂等、分页和 webhook 重放测试
+acceptance:
+- API 版本升级不静默破坏现有客户端
+- 错误包含稳定代码、trace id 和可操作说明
+- Webhook 可验证、可重放且防重复
+- SDK 与服务端 schema 在 CI 中保持一致
+data_entities:
+- api_clients
+- webhook_subscriptions
+- api_idempotency_keys
+events:
+- api.request.completed
+- webhook.delivery.failed
+metrics:
+- api_error_rate
+- contract_test_pass_rate
+failure_modes:
+- 版本不兼容
+- 重复 webhook
+- 客户端超时
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

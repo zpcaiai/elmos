@@ -1,0 +1,518 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/formal-equivalence-evidence.schema.json",
+  "title": "Batch29FormalEquivalenceEvidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "route_key",
+    "route_manifest_sha256",
+    "semantic_profile",
+    "semantic_profile_sha256",
+    "artifact_sha256",
+    "artifact_id",
+    "environment_sha256",
+    "environment_artifact_id",
+    "artifact_refs",
+    "semantic_ir",
+    "semantic_chunks",
+    "behavior_equivalence",
+    "formal_proof"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "route_key": {
+      "type": "string",
+      "pattern": "^[a-z]+-to-[a-z]+$"
+    },
+    "route_manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "semantic_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_profile_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "artifact_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "artifact_id": {
+      "$ref": "#/$defs/artifact_id"
+    },
+    "environment_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "environment_artifact_id": {
+      "$ref": "#/$defs/artifact_id"
+    },
+    "artifact_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact_ref"
+      }
+    },
+    "semantic_ir": {
+      "type": "object",
+      "required": [
+        "status",
+        "source_ir_artifact_id",
+        "source_ir_sha256",
+        "target_ir_artifact_id",
+        "target_relift_ir_sha256",
+        "unknown_or_dropped_nodes",
+        "differences"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/layer_status"
+        },
+        "source_ir_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_ir_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "target_relift_ir_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "target_ir_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "unknown_or_dropped_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "differences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "semantic_chunks": {
+      "type": "object",
+      "required": [
+        "status",
+        "total",
+        "matched",
+        "unmatched",
+        "ambiguous",
+        "coverage",
+        "evidence_artifact_ids",
+        "chunks"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/layer_status"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmatched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ambiguous": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact_id"
+          }
+        },
+        "chunks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/chunk"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "behavior_equivalence": {
+      "type": "object",
+      "required": [
+        "status",
+        "total_cases",
+        "passed_cases",
+        "counterexamples",
+        "evidence_artifact_ids",
+        "source_runtime_artifact_ids",
+        "target_runtime_artifact_ids",
+        "canonical_oracle_passed",
+        "source_runtime_passed",
+        "target_runtime_passed"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/layer_status"
+        },
+        "total_cases": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "passed_cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "counterexamples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/counterexample"
+          }
+        },
+        "evidence_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact_id"
+          }
+        },
+        "source_runtime_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact_id"
+          }
+        },
+        "target_runtime_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact_id"
+          }
+        },
+        "canonical_oracle_passed": {
+          "type": "boolean"
+        },
+        "source_runtime_passed": {
+          "type": "boolean"
+        },
+        "target_runtime_passed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "formal_proof": {
+      "type": "object",
+      "required": [
+        "status",
+        "solver",
+        "solver_version",
+        "solver_options",
+        "input_artifact_id",
+        "input_digest",
+        "result_artifact_ids",
+        "assumptions",
+        "obligations",
+        "replay"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/proof_status"
+        },
+        "solver": {
+          "type": "string",
+          "minLength": 1
+        },
+        "solver_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "solver_options": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "integer",
+              "boolean"
+            ]
+          }
+        },
+        "input_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "input_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "result_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact_id"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "obligations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/obligation"
+          }
+        },
+        "replay": {
+          "$ref": "#/$defs/replay"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifact_ref": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "role",
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "role": {
+          "$ref": "#/$defs/artifact_role"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{7,95}$"
+    },
+    "artifact_role": {
+      "enum": [
+        "source-ir",
+        "target-ir",
+        "target-artifact",
+        "environment",
+        "chunk-map",
+        "behavior-result",
+        "formal-input",
+        "solver-input",
+        "solver-result",
+        "proof-input-bundle",
+        "formal-composition",
+        "engine-source",
+        "engine-source-manifest",
+        "corpus-artifact",
+        "replay-tool",
+        "replay-schema"
+      ]
+    },
+    "layer_status": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "UNKNOWN",
+        "NOT_RUN"
+      ]
+    },
+    "proof_status": {
+      "enum": [
+        "PROVED",
+        "PROVED_UNDER_ASSUMPTIONS",
+        "AXIOM",
+        "BOUNDED",
+        "UNKNOWN",
+        "TIMEOUT",
+        "NOT_RUN",
+        "COUNTEREXAMPLE"
+      ]
+    },
+    "chunk": {
+      "type": "object",
+      "required": [
+        "chunk_id",
+        "source_ref",
+        "target_ref",
+        "semantic_hash",
+        "status"
+      ],
+      "properties": {
+        "chunk_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_hash": {
+          "$ref": "#/$defs/sha256"
+        },
+        "status": {
+          "enum": [
+            "MATCHED",
+            "UNMATCHED",
+            "AMBIGUOUS",
+            "FAILED"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "counterexample": {
+      "type": "object",
+      "required": [
+        "case_id",
+        "reason"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "obligation": {
+      "type": "object",
+      "required": [
+        "obligation_id",
+        "status",
+        "scope",
+        "formal_input_artifact_id",
+        "solver_input_artifact_id",
+        "input_digest",
+        "solver_result_artifact_id",
+        "assumptions"
+      ],
+      "properties": {
+        "obligation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/proof_status"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "formal_input_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "solver_input_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "solver_result_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "detail": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "replay": {
+      "type": "object",
+      "required": [
+        "command",
+        "cwd",
+        "expected_result_artifact_id",
+        "expected_result_sha256",
+        "expected_exit_code"
+      ],
+      "properties": {
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_result_artifact_id": {
+          "$ref": "#/$defs/artifact_id"
+        },
+        "expected_result_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "expected_exit_code": {
+          "const": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

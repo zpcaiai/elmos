@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "component-template-view",
+  "obligation_symbol": "diff_component_template",
+  "variant": "TARGET_ONLY",
+  "pointer": "/componentTemplate/keyedBy",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:10b06292d809c28fd67bc9a6d444475e41485544282c94f2138e4b826a6d6ecc",
+  "canonical_block_digest": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+  "mutant_block_digest": "sha256:f762461dda630cecabd6d4c7b04a270f6d4710ccd31085150caf8f3ba2294ff4",
+  "counterexample_replay": {
+    "block_id": "component-template-view",
+    "pointer": "/componentTemplate/keyedBy",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "componentId": "interaction.shell",
+      "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+      "keyedBy": "route.id",
+      "titleBinding": "route.title",
+      "textBinding": "route.text",
+      "key": "route.home",
+      "title": "首页",
+      "text": "首页内容",
+      "visible": true
+    },
+    "mutant_observation": {
+      "componentId": "interaction.shell",
+      "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+      "keyedBy": "route.id__MUTANT",
+      "titleBinding": "route.title",
+      "textBinding": "route.text",
+      "key": "",
+      "title": "首页",
+      "text": "首页内容",
+      "visible": true
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

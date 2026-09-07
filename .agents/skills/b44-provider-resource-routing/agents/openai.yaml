@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Provider Resource Routing"
+  short_description: "Run evidence-bound Batch 44 provider resource routing work"
+  default_prompt: "Use $b44-provider-resource-routing to implement and verify this capability with fail-closed evidence."

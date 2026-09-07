@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "partners"
+  ],
+  "properties": {
+    "partners": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": [
+          "organization_id",
+          "independent",
+          "repository",
+          "production_validation",
+          "rollback_drill",
+          "handoff",
+          "accepted",
+          "evidence"
+        ],
+        "properties": {
+          "organization_id": {
+            "type": "string"
+          },
+          "independent": {
+            "const": true
+          },
+          "repository": {
+            "type": "object"
+          },
+          "production_validation": {
+            "const": true
+          },
+          "rollback_drill": {
+            "const": true
+          },
+          "handoff": {
+            "const": true
+          },
+          "accepted": {
+            "const": true
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 5
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 9
+name: elmos-pdf-layout-table-parser
+title: PDF 版面与表格解析
+objective: 以逐页混合策略恢复 PDF 的逻辑结构和视觉坐标，保证每段内容可定位到页码与区域。
+dependencies:
+- elmos-image-ocr-and-preprocessing
+- elmos-source-anchor-and-provenance
+inputs:
+- PDF 资产、可选打开密码
+outputs:
+- ParsedDocument、DocumentPage、DocumentTable
+responsibilities:
+- 逐页判断原生文本、扫描或混合解析路径
+- 恢复多栏阅读顺序、标题、页眉页脚、脚注、图注和代码块
+- 解析表格、合并单元格和跨页表格
+- 处理用户提供密码的加密 PDF，但禁止绕过保护
+deliverables:
+- PDFParser 适配器与 page/block/table 模型
+- 原生与 OCR 混合决策器
+- 多栏、跨页表格、扫描页、加密 PDF 测试
+acceptance:
+- 所有内容块包含 page 和 bbox 或明确逻辑锚点
+- 扫描与原生页面可正确混用
+- 表格单元格关系不会被扁平化
+- 密码不会进入日志、普通字段或模型上下文
+data_entities:
+- document_pages
+- document_tables
+events:
+- pdf.page.parsed
+- pdf.password.required
+- pdf.table.detected
+metrics:
+- page_parse_success_rate
+- table_structure_accuracy
+failure_modes:
+- 损坏 xref
+- 密码错误
+- 超大页面
+- 嵌入对象异常
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

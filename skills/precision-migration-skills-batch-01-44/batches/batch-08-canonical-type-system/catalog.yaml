@@ -1,0 +1,29 @@
+batch: 8
+slug: canonical-type-system
+title: "Canonical Type System"
+phase: "C 精密语义表示"
+skills:
+  - name: canonical-primitive-types
+    description: "定义位宽、符号、编码、布尔、字节、字符串和基础值类型的统一语义。"
+  - name: numeric-semantics-model
+    description: "建模整数溢出、浮点、NaN、Infinity、负零、除法和取模差异。"
+  - name: decimal-and-rounding-model
+    description: "建模精度、Scale、舍入模式、溢出和货币语义。"
+  - name: null-missing-undefined-model
+    description: "严格区分 Null、Missing、Undefined、Empty、Zero value 和未初始化。"
+  - name: option-result-union-model
+    description: "统一 Option、Result、Union、错误分支和封闭代数数据类型。"
+  - name: generic-and-variance-model
+    description: "建模泛型约束、擦除、实例化、协变、逆变和高阶类型差异。"
+  - name: collection-semantics-model
+    description: "建模顺序、唯一性、相等、哈希、可变性、惰性与并发集合语义。"
+  - name: datetime-timezone-model
+    description: "建模 Instant、Local time、Offset、时区、精度、闰秒和夏令时。"
+  - name: serialization-type-model
+    description: "统一 JSON、Protobuf、数据库、消息和配置的可观察序列化表示。"
+  - name: refinement-type-contracts
+    description: "为范围、非空、唯一、排序、守恒和权限等性质生成精化类型契约。"
+  - name: ownership-and-lifetime-model
+    description: "统一所有权、借用、别名、可变性、资源生命周期和线程安全语义。"
+  - name: gradual-type-recovery
+    description: "结合静态分析、运行 Trace、Schema 和测试恢复动态语言真实类型与对象形状。"

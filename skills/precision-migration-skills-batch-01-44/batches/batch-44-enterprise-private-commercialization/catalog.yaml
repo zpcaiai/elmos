@@ -1,0 +1,29 @@
+batch: 44
+slug: enterprise-private-commercialization
+title: "企业私有化与商业交付"
+phase: "L 证据、上线和产品化"
+skills:
+  - name: private-deployment-planner
+    description: "根据网络、数据、模型、工具链、规模和合规规划私有部署拓扑。"
+  - name: air-gapped-installation
+    description: "打包离线镜像、依赖、工具链、模型、许可证、升级和验证流程。"
+  - name: offline-toolchain-registry
+    description: "维护离线可验证的编译器、Runtime、数据库、浏览器、设备和证明工具。"
+  - name: private-model-gateway
+    description: "接入客户自有、开源或国产模型，支持审计、限流、路由和版本锁定。"
+  - name: multi-tenant-isolation
+    description: "实现租户、仓库、工作区、数据、模型、缓存、密钥和证据隔离。"
+  - name: rbac-and-sso
+    description: "实现组织、角色、项目、审批、SSO、SCIM 和最小权限。"
+  - name: audit-and-compliance
+    description: "记录不可抵赖操作、数据处理、模型调用、审批和证据保留。"
+  - name: license-and-entitlement
+    description: "管理版本、方向包、席位、并发、容量、离线授权和许可证合规。"
+  - name: white-label-partner-mode
+    description: "为集成商和厂商提供品牌、租户、报告、规则和交付流程定制。"
+  - name: enterprise-reporting
+    description: "生成技术、管理、审计、合规、成本、SLA 和项目组合报告。"
+  - name: sla-and-support-readiness
+    description: "定义监控、值班、升级、响应、恢复、版本支持和客户沟通机制。"
+  - name: customer-private-rule-pack
+    description: "安全开发、测试、签名、部署和升级客户私有转换规则与知识。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Hotspot and Query Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2713-database-hotspot-and-query-validator to run FRT-2713 through the governed FRT runtime with exact scope and fail-closed evidence."

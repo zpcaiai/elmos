@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 670: deal thesis and integration archetype builder"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $deal-thesis-and-integration-archetype-builder to evaluate this capability with evidence."

@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-08-06T11:27:26.315541Z",
+  "os": "Linux 6.8.0-124-generic",
+  "machine": "aarch64",
+  "pythonVersion": "3.10.12",
+  "pythonImplementation": "CPython",
+  "gitVersion": "git version 2.34.1",
+  "opensslVersion": "OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)",
+  "repositoryRevision": "2c9c668fd559011da3016e939c73fa7359cec44e",
+  "artifactRootsClean": true,
+  "uncommittedTrackedPathCount": 0,
+  "cleanlinessNote": "no tracked file under ['pom.xml', 'contracts'] differs from HEAD (untracked files were not enumerated)"
+}

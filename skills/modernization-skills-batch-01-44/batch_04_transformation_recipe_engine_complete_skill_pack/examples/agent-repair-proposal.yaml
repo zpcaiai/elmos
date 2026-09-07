@@ -1,0 +1,11 @@
+# Example instance for batch-04: agent-repair-proposal
+agent_id: example
+diff_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+human_reviewed: false
+proposal_id: example
+record_id: example
+schema_version: 1.0.0
+scope: example
+touches_gate: false
+touches_golden: false
+touches_tests: false

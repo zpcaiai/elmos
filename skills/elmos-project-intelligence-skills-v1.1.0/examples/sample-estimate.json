@@ -1,0 +1,74 @@
+{
+  "estimate_id": "estimate-demo",
+  "as_of": "2026-08-19T07:00:00Z",
+  "project_revision_id": "rev-demo-001",
+  "pipeline": [
+    "ingestion",
+    "parse",
+    "graph",
+    "architecture",
+    "diagrams",
+    "documents",
+    "presentation"
+  ],
+  "system_wall_clock_eta": {
+    "p50_seconds": 900,
+    "p90_seconds": 1800,
+    "confidence": 0.62
+  },
+  "stages": [
+    {
+      "name": "ingestion",
+      "p50_seconds": 30,
+      "p90_seconds": 60,
+      "queue_seconds": 5
+    },
+    {
+      "name": "parse",
+      "p50_seconds": 240,
+      "p90_seconds": 420,
+      "queue_seconds": 10
+    },
+    {
+      "name": "graph",
+      "p50_seconds": 180,
+      "p90_seconds": 360,
+      "queue_seconds": 5
+    },
+    {
+      "name": "artifacts",
+      "p50_seconds": 450,
+      "p90_seconds": 960,
+      "queue_seconds": 20
+    }
+  ],
+  "tokens": {
+    "input": 800000,
+    "output": 120000,
+    "cached": 400000
+  },
+  "resources": {
+    "cpu_core_seconds": 7200,
+    "memory_gb_seconds": 24000,
+    "object_storage_gb": 2.5
+  },
+  "costs": {
+    "currency": "USD",
+    "model": 12.0,
+    "compute": 2.5,
+    "storage": 0.1,
+    "total": 14.6
+  },
+  "human_review_effort": {
+    "p50_hours": 2.0,
+    "p90_hours": 5.0
+  },
+  "assumptions": [
+    "缓存命中率 50%",
+    "4 个 parser worker",
+    "20 页项目介绍 PPT"
+  ],
+  "risks": [
+    "动态路由可能增加解析和人工确认时间"
+  ]
+}

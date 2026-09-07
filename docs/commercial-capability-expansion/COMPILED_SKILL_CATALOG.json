@@ -1,0 +1,2230 @@
+{
+  "kernel_counts": {
+    "K1-skill-runtime": 10,
+    "K2-repository-intelligence": 10,
+    "K3-transformation": 10,
+    "K4-build-execution": 9,
+    "K5-verification": 14,
+    "K6-security-governance": 10,
+    "K7-database-data": 10,
+    "K8-observability-evolution": 12
+  },
+  "kind": "elmos.commercial-capability-expansion.compiled-catalog",
+  "origin": "REPOSITORY_OWNED_COMPILED",
+  "package": {
+    "archive_sha256": "7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380",
+    "id": "elmos-commercial-capability-expansion-skills-v2.0.0",
+    "name": "elmos-commercial-capability-expansion-skills",
+    "version": "2.0.0"
+  },
+  "repository_owned_lifecycle_graph": {
+    "acyclic": true,
+    "dependencies_by_skill": {
+      "affected-test-selection": [
+        "repository-semantic-code-graph"
+      ],
+      "agent-evidence-evaluation": [
+        "otel-agent-execution-tracing"
+      ],
+      "api-contract-preserving-transform": [
+        "multi-engine-rewrite-router"
+      ],
+      "api-schema-fuzz-testing": [
+        "evidence-gate-orchestrator"
+      ],
+      "artifact-signing-verification": [
+        "policy-as-code-kernel"
+      ],
+      "automatic-task-corpus-generation": [
+        "otel-agent-execution-tracing"
+      ],
+      "behavioral-equivalence-migration": [
+        "multi-engine-rewrite-router"
+      ],
+      "browser-e2e-trace-verification": [
+        "evidence-gate-orchestrator"
+      ],
+      "build-system-migration": [
+        "multi-engine-rewrite-router"
+      ],
+      "cdc-shadow-compare": [
+        "database-semantic-compiler"
+      ],
+      "change-risk-classifier": [
+        "repository-semantic-code-graph"
+      ],
+      "compiler-api-rewrite": [
+        "multi-engine-rewrite-router"
+      ],
+      "compiler-grade-certification-gate": [
+        "evidence-gate-orchestrator"
+      ],
+      "concurrency-semantics-transform": [
+        "multi-engine-rewrite-router"
+      ],
+      "configuration-iac-migration": [
+        "multi-engine-rewrite-router"
+      ],
+      "context-aware-skill-source": [
+        "universal-agent-skill-runtime"
+      ],
+      "continuous-fuzz-certification": [
+        "hermetic-build-environment"
+      ],
+      "contract-compatibility-verification": [
+        "hermetic-build-environment"
+      ],
+      "cost-latency-quality-optimizer": [
+        "otel-agent-execution-tracing"
+      ],
+      "cross-repository-impact-analysis": [
+        "repository-semantic-code-graph"
+      ],
+      "data-lineage-impact-analysis": [
+        "database-semantic-compiler"
+      ],
+      "data-migration-reconciliation": [
+        "database-semantic-compiler"
+      ],
+      "database-security-policy-migration": [
+        "database-semantic-compiler"
+      ],
+      "database-semantic-compiler": [],
+      "dependency-build-graph-discovery": [
+        "repository-semantic-code-graph"
+      ],
+      "deterministic-toolchain-lock": [
+        "hermetic-build-environment"
+      ],
+      "differential-runtime-verification": [
+        "hermetic-build-environment"
+      ],
+      "durable-agent-workflow": [
+        "universal-agent-skill-runtime"
+      ],
+      "environment-capture-replay": [
+        "hermetic-build-environment"
+      ],
+      "evidence-gate-orchestrator": [
+        "continuous-fuzz-certification",
+        "contract-compatibility-verification",
+        "differential-runtime-verification",
+        "static-dataflow-assurance"
+      ],
+      "failure-attribution-learning": [
+        "otel-agent-execution-tracing"
+      ],
+      "fault-injection-chaos-execution": [
+        "hermetic-build-environment"
+      ],
+      "feature-flag-progressive-rollout": [
+        "otel-agent-execution-tracing"
+      ],
+      "fine-grained-authorization-engine": [
+        "policy-as-code-kernel"
+      ],
+      "formal-proof-router": [
+        "evidence-gate-orchestrator"
+      ],
+      "framework-modernization-router": [
+        "multi-engine-rewrite-router"
+      ],
+      "golden-route-corpus-manager": [
+        "evidence-gate-orchestrator"
+      ],
+      "hermetic-build-environment": [
+        "multi-engine-rewrite-router"
+      ],
+      "human-approval-message-injection": [
+        "universal-agent-skill-runtime"
+      ],
+      "incident-replay-root-cause": [
+        "otel-agent-execution-tracing"
+      ],
+      "kubernetes-policy-certification": [
+        "policy-as-code-kernel"
+      ],
+      "license-compliance-scanner": [
+        "policy-as-code-kernel"
+      ],
+      "metamorphic-equivalence-testing": [
+        "evidence-gate-orchestrator"
+      ],
+      "model-tool-skill-router": [
+        "universal-agent-skill-runtime"
+      ],
+      "multi-engine-rewrite-router": [
+        "change-risk-classifier"
+      ],
+      "multi-tenant-isolation-certifier": [
+        "policy-as-code-kernel"
+      ],
+      "mutation-strength-certification": [
+        "evidence-gate-orchestrator"
+      ],
+      "native-runtime-lab": [
+        "hermetic-build-environment"
+      ],
+      "otel-agent-execution-tracing": [
+        "slsa-in-toto-provenance"
+      ],
+      "performance-regression-certification": [
+        "evidence-gate-orchestrator"
+      ],
+      "platform-template-generator": [
+        "otel-agent-execution-tracing"
+      ],
+      "policy-as-code-kernel": [],
+      "polyglot-syntax-front-end": [
+        "repository-semantic-code-graph"
+      ],
+      "progressive-skill-disclosure": [
+        "universal-agent-skill-runtime"
+      ],
+      "prompt-injection-tool-boundary": [
+        "policy-as-code-kernel"
+      ],
+      "property-based-test-generation": [
+        "evidence-gate-orchestrator"
+      ],
+      "query-plan-performance-equivalence": [
+        "database-semantic-compiler"
+      ],
+      "remote-execution-cache-planner": [
+        "hermetic-build-environment"
+      ],
+      "repository-semantic-code-graph": [
+        "universal-agent-skill-runtime"
+      ],
+      "repository-slicing-context-pack": [
+        "repository-semantic-code-graph"
+      ],
+      "reproducible-build-verifier": [
+        "hermetic-build-environment"
+      ],
+      "resource-quota-budget-enforcer": [
+        "hermetic-build-environment"
+      ],
+      "runtime-evidence-graph": [
+        "repository-semantic-code-graph"
+      ],
+      "sbom-vulnerability-attestation": [
+        "policy-as-code-kernel"
+      ],
+      "schema-metadata-discovery": [
+        "database-semantic-compiler"
+      ],
+      "secret-egress-control": [
+        "policy-as-code-kernel"
+      ],
+      "self-evolving-skill-factory": [
+        "otel-agent-execution-tracing"
+      ],
+      "semantic-ir-lift-lower": [
+        "multi-engine-rewrite-router"
+      ],
+      "semantic-symbol-index": [
+        "repository-semantic-code-graph"
+      ],
+      "skill-promotion-canary": [
+        "otel-agent-execution-tracing"
+      ],
+      "skill-registry-ingestion": [
+        "universal-agent-skill-runtime"
+      ],
+      "skill-sandbox-runner": [
+        "universal-agent-skill-runtime"
+      ],
+      "skill-version-provenance": [
+        "universal-agent-skill-runtime"
+      ],
+      "slsa-in-toto-provenance": [
+        "evidence-gate-orchestrator",
+        "policy-as-code-kernel"
+      ],
+      "software-catalog-ownership-graph": [
+        "repository-semantic-code-graph"
+      ],
+      "software-catalog-production-scorecard": [
+        "otel-agent-execution-tracing"
+      ],
+      "sql-dialect-transpiler": [
+        "database-semantic-compiler"
+      ],
+      "static-dataflow-assurance": [
+        "hermetic-build-environment"
+      ],
+      "stored-routine-migration": [
+        "database-semantic-compiler"
+      ],
+      "task-checkpoint-time-travel": [
+        "universal-agent-skill-runtime"
+      ],
+      "trajectory-dataset-versioning": [
+        "otel-agent-execution-tracing"
+      ],
+      "transaction-semantic-equivalence": [
+        "database-semantic-compiler"
+      ],
+      "transformation-explainability-ledger": [
+        "multi-engine-rewrite-router"
+      ],
+      "universal-agent-skill-runtime": [
+        "fine-grained-authorization-engine",
+        "policy-as-code-kernel",
+        "prompt-injection-tool-boundary"
+      ],
+      "untrusted-code-microvm-sandbox": [
+        "hermetic-build-environment"
+      ]
+    },
+    "edge_count": 89,
+    "edges": [
+      {
+        "from": "change-risk-classifier",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "risk plan before transformation",
+        "to": "multi-engine-rewrite-router"
+      },
+      {
+        "from": "continuous-fuzz-certification",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "verification producer to evidence gate",
+        "to": "evidence-gate-orchestrator"
+      },
+      {
+        "from": "contract-compatibility-verification",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "verification producer to evidence gate",
+        "to": "evidence-gate-orchestrator"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "cdc-shadow-compare"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "data-lineage-impact-analysis"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "data-migration-reconciliation"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "database-security-policy-migration"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "query-plan-performance-equivalence"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "schema-metadata-discovery"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "sql-dialect-transpiler"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "stored-routine-migration"
+      },
+      {
+        "from": "database-semantic-compiler",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K7-database-data capability anchor",
+        "to": "transaction-semantic-equivalence"
+      },
+      {
+        "from": "differential-runtime-verification",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "verification producer to evidence gate",
+        "to": "evidence-gate-orchestrator"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "api-schema-fuzz-testing"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "browser-e2e-trace-verification"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "compiler-grade-certification-gate"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "formal-proof-router"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "golden-route-corpus-manager"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "metamorphic-equivalence-testing"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "mutation-strength-certification"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "performance-regression-certification"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K5-verification capability anchor",
+        "to": "property-based-test-generation"
+      },
+      {
+        "from": "evidence-gate-orchestrator",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "E0-E5 decision before artifact provenance",
+        "to": "slsa-in-toto-provenance"
+      },
+      {
+        "from": "fine-grained-authorization-engine",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "authorized runtime entry",
+        "to": "universal-agent-skill-runtime"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "real build before fuzz verification",
+        "to": "continuous-fuzz-certification"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "real build before contract verification",
+        "to": "contract-compatibility-verification"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "deterministic-toolchain-lock"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "real build before differential verification",
+        "to": "differential-runtime-verification"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "environment-capture-replay"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "fault-injection-chaos-execution"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "native-runtime-lab"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "remote-execution-cache-planner"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "reproducible-build-verifier"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "resource-quota-budget-enforcer"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "build context before static assurance",
+        "to": "static-dataflow-assurance"
+      },
+      {
+        "from": "hermetic-build-environment",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K4-build-execution capability anchor",
+        "to": "untrusted-code-microvm-sandbox"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "api-contract-preserving-transform"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "behavioral-equivalence-migration"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "build-system-migration"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "compiler-api-rewrite"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "concurrency-semantics-transform"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "configuration-iac-migration"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "framework-modernization-router"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "transformation before sandboxed build",
+        "to": "hermetic-build-environment"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "semantic-ir-lift-lower"
+      },
+      {
+        "from": "multi-engine-rewrite-router",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K3-transformation capability anchor",
+        "to": "transformation-explainability-ledger"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "agent-evidence-evaluation"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "automatic-task-corpus-generation"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "cost-latency-quality-optimizer"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "failure-attribution-learning"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "feature-flag-progressive-rollout"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "incident-replay-root-cause"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "platform-template-generator"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "self-evolving-skill-factory"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "skill-promotion-canary"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K8-observability-evolution capability anchor",
+        "to": "software-catalog-production-scorecard"
+      },
+      {
+        "from": "otel-agent-execution-tracing",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "trace to versioned trajectory dataset",
+        "to": "trajectory-dataset-versioning"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "artifact-signing-verification"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "policy before authorization",
+        "to": "fine-grained-authorization-engine"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "kubernetes-policy-certification"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "license-compliance-scanner"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "multi-tenant-isolation-certifier"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "policy before tool boundary",
+        "to": "prompt-injection-tool-boundary"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "sbom-vulnerability-attestation"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K6-security-governance capability anchor",
+        "to": "secret-egress-control"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "policy-bound provenance",
+        "to": "slsa-in-toto-provenance"
+      },
+      {
+        "from": "policy-as-code-kernel",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "mandatory Task to Policy to Runtime flow",
+        "to": "universal-agent-skill-runtime"
+      },
+      {
+        "from": "prompt-injection-tool-boundary",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "bounded runtime entry",
+        "to": "universal-agent-skill-runtime"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "affected-test-selection"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository graph to risk and evidence plan",
+        "to": "change-risk-classifier"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "cross-repository-impact-analysis"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "dependency-build-graph-discovery"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "polyglot-syntax-front-end"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "repository-slicing-context-pack"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "runtime-evidence-graph"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "semantic-symbol-index"
+      },
+      {
+        "from": "repository-semantic-code-graph",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K2-repository-intelligence capability anchor",
+        "to": "software-catalog-ownership-graph"
+      },
+      {
+        "from": "slsa-in-toto-provenance",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "artifact provenance before trajectory capture",
+        "to": "otel-agent-execution-tracing"
+      },
+      {
+        "from": "static-dataflow-assurance",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "verification producer to evidence gate",
+        "to": "evidence-gate-orchestrator"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "context-aware-skill-source"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "durable-agent-workflow"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "human-approval-message-injection"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "model-tool-skill-router"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "progressive-skill-disclosure"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "runtime to repository graph",
+        "to": "repository-semantic-code-graph"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "skill-registry-ingestion"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "skill-sandbox-runner"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "skill-version-provenance"
+      },
+      {
+        "from": "universal-agent-skill-runtime",
+        "origin": "REPOSITORY_OWNED_NORMALIZATION",
+        "reason": "repository-owned K1-skill-runtime capability anchor",
+        "to": "task-checkpoint-time-travel"
+      }
+    ],
+    "kernel_anchors": {
+      "K1-skill-runtime": "universal-agent-skill-runtime",
+      "K2-repository-intelligence": "repository-semantic-code-graph",
+      "K3-transformation": "multi-engine-rewrite-router",
+      "K4-build-execution": "hermetic-build-environment",
+      "K5-verification": "evidence-gate-orchestrator",
+      "K6-security-governance": "policy-as-code-kernel",
+      "K7-database-data": "database-semantic-compiler",
+      "K8-observability-evolution": "otel-agent-execution-tracing"
+    },
+    "node_count": 85,
+    "nodes": [
+      "universal-agent-skill-runtime",
+      "progressive-skill-disclosure",
+      "context-aware-skill-source",
+      "skill-registry-ingestion",
+      "skill-sandbox-runner",
+      "skill-version-provenance",
+      "model-tool-skill-router",
+      "human-approval-message-injection",
+      "durable-agent-workflow",
+      "task-checkpoint-time-travel",
+      "polyglot-syntax-front-end",
+      "semantic-symbol-index",
+      "repository-semantic-code-graph",
+      "cross-repository-impact-analysis",
+      "dependency-build-graph-discovery",
+      "runtime-evidence-graph",
+      "repository-slicing-context-pack",
+      "affected-test-selection",
+      "software-catalog-ownership-graph",
+      "change-risk-classifier",
+      "multi-engine-rewrite-router",
+      "compiler-api-rewrite",
+      "semantic-ir-lift-lower",
+      "behavioral-equivalence-migration",
+      "framework-modernization-router",
+      "api-contract-preserving-transform",
+      "concurrency-semantics-transform",
+      "build-system-migration",
+      "configuration-iac-migration",
+      "transformation-explainability-ledger",
+      "hermetic-build-environment",
+      "untrusted-code-microvm-sandbox",
+      "reproducible-build-verifier",
+      "remote-execution-cache-planner",
+      "resource-quota-budget-enforcer",
+      "deterministic-toolchain-lock",
+      "environment-capture-replay",
+      "native-runtime-lab",
+      "fault-injection-chaos-execution",
+      "compiler-grade-certification-gate",
+      "differential-runtime-verification",
+      "continuous-fuzz-certification",
+      "property-based-test-generation",
+      "api-schema-fuzz-testing",
+      "contract-compatibility-verification",
+      "browser-e2e-trace-verification",
+      "static-dataflow-assurance",
+      "formal-proof-router",
+      "metamorphic-equivalence-testing",
+      "mutation-strength-certification",
+      "performance-regression-certification",
+      "golden-route-corpus-manager",
+      "evidence-gate-orchestrator",
+      "policy-as-code-kernel",
+      "fine-grained-authorization-engine",
+      "secret-egress-control",
+      "prompt-injection-tool-boundary",
+      "sbom-vulnerability-attestation",
+      "slsa-in-toto-provenance",
+      "artifact-signing-verification",
+      "license-compliance-scanner",
+      "multi-tenant-isolation-certifier",
+      "kubernetes-policy-certification",
+      "database-semantic-compiler",
+      "schema-metadata-discovery",
+      "sql-dialect-transpiler",
+      "stored-routine-migration",
+      "transaction-semantic-equivalence",
+      "query-plan-performance-equivalence",
+      "data-lineage-impact-analysis",
+      "data-migration-reconciliation",
+      "cdc-shadow-compare",
+      "database-security-policy-migration",
+      "otel-agent-execution-tracing",
+      "agent-evidence-evaluation",
+      "trajectory-dataset-versioning",
+      "failure-attribution-learning",
+      "self-evolving-skill-factory",
+      "automatic-task-corpus-generation",
+      "skill-promotion-canary",
+      "software-catalog-production-scorecard",
+      "feature-flag-progressive-rollout",
+      "incident-replay-root-cause",
+      "cost-latency-quality-optimizer",
+      "platform-template-generator"
+    ],
+    "origin": "REPOSITORY_OWNED_NORMALIZATION",
+    "source_dependency_gap": true,
+    "source_owned_dag_claimed": false,
+    "topological_order": [
+      "policy-as-code-kernel",
+      "database-semantic-compiler",
+      "fine-grained-authorization-engine",
+      "secret-egress-control",
+      "prompt-injection-tool-boundary",
+      "sbom-vulnerability-attestation",
+      "artifact-signing-verification",
+      "license-compliance-scanner",
+      "multi-tenant-isolation-certifier",
+      "kubernetes-policy-certification",
+      "schema-metadata-discovery",
+      "sql-dialect-transpiler",
+      "stored-routine-migration",
+      "transaction-semantic-equivalence",
+      "query-plan-performance-equivalence",
+      "data-lineage-impact-analysis",
+      "data-migration-reconciliation",
+      "cdc-shadow-compare",
+      "database-security-policy-migration",
+      "universal-agent-skill-runtime",
+      "progressive-skill-disclosure",
+      "context-aware-skill-source",
+      "skill-registry-ingestion",
+      "skill-sandbox-runner",
+      "skill-version-provenance",
+      "model-tool-skill-router",
+      "human-approval-message-injection",
+      "durable-agent-workflow",
+      "task-checkpoint-time-travel",
+      "repository-semantic-code-graph",
+      "polyglot-syntax-front-end",
+      "semantic-symbol-index",
+      "cross-repository-impact-analysis",
+      "dependency-build-graph-discovery",
+      "runtime-evidence-graph",
+      "repository-slicing-context-pack",
+      "affected-test-selection",
+      "software-catalog-ownership-graph",
+      "change-risk-classifier",
+      "multi-engine-rewrite-router",
+      "compiler-api-rewrite",
+      "semantic-ir-lift-lower",
+      "behavioral-equivalence-migration",
+      "framework-modernization-router",
+      "api-contract-preserving-transform",
+      "concurrency-semantics-transform",
+      "build-system-migration",
+      "configuration-iac-migration",
+      "transformation-explainability-ledger",
+      "hermetic-build-environment",
+      "untrusted-code-microvm-sandbox",
+      "reproducible-build-verifier",
+      "remote-execution-cache-planner",
+      "resource-quota-budget-enforcer",
+      "deterministic-toolchain-lock",
+      "environment-capture-replay",
+      "native-runtime-lab",
+      "fault-injection-chaos-execution",
+      "differential-runtime-verification",
+      "continuous-fuzz-certification",
+      "contract-compatibility-verification",
+      "static-dataflow-assurance",
+      "evidence-gate-orchestrator",
+      "compiler-grade-certification-gate",
+      "property-based-test-generation",
+      "api-schema-fuzz-testing",
+      "browser-e2e-trace-verification",
+      "formal-proof-router",
+      "metamorphic-equivalence-testing",
+      "mutation-strength-certification",
+      "performance-regression-certification",
+      "golden-route-corpus-manager",
+      "slsa-in-toto-provenance",
+      "otel-agent-execution-tracing",
+      "agent-evidence-evaluation",
+      "trajectory-dataset-versioning",
+      "failure-attribution-learning",
+      "self-evolving-skill-factory",
+      "automatic-task-corpus-generation",
+      "skill-promotion-canary",
+      "software-catalog-production-scorecard",
+      "feature-flag-progressive-rollout",
+      "incident-replay-root-cause",
+      "cost-latency-quality-optimizer",
+      "platform-template-generator"
+    ]
+  },
+  "runtime_binding": {
+    "authentication_required": true,
+    "entrypoint": "CommercialCapabilityExpansionService.execute",
+    "input_contract_catalog_entrypoint": "list_capability_kernels",
+    "input_contract_policy": "EXACT_REQUIRED_OPTIONAL_FAIL_CLOSED",
+    "module": "elmos_commercial_expansion",
+    "preparation_entrypoint": "CommercialCapabilityRuntime.prepare_invocation",
+    "preparation_module": "elmos_commercial_expansion.runtime",
+    "service": "CommercialCapabilityExpansionService"
+  },
+  "schema_version": "2.0.0",
+  "skill_count": 85,
+  "skills": [
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "universal-agent-skill-runtime",
+      "objective": "Make Agent Skills first-class executable, versioned, discoverable assets with instructions, resources, scripts and policy metadata.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "fine-grained-authorization-engine",
+        "policy-as-code-kernel",
+        "prompt-injection-tool-boundary"
+      ],
+      "source_member": "skills/K1-skill-runtime/universal-agent-skill-runtime/SKILL.md",
+      "source_member_sha256": "e5d05d7337c4a17a37041054b5231f3a11633dd4e78ee4ab7f782ff21ab7c57b"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "progressive-skill-disclosure",
+      "objective": "Advertise only compact metadata, load full instructions/resources/scripts on demand, and enforce context-budget-aware unloading.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/progressive-skill-disclosure/SKILL.md",
+      "source_member_sha256": "7cac3a1e865b8e500e1905c05319aa79dad70b8933b6bb4128d59ad992ca18ad"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "context-aware-skill-source",
+      "objective": "Filter skills by tenant, repository, task phase, agent, session, permissions and environment, with cache isolation and TTL refresh.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/context-aware-skill-source/SKILL.md",
+      "source_member_sha256": "551eee08ff5e927af2c83d626d26be14bc67c673b9153eb171c6ae38fb87f4a0"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "skill-registry-ingestion",
+      "objective": "Continuously ingest compatible public/private skills, normalize metadata, scan licenses/security, evaluate quality and publish trusted internal variants.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/skill-registry-ingestion/SKILL.md",
+      "source_member_sha256": "60329c6c51c33a08b8375d3f5c8d646a0fd3f7c6b46beb45a8cdf919970b49ae"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "skill-sandbox-runner",
+      "objective": "Execute skill scripts only in policy-constrained sandboxes with CPU/memory/time/network/filesystem/secret limits and complete audit evidence.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/skill-sandbox-runner/SKILL.md",
+      "source_member_sha256": "957e8e562a27767dc9d94396085935f95bfe7fd680dc1d4ca102680b01082d8b"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "skill-version-provenance",
+      "objective": "Pin skill version, source revision, dependencies, model/tool compatibility and evidence so every run is reproducible and auditable.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/skill-version-provenance/SKILL.md",
+      "source_member_sha256": "6e9b446d843d4a72e6af5a0326d30154d07f6bb30211704ed3b9270e108e85ff"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "model-tool-skill-router",
+      "objective": "Select the lowest-risk/highest-value model, tool, rewrite engine and skill combination using capability, cost, latency and proof requirements.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/model-tool-skill-router/SKILL.md",
+      "source_member_sha256": "dbf558738a5d1b5cbc64bb198bda0275af0c6180bd32e8f6c03b52026d01c4dd"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "human-approval-message-injection",
+      "objective": "Allow safe human intervention, approval, correction and policy escalation while a long-running agent session is active.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/human-approval-message-injection/SKILL.md",
+      "source_member_sha256": "8f79c14d937fc6f532b64e7262a58c5448b61cccbbfd971981ee3b3c37ee1dd8"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "durable-agent-workflow",
+      "objective": "Represent repository transformations as durable workflows with retry, idempotency, pause/resume/cancel, checkpoints and recovery after process failure.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/durable-agent-workflow/SKILL.md",
+      "source_member_sha256": "8a83cdc73f7d0fb7119672628cc127c7c247631962bf99c9df57c7d72e06066d"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K1-skill-runtime",
+      "name": "task-checkpoint-time-travel",
+      "objective": "Persist deterministic checkpoints and allow replay/time-travel for debugging, certification and alternative planning branches.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K1-skill-runtime/task-checkpoint-time-travel/SKILL.md",
+      "source_member_sha256": "97f3669f89796ba41b6f45acabbb248150bebff1f363138ea538d3fa909159ee"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "polyglot-syntax-front-end",
+      "objective": "Provide a unified error-tolerant incremental CST/AST layer for all supported languages and configuration formats.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/polyglot-syntax-front-end/SKILL.md",
+      "source_member_sha256": "3c4e89c9b130eb4c879011742a7be6878522d6fb1b91f5c26d9d00ddd73c8230"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "semantic-symbol-index",
+      "objective": "Index definitions, references, implementations, symbols and types using compiler/LSP/SCIP-grade semantic information.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/semantic-symbol-index/SKILL.md",
+      "source_member_sha256": "40ef886b8020e4db9f86d785b74a36c100119cbf1f9f7089d5bc366877f83d27"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "repository-semantic-code-graph",
+      "objective": "Fuse syntax, symbol, type, call, inheritance, dependency, build, data and runtime evidence into one queryable repository graph.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "universal-agent-skill-runtime"
+      ],
+      "source_member": "skills/K2-repository-intelligence/repository-semantic-code-graph/SKILL.md",
+      "source_member_sha256": "b367b4a0bc04e7e39aaa46b31fc33fd91de0cd47757d5507e3ca16c326bcdb0b"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "cross-repository-impact-analysis",
+      "objective": "Compute transitive blast radius across services, libraries, schemas, contracts, packages and repositories before applying changes.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/cross-repository-impact-analysis/SKILL.md",
+      "source_member_sha256": "627dcc72b68ae11805ade56d22d98f13a5131732d29ae859622f104b686c72a1"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "dependency-build-graph-discovery",
+      "objective": "Extract dependency and target graphs from Maven/Gradle/Bazel/Pants/Buck2/npm/pnpm/Cargo/Go/.NET/CMake and normalize them into Build IR.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/dependency-build-graph-discovery/SKILL.md",
+      "source_member_sha256": "543a79f060c77b68afc537770ba0dc73b758c864ad41d453a3326a4fa06bf759"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "runtime-evidence-graph",
+      "objective": "Correlate static code entities with traces, logs, metrics, DB calls, queues, RPCs and exceptions to reduce false semantic assumptions.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/runtime-evidence-graph/SKILL.md",
+      "source_member_sha256": "0b1282650612266455665d0d2d82e6d1a929203e272a3890c15788f40078b372"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "repository-slicing-context-pack",
+      "objective": "Generate minimal semantically closed context slices for an agent rather than loading whole repositories or arbitrary grep results.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/repository-slicing-context-pack/SKILL.md",
+      "source_member_sha256": "cdddbf57687153803b60952107430af2adfbd1c93a7629596bfc6ed5cd6be441"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "affected-test-selection",
+      "objective": "Map changed symbols and targets to the minimal high-confidence unit/integration/contract/E2E certification set.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/affected-test-selection/SKILL.md",
+      "source_member_sha256": "bc20a317e4cd135246706d7d1cf31a7b195d7bfac66d86dbfbf9ffdc9cef5bc4"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "software-catalog-ownership-graph",
+      "objective": "Track component ownership, lifecycle, documentation, interfaces, dependencies and operational metadata for enterprise-scale repositories.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/software-catalog-ownership-graph/SKILL.md",
+      "source_member_sha256": "fa63a47ce8941ac12899af8272ff3f856f30a516c0917ffb01e00cb37c451cba"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K2-repository-intelligence",
+      "name": "change-risk-classifier",
+      "objective": "Score change risk from semantic blast radius, criticality, historical failures, runtime hot paths, security boundaries and proof coverage.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "repository-semantic-code-graph"
+      ],
+      "source_member": "skills/K2-repository-intelligence/change-risk-classifier/SKILL.md",
+      "source_member_sha256": "4d474907aade4885e89e0427ff3b7c380c79db830c8a4ce92bf29bda0ba18705"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "multi-engine-rewrite-router",
+      "objective": "Route each edit to deterministic AST/LST/structural/security/compiler/LLM transformation engines instead of defaulting to free-form generation.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "change-risk-classifier"
+      ],
+      "source_member": "skills/K3-transformation/multi-engine-rewrite-router/SKILL.md",
+      "source_member_sha256": "ecc0715dd00e39f8bc2634c572e241860fee5204f7b55d2dff1c2006b53adb89"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "compiler-api-rewrite",
+      "objective": "Use compiler APIs and typed ASTs for transformations where symbol/type correctness dominates textual convenience.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/compiler-api-rewrite/SKILL.md",
+      "source_member_sha256": "a2150d6f8bf54e4fef362aef287f16d9f33a368cbb8942e7c6e8d6661d7601eb"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "semantic-ir-lift-lower",
+      "objective": "Lift source/framework/database constructs into Semantic IR and lower them to target languages/frameworks with explicit loss and assumption tracking.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/semantic-ir-lift-lower/SKILL.md",
+      "source_member_sha256": "6b5e4c8f7a369f689bd86660820d56335d3c7b2664dad6051cc8b18ba49fc7f5"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "behavioral-equivalence-migration",
+      "objective": "Preserve externally observable behavior while allowing implementation changes, with explicit equivalence contracts and differential evidence.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/behavioral-equivalence-migration/SKILL.md",
+      "source_member_sha256": "79edf5b250af819f37918f5a31972499e7314c6bdee075ee7d1abf7ac0b447c6"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "framework-modernization-router",
+      "objective": "Plan and execute staged legacy-framework modernization with adapters, strangler phases, compatibility shims and rollback points.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/framework-modernization-router/SKILL.md",
+      "source_member_sha256": "e6b5358054dba4cc37f3864b6461671ebab108e5a0e4dc113e7ba42d871c9d4e"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "api-contract-preserving-transform",
+      "objective": "Preserve or intentionally version HTTP/RPC/event contracts and generate compatibility adapters plus contract tests.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/api-contract-preserving-transform/SKILL.md",
+      "source_member_sha256": "1e418489a3fe0995dfdf6b7eee1586a82fab3c73e68b5accef90d9fc9fde37d5"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "concurrency-semantics-transform",
+      "objective": "Translate locks, atomics, async, actors, threads, memory ordering and cancellation without silently changing concurrency semantics.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/concurrency-semantics-transform/SKILL.md",
+      "source_member_sha256": "e0cffc2bcac80d1205e72509bffd25c47595fe6cd610cc5c4e954acce00e949f"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "build-system-migration",
+      "objective": "Convert build definitions and dependency semantics across Maven/Gradle/Bazel/Pants/Buck2/CMake/npm ecosystems with reproducible validation.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/build-system-migration/SKILL.md",
+      "source_member_sha256": "73f2b0a5ceeed83bf233d68964a3d55674c855dc7f1489856a194194ff55234f"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "configuration-iac-migration",
+      "objective": "Transform application config, containers, Kubernetes, Terraform and deployment manifests while preserving environment and policy semantics.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/configuration-iac-migration/SKILL.md",
+      "source_member_sha256": "82356d38170c010a6aa16819e9e3a9d2e023e2aba0d41751d0e70ff4af2f02da"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K3-transformation",
+      "name": "transformation-explainability-ledger",
+      "objective": "Record why every rule/edit was selected, the source evidence used, assumptions made, validation results and rollback mapping.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K3-transformation/transformation-explainability-ledger/SKILL.md",
+      "source_member_sha256": "0a4a53a10382e7de996f13f2e02035e1f0c3e1c1570e4934ad0f7e7a1fdff0e8"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "hermetic-build-environment",
+      "objective": "Build and test inside declared environments with controlled toolchains, dependencies, network and filesystem inputs.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "multi-engine-rewrite-router"
+      ],
+      "source_member": "skills/K4-build-execution/hermetic-build-environment/SKILL.md",
+      "source_member_sha256": "35a17133cd9762817efc5ae9c470209bda47ba0c820393c81c2a0d80a6f85a76"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "untrusted-code-microvm-sandbox",
+      "objective": "Run user repositories and generated artifacts in hardened OCI or microVM sandboxes selected by risk tier.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/untrusted-code-microvm-sandbox/SKILL.md",
+      "source_member_sha256": "3c356867ab584b4f1131ec8ec24afa7d2640439967d8b08d83d3f87d31659a3a"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "reproducible-build-verifier",
+      "objective": "Rebuild artifacts independently and detect nondeterminism, undeclared inputs, timestamp leakage and environment drift.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/reproducible-build-verifier/SKILL.md",
+      "source_member_sha256": "4ffaa27b796503d019c6f9e6b2cb0d36963e450648d74ea90efd64767ccad4d6"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "remote-execution-cache-planner",
+      "objective": "Exploit content-addressed caching, target-level parallelism and remote execution while preserving tenant isolation and evidence integrity.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/remote-execution-cache-planner/SKILL.md",
+      "source_member_sha256": "c7dad09ba1f8739c25d5279f13ffdccb516b280b4017b6e3fe9524341d6a3965"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "resource-quota-budget-enforcer",
+      "objective": "Enforce per-tenant/task/model/tool CPU, RAM, disk, network, token, credit and wall-clock budgets with graceful degradation.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/resource-quota-budget-enforcer/SKILL.md",
+      "source_member_sha256": "efe391b4a14fd17a3f3b068619135d6f80f29b55b43e8d21eac3eced06eec1ab"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "deterministic-toolchain-lock",
+      "objective": "Lock compiler, runtime, package manager, SDK, system library, container and skill versions for replayable transformations.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/deterministic-toolchain-lock/SKILL.md",
+      "source_member_sha256": "772de86234490abada6a379eab83052131b22ba40eb7b7941456918208e3fdc9"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "environment-capture-replay",
+      "objective": "Capture execution environment and replay failures locally or in certification labs with equivalent dependencies and inputs.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/environment-capture-replay/SKILL.md",
+      "source_member_sha256": "da712826099b338cefb6890445193b2f256f5e09b47c5a52076793997c75a2ac"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "native-runtime-lab",
+      "objective": "Execute source and target systems on their real native runtimes/OS/architecture combinations for cross-language behavioral certification.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/native-runtime-lab/SKILL.md",
+      "source_member_sha256": "c6ce9abfc2feca9ba5ba547232f3d83150c54d381022cf67939d912c305cba26"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K4-build-execution",
+      "name": "fault-injection-chaos-execution",
+      "objective": "Inject latency, process death, network faults, DB failover, duplicate messages and partial outages to validate migration resilience.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K4-build-execution/fault-injection-chaos-execution/SKILL.md",
+      "source_member_sha256": "1731930a75da6cbbb005788af44e6afbfe835b91be0082420c59496c26f3467d"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "compiler-grade-certification-gate",
+      "objective": "Gate transformations through parse/compile/unit/integration/fuzz/security/runtime/compatibility/performance evidence rather than compile success alone.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/compiler-grade-certification-gate/SKILL.md",
+      "source_member_sha256": "a02107b8d3d4c71c687404749ac021d5740be0764febd42ce462c1f5beedfc95"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "differential-runtime-verification",
+      "objective": "Run old/new implementations on identical scenarios and compare outputs, state transitions, side effects and temporal behavior.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K5-verification/differential-runtime-verification/SKILL.md",
+      "source_member_sha256": "feccd47763bbe7b1d3c3043dc416606a43c32852ab588149b370a9e0e52cbebd"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "continuous-fuzz-certification",
+      "objective": "Generate and continuously run coverage-guided fuzz targets with sanitizer support, crash deduplication and regression corpus promotion.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K5-verification/continuous-fuzz-certification/SKILL.md",
+      "source_member_sha256": "9dd72aea3e361c52d29147bc3dded9fa4efb4810b8ce5faec50ac9f3948004bc"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "property-based-test-generation",
+      "objective": "Infer invariants and generators from schemas, types, code and runtime samples, then shrink counterexamples into durable regression tests.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/property-based-test-generation/SKILL.md",
+      "source_member_sha256": "9b98c749b81a15497e444c09bc1574a3b2a5dc40dd4191a1dd061bad2c8d6985"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "api-schema-fuzz-testing",
+      "objective": "Generate adversarial and stateful tests directly from OpenAPI/GraphQL schemas and retain minimized failing examples.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/api-schema-fuzz-testing/SKILL.md",
+      "source_member_sha256": "63e63c3643d633ae3066fd0220c2f97973ad8cefc68e085686739d1a0f165186"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "contract-compatibility-verification",
+      "objective": "Verify consumer/provider compatibility across language boundaries and prevent breaking service/event contract changes.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K5-verification/contract-compatibility-verification/SKILL.md",
+      "source_member_sha256": "5229ddfa967e53686c97f75a3fd784cc055811641b49cc28ef868187d7d316b5"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "browser-e2e-trace-verification",
+      "objective": "Validate generated/modernized UIs on real browser engines and retain DOM/network/console/screenshot traces for failures.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/browser-e2e-trace-verification/SKILL.md",
+      "source_member_sha256": "4dd586f40e8d70d1a7513d2e98ebbcdba545d274db9470c2bfd1dc83021b0f27"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "static-dataflow-assurance",
+      "objective": "Run semantic static analysis, taint/data-flow checks and interprocedural defect detection on changed code and critical paths.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "hermetic-build-environment"
+      ],
+      "source_member": "skills/K5-verification/static-dataflow-assurance/SKILL.md",
+      "source_member_sha256": "7927e13e7d0b753c4d80c0d86b405922d7e039e99565522a19899799c625a3a8"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "formal-proof-router",
+      "objective": "Route high-risk invariants to model checking, SMT/theorem proving or lightweight formal models instead of applying formal methods indiscriminately.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/formal-proof-router/SKILL.md",
+      "source_member_sha256": "497d5980a54d30288a38ec6c6e8accd2c311065870fa520974385bf9233b9d1f"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "metamorphic-equivalence-testing",
+      "objective": "Generate transformations of inputs whose output relations must remain invariant to expose silent semantic divergence.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/metamorphic-equivalence-testing/SKILL.md",
+      "source_member_sha256": "4494944aee3e17d317dd361440f5d3a93cbfa0a0f3d121962e372cce68204bff"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "mutation-strength-certification",
+      "objective": "Measure whether generated tests can kill behaviorally meaningful mutations and promote missing tests automatically.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/mutation-strength-certification/SKILL.md",
+      "source_member_sha256": "ab42849dda2f5c9f8c739f13b56c1e619c52217a691a17df39e9ab183c74b698"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "performance-regression-certification",
+      "objective": "Compare latency, throughput, memory, CPU, allocations, startup and query plans under controlled workloads with explicit budgets.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/performance-regression-certification/SKILL.md",
+      "source_member_sha256": "af96f66bffd3c3c66f58d5b689738edb3898774b1722ab5be0abec3e8102aef4"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "golden-route-corpus-manager",
+      "objective": "Maintain real open/commercial fixtures, expected outputs, adversarial mutations and E0-E5 evidence for each high-value migration route.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator"
+      ],
+      "source_member": "skills/K5-verification/golden-route-corpus-manager/SKILL.md",
+      "source_member_sha256": "ae95d28e87dec3767a245c1e0abddfc2a23401e215d1ea27506075d0a73955b6"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K5-verification",
+      "name": "evidence-gate-orchestrator",
+      "objective": "Aggregate all proof artifacts into configurable E0-E5 production gates and fail closed when mandatory evidence is missing or stale.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "continuous-fuzz-certification",
+        "contract-compatibility-verification",
+        "differential-runtime-verification",
+        "static-dataflow-assurance"
+      ],
+      "source_member": "skills/K5-verification/evidence-gate-orchestrator/SKILL.md",
+      "source_member_sha256": "65fc1c765ebb904ccdf61bf78cb7613e22475d26fbaf0f46a2b806fe503c98ec"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "policy-as-code-kernel",
+      "objective": "Centralize model/tool/file/network/build/deploy/data/approval decisions in auditable policy-as-code rather than scattered application conditionals.",
+      "priority": "P0",
+      "repository_owned_dependencies": [],
+      "source_member": "skills/K6-security-governance/policy-as-code-kernel/SKILL.md",
+      "source_member_sha256": "044f0ef4e163572110681485e267933aa1752fad5ac83fef45815b1155255da1"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "fine-grained-authorization-engine",
+      "objective": "Enforce principal-action-resource-context authorization for tenant/repo/branch/environment/secret/tool access with schema validation.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/fine-grained-authorization-engine/SKILL.md",
+      "source_member_sha256": "25ee707151ae96dfe67c965b74496df0afef0346bf70eb6a29e6e6c8b4230240"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "secret-egress-control",
+      "objective": "Broker secret access, redact logs, prevent credential exfiltration, restrict network destinations and produce access evidence.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/secret-egress-control/SKILL.md",
+      "source_member_sha256": "7da083d8898067f7b9cd2809fbcd6bff4243013d40e44ae15ce82181789fcef2"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "prompt-injection-tool-boundary",
+      "objective": "Treat repository content and remote tool output as untrusted data; enforce instruction/data separation and tool capability boundaries.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/prompt-injection-tool-boundary/SKILL.md",
+      "source_member_sha256": "b3036bd8bc47ae8a9040428bfc33ea04584123f99f8a6cb2c11a4a9c7eaa6705"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "sbom-vulnerability-attestation",
+      "objective": "Generate SBOMs, scan dependencies/images and attach vulnerability results to certification evidence.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/sbom-vulnerability-attestation/SKILL.md",
+      "source_member_sha256": "a4b88d1762eb75507e52577fa5124f6265a5ee595b1b1b32e946133fa6c9ba6a"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "slsa-in-toto-provenance",
+      "objective": "Emit verifiable provenance for source, build, transformation, test and packaging steps using standard attestation models.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "evidence-gate-orchestrator",
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/slsa-in-toto-provenance/SKILL.md",
+      "source_member_sha256": "534c8e9ff923c3860c29ebf67b199861f5964cab529c0e66b276a64649dea4a6"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "artifact-signing-verification",
+      "objective": "Sign outputs and attestations and verify signatures before promotion or deployment.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/artifact-signing-verification/SKILL.md",
+      "source_member_sha256": "cdbee5818b15205e8c56da627d6952d43abaff90bda206ce5813eee50ac04007"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "license-compliance-scanner",
+      "objective": "Detect source/dependency/skill licenses, obligations and incompatibilities before generated artifacts are delivered commercially.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/license-compliance-scanner/SKILL.md",
+      "source_member_sha256": "2ed9437342297970fdf890969401b621d27c10421c5f1e44216f1751925e2265"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "multi-tenant-isolation-certifier",
+      "objective": "Continuously verify tenant separation across execution, cache, artifacts, secrets, logs, traces and storage boundaries.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/multi-tenant-isolation-certifier/SKILL.md",
+      "source_member_sha256": "ee762bb8fe8b96a4fce287f751d9686d5e4629a8b1f5209436d0425360581582"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K6-security-governance",
+      "name": "kubernetes-policy-certification",
+      "objective": "Validate/mutate/generate deployment resources and verify image/security policies before cluster admission.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "policy-as-code-kernel"
+      ],
+      "source_member": "skills/K6-security-governance/kubernetes-policy-certification/SKILL.md",
+      "source_member_sha256": "0f604e78bd51c35d4410d07bc7b2e6ef6a145a7bdaaa5c63b48efdebb44f5adb"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "database-semantic-compiler",
+      "objective": "Represent schema, SQL, routines, transaction semantics, constraints and query behavior in a database Semantic IR for target-aware migration.",
+      "priority": "P0",
+      "repository_owned_dependencies": [],
+      "source_member": "skills/K7-database-data/database-semantic-compiler/SKILL.md",
+      "source_member_sha256": "7e8389ad8226540aaafdf69ac59899ed4ad94dd62b6c7a74af001ba2cfaa7a0c"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "schema-metadata-discovery",
+      "objective": "Reverse engineer schemas, keys, constraints, indexes, routines, privileges and relationships into a normalized model.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/schema-metadata-discovery/SKILL.md",
+      "source_member_sha256": "b3443b8eb98b100026f4bd60e9ef2a2e4636f6e40b0ac9738e36fe4bb59de8e6"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "sql-dialect-transpiler",
+      "objective": "Parse/normalize/transpile SQL dialects with explicit unsupported constructs and target-specific rewrite rules.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/sql-dialect-transpiler/SKILL.md",
+      "source_member_sha256": "556814570c4cf8bf29b7615cfd2a1803931e06f5dc627955182dccd6f4e9d77b"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "stored-routine-migration",
+      "objective": "Translate procedures/functions/triggers/packages and preserve exception, transaction, cursor and procedural semantics.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/stored-routine-migration/SKILL.md",
+      "source_member_sha256": "c67af697ef5f0df1b4bfafd8c99dfb2d31d3117af8abb500b590b595aed8af53"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "transaction-semantic-equivalence",
+      "objective": "Verify isolation, locking, retries, autocommit, savepoints and error behavior across source/target database engines.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/transaction-semantic-equivalence/SKILL.md",
+      "source_member_sha256": "4add5d3ef4f17f506180c98f9e31861b7235371187566cfa5fef878148ca0cc2"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "query-plan-performance-equivalence",
+      "objective": "Compare execution plans and representative workload performance; generate index/query fixes when semantics match but performance regresses.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/query-plan-performance-equivalence/SKILL.md",
+      "source_member_sha256": "b8c7c30cf8f0611dd5a40452a54739c58845d81741b665e8d61e8b771cbf3ddd"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "data-lineage-impact-analysis",
+      "objective": "Track run/job/dataset/table/column lineage so code/schema changes propagate to affected pipelines and consumers.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/data-lineage-impact-analysis/SKILL.md",
+      "source_member_sha256": "e02db42c076b890fb17780e30bd44a15b99c7864fe19c83c3c08b16f69c99d6e"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "data-migration-reconciliation",
+      "objective": "Validate row counts, keys, aggregates, referential integrity, sampling hashes and business invariants after data migration.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/data-migration-reconciliation/SKILL.md",
+      "source_member_sha256": "27bed1d7da660d607c1a7b4385930baf45f1faaaaa5a1b95030e0ed8e39bfd10"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "cdc-shadow-compare",
+      "objective": "Run source/target databases in shadow/CDC mode and continuously compare data and query results before cutover.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/cdc-shadow-compare/SKILL.md",
+      "source_member_sha256": "69e692b4184930dd33b7fd18d5143e145c8a55f8594720d9bfb203d045b9aacc"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K7-database-data",
+      "name": "database-security-policy-migration",
+      "objective": "Migrate users, roles, grants, row-level policies, masking and encryption semantics with least-privilege verification.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "database-semantic-compiler"
+      ],
+      "source_member": "skills/K7-database-data/database-security-policy-migration/SKILL.md",
+      "source_member_sha256": "64c05cae957b01b3ac9d9ac69e58f41cd737f305be62178c5bb014b8e3fb385e"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "otel-agent-execution-tracing",
+      "objective": "Emit language-neutral traces/metrics/logs for agents, tools, builds, tests, DB/RPC calls and transformation phases with stable semantic attributes.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "slsa-in-toto-provenance"
+      ],
+      "source_member": "skills/K8-observability-evolution/otel-agent-execution-tracing/SKILL.md",
+      "source_member_sha256": "6d0bd302140db534a54ac9d5897c5b515d31d1accbbbb4b38f4965d7633ec42e"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "agent-evidence-evaluation",
+      "objective": "Evaluate trajectories, responses, retrieval, tool use and outcomes against versioned datasets and production-grade evaluators.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/agent-evidence-evaluation/SKILL.md",
+      "source_member_sha256": "1c35cbda4317ef37058e9abd5f6aff22c9bfdb48dcd9c733dbbafbca2611c4cc"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "trajectory-dataset-versioning",
+      "objective": "Persist successful/failed trajectories, environments, evidence and labels as versioned training/evaluation datasets.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/trajectory-dataset-versioning/SKILL.md",
+      "source_member_sha256": "46eb638c5661cd5a75fb8bf0d4f22fa41428699eed61949e9d218ad6cbb5c51a"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "failure-attribution-learning",
+      "objective": "Attribute failures to planning, context, rule, skill, model, tool, environment, dependency or verification gaps and propose bounded fixes.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/failure-attribution-learning/SKILL.md",
+      "source_member_sha256": "23579a9ee567b1d1d89337af056035a8d6602e070a10edcdd209b183e390466d"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "self-evolving-skill-factory",
+      "objective": "Mine production trajectories into candidate rules/skills/tests, evaluate offline, canary safely and promote only evidence-backed improvements.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/self-evolving-skill-factory/SKILL.md",
+      "source_member_sha256": "02fa0ea2091d5e8601b826b784d32449b6eff8bbc4b7bc3323729122805727c9"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "automatic-task-corpus-generation",
+      "objective": "Generate diverse, adversarial and boundary tasks from environments and failure clusters to expand certification/training corpora.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/automatic-task-corpus-generation/SKILL.md",
+      "source_member_sha256": "06eddf3469584dc4dc0414c90157f022c2410a294db7a35cceeda6030efb9279"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "skill-promotion-canary",
+      "objective": "Promote new skill/rule/model versions through offline replay, shadow, canary and rollback stages with statistically meaningful comparisons.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/skill-promotion-canary/SKILL.md",
+      "source_member_sha256": "82373e18427b0b3ca5b7e5c5c07bd2726733b9d1eced17ec79967a570249fd7b"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "software-catalog-production-scorecard",
+      "objective": "Expose repository ownership, readiness, certification status, documentation, migration debt and operational health in a developer portal.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/software-catalog-production-scorecard/SKILL.md",
+      "source_member_sha256": "1b426f784584297c322ec43415d45e8f05b20b6b6954bc2e3239669b32980a99"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "feature-flag-progressive-rollout",
+      "objective": "Decouple transformation/deployment feature flags from vendors and use controlled cohorts for new rules, models and runtime behaviors.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/feature-flag-progressive-rollout/SKILL.md",
+      "source_member_sha256": "1fdec6c79b3e057bc8c562a4e876990fae9bf26f33cc795b672b5e383fd8b8b1"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "incident-replay-root-cause",
+      "objective": "Reconstruct failed long tasks from checkpoints, traces, tool results and environment snapshots; identify first causal divergence and repair path.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/incident-replay-root-cause/SKILL.md",
+      "source_member_sha256": "53d5bcebf1aa2c4db3b82da2a5f4435c5d631efad08ae8e57de8a125b8193549"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "cost-latency-quality-optimizer",
+      "objective": "Optimize model/tool/parallelism/cache decisions against quality gates, wall-clock ETA, token/credit cost and infrastructure cost.",
+      "priority": "P0",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/cost-latency-quality-optimizer/SKILL.md",
+      "source_member_sha256": "d5ca7b77cc15048688fc90bfeca1aec101db38d74d5d695e303ee9d337985ccf"
+    },
+    {
+      "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+      "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+      "kernel": "K8-observability-evolution",
+      "name": "platform-template-generator",
+      "objective": "Standardize new project/service generation with organization-approved templates, docs, ownership metadata, CI and certification defaults.",
+      "priority": "P1",
+      "repository_owned_dependencies": [
+        "otel-agent-execution-tracing"
+      ],
+      "source_member": "skills/K8-observability-evolution/platform-template-generator/SKILL.md",
+      "source_member_sha256": "29d1113dec09bd690ae36ee72c285b127ab0b2780e7e283831d41dbc7d57c114"
+    }
+  ],
+  "source_graph": {
+    "edge_count": 0,
+    "edges": [],
+    "node_count": 85,
+    "nodes": [
+      "universal-agent-skill-runtime",
+      "progressive-skill-disclosure",
+      "context-aware-skill-source",
+      "skill-registry-ingestion",
+      "skill-sandbox-runner",
+      "skill-version-provenance",
+      "model-tool-skill-router",
+      "human-approval-message-injection",
+      "durable-agent-workflow",
+      "task-checkpoint-time-travel",
+      "polyglot-syntax-front-end",
+      "semantic-symbol-index",
+      "repository-semantic-code-graph",
+      "cross-repository-impact-analysis",
+      "dependency-build-graph-discovery",
+      "runtime-evidence-graph",
+      "repository-slicing-context-pack",
+      "affected-test-selection",
+      "software-catalog-ownership-graph",
+      "change-risk-classifier",
+      "multi-engine-rewrite-router",
+      "compiler-api-rewrite",
+      "semantic-ir-lift-lower",
+      "behavioral-equivalence-migration",
+      "framework-modernization-router",
+      "api-contract-preserving-transform",
+      "concurrency-semantics-transform",
+      "build-system-migration",
+      "configuration-iac-migration",
+      "transformation-explainability-ledger",
+      "hermetic-build-environment",
+      "untrusted-code-microvm-sandbox",
+      "reproducible-build-verifier",
+      "remote-execution-cache-planner",
+      "resource-quota-budget-enforcer",
+      "deterministic-toolchain-lock",
+      "environment-capture-replay",
+      "native-runtime-lab",
+      "fault-injection-chaos-execution",
+      "compiler-grade-certification-gate",
+      "differential-runtime-verification",
+      "continuous-fuzz-certification",
+      "property-based-test-generation",
+      "api-schema-fuzz-testing",
+      "contract-compatibility-verification",
+      "browser-e2e-trace-verification",
+      "static-dataflow-assurance",
+      "formal-proof-router",
+      "metamorphic-equivalence-testing",
+      "mutation-strength-certification",
+      "performance-regression-certification",
+      "golden-route-corpus-manager",
+      "evidence-gate-orchestrator",
+      "policy-as-code-kernel",
+      "fine-grained-authorization-engine",
+      "secret-egress-control",
+      "prompt-injection-tool-boundary",
+      "sbom-vulnerability-attestation",
+      "slsa-in-toto-provenance",
+      "artifact-signing-verification",
+      "license-compliance-scanner",
+      "multi-tenant-isolation-certifier",
+      "kubernetes-policy-certification",
+      "database-semantic-compiler",
+      "schema-metadata-discovery",
+      "sql-dialect-transpiler",
+      "stored-routine-migration",
+      "transaction-semantic-equivalence",
+      "query-plan-performance-equivalence",
+      "data-lineage-impact-analysis",
+      "data-migration-reconciliation",
+      "cdc-shadow-compare",
+      "database-security-policy-migration",
+      "otel-agent-execution-tracing",
+      "agent-evidence-evaluation",
+      "trajectory-dataset-versioning",
+      "failure-attribution-learning",
+      "self-evolving-skill-factory",
+      "automatic-task-corpus-generation",
+      "skill-promotion-canary",
+      "software-catalog-production-scorecard",
+      "feature-flag-progressive-rollout",
+      "incident-replay-root-cause",
+      "cost-latency-quality-optimizer",
+      "platform-template-generator"
+    ],
+    "origin": "SOURCE_MANIFEST_INVENTORY_ONLY",
+    "source_dependency_gap": true,
+    "source_owned_dag_claimed": false
+  },
+  "source_manifest": {
+    "dependency_fields_present": [],
+    "member": "manifest.json",
+    "member_sha256": "84e697c6ce821f9afcc0f52831c1d0da3105102d8a2bcc0ac8333286f688e142",
+    "source_dependency_gap": true,
+    "source_owned_dag_claimed": false
+  }
+}

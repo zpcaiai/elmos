@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Iac Kubernetes Helm Plan Drift Rollback"
+  short_description: "Run this ELMOS Batch 66-80 test Skill with evidence"
+  default_prompt: "Use $tst-iac-kubernetes-helm-plan-drift-rollback to run the exact Batch 66-80 test scope with fail-closed evidence."

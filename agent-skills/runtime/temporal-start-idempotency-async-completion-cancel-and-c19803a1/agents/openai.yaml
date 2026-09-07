@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 015"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $temporal-start-idempotency-async-completion-cancel-and-c19803a1 to implement its fail-closed ELMOS Product Batch 33-mature contract."

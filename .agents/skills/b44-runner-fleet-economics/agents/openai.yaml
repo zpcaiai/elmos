@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Runner Fleet Economics"
+  short_description: "Run evidence-bound Batch 44 runner fleet economics work"
+  default_prompt: "Use $b44-runner-fleet-economics to implement and verify this capability with fail-closed evidence."

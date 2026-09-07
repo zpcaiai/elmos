@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 架构规则与策略引擎"
+  short_description: "Guide 架构规则与策略引擎 with evidence controls"
+  default_prompt: "Use $elmos-architecture-rules as guidance for 架构规则与策略引擎 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

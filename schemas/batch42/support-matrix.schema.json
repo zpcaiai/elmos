@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch42/support-matrix.schema.json",
+  "title": "Batch 42 support-matrix",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "capabilities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 42
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 22,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "capabilityId",
+          "status",
+          "owner",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "capabilityId": {
+            "enum": [
+              "b42-agent-autonomy-levels",
+              "b42-agent-budget-resource-limits",
+              "b42-agent-eval-benchmark",
+              "b42-agent-factory-gate",
+              "b42-agent-incident-killswitch-rollback",
+              "b42-agent-memory-state-governance",
+              "b42-agent-migration-factory",
+              "b42-agent-red-team",
+              "b42-agent-shadow-canary",
+              "b42-agent-team-topology",
+              "b42-agent-tool-permissions",
+              "b42-deterministic-execution-agent",
+              "b42-human-approval-takeover",
+              "b42-language-framework-specialist-agent",
+              "b42-migration-planner-agent",
+              "b42-minimal-context-evidence",
+              "b42-model-routing-provider-failover",
+              "b42-multiagent-consensus-arbitration",
+              "b42-policy-enforcement-agent",
+              "b42-recipe-candidate-agent",
+              "b42-supervisor-coordination-agent",
+              "b42-verification-agent"
+            ]
+          },
+          "status": {
+            "enum": [
+              "research",
+              "experimental",
+              "limited",
+              "certified",
+              "deprecated",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

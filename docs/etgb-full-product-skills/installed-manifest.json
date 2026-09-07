@@ -1,0 +1,748 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence": "NOT_RUN",
+  "namespace": "etgb-v2.0",
+  "package": "elmos-etgb-full-product-assurance-skills-package",
+  "runtime_root": "engines/etgb-engine/src/elmos_etgb",
+  "runtime_state": "BOUND",
+  "schema_version": "2.0",
+  "skills": [
+    {
+      "dependencies": [
+        "risk-based-test-selection",
+        "production-harness-integration",
+        "spring-modernization-validation",
+        "repository-translation-validation",
+        "project-generation-validation",
+        "sql-dialect-routine-validation",
+        "observability-failure-triage",
+        "incident-regression-learning",
+        "release-certification",
+        "full-product-coverage-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-orchestrator/agents/openai.yaml",
+      "interface_sha256": "d5ddacfeeb1e6a12e3beac6bfc0b99f6d239338f2033690a11648c7185d0e021",
+      "name": "etgb-orchestrator",
+      "source_name": "etgb-orchestrator",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/etgb-orchestrator/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "benchmark-integrity-hidden-tests",
+        "statistical-validity-reproducibility"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-test-case-authoring/agents/openai.yaml",
+      "interface_sha256": "42ea6b9eb986e10fd9165e8f4a76414a2257aaf326138dc793f0b433442349eb",
+      "name": "etgb-test-case-authoring",
+      "source_name": "test-case-authoring",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/test-case-authoring/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-spring-modernization-validation/agents/openai.yaml",
+      "interface_sha256": "fd84b81435b82ffa2c76e4a3dbc05c24cf4a8652312f976b46c09c6cd7424461",
+      "name": "etgb-spring-modernization-validation",
+      "source_name": "spring-modernization-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/spring-modernization-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-repository-translation-validation/agents/openai.yaml",
+      "interface_sha256": "5580bb50db6110c59ac20346ebf6536dc59eb8dc2abfca446d86828ab13ff766",
+      "name": "etgb-repository-translation-validation",
+      "source_name": "repository-translation-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/repository-translation-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "benchmark-integrity-hidden-tests",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-project-generation-validation/agents/openai.yaml",
+      "interface_sha256": "74f54a220a10bac3683fa8dfbe5447ecb5ab32169214a617c111ea14b45b549f",
+      "name": "etgb-project-generation-validation",
+      "source_name": "project-generation-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/project-generation-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "differential-oracle-engine",
+        "metamorphic-fuzz-mutation",
+        "corpus-governance",
+        "performance-scale-certification"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-sql-dialect-routine-validation/agents/openai.yaml",
+      "interface_sha256": "f392da38abd25270254a41a71a68221a53891f07c5040260b59e304b974e685b",
+      "name": "etgb-sql-dialect-routine-validation",
+      "source_name": "sql-dialect-routine-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/sql-dialect-routine-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-differential-oracle-engine/agents/openai.yaml",
+      "interface_sha256": "85bb52cb757927ec51b4f76d0fa2098d842f12d71d2581c7768c8caee89542bc",
+      "name": "etgb-differential-oracle-engine",
+      "source_name": "differential-oracle-engine",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/differential-oracle-engine/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "differential-oracle-engine",
+        "statistical-validity-reproducibility"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-metamorphic-fuzz-mutation/agents/openai.yaml",
+      "interface_sha256": "6e8273ade47d167ce0a3383bc7fe0601b27185e5b02b7cc99f18f22377c34dd1",
+      "name": "etgb-metamorphic-fuzz-mutation",
+      "source_name": "metamorphic-fuzz-mutation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/metamorphic-fuzz-mutation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "benchmark-integrity-hidden-tests",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-corpus-governance/agents/openai.yaml",
+      "interface_sha256": "be137f4798f36b03e9d64736f82d031d860720b291b2ea6c1dbe4fd5c51d572d",
+      "name": "etgb-corpus-governance",
+      "source_name": "corpus-governance",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/corpus-governance/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "release-candidate-integrity",
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility",
+        "performance-scale-certification",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-release-certification/agents/openai.yaml",
+      "interface_sha256": "1bc061cbc7ad6915f1dbb45545505e688a82cba9dfe7446262c7e2fbf828ca24",
+      "name": "etgb-release-certification",
+      "source_name": "release-certification",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/release-certification/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "evidence-provenance-ledger",
+        "budget-cost-eta-governance",
+        "multi-tenant-scheduling-isolation",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-production-harness-integration/agents/openai.yaml",
+      "interface_sha256": "51110d277cf6a0dcad70ade99f41c6cc497ca094a9f48932a7ed79a593bd093c",
+      "name": "etgb-production-harness-integration",
+      "source_name": "production-harness-integration",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/production-harness-integration/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-environment-authority-sandbox/agents/openai.yaml",
+      "interface_sha256": "d7ea4aa441d1882cf94cbb36a7098cdd8ddb31abb0f64a308afa66d32e2f3743",
+      "name": "etgb-environment-authority-sandbox",
+      "source_name": "environment-authority-sandbox",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/environment-authority-sandbox/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-checkpoint-resume-recovery/agents/openai.yaml",
+      "interface_sha256": "c747706c1231d92042429c8000df9b86c1905689f59bcc2dec563c07a37a113a",
+      "name": "etgb-checkpoint-resume-recovery",
+      "source_name": "checkpoint-resume-recovery",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/checkpoint-resume-recovery/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "supply-chain-artifact-security"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-evidence-provenance-ledger/agents/openai.yaml",
+      "interface_sha256": "55bbe18b77761c4130228b045c172bd944eb0f6c7d561ca32579b66ba4607e1a",
+      "name": "etgb-evidence-provenance-ledger",
+      "source_name": "evidence-provenance-ledger",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/evidence-provenance-ledger/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "multi-tenant-scheduling-isolation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-budget-cost-eta-governance/agents/openai.yaml",
+      "interface_sha256": "45e8077a13d2bbe6e195ac5f57fccc0dfc87b9e6e3ca64d45d76becfe56f76a5",
+      "name": "etgb-budget-cost-eta-governance",
+      "source_name": "budget-cost-eta-governance",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/budget-cost-eta-governance/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "statistical-validity-reproducibility",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-risk-based-test-selection/agents/openai.yaml",
+      "interface_sha256": "f4eb3306f6fa20f505bc3f0c9a26403766ce53eac2330d9349d4e33e048a6af3",
+      "name": "etgb-risk-based-test-selection",
+      "source_name": "risk-based-test-selection",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/risk-based-test-selection/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-benchmark-integrity-hidden-tests/agents/openai.yaml",
+      "interface_sha256": "695a3f0bd3339c9e95d53efd5e728c6df8381ef5a19ff0b87483db5b96d559c2",
+      "name": "etgb-benchmark-integrity-hidden-tests",
+      "source_name": "benchmark-integrity-hidden-tests",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/benchmark-integrity-hidden-tests/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "evidence-provenance-ledger",
+        "statistical-validity-reproducibility"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-observability-failure-triage/agents/openai.yaml",
+      "interface_sha256": "b5a0b1e9db9ce3b6c2c03efbe44e1ce16e622e857fe3167fdfa58ae8ac4d94e0",
+      "name": "etgb-observability-failure-triage",
+      "source_name": "observability-failure-triage",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/observability-failure-triage/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "statistical-validity-reproducibility",
+        "budget-cost-eta-governance"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-performance-scale-certification/agents/openai.yaml",
+      "interface_sha256": "5e65cdbf5636b7a2f6cc22e316d1c50b75ba44863a3eb728cbae961a4f273f9d",
+      "name": "etgb-performance-scale-certification",
+      "source_name": "performance-scale-certification",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/performance-scale-certification/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-statistical-validity-reproducibility/agents/openai.yaml",
+      "interface_sha256": "0bd8f0b00759c571cca8210cfaf7302921b64181489af39847de24c4ff27fa7e",
+      "name": "etgb-statistical-validity-reproducibility",
+      "source_name": "statistical-validity-reproducibility",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/statistical-validity-reproducibility/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-supply-chain-artifact-security/agents/openai.yaml",
+      "interface_sha256": "16dac56d6f6a44a96210fa4c0ac75fbe720135855bc4dee8fc00f54d6f9e572b",
+      "name": "etgb-supply-chain-artifact-security",
+      "source_name": "supply-chain-artifact-security",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/supply-chain-artifact-security/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "observability-failure-triage",
+        "metamorphic-fuzz-mutation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-incident-regression-learning/agents/openai.yaml",
+      "interface_sha256": "a99329ff3200758a39781fa451e0331a761dfc036129f20fc86317c8b3a29d69",
+      "name": "etgb-incident-regression-learning",
+      "source_name": "incident-regression-learning",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/incident-regression-learning/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "environment-authority-sandbox"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-multi-tenant-scheduling-isolation/agents/openai.yaml",
+      "interface_sha256": "d302e278819936dee935728cab93a4a17e8c7f609141dd289a3ade653aa8375d",
+      "name": "etgb-multi-tenant-scheduling-isolation",
+      "source_name": "multi-tenant-scheduling-isolation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/multi-tenant-scheduling-isolation/SKILL.md"
+    },
+    {
+      "dependencies": [],
+      "interface_path": "agent-skills/runtime/etgb-release-candidate-integrity/agents/openai.yaml",
+      "interface_sha256": "135c75d41a6b994191f687813d87a1a27c3647a4d2483e4094b9956d8246d22c",
+      "name": "etgb-release-candidate-integrity",
+      "source_name": "release-candidate-integrity",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/release-candidate-integrity/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-identity-access-tenant-validation/agents/openai.yaml",
+      "interface_sha256": "37374af9819fe8488bd6f634a4dd23bcf8e0884c948a17a850e2ed802014ccd0",
+      "name": "etgb-identity-access-tenant-validation",
+      "source_name": "identity-access-tenant-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/identity-access-tenant-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-platform-control-plane-validation/agents/openai.yaml",
+      "interface_sha256": "fafdeb759f149b3eab15ef784d0806c2ab40ecd7b812be6f7f1ea68795396d08",
+      "name": "etgb-platform-control-plane-validation",
+      "source_name": "platform-control-plane-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/platform-control-plane-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-repository-ingestion-context-validation/agents/openai.yaml",
+      "interface_sha256": "415db1b91130d2bc545842915d3eb22d594453003ffc74754b467a2297629b79",
+      "name": "etgb-repository-ingestion-context-validation",
+      "source_name": "repository-ingestion-context-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/repository-ingestion-context-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-multimodal-document-processing-validation/agents/openai.yaml",
+      "interface_sha256": "b5546b3ab04e8a7e85e389c7ff5de49d7007ae2b88c3a69ee82351a912ac9416",
+      "name": "etgb-multimodal-document-processing-validation",
+      "source_name": "multimodal-document-processing-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/multimodal-document-processing-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-ai-runtime-model-routing-validation/agents/openai.yaml",
+      "interface_sha256": "7e49b2d521c89b3153aa1b49a3a7ed2c17a0c71dfa47808ffa8a5f2d7d9a0bf3",
+      "name": "etgb-ai-runtime-model-routing-validation",
+      "source_name": "ai-runtime-model-routing-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/ai-runtime-model-routing-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-agent-protocol-tooling-validation/agents/openai.yaml",
+      "interface_sha256": "0d2cd0206ef1cd35526010311522991f1ae43337d6dfb50697339019eaaf8b00",
+      "name": "etgb-agent-protocol-tooling-validation",
+      "source_name": "agent-protocol-tooling-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/agent-protocol-tooling-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-rag-memory-knowledge-validation/agents/openai.yaml",
+      "interface_sha256": "354d93bb0ea0c8945e2f5166b141a7fadf6a17c1985a6892b9c6fa1d7f9bc770",
+      "name": "etgb-rag-memory-knowledge-validation",
+      "source_name": "rag-memory-knowledge-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/rag-memory-knowledge-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-project-intelligence-validation/agents/openai.yaml",
+      "interface_sha256": "97de91bc366a6ce94d710499e96ce77da96a7bdf0b02ad65168c197360b50e33",
+      "name": "etgb-project-intelligence-validation",
+      "source_name": "project-intelligence-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/project-intelligence-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-online-ide-debug-validation/agents/openai.yaml",
+      "interface_sha256": "579627dc883bcc14591c78c9c1a6de02cad8cadc14e9f7e1de63982240f51f20",
+      "name": "etgb-online-ide-debug-validation",
+      "source_name": "online-ide-debug-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/online-ide-debug-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-artifact-document-diagram-validation/agents/openai.yaml",
+      "interface_sha256": "66ef91ff4be5aedd23ad50f3652d2322efa5d4362d852a20a1d3b5cf552e36e0",
+      "name": "etgb-artifact-document-diagram-validation",
+      "source_name": "artifact-document-diagram-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/artifact-document-diagram-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-collaboration-integrations-validation/agents/openai.yaml",
+      "interface_sha256": "b7d8bfe38b823b7c4ef85fc6e4d0f31125e76e66465e80a9c8b163973f68abf2",
+      "name": "etgb-collaboration-integrations-validation",
+      "source_name": "collaboration-integrations-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/collaboration-integrations-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-billing-entitlements-validation/agents/openai.yaml",
+      "interface_sha256": "5fcae9271e2cf627ea01f9af9ebe1eecae82fc73169c16ed31b7a3958dcd6ac7",
+      "name": "etgb-billing-entitlements-validation",
+      "source_name": "billing-entitlements-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/billing-entitlements-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-payment-finance-validation/agents/openai.yaml",
+      "interface_sha256": "afe9ddeabe284e7531970e79296e5e6c6113a93a152f21001f435eb4e8eb2ead",
+      "name": "etgb-payment-finance-validation",
+      "source_name": "payment-finance-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/payment-finance-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-api-sdk-webhook-validation/agents/openai.yaml",
+      "interface_sha256": "77496df407199e97cebd71c3d45a9a9b06449a90e73fc8d7a064ce23843efd39",
+      "name": "etgb-api-sdk-webhook-validation",
+      "source_name": "api-sdk-webhook-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/api-sdk-webhook-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-storage-search-cache-validation/agents/openai.yaml",
+      "interface_sha256": "e9c3c3e8034cbe19f31b30b4d25178b9ab571f465c97106b5b31565cf237344d",
+      "name": "etgb-storage-search-cache-validation",
+      "source_name": "storage-search-cache-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/storage-search-cache-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-deployment-operations-validation/agents/openai.yaml",
+      "interface_sha256": "efaea4857441a9a8e3aad9cafee869b56fe409d894d100e5d2b1ef71a58c4c03",
+      "name": "etgb-deployment-operations-validation",
+      "source_name": "deployment-operations-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/deployment-operations-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-security-privacy-compliance-validation/agents/openai.yaml",
+      "interface_sha256": "216d017595446e5c29863181c587a454c9fa5d648e279517aa3ef9896af89d9f",
+      "name": "etgb-security-privacy-compliance-validation",
+      "source_name": "security-privacy-compliance-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/security-privacy-compliance-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-ui-accessibility-localization-validation/agents/openai.yaml",
+      "interface_sha256": "26ebe00e7a178d34c91b82ba2fcd91ef65c70a41d0ecc3fa923a9f8df355cbac",
+      "name": "etgb-ui-accessibility-localization-validation",
+      "source_name": "ui-accessibility-localization-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/ui-accessibility-localization-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-analytics-admin-support-validation/agents/openai.yaml",
+      "interface_sha256": "5f8e69421aaa7474a46b49694e3c00f719c48904a10682b9cc54f5741a98a9a0",
+      "name": "etgb-analytics-admin-support-validation",
+      "source_name": "analytics-admin-support-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/analytics-admin-support-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-notifications-scheduler-validation/agents/openai.yaml",
+      "interface_sha256": "b26c01f73ea165194a5ff571c8addf7d2bdf85c6686d876167f22091da9e6ba8",
+      "name": "etgb-notifications-scheduler-validation",
+      "source_name": "notifications-scheduler-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/notifications-scheduler-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-ai-solution-factory-validation/agents/openai.yaml",
+      "interface_sha256": "7b71e8b20d02fa484f911446649b96fb79874765f86aeb4fecfff117ed1d856c",
+      "name": "etgb-ai-solution-factory-validation",
+      "source_name": "ai-solution-factory-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/ai-solution-factory-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-data-bigdata-solution-validation/agents/openai.yaml",
+      "interface_sha256": "365f620b374521847af571aecbe120ec04e8ed94faca147845952bf1d2131de1",
+      "name": "etgb-data-bigdata-solution-validation",
+      "source_name": "data-bigdata-solution-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/data-bigdata-solution-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "differential-oracle-engine",
+        "evidence-provenance-ledger"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-commercial-delivery-certification-validation/agents/openai.yaml",
+      "interface_sha256": "5881dd30fc1895a11aa51b2f82f4e7aaa85f257ad66b5039c1b7e43d5e03ba3e",
+      "name": "etgb-commercial-delivery-certification-validation",
+      "source_name": "commercial-delivery-certification-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/commercial-delivery-certification-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "production-harness-integration",
+        "environment-authority-sandbox",
+        "checkpoint-resume-recovery",
+        "evidence-provenance-ledger",
+        "multi-tenant-scheduling-isolation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-product-journey-validation/agents/openai.yaml",
+      "interface_sha256": "b746f4d17bd42cbd4c47214c590e5487bdda0787d078b955bd47e5fae797563b",
+      "name": "etgb-product-journey-validation",
+      "source_name": "product-journey-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/product-journey-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "benchmark-integrity-hidden-tests",
+        "supply-chain-artifact-security",
+        "evidence-provenance-ledger",
+        "release-candidate-integrity"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-standards-assurance-validation/agents/openai.yaml",
+      "interface_sha256": "c73f27334e81910be98e8fcd411ba8a0448daeca6db5a71c04be121430aee0b3",
+      "name": "etgb-standards-assurance-validation",
+      "source_name": "standards-assurance-validation",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/standards-assurance-validation/SKILL.md"
+    },
+    {
+      "dependencies": [
+        "identity-access-tenant-validation",
+        "platform-control-plane-validation",
+        "repository-ingestion-context-validation",
+        "multimodal-document-processing-validation",
+        "ai-runtime-model-routing-validation",
+        "agent-protocol-tooling-validation",
+        "rag-memory-knowledge-validation",
+        "project-intelligence-validation",
+        "online-ide-debug-validation",
+        "artifact-document-diagram-validation",
+        "collaboration-integrations-validation",
+        "billing-entitlements-validation",
+        "payment-finance-validation",
+        "api-sdk-webhook-validation",
+        "storage-search-cache-validation",
+        "deployment-operations-validation",
+        "security-privacy-compliance-validation",
+        "ui-accessibility-localization-validation",
+        "analytics-admin-support-validation",
+        "notifications-scheduler-validation",
+        "ai-solution-factory-validation",
+        "data-bigdata-solution-validation",
+        "commercial-delivery-certification-validation",
+        "product-journey-validation",
+        "standards-assurance-validation",
+        "spring-modernization-validation",
+        "repository-translation-validation",
+        "project-generation-validation",
+        "sql-dialect-routine-validation"
+      ],
+      "interface_path": "agent-skills/runtime/etgb-full-product-coverage-governance/agents/openai.yaml",
+      "interface_sha256": "5f4e1fa9b1597d093a008e48091e0d6509cdfaa844254fedf3f9d0a00f20dc6c",
+      "name": "etgb-full-product-coverage-governance",
+      "source_name": "full-product-coverage-governance",
+      "source_path": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0/skills/full-product-coverage-governance/SKILL.md"
+    }
+  ],
+  "source_archive": "skills/subskills/elmos-etgb-full-product-assurance-skills-package-v2.0.0.zip",
+  "source_archive_sha256": "b11a487b63a0aee7ffb03a247d9439e8c6b9ee19f10c22aca2f7a3dd8bf0072e",
+  "source_root": "skills/elmos-etgb-full-product-assurance-skills-package-v2.0.0",
+  "source_validation": {
+    "archive": "/Users/stephen/DevProjects/AIProjects/elmos/skills/subskills/elmos-etgb-full-product-assurance-skills-package-v2.0.0.zip",
+    "archive_entries": 330,
+    "archive_matches_pin": true,
+    "archive_sha256": "b11a487b63a0aee7ffb03a247d9439e8c6b9ee19f10c22aca2f7a3dd8bf0072e",
+    "checksum_entries": 241,
+    "errors": [],
+    "package_version": "2.0.0",
+    "skills": [
+      "etgb-orchestrator",
+      "test-case-authoring",
+      "spring-modernization-validation",
+      "repository-translation-validation",
+      "project-generation-validation",
+      "sql-dialect-routine-validation",
+      "differential-oracle-engine",
+      "metamorphic-fuzz-mutation",
+      "corpus-governance",
+      "release-certification",
+      "production-harness-integration",
+      "environment-authority-sandbox",
+      "checkpoint-resume-recovery",
+      "evidence-provenance-ledger",
+      "budget-cost-eta-governance",
+      "risk-based-test-selection",
+      "benchmark-integrity-hidden-tests",
+      "observability-failure-triage",
+      "performance-scale-certification",
+      "statistical-validity-reproducibility",
+      "supply-chain-artifact-security",
+      "incident-regression-learning",
+      "multi-tenant-scheduling-isolation",
+      "release-candidate-integrity",
+      "identity-access-tenant-validation",
+      "platform-control-plane-validation",
+      "repository-ingestion-context-validation",
+      "multimodal-document-processing-validation",
+      "ai-runtime-model-routing-validation",
+      "agent-protocol-tooling-validation",
+      "rag-memory-knowledge-validation",
+      "project-intelligence-validation",
+      "online-ide-debug-validation",
+      "artifact-document-diagram-validation",
+      "collaboration-integrations-validation",
+      "billing-entitlements-validation",
+      "payment-finance-validation",
+      "api-sdk-webhook-validation",
+      "storage-search-cache-validation",
+      "deployment-operations-validation",
+      "security-privacy-compliance-validation",
+      "ui-accessibility-localization-validation",
+      "analytics-admin-support-validation",
+      "notifications-scheduler-validation",
+      "ai-solution-factory-validation",
+      "data-bigdata-solution-validation",
+      "commercial-delivery-certification-validation",
+      "product-journey-validation",
+      "standards-assurance-validation",
+      "full-product-coverage-governance"
+    ],
+    "valid": true,
+    "warnings": [
+      "extracted tree has 1 generated or unmanifested files"
+    ]
+  },
+  "version": "2.0.0"
+}

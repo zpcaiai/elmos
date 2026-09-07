@@ -1,0 +1,19 @@
+{
+  "id": "gate-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "subjectId": "project-formal",
+  "gate": "E2_MODEL",
+  "decision": "DENY",
+  "policyRevision": "formal-gate-v1",
+  "evaluatedAt": "2026-08-27T00:00:00Z",
+  "blockingReasons": [
+    "P0 obligation obl-demo-003 is UNKNOWN_TIMEOUT"
+  ],
+  "evidenceHash": "b89919c0b3f5055ae76433c01dd5780fb5be2196848c459a4764bdd80ffdd2c7",
+  "expiresAt": "2026-08-28T00:00:00Z"
+}

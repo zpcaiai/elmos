@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B107-S13",
+    "batch": 107,
+    "name": "frontend-runtime-differential-verifier",
+    "dependencies": [
+      "B107-S10",
+      "B107-S11",
+      "B107-S12"
+    ],
+    "inputs": [
+      "baseline browser evidence",
+      "candidate browser evidence",
+      "diff policy"
+    ],
+    "outputs": [
+      "FrontendRuntimeDiff",
+      "semantic/visual deltas"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/frontend/RuntimeDifferentialService.java",
+        "adapters/visual-diff/",
+        "policies/frontend-equivalence.yaml"
+      ],
+      "interfaces": [
+        "POST /api/validations/frontend-diff",
+        "event frontend-diff.completed"
+      ],
+      "data": [
+        "frontend_diff",
+        "semantic_delta",
+        "visual_delta"
+      ]
+    },
+    "workflow": [
+      "\u5bf9\u9f50\u76f8\u540cJourney\u548c\u6570\u636e\u79cd\u5b50",
+      "\u6bd4\u8f83URL/route\u548c\u5bfc\u822a\u7ed3\u679c",
+      "\u6bd4\u8f83\u53ef\u8bbf\u95ee\u6027\u6811\u4e0e\u8868\u5355\u884c\u4e3a",
+      "\u6bd4\u8f83\u7f51\u7edc\u8c03\u7528\u96c6\u5408\u548c\u54cd\u5e94\u7c7b\u522b",
+      "\u6267\u884c\u53ef\u9009\u50cf\u7d20/\u5e03\u5c40\u5dee\u5f02\u5e76\u8fc7\u6ee4\u5141\u8bb8\u52a8\u6001\u533a",
+      "\u7efc\u5408\u4e3a\u529f\u80fd\u7b49\u4ef7/\u53ef\u63a5\u53d7\u53d8\u5316/\u7834\u574f\u53d8\u5316"
+    ],
+    "tests": [
+      "\u6587\u672c/\u6309\u94ae\u6d88\u5931\u88ab\u8bed\u4e49diff\u53d1\u73b0",
+      "\u4ec5\u53cd\u952f\u9f7f\u53d8\u5316\u4e0d\u963b\u65ad",
+      "API\u8c03\u7528\u51cf\u5c11\u5bfc\u81f4\u529f\u80fd\u7f3a\u5931\u88ab\u53d1\u73b0",
+      "\u5141\u8bb8\u52a8\u6001\u65f6\u95f4\u533a\u57df\u5c4f\u853d",
+      "\u57fa\u7ebf\u81ea\u8eab\u9519\u8bef\u5355\u72ec\u6807\u8bb0"
+    ],
+    "evidence": [
+      "frontend-runtime-diff.json",
+      "semantic-deltas.json",
+      "visual-diff-images/",
+      "network-deltas.json"
+    ],
+    "definition_of_done": [
+      "Journey\u5bf9\u9f50",
+      "\u8bed\u4e49\u4f18\u5148\u4e8e\u50cf\u7d20",
+      "\u5141\u8bb8\u533a\u663e\u5f0f",
+      "\u7834\u574f\u53d8\u5316\u53ef\u5b9a\u4f4d",
+      "\u7ed3\u679c\u8fdb\u5165Live Gate"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:bc266fc07e8b6fc299341187080ae8a189ad8c348596438aca814a8e61b36378",
+  "compiledVersion": 1
+}

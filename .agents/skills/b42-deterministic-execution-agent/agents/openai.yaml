@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Deterministic Execution Agent"
+  short_description: "Run evidence-bound Batch 42 deterministic execution agent work"
+  default_prompt: "Use $b42-deterministic-execution-agent to implement and verify this capability with fail-closed evidence."

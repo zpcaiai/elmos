@@ -1,0 +1,31 @@
+stateDiagram-v2
+    [*] --> CREATED
+    CREATED --> WAITING_FOR_SLOT: persisted, no slot
+    CREATED --> ADMITTED: slot + quotas granted
+    WAITING_FOR_SLOT --> ADMITTED: scheduler claims slot
+    ADMITTED --> STARTING
+    STARTING --> RUNNING
+    RUNNING --> PAUSE_REQUESTED
+    PAUSE_REQUESTED --> PAUSING
+    PAUSING --> PAUSED: checkpoint durable, slot released
+    PAUSED --> WAITING_FOR_SLOT: resume requested
+    RUNNING --> RETRY_WAIT: retryable failure
+    RETRY_WAIT --> RUNNING: backoff elapsed
+    RUNNING --> CANCEL_REQUESTED
+    WAITING_FOR_SLOT --> CANCELLED
+    PAUSED --> CANCELLED
+    CANCEL_REQUESTED --> CANCELLING
+    CANCELLING --> CANCELLED
+    RUNNING --> UNKNOWN_RESULT: lease lost / worker disappeared
+    UNKNOWN_RESULT --> RECONCILING
+    RECONCILING --> RUNNING: safely resumable
+    RECONCILING --> SUCCEEDED: receipt proves completion
+    RECONCILING --> FAILED: terminal evidence
+    RECONCILING --> MANUAL_RECOVERY: ambiguity remains
+    MANUAL_RECOVERY --> RUNNING: approved recovery
+    MANUAL_RECOVERY --> FAILED: operator closes
+    RUNNING --> SUCCEEDED
+    RUNNING --> FAILED
+    SUCCEEDED --> [*]
+    FAILED --> [*]
+    CANCELLED --> [*]

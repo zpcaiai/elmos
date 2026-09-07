@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.behavior-oracle/v1",
+  "type": "object",
+  "required": [
+    "oracleId",
+    "observable",
+    "relation",
+    "normalization"
+  ],
+  "properties": {
+    "oracleId": {
+      "type": "string"
+    },
+    "observable": {
+      "type": "string"
+    },
+    "relation": {
+      "enum": [
+        "exact",
+        "observational-equivalence",
+        "refinement",
+        "tolerance",
+        "custom"
+      ]
+    },
+    "normalization": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tolerance": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "critical": {
+      "type": "boolean"
+    }
+  }
+}

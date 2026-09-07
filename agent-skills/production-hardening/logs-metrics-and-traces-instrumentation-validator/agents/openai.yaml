@@ -1,0 +1,4 @@
+interface:
+  display_name: "Logs Metrics and Traces Instrumentation Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $logs-metrics-and-traces-instrumentation-validator to perform this Batch 10 production-hardening task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-automation-copilot-recommendation-and-h-1f42383a to implement its fail-closed ELMOS Product B50 contract."

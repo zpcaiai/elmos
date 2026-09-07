@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 513: corporate governance architecture builder"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $corporate-governance-architecture-builder to evaluate this capability with evidence."

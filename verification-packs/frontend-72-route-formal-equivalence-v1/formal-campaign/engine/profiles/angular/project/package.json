@@ -1,0 +1,31 @@
+{
+  "name": "formal-angular",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "26.0.0"
+  },
+  "packageManager": "npm@11.12.1",
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng build --configuration development"
+  },
+  "dependencies": {
+    "@angular/common": "22.0.8",
+    "@angular/compiler": "22.0.8",
+    "@angular/core": "22.0.8",
+    "@angular/platform-browser": "22.0.8",
+    "@angular/router": "22.0.8",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1",
+    "zone.js": "0.16.2"
+  },
+  "devDependencies": {
+    "@angular/build": "22.0.8",
+    "@angular/cli": "22.0.8",
+    "@angular/compiler-cli": "22.0.8",
+    "typescript": "6.0.3"
+  }
+}

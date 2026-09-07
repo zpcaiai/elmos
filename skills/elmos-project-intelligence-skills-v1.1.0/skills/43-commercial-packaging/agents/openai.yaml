@@ -1,0 +1,8 @@
+interface:
+  display_name: Elmos · 商业版本、计量与交付套餐
+  short_description: 设计 Elmos Project Intelligence Studio 的 Community/Professional/Enterprise/Private
+    等版本、用量计量、配额、计费、试用和交付边界。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-commercial-packaging 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

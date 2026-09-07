@@ -1,0 +1,10 @@
+{
+  "name": "elmos-vue3-todo-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0",
+    "pinia": "^2.0.0"
+  }
+}

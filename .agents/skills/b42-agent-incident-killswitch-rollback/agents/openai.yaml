@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Agent Incident Killswitch Rollback"
+  short_description: "Run evidence-bound Batch 42 agent incident killswitch rollback w"
+  default_prompt: "Use $b42-agent-incident-killswitch-rollback to implement and verify this capability with fail-closed evidence."

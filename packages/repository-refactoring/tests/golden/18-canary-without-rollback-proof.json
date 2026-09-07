@@ -1,0 +1,59 @@
+{
+  "caseId": "18-canary-without-rollback-proof",
+  "description": "A canary that cannot be reversed is a deployment; it must block.",
+  "evidence": {
+    "rolloutPlanDigest": "sha256:472d0aedb630c0d63835e51f0d80ea2ca4cb0a94b1f0fd52ff8df688f27a4b04"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:89572f7b9aeab27a57bea623b387ec453f302d10faffdc5df56af5a9c9771085",
+  "outputDigest": "sha256:018555c3f3d9a890284130731c68dddde5061325f48faf89c3d51e7791e021e8",
+  "projections": {
+    "output.changesets": [
+      {
+        "buildTargets": [
+          "python:acme-billing"
+        ],
+        "changedLines": 14,
+        "changesetId": "cs-python_acme-billing-0",
+        "dependsOn": [],
+        "owners": [
+          "@acme/payments",
+          "@acme/platform"
+        ],
+        "paths": [
+          "src/acme/api.py",
+          "src/acme/billing.py",
+          "src/acme/ledger.py",
+          "tests/test_billing.py"
+        ],
+        "releaseNote": "4 file(s) modified",
+        "title": "python:acme-billing: 4 file(s)"
+      }
+    ],
+    "output.rolloutPlan.blockedReason": "no verified rollback: a canary that cannot be reversed is a deployment, not an experiment",
+    "output.rolloutPlan.rollbackVerified": false,
+    "output.rolloutPlan.stages": [
+      {
+        "guardrails": [
+          "error-rate",
+          "latency-p95",
+          "resource-utilisation"
+        ],
+        "observationSeconds": 1800,
+        "requiredSignals": [
+          "error-rate",
+          "latency-p95"
+        ],
+        "stageId": "stage-100",
+        "trafficPercent": 100
+      }
+    ],
+    "output.rolloutPlan.startable": false,
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "canary-rollout",
+  "status": "blocked"
+}

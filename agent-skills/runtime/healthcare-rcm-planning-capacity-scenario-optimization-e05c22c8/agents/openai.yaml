@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Healthcare Rcm Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $healthcare-rcm-planning-capacity-scenario-optimization-e05c22c8 to implement its fail-closed ELMOS Product B52 contract."

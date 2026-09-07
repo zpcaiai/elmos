@@ -1,0 +1,6 @@
+interface:
+  display_name: "Durable Agent Workflow"
+  short_description: "Run durable-agent-workflow with bounded commercial controls"
+  default_prompt: "Use $durable-agent-workflow through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

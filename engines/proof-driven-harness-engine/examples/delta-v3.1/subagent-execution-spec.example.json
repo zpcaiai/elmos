@@ -1,0 +1,11 @@
+{
+  "authoritySnapshotId": "auth-child",
+  "budgetReservationId": "budget-1",
+  "environmentId": "env-child",
+  "maxOutputTokens": 16000,
+  "model": "example-model",
+  "parentExecutionId": "exec-parent",
+  "provider": "deepseek",
+  "reasoningEffort": "high",
+  "toolPlanHash": "sha256:child-plan"
+}

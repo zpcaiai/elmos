@@ -1,0 +1,4 @@
+interface:
+  display_name: "B102 Data Query Equivalence"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b102-data-query-equivalence to execute this ELMOS product-closure Skill with fail-closed evidence."

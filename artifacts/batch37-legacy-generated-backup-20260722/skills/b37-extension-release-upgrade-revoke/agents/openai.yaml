@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Extension Release Upgrade Revoke"
+  short_description: "Run evidence-bound Batch 37 extension release upgrade revoke wor"
+  default_prompt: "Use $b37-extension-release-upgrade-revoke to implement and verify this capability with fail-closed evidence."

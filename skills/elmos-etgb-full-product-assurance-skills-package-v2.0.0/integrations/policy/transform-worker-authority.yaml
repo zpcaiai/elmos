@@ -1,0 +1,36 @@
+schema_version: '1.1'
+authority_id: auth-transform-example
+environment_id: env-transform-example
+owner_type: environment
+owner_id: worker-transform-001
+tenant_id: 00000000-0000-0000-0000-000000000001
+role: transform-worker
+capabilities:
+  - harness.prepare
+  - harness.baseline
+  - harness.transform_or_generate
+  - harness.build
+  - filesystem.read
+  - filesystem.write
+  - process.execute
+filesystem:
+  read_roots:
+    - /workspace/source
+    - /workspace/public-tests
+  write_roots:
+    - /workspace/target
+    - /workspace/build
+network:
+  mode: allowlist
+  allowlist:
+    - repo.maven.apache.org
+    - registry.npmjs.org
+secrets:
+  allowed_refs:
+    - secret://model/provider-token
+hidden_tests:
+  read: false
+  write: false
+  execute: false
+fencing_token: 1
+expires_at: '2027-01-01T00:00:00Z'

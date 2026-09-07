@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Offline Evidence Pack Export Import And Airgap Verification"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $offline-evidence-pack-export-import-and-airgap-verification to implement its fail-closed ELMOS Product B37 contract."

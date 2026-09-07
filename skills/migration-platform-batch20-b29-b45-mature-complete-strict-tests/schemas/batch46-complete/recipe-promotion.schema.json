@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "candidate",
+    "sanitization",
+    "development",
+    "negative",
+    "holdout",
+    "security_review",
+    "signing",
+    "publication"
+  ],
+  "properties": {
+    "candidate": {
+      "type": "object"
+    },
+    "sanitization": {
+      "type": "object"
+    },
+    "development": {
+      "type": "object"
+    },
+    "negative": {
+      "type": "object"
+    },
+    "holdout": {
+      "type": "object"
+    },
+    "security_review": {
+      "type": "object"
+    },
+    "signing": {
+      "type": "object"
+    },
+    "publication": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

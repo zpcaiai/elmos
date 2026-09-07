@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "model_ref": "../models/model.json",
+  "business_lines": [
+    "PROJECT_SYNTHESIS",
+    "LANGUAGE_TRANSLATION",
+    "SPRING_MODERNIZATION"
+  ],
+  "repository_external_effects": [
+    "publish-non-force-branch",
+    "publish-pr"
+  ],
+  "forbidden_external_effects": [
+    "force-push",
+    "merge",
+    "deploy",
+    "apply-infrastructure",
+    "migrate-production-database"
+  ],
+  "queue_guards": {
+    "global_capacity": "active_leases < configured_global_capacity",
+    "tenant_capacity": "tenant_active_leases < configured_tenant_capacity",
+    "unique_job": "no_unexpired_lease_for_job",
+    "queue_ttl": "created_at + queue_ttl > now",
+    "lease_liveness": "heartbeat_at + lease_ttl > now"
+  },
+  "recovery": {
+    "expired_lease": "dead-letter-and-requeue-only-if-job-ttl-valid",
+    "corrupt_lease": "dead-letter-and-never-trust",
+    "lost_lease": "terminate-owned-process-and-block-publication",
+    "completed_receipt": "never-repeat-successful-job-with-same-input-digest"
+  }
+}

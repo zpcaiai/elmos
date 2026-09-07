@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Database Migration Compatibility"
+  short_description: "Run evidence-bound Batch 43 database migration compatibility wor"
+  default_prompt: "Use $b43-database-migration-compatibility to implement and verify this capability with fail-closed evidence."

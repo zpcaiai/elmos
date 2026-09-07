@@ -1,0 +1,25 @@
+batch: 13
+slug: neurosymbolic-candidate-generation
+title: "候选生成与神经符号转换"
+phase: "D 转换定义与规则引擎"
+skills:
+  - name: deterministic-rule-generator
+    description: "从已验证规则和 IR Lowering 确定性生成候选，避免重复推理。"
+  - name: llm-candidate-generator
+    description: "向模型提供最小语义切片、契约、方向包和验收测试，生成受约束候选。"
+  - name: multi-candidate-search
+    description: "并行生成架构、库映射和实现候选，并保留差异与来源。"
+  - name: egraph-equivalence-search
+    description: "对局部纯表达式和数据流进行等价饱和，选择目标语言最优形式。"
+  - name: library-api-rag
+    description: "检索目标语言真实 API、版本、导入、示例、语义条件和替代库。"
+  - name: adapter-and-shim-generator
+    description: "在无法无损翻译时生成兼容层、RPC、FFI、Schema Carrier 或临时 Shim。"
+  - name: idiomatic-target-code-generator
+    description: "在保持契约前提下生成目标语言惯用、可维护、可测试的实现。"
+  - name: unsupported-semantics-classifier
+    description: "将无法可靠转换的语义分类为需适配、需重构、保留源服务或不支持。"
+  - name: candidate-cost-ranker
+    description: "按生成成本、运行成本、依赖、维护和迁移风险对候选排序。"
+  - name: candidate-verifiability-ranker
+    description: "优先选择更易类型检查、证明、差分和运行验证的候选。"

@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 30
+name: elmos-context-budget-manager
+title: 上下文预算管理器
+objective: 计算真实可用输入容量，按优先级和不可驱逐规则装载内容，并为工具回合与输出保留安全空间。
+dependencies:
+- elmos-model-capability-discovery
+- elmos-multimodal-token-accounting
+inputs:
+- 上下文候选、模型能力、预留策略
+outputs:
+- ContextPlan、UsageSnapshot、EvictionDecision
+responsibilities:
+- 实现 ContextUsage 分类计量和实时 remaining、pressure
+- 定义 P0-P5 优先级、pin、evict 和 reserve 规则
+- 在每次调用前运行确定性 budget gate
+- 记录装入、卸载、压缩和重新水化决策
+deliverables:
+- ContextBudgetManager 服务
+- 预算策略、快照和审计模型
+- 边界值、并发工具调用和模型切换测试
+acceptance:
+- 总输入加预留输出加安全余量不超过模型窗口
+- P0、P1 内容不能被普通驱逐策略移除
+- 预算包含工具 schema、工具结果和多模态等价 token
+- 前端显示值与实际调用计量一致
+data_entities:
+- task_context_budgets
+- context_usage_snapshots
+- context_source_items
+events:
+- context.source.loaded
+- context.source.evicted
+- context.budget.rejected
+metrics:
+- budget_estimation_error
+- over_limit_requests
+failure_modes:
+- tokenizer 不匹配
+- 并发增长
+- 工具结果爆量
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

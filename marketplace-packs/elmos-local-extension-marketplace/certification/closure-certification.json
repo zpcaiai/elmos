@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-extension-marketplace",
+  "status": "experimental",
+  "owner": "elmos-quality",
+  "metrics": {
+    "dependency_resolution_pass_rate": 0.0,
+    "runtime_reconciliation_pass_rate": 0.0,
+    "catalog_governance_pass_rate": 0.0,
+    "publisher_lifecycle_pass_rate": 0.0,
+    "continuous_certification_pass_rate": 0.0,
+    "migration_rollback_pass_rate": 0.0,
+    "continuity_pass_rate": 0.0,
+    "legal_support_pass_rate": 0.0,
+    "private_marketplace_pass_rate": 0.0,
+    "offline_mirror_pass_rate": 0.0,
+    "operations_dr_pass_rate": 0.0,
+    "settlement_reconciliation_pass_rate": 0.0,
+    "eol_portability_pass_rate": 0.0,
+    "closure_holdout_pass_rate": 0.0,
+    "representative_lifecycle_pass_rate": 0.0,
+    "evidence_trace_coverage": 0.0
+  },
+  "zero_tolerance": {
+    "dependency_cycles": 1,
+    "revoked_dependency_activations": 1,
+    "runtime_drift": 1,
+    "open_critical_incidents": 1,
+    "overdue_p0_certifications": 1,
+    "failed_state_migrations": 1,
+    "continuity_gaps": 1,
+    "open_blocking_legal_cases": 1,
+    "open_p0_sla_breaches": 1,
+    "cross_tenant_private_marketplace_access": 1,
+    "stale_revocation_mirrors": 1,
+    "dr_reconciliation_breaks": 1,
+    "settlement_differences": 1,
+    "fraud_findings_open": 1,
+    "residual_eol_dependencies": 1,
+    "customers_stranded_at_eol": 1,
+    "missing_closure_evidence": 1
+  },
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "certification/local-cli-result.json",
+    "certification/source-manifest.json"
+  ],
+  "evidence_status": "NOT_RUN",
+  "limitations": [
+    "All external lifecycle, operations, legal, settlement and EOL evidence is NOT_RUN."
+  ]
+}

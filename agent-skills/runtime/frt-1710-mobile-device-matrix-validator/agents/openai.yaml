@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Device Matrix Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1710-mobile-device-matrix-validator to run FRT-1710 through the governed FRT runtime with exact scope and fail-closed evidence."

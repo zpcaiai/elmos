@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-03:symbol-identity",
+  "title": "SymbolIdentity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "linkage",
+    "qualified_name",
+    "record_id",
+    "schema_version",
+    "scope",
+    "symbol_id"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "symbol_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "qualified_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "module",
+        "type",
+        "function",
+        "field",
+        "parameter",
+        "label",
+        "unknown"
+      ]
+    },
+    "declared_in": {
+      "type": "string",
+      "minLength": 1
+    },
+    "linkage": {
+      "enum": [
+        "internal",
+        "exported",
+        "imported",
+        "dynamic",
+        "unknown"
+      ]
+    }
+  }
+}

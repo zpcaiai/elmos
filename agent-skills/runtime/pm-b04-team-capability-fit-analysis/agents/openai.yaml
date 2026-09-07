@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B04: Team Capability Fit Analysis"
+  short_description: "Run Precision Migration B04 with evidence controls"
+  default_prompt: "Use $pm-b04-team-capability-fit-analysis to execute this Precision Migration contract with fail-closed evidence."

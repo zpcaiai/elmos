@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M30 Skill 027"
+  short_description: "Run Migration Pack M30 certification safely"
+  default_prompt: "Use $b30-framework-certification-gate to apply the independent, fail-closed Migration Pack M30 contract."

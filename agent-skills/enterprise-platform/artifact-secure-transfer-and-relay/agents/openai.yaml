@@ -1,0 +1,4 @@
+interface:
+  display_name: "artifact-secure-transfer-and-relay"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $artifact-secure-transfer-and-relay to evaluate this enterprise platform capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Unified Payment Intent Instruction Attempt Settlement And Cash Movement Domain"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $unified-payment-intent-instruction-attempt-settlement-a-86fcf414 to implement its fail-closed ELMOS Product B39 contract."

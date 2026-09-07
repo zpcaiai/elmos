@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Target Map Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0713-source-target-map-generator to run FRT-0713 through the governed FRT runtime with exact scope and fail-closed evidence."

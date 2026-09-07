@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read Traffic Routing and Fallback Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $read-traffic-routing-and-fallback-controller to perform this Batch 11 production-cutover task."

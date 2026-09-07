@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:dataflow-edge",
+  "title": "DataflowEdge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "consumer",
+    "medium",
+    "producer",
+    "record_id",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consumer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "medium": {
+      "enum": [
+        "parameter",
+        "field",
+        "queue",
+        "table",
+        "file",
+        "http",
+        "unknown"
+      ]
+    },
+    "carries_pii": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "verified",
+        "corroborated",
+        "single-source",
+        "asserted",
+        "unknown"
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Convergence Roadmap P0 P3"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-convergence-roadmap-p0-p3 to execute this ELMOS product-convergence Skill with fail-closed evidence."

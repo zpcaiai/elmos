@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "capabilities"
+  ],
+  "properties": {
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "capability_id",
+          "reason",
+          "reentry_conditions",
+          "owner",
+          "review_date"
+        ],
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "reentry_conditions": {
+            "type": "array"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "review_date": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

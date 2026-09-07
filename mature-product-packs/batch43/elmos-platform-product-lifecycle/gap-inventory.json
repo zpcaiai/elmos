@@ -1,0 +1,250 @@
+{
+  "batch": 43,
+  "packKey": "elmos-platform-product-lifecycle",
+  "generatedBy": "scripts/mature_product_toolkit.py gaps",
+  "expectedArtifacts": [
+    "candidates",
+    "certification",
+    "claims",
+    "compatibility-matrix",
+    "deprecation-record",
+    "evidence",
+    "gate-result",
+    "metrics",
+    "pack",
+    "profile",
+    "program",
+    "release-channel",
+    "support-matrix",
+    "support-policy",
+    "upgrade-plan",
+    "version-policy",
+    "zero-tolerance"
+  ],
+  "skillCount": 20,
+  "blockingCount": 23,
+  "openCount": 21,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence-manifest.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json artifactDigest is still the zero digest"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json environmentDigest is still the zero digest"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-automated-upgrade-tooling is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-compatibility-test-matrix is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-customer-upgrade-readiness is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-database-migration-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-deprecation-removal is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-event-schema-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-feature-flag-progressive-enable is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-product-lifecycle-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-product-lifecycle-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-psp-uir-schema-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-public-api-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-recipe-pack-extension-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-release-channel-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-release-documentation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-rolling-mixed-version-upgrade is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-runner-protocol-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-sdk-compatibility is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-security-fix-backport is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-support-eol-policy is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b43-version-specification is only experimental in the support matrix"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "backportValidationRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "compatibilityMatrixPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "deprecationOwnerCoverage has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "migrationGuideAccuracyRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "mixedVersionPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "rollbackPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "upgradePassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unsupportedVersionPromotions has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "irreversibleUpgradeWithoutApproval has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "runnerProtocolSafetyRegressions has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "schemaDataLoss has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "expiredFeatureFlags has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unpatchedSupportedCriticalVulnerabilities has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "testIntegrityViolations has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    }
+  ]
+}

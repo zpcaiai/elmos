@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "lakehouse-migration-result-example",
+  "status": "READY",
+  "content_hash": "a2b9c3e01ce5fd5670b8283103ee4ec424b2b124eade423d8007825770509330",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

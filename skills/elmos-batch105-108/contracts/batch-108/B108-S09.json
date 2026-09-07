@@ -1,0 +1,63 @@
+{
+  "id": "B108-S09",
+  "batch": 108,
+  "name": "automation-ratio-calculator",
+  "dependencies": [
+    "B105-S07",
+    "B108-S02"
+  ],
+  "inputs": [
+    "ChangeAttributionReport",
+    "Agent/Manual ledgers"
+  ],
+  "outputs": [
+    "AutomationRatioReport",
+    "unit economics inputs"
+  ],
+  "implementation": {
+    "modules": [
+      "reporting/metrics/AutomationRatioService.java",
+      "policies/automation-metric-definition.json"
+    ],
+    "interfaces": [
+      "GET /api/projects/{id}/automation-ratios",
+      "event metrics.automation-ratio.calculated"
+    ],
+    "data": [
+      "automation_ratio",
+      "automation_denominator"
+    ]
+  },
+  "workflow": [
+    "锁定计算口径和Commit区间",
+    "排除格式化、vendor和生成物",
+    "按文件/行/语义修复/测试/验收计算",
+    "UNKNOWN采用保守分母",
+    "校验与Agent/人工ledger一致",
+    "输出比率、置信区间和复算命令"
+  ],
+  "tests": [
+    "大规模格式化不虚增",
+    "生成DTO单独统计",
+    "UNKNOWN不分配给自动化",
+    "比率不超过100%",
+    "重算一致"
+  ],
+  "evidence": [
+    "automation-ratios.json",
+    "metric-definition.json",
+    "recalculation.txt"
+  ],
+  "definition_of_done": [
+    "保守口径",
+    "多维而非单值",
+    "可复算",
+    "与Ledger一致",
+    "可用于报价但有免责声明"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

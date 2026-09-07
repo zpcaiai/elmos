@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/performance-evidence.schema.json",
+  "title": "Service performance evidence",
+  "type": "object",
+  "required": [
+    "service_id",
+    "artifact_id",
+    "status",
+    "normal_load_passed",
+    "peak_load_passed",
+    "stress_complete",
+    "p95_slo_passed",
+    "p99_slo_passed",
+    "error_rate_slo_passed",
+    "required_scenario_pass_rate",
+    "headroom_percent",
+    "critical_regressions",
+    "unexplained_leaks",
+    "production_resource_accessed",
+    "secret_material_observed",
+    "authority_id",
+    "evidence_refs"
+  ],
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "normal_load_passed": {
+      "type": "boolean"
+    },
+    "peak_load_passed": {
+      "type": "boolean"
+    },
+    "stress_complete": {
+      "type": "boolean"
+    },
+    "soak_passed": {
+      "type": "boolean"
+    },
+    "p95_slo_passed": {
+      "type": "boolean"
+    },
+    "p99_slo_passed": {
+      "type": "boolean"
+    },
+    "error_rate_slo_passed": {
+      "type": "boolean"
+    },
+    "saturation_controlled": {
+      "type": "boolean"
+    },
+    "recovered_after_overload": {
+      "type": "boolean"
+    },
+    "required_scenario_pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "headroom_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "critical_regressions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unexplained_leaks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unbounded_resource_growth": {
+      "type": "boolean"
+    },
+    "production_resource_accessed": {
+      "const": false
+    },
+    "secret_material_observed": {
+      "const": false
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "status": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "NOT_RUN",
+        "BLOCKED",
+        "INCONCLUSIVE",
+        "NOT_APPLICABLE"
+      ]
+    }
+  }
+}
+

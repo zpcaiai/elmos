@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-17/program.schema.json",
+  "title": "Batch 17 Program",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "model",
+    "owner_id",
+    "dimensions",
+    "observed_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 17
+    },
+    "model": {
+      "const": "VSP four-layer model"
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "shared-core",
+          "industry-base-pack",
+          "jurisdiction-overlay",
+          "customer-extension",
+          "finance",
+          "manufacturing",
+          "energy",
+          "healthcare",
+          "government",
+          "commerce",
+          "telecom"
+        ]
+      },
+      "minItems": 11,
+      "uniqueItems": true
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  }
+}

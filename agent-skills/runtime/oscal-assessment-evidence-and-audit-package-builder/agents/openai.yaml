@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oscal Assessment Evidence and Audit Package Builder"
+  short_description: "Help with Oscal Assessment Evidence and Audit Package Builder"
+  default_prompt: "Use $oscal-assessment-evidence-and-audit-package-builder to execute its ELMOS Batch 17 workflow safely."

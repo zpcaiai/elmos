@@ -1,0 +1,9 @@
+apiVersion: frt.openai.dev/v1alpha1
+kind: GenerationBatchRequest
+metadata:
+  projectId: project://example
+  releaseId: release://candidate
+spec:
+  batch: G01
+  targetEnvironment: environment://controlled
+  requestedCertificateLevel: 5

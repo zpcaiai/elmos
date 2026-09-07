@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/go-to-java/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 241,
+      "path": "Migrated.java",
+      "sha256": "sha256:9eb17a08b13b21c46c10482069ebf79182f5ad45705ebcc30209f9079521f68c"
+    },
+    {
+      "bytes": 954,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:84d795567f95161122ea589ac769cec47c19e81369392b02ca76c974848390b4"
+    },
+    {
+      "bytes": 1478,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:e0909baee743ffbbab4a5bd863fb866dce60b8cf3bcd6bc83c6b083ddebea292"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:5066fd88b24d898050d69b72b5cdb60aef361edbd1550fb7bace36f5d55e9e5f"
+    },
+    {
+      "bytes": 2946,
+      "path": "formal-composition.json",
+      "sha256": "sha256:d2333ba333a7e78b15a333fb9637497cdc9df4ab7aeeaa9774fcf413e48e03ed"
+    },
+    {
+      "bytes": 977,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:b2f27ecea6e14f4404e7c0319734f85a4e27012d7de32fabec37f9c5708cbae2"
+    },
+    {
+      "bytes": 7049,
+      "path": "formal-input.json",
+      "sha256": "sha256:846d1c8c90cbc61cc931ed458fa9bb00bce481749454be936533c88a8a5c2b96"
+    },
+    {
+      "bytes": 2324,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:1cc1a617f4f335845493f6d574b00daef1c45dbe42cd400c3a73a7911f021781"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/clamp.go",
+      "sha256": "sha256:272daf64aba04bd922021847a89b212019d6db9b44fdf7e9af51af7c034d3f49"
+    },
+    {
+      "bytes": 3429,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:e083f81552831db64fcd50e591dd7efa2efaebba94cdbbb0b715a106bc045d0a"
+    },
+    {
+      "bytes": 6817,
+      "path": "route-evidence.json",
+      "sha256": "sha256:448bfd64ae1cee434756fbe411ab67f9334fbbeb0c06320318f93072fbb195ff"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 793,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:1b3bc64e69cece1cec037d0512049065646e65f8755247e6e2cdd759dfd50044"
+    },
+    {
+      "bytes": 146,
+      "path": "source-runtime/clamp.go",
+      "sha256": "sha256:272daf64aba04bd922021847a89b212019d6db9b44fdf7e9af51af7c034d3f49"
+    },
+    {
+      "bytes": 680,
+      "path": "source-runtime/source_behavior_test.go",
+      "sha256": "sha256:63a85d6bef4e084a1d36648d8df2b9dea03998deb594bd5d34ecd84381409692"
+    },
+    {
+      "bytes": 793,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:1b3bc64e69cece1cec037d0512049065646e65f8755247e6e2cdd759dfd50044"
+    },
+    {
+      "bytes": 808,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:50730dc9e565badeb69b354c682289c90afa1ea7b35feb47da16a74195b2a618"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "go-to-java",
+  "schema_version": 1,
+  "total_bytes": 40581
+}

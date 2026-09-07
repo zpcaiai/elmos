@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/composite/compatibility-window/1.0.0",
+  "title": "ELMOS Compatibility Window",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "windowId", "organizationId", "contractId", "oldVersion", "newVersion", "startsAt", "expiresAt", "owner", "status", "removalTaskId", "oldVersionUsage", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "windowId": { "type": "string", "minLength": 1 },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "contractId": { "type": "string", "minLength": 1 },
+    "oldVersion": { "type": "string", "minLength": 1 },
+    "newVersion": { "type": "string", "minLength": 1 },
+    "startsAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "owner": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["ACTIVE", "EXPIRING", "EXPIRED_WITH_USAGE", "EXPIRED_UNUSED", "CLOSURE_APPROVED", "CLOSED"] },
+    "strategies": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "removalTaskId": { "type": "string", "minLength": 1 },
+    "oldVersionUsage": { "type": "integer", "minimum": 0 },
+    "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  }
+}

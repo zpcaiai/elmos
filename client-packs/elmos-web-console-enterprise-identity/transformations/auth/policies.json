@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "token_policy": {
+    "browser_javascript_access": false,
+    "issuer_validation": true,
+    "audience_validation": true,
+    "nonce_validation": true,
+    "pkce": "S256",
+    "maximum_access_session_seconds": 3600,
+    "production_shared_bearer_fallback": false
+  },
+  "refresh_policy": {
+    "server_side_only": true,
+    "rotation_accepted": true,
+    "failure": "clear-effective-session-and-require-login"
+  },
+  "logout_policy": {
+    "local_cookie_deletion": "always",
+    "provider_revocation": "when-configured",
+    "revocation_unknown": "reported-not-success"
+  },
+  "tenant_switch_policy": {
+    "source": "elmos_tenants-verified-claim",
+    "cross_tenant_cache_reuse": false,
+    "missing_membership": "deny"
+  },
+  "rollback_policy": {
+    "development_only": "explicit-short-lived-local-credential",
+    "production": "oidc-required"
+  }
+}

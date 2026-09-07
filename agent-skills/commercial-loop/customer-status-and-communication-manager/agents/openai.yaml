@@ -1,0 +1,4 @@
+interface:
+  display_name: "customer-status-and-communication-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $customer-status-and-communication-manager to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 015"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $bitbucket-data-center-project-repository-token-webhook-3b78cac8 to implement its fail-closed ELMOS Product Batch 35 contract."

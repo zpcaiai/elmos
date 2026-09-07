@@ -1,0 +1,99 @@
+version: 1
+policy_id: elmos.autonomous-qa.auto-fix.strict
+
+defaults:
+  enabled: true
+  max_iterations_per_defect: 3
+  max_files_changed: 12
+  max_diff_lines: 500
+  require_isolated_worktree: true
+  require_sandbox: true
+  require_clean_base_commit: true
+  direct_main_write: deny
+  direct_production_write: deny
+  network_access: deny_by_default
+  production_credentials: deny
+  full_regression_after_product_change: required
+
+risk_rules:
+  R0:
+    examples:
+      - generated_test_data
+      - ephemeral_environment_manifest
+      - stable_locator_without_semantic_change
+      - deterministic_wait_condition
+    auto_execute: true
+    auto_accept_after_gates: true
+  R1:
+    examples:
+      - local_validation
+      - null_handling
+      - pure_function_boundary
+      - serialization_edge_case
+    auto_execute: true
+    auto_accept_after_gates: true
+  R2:
+    examples:
+      - shared_library
+      - transaction_logic
+      - cache_semantics
+      - concurrency
+      - public_api_behavior
+      - cross_service_change
+    auto_execute: true
+    auto_accept_after_gates: false
+    required_approver_roles: [code_owner]
+  R3:
+    examples:
+      - authentication
+      - authorization
+      - payment
+      - cryptography
+      - secret_management
+      - destructive_data_operation
+      - database_migration
+      - infrastructure
+      - production_configuration
+      - compliance_policy
+    auto_execute: false
+    auto_accept_after_gates: false
+    required_approver_roles: [code_owner, security_owner, service_owner]
+
+forbidden_patch_patterns:
+  - delete_or_disable_failing_test
+  - reduce_assertion_strength
+  - increase_tolerance_without_requirement_evidence
+  - add_unbounded_retry
+  - add_arbitrary_sleep
+  - hardcode_test_specific_value_in_product_code
+  - bypass_auth_or_validation
+  - suppress_exception_or_log_only
+  - change_quality_gate
+  - change_evidence_policy
+  - remove_audit_logging
+  - introduce_secret_or_production_endpoint
+
+verification_sequence:
+  - compile_and_static_analysis
+  - original_failing_tests
+  - newly_generated_regression_tests
+  - impacted_tests
+  - contract_and_security_checks
+  - mutation_or_property_checks_when_applicable
+  - full_required_regression
+  - evidence_manifest_validation
+
+independent_verifier:
+  required: true
+  must_rebuild_environment: true
+  must_reload_requirements: true
+  may_not_reuse_fixer_conclusion: true
+
+artifact_update_rules:
+
+rematerialize_changed_tests: required
+preserve_previous_artifact_version: required
+update_project_output_manifest: required
+update_test_artifact_set: required
+rebuild_required_bundles: required
+failed_patch_must_not_replace_published_output: true

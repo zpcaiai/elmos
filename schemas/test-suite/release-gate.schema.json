@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-suite/release-gate.schema.json",
+  "type": "object",
+  "required": [
+    "gate_id", "gate_version", "status", "decision", "certification_requested",
+    "field_evidence_status", "evaluated_at", "control_digests", "metrics",
+    "blockers", "evidence_digest", "gate_code_digest"
+  ],
+  "properties": {
+    "gate_id": {"const": "batch1-37-strict"},
+    "gate_version": {"const": 2},
+    "status": {"enum": ["passed", "failed", "blocked"]},
+    "decision": {"enum": ["CERTIFIED", "BLOCKED"]},
+    "certification_requested": {"type": "boolean"},
+    "field_evidence_status": {"enum": ["PASSED", "FAILED", "NOT_RUN"]},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "control_digests": {"type": "object", "minProperties": 4, "additionalProperties": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+    "metrics": {"type": "object"},
+    "blockers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidence_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "gate_code_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "CERTIFIED"}}, "required": ["decision"]},
+      "then": {
+        "properties": {
+          "status": {"const": "passed"},
+          "certification_requested": {"const": true},
+          "field_evidence_status": {"const": "PASSED"},
+          "blockers": {"maxItems": 0}
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Offline Chaos Security Recovery Tests And Release Gates"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $offline-chaos-security-recovery-tests-and-release-gates to implement its fail-closed ELMOS Product B36 contract."

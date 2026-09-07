@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 685: cloud infrastructure and data center consolidator"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $cloud-infrastructure-and-data-center-consolidator to evaluate this capability with evidence."

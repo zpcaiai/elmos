@@ -1,0 +1,20 @@
+{
+  "primary_metric": "Verified Migrated Workload",
+  "required_gates": [
+    "build",
+    "p0-tests",
+    "p0-behavior",
+    "security",
+    "maintainability",
+    "customer-acceptance"
+  ],
+  "secondary": [
+    "time-to-first-vmw",
+    "manual-hours-per-vmw",
+    "cost-per-vmw",
+    "production-regression-rate",
+    "rollback-rate",
+    "handoff-pass-rate",
+    "legacy-retirement-rate"
+  ]
+}

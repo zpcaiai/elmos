@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/skill-contract-v3.schema.json",
+  "title": "Elmos Proof-Carrying Skill Contract v3",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v1"
+    },
+    "kind": {
+      "const": "ProofCarryingSkill"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "pack",
+        "priority",
+        "owner"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 64
+        },
+        "version": {
+          "type": "string"
+        },
+        "pack": {
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 3
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "description",
+        "preconditions",
+        "inputs",
+        "outputs",
+        "workflow",
+        "tools",
+        "evidence",
+        "rollback",
+        "learning",
+        "businessLines",
+        "capabilityTags",
+        "triggers",
+        "negativeTriggers",
+        "dependencies",
+        "invariants",
+        "failureModes",
+        "execution",
+        "compatibility",
+        "maturity"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 8
+        },
+        "businessLines": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "capabilityTags": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "minItems": 1
+        },
+        "negativeTriggers": {
+          "type": "array",
+          "minItems": 1
+        },
+        "preconditions": {
+          "type": "array",
+          "minItems": 1
+        },
+        "inputs": {
+          "type": "array",
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1
+        },
+        "workflow": {
+          "type": "array",
+          "minItems": 3
+        },
+        "tools": {
+          "type": "object",
+          "required": [
+            "allowed",
+            "defaultDeny"
+          ],
+          "properties": {
+            "allowed": {
+              "type": "array",
+              "minItems": 1
+            },
+            "defaultDeny": {
+              "const": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "dependencies": {
+          "type": "array"
+        },
+        "invariants": {
+          "type": "array",
+          "minItems": 1
+        },
+        "failureModes": {
+          "type": "array",
+          "minItems": 1
+        },
+        "execution": {
+          "type": "object",
+          "required": [
+            "class",
+            "idempotencyRequired",
+            "checkpointRequired",
+            "independentVerificationRequired"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "required": [
+            "requiredGates",
+            "minimumLevel"
+          ],
+          "properties": {
+            "requiredGates": {
+              "type": "array",
+              "minItems": 1
+            }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "required": [
+            "required",
+            "strategy"
+          ],
+          "properties": {
+            "required": {
+              "const": true
+            }
+          }
+        },
+        "learning": {
+          "type": "object",
+          "required": [
+            "captureTrajectory",
+            "globalTrainingEligible",
+            "tenantAdapterEligible"
+          ],
+          "properties": {
+            "globalTrainingEligible": {
+              "const": false
+            }
+          }
+        },
+        "compatibility": {
+          "type": "object"
+        },
+        "maturity": {
+          "type": "object",
+          "required": [
+            "status",
+            "runtimeImplementation",
+            "certificationTarget"
+          ]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

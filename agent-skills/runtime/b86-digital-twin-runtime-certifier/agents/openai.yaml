@@ -1,0 +1,4 @@
+interface:
+  display_name: "B86 Digital Twin Runtime Certifier"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b86-digital-twin-runtime-certifier to execute this ELMOS Language Pack Skill with fail-closed evidence."

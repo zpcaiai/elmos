@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Sandbox Execution Receipt Cancel Cleanup Reconciliation And Forensics"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $sandbox-execution-receipt-cancel-cleanup-reconciliation-dfbd6f07 to implement its fail-closed ELMOS Product B36 contract."

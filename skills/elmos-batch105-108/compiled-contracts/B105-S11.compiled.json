@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B105-S11",
+    "batch": 105,
+    "name": "manual-fix-regression-obligation",
+    "dependencies": [
+      "B105-S10"
+    ],
+    "inputs": [
+      "repair commits",
+      "human edits",
+      "policy exceptions"
+    ],
+    "outputs": [
+      "MANUAL_FIXES.md",
+      "ManualInterventionLedger",
+      "approval tasks"
+    ],
+    "implementation": {
+      "modules": [
+        "services/control-plane/.../governance/ManualFixService.java",
+        "apps/web/src/features/manual-fixes/",
+        "templates/MANUAL_FIXES.md"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/manual-fixes",
+        "POST /api/manual-fixes/{id}:approve",
+        "event manual-fix.approved"
+      ],
+      "data": [
+        "manual_fix",
+        "manual_fix_approval",
+        "regression_obligation"
+      ]
+    },
+    "workflow": [
+      "\u68c0\u6d4b\u975e\u89c4\u5219/\u975eAgent actor\u7684\u53d8\u66f4",
+      "\u8981\u6c42\u586b\u5199\u6839\u56e0\u3001\u5f71\u54cd\u3001Owner\u548c\u98ce\u9669",
+      "\u5173\u8054\u65b0\u589e\u6216\u66f4\u65b0\u6d4b\u8bd5",
+      "\u6267\u884c\u6307\u5b9aGate\u5e76\u4fdd\u5b58\u7ed3\u679c",
+      "\u9ad8\u98ce\u9669\u4fee\u590d\u8981\u6c42\u53cc\u4eba\u590d\u6838",
+      "\u751f\u6210MANUAL_FIXES.md\u548c\u673a\u5668ledger"
+    ],
+    "tests": [
+      "\u7f3a\u6839\u56e0\u4e0d\u80fd\u6279\u51c6",
+      "\u6ca1\u6709\u6d4b\u8bd5\u4e14\u65e0\u8c41\u514d\u4e0d\u80fd\u6279\u51c6",
+      "\u540c\u4e00\u4eba\u4e0d\u80fd\u5b8c\u6210\u9ad8\u98ce\u9669\u53cc\u4eba\u590d\u6838",
+      "\u6279\u51c6\u540e\u4ee3\u7801\u53d8\u5316\u4f7f\u6279\u51c6\u5931\u6548",
+      "\u6d4b\u8bd5\u88ab\u5220\u9664\u65f6Gate\u5931\u8d25"
+    ],
+    "evidence": [
+      "manual-fixes.json",
+      "MANUAL_FIXES.md",
+      "approval-receipts.json",
+      "regression-test-links.json"
+    ],
+    "definition_of_done": [
+      "\u6240\u6709\u4eba\u5de5\u5dee\u5f02\u6709\u5f52\u5c5e",
+      "\u9ad8\u98ce\u9669\u53cc\u4eba\u5ba1\u6279",
+      "\u6d4b\u8bd5\u4e49\u52a1\u6ee1\u8db3",
+      "\u6279\u51c6\u7ed1\u5b9apatch\u6458\u8981",
+      "\u8c41\u514d\u6709\u5230\u671f\u65f6\u95f4"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:d86820c9dda6fed3ff181b916a8593e28318b2a20c58598241a1d6ea61733bbb",
+  "compiledVersion": 1
+}

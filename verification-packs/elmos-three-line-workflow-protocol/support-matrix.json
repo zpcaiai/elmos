@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-three-line-workflow-protocol",
+  "capabilities": [
+    {
+      "key": "repository-delivery-state-machine",
+      "status": "experimental",
+      "owner": "elmos-workflow-engineering",
+      "evidence_refs": [
+        "state-machines/workflow-protocol.json",
+        "certification/local-test-manifest.json"
+      ],
+      "limitations": [
+        "Live GitHub and Gitee provider APIs are not exercised in this local pack."
+      ]
+    },
+    {
+      "key": "durable-job-lease-protocol",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "state-machines/workflow-protocol.json",
+        "certification/local-test-manifest.json"
+      ],
+      "limitations": [
+        "Multi-replica shared-volume worker-loss testing remains NOT_RUN."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+apiVersion: elmos.ai/v3alpha1
+kind: NativeTestMatrix
+metadata:
+  name: elmos-embedding-reranker-model-lifecycle-governor
+  version: 4.0.0
+spec:
+  fixtures:
+  - minimal
+  - representative
+  - edge
+  - negative
+  - upgrade
+  - recovery
+  cases:
+  - id: NATIVE-01
+    scenario: 'native scenario: register exact embedding and reranker profiles'
+    layers:
+    - contract
+    - integration
+    - native
+    required: true
+    oracle: native tool/runtime plus typed assertions; LLM explanation non-authoritative
+    faults: []
+    evidence:
+    - commands
+    - versions
+    - digests
+    - assertions
+    - logs/traces
+  - id: NATIVE-02
+    scenario: 'native scenario: validate dimension, metric and tokenizer compatibility'
+    layers:
+    - contract
+    - integration
+    - native
+    required: true
+    oracle: native tool/runtime plus typed assertions; LLM explanation non-authoritative
+    faults: []
+    evidence:
+    - commands
+    - versions
+    - digests
+    - assertions
+    - logs/traces
+  - id: NATIVE-03
+    scenario: 'native scenario: plan incremental re-embedding and dual indexes'
+    layers:
+    - contract
+    - integration
+    - native
+    required: true
+    oracle: native tool/runtime plus typed assertions; LLM explanation non-authoritative
+    faults:
+    - timeout
+    - worker loss
+    evidence:
+    - commands
+    - versions
+    - digests
+    - assertions
+    - logs/traces
+  - id: NATIVE-04
+    scenario: 'native scenario: benchmark retrieval and grounding impact'
+    layers:
+    - contract
+    - integration
+    - native
+    required: true
+    oracle: native tool/runtime plus typed assertions; LLM explanation non-authoritative
+    faults: []
+    evidence:
+    - commands
+    - versions
+    - digests
+    - assertions
+    - logs/traces
+  - id: NATIVE-05
+    scenario: 'native scenario: coordinate rollback and cache invalidation'
+    layers:
+    - contract
+    - integration
+    - native
+    required: true
+    oracle: native tool/runtime plus typed assertions; LLM explanation non-authoritative
+    faults: []
+    evidence:
+    - commands
+    - versions
+    - digests
+    - assertions
+    - logs/traces
+  - id: SEC-01
+    scenario: deny unscoped filesystem/network/secret/tool access
+    layers:
+    - security
+    - policy
+    required: true
+    oracle: policy engine and sandbox audit
+    faults:
+    - missing authority
+    evidence:
+    - policy input/output
+    - sandbox log
+  - id: REC-01
+    scenario: resume from last acknowledged checkpoint after worker loss
+    layers:
+    - resilience
+    required: true
+    oracle: durable history and artifact hashes
+    faults:
+    - SIGKILL worker
+    evidence:
+    - checkpoint
+    - lease generation
+    - recovery trace
+  - id: TENANT-01
+    scenario: cross-tenant identifiers cannot read or mutate state
+    layers:
+    - security
+    - database
+    required: true
+    oracle: RLS/policy negative assertion
+    faults:
+    - forged tenant id
+    evidence:
+    - query result
+    - policy decision
+  - id: EVID-01
+    scenario: tampered or stale evidence is rejected
+    layers:
+    - assurance
+    required: true
+    oracle: hash/signature/freshness validator
+    faults:
+    - artifact mutation
+    - version drift
+    evidence:
+    - validation report
+  coverageGates:
+    requirements: 1.0
+    criticalThreats: 1.0
+    criticalProofObligations: 1.0
+  repeatability: critical Golden Route cases repeat at least three independent times

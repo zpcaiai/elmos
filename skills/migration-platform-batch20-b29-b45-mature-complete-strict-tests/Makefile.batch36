@@ -1,0 +1,6 @@
+batch36-validate:
+	python3 scripts/batch36/validate_skill_bundle.py .agents/skills
+	python3 -m unittest tests/batch36/test_toolkit.py
+
+batch36-scaffold:
+	python3 scripts/batch36/scaffold_developer_experience_pack.py --help

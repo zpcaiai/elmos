@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B25: Postgresql Partial Expression Index"
+  short_description: "Run Precision Migration B25 with evidence controls"
+  default_prompt: "Use $pm-b25-postgresql-partial-expression-index to execute this Precision Migration contract with fail-closed evidence."

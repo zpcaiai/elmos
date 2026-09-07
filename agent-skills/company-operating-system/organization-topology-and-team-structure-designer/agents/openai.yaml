@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 478: organization topology and team structure designer"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $organization-topology-and-team-structure-designer to evaluate this capability with evidence."

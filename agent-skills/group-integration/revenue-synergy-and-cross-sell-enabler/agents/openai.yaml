@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 733: revenue synergy and cross sell enabler"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $revenue-synergy-and-cross-sell-enabler to evaluate this capability with evidence."

@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "id": "B106-S07",
+    "batch": 106,
+    "name": "go-preview-runtime-adapter",
+    "dependencies": [
+      "B106-S03"
+    ],
+    "inputs": [
+      "validated RuntimeManifest",
+      "Go repository snapshot"
+    ],
+    "outputs": [
+      "GoBuildSpec",
+      "GoRunSpec",
+      "module cache key"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/adapters/go/GoPreviewAdapter.java",
+        "private-runner/internal/runtime/go.go",
+        "images/go/"
+      ],
+      "interfaces": [
+        "adapter runtime.go.compile",
+        "event runtime.adapter.go.ready"
+      ],
+      "data": [
+        "go_runtime_spec",
+        "go_build_artifact"
+      ]
+    },
+    "workflow": [
+      "\u89e3\u6790go.mod/toolchain/workspace",
+      "\u53d1\u73b0cmd\u76ee\u5f55\u548cmain package",
+      "\u56fa\u5b9aGOTOOLCHAIN\u4e0emodule proxy\u7b56\u7565",
+      "\u6267\u884cCGO\u7b56\u7565\u660e\u786e\u7684\u6784\u5efa",
+      "\u6ce8\u5165PORT\u5e76\u68c0\u67e5\u76d1\u542c\u5730\u5740",
+      "\u8bc6\u522bHTTP\u3001gRPC Gateway\u548c\u9759\u6001\u6587\u4ef6"
+    ],
+    "tests": [
+      "\u591a\u4e2amain package\u8981\u6c42\u9009\u62e9",
+      "\u79c1\u6709module\u7f3a\u51ed\u8bc1\u660e\u786e\u963b\u65ad",
+      "CGO\u4f9d\u8d56\u4e0eruntime\u955c\u50cf\u5339\u914d",
+      "\u53ea\u76d1\u542c127.0.0.1\u88ab\u53d1\u73b0",
+      "\u9759\u6001\u4e8c\u8fdb\u5236fixture\u8fd0\u884c"
+    ],
+    "evidence": [
+      "go-build-spec.json",
+      "go-run-spec.json",
+      "module-graph.txt",
+      "adapter-test-results.json"
+    ],
+    "definition_of_done": [
+      "main\u5165\u53e3\u552f\u4e00",
+      "\u5de5\u5177\u94fe\u56fa\u5b9a",
+      "CGO\u7b56\u7565\u660e\u786e",
+      "\u7aef\u53e3\u53ef\u66b4\u9732",
+      "Go fixture\u901a\u8fc7"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:a29f0bb86cc6156b288fb243ffdb7da0e8d1b51afa5b61149e5280f4fb45cab4",
+  "compiledVersion": 1
+}

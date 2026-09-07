@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Integration Platform Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $integration-platform-intake-ingestion-connector-sync-an-5afd0e5f to implement its fail-closed ELMOS Product B46 contract."

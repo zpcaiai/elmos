@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 010"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $runbook-knowledge-diagnostic-and-operational-readiness to apply its fail-closed ELMOS runtime contract."

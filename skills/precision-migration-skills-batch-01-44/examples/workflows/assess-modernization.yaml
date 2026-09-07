@@ -1,0 +1,12 @@
+mode: assess
+source_repository: repo://legacy-app
+target_candidates: [java21-spring3-vue3, dotnet, go]
+outputs:
+  - architecture
+  - blockers
+  - readiness_score
+  - pilot_plan
+  - estimate_ranges
+policy:
+  require_evidence: true
+  allow_do_not_convert: true

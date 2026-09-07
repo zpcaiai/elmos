@@ -1,0 +1,153 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceWorkflow
+metadata:
+  name: spring-modernization-formal-assurance
+  title: Spring Legacy Modernization Formal Assurance
+  version: 1.0.0
+  domain: spring-modernization
+spec:
+  durability:
+    checkpointEveryStep: true
+    resumePolicy: idempotent
+    fencingRequired: true
+  concurrency:
+    topLevelPerAccount: 3
+    maxParallelSteps: 8
+  budget:
+    etaUnit: wall-clock-seconds
+    reserveBeforeStart: true
+  steps:
+  - id: route-binding
+    skillRef: elmos-spring-route-binding-proof
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: security-chain
+    skillRef: elmos-spring-security-chain-model
+    dependsOn:
+    - route-binding
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: filter-order
+    skillRef: elmos-spring-filter-interceptor-order-proof
+    dependsOn:
+    - route-binding
+    - security-chain
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: session
+    skillRef: elmos-spring-session-state-refinement
+    dependsOn:
+    - route-binding
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: exception
+    skillRef: elmos-spring-exception-mapping-refinement
+    dependsOn:
+    - route-binding
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: transaction
+    skillRef: elmos-spring-transaction-refinement
+    dependsOn:
+    - exception
+    - security-chain
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: jml
+    skillRef: elmos-java-jml-contract-verifier
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: aop
+    skillRef: elmos-spring-proxy-aop-semantic-checker
+    dependsOn:
+    - security-chain
+    - transaction
+    - jml
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: data
+    skillRef: elmos-spring-data-migration-refinement
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: trace
+    skillRef: elmos-legacy-modernization-trace-validator
+    dependsOn:
+    - filter-order
+    - session
+    - transaction
+    - data
+    - aop
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  terminalPolicy:
+    successRequires: all required steps terminal and gate allowed
+    unknownIsFailure: true
+  events:
+  - workflow.started
+  - proof.step.started
+  - proof.step.completed
+  - proof.step.failed
+  - workflow.completed

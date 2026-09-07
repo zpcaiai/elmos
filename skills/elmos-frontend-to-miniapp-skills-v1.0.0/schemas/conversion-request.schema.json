@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/conversion-request.schema.json",
+  "title": "Elmos Frontend to MiniApp Conversion Request",
+  "type": "object",
+  "required": [
+    "request_id",
+    "tenant_id",
+    "source",
+    "targets",
+    "strategy",
+    "quality",
+    "release"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "pattern": "^conv-[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "root",
+        "revision"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 7
+        },
+        "framework_hint": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "vue2",
+            "vue3",
+            "react",
+            "flutter",
+            "h5",
+            "taro",
+            "uni-app",
+            "native-miniapp"
+          ]
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*"
+          ]
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "wechat",
+          "alipay",
+          "douyin",
+          "xiaohongshu"
+        ]
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "required": [
+        "priority",
+        "webview_fallback",
+        "full_page_canvas_fallback",
+        "unsupported_policy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": [
+            "fidelity",
+            "maintainability",
+            "platform-native",
+            "code-sharing",
+            "balanced"
+          ]
+        },
+        "webview_fallback": {
+          "type": "string",
+          "enum": [
+            "deny",
+            "approval-required",
+            "allow"
+          ]
+        },
+        "full_page_canvas_fallback": {
+          "type": "string",
+          "enum": [
+            "deny",
+            "approval-required"
+          ]
+        },
+        "unsupported_policy": {
+          "type": "string",
+          "enum": [
+            "block",
+            "report-and-continue-noncritical",
+            "ask-decision"
+          ]
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "critical_flow_pass_rate",
+        "visual_similarity_min",
+        "max_auto_repair_iterations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "critical_flow_pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "visual_similarity_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_auto_repair_iterations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "performance_policy_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "required": [
+        "mode",
+        "human_approval_required"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "build-only",
+            "preview",
+            "upload",
+            "review",
+            "release"
+          ]
+        },
+        "human_approval_required": {
+          "type": "boolean"
+        },
+        "credential_refs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^(vault|secret|kms)://"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

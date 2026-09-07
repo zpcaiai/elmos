@@ -1,0 +1,69 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillApiContract
+metadata:
+  name: elmos-rag-corpus-connector-cdc-governor
+  version: 4.0.0
+spec:
+  commands:
+  - method: POST
+    path: /v1/project-generation/skills/elmos-rag-corpus-connector-cdc-governor/runs
+    operation: start
+    requiredHeaders:
+    - Idempotency-Key
+    - X-Tenant-Id
+    request:
+    - goal_id
+    - revision_set_id
+    - environment_authority_ref
+    - proof_graph_id
+    - budget_policy_ref
+    responses:
+    - 202 accepted
+    - 409 conflict/stale revision
+    - 422 invalid contract
+    - 403 denied
+  - method: POST
+    path: /v1/project-generation/runs/{run_id}:pause
+    operation: pause
+    requiredHeaders:
+    - Idempotency-Key
+    - If-Match-Execution-Epoch
+  - method: POST
+    path: /v1/project-generation/runs/{run_id}:resume
+    operation: resume
+    requiredHeaders:
+    - Idempotency-Key
+    - If-Match-Execution-Epoch
+  - method: POST
+    path: /v1/project-generation/runs/{run_id}:cancel
+    operation: cancel
+    requiredHeaders:
+    - Idempotency-Key
+    - If-Match-Execution-Epoch
+  - method: GET
+    path: /v1/project-generation/runs/{run_id}
+    operation: status
+  - method: GET
+    path: /v1/project-generation/runs/{run_id}/evidence
+    operation: evidence-index
+  events:
+  - skill.run.requested
+  - skill.run.state_changed
+  - skill.artifact.created
+  - skill.proof.result
+  - skill.side_effect.state_changed
+  - skill.gate.evaluated
+  concurrency:
+    topLevelAccountDefault: 3
+    optimisticConcurrency: execution_epoch+version
+    workerWrites: lease_generation+fencing_token
+  errorModel:
+  - VALIDATION_FAILED
+  - AUTHORITY_DENIED
+  - VERSION_UNSUPPORTED
+  - CAPABILITY_BLOCKED
+  - BUDGET_EXHAUSTED
+  - NATIVE_CONFORMANCE_FAILED
+  - PROOF_REFUTED
+  - SIDE_EFFECT_UNSETTLED
+  - CANCELLED

@@ -1,0 +1,79 @@
+workflow_id: project-output-publishing
+version: 1
+inputs:
+  - project_id
+  - revision_id
+  - run_id
+  - output_mode
+  - artifact_manifest_ref
+  - test_artifact_set_ref
+  - evidence_manifest_ref
+  - run_status
+
+steps:
+  - id: freeze_artifact_inventory
+    action: reject_unmanifested_files_and_freeze_inventory
+  - id: scan_paths_and_secrets
+    action: validate_path_safety_and_run_secret_scan
+  - id: build_project_with_tests
+    bundle: project-with-tests
+    include_categories:
+      - application_source
+      - application_config
+      - test_source
+      - test_config
+      - test_fixture
+      - test_data
+      - test_mock
+      - test_baseline
+      - ci_config
+      - replay_script
+      - manifest
+  - id: build_tests_only
+    bundle: tests-only
+    include_categories:
+      - test_source
+      - test_config
+      - test_fixture
+      - test_data
+      - test_mock
+      - test_baseline
+      - ci_config
+      - replay_script
+      - manifest
+  - id: build_qa_evidence
+    when: mode in [verify, repair, certify, continuous]
+    bundle: qa-evidence
+    include_categories:
+      - test_plan
+      - traceability
+      - test_result
+      - report
+      - evidence
+      - coverage
+      - performance_baseline
+      - security_result
+      - defect
+      - patch
+      - certificate
+      - manifest
+  - id: build_repair_patches
+    when: patch_count > 0
+    bundle: repair-patches
+    include_categories: [patch, defect, replay_script, manifest]
+  - id: verify_bundles
+    action: extract_to_clean_directory_and_verify_manifest_checksums
+  - id: sign_manifests
+    when: mode == certify and quality_gates_passed
+    action: sign_project_output_and_evidence_manifests
+  - id: atomic_publish
+    action: promote_temporary_objects_to_visible_immutable_revision
+
+failure_behavior:
+  publish_partial_output: true
+  status_mapping:
+    successful_certification: certified
+    tests_failed: failed
+    blocked: partial
+    cancelled_with_artifacts: partial
+    publication_integrity_error: publication_failed

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Integration Platform Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $integration-platform-security-privacy-quality-performan-276ba71a to implement its fail-closed ELMOS Product B46 contract."

@@ -1,0 +1,26 @@
+apiVersion: elmos.ai/v1
+kind: AgenticSolution
+metadata:
+  name: replace-me
+  tenantId: replace-me
+  projectId: replace-me
+spec:
+  archetype: agentic-rag
+  contracts:
+    solution: contracts/solution-contract.json
+    model: contracts/model-contract.json
+    agent: contracts/agent-contract.json
+    workflow: contracts/workflow-contract.json
+    tool: contracts/tool-contract.json
+    rag: contracts/rag-contract.json
+    memory: contracts/memory-contract.json
+    interaction: contracts/interaction-contract.json
+    security: contracts/security-governance.json
+    runtime: contracts/runtime-operations.json
+    assurance: contracts/assurance-contract.json
+  targets:
+    - dify
+    - langgraph-python
+    - spring-ai-java
+    - openclaw
+  allowedDeltas: []

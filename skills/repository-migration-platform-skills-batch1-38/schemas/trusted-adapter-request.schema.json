@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/repository-migration-trusted-adapter-request.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "batch", "adapter_id", "operation", "parameters", "idempotency_key", "fencing_token", "source_fingerprint", "approval", "compensates_idempotency_key"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "batch": {"type": "integer", "minimum": 1, "maximum": 38},
+    "adapter_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,62}[a-z0-9]$"},
+    "operation": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,62}[a-z0-9]$"},
+    "parameters": {"type": "object"},
+    "idempotency_key": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,62}[a-z0-9]$"},
+    "fencing_token": {"type": "integer", "minimum": 1},
+    "source_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "approval": {"type": ["object", "null"]},
+    "compensates_idempotency_key": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{0,62}[a-z0-9]$"}
+  }
+}

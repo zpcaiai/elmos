@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "queryId": "oracle-orders-to-dm8-preflight",
+  "sourceProfile": "oracle-26ai-ee",
+  "targetId": "dm8",
+  "targetVersion": "8.1.3.140",
+  "targetEdition": "enterprise",
+  "compatibilityMode": "oracle-compatible-explicit",
+  "targetDriver": "dm-jdbc-8.1.3.140",
+  "targetCharset": "UTF-8",
+  "targetCollation": "BINARY",
+  "targetTimeZone": "Asia/Shanghai",
+  "capabilitySnapshotDigest": "sha256:2dec280322219bccf68f44569211e1b66a6e0d6fd6f8c5c8f2194d118ef42e8b",
+  "sql": "SELECT id, created_at FROM orders WHERE tenant_id = :tenant_id ORDER BY created_at DESC FETCH FIRST 10 ROWS ONLY",
+  "parameters": [
+    {
+      "name": "tenant_id",
+      "logicalType": "unicode-text",
+      "nullable": false
+    }
+  ]
+}

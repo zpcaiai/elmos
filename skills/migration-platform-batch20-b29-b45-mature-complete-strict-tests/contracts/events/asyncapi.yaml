@@ -1,0 +1,34 @@
+asyncapi: 3.0.0
+info:
+  title: Migration Platform Events
+  version: 0.1.0
+channels:
+  migrationEvents:
+    address: migration.events
+    messages:
+      migrationCreated:
+        $ref: '#/components/messages/MigrationCreated'
+  runnerEvents:
+    address: runner.events
+    messages:
+      runnerJobCompleted:
+        $ref: '#/components/messages/RunnerJobCompleted'
+operations:
+  receiveMigrationEvents:
+    action: receive
+    channel:
+      $ref: '#/channels/migrationEvents'
+  receiveRunnerEvents:
+    action: receive
+    channel:
+      $ref: '#/channels/runnerEvents'
+components:
+  messages:
+    MigrationCreated:
+      name: migration.created
+      payload:
+        $ref: './migration.created.schema.json'
+    RunnerJobCompleted:
+      name: runner.job.completed
+      payload:
+        $ref: './runner.job-completed.schema.json'

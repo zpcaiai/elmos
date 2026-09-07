@@ -1,0 +1,14 @@
+{
+  "environment_id": "elmos-local-engineering-qualification",
+  "captured_at": "2026-07-22T06:19:21.980655Z",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "python": "3.9.6 (default, May 22 2026, 11:13:45) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+  "java": "openjdk version \"21.0.11\" 2026-04-21",
+  "maven": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)",
+  "dotnet": "unavailable: [Errno 2] No such file or directory: 'dotnet'",
+  "node": "unavailable: [Errno 2] No such file or directory: 'node'",
+  "network_policy": "build-tool-managed; no production operations authorized",
+  "production_data": false,
+  "secrets": "references-only"
+}

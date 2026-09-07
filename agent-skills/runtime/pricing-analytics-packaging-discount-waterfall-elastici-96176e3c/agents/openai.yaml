@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Pricing Analytics Packaging Discount Waterfall Elasticity And Experiment"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $pricing-analytics-packaging-discount-waterfall-elastici-96176e3c to implement its fail-closed ELMOS Product B39 contract."

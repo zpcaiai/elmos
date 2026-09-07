@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B106-S11",
+    "batch": 106,
+    "name": "preview-port-exposure-controller",
+    "dependencies": [
+      "B106-S10"
+    ],
+    "inputs": [
+      "SandboxInstance",
+      "service port/protocol",
+      "access policy"
+    ],
+    "outputs": [
+      "PublicEndpoint",
+      "access token",
+      "route receipt"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/gateway/PreviewEndpointService.java",
+        "gateway/preview-routes/",
+        "apps/web/src/features/preview/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/endpoints",
+        "DELETE /api/runtime-runs/{id}/endpoints",
+        "event preview.endpoint.created"
+      ],
+      "data": [
+        "preview_endpoint",
+        "endpoint_token",
+        "route_binding"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1\u7aef\u53e3\u5c5e\u4e8e\u8be5\u5b9e\u4f8b\u548cManifest",
+      "\u521b\u5efa\u968f\u673a\u4e0d\u53ef\u731c\u5b50\u57df\u4e0eTLS\u8def\u7531",
+      "\u914d\u7f6e\u8eab\u4efd\u3001\u9650\u6d41\u3001\u6700\u5927Body\u548cWebSocket\u5347\u7ea7",
+      "\u53ea\u66b4\u9732\u58f0\u660e\u7684\u8def\u5f84/\u7aef\u53e3",
+      "\u8fd4\u56de\u4e0d\u542b\u5185\u90e8\u62d3\u6251\u7684PublicEndpoint",
+      "\u9500\u6bc1\u65f6\u5148\u64a4\u9500\u8def\u7531\u518d\u505c\u6b62\u5b9e\u4f8b"
+    ],
+    "tests": [
+      "\u672a\u58f0\u660e\u7aef\u53e3\u62d2\u7edd",
+      "URL\u4e0d\u53ef\u679a\u4e3e",
+      "\u8fc7\u671fToken\u62d2\u7edd",
+      "WebSocket\u63e1\u624b\u901a\u8fc7",
+      "\u8def\u7531\u64a4\u9500\u540e\u7acb\u5373\u4e0d\u53ef\u8bbf\u95ee"
+    ],
+    "evidence": [
+      "endpoint-receipt.json",
+      "route-policy.json",
+      "access-audit.json",
+      "revocation-receipt.json"
+    ],
+    "definition_of_done": [
+      "HTTPS\u53ef\u8bbf\u95ee",
+      "\u9ed8\u8ba4\u9700\u8981\u8ba4\u8bc1",
+      "\u5185\u90e8\u5730\u5740\u4e0d\u6cc4\u9732",
+      "\u9650\u6d41\u751f\u6548",
+      "\u64a4\u9500\u5177\u539f\u5b50\u6027"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:a863dd42be8249d68f5fa1bb5bb69fc6f603967fb700c4e07355964e335500de",
+  "compiledVersion": 1
+}

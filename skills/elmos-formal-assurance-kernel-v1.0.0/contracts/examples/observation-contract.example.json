@@ -1,0 +1,45 @@
+{
+  "id": "obs-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "sourceSystem": "legacy",
+  "targetSystem": "spring-boot-4",
+  "dimensions": [
+    {
+      "name": "http.status",
+      "comparison": "EXACT",
+      "criticality": "P0"
+    },
+    {
+      "name": "db.writes",
+      "comparison": "TRACE_REFINEMENT",
+      "criticality": "P0"
+    },
+    {
+      "name": "response.generatedAt",
+      "comparison": "TOLERANT",
+      "criticality": "P2",
+      "tolerance": {
+        "milliseconds": 1000
+      }
+    }
+  ],
+  "normalizers": [
+    {
+      "id": "norm-time",
+      "field": "response.generatedAt",
+      "operation": "TIME_WINDOW",
+      "securityReviewed": true,
+      "reason": "wall clock nondeterminism"
+    }
+  ],
+  "forbiddenIgnorePatterns": [
+    "*.authorizationDecision",
+    "*.amount",
+    "*.tenantId"
+  ]
+}

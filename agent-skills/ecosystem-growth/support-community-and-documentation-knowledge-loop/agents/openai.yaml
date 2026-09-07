@@ -1,0 +1,5 @@
+interface:
+  display_name: "Support Community And Documentation Knowledge Loop"
+  short_description: "Authoritative Batch 14 Skill 435 workflow"
+  default_prompt: "Use $support-community-and-documentation-knowledge-loop to execute its evidence-bound Batch 14 workflow."
+

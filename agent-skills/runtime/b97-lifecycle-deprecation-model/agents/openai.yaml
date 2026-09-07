@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Lifecycle Deprecation Model"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-lifecycle-deprecation-model to execute this ELMOS product-closure Skill with fail-closed evidence."

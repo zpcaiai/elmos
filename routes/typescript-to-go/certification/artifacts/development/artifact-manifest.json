@@ -1,0 +1,155 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/typescript-to-go/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/dist/pricing.js",
+    "source-runtime/dist/source_harness.js"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 1562,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:06a6bad628a5418d61e06efd87108015bb7579a371f5fe36bab93ca1342b4d30"
+    },
+    {
+      "bytes": 8158,
+      "path": "chunk-map.json",
+      "sha256": "sha256:6aceb2fcaa4ea7bcc7e863b0cf584a8a1189be7eceff9183775493bbd5c32842"
+    },
+    {
+      "bytes": 2956,
+      "path": "formal-composition.json",
+      "sha256": "sha256:0890002c5a0aaf08eb5f92286fd5782d94deafe7c8c7f8ee5c190903a9b4be39"
+    },
+    {
+      "bytes": 1085,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:261af52e280dfeed4a924dfb6dd6c6ee1b7eeef252882f0f2932c0380af51f60"
+    },
+    {
+      "bytes": 6391,
+      "path": "formal-input.json",
+      "sha256": "sha256:bf40af4da3ea2936eb61bfbc7ba68a529c701df7f6cb63839af87a898fa152dc"
+    },
+    {
+      "bytes": 2334,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:68696cb6f7402b42fa0f07c0d6998f750f23c99a16897aa0ea352785bf5c5a77"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 134,
+      "path": "inputs/pricing.ts",
+      "sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd"
+    },
+    {
+      "bytes": 3450,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:aa20eb6b8038a69ca3b1ee6f0eb9d02c50cafc619c6af2bcef95222124b9c03b"
+    },
+    {
+      "bytes": 147,
+      "path": "migrated.go",
+      "sha256": "sha256:6af38f77b60f222293f5f15ae64c887e1660f62429158dcda451987ef5ccd9f6"
+    },
+    {
+      "bytes": 6854,
+      "path": "route-evidence.json",
+      "sha256": "sha256:c6c8d9bb7591c90d270b2e52b78f47f2f4ad6906192cd903a150dc716eb3b1e6"
+    },
+    {
+      "bytes": 636,
+      "path": "route_harness.go",
+      "sha256": "sha256:5570728e9a876cb4ee2932a8468d942a361005b7304642c8516ad74a3bd075ca"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:47597f8105a4afb19a72ee7c2bdc647b06e14b8d9299f9847dc78bf7ebe143af"
+    },
+    {
+      "bytes": 676,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:9b303db491cf7f587eb13395d850351cc45dff656d66c36589a615027053b7c5"
+    },
+    {
+      "bytes": 134,
+      "path": "source-runtime/pricing.ts",
+      "sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd"
+    },
+    {
+      "bytes": 553,
+      "path": "source-runtime/source_harness.ts",
+      "sha256": "sha256:a119471946e4008e86698f28ab6766c2a9105f0af8fd284c1b92420b3cd633df"
+    },
+    {
+      "bytes": 189,
+      "path": "source-runtime/tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    },
+    {
+      "bytes": 676,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:9b303db491cf7f587eb13395d850351cc45dff656d66c36589a615027053b7c5"
+    },
+    {
+      "bytes": 662,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:4d8c4a5a7f25c5c344b36d049868c1fd93197f85c1ea8d9855e9534fcb0c18e9"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "typescript-to-go",
+  "schema_version": 1,
+  "total_bytes": 37057
+}

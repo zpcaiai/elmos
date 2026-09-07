@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 703: privacy consent and residency harmonizer"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $privacy-consent-and-residency-harmonizer to evaluate this capability with evidence."

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/production-readiness-evidence-pack.schema.json",
+  "title": "Batch 10 production readiness evidence pack",
+  "type": "object",
+  "required": [
+    "protocol",
+    "version",
+    "batch",
+    "artifact_id",
+    "dimensions",
+    "service_gates",
+    "append_only",
+    "redacted",
+    "production_ready",
+    "eligible_for_cutover",
+    "evidence_refs"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "ELMOS-PRM"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 10
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "performance",
+          "security",
+          "reliability",
+          "observability",
+          "operability",
+          "release-safety"
+        ]
+      }
+    },
+    "service_gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "open_risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "append_only": {
+      "const": true
+    },
+    "redacted": {
+      "const": true
+    },
+    "eligible_for_progressive_delivery": {
+      "type": "boolean"
+    },
+    "production_ready": {
+      "const": false
+    },
+    "eligible_for_cutover": {
+      "const": false
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

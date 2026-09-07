@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "status": "experimental",
+  "decision": "NOT_CERTIFIED",
+  "execution_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN",
+  "reason": "The direct route drivers and exact target profile are declared, but no exact source tuple has completed source/target runtime, startup, holdout and independent verification gates."
+}

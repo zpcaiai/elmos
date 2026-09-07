@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 516: enterprise risk management system"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $enterprise-risk-management-system to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B81 Mainframe Cutover Decommission Planner"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b81-mainframe-cutover-decommission-planner to execute this ELMOS Language Pack Skill with fail-closed evidence."

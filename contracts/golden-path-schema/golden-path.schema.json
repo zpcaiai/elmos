@@ -1,0 +1,32 @@
+{
+  "$id": "elmos.golden-path.v1",
+  "type": "object",
+  "required": [
+    "goldenPathId",
+    "version",
+    "workloadType",
+    "status",
+    "capabilities"
+  ],
+  "properties": {
+    "goldenPathId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "workloadType": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array"
+    },
+    "escapeHatches": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

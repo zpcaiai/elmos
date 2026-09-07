@@ -1,0 +1,4 @@
+interface:
+  display_name: "ephemeral-runner-and-sandbox-isolation"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $ephemeral-runner-and-sandbox-isolation to evaluate this enterprise platform capability with evidence."

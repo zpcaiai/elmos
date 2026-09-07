@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "development",
+  "customer_repository": false,
+  "evidence_class": "development-fixture",
+  "function_name": "calculate",
+  "independent": false,
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "rule_authoring_input": true,
+  "schema_version": 1,
+  "source_file": "Pricing.cs",
+  "source_language": "csharp",
+  "type_coverage": [
+    "nodejs-safe-integer-function"
+  ]
+}

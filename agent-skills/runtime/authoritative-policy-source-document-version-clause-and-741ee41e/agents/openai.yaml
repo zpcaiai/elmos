@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Authoritative Policy Source Document Version Clause And Citation Ingestion"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $authoritative-policy-source-document-version-clause-and-741ee41e to implement its fail-closed ELMOS Product B38 contract."

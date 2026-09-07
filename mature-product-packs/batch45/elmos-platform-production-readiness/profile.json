@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-production-readiness",
+  "batch": 45,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "functionalDepthPassRate": 1.0,
+    "certifiedRouteClaimAccuracy": 1.0,
+    "semanticBehaviorPassRate": 1.0,
+    "scaleSloPassRate": 1.0,
+    "securityGovernancePassRate": 1.0,
+    "sreDrPassRate": 1.0,
+    "maintainabilityPassRate": 1.0,
+    "developerExperiencePassRate": 1.0,
+    "deploymentMatrixPassRate": 1.0,
+    "ecosystemPassRate": 1.0,
+    "economicsPassRate": 1.0,
+    "customerOutcomePassRate": 1.0,
+    "evidenceTraceCoverage": 0.99
+  },
+  "zeroTolerance": [
+    "criticalOpenProductRisks",
+    "unsupportedMarketingClaims",
+    "unknownP0Correctness",
+    "criticalSecurityFindings",
+    "unrecoveredDrFailures",
+    "unacceptedCustomerP0Differences",
+    "nonzeroFinancialReconciliationDifference",
+    "conflictedIndependentReviews",
+    "expiredMandatoryEvidence",
+    "testIntegrityViolations"
+  ],
+  "metadata": {},
+  "packKey": "elmos-platform-production-readiness"
+}

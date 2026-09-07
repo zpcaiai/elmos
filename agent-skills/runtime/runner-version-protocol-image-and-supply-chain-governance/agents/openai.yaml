@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Version Protocol Image And Supply Chain Governance"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-version-protocol-image-and-supply-chain-governance to implement its fail-closed ELMOS Product B36 contract."

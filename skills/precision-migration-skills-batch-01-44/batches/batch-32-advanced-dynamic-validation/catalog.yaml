@@ -1,0 +1,29 @@
+batch: 32
+slug: advanced-dynamic-validation
+title: "Fuzz、Mutation、并发与故障验证"
+phase: "H 测试、验证与自动修复"
+skills:
+  - name: differential-fuzzing
+    description: "向源目标输入同一随机或变异数据并比较输出、状态和副作用。"
+  - name: coverage-guided-fuzzing
+    description: "利用覆盖反馈扩展输入，发现新路径、崩溃、超时和不等价。"
+  - name: metamorphic-testing
+    description: "在缺乏精确 Oracle 时使用输入变换与输出关系验证行为性质。"
+  - name: language-pair-mutation-testing
+    description: "注入特定语言方向常见错误，验证专用测试和验证器是否能杀死 Mutant。"
+  - name: systematic-concurrency-exploration
+    description: "接管调度点并探索关键线程、任务、Future、goroutine 和消息交错。"
+  - name: fault-injection
+    description: "注入网络、数据库、消息、磁盘、依赖、权限和资源故障。"
+  - name: crash-point-exploration
+    description: "在事务、写入、消息、ACK、补偿和持久化边界注入进程崩溃。"
+  - name: retry-idempotency-validation
+    description: "验证超时、重试、重复投递和幂等键不会造成重复副作用。"
+  - name: transaction-atomicity-validation
+    description: "验证失败路径无部分提交、事务边界正确且源目标可见性一致。"
+  - name: resource-leak-validation
+    description: "检测线程、任务、连接、文件、内存、句柄、订阅和设备资源泄漏。"
+  - name: performance-stress-validation
+    description: "在代表负载和极端负载下验证延迟、吞吐、稳定性和资源门槛。"
+  - name: deterministic-record-replay
+    description: "记录输入、外部返回、时间、随机、调度和状态并可确定性重放。"

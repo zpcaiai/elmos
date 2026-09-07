@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 016"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $ai-finops-gpu-token-capacity-and-unit-economics to apply its fail-closed ELMOS runtime contract."

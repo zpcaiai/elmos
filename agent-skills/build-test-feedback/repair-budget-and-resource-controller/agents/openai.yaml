@@ -1,0 +1,4 @@
+interface:
+  display_name: "repair budget and resource controller"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $repair-budget-and-resource-controller to perform this Batch 8 repair step."

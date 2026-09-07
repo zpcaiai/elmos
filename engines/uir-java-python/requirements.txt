@@ -1,0 +1,5 @@
+# The Java front end requires a real parser.  There is deliberately no regex
+# fallback: a fallback that half-parses Java would produce IR that looks
+# complete and is not.
+tree_sitter>=0.23,<1.0
+tree_sitter_java>=0.23,<1.0

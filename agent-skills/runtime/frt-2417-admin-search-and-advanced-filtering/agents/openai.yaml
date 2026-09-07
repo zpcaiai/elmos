@@ -1,0 +1,4 @@
+interface:
+  display_name: "Admin Search and Advanced Filtering"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2417-admin-search-and-advanced-filtering to run FRT-2417 through the governed FRT runtime with exact scope and fail-closed evidence."

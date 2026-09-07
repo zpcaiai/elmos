@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B15: Exception To Result Error Lowering"
+  short_description: "Run Precision Migration B15 with evidence controls"
+  default_prompt: "Use $pm-b15-exception-to-result-error-lowering to execute this Precision Migration contract with fail-closed evidence."

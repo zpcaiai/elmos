@@ -1,0 +1,1676 @@
+{
+  "namespace_policy": {
+    "product_commercialization": "Product Batch 33-38",
+    "migration_pack": "M35-M45"
+  },
+  "source": "/Users/stephen/Downloads/ChatGPT-Git项目商业化模式 (2).md",
+  "source_sha256": "900fdfab3fd6010dfc4e90d0ba7da84aa73af06d1dcb70a51af55f3ae6cd4fff",
+  "generated_by": "tooling/sync_product_batch33_38_skills.py",
+  "external_execution_evidence": "NOT_RUN",
+  "records": [
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "secure-java-modernization-vertical-slice-orchestrator",
+      "source_name": "secure-java-modernization-vertical-slice-orchestrator",
+      "source_line": 388,
+      "sha256": "eab64416a1f75866e37aa180b362f44b263612983f9e6a11d8774a564c601530"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "oidc-authentication-session-and-tenant-context",
+      "source_name": "oidc-authentication-session-and-tenant-context",
+      "source_line": 477,
+      "sha256": "48c27c851d5b6788bac99cb8e4b89681f4b840984d6ff56a099f9f1d7878550d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "tenant-membership-rbac-resource-authorization-and-postgresql-rls",
+      "source_name": "tenant-membership-rbac-resource-authorization-and-postgresql-rls",
+      "source_line": 577,
+      "sha256": "15f86989da824917e0a804db5ed2ab76cf99e42da7cc96ee7c6eb565bd0b1742"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "github-app-installation-repository-sync-and-token-broker",
+      "source_name": "github-app-installation-repository-sync-and-token-broker",
+      "source_line": 669,
+      "sha256": "c8f3eb191923b850efb315e16b5c18ce282ddaf5b3f32680e5eb849efa251104"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "secure-runner-enrollment-workload-identity-and-revocation",
+      "source_name": "secure-runner-enrollment-workload-identity-and-revocation",
+      "source_line": 762,
+      "sha256": "2b5d49da7a492ef4701ccb05dff44148eae8d0d07f09e37014c48ac2f1f4e1dc"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "per-task-sandbox-resource-network-secret-and-cleanup",
+      "source_name": "per-task-sandbox-resource-network-secret-and-cleanup",
+      "source_line": 944,
+      "sha256": "76101dfa226df74b87b222e5681ce7ad7c9eac35f6aeef18d059fa342a683a96"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "immutable-repository-snapshot-manifest-and-retention",
+      "source_name": "immutable-repository-snapshot-manifest-and-retention",
+      "source_line": 1032,
+      "sha256": "02b752ab5d152b512aba8a45c8a9ba039ccbf2df0f2d5aa0b8d753e755603dd8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "maven-baseline-build-toolchain-and-failure-classification",
+      "source_name": "maven-baseline-build-toolchain-and-failure-classification",
+      "source_line": 1117,
+      "sha256": "c476efa14868ff3db31cad1cbaeca7edc2304b3407c321c8b86ac7366814a5df"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "java-legacy-health-check-and-risk-evidence",
+      "source_name": "java-legacy-health-check-and-risk-evidence",
+      "source_line": 1207,
+      "sha256": "4867da77ddb390498ad0db85edbe58fd5e44e4974deadbf0bd6e219478a4630d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "migration-target-dag-plan-approval-and-wave-design",
+      "source_name": "migration-target-dag-plan-approval-and-wave-design",
+      "source_line": 1315,
+      "sha256": "4b21f556bb2b158d58ebc2e550b566d7bab3309d20905bd462358ee2ae7641ce"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "openrewrite-recipe-license-execution-and-idempotency",
+      "source_name": "openrewrite-recipe-license-execution-and-idempotency",
+      "source_line": 1414,
+      "sha256": "46216c8ed8f4f996961ac3de05912d3dec1d140e819ea555eaba4e1ceb3d45de"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "compile-test-api-compatibility-and-regression-verification",
+      "source_name": "compile-test-api-compatibility-and-regression-verification",
+      "source_line": 1518,
+      "sha256": "682939f65c02be42a1f13866ec8953747551237102e46e1088a1105db2fdb782"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "github-branch-commit-pr-checks-and-delivery-governor",
+      "source_name": "github-branch-commit-pr-checks-and-delivery-governor",
+      "source_line": 1621,
+      "sha256": "359c9ccdd85731fa9eff101d0295776769653e968e66bfd46bbce0974fa7be0d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "evidence-pack-provenance-signing-retention-and-export",
+      "source_name": "evidence-pack-provenance-signing-retention-and-export",
+      "source_line": 1734,
+      "sha256": "5983552a0a94bfc9bfadb52e1ab7a63dbcf43795ce61a7d4cd930e43c6e596c6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "audit-observability-sse-and-incident-readiness",
+      "source_name": "audit-observability-sse-and-incident-readiness",
+      "source_line": 1838,
+      "sha256": "aae77257f25ccbdafa4048c87a53221203134805200f71d0e50e8827ca5cfab1"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "fixture-e2e-security-recovery-and-release-validation",
+      "source_name": "fixture-e2e-security-recovery-and-release-validation",
+      "source_line": 1940,
+      "sha256": "c39ee528cdc51c00c0b8bd514672b53524b2a049650895dc67fac6066bba83ab"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-core",
+      "name": "java-modernization-mvp-unified-evidence-integration",
+      "source_name": "java-modernization-mvp-unified-evidence-integration",
+      "source_line": 2024,
+      "sha256": "5bbcd6a9aeebff155f0e4517c12fad522d33e2bf1952c4ed876a21f8eb6caaa5"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "oidc-tenant-membership-and-request-context",
+      "source_name": "oidc-tenant-membership-and-request-context",
+      "source_line": 2765,
+      "sha256": "3a80cdf1aa25b5e34df91aef6cd55153078eb5bda92e0f89983bd9ee01956821"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "postgres-runtime-roles-rls-and-tenant-isolation",
+      "source_name": "postgres-runtime-roles-rls-and-tenant-isolation",
+      "source_line": 2887,
+      "sha256": "71df6f5dd32b6089d37056aa9c2282aaa580992dd74bf0bc866854fe4c9e60bf"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "github-app-installation-repository-and-token-lifecycle",
+      "source_name": "github-app-installation-repository-and-token-lifecycle",
+      "source_line": 3017,
+      "sha256": "b1a9e701c7e11e9d183424df8617443aef3743f5a6e0729d17e6fb3b961e3868"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "github-webhook-idempotency-and-access-reconciliation",
+      "source_name": "github-webhook-idempotency-and-access-reconciliation",
+      "source_line": 3158,
+      "sha256": "3c79dc6fabbad5b9776700a190932960394559d6af49f6bd78b27d31d0c432c8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "private-runner-enrollment-workload-identity-and-attestation",
+      "source_name": "private-runner-enrollment-workload-identity-and-attestation",
+      "source_line": 3261,
+      "sha256": "4a0dc0c96ec015686dbe39076fb0ecb4aaac68f8e5a48d6d0539dd157b9f3109"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "runner-lease-heartbeat-cancel-reaper-and-reconciliation",
+      "source_name": "runner-lease-heartbeat-cancel-reaper-and-reconciliation",
+      "source_line": 3394,
+      "sha256": "b9db5abbf6f4f28942ad66078f32504d6025e509073c4c49ffee3642115626a2"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "per-task-sandbox-resource-network-secret-and-cache-isolation",
+      "source_name": "per-task-sandbox-resource-network-secret-and-cache-isolation",
+      "source_line": 3546,
+      "sha256": "06aeb5b8a6ce41e0db7a1b70378726a2181e36fdacc63bc1a9ded4e105eb5afb"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "immutable-repository-snapshot-submodule-lfs-and-retention",
+      "source_name": "immutable-repository-snapshot-submodule-lfs-and-retention",
+      "source_line": 3681,
+      "sha256": "2f152ab849af0f7f1bc453573dd599ce0f01da5c87acfbc592761e5f45931f75"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "maven-toolchain-baseline-build-and-failure-classification",
+      "source_name": "maven-toolchain-baseline-build-and-failure-classification",
+      "source_line": 3806,
+      "sha256": "4f24c01260212fed665a5a95e73f1093304dfe049f8d15f881c97bb150ca1cb2"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "java-module-fingerprint-dependency-test-and-health-report",
+      "source_name": "java-module-fingerprint-dependency-test-and-health-report",
+      "source_line": 3932,
+      "sha256": "be1835616ef99447e28cea0e80a768e1d435536ae0bd445fe08564f55ee821fe"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "migration-target-dag-plan-approval-and-project-cockpit",
+      "source_name": "migration-target-dag-plan-approval-and-project-cockpit",
+      "source_line": 4081,
+      "sha256": "bbceebadb910fcff1d0f86439ec035fdcbfce8b6084ebbb75603e25b8001a1b6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "openrewrite-catalog-license-dryrun-execution-and-idempotency",
+      "source_name": "openrewrite-catalog-license-dryrun-execution-and-idempotency",
+      "source_line": 4220,
+      "sha256": "3af469d749b25ea69593cbfb8a9e56f3f9482935664229955ff36af513a22d8a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "compile-test-api-dependency-and-regression-verification",
+      "source_name": "compile-test-api-dependency-and-regression-verification",
+      "source_line": 4360,
+      "sha256": "84f661acc3a5f4ea90ac463018fbeeabcd4d4e6a1219bc58e6bb6389ac720d74"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "bounded-coding-agent-tool-policy-budget-and-patch-review",
+      "source_name": "bounded-coding-agent-tool-policy-budget-and-patch-review",
+      "source_line": 4483,
+      "sha256": "1a13b27fd20d4917a56037c748c84e7d5d3edc131d2949ca6c64119bd5c12b00"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "temporal-start-idempotency-async-completion-cancel-and-c19803a1",
+      "source_name": "temporal-start-idempotency-async-completion-cancel-and-versioning",
+      "source_line": 4656,
+      "sha256": "80c2f82b458dab4d992b895226c5decc5c021f501f22f4bcc02bcc7ba157f58e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "github-branch-commit-pr-checks-and-delivery-idempotency",
+      "source_name": "github-branch-commit-pr-checks-and-delivery-idempotency",
+      "source_line": 4788,
+      "sha256": "af1dba9701a38d0a9232f38ff9f025cb8fe34be79994dee1abe1f3dbc3f6345a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "evidence-pack-provenance-retention-and-audit",
+      "source_name": "evidence-pack-provenance-retention-and-audit",
+      "source_line": 4946,
+      "sha256": "07cde0186f713d6417400932d5ede03bfc6d28d0a96aebd304f82a5bbca24cb2"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "33-mature",
+      "name": "end-to-end-fixtures-security-gates-and-commercial-readiness",
+      "source_name": "end-to-end-fixtures-security-gates-and-commercial-readiness",
+      "source_line": 5099,
+      "sha256": "3f0e00d9e1aa810afde2f34ae1728e47f8477369582cd59ee5ec2f9ec8e4019b"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "enterprise-identity-access-engine-contract-and-worker",
+      "source_name": "enterprise-identity-access-engine-contract-and-worker",
+      "source_line": 7499,
+      "sha256": "0771cb5dfd4312f5764d941cf448a3f9db34ca9dac63b36d127d13503977bff6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-provider-registry-and-tenant-federation",
+      "source_name": "identity-provider-registry-and-tenant-federation",
+      "source_line": 7570,
+      "sha256": "4a3f431a9acc67f47615ef8ae42597e66f310f0d595f8d76bf75c93633be3d4a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "oidc-login-token-validation-and-session",
+      "source_name": "oidc-login-token-validation-and-session",
+      "source_line": 7659,
+      "sha256": "f27614febae142d1491d5d37f29d0a81094d7e986faf97e9c551e62ff75bda87"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "saml-sso-and-enterprise-federation",
+      "source_name": "saml-sso-and-enterprise-federation",
+      "source_line": 7743,
+      "sha256": "65a9ff3370a3485aed0fdbab6be8c726e9ed4eea46e3e9fd462ee912e662352d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "scim-directory-user-group-and-role-provisioning",
+      "source_name": "scim-directory-user-group-and-role-provisioning",
+      "source_line": 7816,
+      "sha256": "c287302b22b0359bc1c274045a532ba21a964ff33a25f7f2c697a9a39f11d777"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "organization-tenant-hierarchy-and-delegated-administration",
+      "source_name": "organization-tenant-hierarchy-and-delegated-administration",
+      "source_line": 7908,
+      "sha256": "223046b5692ec3e408360509ee0fd288ce75c1c5e7dbac79546ea03f50656525"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "membership-invitation-lifecycle-and-offboarding",
+      "source_name": "membership-invitation-lifecycle-and-offboarding",
+      "source_line": 7985,
+      "sha256": "c6469e11dfe3463ceee71f5651eaafe048b7811413e70b7ca04ecea711cb03d6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "rbac-role-permission-and-separation-of-duties",
+      "source_name": "rbac-role-permission-and-separation-of-duties",
+      "source_line": 8083,
+      "sha256": "c29416bdeb204efd14ac74c945b1aab47e236ca2865586cccd84dd755d5c2e31"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "abac-policy-context-and-resource-authorization",
+      "source_name": "abac-policy-context-and-resource-authorization",
+      "source_line": 8178,
+      "sha256": "958e0933f5218b0361237da4f56182e058a1df326dfe14f6dbfb991cc366684f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "repository-project-runner-artifact-scope-authorization",
+      "source_name": "repository-project-runner-artifact-scope-authorization",
+      "source_line": 8254,
+      "sha256": "dc29c069a935e9a29af4cdf43f91f5159acf61f2ee7695f89552950792096ab6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "service-to-service-workload-identity-and-mtls",
+      "source_name": "service-to-service-workload-identity-and-mtls",
+      "source_line": 8330,
+      "sha256": "0127c13244588cf9647a072c4afc98713504ca620733d6c22663fd0476d6e5b8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "api-token-cli-and-machine-credential-lifecycle",
+      "source_name": "api-token-cli-and-machine-credential-lifecycle",
+      "source_line": 8409,
+      "sha256": "69a695fef508c089bd5cc32c54971191dc2328c1c369407c61d03ab56a8d12a1"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "privileged-access-jit-dual-control-and-break-glass",
+      "source_name": "privileged-access-jit-dual-control-and-break-glass",
+      "source_line": 8495,
+      "sha256": "fa79edc2229de07249082e40949a4907df225e4c90f50d7d077b9d1235b94700"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "access-review-certification-and-entitlement-reconciliation",
+      "source_name": "access-review-certification-and-entitlement-reconciliation",
+      "source_line": 8577,
+      "sha256": "c807892fae571fd0eae716bc97f874640db896adc2d7c6e3bb5be923474c00f9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "session-risk-step-up-mfa-and-device-context",
+      "source_name": "session-risk-step-up-mfa-and-device-context",
+      "source_line": 8659,
+      "sha256": "2cc548b25c2d02ca2df9b06dcb58e849a53b50c19a54f0f44d0216d3731b8e11"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "postgres-rls-object-storage-and-cross-tenant-isolation",
+      "source_name": "postgres-rls-object-storage-and-cross-tenant-isolation",
+      "source_line": 8731,
+      "sha256": "cb7b23efa34e41fef86297b849a0d413e9e5d1977661bea1b3c70cb5a239b2d9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-audit-privacy-retention-and-incident-response",
+      "source_name": "identity-audit-privacy-retention-and-incident-response",
+      "source_line": 8812,
+      "sha256": "2423e86d381fe62447b12ca0b29173a441b1ba18857feabb2b5ae8853595d1ac"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-access-elmos-unified-evidence-integration",
+      "source_name": "identity-access-elmos-unified-evidence-integration",
+      "source_line": 8913,
+      "sha256": "33537cc291a51046bb14ad864e09b1b6a2bcc3fcacb3aff7604e263e57283afb"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-security-foundation-orchestrator",
+      "source_name": "identity-security-foundation-orchestrator",
+      "source_line": 9714,
+      "sha256": "c4d398c945241528c16161c3349e8dbed164b1c3b4c9ce8ad29b432a9d9ec772"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "oidc-bff-resource-server-and-tenant-context",
+      "source_name": "oidc-bff-resource-server-and-tenant-context",
+      "source_line": 9930,
+      "sha256": "8d0162362b322bc9a3b40e50d886309aded8f73fd28565984c3f2d66dfd75c91"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "tenant-membership-current-tenant-and-lifecycle",
+      "source_name": "tenant-membership-current-tenant-and-lifecycle",
+      "source_line": 10248,
+      "sha256": "fb65794fd60d4fb444cc62b6791bbfc8a589de328a76a2d2b795873ab555d86e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "postgres-role-separation-rls-and-tenant-unit-of-work",
+      "source_name": "postgres-role-separation-rls-and-tenant-unit-of-work",
+      "source_line": 10502,
+      "sha256": "4b88849e4c2f653b0d2d979b4974457f3de92188bd6657ba9bd2b6e6d43df787"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "resource-authorization-rbac-abac-and-audit",
+      "source_name": "resource-authorization-rbac-abac-and-audit",
+      "source_line": 10800,
+      "sha256": "d54f2b081e21fb78312f3a1502c60262f6ca7b369e5e43e20e2673f9551e8ade"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-security-integration-tests-and-release-gates",
+      "source_name": "identity-security-integration-tests-and-release-gates",
+      "source_line": 11172,
+      "sha256": "0ba70503329943f4effc140ac9e6017c96b0857081df70e01f55b4a016343ccc"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "saml-scim-organization-lifecycle-orchestrator",
+      "source_name": "saml-scim-organization-lifecycle-orchestrator",
+      "source_line": 11881,
+      "sha256": "c031426b1f6bdf584cb7e9eef74d29986e7b7ca84d5a99e2ecbf8f36b911a8c4"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "saml2-relying-party-metadata-login-logout-and-certifica-a1ba7ee7",
+      "source_name": "saml2-relying-party-metadata-login-logout-and-certificate-rotation",
+      "source_line": 12093,
+      "sha256": "c87fc8951a0633a261002d165ccdc4a781d35b448354b957235daf60a04c060f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "scim2-service-provider-auth-schema-users-and-groups",
+      "source_name": "scim2-service-provider-auth-schema-users-and-groups",
+      "source_line": 12530,
+      "sha256": "386cbfb759e30bc95f73cc7c1eeb75b6eca297a30e7d1a9eaa20f1accbb6ca6d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "scim2-filter-patch-etag-pagination-bulk-and-idempotency",
+      "source_name": "scim2-filter-patch-etag-pagination-bulk-and-idempotency",
+      "source_line": 12967,
+      "sha256": "6a01328add60eda088e9db1871dde4b6a916b2d28e3bd31c53c0dab3390173ab"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "organization-hierarchy-domain-claim-and-delegated-administration",
+      "source_name": "organization-hierarchy-domain-claim-and-delegated-administration",
+      "source_line": 13361,
+      "sha256": "4aa71c83baf0eb569f431f75ec8ee115b4b9d52b69015aca7506e03bcd858584"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "external-group-role-mapping-jit-and-membership-provisioning",
+      "source_name": "external-group-role-mapping-jit-and-membership-provisioning",
+      "source_line": 13692,
+      "sha256": "c45f6627cc1f646f928ad4df6e0ec9715494a97c12c240cc1f9643f1caf7d050"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "deprovision-offboarding-session-token-ownership-and-acc-95f874ef",
+      "source_name": "deprovision-offboarding-session-token-ownership-and-access-cascade",
+      "source_line": 14045,
+      "sha256": "5825b086b0acb84e5d872422aa4ec32c1385bc89e62fe3cf7fcd335fe3caf351"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "provisioning-reconciliation-scim-events-security-tests-9fa5d05d",
+      "source_name": "provisioning-reconciliation-scim-events-security-tests-and-release-gates",
+      "source_line": 14395,
+      "sha256": "1c447260539ef0489f97845aa1f85750f40f384d3116f129af0b56309bc2dd1a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "workload-privileged-access-review-orchestrator",
+      "source_name": "workload-privileged-access-review-orchestrator",
+      "source_line": 15579,
+      "sha256": "9d026320c0c869d8b306dde935f8f3eaa2d45897580d907a010ab9a7fb1afe11"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "workload-identity-trust-domain-spiffe-spire-and-mtls",
+      "source_name": "workload-identity-trust-domain-spiffe-spire-and-mtls",
+      "source_line": 15809,
+      "sha256": "4437c1ee01cebf3a0e7b7a2f7a23f16a8d49a7c0b1a91a3bf33abae5e66217e0"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "service-principal-oauth-mtls-token-exchange-and-delegation",
+      "source_name": "service-principal-oauth-mtls-token-exchange-and-delegation",
+      "source_line": 16208,
+      "sha256": "5bbfbc37abe951bb59be5809f45ceb1b8a8e2142c30f66105ed6aa8771278708"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "machine-credential-secret-broker-rotation-revocation-an-00a3e9e4",
+      "source_name": "machine-credential-secret-broker-rotation-revocation-and-introspection",
+      "source_line": 16573,
+      "sha256": "75dafc8809acf27f8316848672b2309237e274b7f657b21d2e88168701a3e3cd"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "privileged-access-jit-request-approval-lease-and-expiry",
+      "source_name": "privileged-access-jit-request-approval-lease-and-expiry",
+      "source_line": 16931,
+      "sha256": "36d7d96b713c1e206146cd68d97d6ccb3654f5cfcfce8fcce930afa1401a9181"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "break-glass-emergency-access-dual-control-and-post-review",
+      "source_name": "break-glass-emergency-access-dual-control-and-post-review",
+      "source_line": 17256,
+      "sha256": "5df81033f1414714658b40c65e6e4002d1515986dfc7c45b81d551862042a6dd"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "access-review-certification-entitlement-reconciliation-2feb75bd",
+      "source_name": "access-review-certification-entitlement-reconciliation-and-remediation",
+      "source_line": 17629,
+      "sha256": "247427d78d332f4a51d332c7a158097352f5ecf6e259f82eb558cc23d6d4eb63"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "34",
+      "name": "identity-incident-compromise-containment-recovery-tests-6eeb05a2",
+      "source_name": "identity-incident-compromise-containment-recovery-tests-and-release-gates",
+      "source_line": 17994,
+      "sha256": "2e6cf5d3a08c5d723e6581d3fcbe939920fcc61db0628df844a9a958761c7369"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-scm-enterprise-integration-orchestrator",
+      "source_name": "github-scm-enterprise-integration-orchestrator",
+      "source_line": 19348,
+      "sha256": "8aba74ca8f0f48379fb2f3c069b3cc9d3b29e9d0a5d3f9a2092e77a628f9ece9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-provider-profile-version-discovery-and-capabilit-98fa3c1a",
+      "source_name": "github-provider-profile-version-discovery-and-capability-negotiation",
+      "source_line": 19561,
+      "sha256": "d0625234a43023e573fa13da37f755ae095aef9a1b497cbef2c01905306f3aaf"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-app-registration-key-installation-and-permission-6bc545c1",
+      "source_name": "github-app-registration-key-installation-and-permission-lifecycle",
+      "source_line": 19926,
+      "sha256": "8d00187b0943f24fdaf0c155e8821cc70620b34e891dce4714f4dfa5ec5d5090"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-webhook-ingress-idempotency-redelivery-and-event-f6d65b3a",
+      "source_name": "github-webhook-ingress-idempotency-redelivery-and-event-normalization",
+      "source_line": 20293,
+      "sha256": "d40e1b8faf7b0273a967c5386767fb81fe6073315a520165f46760dc8fef8e5e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-repository-catalog-sync-authorization-and-reconciliation",
+      "source_name": "github-repository-catalog-sync-authorization-and-reconciliation",
+      "source_line": 20644,
+      "sha256": "a64f563eb991da672ba1c3b4d58e17a9400414463c00bcb8b1c0dcaf6640d660"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-ref-branch-tag-default-branch-protection-and-rul-68d02015",
+      "source_name": "github-ref-branch-tag-default-branch-protection-and-ruleset-discovery",
+      "source_line": 21020,
+      "sha256": "a49ece32e23bb77da1d7d84cf4e05fd90a0a4e1fcdc99822e0c209198088e11c"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-installation-token-broker-git-http-transport-and-d74d7129",
+      "source_name": "github-installation-token-broker-git-http-transport-and-revocation",
+      "source_line": 21420,
+      "sha256": "6f37283643426ca016f4265aceeb70b9692265c3b25c4c4a83504a04a0e7b7ee"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-enterprise-network-proxy-custom-ca-rate-limit-ma-a2cc0a68",
+      "source_name": "github-enterprise-network-proxy-custom-ca-rate-limit-maintenance-and-resilience",
+      "source_line": 21846,
+      "sha256": "1437e2d1034a0010fa363880339c2b02954b221c06d032a823154d6c07508574"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "github-cloud-ghes-compatibility-contract-tests-and-release-gates",
+      "source_name": "github-cloud-ghes-compatibility-contract-tests-and-release-gates",
+      "source_line": 22230,
+      "sha256": "104f471647649ab4bb0a91fe2b494606aec00a4466fdc734e5a3152b90fb2427"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "multi-scm-connector-orchestrator",
+      "source_name": "multi-scm-connector-orchestrator",
+      "source_line": 23599,
+      "sha256": "022b9de05d026200022ef85711b2dcfada42b97709f946683f6a0ec8c0b9791e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "unified-scm-domain-contract-capability-and-error-model",
+      "source_name": "unified-scm-domain-contract-capability-and-error-model",
+      "source_line": 23797,
+      "sha256": "05b3034f96321b9650d30a16289265b211765210ff1b19e5626cdefa9fd38605"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "gitlab-cloud-self-managed-project-webhook-merge-request-494efba5",
+      "source_name": "gitlab-cloud-self-managed-project-webhook-merge-request-connector",
+      "source_line": 24185,
+      "sha256": "12d514f6e78318e6a6ca835169e10ded1b0190a3994489bfe5dc9c65487d281f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "azure-devops-entra-organization-project-service-hook-pr-c24603ec",
+      "source_name": "azure-devops-entra-organization-project-service-hook-pr-connector",
+      "source_line": 24680,
+      "sha256": "553660928778b214896700601ecec3fa64df49c97153c6e200928681958b1aad"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "bitbucket-cloud-oauth-workspace-repository-webhook-pr-connector",
+      "source_name": "bitbucket-cloud-oauth-workspace-repository-webhook-pr-connector",
+      "source_line": 25214,
+      "sha256": "a9bbee7d073944b52f1fecd8be84e720905ac5e504b42ea63835f85dc9681f84"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "bitbucket-data-center-project-repository-token-webhook-3b78cac8",
+      "source_name": "bitbucket-data-center-project-repository-token-webhook-pr-connector",
+      "source_line": 25690,
+      "sha256": "246780ab9cc4987508d8767dd8f4f499ac458d2d50e7a3fa3960d7a6f3f7fe7d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "gitee-oauth-repository-webhook-pull-request-connector",
+      "source_name": "gitee-oauth-repository-webhook-pull-request-connector",
+      "source_line": 26111,
+      "sha256": "ccfc38121d5bf5ecf4f8ac807635e7d4e99afdeab9849812818360985dc14482"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "unified-scm-credential-webhook-event-git-transport-and-c2f4973f",
+      "source_name": "unified-scm-credential-webhook-event-git-transport-and-delivery-coordinator",
+      "source_line": 26548,
+      "sha256": "4b67cd5a553119c7acda7baa4e956710195e2ca0857ad7f0f4683a769e36b3c5"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "multi-scm-compatibility-contract-tests-and-release-gates",
+      "source_name": "multi-scm-compatibility-contract-tests-and-release-gates",
+      "source_line": 26938,
+      "sha256": "9f2af701056893cc73fc2603d2a0cd63c10e967db70d3ba4d7cf876eae8780ea"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "advanced-repository-workspace-orchestrator",
+      "source_name": "advanced-repository-workspace-orchestrator",
+      "source_line": 28419,
+      "sha256": "d77fb3f94f4281e35442b4b2eea6b4ff211e9aff49b2803f4228237fd0ba74b4"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "repository-workspace-contract-manifest-and-lifecycle",
+      "source_name": "repository-workspace-contract-manifest-and-lifecycle",
+      "source_line": 28628,
+      "sha256": "12d22dd815e6a876187d744962c643b09f47052068a65cf4f0458ba3c7938600"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "monorepo-discovery-component-boundary-build-graph-and-s-c0c54366",
+      "source_name": "monorepo-discovery-component-boundary-build-graph-and-slice-planner",
+      "source_line": 28987,
+      "sha256": "440ba34baae4750806e29f6d2c40be59868246f2a2587dab0b5a40334e68e8e6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "multi-repository-product-composition-lockfile-consisten-2735e221",
+      "source_name": "multi-repository-product-composition-lockfile-consistency-and-change-set",
+      "source_line": 29423,
+      "sha256": "1b822a7b2fcfd201f2916472e7222b812a1e193c850778a30cd1f15714e37c18"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "git-submodule-recursive-authorization-url-resolution-an-73118db5",
+      "source_name": "git-submodule-recursive-authorization-url-resolution-and-snapshot",
+      "source_line": 29816,
+      "sha256": "f5bb35c8ce02e1df5d221302b15d5370b33ccc0e7e61304d34be79f7a53caa57"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "git-lfs-pointer-object-lock-bandwidth-and-integrity",
+      "source_name": "git-lfs-pointer-object-lock-bandwidth-and-integrity",
+      "source_line": 30220,
+      "sha256": "749356b6a1442c6300117a446f0c7680d710fd8a947faabcfbd90b61981626e1"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "sparse-checkout-partial-clone-promisor-hydration-and-co-890ccc1a",
+      "source_name": "sparse-checkout-partial-clone-promisor-hydration-and-compatibility",
+      "source_line": 30690,
+      "sha256": "74f8ded57c3929243a39fff4cea11e560a96ca378b1b38dc5c2a934b57af9a91"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "multi-branch-release-line-worktree-and-parallel-migration",
+      "source_name": "multi-branch-release-line-worktree-and-parallel-migration",
+      "source_line": 31166,
+      "sha256": "89cd56b57be368eddf61fede202578b2bf09ffabc4ffbfdad2c249ba91f00e48"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "enterprise-git-proxy-mirror-object-cache-and-offline-fetch",
+      "source_name": "enterprise-git-proxy-mirror-object-cache-and-offline-fetch",
+      "source_line": 31597,
+      "sha256": "6b7db8dcbda5beaf27250cf0f0fa7ba9b6c257f495bfd1381be7738e05b01b30"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "35",
+      "name": "workspace-quota-cleanup-recovery-security-tests-and-rel-24d7e74d",
+      "source_name": "workspace-quota-cleanup-recovery-security-tests-and-release-gates",
+      "source_line": 32094,
+      "sha256": "1585df62a1bb8f74d66ccb52228e26982966729802fb3e6562f780dda498a87e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "private-runner-fleet-orchestrator",
+      "source_name": "private-runner-fleet-orchestrator",
+      "source_line": 33733,
+      "sha256": "763b39bca568ecc6adb1070e1f14bb1699545695b219759be09180a390ea16d6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-fleet-domain-pool-topology-and-lifecycle",
+      "source_name": "runner-fleet-domain-pool-topology-and-lifecycle",
+      "source_line": 33952,
+      "sha256": "35273b1210f360c17ab903ae0221ee2655bde499ae30f7e52b301ca3e58e487b"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-capability-discovery-attestation-and-trust",
+      "source_name": "runner-capability-discovery-attestation-and-trust",
+      "source_line": 34295,
+      "sha256": "f418266167a67bb9d16cdcca3f6edba68bc0fbc57c381f40c0c71d3a77f70d14"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-version-protocol-image-and-supply-chain-governance",
+      "source_name": "runner-version-protocol-image-and-supply-chain-governance",
+      "source_line": 34724,
+      "sha256": "0c5b12cf0a0998474f6bbbba164b9e67bcbd15f798c5947b12b826381ed5797c"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-capacity-reservation-quota-and-overcommit-accounting",
+      "source_name": "runner-capacity-reservation-quota-and-overcommit-accounting",
+      "source_line": 35117,
+      "sha256": "24218333394465a24c324ba830586994468bda12988a8ced9714fcfabc109fcb"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-task-requirement-affinity-antiaffinity-and-place-29a05c45",
+      "source_name": "runner-task-requirement-affinity-antiaffinity-and-placement-policy",
+      "source_line": 35507,
+      "sha256": "af4044a6df2e02894a6269d75d8ef45e4ea66f063dc97877406205f38fdbca28"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-scheduler-filter-score-fairness-priority-and-admission",
+      "source_name": "runner-scheduler-filter-score-fairness-priority-and-admission",
+      "source_line": 35880,
+      "sha256": "d19be03f8e009925e2d2f56a31eb25c7474009019edb40328ac8c0d37bc191b1"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-provider-static-kubernetes-kueue-and-vm-adapters",
+      "source_name": "runner-provider-static-kubernetes-kueue-and-vm-adapters",
+      "source_line": 36355,
+      "sha256": "b82147ea1db7be7151a999c017a42049d7904e81ec4d28606e6baef585f4630b"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-assignment-offer-lease-ack-renew-cancel-and-reco-7837b31f",
+      "source_name": "runner-assignment-offer-lease-ack-renew-cancel-and-reconciliation",
+      "source_line": 36817,
+      "sha256": "411a361e89e69a18c0d83bea47ee58f505960a0c08234f0741b5f2602e76058a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-drain-maintenance-autoscaling-failover-and-upgrade",
+      "source_name": "runner-drain-maintenance-autoscaling-failover-and-upgrade",
+      "source_line": 37295,
+      "sha256": "af62b576d8fdd45de557b4c0e5a6050439188d2c7cd6c46adf8cf52eece3d8bc"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-fleet-observability-simulation-security-tests-an-5260bf21",
+      "source_name": "runner-fleet-observability-simulation-security-tests-and-release-gates",
+      "source_line": 37769,
+      "sha256": "b36878ba916ad3082778bb0918522a9bc8c82d1d34b1365fa0403562692d53fd"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "task-sandbox-execution-plane-orchestrator",
+      "source_name": "task-sandbox-execution-plane-orchestrator",
+      "source_line": 39494,
+      "sha256": "3b680348638b5d9f90186fb0e6753f23212c91ba8bba305a8898ce5faeda4a02"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-domain-contract-profile-policy-and-lifecycle",
+      "source_name": "sandbox-domain-contract-profile-policy-and-lifecycle",
+      "source_line": 39721,
+      "sha256": "4e35567012d3e0f5e22d6cc5dcac42838a4f2475a0116f83c0f80b6fe3366299"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "rootless-oci-container-userns-idmapped-mount-provider",
+      "source_name": "rootless-oci-container-userns-idmapped-mount-provider",
+      "source_line": 40081,
+      "sha256": "c6834e081af932b36473a32f4b5a307284a5729a10348e897a2643a2c864c6ca"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "gvisor-runsc-containerd-runtimeclass-provider",
+      "source_name": "gvisor-runsc-containerd-runtimeclass-provider",
+      "source_line": 40376,
+      "sha256": "ed67cf2efb2f3b7b0907b5829ec03a5b555af164032a483cfb5b249dc5275e65"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "kata-containers-vm-runtimeclass-provider",
+      "source_name": "kata-containers-vm-runtimeclass-provider",
+      "source_line": 40645,
+      "sha256": "a6afe4fcfc9fd3c2973906b5da5128c598e65ddd954ea54369b29608fe1b64b8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "firecracker-microvm-jailer-guest-agent-provider",
+      "source_name": "firecracker-microvm-jailer-guest-agent-provider",
+      "source_line": 40950,
+      "sha256": "c28fd4923e271ef260e6ea44e1f888e27193d1bd3cdce70f171829fd329bde60"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-image-rootfs-kernel-runtime-and-supply-chain",
+      "source_name": "sandbox-image-rootfs-kernel-runtime-and-supply-chain",
+      "source_line": 41338,
+      "sha256": "7d551e735012292faab8b9b61ed06349bec17551f754c454d8e1d786e6f37383"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-filesystem-mount-path-device-proc-and-sys-isolation",
+      "source_name": "sandbox-filesystem-mount-path-device-proc-and-sys-isolation",
+      "source_line": 41623,
+      "sha256": "74c59e44e3ee2f173e5f9d309661acf6d25dedeedb828782ed42ce38205495af"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-network-dns-egress-proxy-metadata-and-exfiltrat-6affb6b9",
+      "source_name": "sandbox-network-dns-egress-proxy-metadata-and-exfiltration-control",
+      "source_line": 41977,
+      "sha256": "51fc46b2a36102ea5a8cf32423ea8140603447d4fbebe2180518f6d33ed22535"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-secret-lease-injection-redaction-and-zeroization",
+      "source_name": "sandbox-secret-lease-injection-redaction-and-zeroization",
+      "source_line": 42299,
+      "sha256": "f76e80a72d46742e698e7633f6016c46c43f70f85e8f0576b1f9cd25cd346f25"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-process-namespace-syscall-capability-lsm-and-ke-45eb9b80",
+      "source_name": "sandbox-process-namespace-syscall-capability-lsm-and-kernel-surface",
+      "source_line": 42602,
+      "sha256": "39b81fb630eb6f9d7ff14b412ff116a392ef431ddac1df44d389d32f840be96e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-cgroup-resource-time-io-oom-and-abuse-control",
+      "source_name": "sandbox-cgroup-resource-time-io-oom-and-abuse-control",
+      "source_line": 42961,
+      "sha256": "b17f85b72375e45641f42c5bcd97f722ab31f11342b5f54554ba57b433346fc3"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "malicious-repository-build-wrapper-hook-archive-and-tool-policy",
+      "source_name": "malicious-repository-build-wrapper-hook-archive-and-tool-policy",
+      "source_line": 43285,
+      "sha256": "98464d0526da7c4b5ac7d3c329426266a7c32f830c8ad4619483f87390409a5a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-execution-receipt-cancel-cleanup-reconciliation-dfbd6f07",
+      "source_name": "sandbox-execution-receipt-cancel-cleanup-reconciliation-and-forensics",
+      "source_line": 43659,
+      "sha256": "a37efa3befcf48b26143990c1e84e0dc76300929d6ec93833f21ce405a024235"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "sandbox-security-escape-compatibility-chaos-and-release-gates",
+      "source_name": "sandbox-security-escape-compatibility-chaos-and-release-gates",
+      "source_line": 44009,
+      "sha256": "6f524584c41070efd5e5d55d215dd9262319841fc2c16c5c1bd332b099f47b39"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "runner-execution-operations-orchestrator",
+      "source_name": "runner-execution-operations-orchestrator",
+      "source_line": 45814,
+      "sha256": "cde360f6350eb24e3b0547a562ef920d3de7726042735ffcee3a4c883b397239"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "task-checkpoint-model-heartbeat-resume-and-compatibility",
+      "source_name": "task-checkpoint-model-heartbeat-resume-and-compatibility",
+      "source_line": 46031,
+      "sha256": "22fde049d217c8c7a1d8a2cd1a8538bde1e7ab03445c04dc0a3106d83e04f97f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "artifact-stream-session-multipart-checksum-cas-and-dedup",
+      "source_name": "artifact-stream-session-multipart-checksum-cas-and-dedup",
+      "source_line": 46375,
+      "sha256": "f78b969cc66b8f876c2a951928edce2f10a15abeec629e639c36fd67d6171407"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "execution-log-stream-otel-redaction-backpressure-and-replay",
+      "source_name": "execution-log-stream-otel-redaction-backpressure-and-replay",
+      "source_line": 46723,
+      "sha256": "a25992daf7654a3a6e0622d83ea1ae3bc8931bf472781aecc37b87525ba43cb8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "site-local-durable-command-event-queue-wal-and-outbox",
+      "source_name": "site-local-durable-command-event-queue-wal-and-outbox",
+      "source_line": 47074,
+      "sha256": "43e692d74918a688bc19e1c26e031182b334db72a09c849bba1b317adc44bdc7"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "site-connectivity-offline-queue-resynchronization-and-c-a48b1c66",
+      "source_name": "site-connectivity-offline-queue-resynchronization-and-conflict-resolution",
+      "source_line": 47472,
+      "sha256": "7839d6c8a87ac8f2e2aee8e707408a0c2b617c53a92b3fe6d7e72796db63bd18"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "site-autonomy-policy-bundle-offline-permit-local-admiss-517e99cc",
+      "source_name": "site-autonomy-policy-bundle-offline-permit-local-admission-and-safe-stop",
+      "source_line": 47772,
+      "sha256": "769b79d2c2a211a6a856c5b81e4d590da4092a8447faa3d020e6f10d5b13ff25"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "site-local-coordinator-leader-election-runner-gateway-and-ha",
+      "source_name": "site-local-coordinator-leader-election-runner-gateway-and-ha",
+      "source_line": 48135,
+      "sha256": "44ce430d098c302654ce6cc76a1883bd04580158ea9be4cb74c930e1338aae38"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-r-32252d47",
+      "source_name": "cache-warmup-scm-dependency-toolchain-sandbox-lfs-and-recipe-prefetch",
+      "source_line": 48393,
+      "sha256": "0454f81bf981ae873cc03189daaf44775079fb8a2d61d5a2d8cc8463275abebb"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "transfer-qos-bandwidth-priority-throttling-delta-and-ma-83ab54dc",
+      "source_name": "transfer-qos-bandwidth-priority-throttling-delta-and-maintenance-window",
+      "source_line": 48693,
+      "sha256": "e0f59e2c86e89ee2c8630b48bddb22e1a1ab6404581eb94da2b2aad3b00087c1"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "fleet-scale-heartbeat-aggregation-delta-inventory-shard-5d798a5d",
+      "source_name": "fleet-scale-heartbeat-aggregation-delta-inventory-sharding-and-fanout",
+      "source_line": 48933,
+      "sha256": "186d4c008a80d690cb6ebfb314025f1ecb91691608f99c9afdffc441dbf79017"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "checkpointable-task-download-build-test-agent-and-uploa-cda1a0f8",
+      "source_name": "checkpointable-task-download-build-test-agent-and-upload-resume-providers",
+      "source_line": 49214,
+      "sha256": "7b85bf79b92e9609e1cce99d571fc1c4f196607b57361557109085d6b33d6acf"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "local-retention-compaction-gc-disk-pressure-and-evidenc-8c79a8af",
+      "source_name": "local-retention-compaction-gc-disk-pressure-and-evidence-preservation",
+      "source_line": 49479,
+      "sha256": "78b4d6470dde4eb99ea9022708c97c6f00af902b9463d8b610d3ddc5cc30f514"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "execution-operations-cockpit-slo-capacity-forecast-and-runbooks",
+      "source_name": "execution-operations-cockpit-slo-capacity-forecast-and-runbooks",
+      "source_line": 49765,
+      "sha256": "1878352967d3560c981023811ec59324fcc353fd376d58ea54ff2175c5842b7e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "36",
+      "name": "offline-chaos-security-recovery-tests-and-release-gates",
+      "source_name": "offline-chaos-security-recovery-tests-and-release-gates",
+      "source_line": 50030,
+      "sha256": "5097ce8b75a62721472887a7bf36318692f98f936d9146f61e669ea1da5cf67f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "artifact-provenance-evidence-fabric-orchestrator",
+      "source_name": "artifact-provenance-evidence-fabric-orchestrator",
+      "source_line": 51798,
+      "sha256": "86b4c7752918777d2e774102eebaf1c0c9a6f122df0741e89a5e713db2e625b3"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "unified-artifact-domain-schema-identity-classification-002bdb3b",
+      "source_name": "unified-artifact-domain-schema-identity-classification-and-lifecycle",
+      "source_line": 51982,
+      "sha256": "21c49fedeaa3ad12193e0f51fb729da5e76a74301f46e7bee6e84d8eb7ccb974"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "evidence-producer-sdk-schema-registry-ingestion-and-idempotency",
+      "source_name": "evidence-producer-sdk-schema-registry-ingestion-and-idempotency",
+      "source_line": 52242,
+      "sha256": "3d93eada7cd9f09b927f963afab99159d79fddd2ff8d99e27ff9ae8f1d18b032"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "content-addressed-storage-encryption-dedup-integrity-an-249312e4",
+      "source_name": "content-addressed-storage-encryption-dedup-integrity-and-provider-adapters",
+      "source_line": 52493,
+      "sha256": "b5b5c91297b2da0e87d1f56255e40b71cbd3111a2d622b81caa3701fe7b07299"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "in-toto-statement-dsse-attestation-and-predicate-registry",
+      "source_name": "in-toto-statement-dsse-attestation-and-predicate-registry",
+      "source_line": 52712,
+      "sha256": "02f76e921d3592b332ae992359e49b3b2c10e1763867fc223ee6e0d82b752e35"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "artifact-signing-sigstore-kms-trust-root-timestamp-and-f85ebe04",
+      "source_name": "artifact-signing-sigstore-kms-trust-root-timestamp-and-key-lifecycle",
+      "source_line": 52929,
+      "sha256": "9a3eda629aa943cf462cad99bb214b687994fc18f11df36ae2c49c1ada28af1d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "slsa-source-build-provenance-vsa-generation-and-verification",
+      "source_name": "slsa-source-build-provenance-vsa-generation-and-verification",
+      "source_line": 53155,
+      "sha256": "7981b7e644bf0a05b19115514b3d065bd23c5e06fa1edc58407bb1ea6f42b152"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "spdx-cyclonedx-sbom-generation-normalization-merge-and-quality",
+      "source_name": "spdx-cyclonedx-sbom-generation-normalization-merge-and-quality",
+      "source_line": 53375,
+      "sha256": "9259bf652a99b50e3badf503bf106c3802141658f6bee829f98d064bc9a27888"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "oci-artifact-distribution-referrers-and-registry-integration",
+      "source_name": "oci-artifact-distribution-referrers-and-registry-integration",
+      "source_line": 53651,
+      "sha256": "ce6dd5c035f0fe2bb588dbb937806fe4a0d1ec5de3112319c771f0c3a358c32d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "evidence-graph-claim-lineage-projection-and-query",
+      "source_name": "evidence-graph-claim-lineage-projection-and-query",
+      "source_line": 53824,
+      "sha256": "025becd1c16746bc25a2122979b27f32947f6dc6072cd8af7ecd8a7752a71fc2"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "verification-policy-expectations-trust-decision-and-vsa",
+      "source_name": "verification-policy-expectations-trust-decision-and-vsa",
+      "source_line": 54046,
+      "sha256": "39169bd930452720b6d0b179ab37e1e8423923bb60590200cfaaeed2ecca6c11"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "object-lock-retention-legal-hold-records-management-and-6b853d65",
+      "source_name": "object-lock-retention-legal-hold-records-management-and-disposition",
+      "source_line": 54282,
+      "sha256": "b70c11858440cd2ca8dd868b72a133ea003faf60d453f1ad7271e56635143ab9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "offline-evidence-pack-export-import-and-airgap-verification",
+      "source_name": "offline-evidence-pack-export-import-and-airgap-verification",
+      "source_line": 54487,
+      "sha256": "6b121b3b2ee5c8a8726729bd67b8f844353e2b82cb85deabf120e34c47647941"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "evidence-classification-redaction-privacy-and-source-locality",
+      "source_name": "evidence-classification-redaction-privacy-and-source-locality",
+      "source_line": 54740,
+      "sha256": "2e57438903148ba32c5d920fde71b1785eabf925567939964a32b92002af0d45"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "artifact-fabric-replication-backup-scrubbing-migration-52e41d83",
+      "source_name": "artifact-fabric-replication-backup-scrubbing-migration-and-disaster-recovery",
+      "source_line": 54944,
+      "sha256": "1aa79f03c3ee9a49ce8b0faaadb0ecd17ae089be5f659bde8b3fe85475a3183d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37A",
+      "name": "evidence-conformance-tamper-security-chaos-and-release-gates",
+      "source_name": "evidence-conformance-tamper-security-chaos-and-release-gates",
+      "source_line": 55162,
+      "sha256": "75e6006cdb63a6ec32c0be49e8669ea902af45ee504457e6358ee7e9ce769cfd"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "external-evidence-producer-integration-orchestrator",
+      "source_name": "external-evidence-producer-integration-orchestrator",
+      "source_line": 56785,
+      "sha256": "b462e3adcdaf3eb7402b4b8f62c188c4df154ff7433dba57059c22c9aa35432e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "external-evidence-connector-contract-producer-identity-ddf55e1e",
+      "source_name": "external-evidence-connector-contract-producer-identity-and-capability",
+      "source_line": 56885,
+      "sha256": "e2a37c056de1c837b59cde452edd2f6d8da89de403f55dcb0904af7a31e7b64a"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "jenkins-controller-pipeline-build-artifact-test-fingerp-83b8545a",
+      "source_name": "jenkins-controller-pipeline-build-artifact-test-fingerprint-and-plugin-connector",
+      "source_line": 57054,
+      "sha256": "d0201cdcd0928aacaab332823c21ee89da3a15a7939d381ba342944fe397ff66"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "github-actions-workflow-run-job-artifact-log-attestatio-492d0593",
+      "source_name": "github-actions-workflow-run-job-artifact-log-attestation-and-oidc-connector",
+      "source_line": 57291,
+      "sha256": "035bc7614ee29674f02ace7ccbb1304d67bc963222b31e96c8f33165ffe1a2f9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "gitlab-ci-pipeline-job-artifact-report-security-and-pro-33b53d25",
+      "source_name": "gitlab-ci-pipeline-job-artifact-report-security-and-provenance-connector",
+      "source_line": 57496,
+      "sha256": "69178dc25640c08569a70f673499bb7df9ac8158da7a0beaf61acdba8d4f50d9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "azure-pipelines-build-timeline-log-artifact-test-and-id-d161b97d",
+      "source_name": "azure-pipelines-build-timeline-log-artifact-test-and-identity-connector",
+      "source_line": 57681,
+      "sha256": "ff455307e5fefa523ea79b0f9224ea3fc2b7bcc98bf84f544936ed3d00582672"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "sonarqube-server-cloud-analysis-quality-gate-measure-is-96da2ea4",
+      "source_name": "sonarqube-server-cloud-analysis-quality-gate-measure-issue-and-webhook-connector",
+      "source_line": 57873,
+      "sha256": "e5e9fb0941d8587f8338a98c8718ea1f4260a30a415e5eb4b4156c6a54f603a4"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "sast-sca-secret-iac-container-sarif-vulnerability-and-f-3bb9b69b",
+      "source_name": "sast-sca-secret-iac-container-sarif-vulnerability-and-finding-normalizer",
+      "source_line": 58055,
+      "sha256": "530a8d0eccc506251c04abdd45ee9b10be4b466ec9f462c2ff3ec1e5d41d8eae"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "test-result-coverage-mutation-flaky-and-test-management-e7a03112",
+      "source_name": "test-result-coverage-mutation-flaky-and-test-management-normalizer",
+      "source_line": 58251,
+      "sha256": "be42be44e7f1c4c6c0da6d1e568176e53ae6a8fbd85da07eaf75422420178d4b"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "performance-benchmark-load-jmh-jmeter-gatling-k6-and-re-17404d8d",
+      "source_name": "performance-benchmark-load-jmh-jmeter-gatling-k6-and-regression-normalizer",
+      "source_line": 58443,
+      "sha256": "b70a9693ebebdd7d929830e68e29b5ac34437bf941fe8954acf3dee3aba61b1e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "third-party-audit-penetration-test-compliance-assessmen-f8b2a7d4",
+      "source_name": "third-party-audit-penetration-test-compliance-assessment-and-signed-report-intake",
+      "source_line": 58667,
+      "sha256": "02c6191b9169e682ab8f9879203888554d3d2af605bdaf53e592447977147c44"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "ci-producer-workload-identity-oidc-signing-and-trust-policy",
+      "source_name": "ci-producer-workload-identity-oidc-signing-and-trust-policy",
+      "source_line": 58869,
+      "sha256": "03940906d993cda82239adb66e1eb28459e5d5fadb6c3271c2877baf0afcdca8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "webhook-polling-backfill-watermark-dedup-and-reconciliation",
+      "source_name": "webhook-polling-backfill-watermark-dedup-and-reconciliation",
+      "source_line": 59001,
+      "sha256": "dc04c76cd6fb71a4aa9b32741bfa1eb478480847265a80fc6726d36e5dcfb326"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "build-source-artifact-test-security-performance-deliver-2614a221",
+      "source_name": "build-source-artifact-test-security-performance-delivery-correlation-and-lineage",
+      "source_line": 59146,
+      "sha256": "7168ed26de07e96b6fd2123968ed62abd5f851ead95b95f91bc294d9195bf290"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "external-evidence-quality-freshness-completeness-confli-3a40b578",
+      "source_name": "external-evidence-quality-freshness-completeness-conflict-confidence-and-gating",
+      "source_line": 59285,
+      "sha256": "d4b16aa751cd9d0ac74d504a6bdd9cb7e841b1148983e77f3d015ccf71916dae"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37B",
+      "name": "external-evidence-conformance-fixtures-security-chaos-a-de42adcf",
+      "source_name": "external-evidence-conformance-fixtures-security-chaos-and-release-gates",
+      "source_line": 59431,
+      "sha256": "59fd36c7353e56d9bde052a265cd33346e8725424a80cc3ee584c19c0db5f74d"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "evidence-analytics-assurance-cockpit-orchestrator",
+      "source_name": "evidence-analytics-assurance-cockpit-orchestrator",
+      "source_line": 61029,
+      "sha256": "eebcef241db725403be0715fa77ed83bed9f70c5856cef6c7175dd7f3081f236"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-semantic-layer-metric-registry-and-denominato-33135982",
+      "source_name": "assurance-semantic-layer-metric-registry-and-denominator-governance",
+      "source_line": 61155,
+      "sha256": "a579dfd1d58256109c171fa2a98d4033883a0f826ca484565f2a6516bddacaab"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "evidence-data-quality-source-certification-lineage-and-bb4d5028",
+      "source_name": "evidence-data-quality-source-certification-lineage-and-reconciliation",
+      "source_line": 61393,
+      "sha256": "505457325ad7224b1f95cb518502b79cdfaab7dbdbd7dc5b59675f4091f1f3a5"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "evidence-completeness-chain-coverage-gap-and-readiness-analytics",
+      "source_name": "evidence-completeness-chain-coverage-gap-and-readiness-analytics",
+      "source_line": 61573,
+      "sha256": "795a4accd4f462f2bb1fe4326eb1fdf7426adeed35a69c15f764379f2e3caefa"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "software-supply-chain-risk-exposure-concentration-and-b-c5de6a01",
+      "source_name": "software-supply-chain-risk-exposure-concentration-and-blast-radius-analytics",
+      "source_line": 61735,
+      "sha256": "12b98f7e6f69d76e5b1f6d6a43ba8bbd561aea362a2cf6134919486d19f042c7"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "control-catalog-oscal-mapping-assessment-and-continuous-43b7e09f",
+      "source_name": "control-catalog-oscal-mapping-assessment-and-continuous-control-monitoring",
+      "source_line": 61919,
+      "sha256": "757270355f414c19ed0d0a5dedf6220f6dcc29391582ae210a9979d2dae8d528"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "audit-readiness-pbc-request-list-evidence-room-and-exam-58a21dec",
+      "source_name": "audit-readiness-pbc-request-list-evidence-room-and-examiner-workflow",
+      "source_line": 62097,
+      "sha256": "f8957d83363ac589bd56034c03e0e4f1d1ee09fcd820a8cb536b4fa205170425"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "evidence-freshness-expiry-renewal-sla-and-forward-alerting",
+      "source_name": "evidence-freshness-expiry-renewal-sla-and-forward-alerting",
+      "source_line": 62272,
+      "sha256": "fbea61b5721c91b3eaaa0ef877faef64f08547ea68bdaa2c6f56b703a0f98258"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-trend-baseline-change-point-seasonality-anoma-903d0e6d",
+      "source_name": "assurance-trend-baseline-change-point-seasonality-anomaly-and-diagnostics",
+      "source_line": 62420,
+      "sha256": "fc8b51fc909590ce1a92b9645e7d64399fe27b2c14117617ee762c16ad98c597"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "portfolio-assurance-rollup-risk-appetite-segmentation-a-5d409ca9",
+      "source_name": "portfolio-assurance-rollup-risk-appetite-segmentation-and-benchmarking",
+      "source_line": 62589,
+      "sha256": "303dfad96dfa94ae2f82079ce2dac1b334dfa8a95292bc9f04a4d3328bf38b59"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "executive-assurance-cockpit-kpi-scorecard-and-narrative",
+      "source_name": "executive-assurance-cockpit-kpi-scorecard-and-narrative",
+      "source_line": 62746,
+      "sha256": "ef4fba8b42901bb606c41c6898505e6cb4f861e84fd8b8866bc91075cbb9d418"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "auditor-control-cockpit-evidence-navigator-sampling-and-export",
+      "source_name": "auditor-control-cockpit-evidence-navigator-sampling-and-export",
+      "source_line": 62921,
+      "sha256": "8cd604383ed8a2a15311322d7ad402d96f9ab4906103082d335f329214768b3f"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-alert-case-remediation-owner-escalation-and-r-a4dd602f",
+      "source_name": "assurance-alert-case-remediation-owner-escalation-and-reverification",
+      "source_line": 63056,
+      "sha256": "e4f0591592112be145d4ce52eabb2aa2c4c5117de1b31af5e32925b089e448bf"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-query-cube-cache-dashboard-api-export-and-sna-6305ee56",
+      "source_name": "assurance-query-cube-cache-dashboard-api-export-and-snapshot-publication",
+      "source_line": 63210,
+      "sha256": "d7d779961c4218b8ca956b88d81cc6b3195fda23253aa4caafa716b5ea6972d7"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-forecast-scenario-stress-test-and-prioritization",
+      "source_name": "assurance-forecast-scenario-stress-test-and-prioritization",
+      "source_line": 63375,
+      "sha256": "b66e97df5964ffccf5cfbb16cacd4dd2bc40d47a6e16458061970d40f24c5b6e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "37C",
+      "name": "assurance-analytics-security-privacy-quality-performanc-05018e7f",
+      "source_name": "assurance-analytics-security-privacy-quality-performance-and-release-gates",
+      "source_line": 63520,
+      "sha256": "97bf7eae244ef1981764f39b89ba557c0b73904b58baacd9a048816ca7b42050"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-control-continuous-authorization-orchestrator",
+      "source_name": "policy-control-continuous-authorization-orchestrator",
+      "source_line": 65429,
+      "sha256": "81dc9d60449b738d2b537daca6c33f0c1bc53484923d82c8e54764f3b2f6fd93"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "unified-policy-domain-language-engine-contract-and-lifecycle",
+      "source_name": "unified-policy-domain-language-engine-contract-and-lifecycle",
+      "source_line": 65559,
+      "sha256": "25234fd2e5eb43eec3b504486177918ec9279a4283a8bc66688927f603582be9"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-as-code-repository-bundle-signing-distribution-a-684a7580",
+      "source_name": "policy-as-code-repository-bundle-signing-distribution-and-offline-cache",
+      "source_line": 65771,
+      "sha256": "70f46cfa4ede879e0c2280b6cf537b5103433cd29a8fef451828ebc0399ca0fc"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "control-as-code-oscal-objective-evidence-monitor-and-en-84680e15",
+      "source_name": "control-as-code-oscal-objective-evidence-monitor-and-enforcement-binding",
+      "source_line": 65948,
+      "sha256": "e072060286e908e099cae483c20039069ac166c56849c0f7fc6ad0ba35705fa8"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "rego-cedar-cel-policy-authoring-lint-test-simulation-an-26eee7a6",
+      "source_name": "rego-cedar-cel-policy-authoring-lint-test-simulation-and-partial-evaluation",
+      "source_line": 66087,
+      "sha256": "4b6855e7fd3978fc594db6113f0fa6aec9323f61307d25735639509d75650ef5"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-information-point-context-fact-resolver-trust-fr-97e6c78f",
+      "source_name": "policy-information-point-context-fact-resolver-trust-freshness-and-external-data",
+      "source_line": 66254,
+      "sha256": "1d0ea8627ab9efc7226a6b611521534c4ef5788ba514acb4c48644f240e28b4c"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "continuous-authorization-pdp-pep-decision-api-obligatio-e844fab7",
+      "source_name": "continuous-authorization-pdp-pep-decision-api-obligations-and-cache",
+      "source_line": 66400,
+      "sha256": "4a7d1d1d37310922648771d9d88bdd36527967f3756ef584ca00480310dc66b6"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "shared-signals-caep-risc-session-token-device-workload-ba410a72",
+      "source_name": "shared-signals-caep-risc-session-token-device-workload-and-risk-reevaluation",
+      "source_line": 66573,
+      "sha256": "0186f7833ec77d43b33d6bfe7ba805e3cf18b64fd607d69421d652fb68d13550"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "exception-waiver-risk-acceptance-compensating-control-and-expiry",
+      "source_name": "exception-waiver-risk-acceptance-compensating-control-and-expiry",
+      "source_line": 66707,
+      "sha256": "1739fc52c4a8df0157f82dabf73938b951ca77317bfca7646d4228c2c84ffa70"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "deployment-gate-artifact-provenance-sbom-test-risk-and-c45b1ad8",
+      "source_name": "deployment-gate-artifact-provenance-sbom-test-risk-and-environment-admission",
+      "source_line": 66870,
+      "sha256": "a7e3b5c2f50c85b2db5b9f73b536715a1ac90d244f437927b681adf11ac43c0b"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "kubernetes-cel-gatekeeper-kyverno-image-and-workload-ad-80ecc0cb",
+      "source_name": "kubernetes-cel-gatekeeper-kyverno-image-and-workload-admission-policy",
+      "source_line": 67029,
+      "sha256": "b28efd55dc06a2d81a4525dd28f3e6efc03fc53709b0fe67c019da3b21c98ed2"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "runtime-gate-api-service-mesh-database-tool-sandbox-run-1de6fb7a",
+      "source_name": "runtime-gate-api-service-mesh-database-tool-sandbox-runner-and-artifact-enforcement",
+      "source_line": 67193,
+      "sha256": "00ad0f1ea2f6eb77c6742ed0ebc0d0ae42549fd61824e03ca9677123c7835b03"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "control-automation-remediation-plan-approval-execution-43abdb1a",
+      "source_name": "control-automation-remediation-plan-approval-execution-compensation-and-verification",
+      "source_line": 67370,
+      "sha256": "bc0cdd556e9c1bf66041f07f6cbb5a77650d39af3725d937d3046e43d800793e"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-decision-log-explanation-trace-replay-attestatio-206e0318",
+      "source_name": "policy-decision-log-explanation-trace-replay-attestation-and-evidence",
+      "source_line": 67518,
+      "sha256": "d7de43f13977e015a9966a37acfd27647d042ba85cfa5ca02b355fe27ef65273"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-change-impact-shadow-canary-rollout-kill-switch-6856e0a6",
+      "source_name": "policy-change-impact-shadow-canary-rollout-kill-switch-and-rollback",
+      "source_line": 67658,
+      "sha256": "8ad5b8ef7e9f4e182379a6dac50b51e0746947b5bcea2f6ffe61be8091e5b075"
+    },
+    {
+      "family": "elmos-product-commercialization",
+      "batch": "38A",
+      "name": "policy-conformance-fuzz-property-security-chaos-perform-5779b1d0",
+      "source_name": "policy-conformance-fuzz-property-security-chaos-performance-and-release-gates",
+      "source_line": 67822,
+      "sha256": "409356116b819582aa958790dc77a06be70d9454b327b3fb15f494193b0ff794"
+    }
+  ]
+}

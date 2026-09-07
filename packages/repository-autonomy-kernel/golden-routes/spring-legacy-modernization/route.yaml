@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v2alpha1
+kind: GoldenRoute
+metadata:
+  name: spring-legacy-modernization
+  version: 2.0.0
+spec:
+  title: "Spring Legacy Modernization Golden Route"
+  description: "Struts/Spring legacy/Spring Boot 1–2 to Spring Boot 4 semantic modernization"
+  workflow: repository-autonomy-master@2.0.0
+  releaseGate: P05_DEPLOYMENT_COMPLETE
+  mandatoryGates:
+    - route-baseline-build
+    - route-api-contract
+    - route-transaction-semantics
+    - route-security
+    - route-database-rehearsal
+    - route-shadow-runtime
+    - route-rollback
+  failureInjection:
+    - executor-crash
+    - network-interruption
+    - duplicate-delivery
+    - stale-worker-return
+    - user-pause-resume
+    - prompt-injection-in-repository

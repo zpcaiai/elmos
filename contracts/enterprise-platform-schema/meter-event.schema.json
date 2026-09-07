@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/meter-event.schema.json",
+  "title": "Immutable Tenant Usage Meter Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "tenant_id", "organization_id", "workload_id", "capability_id", "idempotency_key", "unit", "quantity", "occurred_at", "recorded_at", "previous_hash", "event_hash", "evidence_refs"],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1}, "tenant_id": {"type": "string", "minLength": 1}, "organization_id": {"type": "string", "minLength": 1},
+    "workload_id": {"type": "string", "minLength": 1}, "capability_id": {"type": "string", "minLength": 1}, "idempotency_key": {"type": "string", "minLength": 1},
+    "unit": {"enum": ["MODEL_INPUT_TOKEN", "MODEL_OUTPUT_TOKEN", "RUNNER_SECOND", "CPU_SECOND", "GPU_SECOND", "STORAGE_BYTE_HOUR", "ARTIFACT_BYTE", "API_REQUEST"]},
+    "quantity": {"type": "number", "exclusiveMinimum": 0}, "occurred_at": {"type": "string", "format": "date-time"}, "recorded_at": {"type": "string", "format": "date-time"},
+    "previous_hash": {"type": "string", "pattern": "^(GENESIS|[A-Fa-f0-9]{64})$"}, "event_hash": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

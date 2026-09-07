@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 661: telecom delivery and channel pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $telecom-delivery-and-channel-pack to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 634: healthcare domain model"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $healthcare-domain-model to evaluate this capability with evidence."

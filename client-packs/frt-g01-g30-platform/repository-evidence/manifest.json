@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "repository": "zpcaiai/elmos",
+  "repository_revision": "4fc2678d7c411c54ae8f35e35ad7a25e6e9644aa",
+  "status": "LOCAL_CONTENT_BOUND",
+  "external_verification": "NOT_RUN",
+  "production_operation_authorized": false,
+  "production_certification": "NOT_CERTIFIED",
+  "producer": {
+    "path": "scripts/frt/repository_evidence.py",
+    "sha256": "sha256:cb9cb11abfb9398eeca1d042ebf9deccf2c929472a6aed456468fd1f596fdb86",
+    "bytes": 16228
+  },
+  "artifacts": [
+    {
+      "artifact_id": "artifact:sha256:4cec56aa3d6f5a2372de1e869d837bb8574c04370d1ac0b69e64f7d6579b94d4",
+      "role": "installed-skill-manifest",
+      "source_path": "docs/frt-g01-g30/installed-manifest.json",
+      "path": "repository-evidence/files/docs/frt-g01-g30/installed-manifest.json",
+      "sha256": "sha256:4cec56aa3d6f5a2372de1e869d837bb8574c04370d1ac0b69e64f7d6579b94d4",
+      "bytes": 1202112
+    },
+    {
+      "artifact_id": "artifact:sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+      "role": "frontend-runtime-test-source",
+      "source_path": "engines/frontend-client-engine/test/frt-runtime.test.ts",
+      "path": "repository-evidence/files/engines/frontend-client-engine/test/frt-runtime.test.ts",
+      "sha256": "sha256:78fb910231368df37b891535b0a8c1cca25eccc29d724748f3bdab7de73747fe",
+      "bytes": 53577
+    },
+    {
+      "artifact_id": "artifact:sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+      "role": "web-browser-journey-source",
+      "source_path": "apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+      "path": "repository-evidence/files/apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+      "sha256": "sha256:c1cb6341b1d5297635ad65a11ec9cb06199952162a205b3bfcc911fbb659f5fd",
+      "bytes": 7893
+    }
+  ],
+  "aggregate_sha256": "sha256:44201ea4321a0f5f7793f3da07a66f0abb8012db258a39dccaab54dc9e9e61a9"
+}

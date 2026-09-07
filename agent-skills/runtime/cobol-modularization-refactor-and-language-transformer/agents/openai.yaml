@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cobol Modularization Refactor And Language Transformer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $cobol-modularization-refactor-and-language-transformer to execute this ELMOS Runtime Skill with fail-closed evidence."

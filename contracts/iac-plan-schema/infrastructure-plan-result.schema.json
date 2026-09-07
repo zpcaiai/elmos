@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.infrastructure-plan-result.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["planId", "organizationId", "stateVersion", "providerLockRef", "changes", "policyDecision", "securityDecision", "estimatedCost", "rollbackRef", "approvedBy", "externalStatus", "evidenceRefs"],
+  "properties": {
+    "planId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "stateVersion": {"type": "string", "minLength": 1},
+    "providerLockRef": {"type": "string", "minLength": 1},
+    "changes": {"type": "array", "items": {"type": "object", "required": ["action", "resourceRef"], "properties": {"action": {"enum": ["CREATE", "UPDATE", "REPLACE", "DELETE", "NO_CHANGE"]}, "resourceRef": {"type": "string"}}}},
+    "policyDecision": {"enum": ["PASS", "BLOCK", "HUMAN_REVIEW"]},
+    "securityDecision": {"enum": ["PASS", "BLOCK", "HUMAN_REVIEW"]},
+    "estimatedCost": {"type": "object", "required": ["amount", "currency"], "properties": {"amount": {"type": "number"}, "currency": {"type": "string"}}},
+    "rollbackRef": {"type": "string"},
+    "approvedBy": {"type": ["string", "null"]},
+    "externalStatus": {"enum": ["NOT_RUN", "PLANNED", "APPLIED", "FAILED"]},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  }
+}

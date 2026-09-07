@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Contract Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1007-api-contract-mapper to run FRT-1007 through the governed FRT runtime with exact scope and fail-closed evidence."

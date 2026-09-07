@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "negative_corpus_digest": "sha256:81009c17143fdf3fcdc173940cef24dc3adbf89e201fb063f9748802c80da966",
+  "mutants": [
+    {"id": "MUTANT_ALLOW_ALL_IPV4", "expected": "killed"},
+    {"id": "MUTANT_ALLOW_LOOPBACK_V6", "expected": "killed"}
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "schema_version": "1.0",
+  "trust_store": "/secure/etgb/harness-public-trust-store.json",
+  "policy": {
+    "request_timeout_seconds": 1800,
+    "max_attempts": 3,
+    "initial_backoff_ms": 500,
+    "max_request_bytes": 16777216,
+    "max_response_bytes": 16777216,
+    "allow_loopback_http": false,
+    "allow_environment_proxy": false,
+    "require_custom_ca": true,
+    "require_mtls": true
+  },
+  "adapters": {
+    "external-agent-protocol-harness": {
+      "endpoint": "https://agent-protocol-harness.example.invalid/v1/cases:execute",
+      "executor_id": "agent-protocol-executor",
+      "auth_token_env": "ETGB_AGENT_PROTOCOL_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-ai-runtime-harness": {
+      "endpoint": "https://ai-runtime-harness.example.invalid/v1/cases:execute",
+      "executor_id": "ai-runtime-executor",
+      "auth_token_env": "ETGB_AI_RUNTIME_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-ai-solution-factory-harness": {
+      "endpoint": "https://ai-solution-factory-harness.example.invalid/v1/cases:execute",
+      "executor_id": "ai-solution-factory-executor",
+      "auth_token_env": "ETGB_AI_SOLUTION_FACTORY_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-analytics-admin-harness": {
+      "endpoint": "https://analytics-admin-harness.example.invalid/v1/cases:execute",
+      "executor_id": "analytics-admin-executor",
+      "auth_token_env": "ETGB_ANALYTICS_ADMIN_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-api-sdk-harness": {
+      "endpoint": "https://api-sdk-harness.example.invalid/v1/cases:execute",
+      "executor_id": "api-sdk-executor",
+      "auth_token_env": "ETGB_API_SDK_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-artifact-render-harness": {
+      "endpoint": "https://artifact-render-harness.example.invalid/v1/cases:execute",
+      "executor_id": "artifact-render-executor",
+      "auth_token_env": "ETGB_ARTIFACT_RENDER_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-billing-ledger-harness": {
+      "endpoint": "https://billing-ledger-harness.example.invalid/v1/cases:execute",
+      "executor_id": "billing-ledger-executor",
+      "auth_token_env": "ETGB_BILLING_LEDGER_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-collaboration-integration-harness": {
+      "endpoint": "https://collaboration-harness.example.invalid/v1/cases:execute",
+      "executor_id": "collaboration-executor",
+      "auth_token_env": "ETGB_COLLABORATION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-commercial-certification-harness": {
+      "endpoint": "https://commercial-certification-harness.example.invalid/v1/cases:execute",
+      "executor_id": "commercial-certification-executor",
+      "auth_token_env": "ETGB_COMMERCIAL_CERTIFICATION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-control-plane-harness": {
+      "endpoint": "https://control-plane-harness.example.invalid/v1/cases:execute",
+      "executor_id": "control-plane-executor",
+      "auth_token_env": "ETGB_CONTROL_PLANE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-data-platform-harness": {
+      "endpoint": "https://data-platform-harness.example.invalid/v1/cases:execute",
+      "executor_id": "data-platform-executor",
+      "auth_token_env": "ETGB_DATA_PLATFORM_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-deployment-chaos-harness": {
+      "endpoint": "https://deployment-chaos-harness.example.invalid/v1/cases:execute",
+      "executor_id": "deployment-chaos-executor",
+      "auth_token_env": "ETGB_DEPLOYMENT_CHAOS_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-dual-database-harness": {
+      "endpoint": "https://dual-database-harness.example.invalid/v1/cases:execute",
+      "executor_id": "dual-database-executor",
+      "auth_token_env": "ETGB_DUAL_DATABASE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-fault-injection-harness": {
+      "endpoint": "https://fault-injection-harness.example.invalid/v1/cases:execute",
+      "executor_id": "fault-injection-executor",
+      "auth_token_env": "ETGB_FAULT_INJECTION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-identity-access-harness": {
+      "endpoint": "https://identity-access-harness.example.invalid/v1/cases:execute",
+      "executor_id": "identity-access-executor",
+      "auth_token_env": "ETGB_IDENTITY_ACCESS_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-ingestion-harness": {
+      "endpoint": "https://ingestion-harness.example.invalid/v1/cases:execute",
+      "executor_id": "ingestion-executor",
+      "auth_token_env": "ETGB_INGESTION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-multimodal-processing-harness": {
+      "endpoint": "https://multimodal-processing-harness.example.invalid/v1/cases:execute",
+      "executor_id": "multimodal-processing-executor",
+      "auth_token_env": "ETGB_MULTIMODAL_PROCESSING_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-notification-scheduler-harness": {
+      "endpoint": "https://notification-scheduler-harness.example.invalid/v1/cases:execute",
+      "executor_id": "notification-scheduler-executor",
+      "auth_token_env": "ETGB_NOTIFICATION_SCHEDULER_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-online-ide-debug-harness": {
+      "endpoint": "https://online-ide-debug-harness.example.invalid/v1/cases:execute",
+      "executor_id": "online-ide-debug-executor",
+      "auth_token_env": "ETGB_ONLINE_IDE_DEBUG_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-payment-sandbox-harness": {
+      "endpoint": "https://payment-sandbox-harness.example.invalid/v1/cases:execute",
+      "executor_id": "payment-sandbox-executor",
+      "auth_token_env": "ETGB_PAYMENT_SANDBOX_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-product-journey-harness": {
+      "endpoint": "https://product-journey-harness.example.invalid/v1/cases:execute",
+      "executor_id": "product-journey-executor",
+      "auth_token_env": "ETGB_PRODUCT_JOURNEY_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-project-evolution-harness": {
+      "endpoint": "https://project-evolution-harness.example.invalid/v1/cases:execute",
+      "executor_id": "project-evolution-executor",
+      "auth_token_env": "ETGB_PROJECT_EVOLUTION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-project-generation-harness": {
+      "endpoint": "https://project-generation-harness.example.invalid/v1/cases:execute",
+      "executor_id": "project-generation-executor",
+      "auth_token_env": "ETGB_PROJECT_GENERATION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-project-intelligence-harness": {
+      "endpoint": "https://project-intelligence-harness.example.invalid/v1/cases:execute",
+      "executor_id": "project-intelligence-executor",
+      "auth_token_env": "ETGB_PROJECT_INTELLIGENCE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-rag-memory-harness": {
+      "endpoint": "https://rag-memory-harness.example.invalid/v1/cases:execute",
+      "executor_id": "rag-memory-executor",
+      "auth_token_env": "ETGB_RAG_MEMORY_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-repository-translation-harness": {
+      "endpoint": "https://repository-translation-harness.example.invalid/v1/cases:execute",
+      "executor_id": "repository-translation-executor",
+      "auth_token_env": "ETGB_REPOSITORY_TRANSLATION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-requirement-reasoning-harness": {
+      "endpoint": "https://requirement-reasoning-harness.example.invalid/v1/cases:execute",
+      "executor_id": "requirement-reasoning-executor",
+      "auth_token_env": "ETGB_REQUIREMENT_REASONING_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-security-compliance-harness": {
+      "endpoint": "https://security-compliance-harness.example.invalid/v1/cases:execute",
+      "executor_id": "security-compliance-executor",
+      "auth_token_env": "ETGB_SECURITY_COMPLIANCE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-standards-assurance-harness": {
+      "endpoint": "https://standards-assurance-harness.example.invalid/v1/cases:execute",
+      "executor_id": "standards-assurance-executor",
+      "auth_token_env": "ETGB_STANDARDS_ASSURANCE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-storage-search-cache-harness": {
+      "endpoint": "https://storage-search-cache-harness.example.invalid/v1/cases:execute",
+      "executor_id": "storage-search-cache-executor",
+      "auth_token_env": "ETGB_STORAGE_SEARCH_CACHE_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-transformation-harness": {
+      "endpoint": "https://transformation-harness.example.invalid/v1/cases:execute",
+      "executor_id": "transformation-executor",
+      "auth_token_env": "ETGB_TRANSFORMATION_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    },
+    "external-ui-accessibility-harness": {
+      "endpoint": "https://ui-accessibility-harness.example.invalid/v1/cases:execute",
+      "executor_id": "ui-accessibility-executor",
+      "auth_token_env": "ETGB_UI_ACCESSIBILITY_TOKEN",
+      "ca_bundle": "/secure/etgb/harness-ca.pem",
+      "client_cert": "/secure/etgb/harness-client.pem",
+      "client_key_env": "ETGB_HARNESS_MTLS_KEY_FILE"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Duplicate Skill Consolidation"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-duplicate-skill-consolidation to execute this ELMOS product-convergence Skill with fail-closed evidence."

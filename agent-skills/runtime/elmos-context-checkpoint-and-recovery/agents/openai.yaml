@@ -1,0 +1,6 @@
+interface:
+  display_name: "Elmos Context Checkpoint and Recovery"
+  short_description: "Run this ELMOS Skill with evidence controls"
+  default_prompt: "Use $elmos-context-checkpoint-and-recovery to execute this ELMOS Skill with fail-closed evidence."
+policy:
+  allow_implicit_invocation: true

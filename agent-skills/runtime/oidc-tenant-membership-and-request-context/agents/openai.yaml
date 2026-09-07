@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 001"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $oidc-tenant-membership-and-request-context to implement its fail-closed ELMOS Product Batch 33-mature contract."

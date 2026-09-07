@@ -1,0 +1,4 @@
+interface:
+  display_name: "parallel bridge dual publish cutover and decommission"
+  short_description: "Govern integration modernization safely"
+  default_prompt: "Use $parallel-bridge-dual-publish-cutover-and-decommission to modernize this integration scope safely."

@@ -1,0 +1,691 @@
+{
+  "schema_version": "1.0",
+  "namespace": "repository-migration-platform-b01-38",
+  "executor_count": 38,
+  "entries": [
+    {
+      "batch": 1,
+      "executor_id": "b01-domain-executor-v1",
+      "handler": "source-baseline",
+      "skill": "b01-source-executable-specification",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 2,
+      "executor_id": "b02-domain-executor-v1",
+      "handler": "differential-replay",
+      "skill": "b02-differential-execution-harness",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 3,
+      "executor_id": "b03-domain-executor-v1",
+      "handler": "semantic-frontend",
+      "skill": "b03-semantic-frontends-unified-ir",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 4,
+      "executor_id": "b04-domain-executor-v1",
+      "handler": "directional-routes",
+      "skill": "b04-directional-semantic-rule-packs",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 5,
+      "executor_id": "b05-domain-executor-v1",
+      "handler": "framework-adapters",
+      "skill": "b05-framework-adapter-matrix",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 6,
+      "executor_id": "b06-domain-executor-v1",
+      "handler": "supply-chain",
+      "skill": "b06-dependency-supply-chain-graph",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 7,
+      "executor_id": "b07-domain-executor-v1",
+      "handler": "data-messaging",
+      "skill": "b07-data-messaging-migration",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 8,
+      "executor_id": "b08-domain-executor-v1",
+      "handler": "api-mesh",
+      "skill": "b08-api-gateway-mesh-migration",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 9,
+      "executor_id": "b09-domain-executor-v1",
+      "handler": "concurrency-native",
+      "skill": "b09-concurrency-memory-native-semantics",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 10,
+      "executor_id": "b10-domain-executor-v1",
+      "handler": "test-mutation-fuzz",
+      "skill": "b10-test-mutation-fuzz-platform",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 11,
+      "executor_id": "b11-domain-executor-v1",
+      "handler": "domain-journey",
+      "skill": "b11-domain-journey-verification",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 12,
+      "executor_id": "b12-domain-executor-v1",
+      "handler": "production-migration",
+      "skill": "b12-production-migration-runtime",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 13,
+      "executor_id": "b13-domain-executor-v1",
+      "handler": "evidence-certification",
+      "skill": "b13-evidence-graph-certification",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 14,
+      "executor_id": "b14-domain-executor-v1",
+      "handler": "formal-proof",
+      "skill": "b14-formal-proof-carrying-migration",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 15,
+      "executor_id": "b15-domain-executor-v1",
+      "handler": "counterexample-repair",
+      "skill": "b15-counterexample-guided-repair",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 16,
+      "executor_id": "b16-domain-executor-v1",
+      "handler": "architecture-search",
+      "skill": "b16-architecture-search-planning",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 17,
+      "executor_id": "b17-domain-executor-v1",
+      "handler": "workflow-execution",
+      "skill": "b17-migration-execution-os",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 18,
+      "executor_id": "b18-domain-executor-v1",
+      "handler": "project-generation",
+      "skill": "b18-complete-project-generation",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 19,
+      "executor_id": "b19-domain-executor-v1",
+      "handler": "generator-routes",
+      "skill": "b19-executable-generator-packs",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 20,
+      "executor_id": "b20-domain-executor-v1",
+      "handler": "skill-runtime",
+      "skill": "b20-skill-productization",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 21,
+      "executor_id": "b21-domain-executor-v1",
+      "handler": "capability-closure",
+      "skill": "b21-capability-closure-registry",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 22,
+      "executor_id": "b22-domain-executor-v1",
+      "handler": "business-line",
+      "skill": "b22-business-line-closure",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 23,
+      "executor_id": "b23-domain-executor-v1",
+      "handler": "cross-domain-journey",
+      "skill": "b23-cross-business-journey-closure",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 24,
+      "executor_id": "b24-domain-executor-v1",
+      "handler": "data-lineage",
+      "skill": "b24-data-lineage-completeness",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 25,
+      "executor_id": "b25-domain-executor-v1",
+      "handler": "data-reconciliation",
+      "skill": "b25-data-quality-reconciliation",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 26,
+      "executor_id": "b26-domain-executor-v1",
+      "handler": "admin-control-plane",
+      "skill": "b26-admin-control-plane-closure",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 27,
+      "executor_id": "b27-domain-executor-v1",
+      "handler": "identity-authorization",
+      "skill": "b27-identity-authorization-audit",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 28,
+      "executor_id": "b28-domain-executor-v1",
+      "handler": "usability-operations",
+      "skill": "b28-functional-operational-usability",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 29,
+      "executor_id": "b29-domain-executor-v1",
+      "handler": "regression-assurance",
+      "skill": "b29-system-regression-assurance",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 30,
+      "executor_id": "b30-domain-executor-v1",
+      "handler": "ha-dr",
+      "skill": "b30-ha-resilience-dr",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 31,
+      "executor_id": "b31-domain-executor-v1",
+      "handler": "transaction-correctness",
+      "skill": "b31-concurrency-transaction-correctness",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 32,
+      "executor_id": "b32-domain-executor-v1",
+      "handler": "performance-capacity",
+      "skill": "b32-performance-capacity-cost",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 33,
+      "executor_id": "b33-domain-executor-v1",
+      "handler": "security-protection",
+      "skill": "b33-migration-security-data-protection",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 34,
+      "executor_id": "b34-domain-executor-v1",
+      "handler": "provider-reliability",
+      "skill": "b34-provider-reliability-closure",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 35,
+      "executor_id": "b35-domain-executor-v1",
+      "handler": "go-live",
+      "skill": "b35-go-live-production-acceptance",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 36,
+      "executor_id": "b36-domain-executor-v1",
+      "handler": "production-operations",
+      "skill": "b36-production-operations-support",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 37,
+      "executor_id": "b37-domain-executor-v1",
+      "handler": "source-retirement",
+      "skill": "b37-source-retirement-closure",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    },
+    {
+      "batch": 38,
+      "executor_id": "b38-domain-executor-v1",
+      "handler": "final-assurance",
+      "skill": "b38-final-system-assurance",
+      "implementation": "typed-native-result-validator",
+      "allowed_corpora": [
+        "development",
+        "negative",
+        "holdout",
+        "representative",
+        "production"
+      ],
+      "requires_actual_toolchain": true,
+      "requires_raw_evidence": true,
+      "repository_commands_allowed": false,
+      "status_boundary": "A validated domain result is eligible for signed Claim-Oracle review; it is not certification."
+    }
+  ]
+}

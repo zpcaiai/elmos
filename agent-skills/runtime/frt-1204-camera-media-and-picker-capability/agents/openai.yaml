@@ -1,0 +1,4 @@
+interface:
+  display_name: "Camera Media and Picker Capability"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1204-camera-media-and-picker-capability to run FRT-1204 through the governed FRT runtime with exact scope and fail-closed evidence."

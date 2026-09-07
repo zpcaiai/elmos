@@ -1,0 +1,8 @@
+{
+  "corpusRole": "holdout",
+  "files": {
+    "package.json": "{\"dependencies\":{\"vue\":\"3.5.39\"}}",
+    "src/App.vue": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nconst enabled = ref(true);\nfunction toggle() { enabled.value = !enabled.value; }\n</script>\n<template><section class=\"panel\"><button @click=\"toggle\">Toggle</button><p v-if=\"enabled\">Visible</p></section></template>\n<style scoped>.panel { padding: 1rem; }</style>"
+  },
+  "expectedStatus": "GENERATED"
+}

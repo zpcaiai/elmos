@@ -1,0 +1,28 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: project-generation-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: formalize-requirements
+    emitEvidence: true
+  - id: design-architecture
+    emitEvidence: true
+  - id: generate-contracts
+    emitEvidence: true
+  - id: generate-project
+    emitEvidence: true
+  - id: build-test-scan
+    emitEvidence: true
+  - id: deploy-preview
+    emitEvidence: true
+  - id: operability-test
+    emitEvidence: true
+  - id: accept-and-package
+    emitEvidence: true

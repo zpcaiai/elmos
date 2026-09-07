@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "PrivacyImpactAssessment",
+  "metadata": {
+    "id": "privacy-impact-assessment-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "purposes": [],
+    "dataFlows": [],
+    "consentControls": [],
+    "residualRisks": []
+  }
+}

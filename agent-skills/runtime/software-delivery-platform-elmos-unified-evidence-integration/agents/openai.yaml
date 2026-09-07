@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 018"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $software-delivery-platform-elmos-unified-evidence-integration to apply its fail-closed ELMOS runtime contract."

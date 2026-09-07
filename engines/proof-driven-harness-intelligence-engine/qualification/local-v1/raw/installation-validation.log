@@ -1,0 +1,36 @@
+{
+  "archive_sha256": "9dcf9a4ac6eafad4d24df12dfc4e31da2fb5c20bde840611d81c43fa9607910e",
+  "canonical_capability_count": 260,
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "integration": {
+    "receipt_digest": "sha256:7fd5c7f517c7c95ccf7e68232ce699bfc54362f419006d3ac081a7179aa51aec",
+    "verified_output_count": 32
+  },
+  "package": "elmos-proof-driven-harness-intelligence@1.0.0",
+  "runtime_counts": {
+    "LOCAL": 203,
+    "PARTIAL": 57,
+    "PLAN": 0
+  },
+  "schemas": {
+    "digests": {
+      "agent-task.schema.json": "277bc64383b75aa2bd4c436704fff1063147ba2c4248c4c6b415844e08c1aaee",
+      "certification-bundle.schema.json": "e1b37a063ba64b4c2b4a11175b7f3af7b3333cdf418fa8cce685cbee1525ab3a",
+      "durable-job-state.schema.json": "1646eae9db9c25f65af929632fbc94de50303f18097fd8006221c8f33a83f67b",
+      "evidence-record.schema.json": "58cf1a0b60e895486277aeceb1c633bd81bf248fd696f70317b83cb4f1a8d1e2",
+      "patch-transaction.schema.json": "edc0c1f0405b50fb4453f4ffa9c7406ab98015e50bf1b4555a7c569f05d25bc3",
+      "proof-carrying-agent-result.schema.json": "32778bbff4a26f32ad68959c6d7d3fd728de0003dacb449d7e6c8e633f220215",
+      "rule-ir.schema.json": "d20d722606982ea15645b5c318537b6b2b92072152f9ae37031856e5916184bd",
+      "skill-manifest.schema.json": "0c5882f945c19c456f26aa35f130998a48264e5f6eb72aa34079be2445299062"
+    },
+    "schema_count": 8
+  },
+  "skill_count": 12,
+  "source_occurrence_count": 262,
+  "status": "PASS",
+  "wrappers": {
+    "skill_count": 12,
+    "verified_file_count": 72
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Edition Route Vertical Certification"
+  short_description: "Run evidence-bound Batch 45 edition route vertical certification"
+  default_prompt: "Use $b45-edition-route-vertical-certification to implement and verify this capability with fail-closed evidence."

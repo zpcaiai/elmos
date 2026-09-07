@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-semantic-assurance-proof-cache-invalidation"
+  short_description: "Cache expensive proof/analysis results by source, IR, toolchain, solver and assumption identity a..."
+  default_prompt: "Use $elmos-semantic-assurance-proof-cache-invalidation through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-proof-cache-invalidation"
+  handler_id: "execute_elmos_proof_cache_invalidation"
+  operation: "CACHE_INVALIDATION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

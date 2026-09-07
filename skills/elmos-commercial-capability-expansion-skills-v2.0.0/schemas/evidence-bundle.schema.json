@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Evidence Bundle",
+  "type": "object",
+  "required": [
+    "taskRunId",
+    "sourceRevision",
+    "environment",
+    "skillVersions",
+    "artifacts",
+    "gateResults"
+  ],
+  "properties": {
+    "taskRunId": {
+      "type": "string"
+    },
+    "sourceRevision": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "skillVersions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "modelVersions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "gateResults": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "sbomRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "attestationRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "signatureRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

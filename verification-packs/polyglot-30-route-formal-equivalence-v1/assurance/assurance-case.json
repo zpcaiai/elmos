@@ -1,0 +1,71 @@
+{
+  "approvals": [],
+  "case_key": "polyglot-30-route-formal-equivalence-v1-assurance-v1",
+  "claims": [
+    {
+      "assumptions": [
+        "Pinned native analyzers and toolchains implement their declared semantics."
+      ],
+      "claim_id": "claim.route-equivalence",
+      "evidence_refs": [
+        "formal-route-campaign.json",
+        "evidence/route-set.json"
+      ],
+      "limitations": [
+        "Unexecuted semantic blocks and independent verification remain NOT_RUN."
+      ],
+      "statement": "Executed local corpora have source/canonical/target semantic, chunk, and behavior agreement.",
+      "status": "partially-supported"
+    },
+    {
+      "assumptions": [],
+      "claim_id": "claim.fail-closed-governance",
+      "evidence_refs": [
+        "solver/arithmetic-campaign.json",
+        "counterexamples/sample.json"
+      ],
+      "limitations": [
+        "Local engineering governance is not an independent certification."
+      ],
+      "statement": "Incomplete, bounded, axiom-only, tampered, or counterexample evidence does not certify.",
+      "status": "partially-supported"
+    }
+  ],
+  "evidence": [
+    "formal-route-campaign.json",
+    "solver/arithmetic-campaign.json"
+  ],
+  "monitoring_obligations": [
+    "rerun-on-analyzer-emitter-toolchain-or-lockfile-digest-change"
+  ],
+  "owner": "elmos-polyglot-verification-engineering",
+  "residual_risks": [
+    {
+      "disposition": "independent-proof-required",
+      "risk_id": "risk.source-lifting-soundness",
+      "severity": "P0",
+      "status": "open"
+    },
+    {
+      "disposition": "native-corpus-required",
+      "risk_id": "risk.semantic-block-coverage",
+      "severity": "P0",
+      "status": "open"
+    },
+    {
+      "disposition": "second-solver-or-certificate-required",
+      "risk_id": "risk.arithmetic-conditional-bounded-or-axiom",
+      "severity": "P0",
+      "status": "open"
+    },
+    {
+      "disposition": "NOT_RUN",
+      "risk_id": "risk.external-validation",
+      "severity": "P0",
+      "status": "open"
+    }
+  ],
+  "schema_version": 1,
+  "top_claim": "The exact 30-route L0 campaign has replayable local evidence and fails closed on every unresolved proof boundary.",
+  "version": 1
+}

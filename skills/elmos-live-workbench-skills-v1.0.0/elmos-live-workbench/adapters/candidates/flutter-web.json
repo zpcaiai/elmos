@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "flutter-web",
+  "language": "Dart",
+  "framework": "Flutter Web",
+  "runtime": "browser",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "Dart/Flutter debug adapter",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "web",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "only web-compatible plugins; no native parity claim",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}

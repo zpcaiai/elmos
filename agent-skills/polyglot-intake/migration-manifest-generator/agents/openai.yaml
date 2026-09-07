@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Manifest Generator"
+  short_description: "Freeze Batch 1 evidence and readiness gate"
+  default_prompt: "Use $migration-manifest-generator to freeze the Batch 1 control manifest and gate Batch 2."

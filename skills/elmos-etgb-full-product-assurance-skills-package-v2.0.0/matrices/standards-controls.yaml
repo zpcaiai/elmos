@@ -1,0 +1,147 @@
+schema_version: '2.0'
+matrix_id: ETGB-STANDARDS-2.0
+profiles:
+- id: owasp-asvs
+  title: OWASP ASVS web and API verification controls
+  source: https://owasp.org/www-project-application-security-verification-standard/
+  controls:
+  - architecture-threat-model
+  - authentication
+  - session-management
+  - access-control
+  - validation-sanitization-encoding
+  - stored-cryptography
+  - error-logging
+  - data-protection
+  - communication
+  - malicious-code
+  - business-logic
+  - file-resource
+  - api-web-service
+  - configuration
+- id: owasp-genai-llm-2026
+  title: OWASP GenAI LLM Top 10 2026 risk coverage
+  source: https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/
+  controls:
+  - prompt-injection
+  - sensitive-information-disclosure
+  - supply-chain
+  - data-model-poisoning
+  - improper-output-handling
+  - excessive-agency
+  - system-prompt-leakage
+  - vector-embedding-weakness
+  - misinformation
+  - unbounded-consumption
+- id: owasp-agentic-2026
+  title: OWASP Top 10 for Agentic Applications 2026 coverage
+  source: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+  controls:
+  - agent-goal-hijacking
+  - tool-misuse
+  - identity-and-privilege-abuse
+  - agentic-supply-chain
+  - unexpected-code-execution
+  - memory-poisoning
+  - insecure-inter-agent-communication
+  - cascading-failures
+  - human-agent-trust-abuse
+  - rogue-agent
+- id: owasp-aisvs
+  title: OWASP AI Security Verification Standard controls
+  source: https://owasp.org/www-project-artificial-intelligence-security-verification-standard-aisvs-docs/
+  controls:
+  - ai-governance
+  - data-security
+  - model-security
+  - deployment-security
+  - monitoring
+  - privacy
+  - robustness
+  - supply-chain
+  - access-control
+  - incident-response
+- id: nist-ssdf
+  title: NIST SSDF secure development practices
+  source: https://csrc.nist.gov/pubs/sp/800/218/final
+  controls:
+  - prepare-organization
+  - protect-software
+  - produce-well-secured-software
+  - respond-to-vulnerabilities
+- id: nist-ssdf-ai
+  title: NIST SP 800-218A AI secure development profile
+  source: https://csrc.nist.gov/pubs/sp/800/218/a/final
+  controls:
+  - ai-model-data-provenance
+  - ai-risk-management
+  - ai-evaluation
+  - ai-release-protection
+  - ai-vulnerability-response
+- id: slsa-1.2
+  title: SLSA 1.2 source and build integrity
+  source: https://slsa.dev/spec/v1.2/
+  controls:
+  - source-provenance
+  - source-controls
+  - build-provenance
+  - hosted-build
+  - isolated-build
+  - dependency-integrity
+  - attestation-verification
+- id: wcag-2.2-aa
+  title: WCAG 2.2 AA accessibility coverage
+  source: https://www.w3.org/TR/WCAG22/
+  controls:
+  - perceivable
+  - operable
+  - understandable
+  - robust
+  - keyboard
+  - focus
+  - contrast
+  - reflow
+  - target-size
+  - accessible-authentication
+- id: pci-dss-4.0.1
+  title: PCI DSS 4.0.1 payment boundary controls
+  source: https://www.pcisecuritystandards.org/standards/pci-dss/
+  controls:
+  - network-security
+  - secure-configuration
+  - account-data-protection
+  - encryption-in-transit
+  - malware-defense
+  - secure-development
+  - access-control
+  - identity-authentication
+  - physical-boundary
+  - logging-monitoring
+  - security-testing
+  - security-policy
+- id: owasp-masvs
+  title: OWASP MASVS mobile and mini-app adjacent controls
+  source: https://mas.owasp.org/MASVS/
+  controls:
+  - storage
+  - cryptography
+  - authentication
+  - network
+  - platform
+  - code
+  - resilience
+  - privacy
+- id: opentelemetry-semconv
+  title: OpenTelemetry semantic convention conformance
+  source: https://opentelemetry.io/docs/specs/semconv/
+  controls:
+  - resource-identity
+  - http
+  - database
+  - messaging
+  - rpc
+  - exceptions
+  - genai-model
+  - genai-tools
+  - genai-retrieval
+  - metrics-logs-traces

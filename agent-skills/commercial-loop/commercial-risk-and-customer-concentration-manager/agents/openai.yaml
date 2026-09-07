@@ -1,0 +1,4 @@
+interface:
+  display_name: "commercial-risk-and-customer-concentration-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $commercial-risk-and-customer-concentration-manager to evaluate this Batch 13 commercial capability with evidence."

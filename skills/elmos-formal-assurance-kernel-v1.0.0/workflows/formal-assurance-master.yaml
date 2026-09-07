@@ -1,0 +1,136 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceWorkflow
+metadata:
+  name: formal-assurance-master
+  title: Formal Assurance Master Workflow
+  version: 1.0.0
+  domain: core
+spec:
+  durability:
+    checkpointEveryStep: true
+    resumePolicy: idempotent
+    fencingRequired: true
+  concurrency:
+    topLevelPerAccount: 3
+    maxParallelSteps: 8
+  budget:
+    etaUnit: wall-clock-seconds
+    reserveBeforeStart: true
+  steps:
+  - id: ingest-spec
+    skillRef: elmos-formal-spec-ir
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: resolve-observation
+    skillRef: elmos-observable-behavior-contract
+    dependsOn:
+    - ingest-spec
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: resolve-assumptions
+    skillRef: elmos-assumption-ledger
+    dependsOn:
+    - ingest-spec
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: plan
+    skillRef: elmos-proof-obligation-planner
+    dependsOn:
+    - resolve-observation
+    - resolve-assumptions
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: route
+    skillRef: elmos-verifier-portfolio-router
+    dependsOn:
+    - plan
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: execute
+    skillRef: elmos-formal-assurance-orchestrator
+    dependsOn:
+    - route
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: store
+    skillRef: elmos-proof-artifact-store
+    dependsOn:
+    - execute
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: gate
+    skillRef: elmos-formal-release-gate
+    dependsOn:
+    - store
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: report
+    skillRef: elmos-formal-assurance-report
+    dependsOn:
+    - gate
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  terminalPolicy:
+    successRequires: all required steps terminal and gate allowed
+    unknownIsFailure: true
+  events:
+  - workflow.started
+  - proof.step.started
+  - proof.step.completed
+  - proof.step.failed
+  - workflow.completed

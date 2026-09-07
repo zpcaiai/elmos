@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-account-usage",
+  "scope": "repository-local-engineering-only",
+  "executor": "codex-local-workspace",
+  "executed_at": "2026-08-06T11:29:50+08:00",
+  "environment": {
+    "runtime": "nodejs-26.0.0",
+    "package_manager": "pnpm-10.12.4",
+    "browser": "google-chrome-150.0.7871.189",
+    "devices": ["desktop-1440x900", "mobile-chromium-390x844"]
+  },
+  "checks": [
+    {"id":"typescript-and-production-build","command":"pnpm --dir apps/web-console check","status":"PASSED_LOCAL"},
+    {"id":"account-usage-browser-journeys","command":"playwright chromium and mobile-chromium pricing-ui.spec.ts usage-meter-ui.spec.ts","status":"PASSED_LOCAL"},
+    {"id":"ui-ir-validation","command":"python3 scripts/batch32/validate_ui_ir.py client-packs/elmos-web-console-account-usage/ui-ir/model.json","status":"PASSED_LOCAL"},
+    {"id":"independent-corpus-contract","command":"python3 scripts/batch32/validate_account_usage_corpora.py","status":"PASSED_LOCAL"}
+  ],
+  "production_operation_authorized": false,
+  "independent_verifier": "NOT_RUN",
+  "customer_workload": "NOT_RUN",
+  "external_certification": "NOT_CERTIFIED"
+}

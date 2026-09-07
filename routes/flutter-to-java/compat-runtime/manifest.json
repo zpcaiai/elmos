@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "route_key": "flutter-to-java",
+  "components": [],
+  "budget": {
+    "max_components": 5,
+    "max_wrapped_callable_ratio": 0.1,
+    "prohibited_domains": [
+      "authentication",
+      "authorization",
+      "transaction-core",
+      "money-calculation"
+    ]
+  }
+}

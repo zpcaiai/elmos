@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "case_key": "path-traversal-member",
+  "synthetic_member_name": "../escape.txt",
+  "expected_result": "reject-before-extraction-or-install",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "data_classification": "synthetic-public"
+}

@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+import argparse,json,uuid
+p=argparse.ArgumentParser();p.add_argument('--skill-id',required=True);p.add_argument('--target-profile',required=True);p.add_argument('--out',default='execution-plan.json');a=p.parse_args()
+x={'schema_version':'1.0','run_id':str(uuid.uuid4()),'skill_id':a.skill_id,'target_profile':a.target_profile,'steps':[{'id':'discover','action':'Inspect and fingerprint repository','consequential':False},{'id':'execute','action':'Run approved generation or repair','consequential':True},{'id':'verify','action':'Run static, build, test, runtime, and evidence checks','consequential':False}],'stop_conditions':['missing version','unapproved breaking change','unavailable protected environment'],'approvals':[]};open(a.out,'w').write(json.dumps(x,indent=2)+'\n');print(a.out)

@@ -1,0 +1,126 @@
+{
+  "kind": "target-relift-ir-bundle",
+  "routes": [
+    {
+      "route_key": "csharp-to-go",
+      "sha256": "sha256:778f9c492108a8fac2fd055559ac45938554cf4737bc59ab151de5825b07c88e"
+    },
+    {
+      "route_key": "csharp-to-java",
+      "sha256": "sha256:7ecdec90ee2ab21a88ce1447e17ab82e8115dae73b9ddd8c33cd64652425d87e"
+    },
+    {
+      "route_key": "csharp-to-python",
+      "sha256": "sha256:982c995f5120c90e95d8838c6509c68957cbe26af80edc93adcba30741d181b9"
+    },
+    {
+      "route_key": "csharp-to-rust",
+      "sha256": "sha256:579031b4be8c9f6a58642893e19da327bb157121e342dc4f4853f6a1c7a79548"
+    },
+    {
+      "route_key": "csharp-to-typescript",
+      "sha256": "sha256:99fdcacd73702519aae0e2072b932ff1e7b0e2e02f398d792c3cde43a373ae18"
+    },
+    {
+      "route_key": "go-to-csharp",
+      "sha256": "sha256:98123cb50ade8847b30305ce9f12b92eb8a2f17c7b0e163dcbd79523c3e10296"
+    },
+    {
+      "route_key": "go-to-java",
+      "sha256": "sha256:c832340cb7d1a2e2d0364cb0d8b817bb33d0b647ace3a8150d60efc38218e95c"
+    },
+    {
+      "route_key": "go-to-python",
+      "sha256": "sha256:683942578744bb90b8636d3464d57ec46081b665b39c2e0eca8f6ed7b790fe75"
+    },
+    {
+      "route_key": "go-to-rust",
+      "sha256": "sha256:e91c84e0a3ddd596226dcba2ccadb1771e9bd957ff3daacc48484aa44fb1a319"
+    },
+    {
+      "route_key": "go-to-typescript",
+      "sha256": "sha256:698ade8d72ede9d18176af0b371bcf6f60ab0cdfeafcf7db36ce66283208cd04"
+    },
+    {
+      "route_key": "java-to-csharp",
+      "sha256": "sha256:b6381760683ef30109496d762bb3f415b19d293afae8b4f550de2929fd073a2a"
+    },
+    {
+      "route_key": "java-to-go",
+      "sha256": "sha256:b400ec73db5e7acf24aee1147aa62a13d76c38481c0c472ee20f8937f8e20e94"
+    },
+    {
+      "route_key": "java-to-python",
+      "sha256": "sha256:eab80c7400a15d4ae17ffa3859459def83b549c48e0741414eea669b8f9c4923"
+    },
+    {
+      "route_key": "java-to-rust",
+      "sha256": "sha256:debe16a2f8df2bab7f34b845631136edf61aed672287c395bd90bc85415640aa"
+    },
+    {
+      "route_key": "java-to-typescript",
+      "sha256": "sha256:43fdd6ec3b13714431e776a7205ce0e02526af63272efe678bada17b4a4b7ee1"
+    },
+    {
+      "route_key": "python-to-csharp",
+      "sha256": "sha256:1a3cacdab49b0414173d0194d9ea2a069e908ac24adb2076366a41a359f9143d"
+    },
+    {
+      "route_key": "python-to-go",
+      "sha256": "sha256:99af88ff2fe98b411bce97ab186d3edf9c1e7c126234fa923e7bab4ffc654a00"
+    },
+    {
+      "route_key": "python-to-java",
+      "sha256": "sha256:2ac611a9b02f853f14ed0bd4de9a6ab46fcb57747aa07274768a340cce315e61"
+    },
+    {
+      "route_key": "python-to-rust",
+      "sha256": "sha256:fbc50644fe8ca20d94c0a1655445bfcc5a62ceffcba2e8a6be9e78e14f76526b"
+    },
+    {
+      "route_key": "python-to-typescript",
+      "sha256": "sha256:1ac7886f77b7935055444c511a25fd73713aa0696e5ba3bf1b1466669d98dd4a"
+    },
+    {
+      "route_key": "rust-to-csharp",
+      "sha256": "sha256:00d37aba6a5a10c95dda47bd32e04f19f845646927529e5942dea33bfdc809e6"
+    },
+    {
+      "route_key": "rust-to-go",
+      "sha256": "sha256:629a9f2a9b397916b1234507d20a11cf6e7ca14f04ae5f311278ed028eaa729b"
+    },
+    {
+      "route_key": "rust-to-java",
+      "sha256": "sha256:354afc8cafa8cb895faa10b45204b1448785cc3da8c1255abd6a46fcc889ae26"
+    },
+    {
+      "route_key": "rust-to-python",
+      "sha256": "sha256:eb164246d783262d73d0eaa9b70e2fcf87be89522e5b0f17749a82c7f23b8f55"
+    },
+    {
+      "route_key": "rust-to-typescript",
+      "sha256": "sha256:812f79997db95189d8bd97664cdac7be1f50a35bac07f1748bb14c1d7072817c"
+    },
+    {
+      "route_key": "typescript-to-csharp",
+      "sha256": "sha256:580479377e5e8ce92cbfaea44c0b655d0bc4c1dc08997b2ce90a47e33e048f43"
+    },
+    {
+      "route_key": "typescript-to-go",
+      "sha256": "sha256:04518432a4c7bd5c795855eef65b3cf97bc256147879e22de8512ae5b74e0a8b"
+    },
+    {
+      "route_key": "typescript-to-java",
+      "sha256": "sha256:f2cf9afd6080ac63e7e7a39b2d9a640c4244ce6c0e10d3fd20c7c28eb4de1da1"
+    },
+    {
+      "route_key": "typescript-to-python",
+      "sha256": "sha256:c948348e74e47b4cf96c5046f423a4f5696f3c7caf8781173bc4d914ec3745d1"
+    },
+    {
+      "route_key": "typescript-to-rust",
+      "sha256": "sha256:5eccbf4a0a753bf8cd69293f83ef07df5985f83ee9e38c070a27dbbbd0357347"
+    }
+  ],
+  "schema_version": 1
+}

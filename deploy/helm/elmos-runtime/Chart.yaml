@@ -1,0 +1,6 @@
+apiVersion: v2
+name: elmos-runtime
+description: ELMOS durable repository execution, billing, scheduler and worker runtime
+type: application
+version: 1.2.0
+appVersion: "1.2.0"

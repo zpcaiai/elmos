@@ -1,0 +1,6 @@
+interface:
+  display_name: "Environment Capture Replay"
+  short_description: "Run environment-capture-replay with bounded commercial controls"
+  default_prompt: "Use $environment-capture-replay through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

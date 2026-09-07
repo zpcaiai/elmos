@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: experience-value-scoring
+  version: 2.0.0
+  pack: 04-memory-experience-flywheel
+  priority: P0
+  owner: TBD
+spec:
+  description: 按正确性、稀缺性、泛化性、证据完整度和训练权利评估经验价值。
+  kernel: K4 Memory and Experience Kernel
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: agent trace
+    required: true
+  - name: tool event
+    required: true
+  - name: patch
+    required: true
+  - name: test result
+    required: true
+  - name: human feedback
+    required: true
+  outputs:
+  - name: experience episode
+    contentAddressed: true
+  - name: memory record
+    contentAddressed: true
+  - name: failure signature
+    contentAddressed: true
+  - name: repair pattern
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - trace.capture
+    - episode.write
+    - memory.query
+    - sandbox.replay
+    - diff.analyze
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - episode-complete
+    - tenant-isolated
+    - outcome-verified
+    - retention-policy-applied
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

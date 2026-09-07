@@ -1,0 +1,551 @@
+apiVersion: elmos.ai/v2alpha1
+kind: SkillIndex
+metadata:
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  generatedAt: '2026-08-27T00:00:00Z'
+spec:
+  skills:
+  - name: elmos-api-contract-verifier
+    title: API Contract Verifier
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-api-contract-verifier/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-requirement-to-formal-spec
+  - name: elmos-architecture-constraint-checker
+    title: Architecture Constraint Checker
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-architecture-constraint-checker/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-requirement-to-formal-spec
+  - name: elmos-assumption-ledger
+    title: Assumption Ledger
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-assumption-ledger/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+  - name: elmos-counterexample-to-test
+    title: Counterexample-to-Test Compiler
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-counterexample-to-test/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-proof-status-policy
+    - elmos-verifier-portfolio-router
+    - elmos-formal-assurance-orchestrator
+  - name: elmos-credit-billing-invariant-model
+    title: Credit and Billing Invariant Model
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-credit-billing-invariant-model/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-tla-task-runtime-model
+  - name: elmos-cross-language-product-program
+    title: Cross-language Product Program Verifier
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-cross-language-product-program/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-semantic-ir-formal-semantics
+  - name: elmos-data-invariant-verifier
+    title: Data Invariant Verifier
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-data-invariant-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-requirement-to-formal-spec
+  - name: elmos-ddl-constraint-preservation
+    title: DDL Constraint Preservation
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-ddl-constraint-preservation/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-sql-semantic-ir
+    - elmos-schema-losslessness-proof
+  - name: elmos-dml-state-equivalence
+    title: DML State Equivalence
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-dml-state-equivalence/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-sql-semantic-ir
+    - elmos-sql-query-equivalence
+  - name: elmos-dynamic-sql-proof-boundary
+    title: Dynamic SQL Proof Boundary
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-dynamic-sql-proof-boundary/SKILL.md
+    dependencies:
+    - elmos-assumption-ledger
+    - elmos-trusted-computing-base-registry
+    - elmos-sql-semantic-ir
+  - name: elmos-effect-exception-trace-refinement
+    title: Effect and Exception Trace Refinement
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-effect-exception-trace-refinement/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-semantic-ir-formal-semantics
+    - elmos-cross-language-product-program
+  - name: elmos-formal-assurance-orchestrator
+    title: Formal Assurance Orchestrator
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-formal-assurance-orchestrator/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-proof-status-policy
+    - elmos-verifier-portfolio-router
+    - elmos-proof-cache-invalidation
+    - elmos-formal-model-versioning
+  - name: elmos-formal-assurance-report
+    title: Formal Assurance Report
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-formal-assurance-report/SKILL.md
+    dependencies:
+    - elmos-proof-status-policy
+    - elmos-proof-artifact-store
+    - elmos-formal-release-gate
+  - name: elmos-formal-release-gate
+    title: Formal Release Gate
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-formal-release-gate/SKILL.md
+    dependencies:
+    - elmos-proof-status-policy
+    - elmos-formal-assurance-orchestrator
+    - elmos-proof-artifact-store
+  - name: elmos-formal-spec-ir
+    title: Formal Specification IR
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-formal-spec-ir/SKILL.md
+    dependencies: []
+  - name: elmos-generated-workflow-model-checker
+    title: Generated Workflow Model Checker
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-generated-workflow-model-checker/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-requirement-to-formal-spec
+  - name: elmos-java-jml-contract-verifier
+    title: Java JML Contract Verifier
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-java-jml-contract-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-trusted-computing-base-registry
+  - name: elmos-language-semantic-profile
+    title: Language Semantic Profile
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-language-semantic-profile/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-assumption-ledger
+  - name: elmos-lease-fencing-verifier
+    title: Lease and Fencing Verifier
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-lease-fencing-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-tla-task-runtime-model
+  - name: elmos-legacy-modernization-trace-validator
+    title: Legacy Modernization Trace Validator
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-legacy-modernization-trace-validator/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-formal-assurance-orchestrator
+  - name: elmos-observable-behavior-contract
+    title: Observable Behavior Contract
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-observable-behavior-contract/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+  - name: elmos-proof-artifact-store
+    title: Proof Artifact Store
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-proof-artifact-store/SKILL.md
+    dependencies:
+    - elmos-proof-status-policy
+    - elmos-trusted-computing-base-registry
+    - elmos-proof-cache-invalidation
+    - elmos-formal-assurance-orchestrator
+  - name: elmos-proof-cache-invalidation
+    title: Proof Cache and Invalidation
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-proof-cache-invalidation/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-assumption-ledger
+    - elmos-trusted-computing-base-registry
+  - name: elmos-proof-obligation-planner
+    title: Proof Obligation Planner
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-proof-obligation-planner/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-observable-behavior-contract
+  - name: elmos-proof-status-policy
+    title: Proof Status Policy
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-proof-status-policy/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-assumption-ledger
+  - name: elmos-repository-refinement-composer
+    title: Repository Refinement Composer
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-repository-refinement-composer/SKILL.md
+    dependencies:
+    - elmos-rule-preservation-prover
+    - elmos-cross-language-product-program
+    - elmos-formal-assurance-orchestrator
+  - name: elmos-requirement-to-formal-spec
+    title: Requirement-to-Formal-Spec Compiler
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-requirement-to-formal-spec/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-assumption-ledger
+    - elmos-proof-status-policy
+  - name: elmos-resource-termination-verifier
+    title: Resource and Termination Verifier
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-resource-termination-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-requirement-to-formal-spec
+  - name: elmos-routine-contract-verifier
+    title: SQL Routine Contract Verifier
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-routine-contract-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-sql-semantic-ir
+  - name: elmos-rule-preservation-prover
+    title: Transformation Rule Preservation Prover
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-rule-preservation-prover/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-semantic-ir-formal-semantics
+  - name: elmos-schema-losslessness-proof
+    title: Schema Losslessness Proof
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-schema-losslessness-proof/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-sql-semantic-ir
+  - name: elmos-semantic-gap-obligation-generator
+    title: Semantic Gap Obligation Generator
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-semantic-gap-obligation-generator/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-language-semantic-profile
+    - elmos-semantic-ir-formal-semantics
+  - name: elmos-semantic-ir-formal-semantics
+    title: Semantic IR Formal Semantics
+    priority: P0
+    domain: cross-language
+    path: skills/P0/elmos-semantic-ir-formal-semantics/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-trusted-computing-base-registry
+    - elmos-language-semantic-profile
+  - name: elmos-spring-exception-mapping-refinement
+    title: Spring Exception Mapping Refinement
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-exception-mapping-refinement/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-spring-filter-interceptor-order-proof
+    title: Spring Filter and Interceptor Order Proof
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-filter-interceptor-order-proof/SKILL.md
+    dependencies:
+    - elmos-spring-route-binding-proof
+    - elmos-spring-security-chain-model
+    - elmos-proof-obligation-planner
+  - name: elmos-spring-route-binding-proof
+    title: Spring Route and Binding Proof
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-route-binding-proof/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-spring-security-chain-model
+    title: Spring Security Chain Model
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-security-chain-model/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-spring-session-state-refinement
+    title: Spring Session State Refinement
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-session-state-refinement/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-spring-transaction-refinement
+    title: Spring Transaction Refinement
+    priority: P0
+    domain: spring-modernization
+    path: skills/P0/elmos-spring-transaction-refinement/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-sql-query-equivalence
+    title: SQL Query Equivalence
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-sql-query-equivalence/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-sql-semantic-ir
+  - name: elmos-sql-semantic-ir
+    title: SQL Semantic IR
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-sql-semantic-ir/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-language-semantic-profile
+  - name: elmos-sql-type-precision-verifier
+    title: SQL Type and Precision Verifier
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-sql-type-precision-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-sql-semantic-ir
+  - name: elmos-tenant-noninterference-verifier
+    title: Tenant Noninterference Verifier
+    priority: P0
+    domain: project-generation
+    path: skills/P0/elmos-tenant-noninterference-verifier/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-requirement-to-formal-spec
+  - name: elmos-tla-task-runtime-model
+    title: Elmos Task Runtime TLA+ Model
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-tla-task-runtime-model/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-formal-assurance-orchestrator
+  - name: elmos-trigger-trace-verifier
+    title: Trigger Trace Verifier
+    priority: P0
+    domain: sql-conversion
+    path: skills/P0/elmos-trigger-trace-verifier/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-sql-semantic-ir
+  - name: elmos-trusted-computing-base-registry
+    title: Trusted Computing Base Registry
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-trusted-computing-base-registry/SKILL.md
+    dependencies:
+    - elmos-assumption-ledger
+    - elmos-proof-status-policy
+  - name: elmos-verifier-portfolio-router
+    title: Verifier Portfolio Router
+    priority: P0
+    domain: core
+    path: skills/P0/elmos-verifier-portfolio-router/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-proof-status-policy
+    - elmos-trusted-computing-base-registry
+  - name: elmos-waiver-governance
+    title: Proof Waiver Governance
+    priority: P0
+    domain: platform
+    path: skills/P0/elmos-waiver-governance/SKILL.md
+    dependencies:
+    - elmos-assumption-ledger
+    - elmos-proof-status-policy
+    - elmos-formal-release-gate
+  - name: elmos-concurrency-async-refinement
+    title: Concurrency and Async Refinement
+    priority: P1
+    domain: cross-language
+    path: skills/P1/elmos-concurrency-async-refinement/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-semantic-ir-formal-semantics
+  - name: elmos-formal-model-versioning
+    title: Formal Model Versioning
+    priority: P1
+    domain: core
+    path: skills/P1/elmos-formal-model-versioning/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-assumption-ledger
+    - elmos-proof-cache-invalidation
+  - name: elmos-liveness-fairness-verifier
+    title: Liveness and Fairness Verifier
+    priority: P1
+    domain: project-generation
+    path: skills/P1/elmos-liveness-fairness-verifier/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-generated-workflow-model-checker
+  - name: elmos-proof-carrying-conversion
+    title: Proof-Carrying Conversion
+    priority: P1
+    domain: cross-language
+    path: skills/P1/elmos-proof-carrying-conversion/SKILL.md
+    dependencies:
+    - elmos-proof-status-policy
+    - elmos-trusted-computing-base-registry
+    - elmos-proof-cache-invalidation
+    - elmos-repository-refinement-composer
+  - name: elmos-proof-drift-monitor
+    title: Proof Drift Monitor
+    priority: P1
+    domain: platform
+    path: skills/P1/elmos-proof-drift-monitor/SKILL.md
+    dependencies:
+    - elmos-assumption-ledger
+    - elmos-proof-cache-invalidation
+    - elmos-formal-model-versioning
+    - elmos-proof-artifact-store
+  - name: elmos-proof-evidence-bundle
+    title: Proof Evidence Bundle
+    priority: P1
+    domain: platform
+    path: skills/P1/elmos-proof-evidence-bundle/SKILL.md
+    dependencies:
+    - elmos-trusted-computing-base-registry
+    - elmos-proof-artifact-store
+    - elmos-formal-assurance-report
+  - name: elmos-spring-data-migration-refinement
+    title: Spring Data Migration Refinement
+    priority: P1
+    domain: spring-modernization
+    path: skills/P1/elmos-spring-data-migration-refinement/SKILL.md
+    dependencies:
+    - elmos-formal-spec-ir
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+  - name: elmos-spring-proxy-aop-semantic-checker
+    title: Spring Proxy and AOP Semantic Checker
+    priority: P1
+    domain: spring-modernization
+    path: skills/P1/elmos-spring-proxy-aop-semantic-checker/SKILL.md
+    dependencies:
+    - elmos-spring-security-chain-model
+    - elmos-spring-transaction-refinement
+    - elmos-java-jml-contract-verifier
+  - name: elmos-sql-transaction-exception-refinement
+    title: SQL Transaction and Exception Refinement
+    priority: P1
+    domain: sql-conversion
+    path: skills/P1/elmos-sql-transaction-exception-refinement/SKILL.md
+    dependencies:
+    - elmos-observable-behavior-contract
+    - elmos-proof-obligation-planner
+    - elmos-sql-semantic-ir
+    - elmos-routine-contract-verifier
+  - name: elmos-verified-core-generator
+    title: Verified Core Generator
+    priority: P1
+    domain: project-generation
+    path: skills/P1/elmos-verified-core-generator/SKILL.md
+    dependencies:
+    - elmos-proof-obligation-planner
+    - elmos-verifier-portfolio-router
+    - elmos-requirement-to-formal-spec
+  - name: elmos-formal-observability-slo
+    title: Formal Assurance Observability and SLO
+    priority: P2
+    domain: platform
+    path: skills/P2/elmos-formal-observability-slo/SKILL.md
+    dependencies:
+    - elmos-formal-assurance-orchestrator
+    - elmos-proof-artifact-store
+    - elmos-formal-release-gate
+  - name: elmos-reflection-ffi-boundary-verifier
+    title: Reflection and FFI Boundary Verifier
+    priority: P2
+    domain: cross-language
+    path: skills/P2/elmos-reflection-ffi-boundary-verifier/SKILL.md
+    dependencies:
+    - elmos-assumption-ledger
+    - elmos-trusted-computing-base-registry
+    - elmos-language-semantic-profile
+    - elmos-semantic-ir-formal-semantics

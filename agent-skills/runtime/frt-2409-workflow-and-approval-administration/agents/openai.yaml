@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow and Approval Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2409-workflow-and-approval-administration to run FRT-2409 through the governed FRT runtime with exact scope and fail-closed evidence."

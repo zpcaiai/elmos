@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-b14",
+  "scenarioId": "order-list-light-1440",
+  "baselineRef": "artifact://visual/baseline",
+  "actualRef": "artifact://visual/actual",
+  "environmentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "differenceRatio": 0.004,
+  "status": "WITHIN_THRESHOLD",
+  "evidenceRefs": ["ev-visual-run"]
+}

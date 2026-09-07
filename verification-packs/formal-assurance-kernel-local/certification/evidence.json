@@ -1,0 +1,42 @@
+{
+  "evidence_refs": [
+    "qualification/local-qualification.json",
+    "qualification/implementation-manifest.json",
+    "qualification/environment.json",
+    "qualification/raw/engine-tests.txt",
+    "qualification/raw/integration-tests.txt",
+    "corpus/development/seed.json",
+    "corpus/negative/cases.json"
+  ],
+  "execution_states": {
+    "all_40_production_adapter_contracts": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "all_481_acceptance_controls": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "all_481_external_acceptance_evidence": "NOT_RUN",
+    "all_60_skill_handler_contracts": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "certification": "NOT_CERTIFIED",
+    "external_verification": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "other_native_toolchains": "NOT_RUN",
+    "real_source_target_databases": "NOT_RUN",
+    "representative_workloads": "NOT_RUN",
+    "spring_representative_builds": "NOT_RUN",
+    "sqlite_differential": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "z3": "LOCAL_EXECUTED_SELF_ATTESTED"
+  },
+  "integrity_manifest": "qualification/evidence-manifest.json",
+  "metrics": {
+    "local_test_pass_rate": 1.0,
+    "local_tests": 579
+  },
+  "notes": [
+    "Code completeness and local execution are recorded separately from external evidence and certification.",
+    "Acceptance traceability is complete for 481 IDs, while native and independent evidence remains explicitly NOT_RUN.",
+    "The attached package remained untrusted declarative source material and none of its executables were run."
+  ],
+  "pack_key": "formal-assurance-kernel-local",
+  "repository_binding_records": [
+    "qualification/local-qualification.json"
+  ],
+  "schema_version": 1,
+  "zero_tolerance": {}
+}

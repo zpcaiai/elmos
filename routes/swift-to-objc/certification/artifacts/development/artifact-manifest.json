@@ -1,0 +1,152 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/swift-to-objc/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1492,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3"
+    },
+    {
+      "bytes": 12422,
+      "path": "chunk-map.json",
+      "sha256": "sha256:480ca6853bd460cfe47bc20b85cd11e752339287a83183d5fd0355430b2591ed"
+    },
+    {
+      "bytes": 3170,
+      "path": "formal-composition.json",
+      "sha256": "sha256:0b2456b83ce77d1826c98b24dd6f9548866b73d1ec1e59e81fa2c4d53fb2cff0"
+    },
+    {
+      "bytes": 2032,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:4101e27cd2b8e87fd65c9fdd72c0992e8e869da1866d22fc5d1850404ea0919d"
+    },
+    {
+      "bytes": 10214,
+      "path": "formal-input.json",
+      "sha256": "sha256:e17355c36ac665c2df8a3678dedadf900087653c950f891a8f354d60a7e9a9aa"
+    },
+    {
+      "bytes": 2512,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:fa1c818cf5a0fb079519c07cabbfa5851df08109050c57a89ab40f652bd09b25"
+    },
+    {
+      "bytes": 205,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
+    },
+    {
+      "bytes": 120,
+      "path": "inputs/pricing.swift",
+      "sha256": "sha256:535a9c014e6ea23524a07a19a1564ee74071312a6ed42b22c419c4702a093fb8"
+    },
+    {
+      "bytes": 4301,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:6ab240163ec98afbf7fefbee488edaa281c8ec45705602757bc5890967d2c081"
+    },
+    {
+      "bytes": 451,
+      "path": "migrated.m",
+      "sha256": "sha256:5bef86bcea7377ecfa7b7cacdd17493d47770cd98d830a949a4334fa2baf0d2b"
+    },
+    {
+      "bytes": 9632,
+      "path": "route-evidence.json",
+      "sha256": "sha256:a470014f87d2cf0aa7a374547857b532f7fd266e0822074460b723608c9058a5"
+    },
+    {
+      "bytes": 1733,
+      "path": "route_harness.m",
+      "sha256": "sha256:ee6518614cb62510ad637586f460fdf1431d16af4f0d48163ba7508702bc7186"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 2256,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:f6ab122f685b9e2eba3969dd23ccaf2c9ee5dedeff876d56ab3e17a9e7308912"
+    },
+    {
+      "bytes": 939,
+      "path": "source-runtime/main.swift",
+      "sha256": "sha256:5a325801cbedfefcd47acffd7c2365fa9f754ec16378410df652d11e0c6a41b6"
+    },
+    {
+      "bytes": 120,
+      "path": "source-runtime/pricing.swift",
+      "sha256": "sha256:535a9c014e6ea23524a07a19a1564ee74071312a6ed42b22c419c4702a093fb8"
+    },
+    {
+      "bytes": 2256,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:f6ab122f685b9e2eba3969dd23ccaf2c9ee5dedeff876d56ab3e17a9e7308912"
+    },
+    {
+      "bytes": 1592,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:be4836918be2f82646de2a800f195b6ec7b7ddf8b3ea7aeb723606fb3fb88c7b"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "swift-to-objc",
+  "schema_version": 1,
+  "total_bytes": 55756
+}

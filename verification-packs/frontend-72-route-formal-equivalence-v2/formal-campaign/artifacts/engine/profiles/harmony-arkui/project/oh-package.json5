@@ -1,0 +1,10 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "interaction-harmonyarkui",
+  "version": "0.1.0",
+  "description": "ELMOS generated ArkUI project",
+  "main": "",
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {}
+}

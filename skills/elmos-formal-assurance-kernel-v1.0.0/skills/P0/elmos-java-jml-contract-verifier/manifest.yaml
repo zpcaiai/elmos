@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-java-jml-contract-verifier
+  title: Java JML Contract Verifier
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 为金额、额度、权限、库存、状态机和关键数据转换方法生成/校验 JML 契约并执行静态或运行时断言检查。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-trusted-computing-base-registry
+  capabilities:
+  - Hoare logic
+  - weakest preconditions
+  - JML ESC
+  - runtime assertion checking
+  inputs:
+  - name: Java source
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: risk map
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: domain invariants
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: JML-annotated source
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: verification log
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: proof result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: test fixture
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

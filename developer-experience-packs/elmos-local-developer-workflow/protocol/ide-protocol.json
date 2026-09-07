@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "protocol_key": "migration-ide-protocol",
+  "version": "1.0.0",
+  "transport": "json-rpc-local-socket",
+  "authentication": {
+    "mode": "local-process-token",
+    "tenant_scoped": true
+  },
+  "methods": [
+    {
+      "name": "migration.preview",
+      "request_schema": "schemas/preview-request.json",
+      "response_schema": "schemas/preview-result.json",
+      "cancellable": true,
+      "requires_document_version": true,
+      "requires_artifact_digest": true,
+      "required_permissions": [
+        "migration.preview"
+      ]
+    }
+  ],
+  "security": {
+    "path_allowlist": [
+      "${workspace}"
+    ],
+    "tool_allowlist": [
+      "migration-cli"
+    ],
+    "arbitrary_shell": false,
+    "secret_access": "reference-only",
+    "network_allowlist": []
+  },
+  "implementation_status": "local-core-only",
+  "external_host_status": "NOT_RUN"
+}

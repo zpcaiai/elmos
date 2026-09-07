@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Responsible Ai Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-data-quality-dedup-reconciliation-and-ce-b85860f8 to implement its fail-closed ELMOS Product B45 contract."

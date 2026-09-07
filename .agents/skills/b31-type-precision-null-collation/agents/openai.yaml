@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Type Precision Null Collation"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-type-precision-null-collation to execute this ELMOS Runtime Skill with fail-closed evidence."

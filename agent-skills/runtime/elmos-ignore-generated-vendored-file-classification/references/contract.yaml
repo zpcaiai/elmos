@@ -1,0 +1,67 @@
+schema_version: 1.0.0
+ordinal: 47
+name: elmos-ignore-generated-vendored-file-classification
+title: 忽略、生成与第三方文件分类
+objective: 基于可解释策略将条目标为 Included、MetadataOnly、Excluded、Quarantined、Generated、Vendored、Binary
+  或 SecretSuspected，减少成本而不静默丢失事实。
+dependencies:
+- elmos-project-package-manifest
+- elmos-data-retention-and-governance
+inputs:
+- 原始 package manifest
+- ignore 文件与用户规则
+- 内容/文件类型/安全特征
+outputs:
+- 分析视图和条目分类
+- 匹配解释
+- 成本预估
+- 需用户审查项
+responsibilities:
+- 合并系统默认规则、.gitignore、.dockerignore、.npmignore、.elmosignore、用户选择和安全策略，定义明确优先级。
+- 解析 ignore 语义时保留规则来源、匹配行、否定规则和目录上下文。
+- 通过路径、文件头、构建系统、生成标记、许可证、哈希和内容特征区分手写、生成、第三方和二进制。
+- 忽略只影响分析视图；原始 manifest 仍保留存在、大小、哈希和状态。
+- 安全隔离和 SecretSuspected 的优先级高于普通 include/ignore，不能被用户规则无痕覆盖。
+- 对必要的第三方接口/类型只索引公开契约，避免载入全部依赖源代码。
+- 用户可预览、覆盖和版本化分类，系统评估成本和安全影响。
+- 增量更新时只重新分类受规则或内容变化影响的条目。
+deliverables:
+- PackageEntryClassification schema 与规则引擎
+- ignore 文件兼容解析器和规则优先级
+- 生成/第三方/二进制/密钥疑似探测器
+- 预览、覆盖、增量重算和回归测试
+acceptance:
+- 原始 manifest 条目不会因 ignore 被删除
+- 规则匹配可解释到具体规则文件和行
+- 安全隔离不能被普通 ignore/include 规则绕过
+- 常见 build、cache、vendor、node_modules 和生成目录正确分类
+- 第三方依赖只按任务需要加载，默认不挤占活动上下文
+- 规则变化产生新分析视图并可比较/回滚
+data_entities:
+- package_ignore_rules
+- package_entry_classifications
+- package_analysis_views
+events:
+- package.entry.classified
+- package.ignore_rule.changed
+- package.analysis_view.created
+- package.secret_suspected
+metrics:
+- generated_file_precision
+- vendored_file_precision
+- ignored_source_false_positive_rate
+- analysis_token_savings
+failure_modes:
+- source file wrongly excluded
+- security finding hidden by ignore
+- gitignore semantics mismatch
+- binary parsed as text
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

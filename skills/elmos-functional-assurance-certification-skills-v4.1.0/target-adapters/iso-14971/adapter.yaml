@@ -1,0 +1,45 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: iso-14971
+  ecosystem: ISO 14971 Medical Device Risk Management
+  version: 4.0.0
+spec:
+  adapterKind: sector-medical-standard
+  maturity: P1
+  modes:
+  - profile
+  - map-controls
+  - compile-obligations
+  - evaluate-evidence
+  - export-assurance
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - exact-version support profile
+  - clause-to-control mapping without reproducing normative text
+  - evidence and competence obligations
+  - scope, limitation and transition ledger
+  - independent conformance decision inputs
+  releaseBoundary: adapter package presence is not native conformance

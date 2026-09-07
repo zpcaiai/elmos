@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lakehouse Modernizer"
+  short_description: "Govern formats protocols storage and compaction"
+  default_prompt: "Use $lakehouse-table-format-and-storage-modernizer to govern this ELMOS Batch 15 workflow."

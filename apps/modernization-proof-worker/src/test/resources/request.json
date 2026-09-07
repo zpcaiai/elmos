@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "targetSkillId": "B105-S01",
+  "execution": {
+    "runId": "job-packaged-worker-smoke",
+    "requestId": "job-packaged-worker-smoke:B105-S01",
+    "skillId": "B105-S01",
+    "actorId": "actor-smoke",
+    "subject": {
+      "organizationId": "org-smoke",
+      "projectId": "project-smoke",
+      "repositoryId": "repository-smoke",
+      "baselineCommit": null,
+      "candidateCommit": null,
+      "imageDigest": null,
+      "policyDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "requestedAt": "2026-08-05T12:00:00Z",
+    "inputs": {},
+    "evidence": {}
+  }
+}

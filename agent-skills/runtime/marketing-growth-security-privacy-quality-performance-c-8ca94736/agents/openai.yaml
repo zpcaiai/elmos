@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Marketing Growth Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $marketing-growth-security-privacy-quality-performance-c-8ca94736 to implement its fail-closed ELMOS Product B40 contract."

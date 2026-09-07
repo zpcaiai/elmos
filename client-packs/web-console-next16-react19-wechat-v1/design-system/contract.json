@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "source": [
+    "apps/web-console/app/globals.css",
+    "apps/web-console/app/**/*.module.css"
+  ],
+  "target": "target-project/**/*.wxss",
+  "token_adapter": "web-console-wechat-token-adapter-v1",
+  "rules": {
+    "global_important": false,
+    "unsupported_styles": "explicit review",
+    "css_module_tokens": "traceable generated classes",
+    "units": "rpx target with device review NOT_RUN"
+  },
+  "state": "LOCAL_GENERATED",
+  "runtime_evidence": "NOT_RUN"
+}

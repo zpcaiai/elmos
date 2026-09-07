@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Database Expand Contract Upgrade"
+  short_description: "Run evidence-bound Batch 38 database expand contract upgrade wor"
+  default_prompt: "Use $b38-database-expand-contract-upgrade to implement and verify this capability with fail-closed evidence."

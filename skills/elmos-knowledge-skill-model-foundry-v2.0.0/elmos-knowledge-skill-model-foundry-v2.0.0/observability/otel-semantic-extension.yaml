@@ -1,0 +1,56 @@
+apiVersion: elmos.ai/v1
+kind: TelemetrySemanticExtension
+metadata:
+  name: elmos-genai
+spec:
+  privacyDefault: no-content-capture
+  attributes:
+  - name: elmos.tenant.id
+    type: string
+    sensitivity: restricted
+  - name: elmos.project.id
+    type: string
+    sensitivity: restricted
+  - name: elmos.task.id
+    type: string
+  - name: elmos.episode.id
+    type: string
+  - name: elmos.environment.id
+    type: string
+  - name: elmos.environment.owner
+    type: string
+  - name: elmos.skill.name
+    type: string
+  - name: elmos.skill.version
+    type: string
+  - name: elmos.knowledge.snapshot
+    type: string
+  - name: elmos.model.release
+    type: string
+  - name: elmos.adapter.id
+    type: string
+    sensitivity: restricted
+  - name: elmos.evidence.bundle_id
+    type: string
+  - name: elmos.certification.level
+    type: string
+  - name: elmos.wall_clock.ms
+    type: integer
+  - name: elmos.cost.total
+    type: double
+  - name: elmos.rollback.target
+    type: string
+  - name: elmos.policy.decision_id
+    type: string
+  signals:
+  - traces
+  - metrics
+  - events
+  - logs
+  requiredCorrelations:
+  - task-to-model
+  - task-to-skill
+  - task-to-tool
+  - task-to-evidence
+  - training-to-dataset
+  - deployment-to-release

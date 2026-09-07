@@ -1,0 +1,66 @@
+{
+  "contract": {
+    "id": "B108-S03",
+    "batch": 108,
+    "name": "rewrite-datatable-evidence-collector",
+    "dependencies": [
+      "B105-S06",
+      "B108-S01"
+    ],
+    "inputs": [
+      "RewriteStageResults",
+      "EvidenceWorkspace"
+    ],
+    "outputs": [
+      "RewriteEvidenceBundle"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/rewrite/RewriteEvidenceCollector.java"
+      ],
+      "interfaces": [
+        "POST /api/evidence/rewrite:collect",
+        "event evidence.rewrite.collected"
+      ],
+      "data": [
+        "rewrite_evidence",
+        "rewrite_recipe_execution"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1stage commit\u548cRecipe lock",
+      "\u91c7\u96c6DataTable\u548c\u65e5\u5fd7",
+      "\u8ba1\u7b97\u6587\u4ef6/\u884c/AST\u5355\u5143\u53d8\u66f4",
+      "\u8bb0\u5f55\u8b66\u544a\u548c\u672a\u89e3\u51b3\u9879",
+      "\u5173\u8054\u5e42\u7b49\u7b2c\u4e8c\u6b21\u8fd0\u884c",
+      "\u5199\u5165\u5185\u5bb9\u5bfb\u5740Bundle"
+    ],
+    "tests": [
+      "\u7f3aDataTable\u4e0d\u4f2a\u9020\u6210\u529f",
+      "\u6d6e\u52a8\u7248\u672c\u6807\u98ce\u9669",
+      "stage commit\u4e0d\u5339\u914d\u62d2\u7edd",
+      "\u5e42\u7b49\u5931\u8d25\u663e\u793a",
+      "\u65e5\u5fd7Secret\u8131\u654f"
+    ],
+    "evidence": [
+      "rewrite-evidence.json",
+      "datatables.zip",
+      "rewrite-metrics.json",
+      "idempotency.json"
+    ],
+    "definition_of_done": [
+      "\u9636\u6bb5\u5168\u8986\u76d6",
+      "\u7248\u672c\u56fa\u5b9a",
+      "\u5dee\u5f02\u53ef\u590d\u7b97",
+      "\u672a\u89e3\u51b3\u9879\u663e\u5f0f",
+      "Bundle\u6709\u6458\u8981"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:76846b094b9dda8c46f82b5b85d83cfc85d69143c3ba84b81b9cd296beb421fb",
+  "compiledVersion": 1
+}

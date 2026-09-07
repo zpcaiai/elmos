@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "windows-side-by-side-plan",
+  "prompt": "Plan modernization for a net48 Web Forms and System.Web application that uses Registry, a custom WCF binding, EDMX, and must stay online.",
+  "assertions": [
+    "The output does not recommend Linux while Registry and System.Web blockers remain.",
+    "The output marks Web Forms UI as rewrite-required and uses incremental YARP/System.Web adapter steps with an exit decision.",
+    "The output treats custom WCF binding as partial/redesign with architecture approval and stages EF6 before per-context EF Core/EDMX regeneration."
+  ]
+}

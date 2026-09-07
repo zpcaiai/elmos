@@ -1,0 +1,4 @@
+interface:
+  display_name: "air-gapped-installation-bundle-builder"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $air-gapped-installation-bundle-builder to evaluate this enterprise platform capability with evidence."

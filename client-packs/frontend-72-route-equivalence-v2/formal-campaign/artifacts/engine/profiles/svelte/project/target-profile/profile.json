@@ -1,0 +1,31 @@
+{
+  "id": "svelte",
+  "label": "Svelte",
+  "frameworkVersion": "5.56.8",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "WEB"
+  ],
+  "language": "TypeScript",
+  "languageVersion": "6.0.3",
+  "runtime": "Node.js",
+  "runtimeVersion": "26.0.0",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Vite",
+  "buildToolVersion": "8.1.5",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "History API adapter",
+  "state": "Svelte runes",
+  "rendering": "CSR",
+  "testTool": "Vitest 4.1.10",
+  "runnerProfile": "MODERN_WEB",
+  "requiredProjectFiles": [
+    "package.json",
+    "svelte.config.js",
+    "vite.config.ts",
+    "src/main.ts",
+    "src/App.svelte"
+  ]
+}

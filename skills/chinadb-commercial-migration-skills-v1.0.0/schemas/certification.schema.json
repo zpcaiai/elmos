@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MigrationCertification",
+  "type": "object",
+  "required": [
+    "route_id",
+    "release_candidate",
+    "gates",
+    "decision"
+  ],
+  "properties": {
+    "route_id": {
+      "type": "string"
+    },
+    "release_candidate": {
+      "type": "string"
+    },
+    "gates": {
+      "type": "object",
+      "required": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "decision": {
+      "enum": [
+        "certified",
+        "rejected",
+        "conditional"
+      ]
+    },
+    "expires_at": {
+      "type": "string"
+    }
+  }
+}

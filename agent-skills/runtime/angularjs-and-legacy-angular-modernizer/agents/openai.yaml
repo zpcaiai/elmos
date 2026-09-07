@@ -1,0 +1,4 @@
+interface:
+  display_name: "Angular Modernizer"
+  short_description: "Modernize AngularJS and legacy Angular safely"
+  default_prompt: "Use $angularjs-and-legacy-angular-modernizer to plan staged AngularJS or legacy Angular modernization with explicit compatibility exits."

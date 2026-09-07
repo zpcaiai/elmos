@@ -1,0 +1,69 @@
+schema_version: 1.0.0
+ordinal: 36
+name: elmos-context-rehydration
+title: 上下文重新水化
+objective: 通过来源锚点与检索键精确恢复原始证据，并在装载前验证版本、冲突和预算。
+dependencies:
+- elmos-source-anchor-and-provenance
+- elmos-storage-index-and-retrieval
+- elmos-long-context-packing-and-ranking
+- elmos-context-checkpoint-and-recovery
+inputs:
+- RehydrationRequest
+- 来源锚点/检索键
+- 资产和项目版本
+- 上下文预算
+outputs:
+- 恢复的原始证据块
+- 更新后的 ContextLoadPlan
+- 版本/冲突报告
+- 审计记录
+responsibilities:
+- 从任务目标、缺失事实、符号、requirement id、source anchor 或检查点生成 RehydrationRequest。
+- 优先精确定位原始资产、页码、段落、时间区间、图片区域、文件路径、符号或测试运行，而非只加载旧摘要。
+- 验证资产未删除、权限仍有效、版本符合当前项目视图且哈希匹配。
+- 对候选证据执行混合检索、相邻上下文扩展、冲突检测和 token 预算检查。
+- 将恢复内容纳入新的 ContextLoadPlan，并明确替换/驱逐项。
+- 记录何时、为何、由谁、加载了什么以及对任务结论的影响。
+- 缓存可重用的派生块但不替代不可变原始证据。
+- 在来源缺失或版本冲突时阻断未经证实的事实，并升级人工处理。
+deliverables:
+- RehydrationRequest/Result schema
+- 按各类 SourceAnchor 的精确加载适配器
+- 版本/权限/哈希校验与预算集成
+- 水化事件、审计和端到端测试
+acceptance:
+- 可从 PDF 页、Word 段落、音频时间段、图片框、文本行和代码符号准确恢复
+- 恢复前执行租户权限与版本检查
+- 加载后上下文不超过预算且不移除 P0/P1
+- 被恢复内容与原始哈希或可验证派生链一致
+- 找不到来源时不得把摘要当原始事实
+- 关键水化请求成功率和延迟满足SLO
+data_entities:
+- context_rehydration_runs
+- rehydration_items
+- rehydration_cache_entries
+events:
+- context.rehydration.started
+- context.rehydration.completed
+- context.rehydration.partial
+- context.rehydration.failed
+metrics:
+- rehydration_success_rate
+- exact_anchor_hit_rate
+- rehydration_latency_ms
+- stale_source_rejection_count
+failure_modes:
+- source deleted
+- anchor drift
+- wrong project version
+- budget cannot fit evidence
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

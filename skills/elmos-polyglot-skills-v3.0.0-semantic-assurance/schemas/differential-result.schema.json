@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.differential-result/v1",
+  "type": "object",
+  "required": [
+    "runId",
+    "fixtureId",
+    "sourceEvidence",
+    "targetEvidence",
+    "verdict"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string"
+    },
+    "fixtureId": {
+      "type": "string"
+    },
+    "sourceEvidence": {
+      "type": "string"
+    },
+    "targetEvidence": {
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "pass",
+        "fail",
+        "blocked",
+        "unknown"
+      ]
+    },
+    "counterexample": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "oracleResults": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

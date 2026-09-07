@@ -1,0 +1,65 @@
+{
+  "id": "B106-S01",
+  "batch": 106,
+  "name": "polyglot-project-runtime-detector",
+  "dependencies": [
+    "B105-S16"
+  ],
+  "inputs": [
+    "certified candidate repository",
+    "runtime detection policies"
+  ],
+  "outputs": [
+    "RuntimeDetectionResult",
+    "service candidates",
+    "ambiguity findings"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/detection/RuntimeDetectorService.java",
+      "private-runner/internal/detect/runtime.go",
+      "registry/runtime-detectors/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/runtime:detect",
+      "event runtime.detected"
+    ],
+    "data": [
+      "runtime_detection",
+      "service_candidate",
+      "runtime_signal"
+    ]
+  },
+  "workflow": [
+    "扫描Dockerfile/Compose和语言构建文件",
+    "识别Java/Python/.NET/Go/Node及框架",
+    "从配置、代码和测试推断端口与健康路径",
+    "识别多服务、数据库和后台进程",
+    "对冲突信号打分并要求选择主服务",
+    "输出候选RuntimeSpec而不执行代码"
+  ],
+  "tests": [
+    "Spring Boot pom正确识别",
+    "多个csproj返回歧义而非任选",
+    "绑定localhost的启动配置被标记",
+    "硬编码端口与环境变量冲突有提示",
+    "恶意文件名不触发命令执行"
+  ],
+  "evidence": [
+    "runtime-detection.json",
+    "service-candidates.json",
+    "ambiguity-findings.json"
+  ],
+  "definition_of_done": [
+    "支持四种后端语言",
+    "所有推断有证据",
+    "多服务不误判单服务",
+    "不执行不可信代码",
+    "结果可生成Manifest"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

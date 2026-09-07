@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "automated_checks": "LOCAL_EXECUTED",
+  "keyboard_checks": "LOCAL_EXECUTED",
+  "zoom_checks": "LOCAL_EXECUTED",
+  "screen_reader": "NOT_RUN",
+  "voice_control": "NOT_RUN",
+  "high_contrast_manual_review": "NOT_RUN",
+  "independent_reviewer": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

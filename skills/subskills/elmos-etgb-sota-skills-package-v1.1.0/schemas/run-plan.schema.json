@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/run-plan.schema.json",
+  "title": "Immutable ETGB Run Plan",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "case_ids", "plan_digest"],
+  "properties": {
+    "schema_version": {"enum": ["1.0", "1.1"]},
+    "candidate_digest": {"type": "string"},
+    "case_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "plan_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "selection_policy": {"type": "string"},
+    "selections": {"type": "array", "items": {"type": "object"}},
+    "shards": {"type": "array", "items": {"type": "object"}},
+    "budget": {"type": "object"}
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "project": {
+    "name": "dotnet-demo",
+    "language": "dotnet",
+    "framework": "aspnet-core"
+  },
+  "build": {
+    "image": "example/dotnet-builder@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "command": [
+      "dotnet",
+      "publish",
+      "-c",
+      "Release",
+      "-o",
+      "/app/publish"
+    ],
+    "workingDirectory": "/workspace"
+  },
+  "runtime": {
+    "image": "example/dotnet-runtime@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "command": [
+      "dotnet",
+      "/app/publish/Application.dll"
+    ],
+    "environment": {
+      "PORT": "8080"
+    }
+  },
+  "service": {
+    "protocol": "http",
+    "port": 8080,
+    "health": {
+      "path": "/health",
+      "expectedStatus": 200,
+      "timeoutSeconds": 120
+    }
+  },
+  "preview": {
+    "homepage": "/",
+    "apiDocs": "/swagger",
+    "openapi": "/swagger/v1/swagger.json",
+    "screenshot": true
+  },
+  "lifecycle": {
+    "ttlSeconds": 600,
+    "startTtlAfterReady": true,
+    "idleTimeoutSeconds": 300
+  },
+  "resources": {
+    "cpu": 2,
+    "memoryMb": 2048,
+    "diskMb": 4096
+  },
+  "network": {
+    "publicIngress": true,
+    "outboundPolicy": "restricted"
+  },
+  "security": {
+    "authenticatedPreview": true,
+    "readOnlyRootFilesystem": true,
+    "blockCloudMetadata": true
+  }
+}

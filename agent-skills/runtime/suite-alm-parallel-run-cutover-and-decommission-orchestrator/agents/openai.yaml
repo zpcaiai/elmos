@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite ALM Parallel Run Cutover And Decommission Orchestrator"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-alm-parallel-run-cutover-and-decommission-orchestrator to govern this enterprise suite modernization task with fail-closed evidence."

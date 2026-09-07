@@ -1,0 +1,3 @@
+destination: unapproved.example
+dataClass: restricted
+expected: DENY

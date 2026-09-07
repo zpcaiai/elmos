@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cutover State Machine and Gate Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $cutover-state-machine-and-gate-controller to perform this Batch 11 production-cutover task."

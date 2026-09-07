@@ -1,0 +1,100 @@
+# Structural qualification fixture only. It contains no credentials, reachable
+# provider, cluster, database, verifier, or production authorization.
+validation:
+  enforceProductionValues: true
+
+images:
+  controlPlane: registry.example.com/elmos/runtime-control-plane@sha256:1111111111111111111111111111111111111111111111111111111111111111
+  worker: registry.example.com/elmos/runtime-worker@sha256:2222222222222222222222222222222222222222222222222222222222222222
+
+database:
+  existingSecret: qualification-database
+
+credentials:
+  existingSecret: qualification-runtime-credentials
+
+migration:
+  serviceAccountName: qualification-runtime-migration
+
+gate:
+  enabled: true
+  fixture:
+    tenant_id: 10000000-0000-4000-8000-000000000001
+    account_id: 10000000-0000-4000-8000-000000000002
+    wallet_id: 10000000-0000-4000-8000-000000000003
+    project_id: 10000000-0000-4000-8000-000000000004
+    job_id: 10000000-0000-4000-8000-000000000005
+    stage_id: 10000000-0000-4000-8000-000000000006
+    work_item_id: 10000000-0000-4000-8000-000000000007
+    attempt_id: 10000000-0000-4000-8000-000000000008
+    provider: openai
+    model: gpt-qualification
+    provider_pricing_version_id: 10000000-0000-4000-8000-000000000009
+    commercial_pricing_version_id: 10000000-0000-4000-8000-00000000000a
+
+provider:
+  enabled: true
+  credentialSecret: qualification-provider-credentials
+  profiles:
+    - provider: openai
+      model: gpt-qualification
+      protocol: OPENAI_RESPONSES_V1
+      endpoint: https://api.openai.com/v1/responses
+      credentialKey: openai-api-key
+      requestTimeoutSeconds: 120
+      maxResponseBytes: 8388608
+  objectStorage:
+    backendId: qualification-s3
+    endpoint: https://s3.example.com
+    bucket: elmos-runtime-qualification
+    region: qualification-region-1
+    serverSideEncryption: SSE_KMS
+    cmkReference: qualification-kms-key
+    objectUriPrefix: s3://elmos-runtime-qualification/provider-responses
+
+outbox:
+  enabled: true
+  endpoint: https://outbox.example.com/v1/events
+
+monitoring:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+  namespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: observability
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  podMonitorLabels:
+    release: prometheus
+  prometheusRuleLabels:
+    release: prometheus
+  dashboardLabels:
+    grafana_dashboard: "1"
+
+worker:
+  identityNamespace: 20000000-0000-4000-8000-000000000001
+  region: qualification-region-1
+  zone: qualification-zone-a
+  routes:
+    - jobType: PROJECT_GENERATION
+      workType: synthesize
+      endpoint: http://engine.runtime.svc.cluster.local:8080/v1/execute
+      reconciliationEndpoint: http://engine.runtime.svc.cluster.local:8080/v1/reconcile
+      timeoutSeconds: 600
+  persistence:
+    storageClass: qualification-rwo
+
+networkPolicy:
+  databaseCidrs: [192.0.2.10/32]
+  providerCidrs: [192.0.2.20/32]
+  objectStorageCidrs: [192.0.2.30/32]
+  workerEngineCidrs: [192.0.2.40/32]
+  outboxCidrs: [192.0.2.50/32]
+  ingressNamespaceSelector:
+    matchLabels:
+      elmos.example/qualification-access: allowed
+  ingressPodSelector:
+    matchLabels:
+      app.kubernetes.io/name: qualification-gate-runner

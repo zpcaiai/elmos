@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Generation Journey Closure"
+  short_description: "Close the governed project synthesis workflow"
+  default_prompt: "Use $elmos-generation-journey-closure to implement and verify the complete project generation journey."

@@ -1,0 +1,21 @@
+{
+  "route_id": "oracle19c-to-dm8-example",
+  "source": {
+    "engine": "oracle",
+    "version": "19c",
+    "compatibility_mode": "n/a"
+  },
+  "target": {
+    "engine": "dm8",
+    "version": "DISCOVER_AT_RUNTIME",
+    "compatibility_mode": "oracle-compatible-profile"
+  },
+  "app_stacks": [
+    "java-spring",
+    "mybatis"
+  ],
+  "gates": {
+    "policy": "config/default-gates.yaml"
+  },
+  "waivers": []
+}

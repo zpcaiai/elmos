@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 514: delegation of authority and reserved matters manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $delegation-of-authority-and-reserved-matters-manager to evaluate this capability with evidence."

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2010",
+  "skill_name": "frt-2010-workspace-multi-tenant-platform",
+  "batch": "G20",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g20/frt-2010-workspace-multi-tenant-platform/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.workspace-multi-tenant-platform",
+  "execution_contract_sha256": "sha256:0d96c46c9ee4d4a5110530196b3cfdceb2d4d5edc4abf1a6543537d6271c0449",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:8d5f495969c02559b6cd2ef978053bfd85a932dbc34a99d7235fe1ecef9d6644",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

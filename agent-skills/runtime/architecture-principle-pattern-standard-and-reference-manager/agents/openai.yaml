@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 009"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $architecture-principle-pattern-standard-and-reference-manager to apply its fail-closed ELMOS runtime contract."

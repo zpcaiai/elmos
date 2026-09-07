@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 013"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $azure-devops-entra-organization-project-service-hook-pr-c24603ec to implement its fail-closed ELMOS Product Batch 35 contract."

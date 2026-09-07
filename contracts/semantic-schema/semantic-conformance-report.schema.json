@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/semantic-conformance-report.schema.json",
+  "title": "PSP v1 Conformance Report",
+  "type": "object",
+  "required": ["status", "batch", "modules", "coverage", "blockingDiagnosticIds", "violations", "recommendedActions"],
+  "properties": {
+    "status": {"enum": ["passed", "passed_with_restrictions", "blocked", "failed"]},
+    "batch": {"const": 2},
+    "modules": {"type": "array", "items": {"type": "object", "required": ["moduleId", "gate", "eligibleForBatch3", "eligibleForAutoTranslation", "restrictions", "coverage"]}},
+    "coverage": {"type": "object"},
+    "blockingDiagnosticIds": {"type": "array", "items": {"type": "string"}},
+    "violations": {"type": "array", "items": {"type": "string"}},
+    "recommendedActions": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

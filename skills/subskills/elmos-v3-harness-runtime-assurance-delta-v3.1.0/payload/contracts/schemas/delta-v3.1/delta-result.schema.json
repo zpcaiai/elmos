@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/delta-result.schema.json",
+  "title": "Elmos v3.1 Delta Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "invocationId",
+    "status",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "invocationId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "COMMITTED",
+        "DENIED",
+        "REFUTED",
+        "UNKNOWN",
+        "UNSUPPORTED",
+        "REQUIRES_REVIEW"
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "proofObligationRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

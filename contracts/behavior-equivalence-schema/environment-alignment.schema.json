@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/behavior-equivalence/environment-alignment.schema.json",
+  "title": "Source target environment alignment",
+  "type": "object",
+  "required": ["source_ready", "target_ready", "isolated", "business_configuration_aligned", "feature_flags_aligned", "locale_aligned", "timezone_aligned", "database_aligned", "cache_aligned", "message_state_aligned", "external_responses_aligned", "virtual_clock_controlled", "randomness_controlled", "clean_environment", "production_resource_accessed", "secret_material_observed", "differences", "evidence_refs"],
+  "properties": {
+    "source_ready": {"type": "boolean"}, "target_ready": {"type": "boolean"}, "isolated": {"type": "boolean"},
+    "business_configuration_aligned": {"type": "boolean"}, "feature_flags_aligned": {"type": "boolean"},
+    "locale_aligned": {"type": "boolean"}, "timezone_aligned": {"type": "boolean"},
+    "database_aligned": {"type": "boolean"}, "cache_aligned": {"type": "boolean"},
+    "message_state_aligned": {"type": "boolean"}, "external_responses_aligned": {"type": "boolean"},
+    "virtual_clock_controlled": {"type": "boolean"}, "randomness_controlled": {"type": "boolean"},
+    "clean_environment": {"type": "boolean"}, "production_resource_accessed": {"const": false},
+    "secret_material_observed": {"const": false},
+    "differences": {"type": "array", "items": {"type": "string"}},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/gate-evidence.schema.json",
+  "title": "G14 Gate Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "area",
+    "status",
+    "coverage",
+    "controls",
+    "tenant_isolation_passed",
+    "privacy_and_consent_passed",
+    "guardrails_passed",
+    "failure_and_negative_evidence_preserved",
+    "critical_violations",
+    "cross_tenant_events",
+    "fabricated_outcomes",
+    "unauthorized_external_actions",
+    "external_operation_executed",
+    "metrics",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": { "type": "string", "minLength": 1 },
+    "platform_business_version": { "type": "string", "minLength": 1 },
+    "area": {
+      "enum": [
+        "PRODUCT_ACTIVATION",
+        "CONTENT_AND_DEVELOPER",
+        "COMMUNITY_SAFETY",
+        "MARKETPLACE_GROWTH",
+        "INTERNATIONALIZATION",
+        "REGIONAL_CHANNEL"
+      ]
+    },
+    "status": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN", "BLOCKED", "INCONCLUSIVE", "NOT_APPLICABLE"]
+    },
+    "coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+    "controls": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "tenant_isolation_passed": { "type": "boolean" },
+    "privacy_and_consent_passed": { "type": "boolean" },
+    "guardrails_passed": { "type": "boolean" },
+    "failure_and_negative_evidence_preserved": { "type": "boolean" },
+    "critical_violations": { "type": "integer", "minimum": 0 },
+    "cross_tenant_events": { "type": "integer", "minimum": 0 },
+    "fabricated_outcomes": { "type": "integer", "minimum": 0 },
+    "unauthorized_external_actions": { "type": "integer", "minimum": 0 },
+    "external_operation_executed": { "const": false },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "authority_id": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

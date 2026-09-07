@@ -1,0 +1,116 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillImplementationBlueprint
+metadata:
+  name: elmos-model-license-usage-restriction-governor
+  version: 4.0.0
+spec:
+  architecture:
+    controlPlane:
+    - command/query API
+    - workflow compiler
+    - policy decision point
+    - approval service
+    - independent gate projection
+    executionPlane:
+    - sandboxed worker
+    - native adapter worker
+    - verifier worker
+    - side-effect reconciler
+    dataPlane:
+    - PostgreSQL 17 with RLS
+    - content-addressed artifact store
+    - append-only event journal
+    - WORM evidence store
+    - OpenTelemetry backend
+  domainServices:
+  - name: InventoryModelAndDataLicensesService
+    responsibility: inventory model and data licenses
+  - name: CompileCommercialRedistributionAndFieldOfUseConstraintsService
+    responsibility: compile commercial, redistribution and field-of-use constraints
+  - name: PropagateObligationsIntoDeploymentProfilesService
+    responsibility: propagate obligations into deployment profiles
+  - name: BlockIncompatibleCombinationAndExportService
+    responsibility: block incompatible combination and export
+  - name: ProduceCustomerFacingUsageEvidenceService
+    responsibility: produce customer-facing usage evidence
+  algorithms:
+  - name: CapabilityNegotiation
+    strategy: exact profile intersection; critical unsupported => BLOCKED
+    determinism: required
+  - name: WorkGraphCompilation
+    strategy: dependency DAG with checkpoint, compensation, proof and budget nodes
+    determinism: required
+  - name: BoundedSynthesis
+    strategy: use models only for unresolved mappings within patch/context/tool budgets
+    determinism: bounded
+  - name: CounterexampleGuidedRepair
+    strategy: minimize, attribute, repair local cause, invalidate affected evidence
+    determinism: replayable inputs
+  phases:
+  - id: P0-freeze
+    exitGate: exact RevisionSet and authority snapshot
+  - id: P1-compile
+    exitGate: domain model and gaps validate
+  - id: P2-plan
+    exitGate: work/proof/cost/rollback plan approved
+  - id: P3-execute
+    exitGate: candidate artifacts frozen
+  - id: P4-native-verify
+    exitGate: required native and negative suites explicit
+  - id: P5-evidence-certify
+    exitGate: sealed evidence and independent gate decision
+  stateMachine:
+    initial: REQUESTED
+    states:
+    - REQUESTED
+    - PROFILED
+    - PLANNED
+    - RUNNING
+    - PAUSED
+    - VERIFYING
+    - REPAIRING
+    - EVIDENCE_SEALED
+    - COMPLETED
+    - BLOCKED
+    - FAILED
+    - CANCELLED
+    terminal:
+    - COMPLETED
+    - BLOCKED
+    - FAILED
+    - CANCELLED
+    rules:
+    - state transitions are monotonic except explicit replay/fork creates a new execution epoch
+    - COMPLETED requires independent K8 decision
+    - cancel cannot erase unsettled side effects
+  persistence:
+    tables:
+    - ai_skill_runs
+    - ai_skill_steps
+    - ai_skill_events
+    - ai_skill_artifacts
+    - proof_obligations
+    - proof_results
+    - side_effect_ledger
+    - usage_ledger
+    indexes:
+    - tenant+goal+revision
+    - run+sequence
+    - artifact content hash
+    - proof subject+claim+status
+    rls: true
+    outbox: true
+  deployment:
+    workerMode: ephemeral non-root sandbox or customer VPC runner
+    network: deny by default
+    secrets: short-lived brokered
+    horizontalScaling: lease/fencing controlled
+    rollback: versioned artifacts and reversible migrations
+  slos:
+    controlApiP95Ms: 500
+    checkpointRpoSeconds: 0
+    orchestratorRtoMinutes: 15
+    evidenceLossTolerance: zero acknowledged terminal evidence
+    etaUnit: machine-wall-clock-seconds
+  releaseBoundary: Reference blueprint requires integration with real Elmos services and native targets; no external conformance
+    is claimed by package presence.

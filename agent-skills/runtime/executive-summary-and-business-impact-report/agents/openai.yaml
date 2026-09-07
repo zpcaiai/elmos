@@ -1,0 +1,4 @@
+interface:
+  display_name: "Executive Summary And Business Impact Report"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $executive-summary-and-business-impact-report to execute this ELMOS Runtime Skill with fail-closed evidence."

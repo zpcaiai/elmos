@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/suite.schema.json",
+  "title": "ETGB Suite Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "suite_id",
+    "version",
+    "case_files",
+    "coverage_model"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "suite_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "case_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage_model": {
+      "type": "string"
+    },
+    "expected_minimum_case_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "release_gates": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,802 @@
+version: 1.1.0
+epics:
+- id: EPIC-00
+  skill: elmos-insight-orchestrator
+  title: Project Intelligence Studio 总编排
+  category: orchestration
+  batch: BATCH-00-product-and-reference-architecture
+  objective: 把代码阅读、架构理解、流程发现、图表、文档、PPT、问答、影响分析和 Elmos 转换能力组织为可暂停、可恢复、可验证的统一工作流。
+  priority: P0
+  depends_on: []
+  acceptance_ids:
+  - AC-00-01
+  - AC-00-02
+  - AC-00-03
+  - AC-00-04
+  - AC-00-05
+- id: EPIC-01
+  skill: elmos-product-scope
+  title: 产品范围与需求基线
+  category: foundation
+  batch: BATCH-00-product-and-reference-architecture
+  objective: 把模糊产品想法转化为有角色、有场景、有边界、有验收指标的生产级需求基线。
+  priority: P0
+  depends_on: []
+  acceptance_ids:
+  - AC-01-01
+  - AC-01-02
+  - AC-01-03
+  - AC-01-04
+- id: EPIC-02
+  skill: elmos-reference-architecture
+  title: 参考架构与服务边界
+  category: foundation
+  batch: BATCH-00-product-and-reference-architecture
+  objective: 建立可扩展、可替换、可私有化部署的参考架构，避免 UI、分析引擎、模型和存储相互耦合。
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  acceptance_ids:
+  - AC-02-01
+  - AC-02-02
+  - AC-02-03
+  - AC-02-04
+  - AC-02-05
+- id: EPIC-03
+  skill: elmos-repository-ingestion
+  title: 仓库接入与修订冻结
+  category: ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  objective: 把任意受支持项目转换为不可歧义、可重放、可审计的 Project Revision。
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  acceptance_ids:
+  - AC-03-01
+  - AC-03-02
+  - AC-03-03
+  - AC-03-04
+  - AC-03-05
+- id: EPIC-04
+  skill: elmos-project-fingerprinting
+  title: 项目指纹与技术栈识别
+  category: ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  objective: 生成可靠的技术栈与项目复杂度指纹，为后续分析选择正确工具链。
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  acceptance_ids:
+  - AC-04-01
+  - AC-04-02
+  - AC-04-03
+  - AC-04-04
+- id: EPIC-05
+  skill: elmos-multilanguage-parsing
+  title: 多语言解析与标准化 Code IR
+  category: analysis-core
+  batch: BATCH-01-ingestion-and-parsing
+  objective: 以可增量、可容错方式把支持语言标准化为统一符号与关系模型。
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  acceptance_ids:
+  - AC-05-01
+  - AC-05-02
+  - AC-05-03
+  - AC-05-04
+  - AC-05-05
+- id: EPIC-06
+  skill: elmos-symbol-code-graph
+  title: 符号、引用与调用图
+  category: analysis-core
+  batch: BATCH-02-graphs-and-evidence
+  objective: 把离散 Code IR 连接为可查询、可增量更新的 Code Graph。
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  acceptance_ids:
+  - AC-06-01
+  - AC-06-02
+  - AC-06-03
+  - AC-06-04
+  - AC-06-05
+- id: EPIC-07
+  skill: elmos-project-intelligence-graph
+  title: 统一 Project Intelligence Graph
+  category: analysis-core
+  batch: BATCH-02-graphs-and-evidence
+  objective: 建立跨视角统一节点、关系、版本和查询接口，消除各生成器各自理解项目造成的不一致。
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-07-01
+  - AC-07-02
+  - AC-07-03
+  - AC-07-04
+  - AC-07-05
+- id: EPIC-08
+  skill: elmos-evidence-provenance
+  title: 证据图、可信度与来源追踪
+  category: analysis-core
+  batch: BATCH-02-graphs-and-evidence
+  objective: 让每个事实都可验证，明确区分 Confirmed、Inferred、Unknown 和 Recommended。
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  acceptance_ids:
+  - AC-08-01
+  - AC-08-02
+  - AC-08-03
+  - AC-08-04
+  - AC-08-05
+- id: EPIC-09
+  skill: elmos-online-code-reader
+  title: 在线代码阅读器
+  category: experience
+  batch: BATCH-03-code-reader-and-explanation
+  objective: 提供快速、安全、可扩展的项目代码阅读入口，并与架构、流程、数据和转换结果双向联动。
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  acceptance_ids:
+  - AC-09-01
+  - AC-09-02
+  - AC-09-03
+  - AC-09-04
+  - AC-09-05
+- id: EPIC-10
+  skill: elmos-semantic-navigation
+  title: 语义导航与跨层追踪
+  category: experience
+  batch: BATCH-03-code-reader-and-explanation
+  objective: 让用户从任意代码或业务节点快速追踪到上下游实现，并显示证据与不确定性。
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-10-01
+  - AC-10-02
+  - AC-10-03
+  - AC-10-04
+  - AC-10-05
+- id: EPIC-11
+  skill: elmos-code-explanation
+  title: 证据化代码与模块讲解
+  category: experience
+  batch: BATCH-03-code-reader-and-explanation
+  objective: 提供不幻觉、可切换深度、可点击证据的 AI 代码讲解。
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-11-01
+  - AC-11-02
+  - AC-11-03
+  - AC-11-04
+  - AC-11-05
+- id: EPIC-12
+  skill: elmos-onboarding-learning-path
+  title: 项目介绍与新人学习路径
+  category: experience
+  batch: BATCH-03-code-reader-and-explanation
+  objective: 把庞大代码库转换为角色化、可进度跟踪、可回源的学习路径。
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-12-01
+  - AC-12-02
+  - AC-12-03
+  - AC-12-04
+  - AC-12-05
+- id: EPIC-13
+  skill: elmos-architecture-discovery
+  title: 架构自动发现与多视角讲解
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 生成可解释、可编辑、可回源的多层架构模型与讲解。
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  acceptance_ids:
+  - AC-13-01
+  - AC-13-02
+  - AC-13-03
+  - AC-13-04
+  - AC-13-05
+- id: EPIC-14
+  skill: elmos-business-capability-map
+  title: 功能思维导图与业务能力地图
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 建立需求—功能—页面—API—代码—数据—测试的端到端追踪。
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-14-01
+  - AC-14-02
+  - AC-14-03
+  - AC-14-04
+  - AC-14-05
+- id: EPIC-15
+  skill: elmos-flow-discovery
+  title: 业务与技术流程发现
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 从入口到结束状态构建带分支、数据、副作用和证据的可执行流程模型。
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  acceptance_ids:
+  - AC-15-01
+  - AC-15-02
+  - AC-15-03
+  - AC-15-04
+  - AC-15-05
+- id: EPIC-16
+  skill: elmos-data-architecture-lineage
+  title: 数据架构、ER、DFD 与血缘
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 建立数据资产、字段、读写、转换、生命周期和功能之间的可追踪模型。
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-16-01
+  - AC-16-02
+  - AC-16-03
+  - AC-16-04
+  - AC-16-05
+- id: EPIC-17
+  skill: elmos-api-event-topology
+  title: API、消息与集成拓扑
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 把系统所有外部与内部接口统一为可版本化、可回源、可影响分析的 Integration Graph。
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-17-01
+  - AC-17-02
+  - AC-17-03
+  - AC-17-04
+  - AC-17-05
+- id: EPIC-18
+  skill: elmos-runtime-trace-fusion
+  title: 运行时 Trace、日志与静态图谱融合
+  category: architecture
+  batch: BATCH-04-architecture-flow-data
+  objective: 在不把有限观测误当完整事实的前提下，用运行证据提高架构、流程和影响分析可信度。
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-18-01
+  - AC-18-02
+  - AC-18-03
+  - AC-18-04
+  - AC-18-05
+- id: EPIC-19
+  skill: elmos-diagram-spec-engine
+  title: 统一图表语义规范
+  category: artifacts
+  batch: BATCH-05-diagram-platform
+  objective: 以可版本化的中立 DSL 表达节点、边、分组、证据、布局约束和交互，避免图表只剩不可维护图片。
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-19-01
+  - AC-19-02
+  - AC-19-03
+  - AC-19-04
+  - AC-19-05
+- id: EPIC-20
+  skill: elmos-diagram-rendering
+  title: 多格式图表生成与渲染
+  category: artifacts
+  batch: BATCH-05-diagram-platform
+  objective: 提供一致、清晰、可缩放、可缓存且可回源的自动图表输出。
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  acceptance_ids:
+  - AC-20-01
+  - AC-20-02
+  - AC-20-03
+  - AC-20-04
+  - AC-20-05
+- id: EPIC-21
+  skill: elmos-diagram-editor
+  title: 在线图表编辑与人工锁定
+  category: artifacts
+  batch: BATCH-05-diagram-platform
+  objective: 让用户编辑语义而非破坏性修改图片，并在重新生成时安全合并自动变化。
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  acceptance_ids:
+  - AC-21-01
+  - AC-21-02
+  - AC-21-03
+  - AC-21-04
+  - AC-21-05
+- id: EPIC-22
+  skill: elmos-architecture-documentation
+  title: 架构与项目文档生成
+  category: artifacts
+  batch: BATCH-06-documents-presentations-reports
+  objective: 建立多文档、可引用、可增量更新、可人工维护的项目知识体系。
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  acceptance_ids:
+  - AC-22-01
+  - AC-22-02
+  - AC-22-03
+  - AC-22-04
+  - AC-22-05
+- id: EPIC-23
+  skill: elmos-presentation-generation
+  title: 项目介绍与技术汇报 PPT 生成
+  category: artifacts
+  batch: BATCH-06-documents-presentations-reports
+  objective: 把统一项目事实、图表和指标转为针对受众的可编辑演示文稿，并保留证据和演讲备注。
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  acceptance_ids:
+  - AC-23-01
+  - AC-23-02
+  - AC-23-03
+  - AC-23-04
+  - AC-23-05
+- id: EPIC-24
+  skill: elmos-project-report-bundle
+  title: 项目全景报告与交付证据包
+  category: artifacts
+  batch: BATCH-06-documents-presentations-reports
+  objective: 提供一次可下载、可审计、可复现的项目全景交付，而不是零散文件。
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-24-01
+  - AC-24-02
+  - AC-24-03
+  - AC-24-04
+  - AC-24-05
+- id: EPIC-25
+  skill: elmos-project-search-qa
+  title: 项目全局搜索与证据化问答
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 以最小充分上下文回答项目问题，返回文件、行号、路径、图表、置信度和未知项。
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-25-01
+  - AC-25-02
+  - AC-25-03
+  - AC-25-04
+  - AC-25-05
+- id: EPIC-26
+  skill: elmos-impact-analysis
+  title: 变更影响与回归范围分析
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 生成可解释的影响半径、风险等级、受影响 artifact 和最小回归测试建议。
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  acceptance_ids:
+  - AC-26-01
+  - AC-26-02
+  - AC-26-03
+  - AC-26-04
+  - AC-26-05
+- id: EPIC-27
+  skill: elmos-architecture-rules
+  title: 架构规则与策略引擎
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 将架构原则转为可版本化、可测试、可豁免、可在 CI 执行的规则。
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-27-01
+  - AC-27-02
+  - AC-27-03
+  - AC-27-04
+  - AC-27-05
+- id: EPIC-28
+  skill: elmos-architecture-drift
+  title: 设计—代码—运行架构漂移检测
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 持续发现实际系统偏离架构意图的位置，并驱动评审、文档更新和改造任务。
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  acceptance_ids:
+  - AC-28-01
+  - AC-28-02
+  - AC-28-03
+  - AC-28-04
+  - AC-28-05
+- id: EPIC-29
+  skill: elmos-risk-technical-debt
+  title: 风险、热点与技术债分析
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 生成可证据化、可排序、可行动的风险和现代化优先级，而非泛泛代码评价。
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  acceptance_ids:
+  - AC-29-01
+  - AC-29-02
+  - AC-29-03
+  - AC-29-04
+  - AC-29-05
+- id: EPIC-30
+  skill: elmos-security-threat-model
+  title: 代码与架构安全分析及威胁建模
+  category: intelligence
+  batch: BATCH-07-search-impact-governance-analysis
+  objective: 把安全证据嵌入项目图谱、代码阅读、文档和认证流程。
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  acceptance_ids:
+  - AC-30-01
+  - AC-30-02
+  - AC-30-03
+  - AC-30-04
+  - AC-30-05
+- id: EPIC-31
+  skill: elmos-incremental-analysis-cache
+  title: 增量分析、缓存与检查点
+  category: platform
+  batch: BATCH-08-cache-versioning-git
+  objective: 让解析、图谱、解释、图表、文档和 PPT 能按最小影响范围重算，并在中断后继续。
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-31-01
+  - AC-31-02
+  - AC-31-03
+  - AC-31-04
+  - AC-31-05
+- id: EPIC-32
+  skill: elmos-artifact-versioning-human-lock
+  title: Artifact 版本与人工内容保护
+  category: platform
+  batch: BATCH-05-diagram-platform
+  objective: 确保自动更新不会破坏人工维护内容，同时保持与代码 revision 的一致性。
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-32-01
+  - AC-32-02
+  - AC-32-03
+  - AC-32-04
+  - AC-32-05
+- id: EPIC-33
+  skill: elmos-git-pr-automation
+  title: Git、文档 PR 与变更交付自动化
+  category: platform
+  batch: BATCH-08-cache-versioning-git
+  objective: 用最小权限和幂等工作流将 Elmos 输出纳入正常代码审查。
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  acceptance_ids:
+  - AC-33-01
+  - AC-33-02
+  - AC-33-03
+  - AC-33-04
+  - AC-33-05
+- id: EPIC-34
+  skill: elmos-collaboration-governance
+  title: 协作、RBAC、审批与审计
+  category: enterprise
+  batch: BATCH-09-collaboration-and-connectors
+  objective: 提供最小权限、可委派、可审计的多角色协作体验。
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  acceptance_ids:
+  - AC-34-01
+  - AC-34-02
+  - AC-34-03
+  - AC-34-04
+  - AC-34-05
+- id: EPIC-35
+  skill: elmos-integrations-mcp
+  title: 外部系统、连接器与 MCP 集成
+  category: enterprise
+  batch: BATCH-09-collaboration-and-connectors
+  objective: 让 Elmos 接入外部系统而不把供应商逻辑耦合到分析核心。
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  acceptance_ids:
+  - AC-35-01
+  - AC-35-02
+  - AC-35-03
+  - AC-35-04
+  - AC-35-05
+- id: EPIC-36
+  skill: elmos-large-repository-scaling
+  title: 大型仓库与多仓库系统扩展
+  category: platform
+  batch: BATCH-10-scale-and-observability
+  objective: 在资源预算内处理大型项目，并提供渐进可用、可恢复和可预测的机器执行 ETA。
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  acceptance_ids:
+  - AC-36-01
+  - AC-36-02
+  - AC-36-03
+  - AC-36-04
+  - AC-36-05
+- id: EPIC-37
+  skill: elmos-observability-slo
+  title: 可观测性、SLO 与运营指标
+  category: operations
+  batch: BATCH-10-scale-and-observability
+  objective: 让质量、性能、成本、队列、失败、证据覆盖和用户体验可测量。
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  acceptance_ids:
+  - AC-37-01
+  - AC-37-02
+  - AC-37-03
+  - AC-37-04
+  - AC-37-05
+- id: EPIC-38
+  skill: elmos-testing-evaluation
+  title: 测试、评测与数据质量
+  category: quality
+  batch: BATCH-11-testing-conversion-estimation
+  objective: 建立可重复的黄金仓库、故障注入、视觉快照和生产门禁。
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  acceptance_ids:
+  - AC-38-01
+  - AC-38-02
+  - AC-38-03
+  - AC-38-04
+  - AC-38-05
+- id: EPIC-39
+  skill: elmos-conversion-integration
+  title: 与 Elmos 生成、转换、翻新引擎集成
+  category: integration
+  batch: BATCH-11-testing-conversion-estimation
+  objective: 形成导入—理解—转换—审阅—验证—文档/PPT—交付的统一闭环。
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  acceptance_ids:
+  - AC-39-01
+  - AC-39-02
+  - AC-39-03
+  - AC-39-04
+  - AC-39-05
+- id: EPIC-40
+  skill: elmos-runtime-cost-estimator
+  title: 系统运行 ETA、Token 与成本估算
+  category: operations
+  batch: BATCH-11-testing-conversion-estimation
+  objective: 基于项目特征和历史遥测提供可校准、可更新、不中途失真的进度与成本预测。
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  acceptance_ids:
+  - AC-40-01
+  - AC-40-02
+  - AC-40-03
+  - AC-40-04
+  - AC-40-05
+- id: EPIC-41
+  skill: elmos-deployment-private-cloud
+  title: SaaS、私有化与离线部署
+  category: operations
+  batch: BATCH-12-deployment-and-certification
+  objective: 提供可升级、可回滚、可观测、可备份并满足代码数据驻留要求的生产部署。
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  acceptance_ids:
+  - AC-41-01
+  - AC-41-02
+  - AC-41-03
+  - AC-41-04
+  - AC-41-05
+- id: EPIC-42
+  skill: elmos-release-certification
+  title: 生产验收与 E1–E5 认证
+  category: quality
+  batch: BATCH-12-deployment-and-certification
+  objective: 用证据驱动的门禁决定是否可试用、可团队使用、可生产或可关键业务部署。
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  acceptance_ids:
+  - AC-42-01
+  - AC-42-02
+  - AC-42-03
+  - AC-42-04
+  - AC-42-05
+- id: EPIC-43
+  skill: elmos-commercial-packaging
+  title: 商业版本、计量与交付套餐
+  category: product
+  batch: BATCH-13-commercialization
+  objective: 把技术能力组合为可售卖、可运营、不会破坏核心可信度和安全性的商业产品。
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  acceptance_ids:
+  - AC-43-01
+  - AC-43-02
+  - AC-43-03
+  - AC-43-04
+  - AC-43-05
+- id: EPIC-44
+  skill: elmos-debug-adapter-gateway
+  title: 调试适配器网关与能力协商
+  category: debug-platform
+  batch: BATCH-14-online-debug-and-learning
+  objective: 在不把某一语言调试器能力误认为所有运行时都支持的前提下，为 Elmos 提供版本化、可观测、可隔离的统一调试控制面。
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  acceptance_ids:
+  - AC-44-01
+  - AC-44-02
+  - AC-44-03
+  - AC-44-04
+  - AC-44-05
+- id: EPIC-45
+  skill: elmos-debug-sandbox-orchestration
+  title: 调试沙箱、运行环境与会话编排
+  category: debug-platform
+  batch: BATCH-14-online-debug-and-learning
+  objective: 让用户能够运行和调试项目，同时确保调试代码、表达式、依赖和测试数据无法逃逸到宿主机、其他租户或未授权网络。
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  acceptance_ids:
+  - AC-45-01
+  - AC-45-02
+  - AC-45-03
+  - AC-45-04
+  - AC-45-05
+- id: EPIC-46
+  skill: elmos-online-debug-workbench
+  title: 在线调试工作台
+  category: debug-experience
+  batch: BATCH-14-online-debug-and-learning
+  objective: 让用户不用离开 Elmos 就能观察项目实际执行，并在固定 revision 和隔离数据环境中把每次暂停理解为可回源的项目知识。
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  acceptance_ids:
+  - AC-46-01
+  - AC-46-02
+  - AC-46-03
+  - AC-46-04
+  - AC-46-05
+- id: EPIC-47
+  skill: elmos-debug-learning-copilot
+  title: 调试学习 Copilot 与互动实验
+  category: debug-learning
+  batch: BATCH-14-online-debug-and-learning
+  objective: 帮助新开发者通过真实执行理解项目，而不是被动阅读答案；所有讲解必须基于当前 Frame、变量、代码和项目图谱证据。
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  acceptance_ids:
+  - AC-47-01
+  - AC-47-02
+  - AC-47-03
+  - AC-47-04
+  - AC-47-05
+- id: EPIC-48
+  skill: elmos-debug-record-replay
+  title: 调试记录、检查点与运行回放
+  category: debug-runtime
+  batch: BATCH-14-online-debug-and-learning
+  objective: 提供可审计、可分享、可比较的调试时间线，同时明确区分通用事件回放与少数运行时原生 Time Travel，避免承诺不存在的通用反向执行。
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  acceptance_ids:
+  - AC-48-01
+  - AC-48-02
+  - AC-48-03
+  - AC-48-04
+  - AC-48-05
+- id: EPIC-49
+  skill: elmos-distributed-debug-correlation
+  title: 分布式调试、异步因果与源目标对照
+  category: debug-integration
+  batch: BATCH-14-online-debug-and-learning
+  objective: 在不会冻结整个生产系统的前提下，让用户理解一次业务请求跨组件的真实执行，并识别源项目与转换后项目的语义分歧。
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  acceptance_ids:
+  - AC-49-01
+  - AC-49-02
+  - AC-49-03
+  - AC-49-04
+  - AC-49-05

@@ -1,0 +1,90 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G08",
+    "slug": "component-semantics",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Component、Props、Events、Slots、Hooks、Context与Identity语义",
+    "transitionFrom": "框架中立组件IR",
+    "transitionTo": "在目标框架中保持组件边界、输入输出、Identity和测试语义",
+    "certificateFamily": "CS",
+    "skills": [
+      {
+        "id": "FRT-0800",
+        "name": "Component Semantics Orchestrator",
+        "path": "skills/frt-0800-component-semantics-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-0801",
+        "name": "Component Boundary Mapper",
+        "path": "skills/frt-0801-component-boundary-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0802",
+        "name": "Props and Input Contract Mapper",
+        "path": "skills/frt-0802-props-and-input-contract-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0803",
+        "name": "Events Callback and Emit Mapper",
+        "path": "skills/frt-0803-events-callback-and-emit-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0804",
+        "name": "Slots Children and Builder Mapper",
+        "path": "skills/frt-0804-slots-children-and-builder-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0805",
+        "name": "Refs Keys and Identity Mapper",
+        "path": "skills/frt-0805-refs-keys-and-identity-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0806",
+        "name": "Hooks Composables and Context Mapper",
+        "path": "skills/frt-0806-hooks-composables-and-context-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0807",
+        "name": "Controlled and Uncontrolled State Mapper",
+        "path": "skills/frt-0807-controlled-and-uncontrolled-state-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0808",
+        "name": "Component Lifecycle Mapper",
+        "path": "skills/frt-0808-component-lifecycle-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0809",
+        "name": "Portal Teleport and Overlay Mapper",
+        "path": "skills/frt-0809-portal-teleport-and-overlay-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0810",
+        "name": "Dynamic Component Mapper",
+        "path": "skills/frt-0810-dynamic-component-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-0811",
+        "name": "Component Test Generator",
+        "path": "skills/frt-0811-component-test-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-0812",
+        "name": "Component Semantics Certification",
+        "path": "skills/frt-0812-component-semantics-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键组件输入输出Contract完整",
+      "Key/Identity变化无未批准状态丢失",
+      "Slot/Children语义不被机械扁平化",
+      "Lifecycle和Cleanup测试通过",
+      "动态组件未知路径显式登记"
+    ]
+  }
+}

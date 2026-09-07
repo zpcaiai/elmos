@@ -1,0 +1,12 @@
+{
+  "request_id": "b17-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Migration Execution Operating System",
+  "upstream_certificate_refs": [
+    "batch-16-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

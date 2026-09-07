@@ -1,0 +1,4 @@
+interface:
+  display_name: "B70 Native Project Profile Detector"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b70-native-project-profile-detector to execute this ELMOS project Skill with fail-closed evidence."

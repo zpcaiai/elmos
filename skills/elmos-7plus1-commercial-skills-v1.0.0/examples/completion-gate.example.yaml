@@ -1,0 +1,21 @@
+gate_version: "1.0"
+required:
+  critical_unknown_gaps: 0
+  build: pass
+  static_analysis: pass
+  contract_tests: pass
+  differential_tests: pass
+  e2e_critical_journeys: pass
+  security_critical_high_open: 0
+  evidence_fresh: true
+thresholds:
+  requirement_closure: 0.97
+  capability_closure: 0.98
+  behavioral_equivalence: 0.95
+  mutation_score_critical: 0.85
+waivers:
+  critical_allowed: false
+  require_owner: true
+  require_expiry: true
+  require_compensating_control: true
+completion_writer: p05-gate-engine-only

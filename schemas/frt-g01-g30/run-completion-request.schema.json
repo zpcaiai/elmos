@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/run-completion-request.v1.schema.json",
+  "title": "FRT G01-G30 run completion request",
+  "description": "Body of POST /engine/v1/frt/runs/{runId}/complete. The caller must hold frt:run and frt:evidence, and the identity token subject must be the current lease holder. expectedVersion is a compare-and-set guard: it must equal the run version returned by the claim or the last heartbeat.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "expectedVersion", "completion"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "expectedVersion": { "type": "integer", "minimum": 0 },
+    "completion": { "$ref": "https://schemas.elmos.io/frt-g01-g30/runner-completion.v1.schema.json" }
+  }
+}

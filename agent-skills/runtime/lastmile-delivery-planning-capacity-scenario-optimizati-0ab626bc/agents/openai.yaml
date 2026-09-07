@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-planning-capacity-scenario-optimizati-0ab626bc to implement its fail-closed ELMOS Product B51 contract."

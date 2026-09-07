@@ -1,0 +1,4 @@
+interface:
+  display_name: "Doom Loop Human Intervention"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $doom-loop-human-intervention for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

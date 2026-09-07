@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/cache-affinity-decision.schema.json",
+  "title": "Cache Affinity Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_id",
+    "affinity_key",
+    "request_id",
+    "selected_target",
+    "candidates",
+    "reason_codes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "affinity_key": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "selected_target": {
+      "type": "string"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target_id",
+          "compatible",
+          "score"
+        ],
+        "properties": {
+          "target_id": {
+            "type": "string"
+          },
+          "compatible": {
+            "type": "boolean"
+          },
+          "score": {
+            "type": "number"
+          },
+          "prompt_value_ms": {
+            "type": "number"
+          },
+          "environment_value_ms": {
+            "type": "number"
+          },
+          "artifact_value_ms": {
+            "type": "number"
+          },
+          "queue_penalty_ms": {
+            "type": "number"
+          },
+          "transfer_penalty_ms": {
+            "type": "number"
+          },
+          "fairness_penalty": {
+            "type": "number"
+          },
+          "freshness_epoch": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "PREFIX_LOCAL",
+          "ENV_LOCAL",
+          "ARTIFACT_LOCAL",
+          "DAG_NEXT_USE",
+          "OVERLOAD_ESCAPE",
+          "FAIRNESS_OVERRIDE",
+          "FAILOVER",
+          "NO_COMPATIBLE_TARGET"
+        ]
+      }
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

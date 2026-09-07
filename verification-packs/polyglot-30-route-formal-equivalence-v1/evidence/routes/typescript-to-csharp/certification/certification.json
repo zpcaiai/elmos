@@ -1,0 +1,35 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 2,
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json"
+  ],
+  "formal_equivalence": {
+    "bytes": 67428,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:2d745ef3fcfb29821a3e579ed0cb9450f10519f2a8a3a794d6add744667ad1b9"
+  },
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "PASSED"
+  },
+  "issued_at": "2026-08-09T03:45:41.416062+00:00",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "route_key": "typescript-to-csharp",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

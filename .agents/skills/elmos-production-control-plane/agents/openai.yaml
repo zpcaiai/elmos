@@ -1,0 +1,6 @@
+interface:
+  display_name: "Production Control Plane"
+  short_description: "Prepare durable, tenant-bound control-plane effects and reconciliation."
+  default_prompt: "Use $elmos-production-control-plane through the exact PDHI v1 K9 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

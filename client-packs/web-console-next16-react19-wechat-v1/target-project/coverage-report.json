@@ -1,0 +1,1774 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "elmos.component-dialect-repository-run",
+  "profile": "certified-component-v1",
+  "sourceFramework": "react",
+  "targetFramework": "miniprogram",
+  "status": "PARTIAL",
+  "deliveryStatus": "COMPLETE_WITH_HANDOFF",
+  "totals": {
+    "discovered": 71,
+    "converted": 32,
+    "blocked": 0,
+    "manuallyPorted": 39
+  },
+  "handoff": {
+    "total": 39,
+    "unassigned": 0,
+    "assigned": 0,
+    "manuallyPorted": 39,
+    "stale": 0,
+    "byAssignee": [
+      {
+        "assignee": "elmos-web-console-wechat-migration",
+        "count": 39
+      }
+    ]
+  },
+  "handoffChecks": [
+    {
+      "sourcePath": "app/account/AccountOrganizationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/commercialization/CommercializationConsole.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/AppShell.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/Icon.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/governance/GovernanceWorkspace.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/help/HelpCenter.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/layout.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/login/page.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/observability/ObservabilityWorkspace.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/playground/PlaygroundWorkspace.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/playground/page.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/pricing/page.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/skills/SkillsWorkspace.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "alerts": [],
+      "detail": []
+    }
+  ],
+  "unresolvedReferences": [],
+  "helpersNotMigrated": [
+    {
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "name": "toNumber"
+    },
+    {
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "name": "yuan"
+    },
+    {
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "name": "moment"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "csvCell"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "downloadCsv"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "formatTime"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "displayTarget"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "isReconciliationCase"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "isNullableTime"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "isOperationsJob"
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "name": "isRunnerFleetNode"
+    },
+    {
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "name": "yuan"
+    },
+    {
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "name": "moment"
+    },
+    {
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "name": "elapsed"
+    },
+    {
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "name": "yuan"
+    },
+    {
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "name": "moment"
+    },
+    {
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "name": "readRows"
+    },
+    {
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "name": "readSession"
+    },
+    {
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "name": "useAccountSession"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "finiteCount"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "graphLayers"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "projectStructureGraph"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "fallbackStructureGraph"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "dependencyGraph"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "name": "matrixLanguages"
+    },
+    {
+      "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
+      "name": "hardware"
+    },
+    {
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "name": "clock"
+    },
+    {
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "name": "readJson"
+    },
+    {
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "name": "storedLocale"
+    },
+    {
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "name": "storedTheme"
+    },
+    {
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "name": "useUiPreferences"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "businessLine"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "safePath"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "stableTarget"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "uuid"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "sessionId"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "loadQueue"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "saveQueue"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "roundedDuration"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "telemetryOutcome"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "telemetryEventName"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "telemetryTargetKind"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "actionKey"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "viewportClass"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "toTelemetry"
+    },
+    {
+      "sourcePath": "app/components/UserActivityCollector.tsx",
+      "name": "UserActivityCollector"
+    },
+    {
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "name": "lower"
+    },
+    {
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "name": "initialContractInput"
+    },
+    {
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "name": "canonicalInput"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "browserArtifactTicket"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "readBoundedArtifact"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "isStoredSourceReference"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "isStoredGenerationDraft"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "shellQuote"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "runnerReasonMessage"
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "name": "buildWorkflowCommands"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "safeProject"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "relativePath"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "extensionOf"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "bytesToBase64"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "sha256"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "fingerprintFile"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "sha256FileOffMainThread"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "boundedOpaque"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewClaimStorageKey"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewEnqueueStorageKey"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "structurallyValidReviewEnqueueAttempt"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "structurallyValidReviewSourceEnqueueInput"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "loadReviewEnqueueAttempts"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "persistReviewEnqueueAttempts"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewEnqueueRequestDigest"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewProjectScopeDigest"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validatedReviewEnqueuePreparation"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewEnqueuePreparationAbsence"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validatedJobProgressEvent"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "structurallyValidReviewClaim"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validReviewClaim"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "loadReviewClaims"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "persistReviewClaims"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validRecoveryRecord"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "recoveryStorageKey"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "openRecoveryDatabase"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "readRecoveryValues"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "replaceRecoveryValues"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "putRecoveryValue"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "deleteRecoveryValue"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "nestedRecord"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "projectPackagePage"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "processingEstimate"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "estimateFileType"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "formatEstimateDuration"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "responseString"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "outputRecord"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewOutput"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validReviewPropagations"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validHistoricalPropagationBatches"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "positiveInteger"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewTarget"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactTimestamp"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactRequiredText"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactObjectFields"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewSourceRef"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewSource"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewSourceKey"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "validatedReviewSource"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewTask"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactCurrentReviewCorrection"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewCorrection"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewDecision"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewEffective"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "reviewTaskDynamicState"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewCursor"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "exactReviewSourceCursor"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "strictSkillResponse"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "readSkillResponse"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "executeSkill"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "phaseFrom"
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "name": "failureDetails"
+    },
+    {
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "name": "isStoredDraft"
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "name": "isRecord"
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "name": "responseJson"
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "name": "errorMessage"
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "name": "apiError"
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "name": "sha256Text"
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "name": "readableReason"
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "name": "statusTone"
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "name": "responseJson"
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "name": "failureMessage"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "idempotencyKey"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "json"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "errorMessage"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "isTrustedCheckoutHost"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "planName"
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "name": "formatDate"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "percent"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "localTime"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "localDate"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "requestHeaders"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "meterLabel"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "parseHistory"
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "name": "parsePreference"
+    },
+    {
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "name": "responseJson"
+    },
+    {
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "name": "jsonObject"
+    },
+    {
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "name": "base64Utf8"
+    },
+    {
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "name": "normalizeWorkspace"
+    },
+    {
+      "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
+      "name": "artifactName"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "buildStageCards"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "routeSourceFamilyLabel"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "routeSourceConstraintLabel"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "routeEvidenceLabel"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "fingerprintSourceLabel"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "randomKey"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "shortDigest"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "formatBytes"
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "name": "api"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "isSafeRepositoryRef"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "isStoredHandoff"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "routeCellLabel"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "routeCellIcon"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "triggerVerifiedDownload"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "verifiedDownloadBlob"
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "name": "translationRunnerFailureMessage"
+    }
+  ],
+  "files": [
+    {
+      "sourcePath": "app/account/AccountOrganizationStudio.tsx",
+      "targetPath": "components/AccountOrganizationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/account/AccountWalletPanel.tsx",
+      "targetPath": "components/AccountWalletPanel",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/account/page.tsx",
+      "targetPath": "components/AccountPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "components/OperationsAdmin",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/admin/PlatformJobsPanel.tsx",
+      "targetPath": "components/PlatformJobsPanel",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/admin/PlatformWalletPanel.tsx",
+      "targetPath": "components/PlatformWalletPanel",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state wallets element.balanceMinor has unsupported type \"Amount\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/admin/page.tsx",
+      "targetPath": "components/AdminPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/commercialization/CommercializationConsole.tsx",
+      "targetPath": "components/CommercializationConsole",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/commercialization/page.tsx",
+      "targetPath": "components/CommercializationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/components/AccountSessionProvider.tsx",
+      "targetPath": "components/AccountSessionProvider",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/AppShell.tsx",
+      "targetPath": "components/AppShell",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/Icon.tsx",
+      "targetPath": "components/Icon",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+      "reason": "tag \"svg\" is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/StatusMark",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
+      "targetPath": "components/RuntimeDeploymentGuide",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+      "reason": "tag \"details\" is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/SmokeRunButton.tsx",
+      "targetPath": "components/SmokeRunButton",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/StatusChip.tsx",
+      "targetPath": "components/StatusChip",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/UiPreferencesProvider.tsx",
+      "targetPath": "components/UiPreferencesProvider",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state locale has unsupported type \"UiLocale\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
+      "targetPath": "components/FrontendTransformationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/frontend/page.tsx",
+      "targetPath": "components/FrontendTransformationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
+      "targetPath": "components/ProjectGenerationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/generation/page.tsx",
+      "targetPath": "components/GenerationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/governance/GovernanceWorkspace.tsx",
+      "targetPath": "components/GovernanceWorkspace",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/governance/page.tsx",
+      "targetPath": "components/GovernancePage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/help/HelpCenter.tsx",
+      "targetPath": "components/HelpCenter",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+      "reason": "expected a `const [x, setX] = useState(...)` declaration",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/help/page.tsx",
+      "targetPath": "components/HelpPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
+      "targetPath": "components/MultimodalIntakeWorkbench",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/intake/page.tsx",
+      "targetPath": "components/MultimodalIntakePage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/layout.tsx",
+      "targetPath": "components/RootLayout",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+      "reason": "tag \"html\" is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/login/page.tsx",
+      "targetPath": "components/LoginPage",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "prop searchParams.then has no object fields",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "components/MigrationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state view has unsupported type \"StudioView\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/migration/page.tsx",
+      "targetPath": "components/MigrationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
+      "targetPath": "components/ChinaDbSqlPreflightStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/migration/sql/page.tsx",
+      "targetPath": "components/ChinaDbSqlPreflightPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/observability/ObservabilityWorkspace.tsx",
+      "targetPath": "components/ObservabilityWorkspace",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+      "reason": "state initializer expression kind ElementAccessExpression is not a closed literal",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/observability/page.tsx",
+      "targetPath": "components/ObservabilityPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
+      "targetPath": "components/RepositoryOrchestratorWorkbench",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/orchestration/page.tsx",
+      "targetPath": "components/RepositoryOrchestrationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/page.tsx",
+      "targetPath": "components/Home",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/playground/PlaygroundWorkspace.tsx",
+      "targetPath": "components/PlaygroundWorkspace",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+      "reason": "state \"sourceCode\" requires a primitive literal initializer",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/playground/page.tsx",
+      "targetPath": "components/PlaygroundPage",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_SLOT",
+      "reason": "<AppShell> is given children; slot projection is outside certified-component-v1 because each target evaluates it differently",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "components/PlanBillingAction",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "components/UsageMeter",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/pricing/page.tsx",
+      "targetPath": "components/PricingPage",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
+      "targetPath": "components/ModernizationProofStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/proof-loop/page.tsx",
+      "targetPath": "components/ModernizationProofPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
+      "targetPath": "components/RepositoryWorkspaceStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/repositories/page.tsx",
+      "targetPath": "components/RepositoriesPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
+      "targetPath": "components/PrecisionMigrationJobs",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/skills/SkillsWorkspace.tsx",
+      "targetPath": "components/SkillsWorkspace",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state namespace has unsupported type \"Namespace\"",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/skills/page.tsx",
+      "targetPath": "components/SkillsPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/smoke/SmokeConsole.tsx",
+      "targetPath": "components/SmokeConsole",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/smoke/page.tsx",
+      "targetPath": "components/SmokePage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/spring/SpringModernizationStudio.tsx",
+      "targetPath": "components/SpringModernizationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/spring/page.tsx",
+      "targetPath": "components/SpringModernizationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/translation/TranslationStudio.tsx",
+      "targetPath": "components/TranslationStudio",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/translation/page.tsx",
+      "targetPath": "components/TranslationPage",
+      "status": "CONVERTED",
+      "ownership": "ENGINE_GENERATED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "components/IncidentCard",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "components/RemediationCard",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "components/Empty",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "targetPath": "components/EventTable",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+      "reason": "tag \"table\" is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/CoverageMeter",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/EvidenceGraph",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind NewExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/EmptyEvidence",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/SemanticMappingChart",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/EquivalenceMatrix",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/BehaviorChart",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
+      ]
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/ProjectEvidenceCharts",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "targetPath": "components/TranslationEvidenceCharts",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
+      ]
+    },
+    {
+      "sourcePath": "app/migration/MigrationStudio.tsx",
+      "targetPath": "components/Marketplace",
+      "ownership": "ENGINE_GENERATED",
+      "status": "CONVERTED",
+      "reasonCode": null,
+      "reason": null,
+      "syntaxStatus": "PASSED",
+      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
+      "notes": [
+        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
+        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional",
+        "WeChat triggerEvent carries an untyped detail object; callback payload types are not representable and will not survive a translation back out of the mini program"
+      ]
+    },
+    {
+      "sourcePath": "app/pricing/BillingActions.tsx",
+      "targetPath": "components/SubscriptionManager",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    },
+    {
+      "sourcePath": "app/pricing/UsageDashboard.tsx",
+      "targetPath": "components/UsageDashboard",
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+      "reason": "state initializer expression kind ConditionalExpression is not a closed literal",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
+    }
+  ]
+}

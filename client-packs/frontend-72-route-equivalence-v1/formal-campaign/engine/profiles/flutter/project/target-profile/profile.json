@@ -1,0 +1,31 @@
+{
+  "id": "flutter",
+  "label": "Flutter",
+  "frameworkVersion": "3.44.1",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "ANDROID",
+    "IOS",
+    "WEB"
+  ],
+  "language": "Dart",
+  "languageVersion": "3.12.1",
+  "runtime": "Flutter Engine",
+  "runtimeVersion": "3.44.1",
+  "buildTool": "flutter",
+  "buildToolVersion": "3.44.1",
+  "packageManager": "pub",
+  "packageManagerVersion": "3.12.1",
+  "router": "MaterialApp named routes",
+  "state": "ChangeNotifier-compatible generated boundary",
+  "rendering": "Flutter widgets",
+  "testTool": "flutter_test 3.44.1",
+  "runnerProfile": "MOBILE_CROSS_PLATFORM",
+  "requiredProjectFiles": [
+    "pubspec.yaml",
+    "analysis_options.yaml",
+    "lib/main.dart",
+    "test/widget_test.dart"
+  ]
+}

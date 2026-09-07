@@ -1,0 +1,164 @@
+{
+  "capabilities": [
+    {
+      "evidence_bindings": [
+        {
+          "bytes": 9742,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+        }
+      ],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "fcm_capability_ids": [
+        "web-json-contract"
+      ],
+      "id": "web",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    },
+    {
+      "evidence_refs": [],
+      "id": "dependency-injection",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "framework-contract"
+    },
+    {
+      "evidence_bindings": [
+        {
+          "bytes": 9742,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+        },
+        {
+          "bytes": 120,
+          "path": "corpus/development/source/src/main/resources/application.properties",
+          "role": "source-configuration",
+          "sha256": "46a842498a4c053721caf47bfbc4e498a2c8f8a3cd14b92cd4cdbec908681392"
+        },
+        {
+          "bytes": 120,
+          "path": "corpus/development/migrated/src/main/resources/application.properties",
+          "role": "target-configuration",
+          "sha256": "46a842498a4c053721caf47bfbc4e498a2c8f8a3cd14b92cd4cdbec908681392"
+        }
+      ],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json",
+        "corpus/development/source/src/main/resources/application.properties",
+        "corpus/development/migrated/src/main/resources/application.properties"
+      ],
+      "fcm_capability_ids": [
+        "configuration-runtime-contract"
+      ],
+      "id": "configuration",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "fcm_capability_ids": [
+        "validation-contract"
+      ],
+      "id": "validation",
+      "reason": "Local source and target HTTP probes cover invalid and valid request validation; customer and independent certification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "fcm_capability_ids": [
+        "security-contract"
+      ],
+      "id": "authentication",
+      "reason": "Local source and target HTTP probes cover fixture authentication and route authorization; provider-specific and independent certification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "fcm_capability_ids": [
+        "security-contract"
+      ],
+      "id": "authorization",
+      "reason": "Local source and target HTTP probes cover fixture authentication and route authorization; provider-specific and independent certification remain NOT_RUN.",
+      "status": "experimental",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    },
+    {
+      "evidence_refs": [],
+      "id": "persistence",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "contract-mapping"
+    },
+    {
+      "evidence_refs": [],
+      "id": "transactions",
+      "reason": "Requires provider-specific certification",
+      "status": "blocked",
+      "strategy": "human-review"
+    },
+    {
+      "evidence_refs": [],
+      "id": "messaging",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "retained-provider-or-adapter"
+    },
+    {
+      "evidence_refs": [],
+      "id": "cache",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "provider-profile"
+    },
+    {
+      "evidence_refs": [],
+      "id": "scheduler",
+      "reason": "Not yet implemented",
+      "status": "detected-only",
+      "strategy": "provider-profile"
+    },
+    {
+      "evidence_bindings": [
+        {
+          "bytes": 9742,
+          "path": "certification/local-reference-evidence.json",
+          "role": "runtime-equivalence",
+          "sha256": "c95b816d54eaa6fa20a8548818fed4f5d4806a62fa9ff089ff8a2155e2f8b35d"
+        }
+      ],
+      "evidence_refs": [
+        "certification/local-reference-evidence.json"
+      ],
+      "fcm_capability_ids": [
+        "health-lifecycle"
+      ],
+      "id": "lifecycle",
+      "reason": "Exact local source/target builds and startup plus separate public holdout and representative repository behavior passed; customer and external certification remain NOT_RUN.",
+      "status": "supported",
+      "strategy": "framework-contract-and-real-runtime",
+      "target_profile_key": "spring-boot-2-7-18-to-3-5-3-target"
+    }
+  ],
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "schema_version": 2
+}

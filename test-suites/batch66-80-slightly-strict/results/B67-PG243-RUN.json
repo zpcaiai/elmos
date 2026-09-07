@@ -1,0 +1,13 @@
+{
+  "case_id": "B67-PG243-RUN",
+  "status": "not-run",
+  "attempts": 0,
+  "source_sha256": null,
+  "environment_sha256": null,
+  "fixture_sha256": null,
+  "started_at": null,
+  "finished_at": null,
+  "evidence": [],
+  "waiver_id": null,
+  "notes": []
+}

@@ -1,0 +1,40 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "formal-route-campaign.json",
+        "evidence/route-set.json"
+      ],
+      "key": "route-layered-equivalence",
+      "limitations": [
+        "Local route proof is assumption-bound; source analyzer soundness is not independently proved."
+      ],
+      "owner": "elmos-polyglot-verification-engineering",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "solver/arithmetic-campaign.json"
+      ],
+      "key": "int64-arithmetic-smt",
+      "limitations": [
+        "Some obligations remain BOUNDED and language-primitive obligations remain AXIOM."
+      ],
+      "owner": "elmos-polyglot-verification-engineering",
+      "status": "experimental"
+    },
+    {
+      "evidence_refs": [
+        "formal-route-campaign.json"
+      ],
+      "key": "l1-plus-language-semantics",
+      "limitations": [
+        "Local variables, loops, calls, nullable values, exceptions, aggregates, concurrency, I/O, frameworks, and databases are out of scope."
+      ],
+      "owner": "elmos-polyglot-verification-engineering",
+      "status": "blocked"
+    }
+  ],
+  "pack_key": "polyglot-30-route-formal-equivalence-v1",
+  "schema_version": 1
+}

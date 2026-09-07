@@ -1,0 +1,32 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-03",
+  "name": "elmos-lw-reader-semantic-navigation",
+  "priority": "P0",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-online-code-reader",
+  "dependencies": [
+    "elmos-lw-revision-source-anchor"
+  ],
+  "contract_refs": [
+    "contracts/source-anchor.schema.json"
+  ],
+  "output_artifacts": [
+    "reader-module",
+    "semantic-navigation-api",
+    "navigation-fixture-report.json"
+  ],
+  "acceptance_cases": [
+    "LW-03-AC-01",
+    "LW-03-AC-02",
+    "LW-03-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

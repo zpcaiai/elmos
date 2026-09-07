@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.kubernetes-platform.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clusterId", "platformProfile", "workloadProfile", "podSecurityTarget", "networkPolicyConfigured", "networkPolicyEnforced", "topologyValidated", "backupRestoreValidated", "status", "evidenceRefs"],
+  "properties": {
+    "clusterId": {"type": "string", "minLength": 1},
+    "platformProfile": {"type": "string", "minLength": 1},
+    "workloadProfile": {"type": "string", "minLength": 1},
+    "podSecurityTarget": {"enum": ["RESTRICTED", "BASELINE", "PRIVILEGED_EXCEPTION"]},
+    "networkPolicyConfigured": {"type": "boolean"},
+    "networkPolicyEnforced": {"type": "boolean"},
+    "topologyValidated": {"type": "boolean"},
+    "backupRestoreValidated": {"type": "boolean"},
+    "status": {"enum": ["PASS", "PASS_WITH_WARNINGS", "FAIL", "NOT_RUN"]},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Lifecycle Messaging And In Product Guidance"
+  short_description: "Authoritative Batch 14 Skill 410 workflow"
+  default_prompt: "Use $lifecycle-messaging-and-in-product-guidance to execute its evidence-bound Batch 14 workflow."
+

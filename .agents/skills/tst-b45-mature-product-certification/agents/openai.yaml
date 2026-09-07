@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B45 Mature Product Certification"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b45-mature-product-certification to run its exact Batch 38-45 cases with fail-closed evidence."

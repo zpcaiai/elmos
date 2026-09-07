@@ -1,0 +1,29 @@
+{
+  "caseId": "12-build-graph-no-executor",
+  "description": "Toolchain lock and sandbox spec; the baseline is not-run and therefore untrustworthy.",
+  "evidence": {
+    "buildGraphDigest": "sha256:953ac9eb247c50394893c8652aaf877ee6f9d2cec505ecb5b64f5d16bf04110f",
+    "executor": "null",
+    "sandboxImageDigest": "sha256:27f0984782706b8d883359c14e6c5578d9e0d2e1290fd80f04a278bc840cb09c",
+    "toolchainLockDigest": "sha256:a23e839af3d8b03fa7524ac41dea6bf0974d781869275f1c10bd64f3e414f976"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:7286a0cbc9b1702b5e8296be250842a27032e777b98d5ca6ab7a4ea4ec5c2400",
+  "outputDigest": "sha256:2abe765dcf11bb833530a5241d62c9b7793d15434692f2669471ec550534d326",
+  "projections": {
+    "output.baseline_report.buildOk": null,
+    "output.baseline_report.status": "not-run",
+    "output.baseline_report.trustworthy": false,
+    "output.sandbox_image_spec.network": "deny",
+    "output.toolchain_lock.reproducible": false,
+    "output.toolchain_lock.unpinned": [
+      "python"
+    ],
+    "status": "succeeded"
+  },
+  "reasonCount": 2,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "build-graph-and-environment",
+  "status": "succeeded"
+}

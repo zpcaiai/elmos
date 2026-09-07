@@ -1,0 +1,11 @@
+{
+  "total_tokens": 0,
+  "duration_ms": 200,
+  "total_duration_seconds": 0.2,
+  "executor_start": "2026-07-20T15:56:14Z",
+  "executor_end": "2026-07-20T15:56:14Z",
+  "executor_duration_seconds": 0.2,
+  "grader_start": "2026-07-20T15:58:00Z",
+  "grader_end": "2026-07-20T15:58:00Z",
+  "grader_duration_seconds": 0.0
+}

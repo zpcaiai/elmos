@@ -1,0 +1,43 @@
+{
+  "$id": "elmos.digital-twin-state.v1",
+  "type": "object",
+  "required": [
+    "twinId",
+    "featureId",
+    "stateType",
+    "value",
+    "quality",
+    "sourceTimestamp",
+    "version"
+  ],
+  "properties": {
+    "twinId": {
+      "type": "string"
+    },
+    "featureId": {
+      "type": "string"
+    },
+    "stateType": {
+      "enum": [
+        "REPORTED",
+        "DESIRED",
+        "OBSERVED",
+        "CALCULATED",
+        "PREDICTED",
+        "MANUAL_OVERRIDE"
+      ]
+    },
+    "value": {},
+    "quality": {
+      "type": "string"
+    },
+    "sourceTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

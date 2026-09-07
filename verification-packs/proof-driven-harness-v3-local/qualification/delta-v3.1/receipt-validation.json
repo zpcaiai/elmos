@@ -1,0 +1,39 @@
+{
+  "acceptance": {
+    "evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "failed": 0,
+    "p0_passed": 89,
+    "p1_passed": 15,
+    "passed": 104
+  },
+  "acceptance_binding_sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529",
+  "adapter_profile_negotiation": "PASS",
+  "base_source_version": "3.0.0",
+  "certification": "NOT_CERTIFIED",
+  "composite_version": "3.1.0",
+  "delta_source_version": "3.1.0",
+  "engine_tree_sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
+  "external_evidence": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "kind": "elmos.harness-runtime-assurance-delta.receipt-validation",
+  "opa": "NOT_RUN",
+  "postgresql17": "NOT_RUN",
+  "provider_runtime": "NOT_RUN",
+  "qualifier_sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3",
+  "raw_log_count": 3,
+  "receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
+  "remote_executor": "NOT_RUN",
+  "schema_version": 1,
+  "source_archive_sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+  "status": "PASS",
+  "target_environment_conformance": "NOT_RUN",
+  "tests": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failed": 0,
+    "passed": 177,
+    "selected": 177,
+    "skipped": 0,
+    "unexpected_successes": 0
+  }
+}

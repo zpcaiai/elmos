@@ -1,0 +1,21 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "GBase 8a",
+  "discovery_required": true,
+  "preferred_sources": [
+    "Oracle",
+    "Teradata-class analytical"
+  ],
+  "native_tool_hooks": [
+    "orato8a"
+  ],
+  "procedural_policy": "analytical_target_do_not_assume_oltp_proc_parity",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

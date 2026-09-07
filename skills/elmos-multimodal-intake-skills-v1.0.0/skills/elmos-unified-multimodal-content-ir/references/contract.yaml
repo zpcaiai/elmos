@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+ordinal: 12
+name: elmos-unified-multimodal-content-ir
+title: 统一多模态内容 IR
+objective: 建立稳定、可版本化、可扩展的 Content IR，避免所有内容被扁平化为纯文本，并隔离上游格式与下游 Agent。
+dependencies: []
+inputs:
+- 各格式解析结果
+outputs:
+- Content IR、版本信息、验证报告
+responsibilities:
+- 定义 Asset、ContentBlock、Table、VisualRegion、AudioSegment、Entity、Relation 和 QualitySignal
+- 提供 schema version、迁移、序列化和向后兼容规则
+- 支持文本、图像区域、时间范围、表格、代码和图模型组合
+- 定义不可变原始结果与可修订派生结果的边界
+deliverables:
+- JSON Schema、语言类型和验证器
+- IR 版本迁移与兼容测试
+- 各解析器到 IR 的适配契约
+acceptance:
+- 任何解析器输出都能映射到统一 IR 且无关键结构丢失
+- 未知扩展字段可安全保留
+- 旧版本数据可迁移或兼容读取
+- 下游不需读取格式专有内部对象
+data_entities:
+- content_blocks
+- content_relations
+- ir_versions
+events:
+- content.ir.created
+- content.ir.migrated
+- content.ir.invalid
+metrics:
+- ir_validation_failure_rate
+- schema_migration_success_rate
+failure_modes:
+- schema 不兼容
+- 未知块类型
+- 迁移中断
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

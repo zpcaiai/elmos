@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 代码与架构安全分析及威胁建模"
+  short_description: "Guide 代码与架构安全分析及威胁建模 with evidence controls"
+  default_prompt: "Use $elmos-security-threat-model as guidance for 代码与架构安全分析及威胁建模 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

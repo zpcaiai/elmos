@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Knowledge Graph Ontology"
+  short_description: "Run evidence-bound Batch 41 knowledge graph ontology work"
+  default_prompt: "Use $b41-knowledge-graph-ontology to implement and verify this capability with fail-closed evidence."

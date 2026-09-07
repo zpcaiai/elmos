@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-04:transformation-transaction",
+  "title": "TransformationTransaction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applied_intents",
+    "record_id",
+    "rollback_token",
+    "schema_version",
+    "scope",
+    "state",
+    "transaction_id",
+    "workspace_digest_before"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "enum": [
+        "open",
+        "applied",
+        "rolled-back",
+        "committed"
+      ]
+    },
+    "applied_intents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rollback_token": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workspace_digest_before": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "workspace_digest_after": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

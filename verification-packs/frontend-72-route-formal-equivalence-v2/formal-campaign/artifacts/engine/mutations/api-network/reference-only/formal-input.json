@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "api-network",
+  "obligation_symbol": "diff_api_network",
+  "variant": "REFERENCE_ONLY",
+  "pointer": "/apiNetwork/cacheScope",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:b0a41f3109ffa347d7660dc56e338eb4afb38315079a7fa7233457c2a15c8df0",
+  "canonical_block_digest": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+  "mutant_block_digest": "sha256:2b4ae217aa1a0a25f0c6ba4b4f109352e5184855447d8799253cf486127cc6c5",
+  "counterexample_replay": {
+    "block_id": "api-network",
+    "pointer": "/apiNetwork/cacheScope",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "operationId": "search",
+      "called": false,
+      "method": "POST",
+      "path": "/api/search",
+      "timeoutMs": 1000,
+      "retry": "NEVER",
+      "cacheScope": "TENANT_QUERY",
+      "cancelOnUnmount": true,
+      "outcome": "NOT_CALLED",
+      "canceled": false,
+      "staleIgnored": false,
+      "cacheKey": "tenant-a:"
+    },
+    "mutant_observation": {
+      "operationId": "search",
+      "called": false,
+      "method": "POST",
+      "path": "/api/search",
+      "timeoutMs": 1000,
+      "retry": "NEVER",
+      "cacheScope": "TENANT_QUERY__MUTANT",
+      "cancelOnUnmount": true,
+      "outcome": "NOT_CALLED",
+      "canceled": false,
+      "staleIgnored": false,
+      "cacheKey": ""
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

@@ -1,0 +1,58 @@
+{
+  "$id": "https://elmos.ai/schemas/v3.1/capability-lease.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authoritySnapshotId": {
+      "type": "string"
+    },
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "delegationAllowed": {
+      "type": "boolean"
+    },
+    "environmentId": {
+      "type": "string"
+    },
+    "executionEpoch": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "expiresAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "invocationId": {
+      "type": "string"
+    },
+    "issuedAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "leaseId": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "ACTIVE",
+        "REVOKED",
+        "EXPIRED"
+      ]
+    }
+  },
+  "required": [
+    "leaseId",
+    "invocationId",
+    "environmentId",
+    "authoritySnapshotId",
+    "executionEpoch",
+    "capabilities",
+    "state"
+  ],
+  "title": "Invocation Scoped Capability Lease",
+  "type": "object"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "run_id": "run-example",
+  "skill_id": "PG223",
+  "target_profile": "replace-me",
+  "steps": [
+    {
+      "id": "discover",
+      "action": "Inspect repository",
+      "consequential": false,
+      "expected_outputs": [
+        "profile"
+      ]
+    }
+  ],
+  "stop_conditions": [
+    "Missing target version"
+  ],
+  "approvals": []
+}

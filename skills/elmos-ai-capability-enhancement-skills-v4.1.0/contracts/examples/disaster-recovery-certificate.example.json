@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "DisasterRecoveryCertificate",
+  "metadata": {
+    "id": "disaster-recovery-certificate-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "topology": {},
+    "rtoSeconds": 1,
+    "rpoSeconds": 1,
+    "drillResults": []
+  }
+}

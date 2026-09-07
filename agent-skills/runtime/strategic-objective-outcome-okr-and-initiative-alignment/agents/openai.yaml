@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 29 Skill 004"
+  short_description: "Run ELMOS Product Batch 29 governance safely"
+  default_prompt: "Use $strategic-objective-outcome-okr-and-initiative-alignment to implement its evidence-bound ELMOS Product Batch 29 contract."

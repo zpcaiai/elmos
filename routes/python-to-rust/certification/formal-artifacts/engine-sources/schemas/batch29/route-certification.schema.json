@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Batch29RouteCertification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "route_key",
+    "route_version",
+    "status",
+    "gate_results",
+    "metrics",
+    "evidence_refs",
+    "issued_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "route_key": {
+      "type": "string"
+    },
+    "route_version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked"
+      ]
+    },
+    "gate_results": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "next_review_at": {
+      "type": "string"
+    },
+    "evidence_format": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "formal_equivalence": {
+      "$ref": "#/$defs/artifact_ref"
+    }
+  },
+  "$defs": {
+    "artifact_ref": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "evidence_format": {
+            "minimum": 2
+          }
+        },
+        "required": [
+          "evidence_format"
+        ]
+      },
+      "then": {
+        "required": [
+          "formal_equivalence"
+        ]
+      }
+    }
+  ]
+}

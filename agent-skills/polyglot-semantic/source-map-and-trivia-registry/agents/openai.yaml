@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Map and Trivia Registry"
+  short_description: "Map semantic facts to exact source and comments"
+  default_prompt: "Use $source-map-and-trivia-registry to preserve source traceability and trivia."

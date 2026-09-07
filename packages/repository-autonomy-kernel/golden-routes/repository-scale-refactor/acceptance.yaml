@@ -1,0 +1,9 @@
+mandatory:
+  - repository-census
+  - changegraph-traceability
+  - parallel-write-isolation
+  - full-validation-dag
+  - security
+  - chaos-recovery
+  - deployment-complete
+final: P05_DEPLOYMENT_COMPLETE

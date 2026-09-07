@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2110",
+  "skill_name": "frt-2110-release-scope-closure-manager",
+  "batch": "G21",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g21/frt-2110-release-scope-closure-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g21.release-scope-closure-manager",
+  "execution_contract_sha256": "sha256:50b0f90068d2922b8975a61c36a2664b19d014660db201b83436c5df04670898",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:64277794b3900bfa46f23018604ae726b9b6fe264d06c61da7bcb79e85893cea",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

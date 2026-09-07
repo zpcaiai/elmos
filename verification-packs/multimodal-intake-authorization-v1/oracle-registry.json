@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "pack_key": "multimodal-intake-authorization-v1",
+  "oracles": [
+    {
+      "oracle_id": "oracle.runtime-contract",
+      "type": "contract",
+      "owner": "elmos-multimodal-intake",
+      "scope": [
+        "claim.identity-scope-binding",
+        "claim.operation-authorization",
+        "claim.untrusted-content-boundary",
+        "claim.append-only-corrections"
+      ],
+      "independence": "dependent",
+      "trust_level": "strong",
+      "version": "1",
+      "evidence_refs": []
+    },
+    {
+      "oracle_id": "oracle.negative-tests",
+      "type": "test",
+      "owner": "elmos-multimodal-intake-security",
+      "scope": [
+        "claim.identity-scope-binding",
+        "claim.operation-authorization",
+        "claim.deny-no-side-effects",
+        "claim.untrusted-content-boundary",
+        "claim.append-only-corrections"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "supporting",
+      "version": "1",
+      "evidence_refs": ["security/principal-resource-action-matrix.json"]
+    },
+    {
+      "oracle_id": "oracle.independent-review",
+      "type": "human-expert",
+      "owner": "external-independent-verifier",
+      "scope": [
+        "claim.identity-scope-binding",
+        "claim.operation-authorization",
+        "claim.deny-no-side-effects",
+        "claim.untrusted-content-boundary"
+      ],
+      "independence": "independent",
+      "trust_level": "authoritative",
+      "version": "NOT_RUN",
+      "evidence_refs": []
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "authorization",
+      "ordered_oracles": [
+        "oracle.independent-review",
+        "oracle.runtime-contract",
+        "oracle.negative-tests"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

@@ -1,0 +1,354 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/refactor-plan.schema.json",
+  "title": "RefactorPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "planId",
+    "runId",
+    "version",
+    "snapshotDigests",
+    "steps",
+    "riskSummary"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "RefactorPlan"
+    },
+    "planId": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "snapshotDigests": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^sha256:"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "statement",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "statement": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "accepted",
+              "rejected",
+              "requires-approval",
+              "unverified"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "riskSummary": {
+      "type": "object",
+      "required": [
+        "overallClass",
+        "reasons"
+      ],
+      "properties": {
+        "overallClass": {
+          "enum": [
+            "R0",
+            "R1",
+            "R2",
+            "R3",
+            "R4",
+            "R5"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknownRiskWeight": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "estimated": {
+      "type": "object",
+      "properties": {
+        "wallClockSeconds": {
+          "type": "object",
+          "properties": {
+            "p50": {
+              "type": "number"
+            },
+            "p80": {
+              "type": "number"
+            },
+            "p95": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "p50",
+            "p80",
+            "p95"
+          ],
+          "additionalProperties": false
+        },
+        "costUsd": {
+          "type": "object",
+          "properties": {
+            "p50": {
+              "type": "number"
+            },
+            "p95": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "changedFiles": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "approvalGates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gateId",
+          "beforeStepId",
+          "roles"
+        ],
+        "properties": {
+          "gateId": {
+            "type": "string"
+          },
+          "beforeStepId": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stepId",
+        "name",
+        "skill",
+        "dependsOn",
+        "riskClass",
+        "inputs",
+        "outputs",
+        "validation"
+      ],
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "skill": {
+          "type": "string"
+        },
+        "dependsOn": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "riskClass": {
+          "enum": [
+            "R0",
+            "R1",
+            "R2",
+            "R3",
+            "R4",
+            "R5"
+          ]
+        },
+        "recipeRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "adapterRequirements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "repositories": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "symbols": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "buildTargets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "readSet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "writeSet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validation": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "gate",
+              "blocking"
+            ],
+            "properties": {
+              "gate": {
+                "type": "string"
+              },
+              "blocking": {
+                "type": "boolean"
+              },
+              "profile": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "properties": {
+            "strategy": {
+              "enum": [
+                "reverse-patch",
+                "snapshot-restore",
+                "compensation",
+                "forward-only"
+              ]
+            },
+            "handler": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "budgets": {
+          "type": "object",
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "maxCostUsd": {
+              "type": "number",
+              "minimum": 0
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}

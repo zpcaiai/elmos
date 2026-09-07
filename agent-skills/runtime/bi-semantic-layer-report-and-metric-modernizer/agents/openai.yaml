@@ -1,0 +1,4 @@
+interface:
+  display_name: "BI Semantic Modernizer"
+  short_description: "Version metrics reports security and refresh"
+  default_prompt: "Use $bi-semantic-layer-report-and-metric-modernizer to govern this ELMOS Batch 15 workflow."

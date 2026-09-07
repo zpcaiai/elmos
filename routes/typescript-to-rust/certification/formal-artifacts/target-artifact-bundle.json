@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-rust",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 138,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.rs",
+      "sha256": "sha256:3f8f75c60bb23db79b7b6aaeb130742335d8dbc05c532022eaaade9e219ba6b9"
+    },
+    {
+      "bytes": 172,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.rs",
+      "sha256": "sha256:44d11aa5a647e9888fb4199acf9b0a3eb60ef10fa3a8055ffb556d9fe28d2cd2"
+    },
+    {
+      "bytes": 126,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.rs",
+      "sha256": "sha256:f8d776e906a033dc5ee690c8139f849559ab21006612f5d2da188eeb747956af"
+    }
+  ]
+}

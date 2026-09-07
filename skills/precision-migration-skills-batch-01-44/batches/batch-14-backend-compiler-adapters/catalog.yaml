@@ -1,0 +1,125 @@
+batch: 14
+slug: backend-compiler-adapters
+title: "后端语言Compiler Adapter"
+phase: "E 后端语言互转"
+skills:
+  - name: java-parser-adapter
+    description: "使用 Java 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: java-symbol-adapter
+    description: "解析 Java 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: java-type-adapter
+    description: "提取并规范化 Java 类型、泛型、可空性、联合类型和类型约束。"
+  - name: java-cfg-ssa-adapter
+    description: "为 Java 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: java-error-exception-adapter
+    description: "恢复 Java 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: java-async-concurrency-adapter
+    description: "恢复 Java 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: java-framework-detector
+    description: "识别 Java 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: java-code-generator
+    description: "从目标语义 IR 生成可构建、符合 Java 惯例且可追踪到源位置的代码。"
+  - name: java-formatter-linter-adapter
+    description: "接入 Java 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: java-test-adapter
+    description: "发现、迁移、运行并规范化 Java 单元、集成、契约和端到端测试。"
+  - name: csharp-parser-adapter
+    description: "使用 C# 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: csharp-symbol-adapter
+    description: "解析 C# 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: csharp-type-adapter
+    description: "提取并规范化 C# 类型、泛型、可空性、联合类型和类型约束。"
+  - name: csharp-cfg-ssa-adapter
+    description: "为 C# 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: csharp-error-exception-adapter
+    description: "恢复 C# 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: csharp-async-concurrency-adapter
+    description: "恢复 C# 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: csharp-framework-detector
+    description: "识别 C# 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: csharp-code-generator
+    description: "从目标语义 IR 生成可构建、符合 C# 惯例且可追踪到源位置的代码。"
+  - name: csharp-formatter-linter-adapter
+    description: "接入 C# 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: csharp-test-adapter
+    description: "发现、迁移、运行并规范化 C# 单元、集成、契约和端到端测试。"
+  - name: go-parser-adapter
+    description: "使用 Go 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: go-symbol-adapter
+    description: "解析 Go 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: go-type-adapter
+    description: "提取并规范化 Go 类型、泛型、可空性、联合类型和类型约束。"
+  - name: go-cfg-ssa-adapter
+    description: "为 Go 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: go-error-exception-adapter
+    description: "恢复 Go 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: go-async-concurrency-adapter
+    description: "恢复 Go 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: go-framework-detector
+    description: "识别 Go 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: go-code-generator
+    description: "从目标语义 IR 生成可构建、符合 Go 惯例且可追踪到源位置的代码。"
+  - name: go-formatter-linter-adapter
+    description: "接入 Go 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: go-test-adapter
+    description: "发现、迁移、运行并规范化 Go 单元、集成、契约和端到端测试。"
+  - name: rust-parser-adapter
+    description: "使用 Rust 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: rust-symbol-adapter
+    description: "解析 Rust 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: rust-type-adapter
+    description: "提取并规范化 Rust 类型、泛型、可空性、联合类型和类型约束。"
+  - name: rust-cfg-ssa-adapter
+    description: "为 Rust 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: rust-error-exception-adapter
+    description: "恢复 Rust 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: rust-async-concurrency-adapter
+    description: "恢复 Rust 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: rust-framework-detector
+    description: "识别 Rust 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: rust-code-generator
+    description: "从目标语义 IR 生成可构建、符合 Rust 惯例且可追踪到源位置的代码。"
+  - name: rust-formatter-linter-adapter
+    description: "接入 Rust 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: rust-test-adapter
+    description: "发现、迁移、运行并规范化 Rust 单元、集成、契约和端到端测试。"
+  - name: python-parser-adapter
+    description: "使用 Python 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: python-symbol-adapter
+    description: "解析 Python 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: python-type-adapter
+    description: "提取并规范化 Python 类型、泛型、可空性、联合类型和类型约束。"
+  - name: python-cfg-ssa-adapter
+    description: "为 Python 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: python-error-exception-adapter
+    description: "恢复 Python 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: python-async-concurrency-adapter
+    description: "恢复 Python 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: python-framework-detector
+    description: "识别 Python 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: python-code-generator
+    description: "从目标语义 IR 生成可构建、符合 Python 惯例且可追踪到源位置的代码。"
+  - name: python-formatter-linter-adapter
+    description: "接入 Python 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: python-test-adapter
+    description: "发现、迁移、运行并规范化 Python 单元、集成、契约和端到端测试。"
+  - name: typescript-parser-adapter
+    description: "使用 TypeScript/Node.js 原生或高保真解析前端构建语法树，并保留源码位置、注释和语法特征。"
+  - name: typescript-symbol-adapter
+    description: "解析 TypeScript/Node.js 符号、作用域、绑定、重载与跨文件引用，输出统一符号模型。"
+  - name: typescript-type-adapter
+    description: "提取并规范化 TypeScript/Node.js 类型、泛型、可空性、联合类型和类型约束。"
+  - name: typescript-cfg-ssa-adapter
+    description: "为 TypeScript/Node.js 构建控制流、数据流与 SSA/近似 SSA 表示，支持切片和验证。"
+  - name: typescript-error-exception-adapter
+    description: "恢复 TypeScript/Node.js 的异常、错误返回、panic/throw 与清理路径语义。"
+  - name: typescript-async-concurrency-adapter
+    description: "恢复 TypeScript/Node.js 的异步、线程、任务、协程、取消和同步原语语义。"
+  - name: typescript-framework-detector
+    description: "识别 TypeScript/Node.js 仓库中的主流框架、版本、约定、插件和隐式运行时行为。"
+  - name: typescript-code-generator
+    description: "从目标语义 IR 生成可构建、符合 TypeScript/Node.js 惯例且可追踪到源位置的代码。"
+  - name: typescript-formatter-linter-adapter
+    description: "接入 TypeScript/Node.js 格式化、Lint 和静态分析工具，并规范化诊断结果。"
+  - name: typescript-test-adapter
+    description: "发现、迁移、运行并规范化 TypeScript/Node.js 单元、集成、契约和端到端测试。"

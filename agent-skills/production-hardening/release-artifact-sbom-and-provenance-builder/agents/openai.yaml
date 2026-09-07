@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Artifact Sbom and Provenance Builder"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $release-artifact-sbom-and-provenance-builder to perform this Batch 10 production-hardening task."

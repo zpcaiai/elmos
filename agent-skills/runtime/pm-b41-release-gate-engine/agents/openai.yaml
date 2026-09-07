@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B41: Release Gate Engine"
+  short_description: "Run Precision Migration B41 with evidence controls"
+  default_prompt: "Use $pm-b41-release-gate-engine to execute this Precision Migration contract with fail-closed evidence."

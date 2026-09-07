@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Transaction Cache Scanner"
+  short_description: "Scan persistence and cache risks"
+  default_prompt: "Use $database-transaction-cache-scanner for ELMOS Batch 3 data risks."

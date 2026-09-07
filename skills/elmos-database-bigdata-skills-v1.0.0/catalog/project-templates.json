@@ -1,0 +1,148 @@
+{
+  "catalog_version": "2026-08-19.1",
+  "templates": [
+    {
+      "id": "offline-warehouse",
+      "skill": "elmos-template-offline-warehouse",
+      "primary_patterns": [
+        "batch-warehouse",
+        "lakehouse"
+      ],
+      "roles": [
+        "ingestion",
+        "batch",
+        "semantic-layer",
+        "BI"
+      ]
+    },
+    {
+      "id": "realtime-analytics",
+      "skill": "elmos-template-realtime-analytics",
+      "primary_patterns": [
+        "streaming-kappa",
+        "unified-batch-stream"
+      ],
+      "roles": [
+        "event-backbone",
+        "stream",
+        "olap-serving",
+        "dashboard"
+      ]
+    },
+    {
+      "id": "realtime-user-profile",
+      "skill": "elmos-template-realtime-user-profile",
+      "primary_patterns": [
+        "streaming-kappa",
+        "lakehouse",
+        "polyglot-serving"
+      ],
+      "roles": [
+        "identity",
+        "stream",
+        "feature-store",
+        "low-latency-serving"
+      ]
+    },
+    {
+      "id": "recommendation",
+      "skill": "elmos-template-recommendation-system",
+      "primary_patterns": [
+        "lakehouse",
+        "streaming-kappa",
+        "polyglot-serving"
+      ],
+      "roles": [
+        "events",
+        "feature-store",
+        "training",
+        "online-serving"
+      ]
+    },
+    {
+      "id": "iot-timeseries",
+      "skill": "elmos-template-iot-timeseries",
+      "primary_patterns": [
+        "streaming-kappa",
+        "lakehouse",
+        "polyglot-serving"
+      ],
+      "roles": [
+        "edge-ingestion",
+        "stream",
+        "time-series",
+        "alerts"
+      ]
+    },
+    {
+      "id": "fraud-risk",
+      "skill": "elmos-template-fraud-risk",
+      "primary_patterns": [
+        "streaming-kappa",
+        "polyglot-serving"
+      ],
+      "roles": [
+        "events",
+        "features",
+        "graph",
+        "decision-serving",
+        "audit"
+      ]
+    },
+    {
+      "id": "log-observability",
+      "skill": "elmos-template-log-observability",
+      "primary_patterns": [
+        "streaming-kappa",
+        "lakehouse"
+      ],
+      "roles": [
+        "telemetry-ingestion",
+        "olap",
+        "retention",
+        "dashboards"
+      ]
+    },
+    {
+      "id": "governance-platform",
+      "skill": "elmos-template-data-governance-platform",
+      "primary_patterns": [
+        "data-fabric-overlay"
+      ],
+      "roles": [
+        "catalog",
+        "lineage",
+        "quality",
+        "policy"
+      ]
+    },
+    {
+      "id": "vector-knowledge",
+      "skill": "elmos-template-vector-knowledge-analytics",
+      "primary_patterns": [
+        "polyglot-serving",
+        "lakehouse"
+      ],
+      "roles": [
+        "document-ingestion",
+        "vector",
+        "search",
+        "evaluation"
+      ]
+    },
+    {
+      "id": "cdc-migration",
+      "skill": "elmos-template-cdc-migration-modernization",
+      "primary_patterns": [
+        "polyglot-serving",
+        "lakehouse"
+      ],
+      "roles": [
+        "snapshot",
+        "cdc",
+        "shadow-validation",
+        "cutover"
+      ]
+    }
+  ]
+}

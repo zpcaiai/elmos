@@ -1,0 +1,61 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_1Java21
+displayName: Prepare Spring Framework MVC 3.2-7.0.8 for Spring Boot 4.1.1 on Java 21
+description: >-
+  Performs deterministic source and build preparation for a non-Boot Spring MVC
+  application. The source FCM, not this recipe, decides whether XML, web.xml,
+  servlet registration, JSP, security, persistence, transactions or provider
+  behavior can be materialized in the target.
+recipeList:
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: org.springframework
+      oldArtifactId: spring-webmvc
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter-webmvc
+      newVersion: 4.1.1
+      overrideManagedVersion: false
+  - org.openrewrite.maven.AddParentPom:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      version: 4.1.1
+      relativePath: ""
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_1Java21
+displayName: Prepare Spring Framework Core and Context 3.2-7.0.8 for Spring Boot 4.1.1
+description: >-
+  Performs deterministic Jakarta, Spring Framework 7 and Boot dependency
+  preparation for a non-web Spring application. Bean graph, context lifecycle,
+  resources, transactions and providers require an extracted FCM and an exact
+  source runtime adapter; this recipe does not infer those behaviors.
+recipeList:
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
+  - org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0
+  - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.java.dependencies.ChangeDependency:
+      oldGroupId: org.springframework
+      oldArtifactId: spring-context
+      newGroupId: org.springframework.boot
+      newArtifactId: spring-boot-starter
+      newVersion: 4.1.1
+      overrideManagedVersion: false
+  - org.openrewrite.maven.AddParentPom:
+      groupId: org.springframework.boot
+      artifactId: spring-boot-starter-parent
+      version: 4.1.1
+      relativePath: ""
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: java.version
+      newValue: "21"
+      addIfMissing: true
+      trustParent: false

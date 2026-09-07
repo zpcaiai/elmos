@@ -1,0 +1,140 @@
+apiVersion: elmos.ai/v2alpha1
+kind: SkillAcceptanceSuite
+metadata:
+  name: elmos-dml-state-equivalence
+  version: 1.0.0
+  priority: P0
+spec:
+  entryCriteria:
+  - required inputs available
+  - semantic profile resolved
+  - TCB versions pinned or non-production mode
+  tests:
+  - id: elmos-dml-state-equivalence-AC-01
+    title: 验证性质：受影响行集合相同
+    given:
+    - 版本固定且哈希完整的输入
+    - 显式 semantic profile、assumptions 与 criticality
+    when:
+    - 执行 DML State Equivalence 的主证明路径
+    then:
+    - 受影响行集合相同
+    - 结果符合 proof-result schema
+    - 证据可通过 sha256 重放定位
+    evidence:
+    - proof_run
+    - proof_artifact
+    - trace
+    severity: critical
+  - id: elmos-dml-state-equivalence-AC-02
+    title: 验证性质：冲突分支和返回行语义保持
+    given:
+    - 版本固定且哈希完整的输入
+    - 显式 semantic profile、assumptions 与 criticality
+    when:
+    - 执行 DML State Equivalence 的主证明路径
+    then:
+    - 冲突分支和返回行语义保持
+    - 结果符合 proof-result schema
+    - 证据可通过 sha256 重放定位
+    evidence:
+    - proof_run
+    - proof_artifact
+    - trace
+    severity: critical
+  - id: elmos-dml-state-equivalence-AC-03
+    title: 验证性质：DEFAULT/identity/sequence 映射正确
+    given:
+    - 版本固定且哈希完整的输入
+    - 显式 semantic profile、assumptions 与 criticality
+    when:
+    - 执行 DML State Equivalence 的主证明路径
+    then:
+    - DEFAULT/identity/sequence 映射正确
+    - 结果符合 proof-result schema
+    - 证据可通过 sha256 重放定位
+    evidence:
+    - proof_run
+    - proof_artifact
+    - trace
+    severity: high
+  - id: elmos-dml-state-equivalence-AC-04
+    title: 验证性质：并发假设明确
+    given:
+    - 版本固定且哈希完整的输入
+    - 显式 semantic profile、assumptions 与 criticality
+    when:
+    - 执行 DML State Equivalence 的主证明路径
+    then:
+    - 并发假设明确
+    - 结果符合 proof-result schema
+    - 证据可通过 sha256 重放定位
+    evidence:
+    - proof_run
+    - proof_artifact
+    - trace
+    severity: high
+  - id: elmos-dml-state-equivalence-AC-90
+    title: 有界结果不得冒充证明
+    given:
+    - 证明器只在有限 scope/bound 内完成且未发现反例
+    when:
+    - 聚合结果并生成发布报告
+    then:
+    - 状态严格为 BOUNDED_NO_COUNTEREXAMPLE
+    - Release Gate 对要求无界证明的 P0 义务返回 DENY
+    evidence:
+    - proof_result
+    - gate_decision
+    severity: critical
+  - id: elmos-dml-state-equivalence-AC-91
+    title: 反例可重放并转为测试
+    given:
+    - 证明义务被反驳并返回 witness
+    when:
+    - 执行反例最小化和 Counterexample-to-Test
+    then:
+    - 状态为 REFUTED_WITH_COUNTEREXAMPLE
+    - 生成测试稳定复现违反性质
+    - 测试绑定原义务 ID
+    evidence:
+    - counterexample
+    - generated_test
+    severity: critical
+  - id: elmos-dml-state-equivalence-AC-92
+    title: 假设与工具链漂移使证据失效
+    given:
+    - 已有成功证据
+    - 修改 assumption 或 TCB digest
+    when:
+    - 执行 Proof Drift Monitor
+    then:
+    - 旧证据标记 stale
+    - 缓存不命中
+    - 生成最小重验计划
+    evidence:
+    - staleness_event
+    - reproof_plan
+    severity: high
+  - id: elmos-dml-state-equivalence-AC-93
+    title: 多租户与陈旧 owner 拒绝
+    given:
+    - 租户 B 或过期 fencing token 尝试读取/提交租户 A 证据
+    when:
+    - 访问 Artifact Store 或提交 proof result
+    then:
+    - 请求被拒绝
+    - 无跨租户信息泄漏
+    - 产生审计事件
+    evidence:
+    - security_audit_event
+    severity: critical
+  exitCriteria:
+  - all critical tests pass
+  - no UNKNOWN mapped to PASS
+  - evidence hashes verified
+  requiredEvidence:
+  - machine-readable results
+  - human-readable summary
+  - replay command
+  - coverage snapshot

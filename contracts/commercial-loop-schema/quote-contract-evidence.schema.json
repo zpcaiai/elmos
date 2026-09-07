@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/quote-contract-evidence.schema.json",
+  "title": "B13-B Quote and Contract Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "catalog_quote_coverage",
+    "unauthorized_discounts",
+    "quote_sow_scope_mismatches",
+    "unapproved_security_commitments",
+    "commercial_approval_coverage",
+    "below_floor_margin_without_approval",
+    "contract_capability_mismatches",
+    "quote_history_immutable",
+    "signed_order_entitlement_reconciled",
+    "billing_before_acceptance_events",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "catalog_quote_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unauthorized_discounts": {
+      "const": 0
+    },
+    "quote_sow_scope_mismatches": {
+      "const": 0
+    },
+    "unapproved_security_commitments": {
+      "const": 0
+    },
+    "commercial_approval_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "below_floor_margin_without_approval": {
+      "const": 0
+    },
+    "contract_capability_mismatches": {
+      "const": 0
+    },
+    "quote_history_immutable": {
+      "const": true
+    },
+    "signed_order_entitlement_reconciled": {
+      "const": true
+    },
+    "billing_before_acceptance_events": {
+      "const": 0
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

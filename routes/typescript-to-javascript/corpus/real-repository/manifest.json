@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "real-repository",
+  "customer_repository": false,
+  "evidence_class": "representative-bounded-fixture",
+  "function_name": "both",
+  "independent": true,
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "both.ts",
+  "source_language": "typescript",
+  "type_coverage": [
+    "boolean"
+  ]
+}

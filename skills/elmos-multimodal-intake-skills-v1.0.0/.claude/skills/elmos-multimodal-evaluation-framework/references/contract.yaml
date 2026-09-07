@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+ordinal: 24
+name: elmos-multimodal-evaluation-framework
+title: 多模态评测框架
+objective: 把准确率、流程遵循、安全和效率变成可自动执行的基准，而不是凭主观感觉验收。
+dependencies: []
+inputs:
+- 测试数据、期望输出、运行配置
+outputs:
+- EvalRun、MetricScore、RegressionDecision
+responsibilities:
+- 建立带授权和版本的 gold datasets、fixtures
+- 定义 OCR CER、ASR WER、布局、表格、图关系、需求和检索指标
+- 同时评估结果、流程、安全和成本
+- 支持 provider、model、config A/B 与回归门禁
+deliverables:
+- EvalRunner 与数据集清单
+- 确定性检查和 rubric grader
+- CI 报告、基线和回归阈值
+acceptance:
+- 每个核心技能至少有正向、边界、失败和安全用例
+- 模型或解析器升级必须跑兼容评测
+- 评测数据不含未经授权生产隐私
+- 回归超过阈值会阻止发布或要求批准
+data_entities:
+- eval_datasets
+- eval_runs
+- eval_scores
+events:
+- eval.completed
+- eval.regression.detected
+metrics:
+- benchmark_coverage
+- regression_count
+failure_modes:
+- 评测泄漏
+- 标签错误
+- 非确定性波动
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

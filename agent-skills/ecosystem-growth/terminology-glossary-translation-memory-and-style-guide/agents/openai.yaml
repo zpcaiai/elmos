@@ -1,0 +1,5 @@
+interface:
+  display_name: "Terminology Glossary Translation Memory And Style Guide"
+  short_description: "Authoritative Batch 14 Skill 446 workflow"
+  default_prompt: "Use $terminology-glossary-translation-memory-and-style-guide to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,5 @@
+build_gate:
+  compile_must_pass: true
+  test_must_pass: true
+  warnings_as_findings: true
+  skipped_test_counts_as_not_run: true

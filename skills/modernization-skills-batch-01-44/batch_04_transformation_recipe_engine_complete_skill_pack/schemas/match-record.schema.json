@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-04:match-record",
+  "title": "MatchRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applicable",
+    "node_id",
+    "record_id",
+    "rule_id",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "guard_results": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "applicable": {
+      "type": "boolean"
+    }
+  }
+}

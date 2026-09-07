@@ -1,0 +1,4 @@
+interface:
+  display_name: "Threat Model Attack Path and Security Architecture Engine"
+  short_description: "Threat Model Attack Path and Security Architecture Engine helper"
+  default_prompt: "Use $threat-model-attack-path-and-security-architecture-engine to execute its ELMOS Batch 17 workflow safely."

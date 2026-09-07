@@ -1,0 +1,580 @@
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch29/validate_skill_bundle.py
+OK: 425 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch29 -p 'test_*.py'
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp_manncvl/out.json
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpkc1goxmx/routes/java-to-csharp
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpkc1goxmx/routes/java-to-csharp
+OK: 425 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch30/validate_skill_bundle.py
+OK: 20 Batch 30 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch30 -p 'test_*.py'
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp8guw_p1r/framework-packs/spring-boot-to-aspnet-core
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp8guw_p1r/framework-packs/spring-boot-to-aspnet-core
+OK: 20 Batch 30 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch31/validate_skill_bundle.py
+OK: 22 Batch 31 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch31 -p 'test_*.py'
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmprkdbdav9/database-packs/mysql-to-postgresql
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmprkdbdav9/database-packs/mysql-to-postgresql
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmprkdbdav9/database-packs/mysql-to-postgresql/canonical-ir/model.json nodes=0
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpq2q9okm4/database-packs/oracle-to-postgresql
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpq2q9okm4/database-packs/oracle-to-postgresql
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpq2q9okm4/database-packs/oracle-to-postgresql/canonical-ir/model.json nodes=0
+OK: 22 Batch 31 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch32/validate_skill_bundle.py .agents/skills
+OK: 20 Batch 32 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch32 -p 'test_*.py'
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcc9buwmq/client-packs/angularjs-to-react
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcc9buwmq/client-packs/angularjs-to-react
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcc9buwmq/client-packs/angularjs-to-react/ui-ir/model.json nodes=2
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpraa3ncej/client-packs/angularjs-to-react
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpraa3ncej/client-packs/angularjs-to-react
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpraa3ncej/client-packs/angularjs-to-react/ui-ir/model.json nodes=2
+OK: 20 Batch 32 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch33/validate_skill_bundle.py .agents/skills
+OK: 20 Batch 33 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch33 -p 'test_*.py'
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmplp8eqelp/cloud-packs/cloudformation-aws-to-terraform-azurerm
+OK: cloudformation-aws-to-terraform-azurerm
+OK: runtime architecture contract
+OK: IaC IR
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmph1rp8pn6/cloud-packs/cloudformation-aws-to-terraform-azurerm
+OK: cloudformation-aws-to-terraform-azurerm
+OK: runtime architecture contract
+OK: IaC IR
+OK: 20 Batch 33 skills
+/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp0d9kmzab/cloud-packs/cloudformation-aws-to-terraform-azurerm
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch34/validate_skill_bundle.py .agents/skills
+OK: 22 Batch 34 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch34 -p 'test_*.py'
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpf6sropyb/out.json
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcqh15xgy/portfolio-packs/acme-enterprise
+OK: acme-enterprise
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpp2wx9xzr/portfolio-packs/acme-enterprise
+OK: acme-enterprise
+GATE PASS: acme-enterprise status=research certification=NOT_CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp6ir1b74x/portfolio-packs/acme-enterprise
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpk5_5fobf/portfolio-packs/acme-enterprise
+OK: acme-enterprise
+OK: 22 Batch 34 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch35/validate_skill_bundle.py .agents/skills
+OK: 22 Batch 35 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch35 -p 'test_*.py'
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpsxrlqfgh/verification-packs/payment-verification
+OK: 2 oracles
+OK: model states=3 transitions=2
+OK: verification pack payment-verification
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpvappmwc6/verification-packs/corpus-verification
+OK: 2 oracles
+OK: model states=3 transitions=2
+OK: verification pack corpus-verification
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpzm40jmau/verification-packs/research-verification
+OK: 2 oracles
+OK: model states=3 transitions=2
+OK: verification pack research-verification
+GATE PASS: research-verification status=research decision=NOT_CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp7w83fnfz/verification-packs/payment-verification
+OK: 2 oracles
+OK: model states=3 transitions=2
+OK: verification pack payment-verification
+OK: 22 Batch 35 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch36/validate_skill_bundle.py .agents/skills
+OK: 18 Batch 36 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch36 -p 'test_*.py'
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp53o42mqd/developer-experience-packs/java-csharp-dev
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp53o42mqd/developer-experience-packs/java-csharp-dev
+OK: IDE protocol
+OK: navigation map
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfbmasu0k/developer-experience-packs/local-dev
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfbmasu0k/developer-experience-packs/local-dev
+OK: IDE protocol
+OK: navigation map
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcajhf3mh/developer-experience-packs/local-dev
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpcajhf3mh/developer-experience-packs/local-dev
+OK: IDE protocol
+OK: navigation map
+GATE PASS: local-dev status=research decision=NOT_CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp7xjyrrom/developer-experience-packs/java-csharp-dev
+OK: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp7xjyrrom/developer-experience-packs/java-csharp-dev
+OK: 18 Batch 36 skills
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/batch37/validate_skill_bundle.py .agents/skills
+VALID SKILLS: 36
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/validate_mature_product_series.py
+Batch 29: skills=20 ids=1141-1160 schemas=3 templates=5
+Batch 30: skills=20 ids=1161-1180 schemas=4 templates=6
+Batch 31: skills=22 ids=1181-1202 schemas=6 templates=9
+Batch 32: skills=20 ids=1203-1222 schemas=7 templates=9
+Batch 33: skills=20 ids=1223-1242 schemas=8 templates=11
+Batch 34: skills=22 ids=1243-1264 schemas=10 templates=12
+Batch 35: skills=22 ids=1265-1286 schemas=13 templates=15
+Batch 36: skills=18 ids=1287-1304 schemas=12 templates=16
+Batch 37: skills=36 ids=1305-1324 schemas=25 templates=27
+Batch 38: skills=22 ids=1325-1346 schemas=4 templates=4
+Batch 39: skills=22 ids=1347-1368 schemas=4 templates=4
+Batch 40: skills=24 ids=1369-1392 schemas=4 templates=4
+Batch 41: skills=20 ids=1393-1412 schemas=4 templates=4
+Batch 42: skills=22 ids=1413-1434 schemas=4 templates=4
+Batch 43: skills=20 ids=1435-1454 schemas=4 templates=4
+Batch 44: skills=20 ids=1455-1474 schemas=4 templates=4
+Batch 45: skills=22 ids=1475-1496 schemas=4 templates=4
+OK: batches=17 skills=372 schemas=120 common_m38_m45_schemas=3
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch37 -p 'test_*.py'
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpjqjb8w1m/marketplace-packs/closed-marketplace
+CLOSURE GATE PASS: closed-marketplace status=certified decision=CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpf1uyac79/marketplace-packs/closed-marketplace
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmp6cgq7q0v/marketplace-packs/closed-marketplace
+CLOSURE GATE PASS: closed-marketplace status=research decision=NOT_CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/dependencies/lock.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/runtime/health.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/catalog
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/publishers/lifecycle.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/certification/recertification-policy.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/migrations/extension-migration.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/continuity/revocation-plan.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/legal-support/policy.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/private-marketplace/policy.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/offline-mirror/policy.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/operations/operations-policy.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/commercial/settlement.json
+VALID: /var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpfxg6ls44/marketplace-packs/closed-marketplace/lifecycle/eol-policy.json
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpu4yb609x/marketplace-packs/sdk-marketplace
+VALID: sdk-marketplace
+VALID MANIFEST: sample.publisher.extension
+VALID SANDBOX: marketplace-default-deny
+VALID RELEASE: sample.publisher.extension@0.1.0
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpq9o2axlb/marketplace-packs/sdk-marketplace
+VALID: sdk-marketplace
+VALID MANIFEST: sample.publisher.extension
+VALID SANDBOX: marketplace-default-deny
+VALID RELEASE: sample.publisher.extension@0.1.0
+GATE PASS: sdk-marketplace status=research decision=NOT_CERTIFIED
+/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/tmpps06c9x5/marketplace-packs/sdk-marketplace
+VALID: sdk-marketplace
+VALID SKILLS: 36
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 38
+OK: Batch 38 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch38 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 39
+OK: Batch 39 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch39 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 40
+OK: Batch 40 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch40 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 41
+OK: Batch 41 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch41 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 42
+OK: Batch 42 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch42 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 43
+OK: Batch 43 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch43 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 44
+OK: Batch 44 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch44 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/mature_product_toolkit.py validate --batch 45
+OK: Batch 45 Skill bundle
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python -m unittest discover -s tests/batch45 -p 'test_*.py'
+/opt/homebrew/bin/uv run --quiet --with jsonschema --with pyyaml python scripts/validate_mature_product_series.py
+Batch 29: skills=20 ids=1141-1160 schemas=3 templates=5
+Batch 30: skills=20 ids=1161-1180 schemas=4 templates=6
+Batch 31: skills=22 ids=1181-1202 schemas=6 templates=9
+Batch 32: skills=20 ids=1203-1222 schemas=7 templates=9
+Batch 33: skills=20 ids=1223-1242 schemas=8 templates=11
+Batch 34: skills=22 ids=1243-1264 schemas=10 templates=12
+Batch 35: skills=22 ids=1265-1286 schemas=13 templates=15
+Batch 36: skills=18 ids=1287-1304 schemas=12 templates=16
+Batch 37: skills=36 ids=1305-1324 schemas=25 templates=27
+Batch 38: skills=22 ids=1325-1346 schemas=4 templates=4
+Batch 39: skills=22 ids=1347-1368 schemas=4 templates=4
+Batch 40: skills=24 ids=1369-1392 schemas=4 templates=4
+Batch 41: skills=20 ids=1393-1412 schemas=4 templates=4
+Batch 42: skills=22 ids=1413-1434 schemas=4 templates=4
+Batch 43: skills=20 ids=1435-1454 schemas=4 templates=4
+Batch 44: skills=20 ids=1455-1474 schemas=4 templates=4
+Batch 45: skills=22 ids=1475-1496 schemas=4 templates=4
+OK: batches=17 skills=372 schemas=120 common_m38_m45_schemas=3
+/opt/homebrew/bin/uv run --quiet --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests -p 'mature_product_gate_test.py'
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.316s
+
+OK
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.227s
+
+OK
+.GATE FAIL: no certified capabilities
+GATE FAIL: workload_fingerprint_coverage below 0.95
+GATE FAIL: canonical_ir_coverage below 0.95
+GATE FAIL: schema_conversion_pass_rate below 1
+GATE FAIL: type_boundary_pass_rate below 1
+GATE FAIL: query_semantic_pass_rate below 1
+GATE FAIL: transaction_contract_pass_rate below 1
+GATE FAIL: data_reconciliation_pass_rate below 1
+GATE FAIL: target_provision_pass_rate below 1
+GATE FAIL: representative_workload_pass_rate below 1
+GATE FAIL: source_map_coverage below 0.95
+GATE FAIL: query_performance_slo_pass_rate below 1
+GATE FAIL: fingerprint coverage below 0.95
+GATE FAIL: fingerprint snapshot digest unset
+GATE FAIL: canonical IR contains no evidence-bearing nodes
+GATE FAIL: holdout corpus empty
+GATE FAIL: representative workload corpus empty
+GATE FAIL: certification evidence refs empty
+GATE FAIL: no data reconciliation rules
+....
+----------------------------------------------------------------------
+Ran 5 tests in 1.864s
+
+OK
+.GATE FAIL: no certified capabilities
+GATE FAIL: source_fingerprint_coverage below 0.95
+GATE FAIL: ui_ir_source_map_coverage below 0.95
+GATE FAIL: target_build_green_rate below 1.0
+GATE FAIL: target_startup_or_launch_rate below 1.0
+GATE FAIL: p0_journey_pass_rate below 1.0
+GATE FAIL: route_contract_pass_rate below 1.0
+GATE FAIL: state_contract_pass_rate below 1.0
+GATE FAIL: form_contract_pass_rate below 1.0
+GATE FAIL: identity_permission_pass_rate below 1.0
+GATE FAIL: visual_pass_rate below 1.0
+GATE FAIL: accessibility_pass_rate below 1.0
+GATE FAIL: i18n_pass_rate below 1.0
+GATE FAIL: browser_matrix_pass_rate below 1.0
+GATE FAIL: representative_workload_pass_rate below 1.0
+GATE FAIL: source_map_coverage below 0.95
+GATE FAIL: source fingerprint coverage below 0.95
+GATE FAIL: acceptance profile has no P0 journeys
+GATE FAIL: holdout corpus empty
+GATE FAIL: representative workload corpus empty
+GATE FAIL: approved visual baselines empty
+GATE FAIL: certification evidence refs empty
+....ERROR: component.a: unknown reference component.missing
+.
+----------------------------------------------------------------------
+Ran 6 tests in 2.099s
+
+OK
+.GATE FAIL: no certified capabilities
+GATE FAIL: source_fingerprint_coverage below 0.95
+GATE FAIL: runtime_contract_source_map_coverage below 0.95
+GATE FAIL: iac_ir_source_map_coverage below 0.95
+GATE FAIL: source_plan_pass_rate below 1.0
+GATE FAIL: target_plan_pass_rate below 1.0
+GATE FAIL: target_apply_or_emulator_pass_rate below 1.0
+GATE FAIL: p0_deployment_contract_pass_rate below 1.0
+GATE FAIL: container_build_pass_rate below 1.0
+GATE FAIL: kubernetes_validation_pass_rate below 1.0
+GATE FAIL: cicd_pipeline_pass_rate below 1.0
+GATE FAIL: identity_network_contract_pass_rate below 1.0
+GATE FAIL: secret_config_pass_rate below 1.0
+GATE FAIL: observability_pass_rate below 1.0
+GATE FAIL: security_guardrail_pass_rate below 1.0
+GATE FAIL: drift_validation_pass_rate below 1.0
+GATE FAIL: cost_budget_pass_rate below 1.0
+GATE FAIL: rollback_destroy_pass_rate below 1.0
+GATE FAIL: representative_workload_pass_rate below 1.0
+GATE FAIL: source_map_coverage below 0.95
+GATE FAIL: source fingerprint coverage below 0.95
+GATE FAIL: holdout corpus empty
+GATE FAIL: representative workload corpus empty
+GATE FAIL: certification evidence refs empty
+.ERROR: r.a: unknown dependency r.missing
+....ERROR: target profile contains prohibited command pattern '-auto-approve': unattended apply/destroy is prohibited
+.
+----------------------------------------------------------------------
+Ran 7 tests in 12.152s
+
+OK
+.GATE FAIL: no certified capabilities
+GATE FAIL: inventory_coverage below 0.95
+GATE FAIL: critical_owner_coverage below 1.0
+GATE FAIL: dependency_graph_coverage below 0.95
+GATE FAIL: cross_repo_edge_resolution_rate below 0.95
+GATE FAIL: work_unit_coverage below 0.95
+GATE FAIL: semantic_index_coverage below 0.95
+GATE FAIL: incremental_index_equivalence_rate below 1.0
+GATE FAIL: workflow_idempotency_pass_rate below 1.0
+GATE FAIL: checkpoint_recovery_pass_rate below 1.0
+GATE FAIL: runner_fleet_scheduling_pass_rate below 1.0
+GATE FAIL: cache_correctness_pass_rate below 1.0
+GATE FAIL: artifact_transfer_resume_pass_rate below 1.0
+GATE FAIL: recipe_campaign_pass_rate below 1.0
+GATE FAIL: multi_repo_pr_pass_rate below 1.0
+GATE FAIL: failure_isolation_pass_rate below 1.0
+GATE FAIL: fairness_slo_pass_rate below 1.0
+GATE FAIL: budget_guardrail_pass_rate below 1.0
+GATE FAIL: control_tower_freshness_pass_rate below 1.0
+GATE FAIL: million_loc_benchmark_pass_rate below 1.0
+GATE FAIL: thousand_repo_benchmark_pass_rate below 1.0
+GATE FAIL: mixed_language_benchmark_pass_rate below 1.0
+GATE FAIL: forecast_interval_coverage below 0.8
+GATE FAIL: disaster_replay_pass_rate below 1.0
+GATE FAIL: representative_portfolio_pass_rate below 1.0
+GATE FAIL: source_map_coverage below 0.95
+GATE FAIL: inventory coverage below 0.95
+GATE FAIL: benchmark result not passed
+GATE FAIL: holdout corpus empty
+GATE FAIL: representative portfolio corpus empty
+GATE FAIL: certification evidence refs empty
+.ERROR: edge e: unknown to missing
+.......ERROR: unit w: unknown repository missing
+.
+----------------------------------------------------------------------
+Ran 10 tests in 25.952s
+
+OK
+.GATE FAIL: property_pass_rate below 1.0
+GATE FAIL: metamorphic_pass_rate below 1.0
+GATE FAIL: mutation_score below 0.8
+GATE FAIL: fuzz_campaign_pass_rate below 1.0
+GATE FAIL: model_transition_coverage below 0.95
+GATE FAIL: p0_contract_pass_rate below 1.0
+GATE FAIL: data_money_invariant_pass_rate below 1.0
+GATE FAIL: security_property_pass_rate below 1.0
+GATE FAIL: query_equivalence_pass_rate below 1.0
+GATE FAIL: numeric_verification_pass_rate below 1.0
+GATE FAIL: counterexample_replay_pass_rate below 1.0
+GATE FAIL: representative_workload_pass_rate below 1.0
+GATE FAIL: source_map_coverage below 0.95
+GATE FAIL: evidence_trace_coverage below 0.95
+GATE FAIL: assurance_claim_support_rate below 1.0
+GATE FAIL: critical_unknown_obligations must be zero
+GATE FAIL: unresolved_oracle_conflicts must be zero
+GATE FAIL: surviving_critical_mutants must be zero
+GATE FAIL: critical_fuzz_crashes must be zero
+GATE FAIL: unreplayed_counterexamples must be zero
+GATE FAIL: security_property_violations must be zero
+GATE FAIL: money_invariant_violations must be zero
+GATE FAIL: forbidden_concurrency_outcomes must be zero
+GATE FAIL: race_deadlock_liveness_violations must be zero
+GATE FAIL: query_equivalence_failures must be zero
+GATE FAIL: numeric_precision_regressions must be zero
+GATE FAIL: invalid_or_unknown_required_proofs must be zero
+GATE FAIL: unsupported_p0_claims must be zero
+GATE FAIL: test_integrity_violations must be zero
+GATE FAIL: unapproved_oracle_changes must be zero
+GATE FAIL: unapproved_tolerance_changes must be zero
+GATE FAIL: negative corpus manifest missing
+GATE FAIL: holdout corpus manifest missing
+GATE FAIL: representative-workloads corpus manifest missing
+GATE FAIL: assurance claim claim.behavior is not fully supported
+GATE FAIL: assurance case approvals empty
+GATE FAIL: certification evidence refs empty
+.ERROR: unknown to state missing
+.GATE FAIL: critical_unknown_obligations must be zero
+GATE FAIL: unresolved_oracle_conflicts must be zero
+GATE FAIL: surviving_critical_mutants must be zero
+GATE FAIL: critical_fuzz_crashes must be zero
+GATE FAIL: unreplayed_counterexamples must be zero
+GATE FAIL: security_property_violations must be zero
+GATE FAIL: money_invariant_violations must be zero
+GATE FAIL: forbidden_concurrency_outcomes must be zero
+GATE FAIL: race_deadlock_liveness_violations must be zero
+GATE FAIL: query_equivalence_failures must be zero
+GATE FAIL: numeric_precision_regressions must be zero
+GATE FAIL: invalid_or_unknown_required_proofs must be zero
+GATE FAIL: unsupported_p0_claims must be zero
+GATE FAIL: test_integrity_violations must be zero
+GATE FAIL: unapproved_oracle_changes must be zero
+GATE FAIL: unapproved_tolerance_changes must be zero
+GATE FAIL: negative corpus status must be passed
+GATE FAIL: holdout corpus status must be passed
+GATE FAIL: representative-workloads corpus status must be passed
+GATE FAIL: assurance claim claim.behavior is not fully supported
+GATE FAIL: assurance case approvals empty
+GATE FAIL: certification evidence refs empty
+.ERROR: LLM oracle oracle.business cannot be authoritative/strong
+.....
+----------------------------------------------------------------------
+Ran 9 tests in 13.066s
+
+OK
+.GATE FAIL: ide_protocol_conformance below 1.0
+GATE FAIL: extension_build_pass_rate below 1.0
+GATE FAIL: cli_contract_pass_rate below 1.0
+GATE FAIL: pr_bot_dry_run_pass_rate below 1.0
+GATE FAIL: local_preview_pass_rate below 1.0
+GATE FAIL: navigation_accuracy below 0.95
+GATE FAIL: explanation_provenance_coverage below 0.95
+GATE FAIL: quick_fix_postcondition_pass_rate below 1.0
+GATE FAIL: conflict_resolution_pass_rate below 1.0
+GATE FAIL: ownership_protection_pass_rate below 1.0
+GATE FAIL: affected_test_recall below 0.95
+GATE FAIL: recipe_authoring_validation_pass_rate below 1.0
+GATE FAIL: review_sync_pass_rate below 1.0
+GATE FAIL: offline_workflow_pass_rate below 1.0
+GATE FAIL: telemetry_privacy_pass_rate below 1.0
+GATE FAIL: representative_workflow_pass_rate below 1.0
+GATE FAIL: developer_task_success_rate below 0.95
+GATE FAIL: evidence_trace_coverage below 0.95
+GATE FAIL: cross_tenant_access must be zero
+GATE FAIL: unauthorized_repository_writes must be zero
+GATE FAIL: secret_leaks must be zero
+GATE FAIL: critical_source_mapping_errors must be zero
+GATE FAIL: protected_region_overwrites must be zero
+GATE FAIL: test_integrity_violations must be zero
+GATE FAIL: telemetry_policy_violations must be zero
+GATE FAIL: unapproved_dependency_changes must be zero
+GATE FAIL: unreplayed_local_failures must be zero
+GATE FAIL: unknown_p0_workflows must be zero
+GATE FAIL: self_approvals must be zero
+GATE FAIL: comment_spam_incidents must be zero
+GATE FAIL: hidden_network_dependencies must be zero
+GATE FAIL: stale_critical_approvals must be zero
+GATE FAIL: corpus/negative corpus manifest missing
+GATE FAIL: corpus/holdout corpus manifest missing
+GATE FAIL: corpus/representative-workflows corpus manifest missing
+GATE FAIL: certification evidence refs empty
+.ERROR: unsafe path ../../secret
+.GATE FAIL: corpus/holdout corpus status must be passed
+.ERROR: arbitrary shell must be false
+.....
+----------------------------------------------------------------------
+Ran 9 tests in 14.657s
+
+OK
+.INVALID: dependency cycles must be empty
+INVALID: floating dependency version
+.CLOSURE GATE FAIL: core external_evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: dependencies/lock.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: runtime/health.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: catalog/catalog-entry.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: catalog/ranking-policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: publishers/lifecycle.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: certification/recertification-policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: migrations/extension-migration.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: continuity/revocation-plan.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: legal-support/policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: private-marketplace/policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: offline-mirror/policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: operations/operations-policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: commercial/settlement.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: lifecycle/eol-policy.json evidence_status must be PASSED for certification
+CLOSURE GATE FAIL: dependency_resolution_pass_rate below 1.0
+CLOSURE GATE FAIL: runtime_reconciliation_pass_rate below 1.0
+CLOSURE GATE FAIL: catalog_governance_pass_rate below 1.0
+CLOSURE GATE FAIL: publisher_lifecycle_pass_rate below 1.0
+CLOSURE GATE FAIL: continuous_certification_pass_rate below 1.0
+CLOSURE GATE FAIL: migration_rollback_pass_rate below 1.0
+CLOSURE GATE FAIL: continuity_pass_rate below 1.0
+CLOSURE GATE FAIL: legal_support_pass_rate below 1.0
+CLOSURE GATE FAIL: private_marketplace_pass_rate below 1.0
+CLOSURE GATE FAIL: offline_mirror_pass_rate below 1.0
+CLOSURE GATE FAIL: operations_dr_pass_rate below 1.0
+CLOSURE GATE FAIL: settlement_reconciliation_pass_rate below 1.0
+CLOSURE GATE FAIL: eol_portability_pass_rate below 1.0
+CLOSURE GATE FAIL: closure_holdout_pass_rate below 1.0
+CLOSURE GATE FAIL: representative_lifecycle_pass_rate below 1.0
+CLOSURE GATE FAIL: evidence_trace_coverage below 0.95
+CLOSURE GATE FAIL: dependency_cycles must be zero
+CLOSURE GATE FAIL: revoked_dependency_activations must be zero
+CLOSURE GATE FAIL: runtime_drift must be zero
+CLOSURE GATE FAIL: open_critical_incidents must be zero
+CLOSURE GATE FAIL: overdue_p0_certifications must be zero
+CLOSURE GATE FAIL: failed_state_migrations must be zero
+CLOSURE GATE FAIL: continuity_gaps must be zero
+CLOSURE GATE FAIL: open_blocking_legal_cases must be zero
+CLOSURE GATE FAIL: open_p0_sla_breaches must be zero
+CLOSURE GATE FAIL: cross_tenant_private_marketplace_access must be zero
+CLOSURE GATE FAIL: stale_revocation_mirrors must be zero
+CLOSURE GATE FAIL: dr_reconciliation_breaks must be zero
+CLOSURE GATE FAIL: settlement_differences must be zero
+CLOSURE GATE FAIL: fraud_findings_open must be zero
+CLOSURE GATE FAIL: residual_eol_dependencies must be zero
+CLOSURE GATE FAIL: customers_stranded_at_eol must be zero
+CLOSURE GATE FAIL: missing_closure_evidence must be zero
+CLOSURE GATE FAIL: closure evidence refs empty
+.INVALID: migration evidence incomplete
+.INVALID: cross-tenant sharing prohibited
+..INVALID: healthy state cannot contain drift
+...INVALID: settlement difference non-zero
+..INVALID: certification stale or overdue
+.INVALID: offline mirror stale
+..GATE FAIL: external_evidence_status must be PASSED for certification
+GATE FAIL: abi_conformance_rate below 1.0
+GATE FAIL: sdk_conformance_rate below 1.0
+GATE FAIL: sandbox_conformance_rate below 1.0
+GATE FAIL: extension_build_pass_rate below 1.0
+GATE FAIL: negative_security_pass_rate below 1.0
+GATE FAIL: signature_verification_rate below 1.0
+GATE FAIL: sbom_provenance_coverage below 1.0
+GATE FAIL: publisher_verification_rate below 1.0
+GATE FAIL: compatibility_matrix_pass_rate below 1.0
+GATE FAIL: install_upgrade_rollback_pass_rate below 1.0
+GATE FAIL: revocation_enforcement_rate below 1.0
+GATE FAIL: entitlement_metering_reconciliation_rate below 1.0
+GATE FAIL: holdout_pass_rate below 1.0
+GATE FAIL: representative_extension_pass_rate below 1.0
+GATE FAIL: evidence_trace_coverage below 0.95
+GATE FAIL: critical_unknowns must be zero
+GATE FAIL: sandbox_escapes must be zero
+GATE FAIL: cross_tenant_access must be zero
+GATE FAIL: undeclared_permission_grants must be zero
+GATE FAIL: unsigned_published_releases must be zero
+GATE FAIL: tampered_artifacts_accepted must be zero
+GATE FAIL: critical_vulnerabilities must be zero
+GATE FAIL: prohibited_license_findings must be zero
+GATE FAIL: unverified_active_publishers must be zero
+GATE FAIL: revoked_release_executions must be zero
+GATE FAIL: orphaned_credentials must be zero
+GATE FAIL: billing_reconciliation_breaks must be zero
+GATE FAIL: self_approved_critical_waivers must be zero
+GATE FAIL: test_integrity_violations must be zero
+GATE FAIL: missing_p0_evidence must be zero
+GATE FAIL: certification evidence refs empty
+.unknown permission: root-host
+..wildcard network forbidden: *
+....
+----------------------------------------------------------------------
+Ran 21 tests in 13.790s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 12.587s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 15.054s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 16.327s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 10.434s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 14.558s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 11.764s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 14.979s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 12.619s
+
+OK
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 42.496s
+
+OK

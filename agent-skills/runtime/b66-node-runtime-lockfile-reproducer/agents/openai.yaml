@@ -1,0 +1,4 @@
+interface:
+  display_name: "B66 Node Runtime Lockfile Reproducer"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b66-node-runtime-lockfile-reproducer to execute this ELMOS project Skill with fail-closed evidence."

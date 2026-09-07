@@ -1,0 +1,15 @@
+fixtures:
+  conversion-request.schema.json: conversion-request.valid.json
+  project-inventory.schema.json: project-inventory.valid.json
+  source-analysis.schema.json: source-analysis.valid.json
+  semantic-ir.schema.json: semantic-ir.valid.json
+  capability-registry-entry.schema.json: capability-registry-entry.valid.json
+  component-mapping.schema.json: component-mapping.valid.json
+  platform-profile.schema.json: platform-profile.valid.json
+  dependency-migration-plan.schema.json: dependency-migration-plan.valid.json
+  compatibility-report.schema.json: compatibility-report.valid.json
+  test-plan.schema.json: test-plan.valid.json
+  differential-result.schema.json: differential-result.valid.json
+  privacy-report.schema.json: privacy-report.valid.json
+  repair-action.schema.json: repair-action.valid.json
+  migration-evidence.schema.json: migration-evidence.valid.json

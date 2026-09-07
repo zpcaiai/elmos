@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+ordinal: 23
+name: elmos-multimodal-observability
+title: 多模态可观测性
+objective: 提供跨服务、跨资产、跨 provider 的端到端可观测性，同时避免在日志中泄露原文、密码和密钥。
+dependencies: []
+inputs:
+- 业务事件、运行时遥测、审计事件
+outputs:
+- Trace、Metric、Log、Alert
+responsibilities:
+- 统一 trace_id、task_id、session_id、asset_id、tenant_id 关联
+- 定义关键 span、指标、结构化日志和错误分类
+- 实现敏感字段脱敏、采样和审计日志隔离
+- 提供 SLO、队列、成本、质量和安全仪表盘数据
+deliverables:
+- Telemetry 规范与 instrumentation
+- 告警、SLO 规则和仪表盘定义
+- 链路完整性与日志泄露测试
+acceptance:
+- 单个任务可从上传追踪到下游交付
+- 日志不包含密码、密钥或未经批准的原文
+- 失败可按阶段、provider、文件类型聚合
+- 高基数标签受控且不拖垮监控系统
+data_entities:
+- trace_spans
+- audit_events
+- slo_burn_records
+events:
+- slo.breached
+- security.log_redaction_failed
+metrics:
+- trace_completeness
+- error_budget_burn
+failure_modes:
+- 采样丢链
+- 高基数爆炸
+- 日志敏感信息泄漏
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

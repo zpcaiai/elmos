@@ -1,0 +1,5 @@
+interface:
+  display_name: "Acquisition Channel Architecture Manager"
+  short_description: "Authoritative Batch 14 Skill 404 workflow"
+  default_prompt: "Use $acquisition-channel-architecture-manager to execute its evidence-bound Batch 14 workflow."
+

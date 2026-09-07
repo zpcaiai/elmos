@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/progress-snapshot.schema.json",
+  "title": "Elmos Task Progress Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "task_id",
+    "task_run_id",
+    "event_sequence_watermark",
+    "state",
+    "progress",
+    "elapsed_ms",
+    "node_counts",
+    "retry_count",
+    "recovery_count",
+    "as_of"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "event_sequence_watermark": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "enum": [
+        "CREATED",
+        "WAITING_FOR_SLOT",
+        "ADMITTED",
+        "STARTING",
+        "RUNNING",
+        "PAUSE_REQUESTED",
+        "PAUSING",
+        "PAUSED",
+        "RETRY_WAIT",
+        "CANCEL_REQUESTED",
+        "CANCELLING",
+        "UNKNOWN_RESULT",
+        "RECONCILING",
+        "MANUAL_RECOVERY",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "current_node_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "elapsed_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "eta_p50_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "eta_p90_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "node_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "recovery_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "latest_checkpoint_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "weight_model_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

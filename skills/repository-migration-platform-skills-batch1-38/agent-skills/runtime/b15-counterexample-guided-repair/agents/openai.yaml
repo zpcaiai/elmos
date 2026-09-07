@@ -1,0 +1,4 @@
+interface:
+  display_name: "B15 Counterexample Guided Repair"
+  short_description: "Help with B15 Counterexample Guided Repair tasks"
+  default_prompt: "Use $b15-counterexample-guided-repair to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

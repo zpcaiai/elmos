@@ -1,0 +1,4 @@
+interface:
+  display_name: "B69 Php Modernization Repair"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b69-php-modernization-repair to execute this ELMOS project Skill with fail-closed evidence."

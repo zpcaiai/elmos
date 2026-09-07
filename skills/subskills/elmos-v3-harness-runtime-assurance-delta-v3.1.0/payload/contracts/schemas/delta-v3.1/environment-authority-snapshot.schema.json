@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/environment-authority-snapshot.schema.json",
+  "title": "Environment Attachment Authority Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshotId",
+    "ownerId",
+    "environmentId",
+    "permissionProfileVersion",
+    "effectivePolicyHash"
+  ],
+  "properties": {
+    "snapshotId": {
+      "type": "string"
+    },
+    "ownerId": {
+      "type": "string"
+    },
+    "environmentId": {
+      "type": "string"
+    },
+    "attachmentId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "permissionProfileVersion": {
+      "type": "string"
+    },
+    "effectivePolicyHash": {
+      "type": "string"
+    },
+    "parentSnapshotId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "widening": {
+      "type": "boolean"
+    }
+  }
+}

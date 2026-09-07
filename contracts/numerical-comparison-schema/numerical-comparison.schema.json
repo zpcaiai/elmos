@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/numerical-comparison.v1.json",
+  "title": "Numerical and Data Behavior Comparison",
+  "type": "object",
+  "required": ["comparisonId", "policy", "status", "metrics", "failures", "evidenceRefs"],
+  "properties": {
+    "comparisonId": {"type": "string", "minLength": 1},
+    "policy": {
+      "type": "object",
+      "required": ["metric", "atol", "rtol", "equalNan", "ordering"],
+      "properties": {
+        "metric": {"type": "string"},
+        "atol": {"type": "number", "minimum": 0},
+        "rtol": {"type": "number", "minimum": 0},
+        "equalNan": {"type": "boolean"},
+        "ordering": {"enum": ["ORDER_STRICT", "ORDER_BY_KEY", "ORDER_IRRELEVANT", "TOP_K"]}
+      },
+      "additionalProperties": false
+    },
+    "status": {"enum": ["NUMERICALLY_EQUIVALENT", "WITHIN_APPROVED_TOLERANCE", "STATISTICALLY_EQUIVALENT", "BUSINESS_EQUIVALENT", "REGRESSION", "INCONCLUSIVE"]},
+    "metrics": {"type": "array", "items": {"type": "object"}},
+    "failures": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
+

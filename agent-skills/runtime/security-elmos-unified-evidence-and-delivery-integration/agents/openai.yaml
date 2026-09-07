@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Elmos Unified Evidence and Delivery Integration"
+  short_description: "Security Elmos Unified Evidence and Delivery Integration helper"
+  default_prompt: "Use $security-elmos-unified-evidence-and-delivery-integration to execute its ELMOS Batch 17 workflow safely."

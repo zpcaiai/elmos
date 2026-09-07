@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 001"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $enterprise-identity-access-engine-contract-and-worker to implement its fail-closed ELMOS Product Batch 34 contract."

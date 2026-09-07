@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "mirror_id",
+    "owner",
+    "source_catalog_digest",
+    "mirror_catalog_digest",
+    "max_staleness_hours",
+    "current_staleness_hours",
+    "revocation_list_digest",
+    "signature_verified",
+    "disconnected_tested",
+    "emergency_revoke_tested"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "mirror_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_catalog_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "mirror_catalog_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "max_staleness_hours": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "current_staleness_hours": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "revocation_list_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "signature_verified": {
+      "type": "boolean"
+    },
+    "disconnected_tested": {
+      "type": "boolean"
+    },
+    "emergency_revoke_tested": {
+      "type": "boolean"
+    },
+    "trust_roots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/offline-mirror.schema.json"
+}

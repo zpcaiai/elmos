@@ -1,0 +1,35 @@
+apiVersion: elmos.dev/v1
+kind: RepositoryModernizationJob
+metadata:
+  name: legacy-orders-to-springboot4
+  tenantId: example-tenant
+spec:
+  source:
+    repository: git@example.invalid:enterprise/legacy-orders.git
+    ref: main
+    credentialsRef: secret://git/legacy-orders-readonly
+  target:
+    framework: spring-boot
+    versionLine: 4.x
+    java: 21
+  strategy:
+    mode: preserve-first
+    view: preserve
+    security: preserve
+    packaging: auto
+    cutover: plan-only
+  equivalence:
+    mode: strict
+    criticalRoutes:
+    - /login.do
+    - /orders/create.do
+    - /admin/*
+  environments:
+    sourceBaseline: env://legacy-orders-baseline
+    targetSandbox: env://legacy-orders-target-sandbox
+  authority:
+    profileRef: authority://migration-sandbox
+  limits:
+    maxParallelUnits: 3
+    maxRepairIterations: 5
+    wallClockBudgetSeconds: 172800

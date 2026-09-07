@@ -1,0 +1,22 @@
+{
+  "kind": "elmos.python-unannotated-assignment-payoff",
+  "schema_version": "1.0.0",
+  "question": "If the Python frontend inferred a local's type the way types.infer already does, how many real functions would enter typed-pure-function-v1?",
+  "engine_modified": false,
+  "candidates_rejected_on_unannotated_assignment": 25,
+  "assignment_sites": {
+    "NOT_INFERABLE": 53,
+    "ANNOTATABLE_FROM_LITERAL": 7,
+    "ANNOTATABLE_FROM_OPERANDS": 1
+  },
+  "outcome_after_rewriting_those_candidates": {
+    "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 24,
+    "PYTHON_UNSUPPORTED_STATEMENT": 1
+  },
+  "newly_ready": [],
+  "net_new_ready_units": 0,
+  "limitations": [
+    "A simulation, not a behaviour change: it rewrites a throwaway copy of each function and re-runs the real analyzer.",
+    "ir_local_bindings records that the type is declared rather than inferred, and that widening the frontend probably means typed-pure-function-v1 -> v2. This measures the payoff so that decision has a number attached; it does not take it."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/python-semantic-graph.v1.json",
+  "title": "Python CST AST Type and Runtime Semantic Graph",
+  "type": "object",
+  "required": ["cstParser", "astParser", "symbols", "edges", "typeResults", "runtimeObservations", "dynamicFindings", "parseFailures", "generatedFiles"],
+  "properties": {
+    "cstParser": {"type": "string", "pattern": "LibCST"},
+    "astParser": {"type": "string", "pattern": "CPython AST"},
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbolId", "module", "qualifiedName", "kind", "line"],
+        "properties": {
+          "symbolId": {"type": "string", "pattern": "^[0-9a-f]{24}$"},
+          "module": {"type": "string"},
+          "qualifiedName": {"type": "string"},
+          "kind": {"type": "string"},
+          "line": {"type": "integer", "minimum": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourceId", "target", "kind", "confidence"],
+        "properties": {
+          "sourceId": {"type": "string"},
+          "target": {"type": "string"},
+          "kind": {"type": "string"},
+          "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "typeResults": {"type": "array", "items": {"type": "object"}},
+    "runtimeObservations": {"type": "array", "items": {"type": "object"}},
+    "dynamicFindings": {"type": "array", "items": {"type": "string"}},
+    "parseFailures": {"type": "array", "items": {"type": "string"}},
+    "generatedFiles": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
+

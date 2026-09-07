@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/dotnet-evidence-extension.v1.json",
+  "title": "ELMOS Unified Evidence .NET Extension",
+  "type": "object",
+  "required": ["schemaVersion", "organizationId", "snapshotRef", "engine", "engineVersion", "artifactType", "contentHash", "status", "dotnet"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "organizationId": {"type": "string", "minLength": 1},
+    "snapshotRef": {"type": "string", "minLength": 1},
+    "engine": {"const": "ELMOS_DOTNET"},
+    "engineVersion": {"type": "string", "minLength": 1},
+    "artifactType": {"enum": ["DOTNET_SOLUTION_INVENTORY", "DOTNET_TECHNOLOGY_FINGERPRINT", "ROSLYN_SYMBOL_GRAPH", "DOTNET_MIGRATION_PLAN", "PROJECT_FILE_TRANSFORMATION", "ASPNET_MIGRATION_RESULT", "WCF_MIGRATION_RESULT", "EF_MIGRATION_RESULT", "DOTNET_VALIDATION_DECISION"]},
+    "contentHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["PASSED", "FAILED", "BLOCKED", "NOT_RUN", "INCONCLUSIVE"]},
+    "dotnet": {
+      "type": "object",
+      "required": ["provider", "providerVersion", "artifact"],
+      "properties": {
+        "provider": {"const": "ELMOS_DOTNET"},
+        "providerVersion": {"type": "string"},
+        "artifact": {"type": ["object", "array"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

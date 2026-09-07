@@ -1,0 +1,14 @@
+apiVersion: elmos.ai/v1
+kind: Pipeline
+metadata:
+  name: customer-private-adapter
+spec:
+  steps:
+  - verify-explicit-consent
+  - isolate-tenant-data
+  - build-gold-dataset
+  - train-tenant-adapter
+  - cross-tenant-leakage-eval
+  - sign-and-encrypt
+  - tenant-only-deploy
+  - support-revocation-and-unlearning

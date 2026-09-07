@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-provider-adapters-versioning-compatibil-1068c037 to implement its fail-closed ELMOS Product B42 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Platform Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-platform-backfill-replay-resilience-disaster-recov-fae02914 to implement its fail-closed ELMOS Product B44 contract."

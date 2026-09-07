@@ -1,0 +1,81 @@
+{
+  "case_id": "B23-007",
+  "severity": "P1",
+  "test_type": "version_drift",
+  "steps": [
+    {
+      "id": "b23-route-readiness",
+      "phase": "precondition",
+      "command": [
+        "python3",
+        "scripts/test-suite/b23_route_readiness.py",
+        "--report",
+        "test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 1,
+      "met_expectation": false,
+      "establishes": "Batch 23实现与契约可定位"
+    },
+    {
+      "id": "repository-route",
+      "phase": "case",
+      "command": [
+        "python3",
+        "-m",
+        "elmos_polyglot_route.cli",
+        "repository-pipeline",
+        "--repository",
+        "convergence-packs/reference-product/reference-repositories/spring-reference",
+        "--repository-ref",
+        "reference-product/spring-reference@pinned",
+        "--source-language",
+        "java",
+        "--target-language",
+        "csharp",
+        "--cases-directory",
+        "convergence-packs/reference-product/reference-repositories/spring-reference/behavior-cases",
+        "--output",
+        "test-suites/batch1-37-strict/evidence/_shared/b23-repository-pipeline/report.json"
+      ],
+      "expect": "exit-zero",
+      "exit_code": null,
+      "met_expectation": false,
+      "not_executed": true,
+      "establishes": "Transaction/AOP: 真实启动 / 受保护端点可用 / 框架运行时契约保持"
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "旧Evidence必须失效，兼容性必须显式验证，不得复用错误认证",
+      "established_by": []
+    },
+    {
+      "index": 1,
+      "assertion": "框架运行时契约保持",
+      "established_by": []
+    },
+    {
+      "index": 2,
+      "assertion": "真实启动",
+      "established_by": []
+    },
+    {
+      "index": 3,
+      "assertion": "受保护端点可用",
+      "established_by": []
+    },
+    {
+      "index": 4,
+      "assertion": "“Transaction/AOP”不得通过以下捷径：只改Annotation; 关闭Filter Chain; Repository语义简化",
+      "established_by": []
+    },
+    {
+      "index": 5,
+      "assertion": "失败时状态、数据、权限和外部副作用必须可解释",
+      "established_by": []
+    }
+  ],
+  "all_steps_met_expectation": false
+}

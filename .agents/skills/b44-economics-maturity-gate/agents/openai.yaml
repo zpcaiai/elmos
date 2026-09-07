@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Economics Maturity Gate"
+  short_description: "Run evidence-bound Batch 44 economics maturity gate work"
+  default_prompt: "Use $b44-economics-maturity-gate to implement and verify this capability with fail-closed evidence."

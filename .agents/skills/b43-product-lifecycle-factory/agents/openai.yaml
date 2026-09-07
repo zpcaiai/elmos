@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Product Lifecycle Factory"
+  short_description: "Run evidence-bound Batch 43 product lifecycle factory work"
+  default_prompt: "Use $b43-product-lifecycle-factory to implement and verify this capability with fail-closed evidence."

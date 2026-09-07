@@ -1,0 +1,4 @@
+semantic_level:
+  declared_level_required: true
+  level_upgrade_requires_evidence: true
+  downstream_may_not_assume_higher_level: true

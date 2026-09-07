@@ -1,0 +1,6 @@
+regions:
+- r1
+- r2
+mode: active-active
+rtoMinutes: 15
+rpoSeconds: 0

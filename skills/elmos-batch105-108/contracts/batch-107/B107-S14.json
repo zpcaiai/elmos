@@ -1,0 +1,63 @@
+{
+  "id": "B107-S14",
+  "batch": 107,
+  "name": "websocket-sse-and-streaming-verifier",
+  "dependencies": [
+    "B107-S01"
+  ],
+  "inputs": [
+    "streaming endpoint specs",
+    "baseline/candidate endpoints"
+  ],
+  "outputs": [
+    "StreamingValidationResult",
+    "protocol traces"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/streaming/StreamingProtocolService.java",
+      "private-runner/internal/streaming/"
+    ],
+    "interfaces": [
+      "POST /api/validations/streaming",
+      "event streaming-validation.completed"
+    ],
+    "data": [
+      "streaming_scenario",
+      "stream_event",
+      "streaming_result"
+    ]
+  },
+  "workflow": [
+    "建立带认证的WS/SSE/HTTP流连接",
+    "验证握手、协议和Header",
+    "发送/接收有序消息并记录时间",
+    "模拟断线、重连、取消和慢消费者",
+    "比较基线候选事件语义",
+    "关闭连接并确认资源释放"
+  ],
+  "tests": [
+    "WebSocket upgrade失败",
+    "SSE Last-Event-ID重连",
+    "消息乱序被发现",
+    "取消后服务停止发送",
+    "连接泄漏检测"
+  ],
+  "evidence": [
+    "streaming-results.json",
+    "protocol-traces.json",
+    "resource-release.json"
+  ],
+  "definition_of_done": [
+    "声明的流式接口全测",
+    "顺序和重连明确",
+    "超时受控",
+    "资源释放",
+    "差异分类"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

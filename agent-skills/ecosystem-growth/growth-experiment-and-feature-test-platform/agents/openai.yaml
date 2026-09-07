@@ -1,0 +1,5 @@
+interface:
+  display_name: "Growth Experiment And Feature Test Platform"
+  short_description: "Authoritative Batch 14 Skill 412 workflow"
+  default_prompt: "Use $growth-experiment-and-feature-test-platform to execute its evidence-bound Batch 14 workflow."
+

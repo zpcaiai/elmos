@@ -1,0 +1,3 @@
+nonce: fixture
+measurement: sha384:fixture
+signatureValid: true

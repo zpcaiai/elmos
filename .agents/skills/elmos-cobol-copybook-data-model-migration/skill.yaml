@@ -1,0 +1,153 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: cobol-copybook-data-model-migration
+  version: 3.0.0
+  pack: 32-legacy-mainframe-enterprise-modernization
+  priority: P0
+  owner: legacy-modernization-team
+spec:
+  description: 迁移 Copybook、REDEFINES、OCCURS、COMP、Packed Decimal 和记录布局。
+  kernel: K3 Legacy Semantic Compiler + K6 Dual-Run Verification
+  riskClass: critical
+  exposure: atomic-registry-only
+  businessLines:
+  - legacy-mainframe-modernization
+  capabilityTags:
+  - 32-legacy-mainframe-enterprise-modernization
+  - cobol
+  - copybook
+  - data
+  - legacy-mainframe-modernization
+  - migration
+  - model
+  triggers:
+  - 任务明确要求：迁移 Copybook、REDEFINES、OCCURS、COMP、Packed Decimal 和记录布局。
+  - 任务属于 legacy-mainframe-modernization，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 cobol-copybook-data-model-migration 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: legacy source, binaries, jobs, screens and runtime samples
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - inventory-estate-and-business-rules
+  - characterize-online-and-batch
+  - extract-legacy-ir
+  - generate-target-and-facades
+  - dual-run-and-reconcile
+  - wave-cutover
+  - certify-or-fallback
+  tools:
+    allowed:
+    - legacy.parse
+    - binary.inspect
+    - semantic.ir
+    - code.generate
+    - emulator.run
+    - differential.run
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - artifact-normalization
+  - semantic-ir-reconciliation
+  - differential-testing
+  invariants:
+  - legacy-behavior-characterized
+  - data-and-transaction-equivalent
+  - batch-restart-preserved
+  - dual-run-pass
+  - fallback-ready
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - legacy-behavior-characterized
+    - data-and-transaction-equivalent
+    - batch-restart-preserved
+    - dual-run-pass
+    - fallback-ready
+    minimumLevel: E3
+    sourceBindingRequired: true
+    independentReplayRequired: true
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: true
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: true
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

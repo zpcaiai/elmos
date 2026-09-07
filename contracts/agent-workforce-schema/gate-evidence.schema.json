@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-16/gate-evidence.schema.json",
+  "title": "Batch 16 Gate Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate",
+    "status",
+    "coverage",
+    "tenant_boundary_passed",
+    "legal_and_policy_passed",
+    "human_accountability_passed",
+    "critical_open_risks",
+    "authority_id",
+    "observed_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 16
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate": {
+      "enum": [
+        "AI16-A",
+        "AI16-B",
+        "AI16-C",
+        "AI16-D",
+        "AI16-E",
+        "AI16-F",
+        "AI16-G"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "NOT_RUN",
+        "INCONCLUSIVE",
+        "NOT_APPLICABLE",
+        "BLOCKED"
+      ]
+    },
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "tenant_boundary_passed": {
+      "type": "boolean"
+    },
+    "legal_and_policy_passed": {
+      "type": "boolean"
+    },
+    "human_accountability_passed": {
+      "type": "boolean"
+    },
+    "critical_open_risks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  }
+}

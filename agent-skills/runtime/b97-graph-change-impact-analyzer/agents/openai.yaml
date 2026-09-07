@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Graph Change Impact Analyzer"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-graph-change-impact-analyzer to execute this ELMOS product-closure Skill with fail-closed evidence."

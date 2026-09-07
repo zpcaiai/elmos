@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Migration Planner"
+  short_description: "Plan evidence-bound client modernization DAGs"
+  default_prompt: "Use $frontend-target-profile-and-migration-planner to select an approved target profile and produce a dependency-safe frontend migration DAG."

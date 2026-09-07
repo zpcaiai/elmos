@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundation Orchestrator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0100-foundation-orchestrator to run FRT-0100 through the governed FRT runtime with exact scope and fail-closed evidence."

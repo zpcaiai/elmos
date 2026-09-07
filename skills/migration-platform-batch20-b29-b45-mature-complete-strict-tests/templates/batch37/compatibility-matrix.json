@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "matrix_id": "sample-marketplace-compatibility",
+  "product_versions": [
+    "TODO"
+  ],
+  "protocol_versions": [
+    "1.0.0"
+  ],
+  "sdk_versions": [
+    "1.0.0"
+  ],
+  "entries": [
+    {
+      "product": "TODO",
+      "protocol": "1.0.0",
+      "sdk": "1.0.0",
+      "status": "conditional",
+      "evidence_refs": []
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Golden Route Corpus Manager"
+  short_description: "Run golden-route-corpus-manager with bounded commercial controls"
+  default_prompt: "Use $golden-route-corpus-manager through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

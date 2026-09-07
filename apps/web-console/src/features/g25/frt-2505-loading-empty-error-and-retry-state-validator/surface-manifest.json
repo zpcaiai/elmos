@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2505",
+  "skill_name": "frt-2505-loading-empty-error-and-retry-state-validator",
+  "batch": "G25",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g25/frt-2505-loading-empty-error-and-retry-state-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.loading-empty-error-and-retry-state-validator",
+  "execution_contract_sha256": "sha256:b06b32b22adc0281323f8d260c73b3ba8cb65f64179f84864c34c491c02f4c91",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:86f1c0e1058bd1266880f3563e4802e68054b5f1d0d33523ccac8fddbe00c69c",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

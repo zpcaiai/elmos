@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-dynamic-sql-proof-boundary
+  title: Dynamic SQL Proof Boundary
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: sql-conversion
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 分析字符串构造的 SQL 模板集合、Grammar 和参数化安全，决定可枚举证明、语法抽象或运行时监控。
+  dependencies:
+  - elmos-assumption-ledger
+  - elmos-trusted-computing-base-registry
+  - elmos-sql-semantic-ir
+  capabilities:
+  - string analysis
+  - grammar abstraction
+  - template enumeration
+  - injection safety
+  inputs:
+  - name: routine code
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: string flow
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: parameter binding
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: template inventory
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: proof boundary
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: monitor policy
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

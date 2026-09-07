@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 590: company ai constitution and non negotiable boundaries"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $company-ai-constitution-and-non-negotiable-boundaries to evaluate this capability with evidence."

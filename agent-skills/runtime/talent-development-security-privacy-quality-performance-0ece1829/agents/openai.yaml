@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Talent Development Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $talent-development-security-privacy-quality-performance-0ece1829 to implement its fail-closed ELMOS Product B43 contract."

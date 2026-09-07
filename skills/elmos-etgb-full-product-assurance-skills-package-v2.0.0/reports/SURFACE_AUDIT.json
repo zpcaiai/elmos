@@ -1,0 +1,25 @@
+{
+  "schema_version": "2.0",
+  "surface_id": "elmos-reference-surface",
+  "candidate_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "complete": true,
+  "implemented_surface_count": 5,
+  "mapped_feature_count": 5,
+  "mapping_ratio": 1.0,
+  "registry_feature_count": 1452,
+  "by_surface_kind": {
+    "agent_routes": 1,
+    "api_operations": 2,
+    "artifact_formats": 1,
+    "ui_actions": 1
+  },
+  "by_domain": {
+    "agent-protocol-tooling": 1,
+    "artifact-document-diagram": 1,
+    "payment-finance": 1,
+    "platform-control-plane": 1,
+    "project-intelligence": 1
+  },
+  "errors": [],
+  "warnings": []
+}

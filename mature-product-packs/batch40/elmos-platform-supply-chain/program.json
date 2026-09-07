@@ -1,0 +1,41 @@
+{
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    ".github/workflows/ci.yml as the build and release pipeline under attestation",
+    "deploy/release-bundle as the signed artifact surface",
+    "apps/egress-proxy as the controlled network boundary",
+    "telemetry/DATA_FLOW_AND_THREAT_MODEL.md and contracts/artifact-promotion-schema as the threat model and promotion control",
+    "the Java reactor and pnpm dependency graphs as the SBOM and SCA scope"
+  ],
+  "skillIds": [
+    1369,
+    1370,
+    1371,
+    1372,
+    1373,
+    1374,
+    1375,
+    1376,
+    1377,
+    1378,
+    1379,
+    1380,
+    1381,
+    1382,
+    1383,
+    1384,
+    1385,
+    1386,
+    1387,
+    1388,
+    1389,
+    1390,
+    1391,
+    1392
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

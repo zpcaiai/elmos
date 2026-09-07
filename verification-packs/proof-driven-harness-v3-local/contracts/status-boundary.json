@@ -1,0 +1,13 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "external_evidence": "NOT_RUN",
+  "holdout": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "kind": "elmos.proof-driven-harness-v3.verification-status-boundary",
+  "local_development_corpus": "passed",
+  "local_negative_corpus": "passed",
+  "maximum_possible_local_gate_decision": "READY_FOR_EXTERNAL_GATE",
+  "pack_status": "limited",
+  "representative_workloads": "NOT_RUN",
+  "schema_version": 1
+}

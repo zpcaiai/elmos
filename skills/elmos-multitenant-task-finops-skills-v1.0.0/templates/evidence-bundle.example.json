@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "package": "elmos-multitenant-task-finops-skills",
+  "repository": {
+    "url": "local-or-approved-remote",
+    "commit_sha": "40-hex-sha"
+  },
+  "environment": {
+    "name": "integration",
+    "config_digest": "sha256"
+  },
+  "executions": [
+    {
+      "stable_task_id": "ELMOS-MTF-003-T12",
+      "status": "passed",
+      "commands": [
+        "./gradlew integrationTest"
+      ],
+      "machine_wall_clock_ms": 120000,
+      "test_evidence": [
+        "artifact://slot-race-test-report.json"
+      ],
+      "trace_ids": [
+        "trace-id"
+      ],
+      "task_ids": [
+        "task-uuid"
+      ],
+      "limitations": []
+    }
+  ],
+  "gates": [
+    {
+      "gate_id": "G2",
+      "status": "passed",
+      "evidence": [
+        "artifact://report"
+      ]
+    }
+  ],
+  "generated_at": "2026-08-19T00:00:00+08:00"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 708: integration hub facade and strangler architecture"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-hub-facade-and-strangler-architecture to evaluate this capability with evidence."

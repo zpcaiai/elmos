@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "capabilities": [
+    {
+      "id": "oidc-authorization-code-pkce",
+      "status": "experimental",
+      "owner": "elmos-identity",
+      "evidence_refs": ["apps/web-console/app/lib/server/accountSession.ts"],
+      "reason": "Local implementation exists; a real external IdP run remains NOT_RUN."
+    },
+    {
+      "id": "server-authoritative-rbac",
+      "status": "experimental",
+      "owner": "elmos-control-plane-security",
+      "evidence_refs": [
+        "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlanePrincipal.java",
+        "apps/control-plane/src/test/java/io/elmos/controlplane/ControlPlanePrincipalTest.java"
+      ],
+      "reason": "Local negative and cross-tenant tests are executable; independent security verification remains NOT_RUN."
+    },
+    {
+      "id": "session-refresh-logout-tenant-switch",
+      "status": "experimental",
+      "owner": "elmos-web-console-maintainers",
+      "evidence_refs": [
+        "apps/web-console/app/components/AccountSessionProvider.tsx",
+        "apps/web-console/app/api/auth"
+      ],
+      "reason": "Lifecycle is implemented; provider revocation confirmation depends on a configured external endpoint."
+    }
+  ]
+}

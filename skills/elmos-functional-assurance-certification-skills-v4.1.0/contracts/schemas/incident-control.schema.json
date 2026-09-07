@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IncidentControl",
+  "type": "object",
+  "required": [
+    "incidentId",
+    "scope",
+    "action",
+    "target",
+    "authorizedBy",
+    "status",
+    "evidenceFreeze"
+  ],
+  "properties": {
+    "incidentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "tenant",
+        "agent",
+        "tool",
+        "provider",
+        "global"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "disable",
+        "revoke",
+        "cancel",
+        "quarantine",
+        "rotate",
+        "restart"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorizedBy": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "planned",
+        "executing",
+        "contained",
+        "recovery-review",
+        "closed"
+      ]
+    },
+    "evidenceFreeze": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

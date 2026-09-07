@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "AccessibilityConformance",
+  "metadata": {
+    "id": "accessibility-conformance-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "target": "example-target",
+    "level": "example-level",
+    "automatedResults": [],
+    "manualReview": []
+  }
+}

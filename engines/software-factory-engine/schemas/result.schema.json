@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/software-factory/result-1.0.json",
+  "title": "ELMOS software-factory execution result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version", "status", "skill_name", "package_id", "operation", "tenant_id",
+    "project_id", "correlation_id", "policy_revision", "source_revision", "output", "error",
+    "warnings", "retry", "evidence", "external_evidence_status", "certification_status",
+    "registry_digest", "request_digest", "result_digest", "dependency_receipt"
+  ],
+  "properties": {
+    "contract_version": {"const": "1.0"},
+    "status": {"enum": ["EXECUTED", "BLOCKED", "REQUIRES_ADAPTER", "FAILED"]},
+    "skill_name": {"$ref": "#/$defs/token"},
+    "package_id": {"$ref": "#/$defs/token"},
+    "operation": {"$ref": "#/$defs/token"},
+    "tenant_id": {"$ref": "#/$defs/token"},
+    "project_id": {"$ref": "#/$defs/token"},
+    "correlation_id": {"$ref": "#/$defs/token"},
+    "idempotency_key": {"$ref": "#/$defs/token"},
+    "policy_revision": {"$ref": "#/$defs/token"},
+    "source_revision": {"$ref": "#/$defs/token"},
+    "output": {"type": "object"},
+    "error": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "message", "retryable"],
+          "properties": {
+            "code": {"$ref": "#/$defs/token"},
+            "message": {"type": "string", "minLength": 1, "maxLength": 2048},
+            "retryable": {"type": "boolean"},
+            "details": {"type": "object"}
+          }
+        }
+      ]
+    },
+    "warnings": {
+      "type": "array", "maxItems": 128,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retryable", "after_ms"],
+      "properties": {
+        "retryable": {"type": "boolean"},
+        "after_ms": {"type": ["integer", "null"], "minimum": 0, "maximum": 86400000}
+      }
+    },
+    "evidence": {"type": "array", "items": {"type": "object"}},
+    "external_evidence_status": {"const": "NOT_RUN"},
+    "certification_status": {"const": "NOT_CERTIFIED"},
+    "registry_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "request_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "result_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "dependency_receipt": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "dependency-receipt.schema.json"}
+      ]
+    }
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"
+    }
+  }
+}

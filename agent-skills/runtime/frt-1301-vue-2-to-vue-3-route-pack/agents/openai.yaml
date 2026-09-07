@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue 2 to Vue 3 Route Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1301-vue-2-to-vue-3-route-pack to run FRT-1301 through the governed FRT runtime with exact scope and fail-closed evidence."

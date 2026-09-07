@@ -1,0 +1,74 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-proof-status-policy
+  title: Proof Status Policy
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: core
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 统一证明状态语义，强制区分机械证明、求解器可信证明、有界无反例、未知、不支持和人工豁免。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-assumption-ledger
+  capabilities:
+  - lattice-based status model
+  - evidence-strength ordering
+  - anti-inflation rules
+  inputs:
+  - name: proof runs
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: evidence metadata
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: business criticality
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: canonical proof result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: assurance level
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: policy violations
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

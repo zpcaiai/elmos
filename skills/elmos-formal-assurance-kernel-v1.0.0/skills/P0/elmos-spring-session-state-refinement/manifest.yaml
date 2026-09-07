@@ -1,0 +1,75 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-session-state-refinement
+  title: Spring Session State Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 验证 HttpSession、登录态、属性生命周期、并发更新、超时和注销在迁移前后保持允许的状态迁移。
+  dependencies:
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  capabilities:
+  - finite-state refinement
+  - linearizability checks
+  - session fixation properties
+  inputs:
+  - name: session traces
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: legacy config
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: Spring Session config
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: session state model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: refinement proof
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: race counterexample
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

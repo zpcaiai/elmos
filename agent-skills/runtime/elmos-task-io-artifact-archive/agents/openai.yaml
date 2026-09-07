@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Task I/O Artifact Archive"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-task-io-artifact-archive to execute its scoped workflow with fail-closed evidence."

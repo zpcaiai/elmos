@@ -1,0 +1,141 @@
+policyVersion: 1.0.0
+levels:
+  E0:
+    name: Inventory
+    required:
+    - metric: snapshot.reproducible
+      op: eq
+      value: true
+    - metric: module.inventory.coverage
+      op: eq
+      value: 1.0
+    - metric: framework.inventory.coverage
+      op: eq
+      value: 1.0
+    - metric: route.inventory.coverage
+      op: eq
+      value: 1.0
+  E1:
+    name: Semantic Model
+    requires:
+    - E0
+    required:
+    - metric: evidence.graph.valid
+      op: eq
+      value: true
+    - metric: semantic.ir.valid
+      op: eq
+      value: true
+    - metric: critical.unknown.count
+      op: eq
+      value: 0
+      scope: claimed-covered-paths
+    - metric: critical.endpoint.ir.coverage
+      op: eq
+      value: 1.0
+  E2:
+    name: Compiles
+    requires:
+    - E1
+    required:
+    - metric: target.parse.success
+      op: eq
+      value: true
+    - metric: target.compile.success
+      op: eq
+      value: true
+    - metric: target.unresolved.dependency.count
+      op: eq
+      value: 0
+    - metric: target.incompatible.javax.count
+      op: eq
+      value: 0
+  E3:
+    name: Runs
+    requires:
+    - E2
+    required:
+    - metric: target.startup.success
+      op: eq
+      value: true
+    - metric: target.readiness.success
+      op: eq
+      value: true
+    - metric: database.migration.success
+      op: eq
+      value: true
+    - metric: smoke.critical.success_rate
+      op: eq
+      value: 1.0
+  E4:
+    name: Behavior Verified
+    requires:
+    - E3
+    required:
+    - metric: route.coverage
+      op: eq
+      value: 1.0
+    - metric: critical.scenario.coverage
+      op: eq
+      value: 1.0
+    - metric: http.behavioral.equivalence
+      op: gte
+      value: 0.999
+    - metric: critical.session.mismatch.count
+      op: eq
+      value: 0
+    - metric: critical.security.mismatch.count
+      op: eq
+      value: 0
+    - metric: critical.transaction.mismatch.count
+      op: eq
+      value: 0
+    - metric: critical.database.mismatch.count
+      op: eq
+      value: 0
+    - metric: critical.effect.mismatch.count
+      op: eq
+      value: 0
+    - metric: critical.unknown.count
+      op: eq
+      value: 0
+  E5:
+    name: Production Certified
+    requires:
+    - E4
+    required:
+    - metric: security.gate
+      op: eq
+      value: passed
+    - metric: sbom.gate
+      op: eq
+      value: passed
+    - metric: performance.gate
+      op: eq
+      value: passed
+    - metric: operability.endpoints
+      op: contains_all
+      value:
+      - /livez
+      - /readyz
+      - /metrics
+      - /version
+    - metric: rollback.rehearsal
+      op: eq
+      value: passed
+    - metric: cutover.plan.executable
+      op: eq
+      value: true
+    - metric: production.config.assumptions.open
+      op: eq
+      value: 0
+    - metric: critical.unknown.count
+      op: eq
+      value: 0
+nonWaivable:
+- critical.data-loss
+- critical.security-bypass
+- critical.authz
+- critical.transaction
+- critical.unknown
+- rollback.unavailable

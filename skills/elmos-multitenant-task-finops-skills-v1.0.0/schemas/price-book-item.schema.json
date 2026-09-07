@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/price-book-item.schema.json",
+  "title": "Elmos Price Book Item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "price_book_item_id",
+    "provider",
+    "sku",
+    "usage_type",
+    "unit",
+    "unit_price",
+    "currency",
+    "version",
+    "effective_from"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "price_book_item_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sku": {
+      "type": "string",
+      "minLength": 1
+    },
+    "region": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "usage_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit_price": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "tier_start": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "tier_end": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "effective_to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "source_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

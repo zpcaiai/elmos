@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Air Gapped Edition"
+  short_description: "Run evidence-bound Batch 38 air gapped edition work"
+  default_prompt: "Use $b38-air-gapped-edition to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ef6 To Efcore Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $ef6-to-efcore-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

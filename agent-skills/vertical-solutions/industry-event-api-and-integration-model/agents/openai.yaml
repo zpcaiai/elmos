@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 603: industry event api and integration model"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $industry-event-api-and-integration-model to evaluate this capability with evidence."

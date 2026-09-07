@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Workspace Path Symlink Permission Case And Filesystem Compatibility"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $workspace-path-symlink-permission-case-and-filesystem-c-e7865cc1 to implement its fail-closed ELMOS Product B35 contract."

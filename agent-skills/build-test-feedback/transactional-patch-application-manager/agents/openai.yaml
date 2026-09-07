@@ -1,0 +1,4 @@
+interface:
+  display_name: "transactional patch application manager"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $transactional-patch-application-manager to perform this Batch 8 repair step."

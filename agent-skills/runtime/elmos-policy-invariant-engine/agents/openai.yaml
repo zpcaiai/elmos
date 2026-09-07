@@ -1,0 +1,6 @@
+interface:
+  display_name: "Policy Invariant Engine"
+  short_description: "Normalize and enforce scoped policy invariants without silent precedence."
+  default_prompt: "Use $elmos-policy-invariant-engine through the exact PDHI v1 K6 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

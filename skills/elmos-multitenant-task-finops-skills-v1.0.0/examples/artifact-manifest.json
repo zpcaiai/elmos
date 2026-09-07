@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "artifact_id": "88888888-8888-4888-8888-888888888888",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "task_id": "33333333-3333-4333-8333-333333333333",
+  "task_run_id": "44444444-4444-4444-8444-444444444444",
+  "node_key": "package",
+  "artifact_role": "FINAL_RESULT",
+  "artifact_type": "ZIP",
+  "version_no": 1,
+  "object_uri": "s3://tenant/task/output/result-v1.zip",
+  "object_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+  "object_size_bytes": 1048576,
+  "media_type": "application/zip",
+  "encryption_key_ref": "kms://tenant/key",
+  "retention_class": "CUSTOMER_RESULT",
+  "integrity_status": "VERIFIED",
+  "evidence_bindings": [
+    {
+      "type": "CHECKPOINT",
+      "id": "66666666-6666-4666-8666-666666666666"
+    }
+  ],
+  "created_at": "2026-08-19T16:05:00+08:00"
+}

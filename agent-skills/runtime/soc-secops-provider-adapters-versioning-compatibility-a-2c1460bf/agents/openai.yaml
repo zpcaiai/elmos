@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Soc Secops Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $soc-secops-provider-adapters-versioning-compatibility-a-2c1460bf to implement its fail-closed ELMOS Product B48 contract."

@@ -1,0 +1,7 @@
+name: contract-assistant
+skills:
+- skills/contract-review
+mcp:
+  server: server.py
+ui:
+  optional: true

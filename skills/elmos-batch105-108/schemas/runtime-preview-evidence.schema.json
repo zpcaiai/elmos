@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/runtime-preview-evidence.schema.json",
+  "title": "Runtime Preview Evidence",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "runId",
+    "repository",
+    "baselineCommit",
+    "candidateCommit",
+    "imageDigest",
+    "readyAt",
+    "expiresAt",
+    "destroyedAt",
+    "health",
+    "apiValidation",
+    "browserValidation",
+    "cleanupAttestation",
+    "artifactDigests"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 6
+    },
+    "repository": {
+      "type": "string"
+    },
+    "baselineCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "candidateCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "imageDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "readyAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "destroyedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "health": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "apiValidation": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_APPLICABLE",
+        "UNKNOWN"
+      ]
+    },
+    "browserValidation": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_APPLICABLE",
+        "UNKNOWN"
+      ]
+    },
+    "cleanupAttestation": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "artifactDigests": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
+    }
+  },
+  "additionalProperties": false
+}

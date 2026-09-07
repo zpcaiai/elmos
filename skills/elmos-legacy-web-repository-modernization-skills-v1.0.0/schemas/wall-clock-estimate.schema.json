@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/wall-clock-estimate.schema.json",
+  "title": "Machine Wall-clock ETA",
+  "type": "object",
+  "required": [
+    "estimateVersion",
+    "jobId",
+    "asOf",
+    "unit",
+    "p50",
+    "p80",
+    "p95",
+    "remainingPhases",
+    "confidence",
+    "features"
+  ],
+  "properties": {
+    "estimateVersion": {
+      "type": "string"
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "unit": {
+      "const": "seconds"
+    },
+    "p50": {
+      "type": "number",
+      "minimum": 0
+    },
+    "p80": {
+      "type": "number",
+      "minimum": 0
+    },
+    "p95": {
+      "type": "number",
+      "minimum": 0
+    },
+    "remainingPhases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "features": {
+      "type": "object"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "humanWaitExcluded": {
+      "const": true
+    },
+    "model": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

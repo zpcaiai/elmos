@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/case.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "skill_code", "skill_name", "batch", "product_skill_ids", "title", "priority", "category", "preconditions", "steps", "assertions", "expected", "evidence_required", "anti_cheat", "zero_tolerance", "required_real_system", "holdout_required", "representative_workload_required", "replayable", "timeout_seconds", "retries", "tags"],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^(B(3[89]|4[0-5])-\\d{3}|X-U\\d{3}-\\d{3})$"},
+    "skill_code": {"type": "string", "pattern": "^U\\d{3}$"},
+    "skill_name": {"type": "string", "pattern": "^[a-z0-9-]{1,64}$"},
+    "batch": {"oneOf": [{"type": "integer", "minimum": 38, "maximum": 45}, {"const": "cross"}]},
+    "product_skill_ids": {"type": "array", "uniqueItems": true, "items": {"type": "integer", "minimum": 1325, "maximum": 1496}},
+    "title": {"type": "string", "minLength": 12},
+    "priority": {"enum": ["P0", "P1", "P2"]},
+    "category": {"enum": ["success", "boundary", "negative", "dependency-failure", "security", "replay-idempotency", "version-drift", "evidence-tamper", "recovery", "performance", "privacy", "governance"]},
+    "preconditions": {"$ref": "#/$defs/nonEmptyStrings"}, "steps": {"$ref": "#/$defs/nonEmptyStrings"}, "assertions": {"$ref": "#/$defs/nonEmptyStrings"}, "expected": {"$ref": "#/$defs/nonEmptyStrings"}, "evidence_required": {"$ref": "#/$defs/nonEmptyStrings"}, "anti_cheat": {"$ref": "#/$defs/nonEmptyStrings"}, "tags": {"$ref": "#/$defs/nonEmptyStrings"},
+    "zero_tolerance": {"type": "boolean"}, "required_real_system": {"type": "boolean"}, "holdout_required": {"const": true}, "representative_workload_required": {"const": true}, "replayable": {"const": true},
+    "timeout_seconds": {"type": "integer", "minimum": 1}, "retries": {"type": "integer", "minimum": 0, "maximum": 2}
+  },
+  "$defs": {"nonEmptyStrings": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}
+}

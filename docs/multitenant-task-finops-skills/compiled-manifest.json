@@ -1,0 +1,704 @@
+{
+  "archive": {
+    "entries": 122,
+    "files": 122,
+    "internal_checksums": 121,
+    "package_scripts_executed": false,
+    "path": "skills/subskills/elmos-multitenant-task-finops-skills-v1.0.0.zip",
+    "sha256": "aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+    "supply_chain": {
+      "archive_digest_meaning": "BYTE_IDENTITY_ONLY",
+      "license": "ABSENT",
+      "provenance_attestation": "ABSENT",
+      "sbom": "ABSENT",
+      "signature": "ABSENT"
+    },
+    "uncompressed_bytes": 494836
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "contracts": {
+    "account_active_root_task_limit": 3,
+    "dependency_order": [
+      "elmos-multitenant-task-finops-orchestrator",
+      "elmos-tenant-identity-rls",
+      "elmos-account-concurrency-admission",
+      "elmos-workload-aware-scheduler",
+      "elmos-task-lifecycle-temporal",
+      "elmos-task-progress-journal",
+      "elmos-checkpoint-recovery",
+      "elmos-task-io-artifact-archive",
+      "elmos-usage-metering-cost-ledger",
+      "elmos-revenue-margin-ledger",
+      "elmos-task-financial-analytics",
+      "elmos-concurrency-recovery-finops-certification"
+    ],
+    "external_dependency_edges": 4,
+    "internal_dependency_edges": 20,
+    "skills": 12,
+    "tasks": 144
+  },
+  "declared_integrations": [
+    {
+      "name": "elmos-architecture-contract-governance",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-identity-tenant-security",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-temporal-task-reliability",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-runner-scheduler-execution",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-content-addressed-cache",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-observability-finops",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-backup-recovery-replay",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-scale-benchmark-certification",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-production-readiness-gate",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-incremental-analysis-cache",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-runtime-cost-estimator",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-commercial-packaging",
+      "status": "DECLARED_UNRESOLVED"
+    }
+  ],
+  "external_dependencies": [
+    {
+      "name": "elmos-architecture-contract-governance",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-identity-tenant-security",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-observability-finops",
+      "status": "DECLARED_UNRESOLVED"
+    },
+    {
+      "name": "elmos-temporal-task-reliability",
+      "status": "DECLARED_UNRESOLVED"
+    }
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multitenant-task-finops.compiled-manifest",
+  "package": {
+    "name": "elmos-multitenant-task-finops-skills",
+    "version": "1.0.0"
+  },
+  "package_material_status": "SOURCE_IMPORTED",
+  "reference_material": {
+    "api": "NOT_APPLIED",
+    "configuration": "NOT_APPLIED",
+    "events": "NOT_APPLIED",
+    "reason": "Package artifacts are immutable design references and require repository-specific adoption.",
+    "schemas": "NOT_APPLIED",
+    "sql_migrations": "NOT_APPLIED"
+  },
+  "schema_version": "1.0.0",
+  "skill_interface_status": "INSTALLED",
+  "skills": [
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "external",
+          "name": "elmos-architecture-contract-governance",
+          "status": "DECLARED_UNRESOLVED"
+        },
+        {
+          "kind": "external",
+          "name": "elmos-identity-tenant-security",
+          "status": "DECLARED_UNRESOLVED"
+        },
+        {
+          "kind": "external",
+          "name": "elmos-temporal-task-reliability",
+          "status": "DECLARED_UNRESOLVED"
+        },
+        {
+          "kind": "external",
+          "name": "elmos-observability-finops",
+          "status": "DECLARED_UNRESOLVED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-001",
+      "installed_skill_md_sha256": "0b177eb57c0452d2dbe0d36465e597f11ae1d825b1b64d6024cb688ced613811",
+      "interface_status": "INSTALLED",
+      "layer": "orchestration",
+      "name": "elmos-multitenant-task-finops-orchestrator",
+      "openai_interface_sha256": "0f9d29911485cbfe370be1d6e9471dedb2e59bc960b3839f11cbbbe68e05e499",
+      "outputs": [
+        "implementation-plan.md",
+        "gap-analysis.json",
+        "contract-freeze.json",
+        "migration-plan.md",
+        "execution-report.md",
+        "evidence-bundle.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md",
+      "source_skill_md_sha256": "214b0d6cd80fba92a5a9727824808a188d4d37ad2f55e43365537a1a589463b4",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-001-T01",
+        "ELMOS-MTF-001-T02",
+        "ELMOS-MTF-001-T03",
+        "ELMOS-MTF-001-T04",
+        "ELMOS-MTF-001-T05",
+        "ELMOS-MTF-001-T06",
+        "ELMOS-MTF-001-T07",
+        "ELMOS-MTF-001-T08",
+        "ELMOS-MTF-001-T09",
+        "ELMOS-MTF-001-T10",
+        "ELMOS-MTF-001-T11",
+        "ELMOS-MTF-001-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-multitenant-task-finops-orchestrator",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-002",
+      "installed_skill_md_sha256": "bc1e85186b9d499266d8fa5923ce35d0d5677f6c3a31e1474710912547aa5f34",
+      "interface_status": "INSTALLED",
+      "layer": "security",
+      "name": "elmos-tenant-identity-rls",
+      "openai_interface_sha256": "e07b34f346f07b3b15285616f2f61970edf10714188beb609d84703f756b6661",
+      "outputs": [
+        "identity-context-contract.md",
+        "rls-migration.sql",
+        "role-matrix.csv",
+        "data-classification.yaml",
+        "tenant-isolation-test-report.json",
+        "audit-policy.md"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-tenant-identity-rls/SKILL.md",
+      "source_skill_md_sha256": "eb2bc693f81b505a49a8461c21a12df5c0e19731a05907bc071c83240ba20dff",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-002-T01",
+        "ELMOS-MTF-002-T02",
+        "ELMOS-MTF-002-T03",
+        "ELMOS-MTF-002-T04",
+        "ELMOS-MTF-002-T05",
+        "ELMOS-MTF-002-T06",
+        "ELMOS-MTF-002-T07",
+        "ELMOS-MTF-002-T08",
+        "ELMOS-MTF-002-T09",
+        "ELMOS-MTF-002-T10",
+        "ELMOS-MTF-002-T11",
+        "ELMOS-MTF-002-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-tenant-identity-rls",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-003",
+      "installed_skill_md_sha256": "6785c3f977f86cd49a0c1346a0950861fb0ebfcbc48ec7dfb2d16d6ed15969eb",
+      "interface_status": "INSTALLED",
+      "layer": "runtime-control",
+      "name": "elmos-account-concurrency-admission",
+      "openai_interface_sha256": "a2316672ea896b98aecae9f8f75d9f89661c5c6c03a72aa659005531cbcf18a6",
+      "outputs": [
+        "account-slot-schema.sql",
+        "admission-service/",
+        "admission-policy.yaml",
+        "concurrency-api.yaml",
+        "slot-race-test-report.json",
+        "queue-fairness-report.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-account-concurrency-admission/SKILL.md",
+      "source_skill_md_sha256": "5615421e69f4731842823442525ac84c407164c0dbd68941609b24a361dde1df",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-003-T01",
+        "ELMOS-MTF-003-T02",
+        "ELMOS-MTF-003-T03",
+        "ELMOS-MTF-003-T04",
+        "ELMOS-MTF-003-T05",
+        "ELMOS-MTF-003-T06",
+        "ELMOS-MTF-003-T07",
+        "ELMOS-MTF-003-T08",
+        "ELMOS-MTF-003-T09",
+        "ELMOS-MTF-003-T10",
+        "ELMOS-MTF-003-T11",
+        "ELMOS-MTF-003-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-account-concurrency-admission",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-004",
+      "installed_skill_md_sha256": "ae14bab5d6b39dffc2bab744cea9751881ab94fe40d1884753fdb76b24c32a0d",
+      "interface_status": "INSTALLED",
+      "layer": "scheduling",
+      "name": "elmos-workload-aware-scheduler",
+      "openai_interface_sha256": "d065198b3f494dc6a1464a6e8851be8020f77190340716940b899b1572e516a5",
+      "outputs": [
+        "workload-class-catalog.yaml",
+        "scheduler-policy.yaml",
+        "capacity-model.json",
+        "worker-pool-config/",
+        "scheduler-metrics.md",
+        "fairness-benchmark.json"
+      ],
+      "risk": "high",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-workload-aware-scheduler/SKILL.md",
+      "source_skill_md_sha256": "135b370535c4f1ad26e69735207342a11c0aa09d2ebf256591b8e19ba84ffa60",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-004-T01",
+        "ELMOS-MTF-004-T02",
+        "ELMOS-MTF-004-T03",
+        "ELMOS-MTF-004-T04",
+        "ELMOS-MTF-004-T05",
+        "ELMOS-MTF-004-T06",
+        "ELMOS-MTF-004-T07",
+        "ELMOS-MTF-004-T08",
+        "ELMOS-MTF-004-T09",
+        "ELMOS-MTF-004-T10",
+        "ELMOS-MTF-004-T11",
+        "ELMOS-MTF-004-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-workload-aware-scheduler",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-005",
+      "installed_skill_md_sha256": "7593171bb038f87d697b1d2e83330585025d620d71e8200e6883e31fb7b2ab30",
+      "interface_status": "INSTALLED",
+      "layer": "workflow",
+      "name": "elmos-task-lifecycle-temporal",
+      "openai_interface_sha256": "bbf320c6cc4edcdbcbe7cb36a9cff4365a941c9e9e5792f4545250f39461ad2f",
+      "outputs": [
+        "task-state-machine.yaml",
+        "workflow-contracts/",
+        "temporal-search-attributes.md",
+        "retry-policy.yaml",
+        "cancellation-contract.md",
+        "workflow-replay-report.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-task-lifecycle-temporal/SKILL.md",
+      "source_skill_md_sha256": "805c8ebc06960ed7cd511632118d8c9435dba66e82677e02266667b0e4161cb3",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-005-T01",
+        "ELMOS-MTF-005-T02",
+        "ELMOS-MTF-005-T03",
+        "ELMOS-MTF-005-T04",
+        "ELMOS-MTF-005-T05",
+        "ELMOS-MTF-005-T06",
+        "ELMOS-MTF-005-T07",
+        "ELMOS-MTF-005-T08",
+        "ELMOS-MTF-005-T09",
+        "ELMOS-MTF-005-T10",
+        "ELMOS-MTF-005-T11",
+        "ELMOS-MTF-005-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-task-lifecycle-temporal",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-006",
+      "installed_skill_md_sha256": "fceefc673ed973558c5e04587352af0c70a0106be7ec01296ee7178c1e43bb19",
+      "interface_status": "INSTALLED",
+      "layer": "observability",
+      "name": "elmos-task-progress-journal",
+      "openai_interface_sha256": "afcaca959583ab4a22bbc7eaaf045abe8229b03a80e15581026ae93d75074a6b",
+      "outputs": [
+        "task-event-schema.json",
+        "progress-aggregator/",
+        "sse-stream-contract.yaml",
+        "node-weight-model.json",
+        "log-segment-policy.md",
+        "progress-rebuild-report.json"
+      ],
+      "risk": "high",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-task-progress-journal/SKILL.md",
+      "source_skill_md_sha256": "931a1d6e70b9cf94c6c4b3d9f9fce15b5f70c608ffaf94e337c504d05dbf696c",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-006-T01",
+        "ELMOS-MTF-006-T02",
+        "ELMOS-MTF-006-T03",
+        "ELMOS-MTF-006-T04",
+        "ELMOS-MTF-006-T05",
+        "ELMOS-MTF-006-T06",
+        "ELMOS-MTF-006-T07",
+        "ELMOS-MTF-006-T08",
+        "ELMOS-MTF-006-T09",
+        "ELMOS-MTF-006-T10",
+        "ELMOS-MTF-006-T11",
+        "ELMOS-MTF-006-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-task-lifecycle-temporal",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-task-progress-journal",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-007",
+      "installed_skill_md_sha256": "66a9eb4ac5340690874ada227144750d4088eedaa4e0f7438f74d171b51f90fe",
+      "interface_status": "INSTALLED",
+      "layer": "reliability",
+      "name": "elmos-checkpoint-recovery",
+      "openai_interface_sha256": "be0fb881bb63e3dfebba926a512d6fd303a593dcba42fdf156ad317f1be4291f",
+      "outputs": [
+        "checkpoint-schema.json",
+        "side-effect-receipt-schema.json",
+        "runner-lease-protocol.md",
+        "reconciliation-rules.yaml",
+        "recovery-runbook.md",
+        "fault-injection-report.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-checkpoint-recovery/SKILL.md",
+      "source_skill_md_sha256": "f365e335f13c78b273f7f44e071f6f00a56f4abfd1a4f81dfada85c0ec3f2d93",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-007-T01",
+        "ELMOS-MTF-007-T02",
+        "ELMOS-MTF-007-T03",
+        "ELMOS-MTF-007-T04",
+        "ELMOS-MTF-007-T05",
+        "ELMOS-MTF-007-T06",
+        "ELMOS-MTF-007-T07",
+        "ELMOS-MTF-007-T08",
+        "ELMOS-MTF-007-T09",
+        "ELMOS-MTF-007-T10",
+        "ELMOS-MTF-007-T11",
+        "ELMOS-MTF-007-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-task-progress-journal",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-checkpoint-recovery",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-008",
+      "installed_skill_md_sha256": "5e278e3fbd4cdd927f098310ec237e694f8b8eb28df4cbc88bd9ed28dac4f74e",
+      "interface_status": "INSTALLED",
+      "layer": "storage",
+      "name": "elmos-task-io-artifact-archive",
+      "openai_interface_sha256": "bb6fe8c4ed303dfedb450c480e08dc6db90c4d1d2f428f3cc28148e85701a1eb",
+      "outputs": [
+        "input-manifest.schema.json",
+        "artifact-manifest.schema.json",
+        "object-key-policy.md",
+        "retention-policy.yaml",
+        "export-delete-workflows.md",
+        "integrity-verification-report.json"
+      ],
+      "risk": "high",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-task-io-artifact-archive/SKILL.md",
+      "source_skill_md_sha256": "17e61cdc42ae3cfe98c7ff9d2b8de327b8d475ca7e48294e59175c7a1b83c13a",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-008-T01",
+        "ELMOS-MTF-008-T02",
+        "ELMOS-MTF-008-T03",
+        "ELMOS-MTF-008-T04",
+        "ELMOS-MTF-008-T05",
+        "ELMOS-MTF-008-T06",
+        "ELMOS-MTF-008-T07",
+        "ELMOS-MTF-008-T08",
+        "ELMOS-MTF-008-T09",
+        "ELMOS-MTF-008-T10",
+        "ELMOS-MTF-008-T11",
+        "ELMOS-MTF-008-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-task-io-artifact-archive",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-009",
+      "installed_skill_md_sha256": "1367e7e258ce34361fac6575eece472f5a3e2c893580ad3c79dfe20c4df34204",
+      "interface_status": "INSTALLED",
+      "layer": "finops",
+      "name": "elmos-usage-metering-cost-ledger",
+      "openai_interface_sha256": "c018b0e16f1a78d4d36825774d883e4d210d6b3bcb9ec20f5f5dd45040f096c7",
+      "outputs": [
+        "usage-event.schema.json",
+        "price-book.schema.json",
+        "metering-adapters/",
+        "task-cost-summary.sql",
+        "budget-policy.yaml",
+        "provider-reconciliation-report.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-usage-metering-cost-ledger/SKILL.md",
+      "source_skill_md_sha256": "c972ba60b4cf090ca17c975c53af5d73d532a7bc231116b18f29c17b842898a4",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-009-T01",
+        "ELMOS-MTF-009-T02",
+        "ELMOS-MTF-009-T03",
+        "ELMOS-MTF-009-T04",
+        "ELMOS-MTF-009-T05",
+        "ELMOS-MTF-009-T06",
+        "ELMOS-MTF-009-T07",
+        "ELMOS-MTF-009-T08",
+        "ELMOS-MTF-009-T09",
+        "ELMOS-MTF-009-T10",
+        "ELMOS-MTF-009-T11",
+        "ELMOS-MTF-009-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-usage-metering-cost-ledger",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-010",
+      "installed_skill_md_sha256": "6a0b4dce280d328bef097023ba7c6fdb6aaee1352a93e87849865e0b68b493f4",
+      "interface_status": "INSTALLED",
+      "layer": "billing",
+      "name": "elmos-revenue-margin-ledger",
+      "openai_interface_sha256": "2db326f285a111e77d90822e764531de21521195924e4bf577bde7dd1df596e0",
+      "outputs": [
+        "revenue-entry.schema.json",
+        "revenue-allocation.schema.json",
+        "billing-mode-catalog.yaml",
+        "revenue-recognition-policy.md",
+        "task-margin-summary.sql",
+        "settlement-reconciliation-report.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-revenue-margin-ledger/SKILL.md",
+      "source_skill_md_sha256": "db560d01d2401a360bdc2a8f66ed8084cdb757839c5f5955a054c22cfb19a333",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-010-T01",
+        "ELMOS-MTF-010-T02",
+        "ELMOS-MTF-010-T03",
+        "ELMOS-MTF-010-T04",
+        "ELMOS-MTF-010-T05",
+        "ELMOS-MTF-010-T06",
+        "ELMOS-MTF-010-T07",
+        "ELMOS-MTF-010-T08",
+        "ELMOS-MTF-010-T09",
+        "ELMOS-MTF-010-T10",
+        "ELMOS-MTF-010-T11",
+        "ELMOS-MTF-010-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-usage-metering-cost-ledger",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-revenue-margin-ledger",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-011",
+      "installed_skill_md_sha256": "b59ba9b26e98222e365239cb06d2bf24324d227b45a74afd83f16c3cc9bc963d",
+      "interface_status": "INSTALLED",
+      "layer": "analytics",
+      "name": "elmos-task-financial-analytics",
+      "openai_interface_sha256": "9be2c5ee6be5d2621be1b786456c59d291961958a2569828d8f4479f2fd3a316",
+      "outputs": [
+        "metric-catalog.yaml",
+        "analytics-rollups.sql",
+        "dashboard-spec.md",
+        "financial-export-schema.json",
+        "data-quality-checks.sql",
+        "aggregate-rebuild-report.json"
+      ],
+      "risk": "high",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-task-financial-analytics/SKILL.md",
+      "source_skill_md_sha256": "9f8cf8a091cd3303645f872ddd8b5be386b142c83281f084a32309e36a948313",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-011-T01",
+        "ELMOS-MTF-011-T02",
+        "ELMOS-MTF-011-T03",
+        "ELMOS-MTF-011-T04",
+        "ELMOS-MTF-011-T05",
+        "ELMOS-MTF-011-T06",
+        "ELMOS-MTF-011-T07",
+        "ELMOS-MTF-011-T08",
+        "ELMOS-MTF-011-T09",
+        "ELMOS-MTF-011-T10",
+        "ELMOS-MTF-011-T11",
+        "ELMOS-MTF-011-T12"
+      ]
+    },
+    {
+      "certification_status": "NOT_CERTIFIED",
+      "dependencies": [
+        {
+          "kind": "internal",
+          "name": "elmos-account-concurrency-admission",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-workload-aware-scheduler",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-task-lifecycle-temporal",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-task-progress-journal",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-checkpoint-recovery",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-task-io-artifact-archive",
+          "status": "INSTALLED"
+        },
+        {
+          "kind": "internal",
+          "name": "elmos-task-financial-analytics",
+          "status": "INSTALLED"
+        }
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "id": "ELMOS-MTF-012",
+      "installed_skill_md_sha256": "3be6b905c7eb68a9661feb0b8f701771808d09f1527e4ab764bfe1c56cf1acbf",
+      "interface_status": "INSTALLED",
+      "layer": "quality",
+      "name": "elmos-concurrency-recovery-finops-certification",
+      "openai_interface_sha256": "7766f8f04976e067f9ddc963a8d64cce2094a5840ef353c0e0b123e7b81915a8",
+      "outputs": [
+        "certification-plan.md",
+        "concurrency-test-report.json",
+        "recovery-test-report.json",
+        "tenant-isolation-report.json",
+        "financial-reconciliation-report.json",
+        "production-readiness-evidence.json"
+      ],
+      "risk": "critical",
+      "source_path": "skills/elmos-multitenant-task-finops-skills-v1.0.0/.agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md",
+      "source_skill_md_sha256": "3b0afd011a4f3dc323621e307a41c55d5e75866c08dfa0c06900e94e85a3a5ae",
+      "task_execution_status": "NOT_RUN",
+      "task_ids": [
+        "ELMOS-MTF-012-T01",
+        "ELMOS-MTF-012-T02",
+        "ELMOS-MTF-012-T03",
+        "ELMOS-MTF-012-T04",
+        "ELMOS-MTF-012-T05",
+        "ELMOS-MTF-012-T06",
+        "ELMOS-MTF-012-T07",
+        "ELMOS-MTF-012-T08",
+        "ELMOS-MTF-012-T09",
+        "ELMOS-MTF-012-T10",
+        "ELMOS-MTF-012-T11",
+        "ELMOS-MTF-012-T12"
+      ]
+    }
+  ],
+  "task_execution_status": "NOT_RUN"
+}

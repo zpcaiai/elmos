@@ -1,0 +1,419 @@
+{
+  "auth_modes": [
+    "jwt",
+    "oidc"
+  ],
+  "case_count": 16,
+  "cases": [
+    {
+      "approved_payload_sha256": "a7789b2fb0b3fba7dbcabb02c2ce1da810bb73ab0b6a32957bb507d3760727a2",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "multi-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 56,
+      "generation_manifest_sha256": "70d34c7ae704f0900e99e7d4fae1ca79f5d22fe22b921b375b0e5d2a036fb0af",
+      "language": "java",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "310189f4432d3a355b4cbe73bdb406af70f568775479a245250cc4e7258de4a4",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-java-jwt\",\"status\":\"UP\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "ea187bc4435615f0b3a82b3bd2d0f449070c3489b92814c28b0b6e839917d51d",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "multi-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 56,
+      "generation_manifest_sha256": "a86ba0ac4bff42f915ddef2d3c6cd0f33c4d52b8a334fe58aa0749304522c9ef",
+      "language": "java",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "27d3592d2d291ee7b87ccb28c3246ae42fa22bde5f01b39c462850cdbd0f071e",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-java-oidc\",\"status\":\"UP\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "698291cb6396ca1b9a7d46e2fa870435c1f0e1c7cd27702b02b1b917ba8fba87",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "multi-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 48,
+      "generation_manifest_sha256": "c1ac95b47e104869d3179945e9478fed374ccd0c9838f9fb7409a3736d635017",
+      "language": "python",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "167838c728d29135de0e7c618cf1eb83758404c399a105ec627471e245b9c959",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-python-jwt\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "7181dcb379ec432efa6a3d4c718dbddfce9d76fc9cd9bbcb2af64c2ff0139647",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "multi-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 48,
+      "generation_manifest_sha256": "7951f481a532fbd0fdcb453c55ad4a3262907460f702accfff0900544c5ad398",
+      "language": "python",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "13d714bfd140291de8d5e6f1863534bda6ce4b0a1852443684dbcaf6598fcc8b",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-python-oidc\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "a43a30440335361782f7535c740662340631f642c496de748ff6ce74f32d01df",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 51,
+      "generation_manifest_sha256": "dabd64aa0e90056142be82cda1e4140254133ea5d8ceb1a18d98b7aa3383cace",
+      "language": "csharp",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "ff0b40ed65ba45b0937776e0894ceac8cec88b3b398a999aca23886d4da06200",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-csharp-jwt\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "680ee29ef7044757280f0afe303a091bf621708d858e8c5ea30d5044d70d4cb0",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 51,
+      "generation_manifest_sha256": "4469c3d697dbc7f18c826cf8d720f9d2e8cf1f911f0202ad4fb0740f0d0ef171",
+      "language": "csharp",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "40168c9331ec40ea93af67f70cab4ca857e15f936a30dd5c20fa60d8cca3a775",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-csharp-oidc\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "9d30691bf8fdecc8458d6c5cd6143a53e330ce1ccd9db37fff21ec5c5efe835d",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 46,
+      "generation_manifest_sha256": "cf14edcc48857a959c83cd041560acd22bc3ff4ff4b2b491ce652a7adcedf164",
+      "language": "typescript",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "faf3316be7332b91d114f879cb0cb22a5dea5ef9a9531269d6d7fed438121d7b",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-typescript-jwt\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "e05197ee30dab88798cff172bb4f9a3a345e798e23d0fa651720af11b1998d11",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 46,
+      "generation_manifest_sha256": "a66cecd3778cd15645e0ed43cd9bfece5d317bcf6f878e5ecedb1630c20566f1",
+      "language": "typescript",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "18c68363d90cbd95121df7be16167df9c72d45be147535a6c60ff4c9e4beec7f",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-typescript-oidc\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "4e581034d7dafac12901fa4fb517d76684f4ae1a316ea633aa75210678bc5d64",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 44,
+      "generation_manifest_sha256": "387e1d0b8dfbc915e7dc6cdb299336a14b4883b8a309dbb3869399f87f273ac5",
+      "language": "go",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "c8a3c4c091bf19746831c2a5f485ce7d2c20f7f08d4b0dee19d2049b5c9b351f",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-go-jwt\",\"status\":\"UP\"}\n",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "4f38ec74c7f862a1f84c97a8886a9473530a39266ac8a38fd79cfc179ea55bab",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 44,
+      "generation_manifest_sha256": "5e6e42a0d74d8950bd5cc41f8c51aab72ec1708ab0ed0392a165979b0afad08c",
+      "language": "go",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "c54536b3b30c1cba451c778b17e9b86b75a898dc39d58fdadf448f253c97d319",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-go-oidc\",\"status\":\"UP\"}\n",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "dc38f95579a9540d639edf90469ade28d0047789309f795cd562537db5a6064d",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 47,
+      "generation_manifest_sha256": "2c63e434f238269388f6f168eb4ab1296c2ccb53828ab92219dc0ae0d1fd1e63",
+      "language": "kotlin",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "e95c0be2b54edeb78aa68160bcf3f71d070acdfc82f282960b8695def3a4ab5f",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-kotlin-jwt\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "daf0d6a7128b50a6b94380b37b710a24e5bfdf59391c1d43c702ffef0e803148",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 47,
+      "generation_manifest_sha256": "049bb02d3e8478f1303dc158ee39f79365a1bbea573388280138f579e0e2349a",
+      "language": "kotlin",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "c30590749c8abe7e12149423de6292538f7f1864c725e8d12d3c26bad1816db5",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-kotlin-oidc\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "5fac48ecdcbaefd17d96774a674638538d59b221b87c17dd04432938f17bc2f8",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 44,
+      "generation_manifest_sha256": "54bfe7df5394307e4d151370bddea96e27605ad68f958d23f2376fd06f8f8988",
+      "language": "php",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "2461a5f1343d63b3b7f4812bffa80654591f51b386961d8f3b7033882666e8fa",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-php-jwt\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "3fff392e06f661bd7cad3e3603e7f023ef9fc1e49a7e26b704f9c71e4cfc162e",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 44,
+      "generation_manifest_sha256": "e36c7ea27ad2ad3a3c5288e5c4a9b9e2a3baaee95b92e648f4200dba677d4680",
+      "language": "php",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "90717344cf8e6868bb9e4c4522f9256610aef28ff960894152ea1066c4c2b870",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-php-oidc\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "297fb9adcd00add527af11f3d50fe8eff0e9f9c4c692add151410429c732518a",
+      "auth_mode": "jwt",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 48,
+      "generation_manifest_sha256": "3087fc8b2b8f5c6cf7cdc040578f50ba7bc6f177042bcad84e42ab7f98372ba8",
+      "language": "rust",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "4f7ea25bd3dc1bbdc4ebec7c31d2adfd819d7a9f700b201ebbf382067adf3d84",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-rust-jwt\",\"status\":\"UP\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    },
+    {
+      "approved_payload_sha256": "99ad619053a62ec5dd8f346328b09e204c0abb8279f6fd384d0c988fffbde5be",
+      "auth_mode": "oidc",
+      "cleanup_status": "PASSED",
+      "entity_shape": "single-entity",
+      "exact_toolchain_match": true,
+      "exit_code": 0,
+      "external_certification_status": "NOT_RUN",
+      "failures": [],
+      "generated_file_count": 48,
+      "generation_manifest_sha256": "3c678516db9c25de3529e6aa4ed36fc61c155e7b8dcf878ff3bb56ee73bf2ca2",
+      "language": "rust",
+      "production_delivery_status": "NOT_RUN",
+      "request_sha256": "57bc5bf8f6e846696b023d896c8a7a9119c1ad455997316a36c953cbc11613d5",
+      "schema_version": "1.0.0",
+      "startup_probes": [
+        {
+          "integration_status": "PASSED",
+          "response": "{\"service\":\"enterprise-orders-rust-oidc\",\"status\":\"UP\"}",
+          "status": "PASSED"
+        }
+      ],
+      "status": "PASSED"
+    }
+  ],
+  "certification_status": "NOT_CERTIFIED",
+  "environment": {
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.9"
+  },
+  "evidence_class": "LOCAL_ENGINEERING",
+  "external_certification_status": "NOT_RUN",
+  "failures": [],
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.local-production-profile-matrix",
+  "languages": [
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "go",
+    "kotlin",
+    "php",
+    "rust"
+  ],
+  "observed_at": "2026-07-28T06:10:28+00:00",
+  "passed_count": 16,
+  "production_delivery_status": "NOT_RUN",
+  "replay": "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py",
+  "schema_version": "1.0.0",
+  "status": "PASSED"
+}

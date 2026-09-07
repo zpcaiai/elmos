@@ -1,0 +1,31 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 12572,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:207e6f74e1e7f0fb768b4d69570a41a03d324db615ab0aa0f5bf93321400504d"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6-arm64-arm-64bit",
+  "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:34:53) [Clang 19.1.7 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
+  },
+  "route_key": "java-to-csharp",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "Java 21.0.11",
+    "JDK Compiler Tree API"
+  ],
+  "target_toolchain": [
+    "C# 14",
+    ".NET SDK 10.0.301",
+    "Roslyn 5.6.0"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 630: energy migration recipe pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $energy-migration-recipe-pack to evaluate this capability with evidence."

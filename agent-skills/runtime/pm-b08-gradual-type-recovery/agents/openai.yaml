@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B08: Gradual Type Recovery"
+  short_description: "Run Precision Migration B08 with evidence controls"
+  default_prompt: "Use $pm-b08-gradual-type-recovery to execute this Precision Migration contract with fail-closed evidence."

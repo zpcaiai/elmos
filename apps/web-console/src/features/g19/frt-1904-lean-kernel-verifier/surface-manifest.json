@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1904",
+  "skill_name": "frt-1904-lean-kernel-verifier",
+  "batch": "G19",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g19/frt-1904-lean-kernel-verifier/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.lean-kernel-verifier",
+  "execution_contract_sha256": "sha256:2e2a167034590ce620d241a385323f624839b621c4001e97587cd43f7a7ff73a",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3a455d12bbb017b4bf25a55138bb3596d8e6c7f4df66ea5e57f9f5bb3d991aed",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

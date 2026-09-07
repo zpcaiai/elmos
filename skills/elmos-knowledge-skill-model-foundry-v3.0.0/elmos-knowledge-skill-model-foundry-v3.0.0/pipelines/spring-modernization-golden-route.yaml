@@ -1,0 +1,30 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: spring-modernization-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: inventory-java-legacy
+    emitEvidence: true
+  - id: characterize
+    emitEvidence: true
+  - id: build-semantic-ir
+    emitEvidence: true
+  - id: migrate-in-waves
+    emitEvidence: true
+  - id: compile-test
+    emitEvidence: true
+  - id: shadow-differential
+    emitEvidence: true
+  - id: security-performance
+    emitEvidence: true
+  - id: canary
+    emitEvidence: true
+  - id: accept-or-rollback
+    emitEvidence: true

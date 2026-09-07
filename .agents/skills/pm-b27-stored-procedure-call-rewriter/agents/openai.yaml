@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B27: Stored Procedure Call Rewriter"
+  short_description: "Run Precision Migration B27 with evidence controls"
+  default_prompt: "Use $pm-b27-stored-procedure-call-rewriter to execute this Precision Migration contract with fail-closed evidence."

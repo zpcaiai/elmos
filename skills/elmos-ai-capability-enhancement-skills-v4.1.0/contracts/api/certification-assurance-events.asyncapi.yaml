@@ -1,0 +1,37 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos Certification Evidence Events
+  version: 4.0.0
+channels:
+  certificationEvents:
+    address: elmos.certification.events
+    messages:
+      certificationEvent:
+        payload:
+          type: object
+          required:
+          - eventId
+          - tenantId
+          - revisionSetId
+          - eventType
+          - occurredAt
+          - payloadHash
+          properties:
+            eventId:
+              type: string
+            tenantId:
+              type: string
+            revisionSetId:
+              type: string
+            eventType:
+              type: string
+            occurredAt:
+              type: string
+              format: date-time
+            payloadHash:
+              type: string
+operations:
+  receiveCertificationEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/certificationEvents'

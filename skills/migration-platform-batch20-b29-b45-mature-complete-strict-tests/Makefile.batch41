@@ -1,0 +1,4 @@
+batch41-validate:
+	python3 scripts/batch41/validate_skill_bundle.py .
+
+	python3 -m unittest tests/batch41/test_toolkit.py

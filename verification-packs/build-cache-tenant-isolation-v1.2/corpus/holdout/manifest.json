@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "corpus_key": "build-cache-tenant-isolation-holdout-v1",
+  "classification": "holdout",
+  "execution_status": "NOT_RUN",
+  "tuning_permitted": false,
+  "cases": [
+    {
+      "case_id": "HOLDOUT-001",
+      "property": "principal-resource confusion across two tenants sharing one project label and one idempotency key"
+    },
+    {
+      "case_id": "HOLDOUT-002",
+      "property": "valid digest from another tenant cannot trigger quarantine, status transition, or cache adoption"
+    },
+    {
+      "case_id": "HOLDOUT-003",
+      "property": "revoked signer and expired evidence cannot authorize affinity, parity, or compaction"
+    },
+    {
+      "case_id": "HOLDOUT-004",
+      "property": "database-level project ownership rejects a service-layer authorization bypass"
+    }
+  ],
+  "independent_executor": "UNASSIGNED",
+  "independent_verifier": "UNASSIGNED"
+}

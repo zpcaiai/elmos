@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Experience Role Workbench and Onboarding"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $product-experience-role-workbench-and-onboarding to execute this ELMOS product-closure Skill with fail-closed evidence."

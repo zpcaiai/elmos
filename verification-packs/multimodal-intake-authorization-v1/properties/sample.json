@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "property_id": "property.scope-bound-authorization",
+  "claim_id": "claim.identity-scope-binding",
+  "owner": "elmos-multimodal-intake-security",
+  "generator": {
+    "kind": "schema-aware",
+    "constraints": [
+      "authenticated-and-anonymous-principals",
+      "same-and-cross-tenant-resources",
+      "read-write-review-admin-actions"
+    ]
+  },
+  "oracle_refs": [
+    "oracle.runtime-contract",
+    "oracle.negative-tests"
+  ],
+  "assertion": {
+    "kind": "allow-if-and-only-if-exact-trusted-binding-and-permission"
+  },
+  "shrinker": {
+    "kind": "structure-aware"
+  },
+  "replay": {
+    "seed": "multimodal-auth-v1",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src python3 -m pytest -q -p no:cacheprovider engines/multimodal-intake-engine/tests"
+  }
+}

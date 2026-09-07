@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Identity Security Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $identity-security-planning-capacity-scenario-optimizati-73c30516 to implement its fail-closed ELMOS Product B48 contract."

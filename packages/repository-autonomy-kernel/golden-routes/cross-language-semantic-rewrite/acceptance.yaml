@@ -1,0 +1,9 @@
+mandatory:
+  - source-baseline
+  - ir-validation
+  - target-build
+  - contract-equivalence
+  - differential-runtime
+  - performance-envelope
+  - rollback
+final: P05_DEPLOYMENT_COMPLETE

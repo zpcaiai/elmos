@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/delivery-snapshot.schema.json",
+  "title": "DeliverySnapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "migrationId",
+    "sourceSnapshotId",
+    "sourceCommit",
+    "deliveryHeadSha",
+    "facts",
+    "risks",
+    "status",
+    "blockingReasons",
+    "contentHash",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "migrationId": {
+      "type": "string"
+    },
+    "sourceSnapshotId": {
+      "type": "string"
+    },
+    "sourceCommit": {
+      "type": "string"
+    },
+    "deliveryHeadSha": {
+      "type": "string"
+    },
+    "validationDecisionId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validationStatus": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rollbackPlanId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidencePackId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "INCOMPLETE",
+        "READY_WITH_WARNINGS",
+        "READY",
+        "BLOCKED",
+        "STALE"
+      ]
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
+

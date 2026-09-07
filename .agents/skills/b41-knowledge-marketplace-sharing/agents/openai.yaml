@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Knowledge Marketplace Sharing"
+  short_description: "Run evidence-bound Batch 41 knowledge marketplace sharing work"
+  default_prompt: "Use $b41-knowledge-marketplace-sharing to implement and verify this capability with fail-closed evidence."

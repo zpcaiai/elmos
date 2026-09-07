@@ -1,0 +1,4 @@
+interface:
+  display_name: "B102 Messaging Idempotency Equivalence"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b102-messaging-idempotency-equivalence to execute this ELMOS product-closure Skill with fail-closed evidence."

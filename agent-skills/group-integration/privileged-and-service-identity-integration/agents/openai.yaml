@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 696: privileged and service identity integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $privileged-and-service-identity-integration to evaluate this capability with evidence."

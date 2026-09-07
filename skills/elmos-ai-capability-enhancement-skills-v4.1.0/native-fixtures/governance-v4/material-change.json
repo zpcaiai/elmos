@@ -1,0 +1,8 @@
+{
+  "change": "model-provider-behavior-drift",
+  "impact": [
+    "safety",
+    "quality"
+  ],
+  "decision": "RECERTIFY"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ArkUI Native Capability Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1509-arkui-native-capability-mapper to run FRT-1509 through the governed FRT runtime with exact scope and fail-closed evidence."

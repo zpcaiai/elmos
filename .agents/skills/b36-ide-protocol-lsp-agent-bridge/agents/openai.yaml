@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 IDE Protocol Bridge"
+  short_description: "Secure IDE, language server, and agent calls"
+  default_prompt: "Use $b36-ide-protocol-lsp-agent-bridge to implement a versioned least-privilege IDE protocol."

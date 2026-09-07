@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 外部系统、连接器与 MCP 集成"
+  short_description: "Guide 外部系统、连接器与 MCP 集成 with evidence controls"
+  default_prompt: "Use $elmos-integrations-mcp as guidance for 外部系统、连接器与 MCP 集成 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

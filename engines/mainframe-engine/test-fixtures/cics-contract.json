@@ -1,0 +1,1 @@
+{"transactionId":"PAY1","programId":"PAYMENT1","contractType":"CHANNEL_CONTRACT","version":"2","containers":["PAYMENT","CONTROL","ERROR"],"identityMapping":"external-subject-to-SAF","errorMapping":{"RESP":"error.code"}}

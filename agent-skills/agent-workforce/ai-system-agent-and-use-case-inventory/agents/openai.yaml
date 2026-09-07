@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 572: ai system agent and use case inventory"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-system-agent-and-use-case-inventory to evaluate this capability with evidence."

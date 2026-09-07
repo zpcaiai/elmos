@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/integration-estate.v1.json",
+  "title": "Integration Estate",
+  "type": "object",
+  "required": ["schemaVersion", "estateId", "organizationId", "platforms", "endpoints", "routes", "runtimeEvidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "estateId": {"type": "string", "minLength": 1},
+    "organizationId": {"type": "string", "minLength": 1},
+    "platforms": {"type": "array", "items": {"type": "object", "required": ["platformId", "type", "environment"], "properties": {"platformId": {"type": "string"}, "type": {"type": "string"}, "environment": {"type": "string"}}, "additionalProperties": true}},
+    "endpoints": {"type": "array", "items": {"type": "object"}},
+    "routes": {"type": "array", "items": {"type": "string"}},
+    "declaredRelationships": {"type": "array", "items": {"type": "object"}},
+    "observedRelationships": {"type": "array", "items": {"type": "object"}},
+    "runtimeEvidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "pack_key": "build-cache-tenant-isolation-v1-2",
+  "capabilities": [
+    {
+      "key": "trusted-authenticated-context",
+      "status": "experimental",
+      "owner": "ELMOS cache security maintainers",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "security/principal-resource-action-matrix.json"
+      ],
+      "limitations": [
+        "Local runtime tests are NOT_RUN in this pack snapshot.",
+        "Gateway mutual-TLS termination is not external evidence."
+      ]
+    },
+    {
+      "key": "tenant-project-metadata-isolation",
+      "status": "experimental",
+      "owner": "ELMOS cache data maintainers",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "corpus/negative/manifest.json"
+      ],
+      "limitations": [
+        "SQLite and PostgreSQL execution are NOT_RUN in this pack snapshot.",
+        "No production RLS claim is made."
+      ]
+    },
+    {
+      "key": "denied-action-noninterference",
+      "status": "blocked",
+      "owner": "ELMOS verification maintainers",
+      "evidence_refs": [
+        "security/principal-resource-action-matrix.json",
+        "corpus/negative/manifest.json"
+      ],
+      "limitations": [
+        "Side-effect sentinels and holdout execution are NOT_RUN."
+      ]
+    },
+    {
+      "key": "signed-affinity-and-evidence-scope",
+      "status": "experimental",
+      "owner": "ELMOS cache security maintainers",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "security/principal-resource-action-matrix.json"
+      ],
+      "limitations": [
+        "No production attested runner registry is configured.",
+        "Revocation and expiry tests are NOT_RUN in this pack snapshot."
+      ]
+    },
+    {
+      "key": "independent-p0-review",
+      "status": "blocked",
+      "owner": "ELMOS verification maintainers",
+      "evidence_refs": [],
+      "limitations": [
+        "Independent executor and verifier are unassigned.",
+        "Holdout and representative workloads are NOT_RUN."
+      ]
+    }
+  ]
+}

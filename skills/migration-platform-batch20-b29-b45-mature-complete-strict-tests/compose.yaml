@@ -1,0 +1,85 @@
+name: migration-platform
+
+services:
+  postgres:
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-migration}
+      POSTGRES_USER: ${POSTGRES_USER:-migration}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-migration}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-migration} -d ${POSTGRES_DB:-migration}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  control-plane:
+    build:
+      context: ./services/control-plane
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-migration}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-migration}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-migration}
+      APP_ARTIFACT_ROOT: /data/artifacts
+    ports:
+      - "${CONTROL_PLANE_PORT:-8080}:8080"
+    volumes:
+      - artifact-data:/data/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q UP"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  agent-service:
+    build:
+      context: ./services/agent-service
+    environment:
+      AGENT_ENVIRONMENT: local
+      AGENT_DEFAULT_MAX_STEPS: 8
+    ports:
+      - "${AGENT_SERVICE_PORT:-8090}:8090"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8090/health')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  runner:
+    build:
+      context: ./services/runner
+    environment:
+      CONTROL_PLANE_URL: http://control-plane:8080
+      RUNNER_NAME: local-docker-runner
+      RUNNER_POLL_INTERVAL: 2s
+      RUNNER_WORK_ROOT: /work
+    volumes:
+      - runner-work:/work
+    depends_on:
+      control-plane:
+        condition: service_healthy
+
+  console:
+    build:
+      context: ./apps/console
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:${CONTROL_PLANE_PORT:-8080}
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:${CONTROL_PLANE_PORT:-8080}
+    ports:
+      - "${CONSOLE_PORT:-3000}:3000"
+    depends_on:
+      control-plane:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  artifact-data:
+  runner-work:

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/semantic-ir.schema.json",
+  "title": "Repository Semantic IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "repositoryDigest", "profileDigests", "shards", "semanticGaps", "coverage"],
+  "properties": {
+    "schemaVersion": {"const": "3.0.0"},
+    "repositoryDigest": {"$ref": "#/$defs/digest"},
+    "profileDigests": {"type": "object", "additionalProperties": {"$ref": "#/$defs/digest"}},
+    "shards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["shardId", "path", "language", "sourceDigest", "frontend", "authority", "symbols", "relations", "sourceMap", "unsupported"],
+        "properties": {
+          "shardId": {"type": "string"},
+          "path": {"type": "string"},
+          "language": {"type": "string"},
+          "sourceDigest": {"$ref": "#/$defs/digest"},
+          "frontend": {"type": "object"},
+          "authority": {"enum": ["COMPILER_GROUNDED", "PARSER_GROUNDED", "STRUCTURAL_ONLY", "UNSUPPORTED"]},
+          "symbols": {"type": "array", "items": {"type": "object"}},
+          "relations": {"type": "array", "items": {"type": "object"}},
+          "sourceMap": {"type": "array", "items": {"type": "object"}},
+          "unsupported": {"type": "array", "items": {"type": "object"}}
+        }
+      }
+    },
+    "semanticGaps": {"type": "array", "items": {"$ref": "#/$defs/gap"}},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["discoveredFiles", "compiledFiles", "unsupportedFiles", "criticalAttributionRatio"],
+      "properties": {
+        "discoveredFiles": {"type": "integer", "minimum": 0},
+        "compiledFiles": {"type": "integer", "minimum": 0},
+        "unsupportedFiles": {"type": "integer", "minimum": 0},
+        "criticalAttributionRatio": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gapId", "family", "severity", "source", "target", "status", "provenance"],
+      "properties": {
+        "gapId": {"type": "string"},
+        "family": {"type": "string"},
+        "severity": {"enum": ["critical", "high", "medium", "low"]},
+        "source": {"type": "object"},
+        "target": {"type": "object"},
+        "status": {"enum": ["OPEN", "BOUNDED", "RESOLVED", "UNSUPPORTED"]},
+        "provenance": {"type": "array", "minItems": 1, "items": {"type": "object"}}
+      }
+    }
+  }
+}
+

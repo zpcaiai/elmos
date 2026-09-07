@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 028"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $scim2-filter-patch-etag-pagination-bulk-and-idempotency to implement its fail-closed ELMOS Product Batch 34 contract."

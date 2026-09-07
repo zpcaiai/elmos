@@ -1,0 +1,22 @@
+{
+  "allow": [
+    {
+      "workload_attested": true,
+      "credential": {
+        "expires_at": 20
+      },
+      "now": 10,
+      "delegated_scopes_subset": true
+    }
+  ],
+  "deny": [
+    {
+      "workload_attested": false,
+      "credential": {
+        "expires_at": 20
+      },
+      "now": 10,
+      "delegated_scopes_subset": true
+    }
+  ]
+}

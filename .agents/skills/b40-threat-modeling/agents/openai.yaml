@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Threat Modeling"
+  short_description: "Run evidence-bound Batch 40 threat modeling work"
+  default_prompt: "Use $b40-threat-modeling to implement and verify this capability with fail-closed evidence."

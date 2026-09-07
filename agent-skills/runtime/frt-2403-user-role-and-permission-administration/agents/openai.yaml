@@ -1,0 +1,4 @@
+interface:
+  display_name: "User, Role and Permission Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2403-user-role-and-permission-administration to run FRT-2403 through the governed FRT runtime with exact scope and fail-closed evidence."

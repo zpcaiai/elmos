@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Call Graph Builder"
+  short_description: "Build conservative exact candidate and dynamic calls"
+  default_prompt: "Use $repository-call-graph-builder to build a conservative PSP call graph with coverage."

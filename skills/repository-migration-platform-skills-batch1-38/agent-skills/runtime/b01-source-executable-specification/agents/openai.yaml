@@ -1,0 +1,4 @@
+interface:
+  display_name: "B01 Source Executable Specification"
+  short_description: "Help with B01 Source Executable Specification tasks"
+  default_prompt: "Use $b01-source-executable-specification to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

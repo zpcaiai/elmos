@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "corpus_key": "vue3-wechat-negative-v1",
+  "independence_class": "negative",
+  "may_author_transformation_rules": false,
+  "cases": [
+    {
+      "case_id": "NEG-VUE3-WECHAT-001",
+      "scenario": "blank or whitespace-only todo text",
+      "required_outcome": "Add remains disabled and no list item is appended",
+      "runtime_state": "NOT_RUN"
+    },
+    {
+      "case_id": "NEG-VUE3-WECHAT-002",
+      "scenario": "undeclared network payment identity upload review or release request",
+      "required_outcome": "candidate generation fails closed without broadening permissions",
+      "runtime_state": "NOT_RUN"
+    }
+  ],
+  "certification": "NOT_CERTIFIED"
+}

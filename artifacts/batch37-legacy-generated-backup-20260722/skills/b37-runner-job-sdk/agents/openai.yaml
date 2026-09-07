@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 37: Runner Job Sdk"
+  short_description: "Run evidence-bound Batch 37 runner job sdk work"
+  default_prompt: "Use $b37-runner-job-sdk to implement and verify this capability with fail-closed evidence."

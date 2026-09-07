@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/data-project-ir.schema.json",
+  "title": "Elmos Data Project IR",
+  "type": "object",
+  "required": [
+    "project_id",
+    "tenant_id",
+    "classification",
+    "architecture",
+    "data_roles",
+    "pipelines",
+    "governance",
+    "deployment",
+    "verification"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "classification": {
+      "type": "object",
+      "required": [
+        "primary",
+        "secondary"
+      ],
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "secondary": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": [
+        "primary_pattern",
+        "overlays"
+      ],
+      "properties": {
+        "primary_pattern": {
+          "type": "string"
+        },
+        "overlays": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "data_roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "role",
+          "owner",
+          "technology_candidates"
+        ],
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "technology_candidates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authoritative": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "pipelines": {
+      "type": "array",
+      "items": {
+        "$ref": "pipeline-contract.schema.json"
+      }
+    },
+    "governance": {
+      "type": "object"
+    },
+    "deployment": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "cost_eta": {
+      "$ref": "cost-and-eta.schema.json"
+    }
+  },
+  "additionalProperties": true
+}

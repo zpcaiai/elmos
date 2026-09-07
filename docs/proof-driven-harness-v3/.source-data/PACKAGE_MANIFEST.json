@@ -1,0 +1,97 @@
+{
+  "apiVersion": "elmos.ai/v3",
+  "kind": "ProofDrivenRepositoryEngineeringPlatform",
+  "metadata": {
+    "name": "elmos-proof-driven-agentic-harness-repository-semantic-compiler",
+    "version": "3.0.0",
+    "packageId": "elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0",
+    "releaseDate": "2026-08-28",
+    "architecture": "eight-kernel-proof-obligation-driven"
+  },
+  "spec": {
+    "counts": {
+      "routableSkills": 16,
+      "kernels": 8,
+      "domainPacks": 5,
+      "crossCuttingSkills": 3,
+      "internalKernelComponents": 96,
+      "legacySkillsMapped": 115,
+      "legacySourceSnapshots": 115,
+      "languageSemanticProfiles": 15,
+      "frameworkSemanticProfiles": 9,
+      "verifierAdapters": 20,
+      "harnessAdapters": 7,
+      "jsonSchemas": 15,
+      "postgresMigrations": 4,
+      "regoModules": 6,
+      "commercialGoldenRoutes": 5,
+      "inheritedEtgbCases": 46664
+    },
+    "canonicalOwners": {
+      "intent": "K1",
+      "repositoryFacts": "K2",
+      "semantics": "K3",
+      "reasoning": "K4",
+      "transformation": "K5",
+      "proof": "K6",
+      "runtimeAuthority": "K7",
+      "completion": "K8"
+    },
+    "defaults": {
+      "accountTopLevelConcurrency": 3,
+      "networkPolicy": "DENY",
+      "unknownToolDecision": "DENY",
+      "adapterFailureMode": "fail-closed",
+      "llmAuthoritativeOracle": "DENY",
+      "agentSelfCertification": "DENY",
+      "etaUnit": "machine_wall_clock_seconds",
+      "database": "PostgreSQL 17",
+      "evidence": "content-addressed append-only"
+    },
+    "releaseGates": [
+      "P05_DEPLOYMENT_COMPLETE",
+      "E0_FROZEN_CONTRACT",
+      "E1_STATIC_SEMANTIC",
+      "E2_FORMAL_MODEL",
+      "E3_DIFFERENTIAL_BEHAVIOR",
+      "E4_RESILIENCE_SECURITY_PERFORMANCE",
+      "E5_CUSTOMER_GOLDEN_ROUTE"
+    ],
+    "sourcePackages": [
+      {
+        "name": "elmos-repository-autonomy-kernel",
+        "version": "2.0.0",
+        "skills": 31,
+        "integration": "absorbed"
+      },
+      {
+        "name": "elmos-formal-assurance-kernel",
+        "version": "1.0.0",
+        "skills": 60,
+        "integration": "absorbed"
+      },
+      {
+        "name": "elmos-etgb-sota-skills-package",
+        "version": "1.1.0",
+        "skills": 24,
+        "cases": 46664,
+        "integration": "validation-data-plane"
+      }
+    ],
+    "runtimeRequirements": {
+      "python": ">=3.11",
+      "postgresql": "17",
+      "kubernetes": ">=1.30",
+      "openTelemetry": "1.x",
+      "objectStorage": "S3-compatible",
+      "eventBus": "Kafka/NATS/Redpanda",
+      "policy": "OPA/Rego or equivalent fail-closed PDP"
+    },
+    "activation": {
+      "packageValidationRequired": true,
+      "referenceTestsRequired": true,
+      "liveEnvironmentConformanceRequiredForProduction": true,
+      "customerGoldenRouteRequiredForCertifiedClaim": true
+    }
+  }
+}

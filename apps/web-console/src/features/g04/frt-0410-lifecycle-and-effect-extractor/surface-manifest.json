@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0410",
+  "skill_name": "frt-0410-lifecycle-and-effect-extractor",
+  "batch": "G04",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g04/frt-0410-lifecycle-and-effect-extractor/",
+  "status": "shared_implementation",
+  "handler_kind": "typed_contract",
+  "capability_key": "frt.g04.lifecycle-and-effect-extractor",
+  "execution_contract_sha256": "sha256:2736ab7a1022e376c54f60a5727dfa2fa822d11189b3d5bbee4598d03baebb59",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:94b6e46e54d1af7460365b515a92575e5bee0f7a787adcad3174e002358d0120",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

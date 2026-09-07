@@ -1,0 +1,28 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: frontend-miniapp-golden-route
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: inventory-ui
+    emitEvidence: true
+  - id: extract-ui-ir
+    emitEvidence: true
+  - id: map-platforms
+    emitEvidence: true
+  - id: transform
+    emitEvidence: true
+  - id: build-device-matrix
+    emitEvidence: true
+  - id: visual-accessibility-test
+    emitEvidence: true
+  - id: performance-security
+    emitEvidence: true
+  - id: store-release-or-rollback
+    emitEvidence: true

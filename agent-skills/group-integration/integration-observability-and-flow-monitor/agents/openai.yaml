@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 711: integration observability and flow monitor"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-observability-and-flow-monitor to evaluate this capability with evidence."

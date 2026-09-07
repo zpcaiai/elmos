@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: Integration Platform Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $integration-platform-automation-copilot-recommendation-d624c0d9 to implement its fail-closed ELMOS Product B46 contract."

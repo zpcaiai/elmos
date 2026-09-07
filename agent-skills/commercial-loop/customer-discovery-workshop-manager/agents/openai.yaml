@@ -1,0 +1,4 @@
+interface:
+  display_name: "customer-discovery-workshop-manager"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $customer-discovery-workshop-manager to evaluate this Batch 13 commercial capability with evidence."

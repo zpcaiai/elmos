@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "ci": {
+    "required": [
+      "build",
+      "unit",
+      "integration",
+      "security",
+      "package"
+    ],
+    "pinned_actions": true
+  },
+  "security": {
+    "critical_block": true,
+    "secret_scan": true,
+    "signed_sbom": true
+  },
+  "container": {
+    "non_root": true,
+    "readonly_root": true,
+    "signed": true
+  },
+  "deployment": {
+    "platform": "kubernetes",
+    "strategy": "canary",
+    "policy_validation": true
+  },
+  "release": {
+    "semver": true,
+    "signed_manifest": true
+  },
+  "recovery": {
+    "rto_minutes": 60,
+    "rpo_minutes": 15,
+    "restore_test_required": true
+  }
+}

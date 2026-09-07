@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 507: fundraising data room manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $fundraising-data-room-manager to evaluate this capability with evidence."

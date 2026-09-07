@@ -1,0 +1,4 @@
+interface:
+  display_name: "B88 Db2i Data Access Mapper"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b88-db2i-data-access-mapper to execute this ELMOS Language Pack Skill with fail-closed evidence."

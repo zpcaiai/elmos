@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: Effect And Side Effect Discovery"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-effect-and-side-effect-discovery to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,11 @@
+{
+  "tenantId": "t-1",
+  "goalId": "g-1",
+  "runId": "r-1",
+  "executionEpoch": 2,
+  "stepId": "s-4",
+  "invocationId": "i-9",
+  "revisionSetId": "rev-3.1",
+  "extensionSkill": "elmos-tool-result-interception-commit",
+  "payload": {}
+}

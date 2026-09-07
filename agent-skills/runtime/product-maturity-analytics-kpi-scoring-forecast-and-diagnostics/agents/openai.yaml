@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Product Maturity Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $product-maturity-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B55 contract."

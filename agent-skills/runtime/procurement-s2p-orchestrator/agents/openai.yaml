@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Orchestrator"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-orchestrator to implement its fail-closed ELMOS Product B42 contract."

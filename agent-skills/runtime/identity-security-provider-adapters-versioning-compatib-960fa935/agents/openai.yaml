@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Identity Security Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $identity-security-provider-adapters-versioning-compatib-960fa935 to implement its fail-closed ELMOS Product B48 contract."

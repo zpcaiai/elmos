@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.external-authorization-model-not-run",
+  "property_id": "property.scope-bound-authorization",
+  "solver": {
+    "name": "external-smt",
+    "version": "NOT_CONFIGURED",
+    "options": {},
+    "timeout_ms": 0
+  },
+  "status": "unsupported",
+  "assumptions": [
+    "Local negative tests are bounded engineering evidence and are not a universal authorization proof."
+  ],
+  "input_digest": "sha256:TODO",
+  "evidence_refs": []
+}

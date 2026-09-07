@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-plan.schema.json",
+  "title": "MiniApp Migration Test Plan",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "targets",
+    "suites",
+    "thresholds"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "source",
+          "wechat",
+          "alipay",
+          "douyin",
+          "xiaohongshu"
+        ]
+      }
+    },
+    "suites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "suite_id",
+          "type",
+          "critical",
+          "cases"
+        ],
+        "properties": {
+          "suite_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "schema",
+              "unit",
+              "contract",
+              "build",
+              "differential",
+              "visual",
+              "performance",
+              "privacy",
+              "security",
+              "release"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "case_id",
+                "steps",
+                "expected"
+              ],
+              "properties": {
+                "case_id": {
+                  "type": "string"
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "expected": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "critical_flow_pass_rate",
+        "visual_similarity_min"
+      ],
+      "properties": {
+        "critical_flow_pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "visual_similarity_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

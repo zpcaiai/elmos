@@ -1,0 +1,4 @@
+interface:
+  display_name: "ArkUI Source Adapter"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0405-arkui-source-adapter to run FRT-0405 through the governed FRT runtime with exact scope and fail-closed evidence."

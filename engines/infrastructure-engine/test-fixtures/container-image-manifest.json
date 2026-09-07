@@ -1,0 +1,20 @@
+{
+  "imageDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "baseImageDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "architectures": [
+    "linux/amd64",
+    "linux/arm64"
+  ],
+  "nonRoot": true,
+  "readOnlyRootFilesystem": true,
+  "gracefulShutdown": "PASS",
+  "sbomRef": "artifact://sbom/a",
+  "signatureRef": "artifact://signature/a",
+  "provenanceRef": "artifact://provenance/a",
+  "secretInLayer": false,
+  "status": "VERIFIED",
+  "evidenceRefs": [
+    "artifact://container/sha256-c"
+  ]
+}
+

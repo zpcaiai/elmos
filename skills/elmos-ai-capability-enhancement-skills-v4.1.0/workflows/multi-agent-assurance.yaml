@@ -1,0 +1,73 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableWorkflow
+metadata:
+  name: multi-agent-assurance
+  version: 4.0.0
+spec:
+  authority: Environment-owned
+  failureMode: fail-closed
+  steps:
+  - id: compile-topology
+    ordinal: 1
+    dependsOn: []
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: verify-authority-and-state-ownership
+    ordinal: 2
+    dependsOn:
+    - compile-topology
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: analyze-deadlock
+    ordinal: 3
+    dependsOn:
+    - verify-authority-and-state-ownership
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: allocate-budgets
+    ordinal: 4
+    dependsOn:
+    - analyze-deadlock
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: execute-fault-scenarios
+    ordinal: 5
+    dependsOn:
+    - allocate-budgets
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: compare-traces
+    ordinal: 6
+    dependsOn:
+    - execute-fault-scenarios
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  - id: certify-bounded-envelope
+    ordinal: 7
+    dependsOn:
+    - compare-traces
+    retry:
+      maxAttempts: 2
+      backoff: bounded-exponential
+    checkpoint: true
+    evidenceRequired: true
+  terminalGate: independent K8 evaluation
+  machineEtaRequired: true

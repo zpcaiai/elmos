@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/completion-review.schema.json",
+  "title": "Completion review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reviewId", "tenantId", "projectId", "goalId", "runId", "revisionSetId", "revisionSetDigest", "revisionSetRevisions", "proofGraphDigest", "evidenceRoot", "evidenceIds", "gateResults", "productionAssessment", "payloadDigest", "reviewerIdentity", "reviewerExecutionSource", "decision", "independentVerification", "externalSignature", "issuedAt"],
+  "properties": {
+    "reviewId": {"type": "string"},
+    "tenantId": {"type": "string"},
+    "projectId": {"type": "string"},
+    "goalId": {"type": "string"},
+    "runId": {"type": "string", "minLength": 1},
+    "revisionSetId": {"type": "string", "minLength": 1},
+    "revisionSetDigest": {"$ref": "#/$defs/digest"},
+    "revisionSetRevisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_repository", "baseline_repository", "requirements", "policy", "workflow", "model_route", "toolchain", "environment", "domain_pack"],
+      "properties": {
+        "source_repository": {"$ref": "#/$defs/digest"},
+        "baseline_repository": {"$ref": "#/$defs/digest"},
+        "requirements": {"$ref": "#/$defs/digest"},
+        "policy": {"$ref": "#/$defs/digest"},
+        "workflow": {"$ref": "#/$defs/digest"},
+        "model_route": {"$ref": "#/$defs/digest"},
+        "toolchain": {"$ref": "#/$defs/digest"},
+        "environment": {"$ref": "#/$defs/digest"},
+        "domain_pack": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "proofGraphDigest": {"$ref": "#/$defs/digest"},
+    "evidenceRoot": {"$ref": "#/$defs/digest"},
+    "evidenceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "gateResults": {
+      "type": "object",
+      "required": ["P05", "E0", "E1", "E2", "E3", "E4", "E5"],
+      "additionalProperties": false,
+      "properties": {
+        "P05": {"$ref": "#/$defs/gateDecision"},
+        "E0": {"$ref": "#/$defs/gateDecision"},
+        "E1": {"$ref": "#/$defs/gateDecision"},
+        "E2": {"$ref": "#/$defs/gateDecision"},
+        "E3": {"$ref": "#/$defs/gateDecision"},
+        "E4": {"$ref": "#/$defs/gateDecision"},
+        "E5": {"$ref": "#/$defs/gateDecision"}
+      }
+    },
+    "productionAssessment": {"type": "boolean"},
+    "payloadDigest": {"$ref": "#/$defs/digest"},
+    "reviewerIdentity": {"type": "string", "minLength": 1},
+    "reviewerExecutionSource": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["READY_FOR_EXTERNAL_GATE", "BLOCKED", "REJECTED", "EXTERNALLY_VERIFIED", "CERTIFIED"]},
+    "independentVerification": {"enum": ["NOT_RUN", "PENDING", "VERIFIED", "REJECTED", "REVOKED"]},
+    "externalSignature": {
+      "type": ["object", "null"],
+      "properties": {
+        "receiptId": {"type": "string", "minLength": 1},
+        "tenantId": {"type": "string", "minLength": 1},
+        "projectId": {"type": "string", "minLength": 1},
+        "signerIdentity": {"type": "string", "minLength": 1},
+        "keyId": {"type": "string", "minLength": 1},
+        "providerId": {"type": "string", "minLength": 1},
+        "algorithm": {"enum": ["Ed25519", "ECDSA-P256-SHA256", "RSA-PSS-SHA256", "X509-REMOTE"]},
+        "payloadDigest": {"$ref": "#/$defs/digest"},
+        "signature": {"type": "string", "minLength": 1},
+        "verificationEvidenceId": {"type": "string", "minLength": 1},
+        "issuedAt": {"type": "string", "format": "date-time"},
+        "expiresAt": {"type": "string", "format": "date-time"},
+        "independent": {"const": true},
+        "certificationAuthority": {"type": "boolean"},
+        "attestedStatus": {"enum": ["EXTERNALLY_VERIFIED", "CERTIFIED"]}
+      },
+      "required": ["receiptId", "tenantId", "projectId", "signerIdentity", "keyId", "providerId", "algorithm", "payloadDigest", "signature", "verificationEvidenceId", "issuedAt", "expiresAt", "independent", "certificationAuthority", "attestedStatus"],
+      "additionalProperties": false
+    },
+    "issuedAt": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {"enum": ["EXTERNALLY_VERIFIED", "CERTIFIED"]}
+        },
+        "required": ["decision"]
+      },
+      "then": {
+        "properties": {
+          "independentVerification": {"const": "VERIFIED"},
+          "externalSignature": {"type": "object"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {"const": "CERTIFIED"}
+        },
+        "required": ["decision"]
+      },
+      "then": {
+        "properties": {
+          "productionAssessment": {"const": true},
+          "gateResults": {"$ref": "#/$defs/allPassingProductionGates"},
+          "externalSignature": {
+            "type": "object",
+            "properties": {
+              "attestedStatus": {"const": "CERTIFIED"},
+              "certificationAuthority": {"const": true}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "gateDecision": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "UNKNOWN", "NOT_APPLICABLE"]},
+    "allPassingProductionGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["P05", "E0", "E1", "E2", "E3", "E4", "E5"],
+      "properties": {
+        "P05": {"const": "PASS"},
+        "E0": {"const": "PASS"},
+        "E1": {"const": "PASS"},
+        "E2": {"const": "PASS"},
+        "E3": {"const": "PASS"},
+        "E4": {"const": "PASS"},
+        "E5": {"const": "PASS"}
+      }
+    }
+  }
+}

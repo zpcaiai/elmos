@@ -1,0 +1,5 @@
+unknown_handling:
+  unknown_must_be_preserved: true
+  unknown_may_not_be_guessed: true
+  unknown_counts_in_denominator: true
+  opaque_payload_requires_digest: true

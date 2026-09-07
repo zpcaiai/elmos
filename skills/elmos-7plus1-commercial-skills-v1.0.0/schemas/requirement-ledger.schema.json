@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/requirement-ledger/1.0",
+  "title": "Requirement Ledger",
+  "type": "object",
+  "required": [
+    "snapshot_id",
+    "source_revision",
+    "requirements"
+  ],
+  "properties": {
+    "snapshot_id": {
+      "type": "string"
+    },
+    "source_revision": {
+      "type": "string"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "risk",
+          "state",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^REQ-[0-9]{5,}$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          },
+          "risk": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "state": {
+            "enum": [
+              "discovered",
+              "designed",
+              "implemented",
+              "tested",
+              "verified",
+              "blocked",
+              "waived"
+            ]
+          },
+          "design_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "implementation_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "test_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

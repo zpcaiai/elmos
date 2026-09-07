@@ -1,0 +1,538 @@
+{
+  "schema_version": "1.0",
+  "package": {
+    "id": "elmos.frontend-to-miniapp.skills",
+    "name": "elmos-frontend-to-miniapp-skills",
+    "title": "Elmos Frontend → MiniApp Production Skills Package",
+    "version": "1.0.0",
+    "generated_at": "2026-08-19T00:00:00+08:00",
+    "language": "zh-CN",
+    "license": "Proprietary",
+    "description": "面向 Elmos 的生产级前端跨端转换技能包：Vue、React、Flutter、H5、Taro、uni-app 与既有小程序转换为微信、支付宝、抖音、小红书原生小程序。",
+    "canonical_skill_root": ".agents/skills",
+    "runtime_locations": {
+      "codex_repo": ".agents/skills",
+      "codex_user": "~/.agents/skills",
+      "claude_code_repo": ".claude/skills",
+      "claude_code_user": "~/.claude/skills"
+    },
+    "source_frameworks": [
+      "vue2",
+      "vue3",
+      "react",
+      "flutter",
+      "h5",
+      "typescript",
+      "javascript",
+      "taro",
+      "uni-app",
+      "native-miniapp"
+    ],
+    "target_platforms": [
+      "wechat",
+      "alipay",
+      "douyin",
+      "xiaohongshu"
+    ],
+    "skill_count": 22,
+    "task_count": 40,
+    "schema_count": 14
+  },
+  "defaults": {
+    "native_output_required": true,
+    "webview_fallback": "deny",
+    "full_page_canvas_fallback": "deny",
+    "silent_feature_drop": "deny",
+    "max_auto_repair_iterations": 3,
+    "visual_similarity_min": 0.95,
+    "critical_flow_pass_rate": 1.0,
+    "release_requires_human_approval": true,
+    "credential_policy": "references-only-no-secret-values"
+  },
+  "skills": [
+    {
+      "name": "frontend-to-miniapp-orchestrator",
+      "path": ".agents/skills/frontend-to-miniapp-orchestrator",
+      "entrypoint": ".agents/skills/frontend-to-miniapp-orchestrator/SKILL.md",
+      "stage": "orchestration",
+      "description": "Orchestrate repository-level conversion from Vue, React, Flutter, H5, Taro, uni-app, or an existing miniapp into WeChat, Alipay, Douyin, and Xiaohongshu miniapps. Use for end-to-end planning, checkpoints, gates, repair loops, and final evidence; do not use for an isolated adapter implementation.",
+      "depends_on": [],
+      "task_ids": [
+        "MAPP-001",
+        "MAPP-002"
+      ],
+      "outputs": [
+        "runs/<run-id>/state.json",
+        "runs/<run-id>/plan.json",
+        "runs/<run-id>/artifacts-index.json",
+        "最终 migration-evidence.json 与兼容性报告"
+      ]
+    },
+    {
+      "name": "miniapp-source-framework-detector",
+      "path": ".agents/skills/miniapp-source-framework-detector",
+      "entrypoint": ".agents/skills/miniapp-source-framework-detector/SKILL.md",
+      "stage": "discovery",
+      "description": "Inventory a frontend repository and detect Vue, React, Flutter, H5, Taro, uni-app, or native miniapp frameworks with evidence and confidence. Use before conversion planning; do not infer a single framework from filenames alone.",
+      "depends_on": [],
+      "task_ids": [
+        "MAPP-003",
+        "MAPP-004"
+      ],
+      "outputs": [
+        "project-inventory.json",
+        "framework-detection.json",
+        "entrypoint-map.json",
+        "unresolved-signals.json"
+      ]
+    },
+    {
+      "name": "vue-to-miniapp-analyzer",
+      "path": ".agents/skills/vue-to-miniapp-analyzer",
+      "entrypoint": ".agents/skills/vue-to-miniapp-analyzer/SKILL.md",
+      "stage": "source-analysis",
+      "description": "Analyze Vue 2/3 projects, including SFCs, Options API, Composition API, script setup, Vue Router, Vuex, Pinia, slots, directives, and styles, and emit source semantic facts for MiniApp IR. Use only after repository inventory.",
+      "depends_on": [
+        "miniapp-source-framework-detector"
+      ],
+      "task_ids": [
+        "MAPP-005",
+        "MAPP-006"
+      ],
+      "outputs": [
+        "vue-analysis.json",
+        "component-graph.json",
+        "route-graph.json",
+        "state-graph.json",
+        "source-trace-map.json"
+      ]
+    },
+    {
+      "name": "react-to-miniapp-analyzer",
+      "path": ".agents/skills/react-to-miniapp-analyzer",
+      "entrypoint": ".agents/skills/react-to-miniapp-analyzer/SKILL.md",
+      "stage": "source-analysis",
+      "description": "Analyze React JavaScript/TypeScript projects, JSX/TSX, hooks, class lifecycles, routers, Redux, Zustand, MobX, Context, portals, and styling, then emit source semantic facts for MiniApp IR. Use only after repository inventory.",
+      "depends_on": [
+        "miniapp-source-framework-detector"
+      ],
+      "task_ids": [
+        "MAPP-007",
+        "MAPP-008"
+      ],
+      "outputs": [
+        "react-analysis.json",
+        "component-graph.json",
+        "hook-effect-graph.json",
+        "route-graph.json",
+        "source-trace-map.json"
+      ]
+    },
+    {
+      "name": "flutter-widget-semantic-reconstructor",
+      "path": ".agents/skills/flutter-widget-semantic-reconstructor",
+      "entrypoint": ".agents/skills/flutter-widget-semantic-reconstructor/SKILL.md",
+      "stage": "source-analysis",
+      "description": "Reconstruct Flutter/Dart widget trees, navigation, state management, gestures, themes, animations, painters, and platform channels into MiniApp IR. Use for Flutter sources; never convert by screenshotting or flattening the whole UI to Canvas.",
+      "depends_on": [
+        "miniapp-source-framework-detector"
+      ],
+      "task_ids": [
+        "MAPP-009",
+        "MAPP-010"
+      ],
+      "outputs": [
+        "flutter-analysis.json",
+        "widget-tree.json",
+        "navigation-graph.json",
+        "state-graph.json",
+        "platform-channel-report.json"
+      ]
+    },
+    {
+      "name": "miniapp-semantic-ir",
+      "path": ".agents/skills/miniapp-semantic-ir",
+      "entrypoint": ".agents/skills/miniapp-semantic-ir/SKILL.md",
+      "stage": "ir",
+      "description": "Define, validate, version, serialize, and migrate the shared MiniApp Semantic IR for components, routes, state, lifecycle, events, styles, capabilities, assets, privacy, and traceability. Use whenever source facts or target code cross adapter boundaries.",
+      "depends_on": [
+        "vue-to-miniapp-analyzer",
+        "react-to-miniapp-analyzer",
+        "flutter-widget-semantic-reconstructor"
+      ],
+      "task_ids": [
+        "MAPP-011",
+        "MAPP-012"
+      ],
+      "outputs": [
+        "semantic-ir.json",
+        "ir-validation.json",
+        "ir-trace-index.json",
+        "ir-migration-log.json"
+      ]
+    },
+    {
+      "name": "miniapp-capability-registry",
+      "path": ".agents/skills/miniapp-capability-registry",
+      "entrypoint": ".agents/skills/miniapp-capability-registry/SKILL.md",
+      "stage": "planning",
+      "description": "Resolve source capabilities against a versioned registry for WeChat, Alipay, Douyin, and Xiaohongshu, producing A-E compatibility classifications, permissions, backend needs, fallbacks, and review risks. Use before target generation.",
+      "depends_on": [
+        "miniapp-semantic-ir"
+      ],
+      "task_ids": [
+        "MAPP-013",
+        "MAPP-014"
+      ],
+      "outputs": [
+        "capability-resolution.json",
+        "compatibility-findings.json",
+        "required-permissions.json",
+        "backend-requirements.json"
+      ]
+    },
+    {
+      "name": "miniapp-component-mapping-engine",
+      "path": ".agents/skills/miniapp-component-mapping-engine",
+      "entrypoint": ".agents/skills/miniapp-component-mapping-engine/SKILL.md",
+      "stage": "planning",
+      "description": "Map semantic UI roles and third-party components to native miniapp components or generated composites with prop, event, slot, accessibility, and behavior contracts. Use after IR validation and before code generation.",
+      "depends_on": [
+        "miniapp-semantic-ir",
+        "miniapp-capability-registry"
+      ],
+      "task_ids": [
+        "MAPP-015",
+        "MAPP-016"
+      ],
+      "outputs": [
+        "component-mapping-plan.json",
+        "generated-component-specs.json",
+        "mapping-decisions.json"
+      ]
+    },
+    {
+      "name": "miniapp-state-event-lifecycle-converter",
+      "path": ".agents/skills/miniapp-state-event-lifecycle-converter",
+      "entrypoint": ".agents/skills/miniapp-state-event-lifecycle-converter/SKILL.md",
+      "stage": "planning",
+      "description": "Lower framework state, derived values, effects, events, navigation hooks, and component/page/app lifecycles into platform-neutral execution plans and target-specific bindings. Use before code generation and during semantic diff repair.",
+      "depends_on": [
+        "miniapp-semantic-ir",
+        "miniapp-component-mapping-engine"
+      ],
+      "task_ids": [
+        "MAPP-017",
+        "MAPP-018"
+      ],
+      "outputs": [
+        "state-lowering-plan.json",
+        "event-binding-plan.json",
+        "lifecycle-plan.json",
+        "side-effect-ledger.json"
+      ]
+    },
+    {
+      "name": "miniapp-style-layout-converter",
+      "path": ".agents/skills/miniapp-style-layout-converter",
+      "entrypoint": ".agents/skills/miniapp-style-layout-converter/SKILL.md",
+      "stage": "planning",
+      "description": "Convert CSS, scoped styles, CSS Modules, CSS-in-JS, Tailwind-like utilities, Flutter constraints, themes, units, animations, and responsive layouts into platform-specific style plans. Use before code generation and visual repair.",
+      "depends_on": [
+        "miniapp-semantic-ir",
+        "miniapp-component-mapping-engine"
+      ],
+      "task_ids": [
+        "MAPP-019",
+        "MAPP-020"
+      ],
+      "outputs": [
+        "style-plan.json",
+        "token-map.json",
+        "responsive-rules.json",
+        "unsupported-style-report.json"
+      ]
+    },
+    {
+      "name": "miniapp-third-party-dependency-migrator",
+      "path": ".agents/skills/miniapp-third-party-dependency-migrator",
+      "entrypoint": ".agents/skills/miniapp-third-party-dependency-migrator/SKILL.md",
+      "stage": "planning",
+      "description": "Classify every frontend dependency and choose retain, replace, rewrite, backend-move, isolate, or remove-with-approval actions for each target miniapp. Use before generation; never drop a package merely because it lacks a direct equivalent.",
+      "depends_on": [
+        "miniapp-source-framework-detector",
+        "miniapp-capability-registry"
+      ],
+      "task_ids": [
+        "MAPP-021",
+        "MAPP-022"
+      ],
+      "outputs": [
+        "dependency-migration-plan.json",
+        "replacement-graph.json",
+        "license-report.json",
+        "supply-chain-findings.json"
+      ]
+    },
+    {
+      "name": "wechat-miniapp-codegen",
+      "path": ".agents/skills/wechat-miniapp-codegen",
+      "entrypoint": ".agents/skills/wechat-miniapp-codegen/SKILL.md",
+      "stage": "target-codegen",
+      "description": "Generate a native WeChat Mini Program project from validated IR and plans, including pages, components, styles, app configuration, subpackages, platform APIs, tests, and build metadata. Use only for the WeChat target.",
+      "depends_on": [
+        "miniapp-component-mapping-engine",
+        "miniapp-state-event-lifecycle-converter",
+        "miniapp-style-layout-converter",
+        "miniapp-third-party-dependency-migrator"
+      ],
+      "task_ids": [
+        "MAPP-023"
+      ],
+      "outputs": [
+        "platforms/wechat/**",
+        "wechat-codegen-report.json",
+        "wechat-trace-map.json"
+      ]
+    },
+    {
+      "name": "alipay-miniapp-codegen",
+      "path": ".agents/skills/alipay-miniapp-codegen",
+      "entrypoint": ".agents/skills/alipay-miniapp-codegen/SKILL.md",
+      "stage": "target-codegen",
+      "description": "Generate a native Alipay Mini Program project from validated IR and plans, including pages, components, styles, app configuration, platform APIs, tests, CLI metadata, and traceability. Use only for the Alipay target.",
+      "depends_on": [
+        "miniapp-component-mapping-engine",
+        "miniapp-state-event-lifecycle-converter",
+        "miniapp-style-layout-converter",
+        "miniapp-third-party-dependency-migrator"
+      ],
+      "task_ids": [
+        "MAPP-024"
+      ],
+      "outputs": [
+        "platforms/alipay/**",
+        "alipay-codegen-report.json",
+        "alipay-trace-map.json"
+      ]
+    },
+    {
+      "name": "douyin-miniapp-codegen",
+      "path": ".agents/skills/douyin-miniapp-codegen",
+      "entrypoint": ".agents/skills/douyin-miniapp-codegen/SKILL.md",
+      "stage": "target-codegen",
+      "description": "Generate a native Douyin Mini Program project from validated IR and plans, including app/page configuration, components, styles, JS APIs, server OpenAPI contracts, tests, toolchain metadata, and traceability. Use only for the Douyin target.",
+      "depends_on": [
+        "miniapp-component-mapping-engine",
+        "miniapp-state-event-lifecycle-converter",
+        "miniapp-style-layout-converter",
+        "miniapp-third-party-dependency-migrator"
+      ],
+      "task_ids": [
+        "MAPP-025"
+      ],
+      "outputs": [
+        "platforms/douyin/**",
+        "douyin-codegen-report.json",
+        "douyin-trace-map.json"
+      ]
+    },
+    {
+      "name": "xiaohongshu-miniapp-codegen",
+      "path": ".agents/skills/xiaohongshu-miniapp-codegen",
+      "entrypoint": ".agents/skills/xiaohongshu-miniapp-codegen/SKILL.md",
+      "stage": "target-codegen",
+      "description": "Generate a native Xiaohongshu Mini Program project from validated IR and plans, including pages, components, styles, authorization, commerce/content adapters, tests, third-party platform metadata, and traceability. Use only for the Xiaohongshu target.",
+      "depends_on": [
+        "miniapp-component-mapping-engine",
+        "miniapp-state-event-lifecycle-converter",
+        "miniapp-style-layout-converter",
+        "miniapp-third-party-dependency-migrator"
+      ],
+      "task_ids": [
+        "MAPP-026"
+      ],
+      "outputs": [
+        "platforms/xiaohongshu/**",
+        "xiaohongshu-codegen-report.json",
+        "xiaohongshu-trace-map.json"
+      ]
+    },
+    {
+      "name": "miniapp-commerce-social-adapter",
+      "path": ".agents/skills/miniapp-commerce-social-adapter",
+      "entrypoint": ".agents/skills/miniapp-commerce-social-adapter/SKILL.md",
+      "stage": "cross-cutting",
+      "description": "Design and implement portable contracts for login, identity, sharing, content, products, carts, orders, payments, refunds, memberships, subscriptions, and platform-specific social entry points. Use when business flows span multiple miniapp targets.",
+      "depends_on": [
+        "miniapp-capability-registry"
+      ],
+      "task_ids": [
+        "MAPP-027",
+        "MAPP-028"
+      ],
+      "outputs": [
+        "commerce-social-contracts.json",
+        "backend-api-specs",
+        "platform-adapter-specs",
+        "risk-and-approval-plan.json"
+      ]
+    },
+    {
+      "name": "miniapp-privacy-permission-auditor",
+      "path": ".agents/skills/miniapp-privacy-permission-auditor",
+      "entrypoint": ".agents/skills/miniapp-privacy-permission-auditor/SKILL.md",
+      "stage": "validation",
+      "description": "Audit generated miniapps for permissions, personal-data flows, secrets, logging, storage, consent, third-party SDKs, and platform review disclosures. Use before release and after any capability or dependency change.",
+      "depends_on": [
+        "miniapp-capability-registry",
+        "miniapp-third-party-dependency-migrator",
+        "wechat-miniapp-codegen",
+        "alipay-miniapp-codegen",
+        "douyin-miniapp-codegen",
+        "xiaohongshu-miniapp-codegen"
+      ],
+      "task_ids": [
+        "MAPP-029",
+        "MAPP-030"
+      ],
+      "outputs": [
+        "privacy-report.json",
+        "permission-manifest.json",
+        "secret-scan.json",
+        "review-disclosure-checklist.md"
+      ]
+    },
+    {
+      "name": "miniapp-differential-testing",
+      "path": ".agents/skills/miniapp-differential-testing",
+      "entrypoint": ".agents/skills/miniapp-differential-testing/SKILL.md",
+      "stage": "validation",
+      "description": "Capture and compare source and target behavior traces for routes, state, events, network contracts, storage, errors, and key user flows across all generated miniapps. Use to prove semantic parity and drive repair.",
+      "depends_on": [
+        "wechat-miniapp-codegen",
+        "alipay-miniapp-codegen",
+        "douyin-miniapp-codegen",
+        "xiaohongshu-miniapp-codegen"
+      ],
+      "task_ids": [
+        "MAPP-031",
+        "MAPP-032"
+      ],
+      "outputs": [
+        "differential-result.json",
+        "flow-traces/**",
+        "semantic-diff-report.html",
+        "repair-candidates.json"
+      ]
+    },
+    {
+      "name": "miniapp-visual-regression-testing",
+      "path": ".agents/skills/miniapp-visual-regression-testing",
+      "entrypoint": ".agents/skills/miniapp-visual-regression-testing/SKILL.md",
+      "stage": "validation",
+      "description": "Run deterministic screenshot, layout, typography, safe-area, responsive, theme, and interaction-state comparisons between source and target pages. Use after semantic tests; visual similarity never overrides functional failures.",
+      "depends_on": [
+        "miniapp-style-layout-converter",
+        "miniapp-differential-testing"
+      ],
+      "task_ids": [
+        "MAPP-033",
+        "MAPP-034"
+      ],
+      "outputs": [
+        "visual-diff-report.html",
+        "screenshots/**",
+        "layout-diffs.json",
+        "visual-repair-candidates.json"
+      ]
+    },
+    {
+      "name": "miniapp-auto-repair-loop",
+      "path": ".agents/skills/miniapp-auto-repair-loop",
+      "entrypoint": ".agents/skills/miniapp-auto-repair-loop/SKILL.md",
+      "stage": "repair",
+      "description": "Apply bounded, evidence-driven repairs to IR, mappings, adapters, or generated code, then rerun the smallest valid test set and all affected gates. Use only when a reproducible finding and rollback point exist.",
+      "depends_on": [
+        "miniapp-differential-testing",
+        "miniapp-visual-regression-testing",
+        "miniapp-privacy-permission-auditor"
+      ],
+      "task_ids": [
+        "MAPP-035",
+        "MAPP-036"
+      ],
+      "outputs": [
+        "repair-action.json",
+        "patches/**",
+        "repair-history.json",
+        "post-repair-validation.json"
+      ]
+    },
+    {
+      "name": "miniapp-ci-build-release",
+      "path": ".agents/skills/miniapp-ci-build-release",
+      "entrypoint": ".agents/skills/miniapp-ci-build-release/SKILL.md",
+      "stage": "delivery",
+      "description": "Integrate platform toolchains into reproducible CI for lint, schema validation, native builds, previews, artifact signing, uploads, review submissions, staged release, rollback, and credential isolation. Use after local gates pass.",
+      "depends_on": [
+        "miniapp-auto-repair-loop",
+        "miniapp-privacy-permission-auditor"
+      ],
+      "task_ids": [
+        "MAPP-037",
+        "MAPP-038"
+      ],
+      "outputs": [
+        "ci pipelines",
+        "build manifests",
+        "preview artifacts",
+        "upload receipts",
+        "release records"
+      ]
+    },
+    {
+      "name": "miniapp-migration-evidence-reporter",
+      "path": ".agents/skills/miniapp-migration-evidence-reporter",
+      "entrypoint": ".agents/skills/miniapp-migration-evidence-reporter/SKILL.md",
+      "stage": "evidence",
+      "description": "Assemble an auditable evidence graph linking source revisions, IR nodes, mapping decisions, generated files, builds, tests, repairs, approvals, costs, and release status. Use at every checkpoint and for final migration sign-off.",
+      "depends_on": [
+        "miniapp-ci-build-release",
+        "miniapp-differential-testing",
+        "miniapp-visual-regression-testing",
+        "miniapp-privacy-permission-auditor"
+      ],
+      "task_ids": [
+        "MAPP-039",
+        "MAPP-040"
+      ],
+      "outputs": [
+        "migration-evidence.json",
+        "compatibility-report.html",
+        "validation-report.md",
+        "release-readiness.md",
+        "artifact-index.json"
+      ]
+    }
+  ],
+  "required_docs": [
+    "README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/ARCHITECTURE.md",
+    "docs/REFERENCE-IMPLEMENTATION-STRUCTURE.md",
+    "docs/IMPLEMENTATION-ROADMAP.md",
+    "docs/ACCEPTANCE-GATES.md",
+    "docs/DEPENDENCY-GRAPH.md",
+    "docs/FIRST-40-TASKS.md",
+    "docs/PLATFORM-CAPABILITY-MATRIX.md",
+    "docs/CONVERSION-RULES.md",
+    "docs/TEST-STRATEGY.md",
+    "docs/SECURITY-PRIVACY.md",
+    "docs/THREAT-MODEL.md",
+    "docs/RELEASE-OPERATIONS.md",
+    "docs/KNOWN-LIMITATIONS.md",
+    "docs/PLATFORM-REFERENCES.md"
+  ]
+}

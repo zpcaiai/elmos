@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "product_skill_count",
+    "case_count",
+    "mappings"
+  ]
+}

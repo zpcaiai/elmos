@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Product Maturity Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $product-maturity-backfill-replay-resilience-disaster-re-54222790 to implement its fail-closed ELMOS Product B55 contract."

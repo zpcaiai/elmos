@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.frontend.v1",
+  "title": "ELMOS Frontend Application",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile",
+    "routes",
+    "contracts",
+    "state",
+    "accessibility"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "profile": {
+      "type": "object"
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "state": {
+      "type": "object"
+    },
+    "accessibility": {
+      "type": "object"
+    },
+    "generation_units": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

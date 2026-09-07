@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-status-snapshot.v1",
+  "title": "ELMOS Project Status Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projectId",
+    "health",
+    "progress",
+    "blockingReasons",
+    "p50Date",
+    "p80Date"
+  ],
+  "properties": {
+    "projectId": {
+      "type": "string"
+    },
+    "health": {
+      "enum": [
+        "GREEN",
+        "AMBER",
+        "RED",
+        "UNKNOWN"
+      ]
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "blockingReasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "p50Date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "p80Date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "budgetUsed": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "budgetLimit": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "overrideApplied": {
+      "type": "boolean"
+    },
+    "overrideReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
+

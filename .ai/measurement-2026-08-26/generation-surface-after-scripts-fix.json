@@ -1,0 +1,210 @@
+{
+  "kind": "elmos.generation-spec-surface-measurement",
+  "schema_version": "1.0.0",
+  "instruments": {
+    "intake": "elmos_project_synthesis.intake.create_draft/approve_request",
+    "generation": "elmos_project_synthesis.workspace.generate_workspace"
+  },
+  "verification_status": {
+    "status": "NOT_RUN",
+    "reason": "verification.verify_workspace needs the pinned macOS toolchains; build/startup/CRUD/RLS results are not produced by this run."
+  },
+  "declared_surface": {
+    "languages": [
+      "java",
+      "python",
+      "csharp",
+      "typescript",
+      "go",
+      "kotlin",
+      "php",
+      "rust"
+    ],
+    "field_types": [
+      "string",
+      "integer",
+      "number",
+      "boolean",
+      "datetime"
+    ],
+    "persistence": [
+      "in-memory",
+      "postgresql"
+    ],
+    "auth_modes": [
+      "none",
+      "jwt",
+      "oidc"
+    ],
+    "relation_kinds": [
+      "one-to-one",
+      "one-to-many",
+      "many-to-one",
+      "many-to-many"
+    ],
+    "project_kinds_supported": [
+      "api"
+    ],
+    "project_kinds_planned_but_rejected": [
+      "fullstack",
+      "worker",
+      "cli",
+      "modular-monolith"
+    ]
+  },
+  "profile_combinations": {
+    "in-memory|none|java": "ACCEPTED",
+    "in-memory|none|python": "ACCEPTED",
+    "in-memory|none|csharp": "ACCEPTED",
+    "in-memory|none|typescript": "ACCEPTED",
+    "in-memory|none|go": "ACCEPTED",
+    "in-memory|none|kotlin": "ACCEPTED",
+    "in-memory|none|php": "ACCEPTED",
+    "in-memory|none|rust": "ACCEPTED",
+    "in-memory|jwt|java": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|python": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|csharp": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|typescript": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|go": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|kotlin": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|php": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|jwt|rust": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+    "in-memory|oidc|java": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|python": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|csharp": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|typescript": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|go": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|kotlin": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|php": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "in-memory|oidc|rust": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+    "postgresql|none|java": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|python": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|csharp": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|typescript": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|go": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|kotlin": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|php": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|none|rust": "ERROR:ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+    "postgresql|jwt|java": "ACCEPTED",
+    "postgresql|jwt|python": "ACCEPTED",
+    "postgresql|jwt|csharp": "ACCEPTED",
+    "postgresql|jwt|typescript": "ACCEPTED",
+    "postgresql|jwt|go": "ACCEPTED",
+    "postgresql|jwt|kotlin": "ACCEPTED",
+    "postgresql|jwt|php": "ACCEPTED",
+    "postgresql|jwt|rust": "ACCEPTED",
+    "postgresql|oidc|java": "ACCEPTED",
+    "postgresql|oidc|python": "ACCEPTED",
+    "postgresql|oidc|csharp": "ACCEPTED",
+    "postgresql|oidc|typescript": "ACCEPTED",
+    "postgresql|oidc|go": "ACCEPTED",
+    "postgresql|oidc|kotlin": "ACCEPTED",
+    "postgresql|oidc|php": "ACCEPTED",
+    "postgresql|oidc|rust": "ACCEPTED"
+  },
+  "profile_combination_summary": {
+    "cells": 48,
+    "accepted": 24,
+    "codes": {
+      "ACCEPTED": 24,
+      "PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt": 8,
+      "PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc": 8,
+      "PROFILE_COMBINATION_UNSUPPORTED:postgresql:none": 8
+    }
+  },
+  "entity_scaling_postgresql_jwt": {
+    "java": {
+      "1": 63,
+      "2": 67,
+      "3": 71,
+      "5": 79,
+      "10": 99,
+      "20": 139,
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "python": {
+      "1": 59,
+      "2": 59,
+      "3": 59,
+      "5": 59,
+      "10": 59,
+      "20": 59,
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "csharp": {
+      "1": 62,
+      "2": "ERROR:ValueError:DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,entity1",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "typescript": {
+      "1": 57,
+      "2": "ERROR:ValueError:TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,ent",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "go": {
+      "1": 55,
+      "2": "ERROR:ValueError:GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,entity14,en",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "kotlin": {
+      "1": 58,
+      "2": "ERROR:ValueError:KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,entity1",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "php": {
+      "1": 55,
+      "2": "ERROR:ValueError:PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,entity14,e",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    },
+    "rust": {
+      "1": 59,
+      "2": "ERROR:ValueError:RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2",
+      "3": "ERROR:ValueError:RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3",
+      "5": "ERROR:ValueError:RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5",
+      "10": "ERROR:ValueError:RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10",
+      "20": "ERROR:ValueError:RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:entity1,entity2,entity3,entity4,entity5,entity6,entity7,entity8,entity9,entity10,entity11,entity12,entity13,entity14,",
+      "21": "REJECTED:ENTITY_LIMIT_EXCEEDED"
+    }
+  },
+  "relation_kinds": {
+    "postgresql|jwt": {
+      "one-to-one": "ACCEPTED",
+      "one-to-many": "REJECTED:RELATION_SOURCE_FIELD_UNKNOWN:entity1:label",
+      "many-to-one": "ACCEPTED",
+      "many-to-many": "ERROR:ValueError:OPEN_QUESTIONS_BLOCK_APPROVAL"
+    },
+    "in-memory|none": {
+      "one-to-one": "ACCEPTED",
+      "one-to-many": "REJECTED:RELATION_SOURCE_FIELD_UNKNOWN:entity1:label",
+      "many-to-one": "ACCEPTED",
+      "many-to-many": "ACCEPTED"
+    }
+  },
+  "project_kinds": {
+    "api": "ACCEPTED",
+    "fullstack": "REJECTED:PROJECT_KIND_INVALID:fullstack",
+    "worker": "REJECTED:PROJECT_KIND_INVALID:worker",
+    "cli": "REJECTED:PROJECT_KIND_INVALID:cli",
+    "modular-monolith": "REJECTED:PROJECT_KIND_INVALID:modular-monolith"
+  }
+}

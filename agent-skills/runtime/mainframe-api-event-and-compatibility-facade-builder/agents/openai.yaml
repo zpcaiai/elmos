@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Api Event And Compatibility Facade Builder"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-api-event-and-compatibility-facade-builder to execute this ELMOS Runtime Skill with fail-closed evidence."

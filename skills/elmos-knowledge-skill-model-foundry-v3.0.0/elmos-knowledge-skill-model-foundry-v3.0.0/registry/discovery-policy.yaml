@@ -1,0 +1,31 @@
+apiVersion: elmos.ai/v1
+kind: SkillDiscoveryPolicy
+metadata:
+  version: 3.0.0
+spec:
+  startupExposure:
+  - skills/meta
+  candidateLimit: 16
+  activationLimit: 8
+  queryStages:
+  - classify-business-line
+  - resolve-technology-and-version
+  - filter-tenant-and-entitlement
+  - filter-risk-signature-and-maturity
+  - rank-by-specificity-and-evidence
+  - compose-dag-and-check-dependencies
+  ranking:
+  - task-fit
+  - technology-version-fit
+  - risk-minimization
+  - evidence-readiness
+  - historical-success
+  - cost-wall-clock
+  hardDeny:
+  - cross-tenant
+  - revoked
+  - unsigned
+  - unsupported-version
+  - missing-rollback
+  - quarantined-data
+  fallback: emit-capability-gap-and-human-escalation

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 538: agent work queue scheduler and dispatcher"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-work-queue-scheduler-and-dispatcher to evaluate this capability with evidence."

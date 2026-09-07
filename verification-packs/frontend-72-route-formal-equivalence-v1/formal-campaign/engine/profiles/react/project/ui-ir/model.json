@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "pack_key": "formal-react",
+  "source_snapshot_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "routes": [
+    {
+      "id": "route.home",
+      "kind": "bounded-fixture",
+      "name": "route.home",
+      "references": [
+        "component.home"
+      ],
+      "source_refs": [
+        "fixture/route.home.tsx:1"
+      ],
+      "path": "/",
+      "component_id": "component.home",
+      "requires_auth": false,
+      "deep_link": true
+    },
+    {
+      "id": "route.account",
+      "kind": "bounded-fixture",
+      "name": "route.account",
+      "references": [
+        "component.account"
+      ],
+      "source_refs": [
+        "fixture/route.account.tsx:1"
+      ],
+      "path": "/account",
+      "component_id": "component.account",
+      "requires_auth": true,
+      "deep_link": true
+    },
+    {
+      "id": "route.help",
+      "kind": "bounded-fixture",
+      "name": "route.help",
+      "references": [
+        "component.help"
+      ],
+      "source_refs": [
+        "fixture/route.help.tsx:1"
+      ],
+      "path": "/help",
+      "component_id": "component.help",
+      "requires_auth": false,
+      "deep_link": false
+    }
+  ],
+  "views": [
+    {
+      "id": "view.shell",
+      "kind": "bounded-fixture",
+      "name": "view.shell",
+      "references": [
+        "component.home",
+        "component.account",
+        "component.help"
+      ],
+      "source_refs": [
+        "fixture/view.shell.tsx:1"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "component.home",
+      "kind": "bounded-fixture",
+      "name": "component.home",
+      "references": [
+        "state.navigation"
+      ],
+      "source_refs": [
+        "fixture/component.home.tsx:1"
+      ],
+      "text": "首页内容",
+      "accessibility_role": "main"
+    },
+    {
+      "id": "component.account",
+      "kind": "bounded-fixture",
+      "name": "component.account",
+      "references": [
+        "state.navigation"
+      ],
+      "source_refs": [
+        "fixture/component.account.tsx:1"
+      ],
+      "text": "账户内容",
+      "accessibility_role": "main"
+    },
+    {
+      "id": "component.help",
+      "kind": "bounded-fixture",
+      "name": "component.help",
+      "references": [
+        "state.navigation"
+      ],
+      "source_refs": [
+        "fixture/component.help.tsx:1"
+      ],
+      "text": "帮助内容",
+      "accessibility_role": "main"
+    }
+  ],
+  "states": [
+    {
+      "id": "state.navigation",
+      "kind": "bounded-fixture",
+      "name": "state.navigation",
+      "references": [],
+      "source_refs": [
+        "fixture/state.navigation.tsx:1"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "action.select-route",
+      "kind": "bounded-fixture",
+      "name": "action.select-route",
+      "references": [
+        "state.navigation"
+      ],
+      "source_refs": [
+        "fixture/action.select-route.tsx:1"
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "id": "effect.history",
+      "kind": "bounded-fixture",
+      "name": "effect.history",
+      "references": [
+        "action.select-route"
+      ],
+      "source_refs": [
+        "fixture/effect.history.tsx:1"
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "id": "form.none",
+      "kind": "bounded-fixture",
+      "name": "form.none",
+      "references": [],
+      "source_refs": [
+        "fixture/form.none.tsx:1"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "binding.route",
+      "kind": "bounded-fixture",
+      "name": "binding.route",
+      "references": [
+        "state.navigation"
+      ],
+      "source_refs": [
+        "fixture/binding.route.tsx:1"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "id": "permission.route-metadata",
+      "kind": "bounded-fixture",
+      "name": "permission.route-metadata",
+      "references": [],
+      "source_refs": [
+        "fixture/permission.route-metadata.tsx:1"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "resource.route-copy",
+      "kind": "bounded-fixture",
+      "name": "resource.route-copy",
+      "references": [],
+      "source_refs": [
+        "fixture/resource.route-copy.tsx:1"
+      ]
+    }
+  ],
+  "design_tokens": [
+    {
+      "id": "token.navigation",
+      "kind": "bounded-fixture",
+      "name": "token.navigation",
+      "references": [],
+      "source_refs": [
+        "fixture/token.navigation.tsx:1"
+      ]
+    }
+  ],
+  "accessibility": [
+    {
+      "id": "a11y.navigation",
+      "kind": "bounded-fixture",
+      "name": "a11y.navigation",
+      "references": [
+        "view.shell"
+      ],
+      "source_refs": [
+        "fixture/a11y.navigation.tsx:1"
+      ]
+    }
+  ],
+  "source_map": [
+    {
+      "node_id": "route.home",
+      "source_refs": [
+        {
+          "reference": "fixture/route.home.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "route.account",
+      "source_refs": [
+        {
+          "reference": "fixture/route.account.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "route.help",
+      "source_refs": [
+        {
+          "reference": "fixture/route.help.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "view.shell",
+      "source_refs": [
+        {
+          "reference": "fixture/view.shell.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "component.home",
+      "source_refs": [
+        {
+          "reference": "fixture/component.home.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "component.account",
+      "source_refs": [
+        {
+          "reference": "fixture/component.account.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "component.help",
+      "source_refs": [
+        {
+          "reference": "fixture/component.help.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "state.navigation",
+      "source_refs": [
+        {
+          "reference": "fixture/state.navigation.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "action.select-route",
+      "source_refs": [
+        {
+          "reference": "fixture/action.select-route.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "effect.history",
+      "source_refs": [
+        {
+          "reference": "fixture/effect.history.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "form.none",
+      "source_refs": [
+        {
+          "reference": "fixture/form.none.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "binding.route",
+      "source_refs": [
+        {
+          "reference": "fixture/binding.route.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "permission.route-metadata",
+      "source_refs": [
+        {
+          "reference": "fixture/permission.route-metadata.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "resource.route-copy",
+      "source_refs": [
+        {
+          "reference": "fixture/resource.route-copy.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "token.navigation",
+      "source_refs": [
+        {
+          "reference": "fixture/token.navigation.tsx:1"
+        }
+      ]
+    },
+    {
+      "node_id": "a11y.navigation",
+      "source_refs": [
+        {
+          "reference": "fixture/a11y.navigation.tsx:1"
+        }
+      ]
+    }
+  ],
+  "unknowns": []
+}

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "id": "example-product-lifecycle",
+  "capabilities": [
+    {
+      "capability_id": "b43-product-version-lifecycle-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-product-protocol-artifact-versioning",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-public-api-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-event-schema-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-sdk-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-runner-protocol-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-psp-uir-schema-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-recipe-pack-extension-compatibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-database-migration-compatibility-policy",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-lts-stable-preview-experimental-channels",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-support-lifecycle-eol-policy",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-deprecation-removal-process",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-customer-upgrade-readiness",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-automated-upgrade-migration-tooling",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-feature-flag-progressive-enablement",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-rolling-upgrade-mixed-version",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-security-fix-backport",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-full-version-compatibility-test-matrix",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-changelog-release-note-migration-guide",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b43-product-lifecycle-certification-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    }
+  ]
+}

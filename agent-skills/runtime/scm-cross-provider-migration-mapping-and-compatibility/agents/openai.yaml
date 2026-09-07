@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Scm Cross Provider Migration Mapping And Compatibility"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $scm-cross-provider-migration-mapping-and-compatibility to implement its fail-closed ELMOS Product B35 contract."

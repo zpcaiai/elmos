@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dashboard Alert and Runbook Generator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $dashboard-alert-and-runbook-generator to perform this Batch 10 production-hardening task."

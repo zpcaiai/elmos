@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Compliance Control Crosswalk"
+  short_description: "Run evidence-bound Batch 40 compliance control crosswalk work"
+  default_prompt: "Use $b40-compliance-control-crosswalk to implement and verify this capability with fail-closed evidence."

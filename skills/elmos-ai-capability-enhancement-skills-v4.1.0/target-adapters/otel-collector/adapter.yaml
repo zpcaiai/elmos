@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: otel-collector
+  ecosystem: OpenTelemetry Collector
+  version: 4.0.0
+spec:
+  adapterKind: telemetry-pipeline
+  maturity: P1
+  modes:
+  - receive
+  - process
+  - export
+  - redact
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - otel-collector exact-version profile
+  - otel-collector capability and semantic-gap map
+  - otel-collector native conformance evidence
+  - otel-collector deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 644: government legacy modernization recipe pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $government-legacy-modernization-recipe-pack to evaluate this capability with evidence."

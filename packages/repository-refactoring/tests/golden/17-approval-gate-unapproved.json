@@ -1,0 +1,38 @@
+{
+  "caseId": "17-approval-gate-unapproved",
+  "description": "Zero approvers is a refusal, and the request binds four digests.",
+  "evidence": {
+    "approvalRequestDigest": "sha256:382208f9efff394405677681ab78c17ea8e929895b00f3c7f0e6fabf2c6ba456"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:17a894c36fb53d6c5f158050f8b593b36d516302a1bcc761ac9be10179258f44",
+  "outputDigest": "sha256:3c1a3fc033c30849995452724a900e1f446e255f705abf42d573d5ab426195c9",
+  "projections": {
+    "output.approval_decision": {
+      "acceptedApprovals": [],
+      "reasons": [
+        "0 distinct approver(s) recorded; 1 required"
+      ],
+      "rejectedApprovals": [],
+      "satisfied": false,
+      "unmetConditions": []
+    },
+    "output.approval_request.boundDigests": {
+      "patch": "sha256:9de232f87488d26e5b172c1f3db74880daede40845c40a481f0fbf50f61f764b",
+      "plan": "sha256:a74dcb2927be07d8cefa7367883908fbeafc7cc1dbcbcc3d1f716ec7ed3f6c47",
+      "recipeLock": "sha256:398e11ee758ca562bd26ad7728566009ab697a672d6f20302de79820e967f76f",
+      "request": "sha256:95b455a3c3e3e7ea2c8471057fa31dceb8cef93f8825178455c3bf1fbafb7aff"
+    },
+    "output.approval_request.forbidSelfApproval": true,
+    "output.approval_request.minimumApprovers": 1,
+    "output.approval_request.requiredRoles": [
+      "tech-lead"
+    ],
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "human-approval-gate",
+  "status": "blocked"
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "property_id": "property.build-cache-tenant-noninterference.v1",
+  "claim_id": "claim.tenant-noninterference",
+  "owner": "ELMOS cache security maintainers",
+  "generator": {
+    "kind": "principal-resource-action-matrix",
+    "constraints": [
+      "two-distinct-tenant-identities",
+      "two-distinct-principal-digests",
+      "same-project-label-collision",
+      "same-idempotency-key-collision",
+      "valid-content-digest-cross-scope"
+    ],
+    "manifest_ref": "security/principal-resource-action-matrix.json"
+  },
+  "oracle_refs": [
+    "oracle.security-contract",
+    "oracle.denied-side-effect-sentinel"
+  ],
+  "assertion": {
+    "kind": "tenant-noninterference",
+    "rule": "a denied or cross-tenant request changes no response-visible data, metadata row, CAS ownership, quarantine state, cache observation, audit authority, or external call in the other scope"
+  },
+  "shrinker": {
+    "kind": "matrix-case-reducer",
+    "preserve": [
+      "principal",
+      "tenant",
+      "project",
+      "action",
+      "side-effect-fingerprint"
+    ]
+  },
+  "environment_digest": "sha256:aa65fad54e738274bd289ccc4d603387b1b2f2429a1970817dbac38365f60a2e",
+  "target_artifact_digest": "sha256:327f4136846a20dda3ccfaba6cd235716ea8c807b5b689aeca3e55a09eeb6dbd",
+  "replay": {
+    "seed": "build-cache-tenant-isolation-v1",
+    "command": "engines/build-cache-engine/.venv/bin/pytest -q engines/build-cache-engine/tests/test_api.py engines/build-cache-engine/tests/test_affinity.py engines/build-cache-engine/tests/test_parity_api.py engines/build-cache-engine/tests/test_environment_service.py engines/build-cache-engine/tests/test_context_compaction.py engines/build-cache-engine/tests/test_metadata_store_contract.py"
+  },
+  "execution_status": "NOT_RUN"
+}

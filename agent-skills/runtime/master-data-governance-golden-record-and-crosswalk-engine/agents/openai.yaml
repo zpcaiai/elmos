@@ -1,0 +1,4 @@
+interface:
+  display_name: "Master Data Governance Golden Record And Crosswalk Engine"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $master-data-governance-golden-record-and-crosswalk-engine to govern this enterprise suite modernization task with fail-closed evidence."

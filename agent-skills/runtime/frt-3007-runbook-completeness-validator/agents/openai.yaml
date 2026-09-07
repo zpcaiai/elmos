@@ -1,0 +1,4 @@
+interface:
+  display_name: "Runbook Completeness Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-3007-runbook-completeness-validator to run FRT-3007 through the governed FRT runtime with exact scope and fail-closed evidence."

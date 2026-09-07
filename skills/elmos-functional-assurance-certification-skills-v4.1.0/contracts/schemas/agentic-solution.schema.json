@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgenticSolution",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v1"
+    },
+    "kind": {
+      "const": "AgenticSolution"
+    },
+    "metadata": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Metadata",
+      "type": "object",
+      "required": [
+        "name",
+        "tenantId",
+        "projectId"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tenantId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "projectId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Spec",
+      "type": "object",
+      "required": [
+        "archetype",
+        "contracts",
+        "targets"
+      ],
+      "properties": {
+        "archetype": {
+          "type": "string"
+        },
+        "contracts": {
+          "type": "object",
+          "required": [
+            "solution",
+            "model",
+            "agent",
+            "workflow",
+            "tool",
+            "security",
+            "runtime",
+            "assurance"
+          ],
+          "properties": {
+            "solution": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "agent": {
+              "type": "string"
+            },
+            "workflow": {
+              "type": "string"
+            },
+            "tool": {
+              "type": "string"
+            },
+            "rag": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            },
+            "interaction": {
+              "type": "string"
+            },
+            "security": {
+              "type": "string"
+            },
+            "runtime": {
+              "type": "string"
+            },
+            "assurance": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedDeltas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

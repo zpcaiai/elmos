@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repair Context And Task Builder"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $repair-context-and-task-builder to execute this ELMOS Runtime Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 728: tsa exit and standalone operation validator"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $tsa-exit-and-standalone-operation-validator to evaluate this capability with evidence."

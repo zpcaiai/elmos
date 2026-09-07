@@ -1,0 +1,6 @@
+interface:
+  display_name: "Cross-Language Conversion Domain Pack"
+  short_description: "Run ELMOS-V3-010 with proof-driven controls"
+  default_prompt: "Use $elmos-domain-cross-language-conversion through the proof-driven harness runtime with exact source identity, least privilege, replayable evidence, and fail-closed gates."
+policy:
+  allow_implicit_invocation: true

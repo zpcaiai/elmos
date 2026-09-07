@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "fixtures": [
+    { "fixture": "system-node.json", "schema": "../../../contracts/system-landscape-schema/system-node.schema.json", "expected": "VALID" },
+    { "fixture": "dependency-edge.json", "schema": "../../../contracts/system-dependency-schema/dependency-edge.schema.json", "expected": "VALID" },
+    { "fixture": "contract-consumer-matrix.json", "schema": "../../../contracts/contract-catalog-schema/contract-consumer-matrix.schema.json", "expected": "VALID" },
+    { "fixture": "compatibility-window.json", "schema": "../../../contracts/compatibility-window-schema/compatibility-window.schema.json", "expected": "VALID" },
+    { "fixture": "data-ownership.json", "schema": "../../../contracts/data-ownership-schema/data-ownership.schema.json", "expected": "VALID" },
+    { "fixture": "shadow-differential-result.json", "schema": "../../../contracts/shadow-result-schema/shadow-differential-result.schema.json", "expected": "VALID" },
+    { "fixture": "system-cutover-decision.json", "schema": "../../../contracts/cutover-schema/system-cutover-decision.schema.json", "expected": "VALID" }
+  ]
+}

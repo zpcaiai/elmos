@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "PRJ-EQUIPMENT-MAINTENANCE",
+  "style": "modular-monolith",
+  "containers": [
+    {
+      "id": "CTR-API",
+      "name": "Maintenance API",
+      "type": "application",
+      "responsibilities": [
+        "REST API",
+        "Kafka ingestion",
+        "workflow execution"
+      ]
+    },
+    {
+      "id": "CTR-DB",
+      "name": "PostgreSQL",
+      "type": "database",
+      "responsibilities": [
+        "Authoritative asset and alert persistence"
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "MOD-ASSET",
+      "name": "asset",
+      "context_id": "CTX-ASSET"
+    },
+    {
+      "id": "MOD-ALERT",
+      "name": "alert",
+      "context_id": "CTX-ALERT"
+    },
+    {
+      "id": "MOD-IDENTITY",
+      "name": "identity",
+      "context_id": "CTX-IDENTITY"
+    }
+  ],
+  "data_ownership": [
+    {
+      "data": "alerts",
+      "owner_module": "MOD-ALERT",
+      "consistency": "strong"
+    }
+  ],
+  "communications": [
+    {
+      "from": "SYS-KAFKA",
+      "to": "MOD-ALERT",
+      "pattern": "event-consumer",
+      "delivery": "at-least-once",
+      "idempotency": "event-id"
+    }
+  ],
+  "resilience": [
+    {
+      "interaction": "Kafka ingestion",
+      "tactics": [
+        "bounded retry",
+        "dead-letter queue",
+        "idempotent consumer"
+      ]
+    }
+  ],
+  "security": [
+    {
+      "threat": "cross-organization alert access",
+      "control": "organization-scoped authorization"
+    }
+  ],
+  "multitenancy": {
+    "mode": "pooled",
+    "tenant_key": "organization_id"
+  },
+  "observability": [
+    {
+      "journey": "alert ingestion",
+      "signals": [
+        "trace",
+        "ingestion_count",
+        "failure_count",
+        "dead_letter_count"
+      ]
+    }
+  ],
+  "deployment": {
+    "environments": [
+      "local",
+      "test",
+      "staging",
+      "production"
+    ],
+    "production": {
+      "compute": "kubernetes",
+      "database": "managed-postgresql"
+    }
+  },
+  "quality_tactics": [
+    {
+      "quality_attribute_id": "QA-OBS-001",
+      "tactics": [
+        "structured logs",
+        "trace correlation",
+        "DLQ dashboard"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "ADR-001",
+      "title": "Use modular monolith for first production release",
+      "status": "accepted",
+      "decision": "Deploy one Spring Boot application with enforced module boundaries.",
+      "consequences": [
+        "Lower operational complexity.",
+        "Independent service extraction remains possible after evidence appears."
+      ],
+      "requirement_ids": [
+        "REQ-ALERT-001",
+        "REQ-ALERT-002"
+      ]
+    }
+  ]
+}

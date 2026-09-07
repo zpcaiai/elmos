@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "project_id": "example",
+  "source_commit": "0123456789abcdef",
+  "assets": [
+    {
+      "kind": "source",
+      "path": "src/example",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "toolchains": [
+    {
+      "name": "replace-me",
+      "version": "replace-me"
+    }
+  ],
+  "target_profiles": [
+    "replace-me"
+  ],
+  "assumptions": [
+    "Template only"
+  ]
+}

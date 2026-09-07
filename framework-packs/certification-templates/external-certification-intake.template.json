@@ -1,0 +1,295 @@
+{
+  "_template_status": "NOT_RUN_REMOVE_BEFORE_VALIDATION",
+  "schema_version": 1,
+  "namespace": "batch30-framework-external-certification",
+  "intake_id": "UNKNOWN",
+  "producer_organization_id": "UNKNOWN",
+  "customer_organization_id": "UNKNOWN",
+  "rootless_organization_id": "UNKNOWN",
+  "independent_organization_id": "UNKNOWN",
+  "certification_organization_id": "UNKNOWN",
+  "binding": {
+    "pack_key": "UNKNOWN",
+    "pack_version": "UNKNOWN",
+    "pack_manifest_digest": "sha256:UNKNOWN",
+    "source_tuple": {
+      "framework": "UNKNOWN",
+      "framework_version": "UNKNOWN",
+      "runtime": "UNKNOWN",
+      "runtime_version": "UNKNOWN",
+      "build_tool": "UNKNOWN",
+      "provider_versions": {}
+    },
+    "target_tuple": {
+      "framework": "UNKNOWN",
+      "framework_version": "UNKNOWN",
+      "runtime": "UNKNOWN",
+      "runtime_version": "UNKNOWN",
+      "build_tool": "UNKNOWN",
+      "provider_versions": {}
+    },
+    "version_matrix_digest": "sha256:UNKNOWN",
+    "recipe_manifest_digest": "sha256:UNKNOWN",
+    "target_profile_digest": "sha256:UNKNOWN",
+    "artifact_digest": "sha256:UNKNOWN",
+    "artifact_size_bytes": 0,
+    "execution_profile_digest": "sha256:UNKNOWN",
+    "execution_profile_size_bytes": 0
+  },
+  "artifact": {
+    "uri": "file:///approved/evidence/UNKNOWN",
+    "digest": "sha256:UNKNOWN",
+    "size_bytes": 0,
+    "media_type": "application/octet-stream"
+  },
+  "execution_profile": {
+    "uri": "file:///approved/evidence/UNKNOWN",
+    "digest": "sha256:UNKNOWN",
+    "size_bytes": 0,
+    "media_type": "application/json"
+  },
+  "evidence_executors": {
+    "source_build": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "target_build": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "source_startup": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "target_startup": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "behavioral_equivalence": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "security": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "performance": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "operability": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "sbom": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "rollback": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "independent_review": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "customer_acceptance": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    },
+    "external_certification": {
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN"
+    }
+  },
+  "customer_authorization": {
+    "algorithm": "ed25519",
+    "key_id": "UNKNOWN",
+    "payload": {},
+    "signature": "UNKNOWN"
+  },
+  "evidence": {
+    "source_build": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "target_build": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "source_startup": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "target_startup": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "behavioral_equivalence": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "security": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "performance": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "operability": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "sbom": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "rollback": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "independent_review": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "customer_acceptance": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    },
+    "external_certification": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {
+        "algorithm": "ed25519",
+        "key_id": "UNKNOWN",
+        "payload": {},
+        "signature": "UNKNOWN"
+      }
+    }
+  }
+}

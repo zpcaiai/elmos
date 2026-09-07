@@ -1,0 +1,12 @@
+{
+  "request_id": "b29-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Multi-Language Route Certification Factory",
+  "upstream_certificate_refs": [
+    "batch-28-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

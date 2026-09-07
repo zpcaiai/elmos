@@ -1,0 +1,23 @@
+export interface TargetGenerator {
+  readonly platform: "wechat" | "alipay" | "douyin" | "xiaohongshu";
+  readonly version: string;
+
+  generate(input: Readonly<GenerationInput>, context: GenerationContext): Promise<GenerationResult>;
+}
+
+export type GenerationInput = {
+  semanticIrPath: string;
+  capabilityPlanPath: string;
+  componentPlanPath: string;
+  lifecyclePlanPath: string;
+  stylePlanPath: string;
+  dependencyPlanPath: string;
+  platformProfilePath: string;
+};
+
+export type GenerationResult = {
+  projectRoot: string;
+  artifactRefs: string[];
+  traceMapPath: string;
+  findings: string[];
+};

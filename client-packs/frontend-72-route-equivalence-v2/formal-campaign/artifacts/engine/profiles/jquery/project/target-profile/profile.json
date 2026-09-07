@@ -1,0 +1,30 @@
+{
+  "id": "jquery",
+  "label": "jQuery compatibility target",
+  "frameworkVersion": "4.0.0",
+  "profileVersion": "1.0.0",
+  "status": "LEGACY_CONDITIONAL",
+  "platforms": [
+    "WEB"
+  ],
+  "language": "TypeScript",
+  "languageVersion": "7.0.2",
+  "runtime": "Node.js",
+  "runtimeVersion": "26.0.0",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Vite",
+  "buildToolVersion": "8.1.5",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "History API adapter",
+  "state": "Explicit immutable store",
+  "rendering": "CSR with isolated DOM ownership",
+  "testTool": "Vitest 4.1.10",
+  "runnerProfile": "WEB_LEGACY",
+  "requiredProjectFiles": [
+    "package.json",
+    "vite.config.ts",
+    "index.html",
+    "src/main.ts"
+  ]
+}

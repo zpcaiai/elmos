@@ -1,0 +1,69 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos AI Project Factory Events
+  version: 1.0.0
+channels:
+  runEvents:
+    address: elmos.ai-factory.run.{tenantId}.{runId}
+    messages:
+      runEvent: {$ref: '#/components/messages/RunEvent'}
+  approvalEvents:
+    address: elmos.ai-factory.approval.{tenantId}.{runId}
+    messages:
+      approvalEvent: {$ref: '#/components/messages/ApprovalEvent'}
+  evidenceEvents:
+    address: elmos.ai-factory.evidence.{tenantId}.{revisionSetId}
+    messages:
+      evidenceEvent: {$ref: '#/components/messages/EvidenceEvent'}
+operations:
+  consumeRunEvents:
+    action: receive
+    channel: {$ref: '#/channels/runEvents'}
+    messages:
+      - {$ref: '#/channels/runEvents/messages/runEvent'}
+  publishApprovalEvents:
+    action: send
+    channel: {$ref: '#/channels/approvalEvents'}
+    messages:
+      - {$ref: '#/channels/approvalEvents/messages/approvalEvent'}
+  consumeEvidenceEvents:
+    action: receive
+    channel: {$ref: '#/channels/evidenceEvents'}
+    messages:
+      - {$ref: '#/channels/evidenceEvents/messages/evidenceEvent'}
+components:
+  messages:
+    RunEvent:
+      payload:
+        type: object
+        required: [eventId, tenantId, runId, type, occurredAt, executionEpoch]
+        properties:
+          eventId: {type: string}
+          tenantId: {type: string}
+          runId: {type: string}
+          type: {type: string}
+          occurredAt: {type: string, format: date-time}
+          executionEpoch: {type: integer}
+          stepId: {type: string}
+          payloadHash: {type: string}
+    ApprovalEvent:
+      payload:
+        type: object
+        required: [approvalId, runId, decision, authoritySnapshot]
+        properties:
+          approvalId: {type: string}
+          runId: {type: string}
+          decision:
+            type: string
+            enum: [REQUESTED, APPROVED, DENIED, EXPIRED]
+          authoritySnapshot: {type: string}
+    EvidenceEvent:
+      payload:
+        type: object
+        required: [evidenceId, revisionSetId, sha256, producer]
+        properties:
+          evidenceId: {type: string}
+          revisionSetId: {type: string}
+          sha256: {type: string}
+          producer: {type: string}
+          status: {type: string}

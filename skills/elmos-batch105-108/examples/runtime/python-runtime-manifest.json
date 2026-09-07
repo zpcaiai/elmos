@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "project": {
+    "name": "python-demo",
+    "language": "python",
+    "framework": "fastapi"
+  },
+  "build": {
+    "image": "example/python-builder@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "command": [
+      "uv",
+      "sync",
+      "--frozen"
+    ],
+    "workingDirectory": "/workspace"
+  },
+  "runtime": {
+    "image": "example/python-runtime@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "command": [
+      "uv",
+      "run",
+      "uvicorn",
+      "app.main:app",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8080"
+    ],
+    "environment": {
+      "PORT": "8080"
+    }
+  },
+  "service": {
+    "protocol": "http",
+    "port": 8080,
+    "health": {
+      "path": "/health",
+      "expectedStatus": 200,
+      "timeoutSeconds": 120
+    }
+  },
+  "preview": {
+    "homepage": "/",
+    "apiDocs": "/docs",
+    "openapi": "/openapi.json",
+    "screenshot": true
+  },
+  "lifecycle": {
+    "ttlSeconds": 600,
+    "startTtlAfterReady": true,
+    "idleTimeoutSeconds": 300
+  },
+  "resources": {
+    "cpu": 2,
+    "memoryMb": 2048,
+    "diskMb": 4096
+  },
+  "network": {
+    "publicIngress": true,
+    "outboundPolicy": "restricted"
+  },
+  "security": {
+    "authenticatedPreview": true,
+    "readOnlyRootFilesystem": true,
+    "blockCloudMetadata": true
+  }
+}

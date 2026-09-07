@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "DEV-001",
+      "purpose": "private digest-pinned candidate revision plan",
+      "expected": [
+        "--no-allow-unauthenticated",
+        "--no-traffic",
+        "--ingress=internal"
+      ]
+    },
+    {
+      "id": "DEV-002",
+      "purpose": "immutable numeric Secret Manager version",
+      "expected": [
+        "--set-secrets=/run/secrets/database-url=database-url:7"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+apiVersion: elmos.ai/v1
+kind: KnowledgeSkillModelFoundryPackage
+metadata:
+  name: elmos-knowledge-skill-model-foundry
+  version: 2.0.0
+  generatedAt: '2026-08-28'
+  license: Proprietary-Elmos-Commercial
+  atomicSkillCount: 458
+  metaSkillCount: 17
+spec:
+  architecture: Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+  discoveryMode: hierarchical-meta-first
+  globalExposure: skills/meta only
+  atomicRegistry: registry/skill-catalog.yaml
+  productionPrinciples:
+  - knowledge-skill-experience-model-separation
+  - tenant-private-by-default
+  - evidence-before-promotion
+  - deterministic-verification-before-model-judgment
+  - immutable-release-bundles
+  - whole-combination-rollback
+  - machine-wall-clock-accounting
+  packs:
+  - 00-foundation-contracts
+  - 01-knowledge-ingestion-governance
+  - 02-repository-semantic-intelligence
+  - 03-retrieval-context-engineering
+  - 04-memory-experience-flywheel
+  - 05-skill-foundry-runtime
+  - 06-dataset-foundry
+  - 07-private-model-foundry
+  - 08-agentic-training-rl
+  - 09-evaluation-proof-certification
+  - 10-serving-routing-inference
+  - 11-security-privacy-compliance
+  - 12-observability-lineage-finops
+  - 13-commercial-multitenant-platform
+  - 14-human-governance-operations
+  - 15-domain-engineering-packs
+  - 16-self-evolution-release-engineering

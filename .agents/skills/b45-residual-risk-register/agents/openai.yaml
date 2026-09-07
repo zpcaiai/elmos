@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Residual Risk Register"
+  short_description: "Run evidence-bound Batch 45 residual risk register work"
+  default_prompt: "Use $b45-residual-risk-register to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "pack_key": "frt-g01-g30-platform",
+  "source_snapshot_digest": "sha256:dc69881e7e10d3c80159f8eaaf44a1ed13af1d9374275054742340e75f8a2d15",
+  "routes": [
+    { "id": "route.frontend-studio", "kind": "route", "name": "Frontend transformation studio", "source_refs": [{ "reference": "apps/web-console/app/frontend/page.tsx" }], "references": ["view.frontend-studio", "permission.frt-read"] },
+    { "id": "route.frt-api", "kind": "api-route", "name": "FRT Skill runtime API", "source_refs": [{ "reference": "engines/frontend-client-engine/src/server.ts" }], "references": ["resource.frt-catalog", "permission.frt-run"] }
+  ],
+  "views": [
+    { "id": "view.frontend-studio", "kind": "view", "name": "FRT G01-G30 studio", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx" }], "references": ["component.route-planner", "component.skill-catalog", "component.evidence-boundary"] }
+  ],
+  "components": [
+    { "id": "component.route-planner", "kind": "interactive-component", "name": "Directed route planner", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#route-planner" }], "references": ["form.route-selection", "binding.route-selection"] },
+    { "id": "component.skill-catalog", "kind": "interactive-component", "name": "472 Skill catalog", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#frt-skill-catalog" }], "references": ["state.catalog-filter", "action.filter-skills", "resource.frt-catalog"] },
+    { "id": "component.evidence-boundary", "kind": "status-component", "name": "Evidence boundary", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#Evidence boundary" }], "references": ["accessibility.status-semantics"] }
+  ],
+  "states": [
+    { "id": "state.catalog-filter", "kind": "local-ui-state", "name": "Batch, query, source, target and selected Skill", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#useState" }], "references": [] }
+  ],
+  "actions": [
+    { "id": "action.filter-skills", "kind": "user-action", "name": "Filter and inspect Skill", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#filteredSkills" }], "references": ["state.catalog-filter"] }
+  ],
+  "effects": [
+    { "id": "effect.scroll-to-skill", "kind": "bounded-browser-effect", "name": "Scroll to selected Route Skill", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#openRouteSkill" }], "references": ["action.filter-skills"] }
+  ],
+  "forms": [
+    { "id": "form.route-selection", "kind": "selection-form", "name": "Source and target stack selection", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#routeControls" }], "references": ["binding.route-selection"] }
+  ],
+  "bindings": [
+    { "id": "binding.route-selection", "kind": "typed-binding", "name": "Six-stack directed route binding", "source_refs": [{ "reference": "apps/web-console/app/lib/frtCatalog.generated.ts#routes" }], "references": ["resource.frt-catalog"] }
+  ],
+  "permissions": [
+    { "id": "permission.frt-read", "kind": "permission", "name": "FRT catalog read", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-types.ts#FrtExecutionScope" }], "references": [] },
+    { "id": "permission.frt-run", "kind": "permission", "name": "Exact scoped FRT run", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-runtime.ts#validateScope" }], "references": [] }
+  ],
+  "resources": [
+    { "id": "resource.frt-catalog", "kind": "immutable-resource", "name": "Compiled FRT catalog", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-catalog.generated.ts" }], "references": [] }
+  ],
+  "design_tokens": [
+    { "id": "token.frt-accent", "kind": "design-token", "name": "FRT accent and evidence state colors", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.module.css" }], "references": [] }
+  ],
+  "accessibility": [
+    { "id": "accessibility.status-semantics", "kind": "accessibility-contract", "name": "Landmarks, labels, keyboard focus and reduced motion", "source_refs": [{ "reference": "apps/web-console/e2e/frt-frontend-transformation.spec.ts" }], "references": [] }
+  ],
+  "source_map": [
+    { "node_id": "route.frontend-studio", "source_refs": [{ "reference": "apps/web-console/app/frontend/page.tsx" }] },
+    { "node_id": "route.frt-api", "source_refs": [{ "reference": "engines/frontend-client-engine/src/server.ts" }] },
+    { "node_id": "view.frontend-studio", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx" }] },
+    { "node_id": "component.route-planner", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#route-planner" }] },
+    { "node_id": "component.skill-catalog", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#frt-skill-catalog" }] },
+    { "node_id": "component.evidence-boundary", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#Evidence boundary" }] },
+    { "node_id": "state.catalog-filter", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#useState" }] },
+    { "node_id": "action.filter-skills", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#filteredSkills" }] },
+    { "node_id": "effect.scroll-to-skill", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#openRouteSkill" }] },
+    { "node_id": "form.route-selection", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.tsx#routeControls" }] },
+    { "node_id": "binding.route-selection", "source_refs": [{ "reference": "apps/web-console/app/lib/frtCatalog.generated.ts#routes" }] },
+    { "node_id": "permission.frt-read", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-types.ts#FrtExecutionScope" }] },
+    { "node_id": "permission.frt-run", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-runtime.ts#validateScope" }] },
+    { "node_id": "resource.frt-catalog", "source_refs": [{ "reference": "engines/frontend-client-engine/src/frt-catalog.generated.ts" }] },
+    { "node_id": "token.frt-accent", "source_refs": [{ "reference": "apps/web-console/app/frontend/FrontendTransformationStudio.module.css" }] },
+    { "node_id": "accessibility.status-semantics", "source_refs": [{ "reference": "apps/web-console/e2e/frt-frontend-transformation.spec.ts" }] }
+  ],
+  "unknowns": [
+    { "id": "unknown.external-runtime-evidence", "severity": "critical", "description": "Real source/target builds, devices, independent holdout, proof, performance, Chaos, penetration, production and customer evidence are NOT_RUN.", "owner": "External validation owners" }
+  ]
+}

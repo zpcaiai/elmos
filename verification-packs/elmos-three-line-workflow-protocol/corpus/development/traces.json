@@ -1,0 +1,18 @@
+{
+  "corpus": "development",
+  "immutable": true,
+  "traces": [
+    {
+      "id": "dev-repository-to-generation",
+      "initial": "workspace_clean",
+      "events": ["handoff", "acquire-lease", "start", "complete"],
+      "expected": "succeeded"
+    },
+    {
+      "id": "dev-edit-pr-translation",
+      "initial": "workspace_clean",
+      "events": ["edit", "commit-approved-paths", "push-exact-head", "create-idempotent-pr", "handoff", "acquire-lease", "start", "partial"],
+      "expected": "partial"
+    }
+  ]
+}

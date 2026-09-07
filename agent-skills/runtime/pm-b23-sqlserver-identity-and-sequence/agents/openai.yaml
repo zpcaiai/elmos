@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B23: Sqlserver Identity And Sequence"
+  short_description: "Run Precision Migration B23 with evidence controls"
+  default_prompt: "Use $pm-b23-sqlserver-identity-and-sequence to execute this Precision Migration contract with fail-closed evidence."

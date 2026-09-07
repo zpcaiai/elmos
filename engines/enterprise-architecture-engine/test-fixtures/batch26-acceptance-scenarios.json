@@ -1,0 +1,402 @@
+[
+  {
+    "scenarioId": "B26-S01",
+    "title": "业务能力地图复制组织架构",
+    "requirements": "Given：\n能力地图顶层为销售部、财务部和IT部\n\nWhen：\n组织发生重组\n\nThen：\n大量能力节点失效\nELMOS要求重构为稳定业务能力。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S02",
+    "title": "业务能力直接命名为Salesforce",
+    "requirements": "Given：\n“Salesforce CRM”被定义为业务能力\n\nWhen：\n评估能力模型\n\nThen：\n拆分为Customer Management等能力\nSalesforce作为应用实现映射。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S03",
+    "title": "能力层级过细",
+    "requirements": "Given：\nCapability Map包含一万多个按钮级能力\n\nWhen：\n执行模型质量检查\n\nThen：\n标记OVER_DECOMPOSED_CAPABILITY\n要求回归业务结果层级。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S04",
+    "title": "Capability Heatmap由政治偏好决定",
+    "requirements": "Given：\n某部门把自己全部能力标记为Strategic\n\nWhen：\n检查Assessment Evidence\n\nThen：\n低Evidence Confidence\n不能直接进入投资优先级。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S05",
+    "title": "EA图与生产拓扑冲突",
+    "requirements": "Given：\n架构图声明Service A调用B\n\nWhen：\nRuntime Trace显示A调用C\n\nThen：\n保留Declared和Observed\n产生Architecture Drift。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S06",
+    "title": "Repository静默覆盖冲突Owner",
+    "requirements": "Given：\nCMDB和Service Catalog声明不同Owner\n\nWhen：\n同步Repository\n\nThen：\n状态为CONFLICTED\n不能以最后写入者覆盖。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S07",
+    "title": "架构View成为独立数据源",
+    "requirements": "Given：\n两个团队在不同PPT中维护应用关系\n\nWhen：\n关系发生变化\n\nThen：\n要求View由统一Repository投影生成。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S08",
+    "title": "一个应用被拆成每个Pod一个Application",
+    "requirements": "Given：\nKubernetes发现200个Replica\n\nWhen：\n导入Application Portfolio\n\nThen：\n归一为Application Service和Service Instance\n不创建200个业务应用。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S09",
+    "title": "两个同名应用被错误合并",
+    "requirements": "Given：\n不同国家各有一个“Billing System”\n\nWhen：\n名称匹配\n\nThen：\n根据能力、数据、Owner和地区判断\n不按名称自动合并。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S10",
+    "title": "多个应用支持同一能力",
+    "requirements": "Given：\n三个地区各使用独立薪资系统\n\nWhen：\n发现能力重复\n\nThen：\n考虑法规、本地化和数据驻留\n只生成Consolidation Candidate。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S11",
+    "title": "低使用监管系统被退役",
+    "requirements": "Given：\n系统每年只运行一次监管申报\n\nWhen：\nUsage分析显示低活跃\n\nThen：\n标记REGULATORY和SEASONAL\n阻止自动退役。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S12",
+    "title": "灾备应用没有日常流量",
+    "requirements": "Given：\n备用结算系统长期无请求\n\nWhen：\nPortfolio评估\n\nThen：\n识别STANDBY依赖\n不能标记Dormant。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S13",
+    "title": "应用成本只统计服务器",
+    "requirements": "Given：\n系统基础设施成本很低\n但License和人工支持极高\n\nWhen：\n计算TCO\n\nThen：\nCost Assessment必须加入License、支持和Change成本。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S14",
+    "title": "应用退役遗漏报表Consumer",
+    "requirements": "Given：\n在线用户为零\n夜间BI仍读取旧数据库\n\nWhen：\n申请Retire\n\nThen：\nUnknown Consumer阻止。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S15",
+    "title": "技术雷达直接复制外部Radar",
+    "requirements": "Given：\n外部Radar把某技术列为Adopt\n\nWhen：\n企业没有技能、支持和适用场景\n\nThen：\n内部状态只能是Assess或Experiment候选。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S16",
+    "title": "供应商宣传直接进入Preferred",
+    "requirements": "Given：\nVendor Demo宣称新数据库性能极高\n\nWhen：\n没有Pilot和Benchmark\n\nThen：\nEvidence不足\n不能标记PREFERRED。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S17",
+    "title": "标准没有版本范围",
+    "requirements": "Given：\n企业标准写“使用Java”\n\nWhen：\n大量系统运行不同且过期的JDK版本\n\nThen：\n标准必须增加允许版本和Support Policy。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S18",
+    "title": "所有系统强制Kubernetes",
+    "requirements": "Given：\n固定硬件商业软件无法容器化\n\nWhen：\n平台标准强制Kubernetes\n\nThen：\n标准Scope被判不合理\n生成Variant或Exception。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S19",
+    "title": "禁止技术没有替代路径",
+    "requirements": "Given：\n技术状态改为PROHIBITED\n仍有数百应用依赖\n\nWhen：\n发布标准\n\nThen：\n必须附Replacement、时间和迁移能力。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S20",
+    "title": "例外永久有效",
+    "requirements": "Given：\nArchitecture Exception无Expiry\n\nWhen：\n执行治理检查\n\nThen：\n拒绝批准。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S21",
+    "title": "例外已到期但系统仍生产运行",
+    "requirements": "Given：\n临时共享数据库例外已过期\n\nWhen：\nConformance运行\n\nThen：\n产生Hard Finding\n触发复核或整改。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S22",
+    "title": "大量例外说明标准不可执行",
+    "requirements": "Given：\n80%的团队对同一标准申请例外\n\nWhen：\n分析Exception Volume\n\nThen：\n同时Review标准、Golden Path和迁移能力\n不能只惩罚团队。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S23",
+    "title": "共享数据库隐藏耦合",
+    "requirements": "Given：\n应用之间无API调用\n却直接读写同一Schema\n\nWhen：\n运行Dependency Analysis\n\nThen：\n建立Data Dependency和Ownership风险。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S24",
+    "title": "关键身份平台形成系统性单点",
+    "requirements": "Given：\n所有服务依赖单一Identity Provider\n没有降级或恢复路径\n\nWhen：\n计算Blast Radius\n\nThen：\n生成Enterprise Systemic Risk。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S25",
+    "title": "供应商集中风险未被发现",
+    "requirements": "Given：\n云、身份、数据库和AI全部来自一个Vendor\n\nWhen：\nPortfolio分别评估时均通过\n\nThen：\n跨Portfolio分析识别Vendor Concentration。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S26",
+    "title": "唯一专家风险",
+    "requirements": "Given：\n核心主机系统只有一名工程师掌握\n\nWhen：\n技术健康度只检查版本\n\nThen：\nSkills Dependency提高风险评级。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S27",
+    "title": "目标架构只有产品Logo",
+    "requirements": "Given：\nTarget Architecture只画多个云产品\n\nWhen：\n评审\n\nThen：\n缺少Capability、Data Ownership、Interface和Outcome\n目标架构不通过。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S28",
+    "title": "Target没有Operating Model",
+    "requirements": "Given：\n设计了多云平台\n没有团队负责运行共享能力\n\nWhen：\n执行Feasibility Check\n\nThen：\n识别OPERATING_MODEL_GAP。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S29",
+    "title": "Current Architecture只来自三年前文档",
+    "requirements": "Given：\n没有Runtime和Deployment Evidence\n\nWhen：\n建立Baseline\n\nThen：\n状态为DECLARED_ONLY或STALE\n不能作为精确迁移输入。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S30",
+    "title": "缺少Transition Architecture",
+    "requirements": "Given：\n当前为主机单体\n目标为事件驱动微服务\n\nWhen：\nRoadmap直接计划最终状态\n\nThen：\n要求API Facade、数据同步和兼容窗口等过渡状态。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S31",
+    "title": "过渡状态无法独立运行",
+    "requirements": "Given：\n过渡架构同时要求新旧系统都为唯一数据Owner\n\nWhen：\n验证Data Authority\n\nThen：\nTransition Architecture失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S32",
+    "title": "Cloud-first原则误用于安全控制",
+    "requirements": "Given：\n工业安全回路被要求迁往云端\n\nWhen：\n执行原则适用性判断\n\nThen：\nSafety Constraint优先\n原则不得机械套用。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S33",
+    "title": "API-first被理解为所有函数都要API",
+    "requirements": "Given：\n内部纯函数被强制发布远程API\n\nWhen：\n评估Trade-off\n\nThen：\n识别无必要网络耦合\n原则按边界而非代码函数使用。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S34",
+    "title": "选项评估只有首选Vendor",
+    "requirements": "Given：\n架构评估只描述一个产品\n\nWhen：\n重大投资申请\n\nThen：\n至少要求Baseline和可行替代方案。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S35",
+    "title": "评分模型掩盖Hard Constraint",
+    "requirements": "Given：\n某选项平均得分最高\n但违反数据驻留要求\n\nWhen：\n执行Evaluation\n\nThen：\nHard Constraint使其NOT_VIABLE。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S36",
+    "title": "Pilot环境与生产规模不相符",
+    "requirements": "Given：\n小数据集Pilot成功\n生产数据规模大百倍\n\nWhen：\n接受Target\n\nThen：\n标记Evidence Scope不足\n要求容量和性能验证。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S37",
+    "title": "ADR在系统上线后补写",
+    "requirements": "Given：\nADR日期早于文件实际创建时间\n\nWhen：\n审计\n\nThen：\n标记POSTHOC_DECISION_RECORD\n保留真实创建时间。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S38",
+    "title": "Decision有条件但未监控",
+    "requirements": "Given：\n批准条件为六个月内完成Exit Plan\n\nWhen：\n到期仍未完成\n\nThen：\nDecision状态转DIVERGED或REASSESSMENT。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S39",
+    "title": "新ADR替代旧ADR但应用未迁移",
+    "requirements": "Given：\n企业数据库标准已改变\n旧应用仍遵循被Supersede的Decision\n\nWhen：\n检查影响范围\n\nThen：\n生成Consumer Migration清单\n不能只更新文档。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S40",
+    "title": "Architecture Board审批所有小变更",
+    "requirements": "Given：\n每个小型Library升级都需月度Board\n\nWhen：\n分析Decision Lead Time\n\nThen：\n将符合标准的可逆决定下放团队。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S41",
+    "title": "项目收益重复计算",
+    "requirements": "Given：\n两个项目都把同一应用退役节约计为收益\n\nWhen：\nPortfolio聚合\n\nThen：\nBenefit Deduplication阻止双重计算。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S42",
+    "title": "项目完成但旧系统没有退役",
+    "requirements": "Given：\n新平台已上线\n旧平台继续支付License和运维\n\nWhen：\n验证Benefit\n\nThen：\nCost Saving状态仍为NOT_REALIZED。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S43",
+    "title": "强制项目继续因为已投入大量成本",
+    "requirements": "Given：\nPilot证明Target不可行\n但团队以已投入成本为理由继续\n\nWhen：\nDecision Gate执行\n\nThen：\n重新评估或STOP\n历史投入不自动构成继续理由。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S44",
+    "title": "路线图忽略数据依赖",
+    "requirements": "Given：\n应用计划第一波迁移\n主数据Crosswalk计划第三波完成\n\nWhen：\n依赖排序\n\nThen：\nRoadmap识别顺序冲突。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S45",
+    "title": "多个Roadmap争夺同一团队",
+    "requirements": "Given：\n三个战略项目同时需要同一主机专家\n\nWhen：\nPortfolio Capacity分析\n\nThen：\n重新排序或增加能力\n不能把冲突隐藏在各项目计划中。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S46",
+    "title": "循环依赖导致无法迁移",
+    "requirements": "Given：\n应用A依赖B数据\nB又依赖A流程\n\nWhen：\n生成Wave\n\nThen：\n识别SCC\n通过Facade、数据所有权拆分或共同Wave解决。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S47",
+    "title": "Roadmap没有停止条件",
+    "requirements": "Given：\n实验性技术项目失败多次\n仍持续扩大投入\n\nWhen：\nDecision Gate检查\n\nThen：\n缺少Kill Criteria\nPortfolio Governance失败。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S48",
+    "title": "Architecture Conformance只查设计文档",
+    "requirements": "Given：\n设计符合标准\n生产Runtime使用未经批准技术\n\nWhen：\n执行持续验证\n\nThen：\nRuntime Drift触发Non-conformance。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S49",
+    "title": "Target已过时但团队被要求继续符合",
+    "requirements": "Given：\n市场与法规已变化\n三年前Target不再合理\n\nWhen：\n发现持续Drift\n\nThen：\n允许重新评估Target\n不能只强迫现实回到旧图纸。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  },
+  {
+    "scenarioId": "B26-S50",
+    "title": "EA通过图纸数量证明价值",
+    "requirements": "Given：\nEA团队每季度发布数百张图\nDecision时间和重复应用没有改善\n\nWhen：\n价值评估\n\nThen：\nEA Value状态为低\n文档产量不能替代业务结果。",
+    "safeOutcome": "FAIL_CLOSED",
+    "externalExecutionExpected": false,
+    "autoApprovalAllowed": false
+  }
+]

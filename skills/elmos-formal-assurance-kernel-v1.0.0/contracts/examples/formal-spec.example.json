@@ -1,0 +1,36 @@
+{
+  "id": "spec-demo-001",
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "businessLine": "spring-modernization",
+  "specKind": "TRACE",
+  "version": "1.0.0",
+  "sourceHash": "41cf6794ba4200b839c53531555f0f3998df4cbb01a4d5cb0b94e3ca5e23947d",
+  "semanticProfile": "java-core-21",
+  "status": "FROZEN",
+  "body": {
+    "property": "target trace refines legacy trace",
+    "relation": "TRACE_REFINEMENT"
+  },
+  "sourceMap": [
+    {
+      "source": "legacy/src/Action.java:10",
+      "target": "spec.nodes[0]"
+    }
+  ],
+  "assumptionIds": [
+    "assume-db-contract"
+  ],
+  "provenance": {
+    "sourceType": "repository",
+    "sourceUri": "repo://legacy",
+    "sourceRevision": "abc123",
+    "capturedAt": "2026-08-27T00:00:00Z",
+    "generator": "elmos",
+    "generatorVersion": "1.0.0"
+  }
+}

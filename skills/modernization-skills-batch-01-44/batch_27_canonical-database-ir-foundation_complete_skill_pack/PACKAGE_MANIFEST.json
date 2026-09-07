@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-27-canonical-database-ir-foundation-complete-skill-pack",
+  "batch": 27,
+  "title": "Canonical Database IR, Data Migration and Cutover Foundation",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b27-canonical-database-ir-foundation-orchestrator",
+    "b27-canonical-database-ir-foundation-domain-model",
+    "b27-canonical-database-ir-foundation-discovery-inventory",
+    "b27-canonical-database-ir-foundation-capability-planning",
+    "b27-canonical-database-ir-foundation-deterministic-engine",
+    "b27-canonical-database-ir-foundation-adapter-provider",
+    "b27-canonical-database-ir-foundation-workflow-runtime",
+    "b27-canonical-database-ir-foundation-lineage-reconciliation",
+    "b27-canonical-database-ir-foundation-security-policy",
+    "b27-canonical-database-ir-foundation-human-approval",
+    "b27-canonical-database-ir-foundation-observability-economics",
+    "b27-canonical-database-ir-foundation-corpus-benchmark",
+    "b27-canonical-database-ir-foundation-failure-recovery",
+    "b27-canonical-database-ir-foundation-integration-api",
+    "b27-canonical-database-ir-foundation-lifecycle-recertification",
+    "b27-canonical-database-ir-foundation-certification-gate"
+  ],
+  "upstream_batch": 26,
+  "files": [
+    {
+      "path": "BATCH26_COMPATIBILITY.md",
+      "sha256": "72f6815ac98b44ca153594a9d1dbccdef6f01eab07818a9875160d7f701394ce",
+      "size": 2118
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "e2b8154afb0a164eb15a26f7c454c5fb032e7dd2b55538324b12d0566793bfde",
+      "size": 2268
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "4ee01a09360c0746e8fcde6dd02c7aa6f53c16a6c9f1274b084af5e9e9289341",
+      "size": 1781
+    },
+    {
+      "path": "README.md",
+      "sha256": "aecce8f6c1a9c2de7f1cf44333cf82c83a495dc069b0f6cd47a11c3e7257f4db",
+      "size": 1049
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "735bdf5b6f634596510773427e6fc1e94582b3ac01ec107d9026fce0c627d30a",
+      "size": 3578
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "93eee1d2c1b2e27dae7d1eff041edd1dec15c0e00c2c8a74ca7b8a27b722d5d0",
+      "size": 3141
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "83768ee2b683e41359672b31159484417f7fbd03402fc3558302f48388c1f9e4",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "e26addc4b268c3c37a7f174b97581967633c8250d96745528551fc2cb1b19bee",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "4fbd4b6f23c448a2628049f800d080e7724201c9410573f33735324014279f6e",
+      "size": 294
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "266f958826f233f781681b3744f300074bf38948b26a9b63e4752017aae5eb42",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "b459a9a1c3aa7b2706c486014be6d200eed7977aca99cab3f5200d1a10521de0",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "e76ae89e7ecf784ee14ed64d02089e225571df7f7c0bfcb3ca047782d701f24f",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "5b28137f13b57e3e50820b3dec60966ce1bb8be6c862da2fedad39c3c851de3c",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "b6e865786ec9092f4d2c82e53e819814720abb05594eeabf0e20323bf78209c3",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "408a862ec1cdd2d4ded4d699cb19fbf1d36b3b26abad19c5c4a3ae0cf9aab38d",
+      "size": 848
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-adapter-provider/SKILL.md",
+      "sha256": "afba70b46c56c0f42c94aa3deab1e9f7b66cc9ee3cdef5100a7cd508c337aed3",
+      "size": 3863
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-capability-planning/SKILL.md",
+      "sha256": "08c1b3edc8bdee51436a629a6f44a68f75eaeb0988d20ec86a7664c75d621a95",
+      "size": 3765
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-certification-gate/SKILL.md",
+      "sha256": "1d2580ffeb433f2d27e38a4aac19438f8a96c7df8d1ca2f84ab48b75bd6e4173",
+      "size": 3894
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-corpus-benchmark/SKILL.md",
+      "sha256": "1621f4eef7ae209e6f756c0e77fbf2ff36386c69a5549b9388a24bee2d670a15",
+      "size": 3804
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-deterministic-engine/SKILL.md",
+      "sha256": "17d93525065d37050378bbc5e026a04d9945bff969334b9e7c38493b2e45acba",
+      "size": 3781
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-discovery-inventory/SKILL.md",
+      "sha256": "2fe415a1ee6ca19d7e415c232204f92f3534a7b7c09385534dcc8d67557c7c1f",
+      "size": 3808
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-domain-model/SKILL.md",
+      "sha256": "65bd72affed91ea16c324185bfb4ac89c9cfe8c770eb4ec154e4fd39ed6da41f",
+      "size": 3835
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-failure-recovery/SKILL.md",
+      "sha256": "5296f060fcea54ae478b9c1963de70e224c28466d099523f8d2094b57ea85bcf",
+      "size": 3812
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-human-approval/SKILL.md",
+      "sha256": "79844274e7852896ee80cc07cab5ec1fe6e478d2ca9587023420262156c53886",
+      "size": 3797
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-integration-api/SKILL.md",
+      "sha256": "cb448e9c13d007a569f465a0d956c57f810649ddb702786250f41adbba332eb1",
+      "size": 3782
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-lifecycle-recertification/SKILL.md",
+      "sha256": "1b609c925d7ec795622597fb2dc08348acec074facd4f644e47dfbfbf2902c7c",
+      "size": 3872
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-lineage-reconciliation/SKILL.md",
+      "sha256": "b51e36c8ec12afefe4056cde1943b9ed6917a2029bee1654fb0e3152ddb0dc9c",
+      "size": 3823
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-observability-economics/SKILL.md",
+      "sha256": "d36a84523b43baab0156a5e804f25f6c084dfa20f5b0ec8dc8b8b57680831dec",
+      "size": 3838
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-orchestrator/SKILL.md",
+      "sha256": "d3280d8684b7cab50ea3cfcfb9c2f96025c8a799ef0d9bbaeaef88efc61cab6d",
+      "size": 3860
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-security-policy/SKILL.md",
+      "sha256": "dea6dc8e856d82d88338bd8dad884c930b34893a289216e8410b75149a168224",
+      "size": 3817
+    },
+    {
+      "path": "skills/b27-canonical-database-ir-foundation-workflow-runtime/SKILL.md",
+      "sha256": "b629704735dab690f1bacfdff727978843ef5cf34b09a3cd8a87a4feafaf91f6",
+      "size": 3826
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "790fc98713572b53011f7bc6a50627d0fea7f9065fc926bb949692bd37e29e54",
+      "size": 385
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "382b245560d8727ff3ec53366727ed5bc03c810e30ee089d25fa2bc9b4d53fa8",
+      "size": 1938
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

@@ -1,0 +1,47 @@
+{
+  "profile_key": "spring-to-boot-4-1-1-java-21",
+  "version": "0.1.0",
+  "owner": "ELMOS Java Modernization Team",
+  "framework": "spring-boot",
+  "framework_versions": ["4.1.1"],
+  "runtime": "java",
+  "runtime_versions": ["21"],
+  "architecture_style": "source-fingerprint-bound-spring-boot-application",
+  "providers": {
+    "spring_framework": {"provider": "spring-framework", "version": "7.0.8"},
+    "spring_security": {"provider": "spring-security", "version": "7.1.0", "source_profile_required": true},
+    "spring_graphql": {"provider": "spring-graphql", "version": "2.0.4", "source_profile_required": true},
+    "spring_hateoas": {"provider": "spring-hateoas", "version": "3.1.0", "source_profile_required": true},
+    "spring_integration": {"provider": "spring-integration", "version": "7.1.0", "source_profile_required": true},
+    "spring_kafka": {"provider": "spring-kafka", "version": "4.1.0", "source_profile_required": true},
+    "spring_amqp": {"provider": "spring-amqp", "version": "4.1.0", "source_profile_required": true},
+    "spring_ldap": {"provider": "spring-ldap", "version": "4.1.0", "source_profile_required": true},
+    "spring_session": {"provider": "spring-session", "version": "4.1.0", "source_profile_required": true},
+    "persistence": {"provider": "hibernate-orm", "version": "7.4.1.Final", "source_profile_required": true},
+    "servlet": {"namespace": "jakarta.servlet", "version": "6.1", "embedded_container": "tomcat-11.0.22"},
+    "views": {"provider": "source-profile-required", "unsupported_construct_policy": "fail-closed"},
+    "grpc": {"provider": "spring-grpc", "version": "1.1.0", "source_profile_required": true},
+    "observability": {"provider": "spring-boot-actuator", "exposure_requires_policy": true}
+  },
+  "build": {
+    "commands": ["mvn -B --no-transfer-progress test", "mvn -B --no-transfer-progress verify", "gradle --no-daemon test", "gradle --no-daemon build"],
+    "required_maven": "3.9.11",
+    "required_gradle": "8.14.3",
+    "execution_status": "NOT_RUN",
+    "execution_scope": "NO_SOURCE_TUPLE_BOUND"
+  },
+  "startup": {
+    "command": "java -jar <target-artifact> --server.address=127.0.0.1 --server.port=<ephemeral-port>",
+    "health_check": "GET http://127.0.0.1:<ephemeral-port>/actuator/health",
+    "shutdown_check": "SIGTERM followed by bounded graceful completion",
+    "execution_status": "NOT_RUN",
+    "execution_scope": "NO_SOURCE_TUPLE_BOUND"
+  },
+  "manual_obligations": [
+    "source-specific FCM governs XML, web.xml, servlet contexts, views and reactive pipelines",
+    "security and authorization require a separate exact Spring Security profile",
+    "persistence and transactions require exact Hibernate/database/provider profiles",
+    "messaging, cache, scheduler, Batch and gRPC behavior require provider-specific execution",
+    "Boot 4.1.1 target build, startup, holdout and independent verification are NOT_RUN"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "images": [
+    {
+      "profile": "INFRASTRUCTURE_DISCOVERY",
+      "status": "NOT_BUILT",
+      "approved": false
+    },
+    {
+      "profile": "VM_IMAGE_BUILDER",
+      "status": "NOT_BUILT",
+      "approved": false
+    },
+    {
+      "profile": "CONTAINER_BUILD",
+      "status": "NOT_BUILT",
+      "approved": false
+    },
+    {
+      "profile": "KUBERNETES_VALIDATION",
+      "status": "NOT_BUILT",
+      "approved": false
+    },
+    {
+      "profile": "SERVERLESS_VALIDATION",
+      "status": "NOT_BUILT",
+      "approved": false
+    },
+    {
+      "profile": "MULTICLOUD_TEST",
+      "status": "NOT_BUILT",
+      "approved": false
+    }
+  ],
+  "signingStatus": "NOT_RUN",
+  "vulnerabilityScanStatus": "NOT_RUN",
+  "externalProviderValidation": "NOT_RUN"
+}
+

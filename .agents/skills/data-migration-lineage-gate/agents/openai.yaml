@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Migration Lineage Gate"
+  short_description: "Run this ELMOS Batch 81-95 test Skill with evidence"
+  default_prompt: "Use $data-migration-lineage-gate to run its exact Batch 81-95 test scope with fail-closed evidence."

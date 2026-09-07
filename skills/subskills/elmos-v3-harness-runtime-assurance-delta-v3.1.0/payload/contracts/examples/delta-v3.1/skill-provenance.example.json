@@ -1,0 +1,14 @@
+{
+  "skillId": "skill-1",
+  "publisher": "enterprise",
+  "origin": "managed",
+  "canonicalUri": "file:///trusted/skills/skill-1",
+  "packageDigest": "sha256:pkg",
+  "trustDomain": "ENTERPRISE",
+  "installScope": "tenant:t-1",
+  "signature": "sig",
+  "authorizationSemantics": [
+    "filesystem:read"
+  ],
+  "verified": true
+}

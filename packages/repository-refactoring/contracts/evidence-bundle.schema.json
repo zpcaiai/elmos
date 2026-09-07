@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/evidence-bundle.schema.json",
+  "title": "EvidenceBundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "bundleId",
+    "runId",
+    "status",
+    "createdAt",
+    "inputs",
+    "artifacts",
+    "traceability",
+    "gateDecisions",
+    "manifestDigest"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.dev/v1"
+    },
+    "kind": {
+      "const": "EvidenceBundle"
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "invalid"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inputs": {
+      "type": "object",
+      "required": [
+        "requestDigest",
+        "planDigest",
+        "policyDigest",
+        "recipeLockDigest",
+        "snapshotDigests"
+      ],
+      "properties": {
+        "requestDigest": {
+          "type": "string"
+        },
+        "planDigest": {
+          "type": "string"
+        },
+        "policyDigest": {
+          "type": "string"
+        },
+        "recipeLockDigest": {
+          "type": "string"
+        },
+        "snapshotDigests": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "toolchainDigests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "adapterDigests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifactId",
+          "type",
+          "uri",
+          "digest",
+          "sizeBytes"
+        ],
+        "properties": {
+          "artifactId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mediaType": {
+            "type": "string"
+          },
+          "retentionClass": {
+            "type": "string"
+          },
+          "redacted": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "traceability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "patchHunkId",
+          "stepId",
+          "recipeExecutionId",
+          "validationRefs"
+        ],
+        "properties": {
+          "patchHunkId": {
+            "type": "string"
+          },
+          "stepId": {
+            "type": "string"
+          },
+          "recipeExecutionId": {
+            "type": "string"
+          },
+          "symbolIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actionIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validationRefs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gateDecisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gate",
+          "decision",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "gate": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "pass",
+              "fail",
+              "waived",
+              "not-applicable"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "waiverApprovalId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "manifestDigest": {
+      "type": "string",
+      "pattern": "^sha256:"
+    },
+    "signature": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "type": "string"
+        },
+        "keyId": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

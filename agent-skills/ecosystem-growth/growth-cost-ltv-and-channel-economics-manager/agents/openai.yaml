@@ -1,0 +1,5 @@
+interface:
+  display_name: "Growth Cost LTV And Channel Economics Manager"
+  short_description: "Authoritative Batch 14 Skill 457 workflow"
+  default_prompt: "Use $growth-cost-ltv-and-channel-economics-manager to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "snapshot_key": "elmos-web-console-before-ui-polish",
+  "captured_for": "quality-polish-0.2.0",
+  "aggregate_sha256": "8e5774c3217f91140e341ec8c9c48d9ed375d5acf655679ebb7f56d38a7bed54",
+  "files": [
+    {"path":"apps/web-console/app/page.tsx","sha256":"479c5fe21d935a0588a59f265268e81729c4e27545cff547d7ea1920910209d4"},
+    {"path":"apps/web-console/app/styles.css","sha256":"98628f5efd619a35cf47c68f154c84d2b7a5f633a175b31da4a5a8436f74a146"},
+    {"path":"apps/web-console/app/layout.tsx","sha256":"0ab5456a7617075dfb749342d330c35a44960f37887a0c089bf1d0b863fc149c"},
+    {"path":"apps/web-console/app/components/AppShell.tsx","sha256":"e52cc468ea2a8c70c152a78fe5ca2f723b3477766b559952e1df80ca584cda15"},
+    {"path":"apps/web-console/app/migration/MigrationStudio.tsx","sha256":"874332a470b6ec0483e601cb6f2593b38fd09a19a391bcd95d1defdca60cf4f7"},
+    {"path":"apps/web-console/app/commercialization/CommercializationConsole.tsx","sha256":"61f014097117113fc19c555c2db3c4b104afd95c6a248907e978b9eb109b5350"},
+    {"path":"apps/web-console/app/lib/catalog.ts","sha256":"e009a35aeba2ccc3f1343b4541014ac75627a59fdcb1f494b9242c9204076255"}
+  ],
+  "immutable": true
+}

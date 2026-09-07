@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Verification Policy Expectations Trust Decision And Vsa"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $verification-policy-expectations-trust-decision-and-vsa to implement its fail-closed ELMOS Product B37 contract."

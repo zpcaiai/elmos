@@ -1,0 +1,30 @@
+{
+  "suite_id": "batch66-80-slightly-strict",
+  "status": "NOT_RUN",
+  "thresholds": {
+    "P0": 1.0,
+    "P1": 0.98,
+    "P2": 0.95,
+    "zero_tolerance_failures": 0
+  },
+  "counts": {
+    "overall": {
+      "not-run": 450
+    },
+    "by_priority": {
+      "P0": {
+        "not-run": 312
+      },
+      "P1": {
+        "not-run": 120
+      },
+      "P2": {
+        "not-run": 18
+      }
+    }
+  },
+  "reasons": [
+    "all cases are not-run"
+  ],
+  "generated_at": "2026-09-03T16:12:53.160898+00:00"
+}

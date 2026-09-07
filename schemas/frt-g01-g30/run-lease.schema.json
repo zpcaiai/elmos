@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/frt-g01-g30/run-lease.v1.schema.json",
+  "title": "FRT G01-G30 run lease",
+  "description": "A time-bounded right to execute one claimed run. Distinct from elmos.runner-job-lease.v1, which leases generic ELMOS jobs: an FRT lease is embedded in the run result itself and is the only thing that makes a RUNNING run legitimate. Once it expires the control plane reclaims the run, so a runner that dies silently can never leave a run stuck in RUNNING.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runnerId", "claimedAt", "expiresAt", "heartbeatCount"],
+  "properties": {
+    "runnerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$",
+      "description": "Identity that claimed the run. Only this identity may heartbeat or complete it."
+    },
+    "claimedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "claimedAt plus the requested lease seconds, bounded to [30, 86400]. Default 900; override per claim or with ELMOS_FRT_LEASE_SECONDS."
+    },
+    "heartbeatCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of successful renewals. Each renewal bumps the run version, so a runner must carry the version returned by its last heartbeat into the next call."
+    }
+  },
+  "$comment": "Lifecycle: claim issues the lease; heartbeat extends it (holder only, never after expiry); complete, cancel and retry clear it; sweepExpiredLeases reclaims RUNNING runs whose lease expired, emitting RUN_LEASE_EXPIRED and outcome BLOCKED_BY_LEASE_EXPIRED. An expired lease cannot be revived - the run must be retried, which creates a fresh claim."
+}

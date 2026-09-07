@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite-b38-45/coverage-matrix.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["suite_id", "product_skill_count", "case_count", "mappings"],
+  "properties": {
+    "suite_id": {"const": "batch38-45-strict"}, "product_skill_count": {"const": 172}, "case_count": {"const": 400},
+    "mappings": {"type": "array", "minItems": 172, "maxItems": 172, "items": {"type": "object", "additionalProperties": false, "required": ["product_skill_id", "batch", "case_ids"], "properties": {"product_skill_id": {"type": "integer", "minimum": 1325, "maximum": 1496}, "batch": {"type": "integer", "minimum": 38, "maximum": 45}, "case_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}}}}}
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "bundle_id": "evb-demo",
+  "tenant_id": "tenant-demo",
+  "project_id": "elmos-demo",
+  "revision_id": "rev-demo-001",
+  "analysis_run_id": "run-demo",
+  "claims": [
+    {
+      "claim_id": "claim-order-event",
+      "text": "订单创建后发布 order.created 事件。",
+      "status": "confirmed",
+      "confidence": 0.98,
+      "evidence_refs": [
+        "ev-source-publish",
+        "ev-test-event"
+      ],
+      "counter_evidence_refs": [],
+      "generator": {
+        "name": "flow-discovery",
+        "version": "1.0.0"
+      }
+    },
+    {
+      "claim_id": "claim-prod-gateway",
+      "text": "生产环境是否通过外部 API Gateway 无法由当前仓库确认。",
+      "status": "unknown",
+      "confidence": 0.0,
+      "evidence_refs": [],
+      "counter_evidence_refs": [],
+      "generator": {
+        "name": "architecture-discovery",
+        "version": "1.0.0"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev-source-publish",
+      "kind": "source",
+      "locator": {
+        "file": "services/order/src/OrderService.java",
+        "start_line": 128,
+        "end_line": 132
+      },
+      "hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "strength": 1.0,
+      "classification": "SOURCE_CODE"
+    },
+    {
+      "evidence_id": "ev-test-event",
+      "kind": "test",
+      "locator": {
+        "test": "OrderServiceTest#publishesOrderCreated",
+        "run_id": "test-run-demo"
+      },
+      "hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "strength": 0.9,
+      "classification": "INTERNAL"
+    }
+  ]
+}

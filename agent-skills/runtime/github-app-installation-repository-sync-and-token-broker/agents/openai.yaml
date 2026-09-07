@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-core Skill 004"
+  short_description: "Run Product Batch 33-core evidence contract safely"
+  default_prompt: "Use $github-app-installation-repository-sync-and-token-broker to implement its fail-closed ELMOS Product Batch 33-core contract."

@@ -1,0 +1,21 @@
+{
+  "batch": 5,
+  "archetypes": {
+    "orchestrator": "b05-target-generation-orchestrator",
+    "domain-model": "b05-target-typed-ir-schema",
+    "discovery-inventory": "b05-target-generation-orchestrator",
+    "capability-planning": "b05-target-lowering-plan-and-pass-manager",
+    "deterministic-engine": "b05-idiom-policy-and-pattern-selector",
+    "adapter-provider": "b05-target-profile-and-platform-registry",
+    "integration-api": "b05-target-generation-orchestrator",
+    "workflow-runtime": "b05-target-generation-orchestrator",
+    "certification-gate": "b05-generated-project-completeness-and-certification-gate",
+    "security-policy": "b05-target-generation-orchestrator",
+    "human-approval": "b05-restricted-generation-agent-controller",
+    "failure-recovery": "b05-build-lint-typecheck-repair-loop",
+    "lineage-reconciliation": "b05-source-target-map-and-provenance-exporter",
+    "lifecycle-recertification": "b05-incremental-regeneration-manual-region-protector",
+    "observability-economics": "b05-target-generation-orchestrator",
+    "corpus-benchmark": "b05-target-generation-orchestrator"
+  }
+}

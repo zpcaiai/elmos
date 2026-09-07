@@ -1,0 +1,47 @@
+# case TS-GOV-02-001
+# started_at 2026-08-06T09:59:53Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py traceability
+=== probe: traceability ===
+[PASS] catalog-count-matches-declaration :: 408 vs 408
+[PASS] every-batch-has-a-P0-positive-case :: missing=[]
+[PASS] every-batch-has-a-P0-negative-case :: missing=[]
+[PASS] every-case-declares-required-evidence :: []
+[PASS] every-case-binds-an-implemented-skill :: []
+[PASS] append-only-case-history-exists
+[PASS] history-covers-every-live-case :: []
+[PASS] history-is-never-truncated :: 408 >= 408
+
+8/8 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/validate_coverage_matrix.py test-suites/batch1-37-strict/coverage-matrix.json
+PASS: exact Batch 1-37 coverage and all eight required variants
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py control-manifest
+=== probe: control-manifest ===
+[PASS] live-controls-match-recorded-digests :: []
+[PASS] gate-reports-four-control-digests
+[PASS] control-digest-nonzero-catalog
+[PASS] control-digest-nonzero-coverage_matrix
+[PASS] control-digest-nonzero-strict_profile
+[PASS] control-digest-nonzero-suite
+[PASS] catalog-tamper-detected-by-control-manifest :: ['case/control manifest control digests are stale or tampered']
+
+7/7 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

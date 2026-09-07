@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-source-ingestion",
+  "oracles": [
+    {
+      "oracle_id": "oracle.source-policy",
+      "type": "contract",
+      "owner": "elmos-security-engineering",
+      "scope": [
+        "claim.source-boundaries"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "1",
+      "evidence_refs": ["corpus/negative/cases.json", "corpus/holdout/cases.json"]
+    },
+    {
+      "oracle_id": "oracle.playwright-regression",
+      "type": "test",
+      "owner": "elmos-project-synthesis-engineering",
+      "scope": [
+        "claim.source-boundaries"
+      ],
+      "independence": "dependent",
+      "trust_level": "supporting",
+      "version": "1",
+      "evidence_refs": ["certification/local-test-result.json"]
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "source-security",
+      "ordered_oracles": [
+        "oracle.source-policy",
+        "oracle.playwright-regression"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

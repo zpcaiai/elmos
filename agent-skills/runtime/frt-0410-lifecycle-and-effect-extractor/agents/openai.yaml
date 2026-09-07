@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lifecycle and Effect Extractor"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0410-lifecycle-and-effect-extractor to run FRT-0410 through the governed FRT runtime with exact scope and fail-closed evidence."

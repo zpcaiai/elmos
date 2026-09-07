@@ -1,0 +1,52 @@
+{
+  "base_package": "elmos-polyglot-skills",
+  "base_version": "1.0.0",
+  "required_core_technologies": [
+    "java",
+    "kotlin",
+    "python",
+    "csharp",
+    "go",
+    "rust",
+    "cpp",
+    "php",
+    "typescript",
+    "react",
+    "objc",
+    "swift",
+    "flutter",
+    "javascript"
+  ],
+  "p0_primary_technologies": [
+    "c",
+    "cobol",
+    "rpg",
+    "pli",
+    "vb6",
+    "vbscript",
+    "object-pascal",
+    "powerscript",
+    "abap",
+    "natural",
+    "abl",
+    "fortran",
+    "ada-spark",
+    "xbase"
+  ],
+  "repository_surfaces": [
+    "jcl",
+    "rexx",
+    "ibmi-cl",
+    "cobol-copybook",
+    "cics-bms",
+    "ims-mfs",
+    "ibmi-dds",
+    "legacy-sql-routines"
+  ],
+  "merged_primary_technology_count": 28,
+  "merged_route_cell_count": 784,
+  "extension_skill_id_range": [
+    "ELMOS-POLY-065",
+    "ELMOS-POLY-168"
+  ]
+}

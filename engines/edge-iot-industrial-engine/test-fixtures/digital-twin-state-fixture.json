@@ -1,0 +1,9 @@
+{
+  "twinId": "twinId-fixture",
+  "featureId": "featureId-fixture",
+  "stateType": "REPORTED",
+  "value": "value-fixture",
+  "quality": "quality-fixture",
+  "sourceTimestamp": "sourceTimestamp-fixture",
+  "version": "version-fixture"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3011",
+  "skill_name": "frt-3011-canary-and-progressive-delivery",
+  "batch": "G30",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g30/frt-3011-canary-and-progressive-delivery/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.canary-and-progressive-delivery",
+  "execution_contract_sha256": "sha256:1daea7f6f8333ceb6c4faf73a65dd37fef52ded47f20f6eb05a32a75299abfbb",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:465a97d0447c5a4c511bfdd30220b8be2137a32ae770414867e67dc24d31cca3",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

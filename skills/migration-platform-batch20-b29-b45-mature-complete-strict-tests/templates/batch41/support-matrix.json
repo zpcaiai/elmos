@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "id": "example-knowledge-flywheel",
+  "capabilities": [
+    {
+      "capability_id": "b41-migration-knowledge-flywheel-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-migration-knowledge-graph-ontology",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-project-code-rule-patch-evidence-relationships",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-migration-run-knowledge-ingestion",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-pattern-antipattern-extraction",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-recipe-mapping-recommendation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-similar-project-module-retrieval",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-migration-risk-prediction",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-automation-build-green-probability-prediction",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-effort-duration-cost-prediction",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-target-technology-stack-recommendation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-diagnostic-root-cause-recommendation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-knowledge-confidence-evidence-provenance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-knowledge-freshness-decay-versioning",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-public-certified-private-knowledge-isolation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-privacy-preserving-aggregation-cross-project-learning",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-holdout-feedback-prediction-calibration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-human-curation-domain-expert-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-knowledge-asset-marketplace-sharing",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b41-knowledge-flywheel-certification-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    }
+  ]
+}

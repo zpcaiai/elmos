@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 29 Skill 011"
+  short_description: "Run ELMOS Product Batch 29 governance safely"
+  default_prompt: "Use $resistance-concern-barrier-and-resolution-manager to implement its evidence-bound ELMOS Product Batch 29 contract."

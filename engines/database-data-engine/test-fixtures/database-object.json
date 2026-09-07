@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "objectId": "object-orders",
+  "instanceId": "oracle-prod-1",
+  "databaseName": "orders",
+  "schemaName": "sales",
+  "objectType": "TABLE",
+  "objectName": "orders",
+  "captureWindow": "2026-07-01T00:00:00Z/2026-07-08T00:00:00Z",
+  "evidenceRefs": ["artifact://database-estate/orders"]
+}

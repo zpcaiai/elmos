@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "elmos.capability-package/v1",
+  "kind": "CapabilityPackage",
+  "metadata": {
+    "name": "elmos-polyglot-skills",
+    "version": "3.0.0",
+    "createdAt": "2026-08-29T14:18:00+08:00",
+    "readiness": "not-run",
+    "labels": {
+      "domain": "software-transformation",
+      "scope": "polyglot-project-generation-modernization",
+      "assurance": "semantic-equivalence-e0-e5"
+    }
+  },
+  "spec": {
+    "description": "Implementation-grade polyglot repository transformation plus semantic preservation, native runtime characterization, differential/fuzz/formal assurance, fixture corpus and E0-E5 certification.",
+    "technologyRegistry": "technology-registry.yaml",
+    "skillManifest": "manifest.json",
+    "routeRegistry": "route-registry.yaml",
+    "routeMatrix": "route-matrix.csv",
+    "schemas": "schemas/",
+    "policies": "policies/",
+    "entrySkills": [
+      "elmos-polyglot-modernization-orchestrator",
+      "elmos-full-project-generator",
+      "elmos-spring-legacy-modernizer"
+    ],
+    "readinessPolicy": {
+      "default": "not-run",
+      "allowedStates": [
+        "not-run",
+        "blocked",
+        "fail",
+        "waived",
+        "pass"
+      ],
+      "filePresenceIsEvidence": false,
+      "staticValidationIsProductionCertification": false
+    },
+    "semanticAssurance": {
+      "routeCertificationRegistry": "route-certification-registry.json",
+      "fixtureCorpusRegistry": "certification-corpus/corpus-registry.json",
+      "nativeLabRegistry": "native-runtime-lab/lab-registry.json",
+      "e0e5Policy": "policies/e0-e5-policy-v3.yaml"
+    }
+  }
+}

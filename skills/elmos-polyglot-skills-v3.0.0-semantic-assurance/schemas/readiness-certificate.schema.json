@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/readiness-certificate.schema.json",
+  "title": "ELMOS Readiness Certificate",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "certificateId",
+    "scope",
+    "artifacts",
+    "environment",
+    "issuedAt",
+    "decision",
+    "gates",
+    "residualRisks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.readiness-certificate/v1"
+    },
+    "certificateId": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision": {
+      "enum": [
+        "not-run",
+        "blocked",
+        "fail",
+        "waived",
+        "pass"
+      ]
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "not-run",
+              "blocked",
+              "fail",
+              "waived",
+              "pass"
+            ]
+          }
+        }
+      }
+    },
+    "residualRisks": {
+      "type": "array"
+    }
+  }
+}

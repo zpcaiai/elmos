@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M29 Skill 018"
+  short_description: "Run Migration Pack M29 certification safely"
+  default_prompt: "Use $b29-route-economics-certifier to apply the independent, fail-closed Migration Pack M29 contract."

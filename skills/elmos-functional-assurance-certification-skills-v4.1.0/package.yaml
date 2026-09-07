@@ -1,0 +1,67 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitSkillsPackage
+metadata:
+  name: elmos-functional-assurance-certification-skills
+  version: 4.1.0
+  packageId: elmos-functional-assurance-certification-skills-v4.1.0
+  generatedAt: '2026-08-28'
+  sourcePackage: elmos-ai-native-project-factory-total-skills-v4.0.0
+  sourcePackageVersion: 4.0.0
+  maturity: production-functional-assurance-certification-contract
+spec:
+  packageRole: certification
+  parentDomainPack: project-generation
+  architecture: Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+  routeOwner: domain-pack.project-generation
+  routableEntryDelta: 0
+  preservesRoutableEntryCount: 16
+  companionPackage:
+    name: elmos-ai-capability-enhancement-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    relationship: required-base
+  componentVersionPolicy: inherited from source package 4.0.0; split packaging version is 4.1.0
+  standaloneCompletionCeiling: BLOCKED_WITHOUT_BASE_EVIDENCE
+  counts:
+    skills: 178
+    perSkillFiles: 2314
+    externalDependencyEdges: 123
+    adapters: 112
+    perAdapterFiles: 896
+    schemas: 219
+    examples: 219
+    workflows: 39
+    policies: 37
+    policyTests: 37
+    migrations: 12
+    goldenRoutes: 23
+    implementationBatches: 18
+    implementationTasks: 178
+    traceability: 178
+    referenceModules: 71
+    referenceTests: 104
+    nativeFixtureFiles: 24
+    docs: 36
+  defaults:
+    failureMode: fail-closed
+    networkPolicy: deny
+    unknownToolDecision: deny
+    unknownProofDecision: block-critical
+    etaUnit: machine-wall-clock-seconds
+  runtimeRequirements:
+    python: '>=3.11'
+    postgresql: '17'
+    jsonSchema: 2020-12
+    policy: OPA/Rego or equivalent
+    objectStorage: content-addressed/WORM
+  autoDiscovery:
+    skills: agent-skills/runtime/*/SKILL.md
+    schemas: contracts/schemas/*.schema.json
+    adapters: target-adapters/*/adapter.yaml
+    workflows: workflows/*.yaml
+    policies: policies/rego/*.rego
+    goldenRoutes: golden-routes/*/route.yaml
+  releaseBoundary: Independent bounded certificate or BLOCKED result for exact capability-package evidence
+  nonClaims:
+  - Package validation is not native product completion or production certification.
+  - No external accreditation, statutory approval, customer acceptance, E5 or P05 is inferred from package contents.
+  - Shared contract files do not create duplicate Skill ownership.

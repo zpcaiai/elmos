@@ -1,0 +1,58 @@
+{
+  "schema": "elmos.batch46.seed-manifest/1",
+  "generated_at": "<utc-timestamp>",
+  "seed": "<deterministic seed>",
+  "deterministic": true,
+  "classification": "ephemeral-disposable",
+  "allowed_data_sources": [
+    "synthetic-from-contract",
+    "desensitized-sample",
+    "corpus-trim"
+  ],
+  "production_data_used": false,
+  "provenance": [
+    {
+      "data_source": "synthetic-from-contract",
+      "derived_from": [
+        "<ddl>",
+        "<env template>",
+        "<api contract>"
+      ]
+    },
+    {
+      "data_source": "desensitized-sample",
+      "path": "<file>",
+      "digest": "sha256:<digest>",
+      "authorization": "<approval reference>",
+      "scan_findings": [],
+      "accepted_with_findings": false
+    },
+    {
+      "data_source": "corpus-trim",
+      "corpus_root": "<development corpus only>",
+      "files": [
+        "<file>"
+      ],
+      "independence_note": "corpus-trim may reuse development corpora only; holdout and representative workload corpora must stay untouched"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "<artifact>",
+      "path": "smoke/seed/<artifact>",
+      "data_source": "synthetic-from-contract",
+      "classification": "ephemeral-disposable",
+      "digest": "sha256:<digest>"
+    }
+  ],
+  "teardown": {
+    "drop_on_expiry": true,
+    "targets": [
+      "ephemeral database volume",
+      "generated seed files",
+      "stub upstream state"
+    ]
+  },
+  "unsupported": [],
+  "unknown": []
+}

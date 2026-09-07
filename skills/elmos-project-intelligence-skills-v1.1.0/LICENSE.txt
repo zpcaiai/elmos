@@ -1,0 +1,7 @@
+Elmos Project Intelligence Skills Package
+Copyright (c) 2026 Elmos project owner.
+
+This package is supplied for use, adaptation, and commercialization within the Elmos project and its authorized deployments.
+Redistribution outside the authorized Elmos project requires the project owner's approval.
+
+Third-party libraries, formats, and product names referenced by the package remain subject to their own licenses.

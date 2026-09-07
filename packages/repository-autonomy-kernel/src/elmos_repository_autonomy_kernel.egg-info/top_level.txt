@@ -1,0 +1,2 @@
+elmos_autonomy_kernel
+elmos_repository_autonomy

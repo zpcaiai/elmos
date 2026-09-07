@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "workload_id",
+    "build_green",
+    "p0_tests_passed",
+    "p0_behavior_passed",
+    "security_passed",
+    "maintainability_passed",
+    "customer_accepted",
+    "evidence"
+  ],
+  "properties": {
+    "workload_id": {
+      "type": "string"
+    },
+    "build_green": {
+      "const": true
+    },
+    "p0_tests_passed": {
+      "const": true
+    },
+    "p0_behavior_passed": {
+      "const": true
+    },
+    "security_passed": {
+      "const": true
+    },
+    "maintainability_passed": {
+      "const": true
+    },
+    "customer_accepted": {
+      "const": true
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 0
+    }
+  },
+  "additionalProperties": false
+}

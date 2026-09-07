@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Tenant Identity RLS"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-tenant-identity-rls to execute its scoped workflow with fail-closed evidence."

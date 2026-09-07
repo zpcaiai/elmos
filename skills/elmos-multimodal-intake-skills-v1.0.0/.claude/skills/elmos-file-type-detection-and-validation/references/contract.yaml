@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+ordinal: 3
+name: elmos-file-type-detection-and-validation
+title: 文件类型识别与验证
+objective: 在任何解析或解压前可靠识别真实文件类型，并给出可审计的置信度、冲突和处理决策。
+dependencies: []
+inputs:
+- 原始字节头、元数据、文件名
+outputs:
+- DetectedFileType、风险标签、解析器候选
+responsibilities:
+- 组合扩展名、Content-Type、magic bytes 和内容探测
+- 对多态格式与容器格式进行二级识别
+- 维护可版本化的格式注册表与解析器能力表
+- 将不一致、未知和高风险格式路由到隔离或人工复核
+deliverables:
+- FileTypeDetector 接口与适配器
+- 格式注册表和决策规则
+- 伪扩展名、截断文件和 polyglot 文件测试
+acceptance:
+- 仅改扩展名无法绕过识别
+- 未知格式不会被错误交给宽松解析器
+- 识别结果包含依据、置信度和注册表版本
+- 检测过程有资源上限且不会执行文件内容
+data_entities:
+- file_type_registry
+- file_type_detections
+events:
+- asset.type.detected
+- asset.type.conflict
+- asset.type.unknown
+metrics:
+- type_detection_accuracy
+- unknown_rate
+failure_modes:
+- 伪扩展名
+- 多格式冲突
+- 文件头损坏
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

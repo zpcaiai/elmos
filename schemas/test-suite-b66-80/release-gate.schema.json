@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "release-gate.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "suite_id",
+    "status",
+    "thresholds",
+    "counts",
+    "reasons",
+    "generated_at"
+  ],
+  "properties": {
+    "suite_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "NOT_RUN",
+        "PASS",
+        "CONDITIONAL",
+        "BLOCKED"
+      ]
+    },
+    "thresholds": {
+      "type": "object"
+    },
+    "counts": {
+      "type": "object"
+    },
+    "reasons": {
+      "type": "array"
+    },
+    "generated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

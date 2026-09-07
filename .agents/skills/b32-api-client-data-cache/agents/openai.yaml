@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Api Client Data Cache"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b32-api-client-data-cache to execute this ELMOS Runtime Skill with fail-closed evidence."

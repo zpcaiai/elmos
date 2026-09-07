@@ -1,0 +1,14 @@
+BEGIN;
+CREATE TABLE IF NOT EXISTS ai_skill_definition (tenant_id uuid NOT NULL, skill_id text NOT NULL, version text NOT NULL, ir jsonb NOT NULL, content_hash text NOT NULL, status text NOT NULL CHECK (status IN ('DRAFT','FROZEN','BLOCKED','RELEASED','REVOKED')), created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (tenant_id, skill_id, version));
+CREATE TABLE IF NOT EXISTS ai_protocol_resource (tenant_id uuid NOT NULL, resource_id text NOT NULL, resource_type text NOT NULL, version text, digest text, trust_status text NOT NULL, metadata jsonb NOT NULL DEFAULT '{}'::jsonb, updated_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (tenant_id, resource_id));
+CREATE TABLE IF NOT EXISTS ai_delegated_identity (tenant_id uuid NOT NULL, binding_id uuid PRIMARY KEY DEFAULT gen_random_uuid(), human_subject text, agent_id text NOT NULL, workload_id text NOT NULL, audience text NOT NULL, scopes jsonb NOT NULL, issued_at timestamptz NOT NULL, expires_at timestamptz NOT NULL, status text NOT NULL CHECK (status IN ('ACTIVE','EXPIRED','REVOKED','BLOCKED')));
+ALTER TABLE ai_skill_definition ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_skill_definition ON ai_skill_definition;
+CREATE POLICY tenant_isolation_ai_skill_definition ON ai_skill_definition USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_protocol_resource ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_protocol_resource ON ai_protocol_resource;
+CREATE POLICY tenant_isolation_ai_protocol_resource ON ai_protocol_resource USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+ALTER TABLE ai_delegated_identity ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation_ai_delegated_identity ON ai_delegated_identity;
+CREATE POLICY tenant_isolation_ai_delegated_identity ON ai_delegated_identity USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+COMMIT;

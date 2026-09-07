@@ -1,0 +1,1235 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.harness-runtime-assurance-delta.acceptance-bindings",
+  "package": "elmos-v3-harness-runtime-assurance-delta@3.1.0",
+  "source_archive": {
+    "path": "skills/subskills/elmos-v3-harness-runtime-assurance-delta-v3.1.0.zip",
+    "sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
+    "bytes": 173228,
+    "executed": false
+  },
+  "binding_semantics": {
+    "classification": "STATIC_TRACEABILITY_ONLY",
+    "successful_local_result_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "target_environment": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "static_mapping_is_execution_evidence": false
+  },
+  "expected_skill_count": 13,
+  "expected_scenarios_per_skill": 8,
+  "expected_scenario_count": 104,
+  "skills": [
+    {
+      "skill": "elmos-tool-result-interception-commit",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-tool-result-interception-commit/acceptance.yaml",
+        "sha256": "sha256:5899a783fb88568b847f0216c5ab99542aa5a9022545ae6c0d99b901af3f63fa",
+        "bytes": 4331,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-001-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_tool_result_commit_publish_abort_and_replay_are_atomic"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_36_two_calls_in_one_invocation_commit_independently",
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_tool_result_commit_publish_abort_and_replay_are_atomic"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_tool_result_commit_publish_abort_and_replay_are_atomic"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_37_aborted_result_cannot_publish"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_45_result_commit_replay_does_not_reinvoke_interceptor"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_45_result_commit_replay_does_not_reinvoke_interceptor"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-001-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_completed_invocation_replays_without_handler_or_state_transition",
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_explicit_recovery_reconciles_existing_result_without_handler",
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_precommit_recovery_aborts_without_reinvoking_interceptors"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-step-finalized-execution-plan",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-step-finalized-execution-plan/acceptance.yaml",
+        "sha256": "sha256:69ea973a1920a132dd491bbafbf76e4d36e4491b243fd2fb62878dc615dede96",
+        "bytes": 4160,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-002-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_02_step_finalized_execution_plan"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_38_fabricated_finalized_plan_is_rejected"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_02_step_finalized_execution_plan",
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_snapshot_revision_drift_fails_before_runtime_execution"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_new_plan_retires_old_active_plan_before_activation"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_38_fabricated_finalized_plan_is_rejected"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_step_and_capability_mutations_emit_once_and_stale_states_fail"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_active_plan_restores_in_a_new_process_without_state_regression"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-002-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_active_plan_restores_in_a_new_process_without_state_regression"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-lossless-permission-replay",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-lossless-permission-replay/acceptance.yaml",
+        "sha256": "sha256:35bf117108f3795c015f45bb84cf05461b731d8a43d9664b94934b2634f282bd",
+        "bytes": 4034,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-003-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_03_permission_adapter_exact_replay"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_20_permission_adapter_lossy_is_unsupported"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_03_permission_adapter_exact_replay"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_20_permission_adapter_lossy_is_unsupported"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_evidence_adapter_survives_reconstruction_and_is_tenant_scoped",
+            "test_delta_skills.DeltaSkillsImplementationTests.test_03_permission_adapter_exact_replay"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_03_permission_adapter_exact_replay"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-003-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_evidence_adapter_survives_reconstruction_and_is_tenant_scoped"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-invocation-scoped-capability-lease",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-invocation-scoped-capability-lease/acceptance.yaml",
+        "sha256": "sha256:c5bf7c691b2b4c623b6cc7ac1db7c78999b621c5259a00da0673db1abf088f1f",
+        "bytes": 4079,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-004-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_04_invocation_scoped_capability_lease"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_39_capability_lease_expiration_is_monotonic"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_step_and_capability_mutations_emit_once_and_stale_states_fail"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_21_capability_lease_requires_short_expiry"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_step_and_capability_mutations_emit_once_and_stale_states_fail"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_step_and_capability_mutations_emit_once_and_stale_states_fail"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-004-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_recovery_required_claim_never_executes_the_handler"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-host-minted-security-context",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-host-minted-security-context/acceptance.yaml",
+        "sha256": "sha256:7c77ec1eab3e1e333f2f7ee092b38833ae0ef6572243a521a7eb447bf9b9d398",
+        "bytes": 4322,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-005-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_18_unknown_payload_fields_are_denied",
+            "test_delta_skills.DeltaSkillsImplementationTests.test_05_host_minted_security_context"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_05_host_minted_security_context"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_22_unverified_host_context_stays_unknown"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.AuthorityAndExecutionClosureTests.test_deadline_is_checked_before_and_after_dispatch"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.PrivilegedPathContractClosureTests.test_privileged_path_policy_rejects_remote_mutable_undeclared_and_argument_drift"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_snapshot_revision_drift_fails_before_runtime_execution"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_23_security_context_signature_tampering_is_denied"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-005-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_completed_invocation_replays_without_handler_or_state_transition"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-environment-attachment-authority",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-environment-attachment-authority/acceptance.yaml",
+        "sha256": "sha256:be88c48775799b87b596384c12bba2ee275068eb8ddbab1faa3d81e8a52d7c54",
+        "bytes": 4100,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-006-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_06_environment_attachment_authority"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_41_authority_environment_mismatch_is_denied"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.AuthorityAndExecutionClosureTests.test_trusted_authority_skips_second_provider_resolution"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_06_environment_attachment_authority"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.AuthorityAndExecutionClosureTests.test_authority_digest_changes_for_nested_grants_and_is_order_stable"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_snapshot_revision_drift_fails_before_runtime_execution"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.AuthorityAndExecutionClosureTests.test_authority_digest_contains_every_dataclass_field"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-006-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_completed_invocation_replays_without_handler_or_state_transition"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-executor-generation-fencing",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-executor-generation-fencing/acceptance.yaml",
+        "sha256": "sha256:43346d677759774890f99feafe8204b8e149e1f8fb1a87c1cb317ac2320dbebc",
+        "bytes": 4115,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-007-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_executor_record_transition_and_atomic_advance_are_idempotent"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_executor_record_transition_and_atomic_advance_are_idempotent"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_24_executor_stale_epoch_and_missing_probe_are_denied"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_24_executor_stale_epoch_and_missing_probe_are_denied"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_executor_record_transition_and_atomic_advance_are_idempotent"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_executor_record_transition_and_atomic_advance_are_idempotent"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-007-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_executor_record_transition_and_atomic_advance_are_idempotent"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-workspace-ownership-lease",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-workspace-ownership-lease/acceptance.yaml",
+        "sha256": "sha256:8d20baca448f17061c9c2284d5b228e4f5f0ef8605ad1f3e9138511505040cd6",
+        "bytes": 3995,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-008-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_25_workspace_scope_traversal_is_denied",
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_40_workspace_scope_is_hierarchical"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_26_workspace_takeover_requires_handoff",
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-008-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_workspace_lifecycle_preserves_repository_base_and_write_scope"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-harness-transport-version-negotiation",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-harness-transport-version-negotiation/acceptance.yaml",
+        "sha256": "sha256:1e99db46ff3a4768dfda6232165a11746a0151996d7708e46fe7b09c393dca53",
+        "bytes": 4229,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-009-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_every_explicit_protocol_offer_dimension_is_exact"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_negative_feature_boundaries_apply_only_when_requested"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_deepseek_profiles_expose_only_canonical_tool_call_identity"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_negative_feature_boundaries_apply_only_when_requested"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_empty_requirements_do_not_activate_advertised_negative_features"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_27_protocol_adapter_unknown_version_is_unsupported"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.ProtocolContractClosureTests.test_runtime_accepts_exact_offer_and_rejects_transport_drift"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-009-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_09_protocol_adapter_negotiation"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-skill-trust-domain-provenance",
+      "priority": "P0",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P0/elmos-skill-trust-domain-provenance/acceptance.yaml",
+        "sha256": "sha256:5f379ff123b476650e00367908b72a124a09e173fc6af0385fb9fd83fbba0fdf",
+        "bytes": 4184,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-010-A01",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_46_skill_provenance_rejects_in_root_symlink"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-A02",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_29_skill_provenance_rejects_self_verification_and_bad_digest"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-A03",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_29_skill_provenance_rejects_self_verification_and_bad_digest"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-A04",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_10_skill_trust_domain_provenance"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-A05",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_29_skill_provenance_rejects_self_verification_and_bad_digest"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_snapshot_revision_drift_fails_before_runtime_execution"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_29_skill_provenance_rejects_self_verification_and_bad_digest"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-010-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_46_skill_provenance_rejects_in_root_symlink"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-registered-durable-plugin-events",
+      "priority": "P1",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P1/elmos-registered-durable-plugin-events/acceptance.yaml",
+        "sha256": "sha256:12540cc7b24258662c8c41d0b24e4aef5089f64a0970d6e0c61c833db1f63d15",
+        "bytes": 4145,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-011-A01",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_injected_custom_validator_and_upgrader_are_used"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-A02",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_unregistered_custom_handler_stays_unsupported"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-A03",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_optional_unknown_event_is_skipped_only_by_host_rule_and_audited"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-A04",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_uninstall_preflight_is_explicit_conservative_and_audited",
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_downgrade_preflight_requires_migration_of_newer_events"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-A05",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_fork_replay_preserves_exact_causal_identity",
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_migration_replay_upgrades_payload_without_changing_causality"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_causal_replay_rejects_missing_duplicate_and_cross_scope_parents"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-011-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.DurableEventContractClosureTests.test_migration_replay_upgrades_payload_without_changing_causality"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-typed-external-ingress",
+      "priority": "P1",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P1/elmos-typed-external-ingress/acceptance.yaml",
+        "sha256": "sha256:18649ba6606a46c8f0b4f322596b7051339b2b8e5718a82096c99832e543e1c3",
+        "bytes": 4022,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-012-A01",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_runtime_external_ingress_rejects_user_impersonation",
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_legacy_producer_set_defaults_to_external_kinds_not_user_input"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-A02",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_12_typed_external_ingress",
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_event_ingress_and_subagent_records_are_immutable_deduplicated_and_journaled"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-A03",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_34_conflicting_ingress_replay_is_denied",
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_ingress_causation_rejects_cross_correlation_cycles_and_reused_ids"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-A04",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_12_typed_external_ingress"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-A05",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_history_uses_stable_keyset_cursor_and_arrival_order",
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_ingress_causation_rejects_cross_correlation_cycles_and_reused_ids"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_34_conflicting_ingress_replay_is_denied",
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_ingress_causation_rejects_cross_correlation_cycles_and_reused_ids"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-012-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_contract_closure.TypedIngressContractClosureTests.test_history_uses_stable_keyset_cursor_and_arrival_order"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    },
+    {
+      "skill": "elmos-subagent-model-execution-spec",
+      "priority": "P1",
+      "source_acceptance": {
+        "archive_member": "elmos-v3-harness-runtime-assurance-delta-v3.1.0/payload/skills/extensions/P1/elmos-subagent-model-execution-spec/acceptance.yaml",
+        "sha256": "sha256:c6d7d907ff2d7217eefdee5434b8a091d10e6dcdd93199d56b55b25c436222e7",
+        "bytes": 4142,
+        "executed": false
+      },
+      "cases": [
+        {
+          "acceptance_id": "ELMOS-V3D-013-A01",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_13_subagent_model_execution_spec"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-A02",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_35_subagent_authority_and_model_widening_fail_closed"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-A03",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_13_subagent_model_execution_spec"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-A04",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_35_subagent_authority_and_model_widening_fail_closed"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-A05",
+          "priority": "P1",
+          "repository_test_selectors": [
+            "test_delta_skills.DeltaSkillsImplementationTests.test_13_subagent_model_execution_spec"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-NEG-STALE",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_scope_fences_fail_closed_before_any_delta_read"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-NEG-REPLAY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_storage.RuntimeAssurancePostgresPortTests.test_event_ingress_and_subagent_records_are_immutable_deduplicated_and_journaled"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        },
+        {
+          "acceptance_id": "ELMOS-V3D-013-RECOVERY",
+          "priority": "P0",
+          "repository_test_selectors": [
+            "test_delta_control_plane.RuntimeAssuranceControlPlaneTests.test_completed_invocation_replays_without_handler_or_state_transition"
+          ],
+          "local_evidence_boundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "target_environment": "NOT_RUN",
+          "certification": "NOT_CERTIFIED"
+        }
+      ]
+    }
+  ]
+}

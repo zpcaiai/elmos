@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-17-migration-execution-os-complete-skill-pack",
+  "batch": 17,
+  "title": "Migration Execution Operating System",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b17-migration-execution-os-orchestrator",
+    "b17-migration-execution-os-domain-model",
+    "b17-migration-execution-os-discovery-inventory",
+    "b17-migration-execution-os-capability-planning",
+    "b17-migration-execution-os-deterministic-engine",
+    "b17-migration-execution-os-adapter-provider",
+    "b17-migration-execution-os-workflow-runtime",
+    "b17-migration-execution-os-lineage-reconciliation",
+    "b17-migration-execution-os-security-policy",
+    "b17-migration-execution-os-human-approval",
+    "b17-migration-execution-os-observability-economics",
+    "b17-migration-execution-os-corpus-benchmark",
+    "b17-migration-execution-os-failure-recovery",
+    "b17-migration-execution-os-integration-api",
+    "b17-migration-execution-os-lifecycle-recertification",
+    "b17-migration-execution-os-certification-gate"
+  ],
+  "upstream_batch": 16,
+  "files": [
+    {
+      "path": "BATCH16_COMPATIBILITY.md",
+      "sha256": "c2c3018217d34c3a6596e82e68cd36a9f0edd1d3951ec4fedd5cc16ff4e59541",
+      "size": 2099
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "c8b2bba8049c8e467070862319bd37e2cea7ae987dc2abf867bac3a260a28264",
+      "size": 2284
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "60f288ed853406bc6d5852bc07cb9d81d912f5af4e7df9c53d557710a31f04ac",
+      "size": 1770
+    },
+    {
+      "path": "README.md",
+      "sha256": "df898ec9623244d7343441e96d5edb66dfd810b9f3c30360e5083c1db719e3ec",
+      "size": 1060
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "7ccba732c53341dfdd00c01689c6457ddcd7e18635100a4d85e216f20bc03073",
+      "size": 3400
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "e1c84d019246eedd4770e660b0f1b99a712ec51c544932bff11935971391c6fc",
+      "size": 2957
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "de403ff17ad2eaf580b0dad5435572e4c5e387dbbdf624bbfdb371f895a8a3ba",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "2aad41bafa590c7e66ca572d779cd4ec33af8e6fd29c20564492314a0110ae76",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "f22c44f211dae7cde4e0ddb3db4d92c94a6094c8d4c0efd916a7971c783f1c19",
+      "size": 270
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "36a629c12d74910af9aca4e1a740f87751eae24c35bd4ab21818df594490eba2",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "101bb8cb9fb633fad4c1c072eb15286c2e99f3b94e7b8045b5a2ef0654ffec02",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "3ea53207d89616186bcb92f0f91610ff438e145749811e9da6e9b92e924ec7db",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "d76052c8f7dfe61220c8b37becd5892bf56cb3c9087bed91c9fe9031ae506808",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "08667688f28780d9a7f0555778260651e34ce26f9e8c8b3bf0f3ff4b1d125436",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "fe4eb2628da49a5bb968ccf37f1d5917f539f179d53f4653ec9c3e3420cf2905",
+      "size": 848
+    },
+    {
+      "path": "skills/b17-migration-execution-os-adapter-provider/SKILL.md",
+      "sha256": "2fd2d4e30eb8bc17ab13132ad37b85bc5f88106191cacdc5acf51b38185aa773",
+      "size": 3838
+    },
+    {
+      "path": "skills/b17-migration-execution-os-capability-planning/SKILL.md",
+      "sha256": "5db3ac59fe8272558fb34184ea3f212a3032f740a47ac74689fcc0f3f6e7c69d",
+      "size": 3740
+    },
+    {
+      "path": "skills/b17-migration-execution-os-certification-gate/SKILL.md",
+      "sha256": "a3726a5c7902099d894ea91de6bf83d74622dbe19f2ec40bee5abc139b6fc395",
+      "size": 3869
+    },
+    {
+      "path": "skills/b17-migration-execution-os-corpus-benchmark/SKILL.md",
+      "sha256": "832185877082148bdf2f0aba2595bf80993768069d9676aa08e448911516edd0",
+      "size": 3779
+    },
+    {
+      "path": "skills/b17-migration-execution-os-deterministic-engine/SKILL.md",
+      "sha256": "c3768baf6d6394540277e8b7c8a66d6b43eaa0e869864cde9c54ab070160875b",
+      "size": 3756
+    },
+    {
+      "path": "skills/b17-migration-execution-os-discovery-inventory/SKILL.md",
+      "sha256": "8177e0cffb350e2403c499156283ed35e663b712a6b14a4c180a60a789272dea",
+      "size": 3783
+    },
+    {
+      "path": "skills/b17-migration-execution-os-domain-model/SKILL.md",
+      "sha256": "d3715aad548f32e576606e8d0062987fa2c7ccaea5d868e7db17f767a87b6f16",
+      "size": 3810
+    },
+    {
+      "path": "skills/b17-migration-execution-os-failure-recovery/SKILL.md",
+      "sha256": "3aa6eed5e7249055d46b0759948da4e7e384b961bfb2cc38c7154aa11353afc7",
+      "size": 3787
+    },
+    {
+      "path": "skills/b17-migration-execution-os-human-approval/SKILL.md",
+      "sha256": "f24f7ec87a5ced8ab4292189755e6cadbeb50d06267894b0e8c42ec9a57ffafa",
+      "size": 3772
+    },
+    {
+      "path": "skills/b17-migration-execution-os-integration-api/SKILL.md",
+      "sha256": "b4ed23bbab760dc4f3c74faa40ab1cd1544d657b029bc6ac76debca706cf7b64",
+      "size": 3757
+    },
+    {
+      "path": "skills/b17-migration-execution-os-lifecycle-recertification/SKILL.md",
+      "sha256": "b781f57f4f2ed3928adc9b39e954470734925a7dc262845b0560c89670f6bbf7",
+      "size": 3847
+    },
+    {
+      "path": "skills/b17-migration-execution-os-lineage-reconciliation/SKILL.md",
+      "sha256": "920c22edcb77f3d70020f102e4fa7faeeedd548aaa6ec8b71c2dde1a72cfcdc8",
+      "size": 3798
+    },
+    {
+      "path": "skills/b17-migration-execution-os-observability-economics/SKILL.md",
+      "sha256": "2711768f931dc6b6027c5984e2fe2e96858bdeadf59a03fad0f14b76c862881d",
+      "size": 3813
+    },
+    {
+      "path": "skills/b17-migration-execution-os-orchestrator/SKILL.md",
+      "sha256": "d3c78ccc1988c208c3600e24725e30ad30123dfb65414b9718e24635f8876786",
+      "size": 3835
+    },
+    {
+      "path": "skills/b17-migration-execution-os-security-policy/SKILL.md",
+      "sha256": "b7e63cbb1c6b1533cd6b6787a6a479c0dc88f78e4c1b9b7e67cf9ed37c956647",
+      "size": 3792
+    },
+    {
+      "path": "skills/b17-migration-execution-os-workflow-runtime/SKILL.md",
+      "sha256": "427e8d08bd29e3bbc3e3be73f1f7fd30d1148054bf02d679188099b9d9cae7b4",
+      "size": 3801
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "c6090a39c74389b72f7a7bcc065849413e7735568186dcb6ed99dc473dffb4ae",
+      "size": 388
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "da72084e3bf5f5e91927f2d5b913c870095e3675282141c88b1033b136b1a942",
+      "size": 1914
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

@@ -1,0 +1,155 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceWorkflow
+metadata:
+  name: sql-conversion-formal-assurance
+  title: SQL Dialect and Routine Formal Assurance
+  version: 1.0.0
+  domain: sql-conversion
+spec:
+  durability:
+    checkpointEveryStep: true
+    resumePolicy: idempotent
+    fencingRequired: true
+  concurrency:
+    topLevelPerAccount: 3
+    maxParallelSteps: 8
+  budget:
+    etaUnit: wall-clock-seconds
+    reserveBeforeStart: true
+  steps:
+  - id: sir
+    skillRef: elmos-sql-semantic-ir
+    dependsOn: []
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: types
+    skillRef: elmos-sql-type-precision-verifier
+    dependsOn:
+    - sir
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: query
+    skillRef: elmos-sql-query-equivalence
+    dependsOn:
+    - sir
+    - types
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: schema
+    skillRef: elmos-schema-losslessness-proof
+    dependsOn:
+    - sir
+    - types
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: ddl
+    skillRef: elmos-ddl-constraint-preservation
+    dependsOn:
+    - schema
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: dml
+    skillRef: elmos-dml-state-equivalence
+    dependsOn:
+    - query
+    - schema
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: routine
+    skillRef: elmos-routine-contract-verifier
+    dependsOn:
+    - sir
+    - types
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: trigger
+    skillRef: elmos-trigger-trace-verifier
+    dependsOn:
+    - sir
+    - routine
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: dynamic
+    skillRef: elmos-dynamic-sql-proof-boundary
+    dependsOn:
+    - sir
+    - routine
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  - id: transaction
+    skillRef: elmos-sql-transaction-exception-refinement
+    dependsOn:
+    - routine
+    - trigger
+    - dml
+    onFailure: halt-and-preserve-evidence
+    retry:
+      maxAttempts: 2
+      retryOn:
+      - INFRASTRUCTURE
+      neverRetryOn:
+      - REFUTED_WITH_COUNTEREXAMPLE
+      - UNSUPPORTED
+  terminalPolicy:
+    successRequires: all required steps terminal and gate allowed
+    unknownIsFailure: true
+  events:
+  - workflow.started
+  - proof.step.started
+  - proof.step.completed
+  - proof.step.failed
+  - workflow.completed

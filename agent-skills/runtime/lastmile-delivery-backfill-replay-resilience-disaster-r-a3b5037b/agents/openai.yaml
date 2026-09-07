@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-backfill-replay-resilience-disaster-r-a3b5037b to implement its fail-closed ELMOS Product B51 contract."

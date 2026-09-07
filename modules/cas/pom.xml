@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../pom.xml</relativePath></parent>
+  <artifactId>elmos-cas</artifactId>
+  <dependencies>
+    <!--
+      The repository's one SigV4 implementation lives here. elmos-object-storage has no
+      third-party dependencies of its own, so depending on it keeps this module's transitive
+      closure JDK-only while removing a duplicate RFC 3986 encoder.
+    -->
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-object-storage</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>

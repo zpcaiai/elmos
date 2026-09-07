@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "source_build": "PASSED_LOCAL_SELF_ATTESTED",
+  "official_target_build": "NOT_RUN",
+  "emulator": "NOT_RUN",
+  "physical_device": "NOT_RUN",
+  "differential_journeys": "NOT_RUN",
+  "visual": "NOT_RUN",
+  "accessibility": "NOT_RUN",
+  "privacy": "NOT_RUN",
+  "performance": "NOT_RUN",
+  "security": "NOT_RUN",
+  "independent_holdout": "NOT_RUN",
+  "customer_acceptance": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

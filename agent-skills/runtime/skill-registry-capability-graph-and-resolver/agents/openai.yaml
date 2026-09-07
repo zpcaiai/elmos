@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Registry Capability Graph and Resolver"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $skill-registry-capability-graph-and-resolver to execute this ELMOS product-closure Skill with fail-closed evidence."

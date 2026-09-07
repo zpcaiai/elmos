@@ -1,0 +1,63 @@
+{
+  "BATCH": 38,
+  "TITLE": "企业部署矩阵与升级生命周期",
+  "PACK_TYPE": "deployment-lifecycle",
+  "SKILL_COUNT": 22,
+  "SKILL_NAMES": [
+    "b38-enterprise-deployment-upgrade-factory",
+    "b38-edition-deployment-responsibility-matrix",
+    "b38-portable-control-plane-architecture",
+    "b38-multitenant-saas-edition",
+    "b38-dedicated-saas-edition",
+    "b38-customer-vpc-edition",
+    "b38-self-hosted-edition",
+    "b38-private-sovereign-cloud-edition",
+    "b38-airgapped-edition",
+    "b38-edge-plant-restricted-network-edition",
+    "b38-multiregion-active-active-edition",
+    "b38-control-data-execution-plane-topology",
+    "b38-tenant-cross-edition-migration",
+    "b38-platform-version-compatibility-matrix",
+    "b38-runner-n-minus-one-n-plus-one-compatibility",
+    "b38-workflow-version-coexistence-recovery",
+    "b38-database-expand-contract-upgrade",
+    "b38-recipe-pack-extension-upgrade",
+    "b38-offline-signed-update-bundle",
+    "b38-zero-downtime-rolling-upgrade",
+    "b38-upgrade-failure-rollback-dr",
+    "b38-deployment-upgrade-certification-gate"
+  ],
+  "METRICS": {
+    "edition_coverage": 1.0,
+    "portable_control_plane_pass_rate": 1.0,
+    "mixed_version_compatibility_pass_rate": 1.0,
+    "zero_downtime_upgrade_pass_rate": 1.0,
+    "rollback_pass_rate": 1.0,
+    "airgap_update_pass_rate": 1.0,
+    "tenant_migration_pass_rate": 1.0,
+    "dr_recovery_pass_rate": 1.0,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "critical_data_loss",
+    "cross_tenant_access",
+    "unsigned_updates_accepted",
+    "unresolved_schema_incompatibilities",
+    "incompatible_runner_leases",
+    "orphaned_workflows",
+    "residency_violations",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "edition-matrix",
+    "topology-contract",
+    "upgrade-plan",
+    "offline-bundle-manifest",
+    "dr-plan"
+  ],
+  "REQUIRED_BATCHES": [
+    26,
+    27,
+    37
+  ]
+}

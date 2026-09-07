@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Jakarta Ee Modernization"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-jakarta-ee-modernization to execute this ELMOS Runtime Skill with fail-closed evidence."

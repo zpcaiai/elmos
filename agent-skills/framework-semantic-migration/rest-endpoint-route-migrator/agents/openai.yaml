@@ -1,0 +1,4 @@
+interface:
+  display_name: "rest-endpoint-route-migrator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $rest-endpoint-route-migrator to perform this Batch 7 framework migration step."

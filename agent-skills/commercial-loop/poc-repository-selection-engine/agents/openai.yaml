@@ -1,0 +1,4 @@
+interface:
+  display_name: "poc-repository-selection-engine"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $poc-repository-selection-engine to evaluate this Batch 13 commercial capability with evidence."

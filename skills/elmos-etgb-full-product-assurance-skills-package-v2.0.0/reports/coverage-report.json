@@ -1,0 +1,203 @@
+{
+  "complete": true,
+  "declared_model": "ETGB-FULL-PRODUCT-COVERAGE-2.0",
+  "case_counts": {
+    "spring-modernization": 3117,
+    "cross-language": 29535,
+    "project-generation": 1451,
+    "sql-conversion": 11761,
+    "identity-access-tenant": 849,
+    "platform-control-plane": 1057,
+    "repository-ingestion-context": 1024,
+    "multimodal-document-processing": 880,
+    "ai-runtime-model-routing": 1073,
+    "agent-protocol-tooling": 1040,
+    "rag-memory-knowledge": 1073,
+    "project-intelligence": 1137,
+    "online-ide-debug": 1041,
+    "artifact-document-diagram": 1040,
+    "collaboration-integrations": 896,
+    "billing-entitlements": 1041,
+    "payment-finance": 993,
+    "api-sdk-webhook": 992,
+    "storage-search-cache": 1008,
+    "deployment-operations": 1136,
+    "security-privacy-compliance": 1296,
+    "ui-accessibility-localization": 1040,
+    "analytics-admin-support": 1008,
+    "notifications-scheduler": 736,
+    "ai-solution-factory": 992,
+    "data-bigdata-solution": 944,
+    "commercial-delivery-certification": 944,
+    "product-journey": 615,
+    "standards-assurance": 300,
+    "cross-cutting": 5400
+  },
+  "lines": {
+    "agent-protocol-tooling": {
+      "expected_cells": 1040,
+      "covered_cells": 1040,
+      "coverage": 1.0
+    },
+    "ai-runtime-model-routing": {
+      "expected_cells": 1072,
+      "covered_cells": 1072,
+      "coverage": 1.0
+    },
+    "ai-solution-factory": {
+      "expected_cells": 992,
+      "covered_cells": 992,
+      "coverage": 1.0
+    },
+    "analytics-admin-support": {
+      "expected_cells": 1008,
+      "covered_cells": 1008,
+      "coverage": 1.0
+    },
+    "api-sdk-webhook": {
+      "expected_cells": 992,
+      "covered_cells": 992,
+      "coverage": 1.0
+    },
+    "artifact-document-diagram": {
+      "expected_cells": 1040,
+      "covered_cells": 1040,
+      "coverage": 1.0
+    },
+    "billing-entitlements": {
+      "expected_cells": 1040,
+      "covered_cells": 1040,
+      "coverage": 1.0
+    },
+    "collaboration-integrations": {
+      "expected_cells": 896,
+      "covered_cells": 896,
+      "coverage": 1.0
+    },
+    "commercial-delivery-certification": {
+      "expected_cells": 944,
+      "covered_cells": 944,
+      "coverage": 1.0
+    },
+    "cross-cutting": {
+      "expected_cells": 5400,
+      "covered_cells": 5400,
+      "coverage": 1.0
+    },
+    "cross-language": {
+      "expected_cells": 29534,
+      "covered_cells": 29534,
+      "coverage": 1.0
+    },
+    "data-bigdata-solution": {
+      "expected_cells": 944,
+      "covered_cells": 944,
+      "coverage": 1.0
+    },
+    "deployment-operations": {
+      "expected_cells": 1136,
+      "covered_cells": 1136,
+      "coverage": 1.0
+    },
+    "identity-access-tenant": {
+      "expected_cells": 848,
+      "covered_cells": 848,
+      "coverage": 1.0
+    },
+    "multimodal-document-processing": {
+      "expected_cells": 880,
+      "covered_cells": 880,
+      "coverage": 1.0
+    },
+    "notifications-scheduler": {
+      "expected_cells": 736,
+      "covered_cells": 736,
+      "coverage": 1.0
+    },
+    "online-ide-debug": {
+      "expected_cells": 1040,
+      "covered_cells": 1040,
+      "coverage": 1.0
+    },
+    "payment-finance": {
+      "expected_cells": 992,
+      "covered_cells": 992,
+      "coverage": 1.0
+    },
+    "platform-control-plane": {
+      "expected_cells": 1056,
+      "covered_cells": 1056,
+      "coverage": 1.0
+    },
+    "product-journey": {
+      "expected_cells": 615,
+      "covered_cells": 615,
+      "coverage": 1.0
+    },
+    "project-generation": {
+      "expected_cells": 1450,
+      "covered_cells": 1450,
+      "coverage": 1.0
+    },
+    "project-intelligence": {
+      "expected_cells": 1136,
+      "covered_cells": 1136,
+      "coverage": 1.0
+    },
+    "rag-memory-knowledge": {
+      "expected_cells": 1072,
+      "covered_cells": 1072,
+      "coverage": 1.0
+    },
+    "repository-ingestion-context": {
+      "expected_cells": 1024,
+      "covered_cells": 1024,
+      "coverage": 1.0
+    },
+    "security-privacy-compliance": {
+      "expected_cells": 1296,
+      "covered_cells": 1296,
+      "coverage": 1.0
+    },
+    "spring-modernization": {
+      "expected_cells": 3116,
+      "covered_cells": 3116,
+      "coverage": 1.0
+    },
+    "sql-conversion": {
+      "expected_cells": 11760,
+      "covered_cells": 11760,
+      "coverage": 1.0
+    },
+    "standards-assurance": {
+      "expected_cells": 300,
+      "covered_cells": 300,
+      "coverage": 1.0
+    },
+    "storage-search-cache": {
+      "expected_cells": 1008,
+      "covered_cells": 1008,
+      "coverage": 1.0
+    },
+    "ui-accessibility-localization": {
+      "expected_cells": 1040,
+      "covered_cells": 1040,
+      "coverage": 1.0
+    }
+  },
+  "missing_case_count": 0,
+  "missing_case_examples": [],
+  "unexpected_case_count": 0,
+  "unexpected_case_examples": [],
+  "mandatory_techniques": [
+    "differential",
+    "example-based",
+    "fault-injection",
+    "fuzz",
+    "metamorphic",
+    "mutation",
+    "property-based",
+    "temporal-hidden"
+  ],
+  "missing_techniques": []
+}

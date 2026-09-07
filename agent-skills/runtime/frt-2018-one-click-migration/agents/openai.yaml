@@ -1,0 +1,4 @@
+interface:
+  display_name: "One-Click Migration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2018-one-click-migration to run FRT-2018 through the governed FRT runtime with exact scope and fail-closed evidence."

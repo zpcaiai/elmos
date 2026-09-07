@@ -1,0 +1,4 @@
+interface:
+  display_name: "continuous-validation-observability-and-defect-learning-platform"
+  short_description: "Apply this Batch 18 quality workflow safely"
+  default_prompt: "Use $continuous-validation-observability-and-defect-learning-platform to implement this test-quality task with fail-closed evidence boundaries."

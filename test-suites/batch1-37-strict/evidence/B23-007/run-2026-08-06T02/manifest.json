@@ -1,0 +1,84 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "B23-007-run-2026-08-06T02",
+  "case_id": "B23-007",
+  "case_digest": "sha256:0e0a25812fca005a95143f1012ed1bcdc81d9ee433ec057fe750fcbab76c9a4f",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:d0b42a2665a4251462fff87167a01bc356f6b2b2954448415076933f63edeb4f",
+  "environment_digest": "sha256:d6ba2dcf273d2679a0cfa4319d6acb60a44eebb16a8b32c3cc072c58a73f699f",
+  "execution_kind": "real",
+  "started_at": "2026-08-06T11:10:59Z",
+  "finished_at": "2026-08-06T11:11:05Z",
+  "executor": {
+    "id": "elmos-strict-runner@automation",
+    "role": "executor"
+  },
+  "authorization_refs": [
+    "LOCAL-DEV-2026-08-06"
+  ],
+  "files": [
+    {
+      "role": "artifact-digest",
+      "path": "artifact-manifest.json",
+      "sha256": "d0b42a2665a4251462fff87167a01bc356f6b2b2954448415076933f63edeb4f",
+      "bytes": 7134,
+      "immutable": true
+    },
+    {
+      "role": "coverage-link",
+      "path": "coverage-link.json",
+      "sha256": "a8b3d0aa6b8eb88b363e676ec868ed2b6136c20dfe06175ded34bca293dcb686",
+      "bytes": 272,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "environment-binding.json",
+      "sha256": "d6ba2dcf273d2679a0cfa4319d6acb60a44eebb16a8b32c3cc072c58a73f699f",
+      "bytes": 195,
+      "immutable": true
+    },
+    {
+      "role": "input-manifest",
+      "path": "input-manifest.json",
+      "sha256": "059f56381b51ca29d6b000a0cd211cda87d9ea70b613a3f37f908f783d658712",
+      "bytes": 1531,
+      "immutable": true
+    },
+    {
+      "role": "raw-execution-log",
+      "path": "raw-log.txt",
+      "sha256": "a40029e184324f45c27fd154b201cbb4c3c4db72e17341b065f6ba64ab29249b",
+      "bytes": 4383,
+      "immutable": true
+    },
+    {
+      "role": "replay-command",
+      "path": "replay-command.txt",
+      "sha256": "7570923c790035043190a3bf527acfaa7d13bc2df2f79f177a49818f8783868c",
+      "bytes": 151,
+      "immutable": true
+    },
+    {
+      "role": "state-before-after",
+      "path": "state-before-after.json",
+      "sha256": "076312cc21488ebbb444492cc834f0c167da3a8b953c9220fe4f2308672997bf",
+      "bytes": 1382,
+      "immutable": true
+    },
+    {
+      "role": "toolchain-version",
+      "path": "toolchain-versions.json",
+      "sha256": "52c94e18ba162914c9eeccc832b6cf908d7c7ee76eb11021b7b68cc16442b129",
+      "bytes": 561,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5"
+    }
+  ],
+  "verification_status": "pending-independent-verifier"
+}

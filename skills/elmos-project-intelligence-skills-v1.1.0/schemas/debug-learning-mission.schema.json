@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/debug-learning-mission.schema.json",
+  "title": "Elmos Debug Learning Mission",
+  "type": "object",
+  "required": [
+    "mission_id",
+    "tenant_id",
+    "project_id",
+    "revision_id",
+    "title",
+    "mode",
+    "difficulty",
+    "entry",
+    "learning_objectives",
+    "steps",
+    "assessment"
+  ],
+  "properties": {
+    "mission_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "observe",
+        "guided",
+        "challenge",
+        "free",
+        "compare"
+      ]
+    },
+    "difficulty": {
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string"
+        }
+      }
+    },
+    "learning_objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "step_id",
+          "prompt",
+          "completion"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "string"
+          },
+          "breakpoint_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "hints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "completion": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "required": [
+        "type",
+        "pass_score"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "pass_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "redaction_profile": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,22 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "OceanBase Oracle mode",
+  "discovery_required": true,
+  "preferred_sources": [
+    "Oracle"
+  ],
+  "native_tool_hooks": [
+    "OMS",
+    "OMA",
+    "DBCAT"
+  ],
+  "procedural_policy": "oracle_compatibility_with_explicit_gap_matrix",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

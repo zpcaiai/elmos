@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-etgb"
+version = "2.0.0"
+description = "Elmos full-product enterprise testing, transformation and release assurance benchmark"
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6.0",
+  "jsonschema>=4.20"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+etgb = "etgb.cli:main"
+
+[tool.setuptools]
+packages = ["etgb", "etgb.adapters"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]

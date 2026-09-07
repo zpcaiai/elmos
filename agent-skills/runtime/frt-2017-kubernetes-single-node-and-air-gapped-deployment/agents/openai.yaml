@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kubernetes Single-Node and Air-Gapped Deployment"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2017-kubernetes-single-node-and-air-gapped-deployment to run FRT-2017 through the governed FRT runtime with exact scope and fail-closed evidence."

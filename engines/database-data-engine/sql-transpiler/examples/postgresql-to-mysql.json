@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0",
+  "queryId": "orders-by-tenant",
+  "sourceProfile": "postgresql-18.4",
+  "targetProfile": "mysql-8.4.10-lts",
+  "sql": "SELECT id, created_at, total FROM orders WHERE tenant_id = :tenant_id ORDER BY created_at DESC LIMIT 25",
+  "parameters": [
+    {
+      "name": "tenant_id",
+      "logicalType": "unicode-text",
+      "nullable": false
+    }
+  ]
+}

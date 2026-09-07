@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Cost Unit Economics Certification"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-cost-unit-economics-certification to execute this ELMOS product-closure Skill with fail-closed evidence."

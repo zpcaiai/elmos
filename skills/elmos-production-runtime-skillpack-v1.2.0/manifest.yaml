@@ -1,0 +1,37 @@
+name: elmos-production-runtime
+version: 1.2.0
+title: Elmos Production Repository Execution OS
+maturity: production-candidate-skillpack
+supersedes:
+  - elmos-production-execution-data-skillpack-v1.0.0
+  - elmos-execution-runtime-services-skillpack-v1.0.0
+  - elmos-springboot4-runtime-implementation-skillpack-v1.0.0
+scope:
+  - spring-modernization
+  - repository-language-conversion
+  - multilingual-project-generation
+  - sql-dialect-routine-conversion
+platform_invariants:
+  - postgres-is-authoritative
+  - redis-is-ephemeral-only
+  - immutable-repository-snapshots
+  - workitem-attempt-modelcall-are-distinct
+  - reserve-before-billable-execution
+  - exactly-once-accounting-boundary
+  - provider-call-idempotency
+  - monotonic-fencing
+  - durable-dispatch-saga
+  - transactional-outbox
+  - rebuildable-projections
+  - tenant-isolation
+  - stream-level-usage-metering
+production_gates:
+  - negative-prepaid-balance-zero
+  - duplicate-customer-charge-zero
+  - duplicate-provider-call-on-idempotent-replay-zero
+  - stale-worker-terminal-commit-zero
+  - unexplained-reconciliation-delta-zero
+  - redis-loss-durable-state-loss-zero
+  - worker-crash-resumes-from-checkpoint
+  - credit-exhaustion-resumes-after-topup
+  - rls-cross-tenant-leak-zero

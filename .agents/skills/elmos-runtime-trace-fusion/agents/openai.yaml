@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 运行时 Trace、日志与静态图谱融合"
+  short_description: "Guide 运行时 Trace、日志与静态图谱融合 with evidence controls"
+  default_prompt: "Use $elmos-runtime-trace-fusion as guidance for 运行时 Trace、日志与静态图谱融合 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

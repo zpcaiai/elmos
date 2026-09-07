@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 730: cost baseline and run rate calculator"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $cost-baseline-and-run-rate-calculator to evaluate this capability with evidence."

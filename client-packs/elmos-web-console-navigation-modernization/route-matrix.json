@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "tuples": [
+    {
+      "source_stack": "nextjs-app-router",
+      "source_version": "16.2.10",
+      "target_stack": "nextjs-app-router",
+      "target_version": "16.2.10",
+      "status": "research",
+      "evidence_refs": []
+    }
+  ],
+  "recertification_triggers": []
+}

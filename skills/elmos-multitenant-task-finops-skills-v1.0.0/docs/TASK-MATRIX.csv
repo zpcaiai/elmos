@@ -1,0 +1,145 @@
+task_id,skill_id,skill_name,task,priority,gate,evidence_required
+ELMOS-MTF-001-T01,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,"Scan the target repository and locate identity, task, workflow, runner, event, storage, billing, and analytics boundaries.",P0,required,true
+ELMOS-MTF-001-T02,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,"Create a requirement-to-component gap matrix and mark existing, reusable, conflicting, and missing implementation.",P0,required,true
+ELMOS-MTF-001-T03,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,"Freeze domain names, state machine, identifiers, idempotency keys, event names, and financial terms.",P0,required,true
+ELMOS-MTF-001-T04,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Select the authoritative storage owner for every persistent data type and prohibit dual truth.,P0,required,true
+ELMOS-MTF-001-T05,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Plan backward-compatible schema migrations and rollback/roll-forward procedures.,P0,required,true
+ELMOS-MTF-001-T06,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Define the first production-shaped vertical slice and its fixtures.,P0,required,true
+ELMOS-MTF-001-T07,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Sequence dependent skills and assign evidence owners.,P0,required,true
+ELMOS-MTF-001-T08,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Define environment-specific feature flags and safe rollout order.,P0,required,true
+ELMOS-MTF-001-T09,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,"Integrate runtime ETA reporting with queue, execution, model, validation, transfer, and recovery time.",P0,required,true
+ELMOS-MTF-001-T10,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Track implementation status in a stable task matrix.,P0,required,true
+ELMOS-MTF-001-T11,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Run all package and repository validation gates.,P0,required,true
+ELMOS-MTF-001-T12,ELMOS-MTF-001,elmos-multitenant-task-finops-orchestrator,Generate the final execution report with known limitations and waivers.,P0,required,true
+ELMOS-MTF-002-T01,ELMOS-MTF-002,elmos-tenant-identity-rls,Define OIDC claims and membership resolution rules.,P0,required,true
+ELMOS-MTF-002-T02,ELMOS-MTF-002,elmos-tenant-identity-rls,Remove all trust in client-provided tenant headers.,P0,required,true
+ELMOS-MTF-002-T03,ELMOS-MTF-002,elmos-tenant-identity-rls,Define transaction-local identity context propagation.,P0,required,true
+ELMOS-MTF-002-T04,ELMOS-MTF-002,elmos-tenant-identity-rls,Create non-superuser database roles and grants.,P0,required,true
+ELMOS-MTF-002-T05,ELMOS-MTF-002,elmos-tenant-identity-rls,Enable and force RLS on all tenant-scoped task tables.,P0,required,true
+ELMOS-MTF-002-T06,ELMOS-MTF-002,elmos-tenant-identity-rls,Create account-owner policies for global concurrency slots.,P0,required,true
+ELMOS-MTF-002-T07,ELMOS-MTF-002,elmos-tenant-identity-rls,Add admin and workflow-service access through explicit least-privilege paths.,P0,required,true
+ELMOS-MTF-002-T08,ELMOS-MTF-002,elmos-tenant-identity-rls,"Classify task inputs, outputs, logs, prompts, usage, and revenue fields.",P0,required,true
+ELMOS-MTF-002-T09,ELMOS-MTF-002,elmos-tenant-identity-rls,Implement encryption-key references and log redaction.,P0,required,true
+ELMOS-MTF-002-T10,ELMOS-MTF-002,elmos-tenant-identity-rls,Audit all privileged task and finance operations.,P0,required,true
+ELMOS-MTF-002-T11,ELMOS-MTF-002,elmos-tenant-identity-rls,"Add tenant export, retention, and deletion workflows.",P0,required,true
+ELMOS-MTF-002-T12,ELMOS-MTF-002,elmos-tenant-identity-rls,"Execute cross-tenant, confused-deputy, and BYPASSRLS tests.",P0,required,true
+ELMOS-MTF-003-T01,ELMOS-MTF-003,elmos-account-concurrency-admission,Define slot-consuming and non-slot-consuming task states.,P0,required,true
+ELMOS-MTF-003-T02,ELMOS-MTF-003,elmos-account-concurrency-admission,Implement three durable account slot rows.,P0,required,true
+ELMOS-MTF-003-T03,ELMOS-MTF-003,elmos-account-concurrency-admission,Implement atomic slot claim with row locking and lease generation.,P0,required,true
+ELMOS-MTF-003-T04,ELMOS-MTF-003,elmos-account-concurrency-admission,Implement generation-safe slot renewal and release.,P0,required,true
+ELMOS-MTF-003-T05,ELMOS-MTF-003,elmos-account-concurrency-admission,Implement idempotent task submission.,P0,required,true
+ELMOS-MTF-003-T06,ELMOS-MTF-003,elmos-account-concurrency-admission,Queue fourth and later tasks without executing them.,P0,required,true
+ELMOS-MTF-003-T07,ELMOS-MTF-003,elmos-account-concurrency-admission,"Promote queued tasks after terminal, paused, or safely reconciled slot release.",P0,required,true
+ELMOS-MTF-003-T08,ELMOS-MTF-003,elmos-account-concurrency-admission,"Enforce tenant active-task, queued-task, and resource-unit quotas.",P0,required,true
+ELMOS-MTF-003-T09,ELMOS-MTF-003,elmos-account-concurrency-admission,Expose concurrency status and queue position APIs.,P0,required,true
+ELMOS-MTF-003-T10,ELMOS-MTF-003,elmos-account-concurrency-admission,Publish admission and slot lifecycle events.,P0,required,true
+ELMOS-MTF-003-T11,ELMOS-MTF-003,elmos-account-concurrency-admission,Add stale-slot reaping and reconciliation.,P0,required,true
+ELMOS-MTF-003-T12,ELMOS-MTF-003,elmos-account-concurrency-admission,Run high-contention race tests across multiple API replicas.,P0,required,true
+ELMOS-MTF-004-T01,ELMOS-MTF-004,elmos-workload-aware-scheduler,Define workload classes and resource-unit weights.,P1,required,true
+ELMOS-MTF-004-T02,ELMOS-MTF-004,elmos-workload-aware-scheduler,Estimate root-task and node-level resource demand.,P1,required,true
+ELMOS-MTF-004-T03,ELMOS-MTF-004,elmos-workload-aware-scheduler,Create workload-specific Temporal task queues.,P1,required,true
+ELMOS-MTF-004-T04,ELMOS-MTF-004,elmos-workload-aware-scheduler,Configure bounded worker concurrency per queue.,P1,required,true
+ELMOS-MTF-004-T05,ELMOS-MTF-004,elmos-workload-aware-scheduler,Implement tenant active-task and resource-unit quotas.,P1,required,true
+ELMOS-MTF-004-T06,ELMOS-MTF-004,elmos-workload-aware-scheduler,Implement weighted fair scheduling and priority aging.,P1,required,true
+ELMOS-MTF-004-T07,ELMOS-MTF-004,elmos-workload-aware-scheduler,Implement platform backpressure and admission delay reasons.,P1,required,true
+ELMOS-MTF-004-T08,ELMOS-MTF-004,elmos-workload-aware-scheduler,Integrate cost budget and provider quota gates.,P1,required,true
+ELMOS-MTF-004-T09,ELMOS-MTF-004,elmos-workload-aware-scheduler,Expose queue position and estimated start time.,P1,required,true
+ELMOS-MTF-004-T10,ELMOS-MTF-004,elmos-workload-aware-scheduler,Emit queue and scheduling metrics through OpenTelemetry.,P1,required,true
+ELMOS-MTF-004-T11,ELMOS-MTF-004,elmos-workload-aware-scheduler,Define autoscaling policies and safe minimum/maximum workers.,P1,required,true
+ELMOS-MTF-004-T12,ELMOS-MTF-004,elmos-workload-aware-scheduler,"Run fairness, saturation, and noisy-neighbor benchmarks.",P1,required,true
+ELMOS-MTF-005-T01,ELMOS-MTF-005,elmos-task-lifecycle-temporal,"Define task, run, node, and attempt states and legal transitions.",P0,required,true
+ELMOS-MTF-005-T02,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Create deterministic workflow IDs and run numbers.,P0,required,true
+ELMOS-MTF-005-T03,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Implement idempotent workflow startup through outbox or Update-with-Start.,P0,required,true
+ELMOS-MTF-005-T04,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Use typed versioned workflow payloads.,P0,required,true
+ELMOS-MTF-005-T05,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Persist every critical transition with a unique transition_id.,P0,required,true
+ELMOS-MTF-005-T06,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Implement explicit application failure mapping.,P0,required,true
+ELMOS-MTF-005-T07,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Propagate pause and cancel to all activities and runner tasks.,P0,required,true
+ELMOS-MTF-005-T08,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Implement retry policies by error class.,P0,required,true
+ELMOS-MTF-005-T09,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Add Search Attributes and operational queries.,P0,required,true
+ELMOS-MTF-005-T10,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Use Continue-As-New for long histories.,P0,required,true
+ELMOS-MTF-005-T11,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Project terminal state in a global try/catch/finally path.,P0,required,true
+ELMOS-MTF-005-T12,ELMOS-MTF-005,elmos-task-lifecycle-temporal,Run Temporal replay and duplicate-start tests.,P0,required,true
+ELMOS-MTF-006-T01,ELMOS-MTF-006,elmos-task-progress-journal,Define the append-only task event catalog.,P1,required,true
+ELMOS-MTF-006-T02,ELMOS-MTF-006,elmos-task-progress-journal,Allocate monotonic per-run event sequences.,P1,required,true
+ELMOS-MTF-006-T03,ELMOS-MTF-006,elmos-task-progress-journal,Enforce event and transition idempotency.,P1,required,true
+ELMOS-MTF-006-T04,ELMOS-MTF-006,elmos-task-progress-journal,Persist current node and progress snapshots.,P1,required,true
+ELMOS-MTF-006-T05,ELMOS-MTF-006,elmos-task-progress-journal,Compute weighted monotonic progress.,P1,required,true
+ELMOS-MTF-006-T06,ELMOS-MTF-006,elmos-task-progress-journal,Store elapsed time and machine ETA P50/P90.,P1,required,true
+ELMOS-MTF-006-T07,ELMOS-MTF-006,elmos-task-progress-journal,Batch asynchronous heartbeat and progress writes.,P1,required,true
+ELMOS-MTF-006-T08,ELMOS-MTF-006,elmos-task-progress-journal,Segment large logs into object storage.,P1,required,true
+ELMOS-MTF-006-T09,ELMOS-MTF-006,elmos-task-progress-journal,Publish outbox events to the configured event bus.,P1,required,true
+ELMOS-MTF-006-T10,ELMOS-MTF-006,elmos-task-progress-journal,Expose SSE replay with after_sequence.,P1,required,true
+ELMOS-MTF-006-T11,ELMOS-MTF-006,elmos-task-progress-journal,Rebuild snapshots from the journal.,P1,required,true
+ELMOS-MTF-006-T12,ELMOS-MTF-006,elmos-task-progress-journal,"Test duplicate, delayed, and out-of-order event delivery.",P1,required,true
+ELMOS-MTF-007-T01,ELMOS-MTF-007,elmos-checkpoint-recovery,Identify safe checkpoint boundaries for every task type.,P0,required,true
+ELMOS-MTF-007-T02,ELMOS-MTF-007,elmos-checkpoint-recovery,Persist atomic checkpoint manifests.,P0,required,true
+ELMOS-MTF-007-T03,ELMOS-MTF-007,elmos-checkpoint-recovery,Record completed side effects and immutable receipts.,P0,required,true
+ELMOS-MTF-007-T04,ELMOS-MTF-007,elmos-checkpoint-recovery,Implement runner lease generation and renewal.,P0,required,true
+ELMOS-MTF-007-T05,ELMOS-MTF-007,elmos-checkpoint-recovery,Implement generation-safe complete and fail operations.,P0,required,true
+ELMOS-MTF-007-T06,ELMOS-MTF-007,elmos-checkpoint-recovery,Detect expired leases and set UNKNOWN_RESULT.,P0,required,true
+ELMOS-MTF-007-T07,ELMOS-MTF-007,elmos-checkpoint-recovery,"Reconcile provider, workspace, artifact, and receipt state.",P0,required,true
+ELMOS-MTF-007-T08,ELMOS-MTF-007,elmos-checkpoint-recovery,"Validate input, revision, tool, model, and schema compatibility.",P0,required,true
+ELMOS-MTF-007-T09,ELMOS-MTF-007,elmos-checkpoint-recovery,Resume from a compatible checkpoint.,P0,required,true
+ELMOS-MTF-007-T10,ELMOS-MTF-007,elmos-checkpoint-recovery,Fork a new run for incompatible recovery.,P0,required,true
+ELMOS-MTF-007-T11,ELMOS-MTF-007,elmos-checkpoint-recovery,Expose manual recovery with audited decisions.,P0,required,true
+ELMOS-MTF-007-T12,ELMOS-MTF-007,elmos-checkpoint-recovery,Inject crashes at every checkpoint and side-effect boundary.,P0,required,true
+ELMOS-MTF-008-T01,ELMOS-MTF-008,elmos-task-io-artifact-archive,Define input and output manifest schemas.,P1,required,true
+ELMOS-MTF-008-T02,ELMOS-MTF-008,elmos-task-io-artifact-archive,Store small validated task parameters in JSONB.,P1,required,true
+ELMOS-MTF-008-T03,ELMOS-MTF-008,elmos-task-io-artifact-archive,Store large payloads in tenant-scoped object storage.,P1,required,true
+ELMOS-MTF-008-T04,ELMOS-MTF-008,elmos-task-io-artifact-archive,Compute and verify SHA-256 content digests.,P1,required,true
+ELMOS-MTF-008-T05,ELMOS-MTF-008,elmos-task-io-artifact-archive,Record execution environment and version lineage.,P1,required,true
+ELMOS-MTF-008-T06,ELMOS-MTF-008,elmos-task-io-artifact-archive,Version outputs and artifacts append-only.,P1,required,true
+ELMOS-MTF-008-T07,ELMOS-MTF-008,elmos-task-io-artifact-archive,Segment and archive logs outside PostgreSQL.,P1,required,true
+ELMOS-MTF-008-T08,ELMOS-MTF-008,elmos-task-io-artifact-archive,Implement redacted searchable projections.,P1,required,true
+ELMOS-MTF-008-T09,ELMOS-MTF-008,elmos-task-io-artifact-archive,Implement retention classes and legal hold.,P1,required,true
+ELMOS-MTF-008-T10,ELMOS-MTF-008,elmos-task-io-artifact-archive,Implement tenant export and deletion.,P1,required,true
+ELMOS-MTF-008-T11,ELMOS-MTF-008,elmos-task-io-artifact-archive,Prevent secret and credential persistence.,P1,required,true
+ELMOS-MTF-008-T12,ELMOS-MTF-008,elmos-task-io-artifact-archive,"Run integrity, retention, and cross-tenant object-access tests.",P1,required,true
+ELMOS-MTF-009-T01,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Define canonical usage dimensions and units.,P0,required,true
+ELMOS-MTF-009-T02,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Create versioned provider and internal price books.,P0,required,true
+ELMOS-MTF-009-T03,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,"Meter uncached input, cached input, output, and specialized model units.",P0,required,true
+ELMOS-MTF-009-T04,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,"Meter CPU, memory, GPU, sandbox, and runner time.",P0,required,true
+ELMOS-MTF-009-T05,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Meter storage byte-hours and network egress.,P0,required,true
+ELMOS-MTF-009-T06,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Meter third-party API and rendering costs.,P0,required,true
+ELMOS-MTF-009-T07,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Ingest idempotent immutable usage events.,P0,required,true
+ELMOS-MTF-009-T08,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Calculate base-currency cost with FX snapshots.,P0,required,true
+ELMOS-MTF-009-T09,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,"Track estimated, reserved, posted, and final actual cost.",P0,required,true
+ELMOS-MTF-009-T10,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Enforce per-task and tenant budget gates.,P0,required,true
+ELMOS-MTF-009-T11,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Aggregate historical total cost by business dimensions.,P0,required,true
+ELMOS-MTF-009-T12,ELMOS-MTF-009,elmos-usage-metering-cost-ledger,Reconcile provider invoices with explicit correction events.,P0,required,true
+ELMOS-MTF-010-T01,ELMOS-MTF-010,elmos-revenue-margin-ledger,Define supported billing modes and revenue states.,P0,required,true
+ELMOS-MTF-010-T02,ELMOS-MTF-010,elmos-revenue-margin-ledger,Create append-only revenue ledger entries.,P0,required,true
+ELMOS-MTF-010-T03,ELMOS-MTF-010,elmos-revenue-margin-ledger,"Record charges, credits, refunds, recognition, and collection separately.",P0,required,true
+ELMOS-MTF-010-T04,ELMOS-MTF-010,elmos-revenue-margin-ledger,Map direct task and project revenue.,P0,required,true
+ELMOS-MTF-010-T05,ELMOS-MTF-010,elmos-revenue-margin-ledger,Allocate fixed-project revenue by milestone or usage.,P0,required,true
+ELMOS-MTF-010-T06,ELMOS-MTF-010,elmos-revenue-margin-ledger,Allocate subscription revenue with a versioned policy.,P0,required,true
+ELMOS-MTF-010-T07,ELMOS-MTF-010,elmos-revenue-margin-ledger,"Record taxes, payment fees, and FX separately.",P0,required,true
+ELMOS-MTF-010-T08,ELMOS-MTF-010,elmos-revenue-margin-ledger,Calculate recognized and collected totals.,P0,required,true
+ELMOS-MTF-010-T09,ELMOS-MTF-010,elmos-revenue-margin-ledger,Calculate per-task gross profit and gross margin.,P0,required,true
+ELMOS-MTF-010-T10,ELMOS-MTF-010,elmos-revenue-margin-ledger,"Calculate tenant, account, project, and platform totals.",P0,required,true
+ELMOS-MTF-010-T11,ELMOS-MTF-010,elmos-revenue-margin-ledger,Reconcile payment-provider settlements.,P0,required,true
+ELMOS-MTF-010-T12,ELMOS-MTF-010,elmos-revenue-margin-ledger,Audit manual revenue and allocation adjustments.,P0,required,true
+ELMOS-MTF-011-T01,ELMOS-MTF-011,elmos-task-financial-analytics,"Define metric names, formulas, dimensions, and grain.",P1,required,true
+ELMOS-MTF-011-T02,ELMOS-MTF-011,elmos-task-financial-analytics,Create hourly and daily task aggregates.,P1,required,true
+ELMOS-MTF-011-T03,ELMOS-MTF-011,elmos-task-financial-analytics,"Create cost, revenue, profit, and margin aggregates.",P1,required,true
+ELMOS-MTF-011-T04,ELMOS-MTF-011,elmos-task-financial-analytics,Create task throughput and concurrency metrics.,P1,required,true
+ELMOS-MTF-011-T05,ELMOS-MTF-011,elmos-task-financial-analytics,"Create progress, retry, recovery, and cancellation metrics.",P1,required,true
+ELMOS-MTF-011-T06,ELMOS-MTF-011,elmos-task-financial-analytics,Create model and cache efficiency metrics.,P1,required,true
+ELMOS-MTF-011-T07,ELMOS-MTF-011,elmos-task-financial-analytics,"Add filters by tenant, account, project, task type, model, and period.",P1,required,true
+ELMOS-MTF-011-T08,ELMOS-MTF-011,elmos-task-financial-analytics,Add drill-through to source events and ledger entries.,P1,required,true
+ELMOS-MTF-011-T09,ELMOS-MTF-011,elmos-task-financial-analytics,"Detect missing, duplicated, stale, and unreconciled financial data.",P1,required,true
+ELMOS-MTF-011-T10,ELMOS-MTF-011,elmos-task-financial-analytics,Create tenant-isolated CSV/JSON exports.,P1,required,true
+ELMOS-MTF-011-T11,ELMOS-MTF-011,elmos-task-financial-analytics,Rebuild and checksum aggregate projections.,P1,required,true
+ELMOS-MTF-011-T12,ELMOS-MTF-011,elmos-task-financial-analytics,Publish operational and executive dashboard specifications.,P1,required,true
+ELMOS-MTF-012-T01,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,"Validate schemas, API, events, migrations, and state transitions.",P0,required,true
+ELMOS-MTF-012-T02,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Run one-account 100-request admission race tests.,P0,required,true
+ELMOS-MTF-012-T03,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Run cross-tenant and cross-account isolation tests.,P0,required,true
+ELMOS-MTF-012-T04,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Run workload fairness and noisy-neighbor load tests.,P0,required,true
+ELMOS-MTF-012-T05,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Run worker saturation and retry-storm tests.,P0,required,true
+ELMOS-MTF-012-T06,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Inject workflow-start dual-write failures.,P0,required,true
+ELMOS-MTF-012-T07,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Inject runner crashes at every side-effect boundary.,P0,required,true
+ELMOS-MTF-012-T08,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,"Test pause, resume, cancel, stale lease, and reconciliation.",P0,required,true
+ELMOS-MTF-012-T09,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Verify input/output object integrity and retention.,P0,required,true
+ELMOS-MTF-012-T10,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,"Reconcile usage, cost, revenue, refund, and margin totals.",P0,required,true
+ELMOS-MTF-012-T11,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Measure SLOs and capacity limits.,P0,required,true
+ELMOS-MTF-012-T12,ELMOS-MTF-012,elmos-concurrency-recovery-finops-certification,Generate signed evidence and block release on hard-gate failure.,P0,required,true

@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "EvidenceChain",
+  "metadata": {
+    "id": "evidence-chain-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "entries": [],
+    "merkleRoot": "example-merkleRoot",
+    "signature": "example-signature",
+    "storageClass": "example-storageClass"
+  }
+}

@@ -1,0 +1,11 @@
+apiVersion: elmos.ai/v2alpha1
+kind: ObservationContractTemplate
+metadata: {name: replace-me}
+spec:
+  sourceSystem: legacy
+  targetSystem: target
+  dimensions:
+    - {name: http.status, comparison: EXACT, criticality: P0}
+    - {name: database.writes, comparison: TRACE_REFINEMENT, criticality: P0}
+  normalizers: []
+  forbiddenIgnorePatterns: ["*.amount", "*.authorizationDecision", "*.tenantId"]

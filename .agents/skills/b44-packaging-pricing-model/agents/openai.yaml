@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Packaging Pricing Model"
+  short_description: "Run evidence-bound Batch 44 packaging pricing model work"
+  default_prompt: "Use $b44-packaging-pricing-model to implement and verify this capability with fail-closed evidence."

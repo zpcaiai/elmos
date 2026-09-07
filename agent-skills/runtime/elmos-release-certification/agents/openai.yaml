@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 生产验收与 E1–E5 认证"
+  short_description: "Guide 生产验收与 E1–E5 认证 with evidence controls"
+  default_prompt: "Use $elmos-release-certification as guidance for 生产验收与 E1–E5 认证 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

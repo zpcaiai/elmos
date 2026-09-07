@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/staging-workspace.schema.json",
+  "title": "Staging Workspace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "staging_id",
+    "tenant_id",
+    "project_id",
+    "source_snapshot_digest",
+    "state",
+    "created_at",
+    "expires_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "staging_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "source_snapshot_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "toolchain_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "rule_pack_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "state": {
+      "enum": [
+        "CREATED",
+        "WRITABLE",
+        "SEALED",
+        "VALIDATING",
+        "VALIDATED",
+        "PROMOTING",
+        "PROMOTED",
+        "FAILED",
+        "ARCHIVED",
+        "EXPIRED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sealed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tree_manifest_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "merkle_root": {
+      "$ref": "digest.schema.json"
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "ARCHIVE",
+            "GIT_BRANCH",
+            "PULL_REQUEST"
+          ]
+        },
+        "target_ref": {
+          "type": "string"
+        },
+        "receipt_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "gates": {
+    "independent_evidence_required_for_certification": true,
+    "self_certification_allowed": false,
+    "unknown_is_success": false
+  },
+  "kind": "elmos.commercial-capability-expansion.compiled-skill-contract",
+  "package": {
+    "name": "elmos-commercial-capability-expansion-skills",
+    "version": "2.0.0"
+  },
+  "provenance": {
+    "archive_rego_executed": false,
+    "archive_scripts_executed": false,
+    "compiler": "tooling/integrate_commercial_capability_expansion_skills.py",
+    "dual_roots_required_byte_identical": [
+      ".agents/skills",
+      "agent-skills/runtime"
+    ],
+    "wrapper_ownership": "REPOSITORY_OWNED"
+  },
+  "runtime": {
+    "authentication_required": true,
+    "binding_mode": "AUTHENTICATED_EXACT_EXECUTION",
+    "entrypoint": "CommercialCapabilityExpansionService.execute",
+    "execute_fields": [
+      "invocation",
+      "inputs",
+      "decision",
+      "lease",
+      "authority_proof"
+    ],
+    "input_contract_catalog_entrypoint": "list_capability_kernels",
+    "input_contract_policy": "EXACT_REQUIRED_OPTIONAL_FAIL_CLOSED",
+    "module": "elmos_commercial_expansion",
+    "preparation_entrypoint": "CommercialCapabilityRuntime.prepare_invocation",
+    "preparation_fields": [
+      "scope",
+      "skill_id",
+      "action",
+      "inputs",
+      "idempotency_key",
+      "ttl"
+    ],
+    "preparation_module": "elmos_commercial_expansion.runtime",
+    "scope_fields": [
+      "tenant_id",
+      "project_id",
+      "actor_id",
+      "revision",
+      "environment_id"
+    ],
+    "service": "CommercialCapabilityExpansionService"
+  },
+  "schema_version": "2.0.0",
+  "skill": {
+    "dependencies": [
+      "otel-agent-execution-tracing"
+    ],
+    "dependency_origin": "REPOSITORY_OWNED_NORMALIZATION",
+    "kernel": "K8-observability-evolution",
+    "name": "cost-latency-quality-optimizer",
+    "objective": "Optimize model/tool/parallelism/cache decisions against quality gates, wall-clock ETA, token/credit cost and infrastructure cost.",
+    "priority": "P0",
+    "source_dependency_gap": true
+  },
+  "source": {
+    "archive_bytes": 161254,
+    "archive_path": "skills/subskills/elmos-commercial-capability-expansion-skills-v2.0.0.zip",
+    "archive_sha256": "7a73cf924f4ebab3eddba327ba4feeb64b8575e39f2baf03fc53315cbc868380",
+    "member": "skills/K8-observability-evolution/cost-latency-quality-optimizer/SKILL.md",
+    "member_sha256": "d5ca7b77cc15048688fc90bfeca1aec101db38d74d5d695e303ee9d337985ccf",
+    "source_content_executed": false,
+    "source_dependency_declarations_present": false,
+    "source_instructions_installed": false
+  },
+  "status": {
+    "certification": "NOT_CERTIFIED",
+    "external_runtime_evidence": "NOT_RUN",
+    "implementation": "RUNTIME_BOUND_NOT_EXECUTED",
+    "independent_verification": "NOT_RUN",
+    "local_execution_evidence": "NOT_RUN"
+  }
+}

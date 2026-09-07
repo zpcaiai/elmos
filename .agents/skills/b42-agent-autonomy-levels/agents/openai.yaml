@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Agent Autonomy Levels"
+  short_description: "Run evidence-bound Batch 42 agent autonomy levels work"
+  default_prompt: "Use $b42-agent-autonomy-levels to implement and verify this capability with fail-closed evidence."

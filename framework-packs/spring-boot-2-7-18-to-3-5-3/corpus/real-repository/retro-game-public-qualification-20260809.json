@@ -1,0 +1,404 @@
+{
+  "blocker_codes": [
+    "NATIVE_JNI_TOOLCHAIN_MISMATCH",
+    "PINNED_SERVICE_IMAGES_NOT_AVAILABLE",
+    "SOURCE_TEST_BASELINE_NOT_GREEN",
+    "TARGET_TEST_ORACLE_NOT_GREEN"
+  ],
+  "certification_eligible": false,
+  "certification_status": "NOT_CERTIFIED",
+  "claims": {
+    "behavioral_equivalence": "NOT_EVALUATED",
+    "customer_acceptance": "NOT_RUN",
+    "independent_external_validation": "NOT_RUN",
+    "migration_success_rate": "NOT_EVALUATED"
+  },
+  "customer_outcome_status": "NOT_EVALUATED",
+  "customer_repository": false,
+  "evidence_class": "LOCAL_PUBLIC_ENGINEERING_EXPLORATORY_SUPERSEDED",
+  "execution_environment": {
+    "architecture": "arm64",
+    "free_bytes_after_run": 11471691776,
+    "minimum_free_bytes_stop_line": 10737418240,
+    "os": "macOS-26.6-arm64-arm-64bit-Mach-O"
+  },
+  "external_execution_status": "NOT_RUN",
+  "independent_review_status": "NOT_RUN",
+  "independent_verification": false,
+  "native_prerequisite": {
+    "artifact": {
+      "bytes": 34824,
+      "path": "qualification-native-build/libBattleEngine.dylib",
+      "sha256": "c3c871c7d4b457dfd64439aebc8915cf17368883d900a3e7255f3a65520a0302",
+      "qualification_status": "INVALIDATED_NOT_PASS"
+    },
+    "build": {
+      "command": [
+        "cmake",
+        "--build",
+        "/private/tmp/elmos-retro-qualification-20260809.ZReezM/retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85/qualification-native-build",
+        "--config",
+        "release"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-08-09T13:05:06Z",
+      "output": "[ 50%] Building CXX object CMakeFiles/BattleEngine.dir/BattleEngine.cpp.o\n[100%] Linking CXX shared library libBattleEngine.dylib\n[100%] Built target BattleEngine\n",
+      "output_bytes": 163,
+      "output_sha256": "ddb43bb603b5de8b739676ba7e148d5a362a1a9b1d99127594cf4a358f1a0d1b",
+      "started_at": "2026-08-09T13:05:06Z",
+      "timed_out": false
+    },
+    "configure": {
+      "command": [
+        "cmake",
+        "-S",
+        "/private/tmp/elmos-retro-qualification-20260809.ZReezM/retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85/battle-engine",
+        "-B",
+        "/private/tmp/elmos-retro-qualification-20260809.ZReezM/retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85/qualification-native-build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_BUILD_TYPE=Release"
+      ],
+      "exit_code": 0,
+      "finished_at": "2026-08-09T13:05:06Z",
+      "output": "CMake Warning (deprecated) at CMakeLists.txt:1 (cmake_minimum_required):\n  Compatibility with CMake < 3.10 will be removed from a future version of\n  CMake.\n\n  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax\n  to tell CMake that the project requires at least <min> but has been updated\n  to work with policies introduced by <max> or earlier.\nThis warning is for project developers.  Use -Wno-author or -Wno-deprecated\nto suppress it.\n\n-- The CXX compiler identification is AppleClang 21.0.0.21000101\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Found JNI: /opt/homebrew/include  found components: AWT JVM\n-- Configuring done (0.7s)\n-- Generating done (0.0s)\n-- Build files have been written to: /private/tmp/elmos-retro-qualification-20260809.ZReezM/retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85/qualification-native-build\n",
+      "output_bytes": 1024,
+      "output_sha256": "5f0dae344a1d705228d77a0735b462de4160fd828936b7a0a052334314eb62da",
+      "started_at": "2026-08-09T13:05:05Z",
+      "timed_out": false
+    },
+    "declared_java_home": "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+    "observed_jni_include": "/opt/homebrew/include",
+    "observed_jni_jdk_major": 26,
+    "qualification_reason": "CMake resolved JNI from /opt/homebrew/include instead of the declared Java 17 toolchain; the successful compile is exploratory raw execution and is not qualifying native evidence.",
+    "library_directory": "/private/tmp/elmos-retro-qualification-20260809.ZReezM/retro-game-3d08c4b2ca814acfd873fc7874f724089e5b1d85/qualification-native-build",
+    "status": "INVALIDATED_TOOLCHAIN_MISMATCH"
+  },
+  "observed_at": "2026-08-09T13:05:06Z",
+  "original_repository_default": {
+    "ci_build_command": "mvn -B -DskipTests package",
+    "ci_executes_tests": false,
+    "junit4_tests_not_discoverable_without_vintage": 20,
+    "junit_platform_tests_statically_discoverable": 2,
+    "junit_vintage_declared": false,
+    "runtime_execution_in_this_replay": "NOT_RUN_PREREQUISITES"
+  },
+  "overall_status": "SUPERSEDED_EXPLORATORY_BLOCKED_SOURCE_PREREQUISITES",
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "pom_audit": {
+    "java_version": "17",
+    "junit_vintage_declared": false,
+    "pom_sha256": "901f3c124d8784b6b976319a3fe067448339f7ad66b2ad312631956984c59492",
+    "spring_boot_parent": "2.7.18"
+  },
+  "record_type": "PUBLIC_REPOSITORY_LOCAL_QUALIFICATION_EXPLORATORY_SUPERSEDED",
+  "replay": {
+    "command": [
+      "python3",
+      "scripts/operations/qualify_spring_public_repository.py",
+      "--repository-id",
+      "retro-game",
+      "--archive",
+      "<verified-source.tar.gz>",
+      "--workspace",
+      "<empty-workspace>",
+      "--output",
+      "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-public-qualification-20260809.json",
+      "--java-home",
+      "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+      "--target-java-home",
+      "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+      "--maven-executable",
+      "/private/tmp/elmos-spring-toolchains-20260809/apache-maven-3.9.11/bin/mvn"
+    ],
+    "manifest_path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/public-qualification-manifest.json"
+  },
+  "repository": {
+    "archive": {
+      "bytes": 4202611,
+      "fetch": null,
+      "provided_locally": true,
+      "sha256": "4b911b019025fdc75e8168095b32d225536810385196133ab1d3f26f92cc6794",
+      "url": "https://codeload.github.com/retro-game/retro-game/tar.gz/3d08c4b2ca814acfd873fc7874f724089e5b1d85"
+    },
+    "commit_sha": "3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+    "id": "retro-game",
+    "tree_sha": "0d1d5b20c725f559d9f996609ebbe11a56832a41",
+    "url": "https://github.com/retro-game/retro-game"
+  },
+  "schema_version": 1,
+  "separate_public_candidates": [
+    {
+      "capture_status": "FIXED_COMMIT_STATIC_CANDIDATE",
+      "commit_sha": "f946102986af5e6324b881b68486648563e89e99",
+      "commit_timestamp": "2025-04-01T12:28:55+02:00",
+      "customer_repository": false,
+      "id": "scc-digitalhub-aac",
+      "independent_verification": false,
+      "pom_bytes": 19873,
+      "pom_git_blob": "0a4336d43b1d6cffb05e48fe06e7129ccb661454",
+      "pom_sha256": "ea548f950513888d6115c9979b6c8306818433befcb09f0536159223c93f2623",
+      "repository_url": "https://github.com/scc-digitalhub/AAC",
+      "security_and_data_scope": [
+        "spring-security",
+        "oauth2",
+        "openid-connect",
+        "saml",
+        "jpa",
+        "mail",
+        "actuator"
+      ],
+      "source_execution": "NOT_RUN",
+      "source_tuple": {
+        "java": "17",
+        "spring_boot": "2.7.18"
+      },
+      "static_tree_counts": {
+        "main_java_files": 1244,
+        "test_java_files": 39
+      },
+      "target_execution": "NOT_RUN",
+      "tree_sha": "6cf8269ab52b2a486e916683d4611aee1d427544"
+    }
+  ],
+  "service_prerequisites": [
+    {
+      "expected_platform_digest": "sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
+      "inspect": {
+        "command": [
+          "/usr/local/bin/docker",
+          "image",
+          "inspect",
+          "postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84"
+        ],
+        "exit_code": 1,
+        "finished_at": "2026-08-09T13:05:06Z",
+        "output": "[]\nError response from daemon: No such image: postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84\n",
+        "output_bytes": 127,
+        "output_sha256": "fa81b51845047abebb5a6b888e2016d229938e08706ae15cc75898bf8b401f56",
+        "started_at": "2026-08-09T13:05:06Z",
+        "timed_out": false
+      },
+      "platform": "linux/arm64",
+      "reason": "PINNED_IMAGE_NOT_PRESENT_NO_PULL_PERFORMED",
+      "resolved_reference": "postgres@sha256:3119f20c52c059928a1f3455ef0c4ce57fa4f4c39562f0bf4c5ead414ad55b84",
+      "role": "postgresql-testcontainers",
+      "source_reference": "postgres:13-alpine",
+      "status": "NOT_AVAILABLE"
+    },
+    {
+      "expected_platform_digest": "sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
+      "inspect": {
+        "command": [
+          "/usr/local/bin/docker",
+          "image",
+          "inspect",
+          "redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998"
+        ],
+        "exit_code": 1,
+        "finished_at": "2026-08-09T13:05:06Z",
+        "output": "[]\nError response from daemon: No such image: redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998\n",
+        "output_bytes": 124,
+        "output_sha256": "97351e75d1106ba39f1baae1528093d8acc8c024d54993fde0cf66658907f373",
+        "started_at": "2026-08-09T13:05:06Z",
+        "timed_out": false
+      },
+      "platform": "linux/arm64",
+      "reason": "PINNED_IMAGE_NOT_PRESENT_NO_PULL_PERFORMED",
+      "resolved_reference": "redis@sha256:ef0234ae359f2550f773accc0b4207ae213475eccaa0b2dd17c2710abb8c1998",
+      "role": "redis-testcontainers",
+      "source_reference": "redis:6-alpine",
+      "status": "NOT_AVAILABLE"
+    },
+    {
+      "expected_platform_digest": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+      "inspect": {
+        "command": [
+          "/usr/local/bin/docker",
+          "image",
+          "inspect",
+          "testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298"
+        ],
+        "exit_code": 0,
+        "finished_at": "2026-08-09T13:05:06Z",
+        "output": "[\n    {\n        \"Id\": \"sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\",\n        \"RepoTags\": [\n            \"testcontainers/ryuk:0.12.0\"\n        ],\n        \"RepoDigests\": [\n            \"testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\"\n        ],\n        \"Comment\": \"buildkit.dockerfile.v0\",\n        \"Created\": \"2025-06-02T12:47:34.697652416Z\",\n        \"Config\": {\n            \"Env\": [\n                \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n            ],\n            \"Cmd\": [\n                \"/bin/ryuk\"\n            ],\n            \"WorkingDir\": \"/\",\n            \"Labels\": {\n                \"org.testcontainers.ryuk\": \"true\"\n            },\n            \"ArgsEscaped\": true\n        },\n        \"Architecture\": \"arm64\",\n        \"Os\": \"linux\",\n        \"Size\": 11735197,\n        \"RootFS\": {\n            \"Type\": \"layers\",\n            \"Layers\": [\n                \"sha256:1231a673589ac9e2f8a98ed916d1fa8301b36a44dd14fc40eba5a05905da69f1\",\n                \"sha256:905c1efa80048fe705103e46e80ee5855357126fc60447249b9dd977d868a937\",\n                \"sha256:00a35fa2f388257264928ce19accdacadae52cfb6ef15aea92f55e9a29888ed0\"\n            ]\n        },\n        \"Metadata\": {\n            \"LastTagTime\": \"2026-07-29T04:01:07.022963424Z\"\n        },\n        \"Descriptor\": {\n            \"mediaType\": \"application/vnd.docker.distribution.manifest.list.v2+json\",\n            \"digest\": \"sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\",\n            \"size\": 5091\n        },\n        \"Identity\": {\n            \"Pull\": [\n                {\n                    \"Repository\": \"docker.io/testcontainers/ryuk\"\n                }\n            ]\n        }\n    }\n]\n",
+        "output_bytes": 1745,
+        "output_sha256": "a591081da5b4af24bf6a63b23c51b90718eab066c2b85a864a5b535b0bcdd9fe",
+        "started_at": "2026-08-09T13:05:06Z",
+        "timed_out": false
+      },
+      "pinned_image_id": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+      "platform": "linux/arm64",
+      "resolved_reference": "testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+      "role": "testcontainers-resource-reaper",
+      "source_reference": "testcontainers/ryuk:0.12.0",
+      "source_reference_image_id": "sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298",
+      "source_reference_inspect": {
+        "command": [
+          "/usr/local/bin/docker",
+          "image",
+          "inspect",
+          "testcontainers/ryuk:0.12.0"
+        ],
+        "exit_code": 0,
+        "finished_at": "2026-08-09T13:05:06Z",
+        "output": "[\n    {\n        \"Id\": \"sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\",\n        \"RepoTags\": [\n            \"testcontainers/ryuk:0.12.0\"\n        ],\n        \"RepoDigests\": [\n            \"testcontainers/ryuk@sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\"\n        ],\n        \"Comment\": \"buildkit.dockerfile.v0\",\n        \"Created\": \"2025-06-02T12:47:34.697652416Z\",\n        \"Config\": {\n            \"Env\": [\n                \"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n            ],\n            \"Cmd\": [\n                \"/bin/ryuk\"\n            ],\n            \"WorkingDir\": \"/\",\n            \"Labels\": {\n                \"org.testcontainers.ryuk\": \"true\"\n            },\n            \"ArgsEscaped\": true\n        },\n        \"Architecture\": \"arm64\",\n        \"Os\": \"linux\",\n        \"Size\": 11735197,\n        \"RootFS\": {\n            \"Type\": \"layers\",\n            \"Layers\": [\n                \"sha256:1231a673589ac9e2f8a98ed916d1fa8301b36a44dd14fc40eba5a05905da69f1\",\n                \"sha256:905c1efa80048fe705103e46e80ee5855357126fc60447249b9dd977d868a937\",\n                \"sha256:00a35fa2f388257264928ce19accdacadae52cfb6ef15aea92f55e9a29888ed0\"\n            ]\n        },\n        \"Metadata\": {\n            \"LastTagTime\": \"2026-07-29T04:01:07.022963424Z\"\n        },\n        \"Descriptor\": {\n            \"mediaType\": \"application/vnd.docker.distribution.manifest.list.v2+json\",\n            \"digest\": \"sha256:dd3f023a6ed7015b3f95a49ccd65a2daf0c56e681422c12952b19a810dfa6298\",\n            \"size\": 5091\n        },\n        \"Identity\": {\n            \"Pull\": [\n                {\n                    \"Repository\": \"docker.io/testcontainers/ryuk\"\n                }\n            ]\n        }\n    }\n]\n",
+        "output_bytes": 1745,
+        "output_sha256": "a591081da5b4af24bf6a63b23c51b90718eab066c2b85a864a5b535b0bcdd9fe",
+        "started_at": "2026-08-09T13:05:06Z",
+        "timed_out": false
+      },
+      "status": "AVAILABLE_PINNED_LOCAL"
+    }
+  ],
+  "source_baseline": {
+    "all_declared_tests_required": true,
+    "execution": null,
+    "expected_tests": 22,
+    "status": "NOT_RUN_PREREQUISITES"
+  },
+  "source_tuple": {
+    "java": "17",
+    "junit4": "4.13.2",
+    "junit_jupiter": "5.8.2",
+    "maven": "3.9.11",
+    "spring_boot": "2.7.18",
+    "testcontainers": "1.21.3"
+  },
+  "supersession": {
+    "status": "SUPERSEDED",
+    "reason_code": "JNI_TOOLCHAIN_DID_NOT_MATCH_DECLARED_JAVA_17",
+    "prior_native_result": "INVALIDATED_NOT_PASS",
+    "corrected_harness_revision": "2e4d0a1bf1856c62789f8843b88bb18c8aaa312e",
+    "corrected_exact_jni_execution": "NOT_RUN",
+    "source_22_test_execution": "NOT_RUN_PREREQUISITES",
+    "target_execution": "NOT_RUN_SOURCE_NOT_GREEN",
+    "certification_status": "NOT_CERTIFIED"
+  },
+  "target_execution": {
+    "source_green_required": true,
+    "status": "NOT_RUN_SOURCE_NOT_GREEN"
+  },
+  "test_discovery_overlay": {
+    "original_pom_sha256": "901f3c124d8784b6b976319a3fe067448339f7ad66b2ad312631956984c59492",
+    "overlay_pom_path": "qualification-pom.xml",
+    "overlay_pom_sha256": "193063c1f7fda7291a03f6bdc03771abbbe47f322b0cad2ca0f86ea53d6dc632",
+    "reason": "Expose the repository's 20 existing JUnit4 tests to the JUnit Platform; no test source is changed.",
+    "status": "APPLIED_EXPLICIT_TEST_DISCOVERY_ONLY",
+    "test_source_hashes_after_overlay": {
+      "src/test/java/com/github/retro_game/retro_game/differential/BattleEngineDifferentialTest.java": "efe01e34aad78ec9be7963033f82225c1c3ae17b5f05116c8519908fa40d7ec3",
+      "src/test/java/com/github/retro_game/retro_game/integration/IntegrationTest.java": "b5219e1f3aec49344991447c55070076249ce59543a33dbedb628806b204ef6b",
+      "src/test/java/com/github/retro_game/retro_game/integration/ShipyardServiceIntegrationTest.java": "0d73705eb771d1d2f0833de30ea100edb7bdf43333843ba023abaa5a5a85588e",
+      "src/test/java/com/github/retro_game/retro_game/unit/BattleEngineUnitTest.java": "57dec4f2f8a03b0b7053ba7ba5356bd13e698b52c5a68fae50cc94109ed4c09a"
+    },
+    "test_source_hashes_before_overlay": {
+      "src/test/java/com/github/retro_game/retro_game/differential/BattleEngineDifferentialTest.java": "efe01e34aad78ec9be7963033f82225c1c3ae17b5f05116c8519908fa40d7ec3",
+      "src/test/java/com/github/retro_game/retro_game/integration/IntegrationTest.java": "b5219e1f3aec49344991447c55070076249ce59543a33dbedb628806b204ef6b",
+      "src/test/java/com/github/retro_game/retro_game/integration/ShipyardServiceIntegrationTest.java": "0d73705eb771d1d2f0833de30ea100edb7bdf43333843ba023abaa5a5a85588e",
+      "src/test/java/com/github/retro_game/retro_game/unit/BattleEngineUnitTest.java": "57dec4f2f8a03b0b7053ba7ba5356bd13e698b52c5a68fae50cc94109ed4c09a"
+    },
+    "version": "5.8.2"
+  },
+  "test_inventory": {
+    "junit4_tests": 20,
+    "junit_jupiter_tests": 2,
+    "test_source_files": 4,
+    "total_tests": 22
+  },
+  "toolchains": {
+    "cmake": {
+      "command": [
+        "cmake",
+        "--version"
+      ],
+      "exit_code": 0,
+      "expected_fragment": "cmake version 4.4.0",
+      "finished_at": "2026-08-09T13:05:05Z",
+      "matched": true,
+      "output": "cmake version 4.4.0\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+      "output_bytes": 90,
+      "output_sha256": "ab8bb921d0f28aed0e7bc0b53818946889a3eb72b0d4f826d446cb62f59ddf46",
+      "started_at": "2026-08-09T13:05:05Z",
+      "timed_out": false
+    },
+    "java": {
+      "command": [
+        "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java",
+        "-version"
+      ],
+      "exit_code": 0,
+      "expected_fragment": "17.0.11",
+      "finished_at": "2026-08-09T13:05:03Z",
+      "matched": true,
+      "output": "java version \"17.0.11\" 2024-04-16 LTS\nJava(TM) SE Runtime Environment (build 17.0.11+7-LTS-207)\nJava HotSpot(TM) 64-Bit Server VM (build 17.0.11+7-LTS-207, mixed mode, sharing)\n",
+      "output_bytes": 177,
+      "output_sha256": "9afd7030847178b3352122b9e7471deb5a762c9c73c1604332edd39a39148c4a",
+      "started_at": "2026-08-09T13:05:02Z",
+      "timed_out": false
+    },
+    "maven": {
+      "command": [
+        "/private/tmp/elmos-spring-toolchains-20260809/apache-maven-3.9.11/bin/mvn",
+        "-version"
+      ],
+      "exit_code": 0,
+      "expected_fragment": "Apache Maven 3.9.11",
+      "finished_at": "2026-08-09T13:05:05Z",
+      "java_matched": true,
+      "java_version_fragment": "17.0.11",
+      "matched": true,
+      "output": "Apache Maven 3.9.11 (3e54c93a704957b63ee3494413a2b544fd3d825b)\nMaven home: /private/tmp/elmos-spring-toolchains-20260809/apache-maven-3.9.11\nJava version: 17.0.11, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6\", arch: \"aarch64\", family: \"mac\"\n",
+      "output_bytes": 377,
+      "output_sha256": "7333c789a440ed929cc8f5f8d22d8b5a5a6fb1d81de0f71186c0e015366b474f",
+      "started_at": "2026-08-09T13:05:03Z",
+      "timed_out": false
+    }
+  },
+  "verified_files": [
+    {
+      "bytes": 4667,
+      "path": "pom.xml",
+      "sha256": "901f3c124d8784b6b976319a3fe067448339f7ad66b2ad312631956984c59492"
+    },
+    {
+      "bytes": 2110,
+      "path": "battle-engine/CMakeLists.txt",
+      "sha256": "e57dbd41349adcabd31c22864df555fc5ef9753ec36018533b734c84d8699f19"
+    },
+    {
+      "bytes": 1885,
+      "path": ".github/workflows/ci.yml",
+      "sha256": "c49d2d50edc9ceb1fa4f709d04856a713997a09f798c33c73f93fe1ce5f0bd47"
+    },
+    {
+      "bytes": 978,
+      "path": "Dockerfile",
+      "sha256": "aee0dbaa1e9253b6bf71e7ef0ad48fa0055c7abc9b6e42e95719ee633fde868d"
+    },
+    {
+      "bytes": 784,
+      "path": "docker-compose.yml",
+      "sha256": "15db21a106c62b5da09cbd46e4d5a65db53afa1f5f1e1f412a9f052a49fd821a"
+    },
+    {
+      "bytes": 3372,
+      "path": "src/test/java/com/github/retro_game/retro_game/differential/BattleEngineDifferentialTest.java",
+      "sha256": "efe01e34aad78ec9be7963033f82225c1c3ae17b5f05116c8519908fa40d7ec3"
+    },
+    {
+      "bytes": 1374,
+      "path": "src/test/java/com/github/retro_game/retro_game/integration/IntegrationTest.java",
+      "sha256": "b5219e1f3aec49344991447c55070076249ce59543a33dbedb628806b204ef6b"
+    },
+    {
+      "bytes": 13015,
+      "path": "src/test/java/com/github/retro_game/retro_game/integration/ShipyardServiceIntegrationTest.java",
+      "sha256": "0d73705eb771d1d2f0833de30ea100edb7bdf43333843ba023abaa5a5a85588e"
+    },
+    {
+      "bytes": 1757,
+      "path": "src/test/java/com/github/retro_game/retro_game/unit/BattleEngineUnitTest.java",
+      "sha256": "57dec4f2f8a03b0b7053ba7ba5356bd13e698b52c5a68fae50cc94109ed4c09a"
+    }
+  ]
+}

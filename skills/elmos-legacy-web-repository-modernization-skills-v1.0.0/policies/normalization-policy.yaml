@@ -1,0 +1,70 @@
+policyVersion: 1.0.0
+default: deny
+rules:
+- id: NORM-TRACE-ID
+  scope:
+  - header
+  - json
+  - html
+  match:
+  - x-request-id
+  - traceparent
+  - spanId
+  - traceId
+  action: replace-token
+  reason: observability identifier
+  maxSeverity: info
+- id: NORM-JSON-KEY-ORDER
+  scope:
+  - json
+  action: canonicalize-object-key-order
+  reason: JSON object order is not semantic
+- id: NORM-XML-ATTR-ORDER
+  scope:
+  - xml
+  action: canonicalize-attribute-order
+  reason: attribute order is not semantic
+- id: NORM-HTML-WHITESPACE
+  scope:
+  - html
+  action: normalize-nonpre-whitespace
+  reason: non-rendering whitespace
+  constraints:
+  - do-not-apply-in-pre-textarea-script-style
+- id: NORM-SYNTHETIC-CLOCK
+  scope:
+  - json
+  - html
+  - db
+  action: replace-controlled-clock-values
+  reason: fixture-controlled time
+  requires:
+  - scenario.fixedClock
+- id: NORM-RANDOM-NONCE
+  scope:
+  - header
+  - html
+  action: map-paired-nonce
+  reason: security nonce remains structurally equivalent
+  requires:
+  - same-generation-contract
+- id: NORM-SESSION-ID
+  scope:
+  - cookie
+  - header
+  action: map-paired-session-id
+  reason: identity differs but attributes/lifecycle are compared separately
+forbidden:
+- ignore business fields
+- ignore status codes
+- ignore redirect targets
+- ignore database values
+- ignore security decisions
+- ignore side-effect payloads
+- strip all HTML text
+- regex-remove validation errors
+audit:
+  recordAppliedRule: true
+  recordBeforeAfterDigest: true
+  versionPinned: true
+  sameRuleBothSides: true

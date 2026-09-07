@@ -1,0 +1,9 @@
+{
+  "desc": "Local migration candidate; no release authority",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

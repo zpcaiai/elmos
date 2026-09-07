@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/semantic-run-manifest.schema.json",
+  "title": "PSP v1 Semantic Run Manifest",
+  "type": "object",
+  "required": ["semanticRunId", "snapshotId", "status", "adapters", "projects", "artifacts", "metrics", "diagnosticIds", "configurationHash", "createdAt"],
+  "properties": {
+    "semanticRunId": {"type": "string", "minLength": 1},
+    "snapshotId": {"type": "string", "minLength": 1},
+    "status": {"enum": ["completed", "completed_with_warnings", "completed_with_restrictions", "failed"]},
+    "adapters": {"type": "array", "items": {"type": "object", "required": ["adapter", "adapterVersion", "language", "provider", "providerVersion", "authoritativeSemantics", "losslessSyntax", "configurationHash"]}},
+    "projects": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "artifacts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "metrics": {"$ref": "#/$defs/coverage"},
+    "diagnosticIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "configurationHash": {"type": "string", "minLength": 1},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "coverage": {
+      "type": "object",
+      "required": ["syntaxParseRate", "symbolResolutionRate", "typeResolutionRate", "exactCallResolutionRate", "candidateCallResolutionRate", "dynamicCallRate", "unresolvedCallRate", "sourceMapCoverage"],
+      "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,90 @@
+{
+  "case_id": "TS-GOV-02-005",
+  "severity": "P0",
+  "test_type": "security",
+  "steps": [
+    {
+      "id": "skill-binding",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "skill-binding"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "path-escape",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "path-escape"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "traceability",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "traceability"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "not-run",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "必须拒绝并产生不可抵赖审计，且无数据和Secret泄漏",
+      "established_by": [
+        "skill-binding",
+        "path-escape"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "每个Batch至少一个P0正向和一个P0负向用例",
+      "established_by": [
+        "traceability"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "每个用例绑定实现与Evidence",
+      "established_by": [
+        "traceability"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "删除能力不能删除历史追踪",
+      "established_by": [
+        "traceability"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "not-run"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

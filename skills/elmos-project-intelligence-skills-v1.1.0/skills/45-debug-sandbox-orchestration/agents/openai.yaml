@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 调试沙箱、运行环境与会话编排
+  short_description: 为在线调试创建一次性、可复现、最小权限的运行沙箱。用于 Runtime Profile、构建与启动、资源配额、网络和密钥策略、会话心跳、清理、生产环境禁用与紧急审批。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-debug-sandbox-orchestration 按模块规格实施、测试并提供可复现证据。
+policy:
+  allow_implicit_invocation: true

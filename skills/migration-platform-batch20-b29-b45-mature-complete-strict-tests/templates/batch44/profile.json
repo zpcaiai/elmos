@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "example-finops-economics",
+  "risk_tier": "P0",
+  "required_holdout": true,
+  "required_representative_workloads": true,
+  "minimum_evidence_trace_coverage": 0.98
+}

@@ -1,0 +1,128 @@
+apiVersion: elmos.ai/v3alpha1
+kind: DurableCertificationWorkflow
+metadata:
+  name: progressive-delivery-certificate-admission
+  version: 4.0.0
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-certificate-deployment-admission-controller
+  stateStore: PostgreSQL 17 append-only journal plus WORM evidence
+  execution:
+    pauseResumeCancel: true
+    leaseFencing: true
+    sideEffectReconciliation: true
+    machineWallClockEta: true
+  stages:
+  - id: S01
+    name: freeze-candidate-and-flag-contract
+    dependsOn: []
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S02
+    name: offline-and-shadow-eval
+    dependsOn:
+    - S01
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S03
+    name: certificate-scope-check
+    dependsOn:
+    - S02
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S04
+    name: admit-canary
+    dependsOn:
+    - S03
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S05
+    name: monitor-guardrails
+    dependsOn:
+    - S04
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S06
+    name: promote-or-rollback
+    dependsOn:
+    - S05
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S07
+    name: revoke-stale-certificate
+    dependsOn:
+    - S06
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  - id: S08
+    name: seal-decision
+    dependsOn:
+    - S07
+    checkpoint: true
+    authority: environment-owned
+    idempotency: required for writes
+    failurePolicy: critical unknown/refuted/unsupported => BLOCK; retry only idempotent or reconciled operations
+    evidence:
+    - input-hash
+    - tool-version-digest
+    - command-exit-code
+    - trace-reference
+    - resource-and-cost-event
+  terminalRule: COMPLETED only after independent K8 decision; otherwise typed BLOCKED/FAILED/CANCELLED

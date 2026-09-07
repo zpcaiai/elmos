@@ -1,0 +1,4 @@
+interface:
+  display_name: "File Object Storage Output Comparator"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $file-object-storage-output-comparator to perform this Batch 9 behavioral-equivalence task."

@@ -1,0 +1,12 @@
+{
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "libVersion": "3.9.1",
+  "projectname": "web-console-next16-react19-wechat-v1",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "urlCheck": true,
+    "postcss": true
+  }
+}

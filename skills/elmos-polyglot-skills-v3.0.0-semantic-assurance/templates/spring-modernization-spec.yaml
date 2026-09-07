@@ -1,0 +1,31 @@
+schemaVersion: elmos.spring-modernization-spec/v1
+jobId: REPLACE-ME
+source:
+  repository: REPLACE-ME
+  revision: REPLACE-ME
+  expectedJava: REPLACE-ME
+  expectedSpringBoot: REPLACE-ME
+target:
+  java: "21"
+  springBoot: REPLACE-ME
+  packaging: container
+  architecture: modular-monolith
+strategy:
+  mode: incremental
+  allowStrangler: true
+  allowServiceExtraction: false
+preserve:
+  - public-api
+  - security-policy
+  - transaction-semantics
+  - serialization
+  - data-compatibility
+  - performance-budgets
+requiredBaselines:
+  - clean-build
+  - unit-and-integration-tests
+  - api-contract
+  - data-invariants
+  - performance
+  - security
+readiness: not-run

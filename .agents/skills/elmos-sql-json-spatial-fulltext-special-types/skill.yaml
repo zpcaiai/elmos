@@ -1,0 +1,127 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: sql-json-spatial-fulltext-special-types
+  version: 3.0.0
+  pack: 15-domain-engineering-packs
+  priority: P1
+  owner: domain-engineering-team
+spec:
+  description: 转换 JSON、数组、空间、全文、XML 和厂商专有类型。
+  kernel: Domain Packs over K1-K8
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: repository
+    required: true
+  - name: target contract
+    required: true
+  - name: semantic IR
+    required: true
+  - name: domain knowledge
+    required: true
+  - name: verification environment
+    required: true
+  outputs:
+  - name: transformation plan
+    contentAddressed: true
+  - name: patch set
+    contentAddressed: true
+  - name: test suite
+    contentAddressed: true
+  - name: equivalence evidence
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - repo.analyze
+    - semantic.transform
+    - patch.apply
+    - build.test
+    - diff.verify
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - inventory-complete
+    - behavior-preserved
+    - tests-adequate
+    - migration-reversible
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+  businessLines:
+  - sql-database-conversion
+  capabilityTags:
+  - 15-domain-engineering-packs
+  - fulltext
+  - json
+  - spatial
+  - special
+  - sql
+  - sql-database-conversion
+  - types
+  triggers:
+  - 任务需要：转换 JSON、数组、空间、全文、XML 和厂商专有类型。
+  - 任务属于 sql-database-conversion 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - inventory-complete
+  - behavior-preserved
+  - tests-adequate
+  - migration-reversible
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

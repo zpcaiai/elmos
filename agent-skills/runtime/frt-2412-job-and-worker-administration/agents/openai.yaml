@@ -1,0 +1,4 @@
+interface:
+  display_name: "Job and Worker Administration"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2412-job-and-worker-administration to run FRT-2412 through the governed FRT runtime with exact scope and fail-closed evidence."

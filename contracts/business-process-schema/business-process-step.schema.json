@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/business-process-step/v1",
+  "title": "Business Process Step",
+  "type": "object",
+  "required": ["schemaVersion", "stepId", "processVersionId", "sequence", "stepType", "evidenceStatus"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "stepId": {"type": "string", "minLength": 1},
+    "processVersionId": {"type": "string", "minLength": 1},
+    "sequence": {"type": "integer", "minimum": 0},
+    "stepType": {"enum": ["SYSTEM_TRANSACTION", "WORKFLOW", "INTEGRATION", "MANUAL", "DECISION", "CONTROL", "REPORT"]},
+    "evidenceStatus": {"enum": ["DECLARED", "CONFIGURED", "RUNTIME_OBSERVED", "USER_CONFIRMED", "BUSINESS_APPROVED"]},
+    "suiteObjectRefs": {"type": "array", "items": {"type": "string"}},
+    "controlRefs": {"type": "array", "items": {"type": "string"}},
+    "sourceArtifactRef": {"type": "string"}
+  },
+  "additionalProperties": false
+}

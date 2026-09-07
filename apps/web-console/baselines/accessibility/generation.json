@@ -1,0 +1,7 @@
+{
+  "route": "/generation",
+  "tool": "axe-core 4.12.1",
+  "allowed_violations": [],
+  "manual_cases": ["keyboard focus entry", "live region announcements"],
+  "status": "NOT_RUN"
+}

@@ -1,0 +1,30 @@
+skill: miniapp-source-framework-detector
+version: 1.0.0
+task_ids:
+- MAPP-003
+- MAPP-004
+required_outputs:
+- path: project-inventory.json
+  required: true
+- path: framework-detection.json
+  required: true
+- path: entrypoint-map.json
+  required: true
+- path: unresolved-signals.json
+  required: true
+gates:
+- name: 扫描文件覆盖率=100%（排除项有理由）
+  required: true
+- name: 入口与路由根可追踪
+  required: true
+- name: 锁文件和依赖清单已记录
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

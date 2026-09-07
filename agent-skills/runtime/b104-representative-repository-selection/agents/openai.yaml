@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Representative Repository Selection"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-representative-repository-selection to execute this ELMOS product-closure Skill with fail-closed evidence."

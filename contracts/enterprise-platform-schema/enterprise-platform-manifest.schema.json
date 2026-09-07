@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/enterprise-platform-manifest.schema.json",
+  "title": "Batch 12 Enterprise Platform Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["batch", "assessment_run_id", "platform", "tenants", "deployments", "capabilities", "policy", "observed_at", "production_operation_executed"],
+  "properties": {
+    "batch": {"const": 12},
+    "assessment_run_id": {"type": "string", "minLength": 1},
+    "platform": {"$ref": "platform-artifact.schema.json"},
+    "tenants": {"type": "array", "minItems": 1, "items": {"$ref": "tenant-profile.schema.json"}},
+    "deployments": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "deployment-profile.schema.json"}},
+    "capabilities": {"type": "array", "minItems": 1, "items": {"$ref": "capability-binding.schema.json"}},
+    "policy": {"type": "object"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "production_operation_executed": {"const": false}
+  }
+}

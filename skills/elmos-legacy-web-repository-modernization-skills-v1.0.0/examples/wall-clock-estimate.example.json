@@ -1,0 +1,41 @@
+{
+  "estimateVersion": "1.0.0",
+  "jobId": "job-demo-001",
+  "asOf": "2026-08-26T09:00:00Z",
+  "unit": "seconds",
+  "p50": 21600,
+  "p80": 32400,
+  "p95": 43200,
+  "remainingPhases": [
+    {
+      "phase": "transformation",
+      "p50": 7200
+    },
+    {
+      "phase": "verification",
+      "p50": 12600
+    },
+    {
+      "phase": "repair-certification",
+      "p50": 1800
+    }
+  ],
+  "confidence": 0.68,
+  "features": {
+    "loc": 650000,
+    "modules": 42,
+    "endpoints": 486,
+    "jspFiles": 230,
+    "baselineBuildSeconds": 780,
+    "cacheHit": 0.42
+  },
+  "assumptions": [
+    "source baseline is reproducible",
+    "no production approval wait included"
+  ],
+  "humanWaitExcluded": true,
+  "model": {
+    "id": "eta-model-v1",
+    "trainingWindow": "validated internal jobs"
+  }
+}

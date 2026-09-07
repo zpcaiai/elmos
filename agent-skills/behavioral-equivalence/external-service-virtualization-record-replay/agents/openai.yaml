@@ -1,0 +1,4 @@
+interface:
+  display_name: "External Service Virtualization Record Replay"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $external-service-virtualization-record-replay to perform this Batch 9 behavioral-equivalence task."

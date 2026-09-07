@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-effect-exception-trace-refinement
+  title: Effect and Exception Trace Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明文件、网络、数据库、消息、日志和异常的可观察 Trace 顺序、数量、参数和补偿关系保持。
+  dependencies:
+  - elmos-observable-behavior-contract
+  - elmos-semantic-ir-formal-semantics
+  - elmos-cross-language-product-program
+  capabilities:
+  - effect systems
+  - trace inclusion
+  - exception sum types
+  - causal alignment
+  inputs:
+  - name: source/target effect graphs
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: observation contract
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: exception maps
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: trace refinement result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: effect delta
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

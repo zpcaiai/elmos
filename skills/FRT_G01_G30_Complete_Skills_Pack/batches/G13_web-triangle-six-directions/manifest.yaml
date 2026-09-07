@@ -1,0 +1,80 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G13",
+    "slug": "web-triangle-six-directions",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Vue2、Vue3、React Web Triangle六条有向转换路径",
+    "transitionFrom": "通用生成内核和三种Web框架能力",
+    "transitionTo": "六条Web方向均具备独立Route Pack、Corpus和证书",
+    "certificateFamily": "WR",
+    "skills": [
+      {
+        "id": "FRT-1300",
+        "name": "Web Triangle Route Orchestrator",
+        "path": "skills/frt-1300-web-triangle-route-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1301",
+        "name": "Vue 2 to Vue 3 Route Pack",
+        "path": "skills/frt-1301-vue-2-to-vue-3-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1302",
+        "name": "Vue 3 to Vue 2 Route Pack",
+        "path": "skills/frt-1302-vue-3-to-vue-2-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1303",
+        "name": "Vue 2 to React Route Pack",
+        "path": "skills/frt-1303-vue-2-to-react-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1304",
+        "name": "React to Vue 2 Route Pack",
+        "path": "skills/frt-1304-react-to-vue-2-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1305",
+        "name": "Vue 3 to React Route Pack",
+        "path": "skills/frt-1305-vue-3-to-react-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1306",
+        "name": "React to Vue 3 Route Pack",
+        "path": "skills/frt-1306-react-to-vue-3-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1307",
+        "name": "Web Direction Pack Registry",
+        "path": "skills/frt-1307-web-direction-pack-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-1308",
+        "name": "Web State Router and UI Mapping",
+        "path": "skills/frt-1308-web-state-router-and-ui-mapping/SKILL.md"
+      },
+      {
+        "id": "FRT-1309",
+        "name": "Web Differential Corpus",
+        "path": "skills/frt-1309-web-differential-corpus/SKILL.md"
+      },
+      {
+        "id": "FRT-1310",
+        "name": "Web Route Certification",
+        "path": "skills/frt-1310-web-route-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "六条路径均可构建和运行",
+      "直接与间接路径关键行为一致",
+      "Vue2降级限制显式",
+      "Hooks/Watch/Computed语义不机械映射",
+      "每条Route有独立版本和证书"
+    ]
+  }
+}

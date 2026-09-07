@@ -1,0 +1,928 @@
+schema_version: 1.0.0
+package_version: 1.0.0
+global_gates:
+- id: G-01
+  requirement: Exactly 50 canonical Skills and valid mirrors
+  evidence: scripts/validate_package.py
+- id: G-02
+  requirement: No silent truncation or silent input omission
+  evidence: long-context and package E2E
+- id: G-03
+  requirement: Critical source anchor coverage is 100%
+  evidence: provenance report
+- id: G-04
+  requirement: No cross-tenant data leak
+  evidence: isolation security suite
+- id: G-05
+  requirement: No archive sandbox escape or uncontrolled bomb
+  evidence: archive attack corpus
+- id: G-06
+  requirement: No duplicate external effect/provider charge on recovery
+  evidence: fault-injection ledger report
+- id: G-07
+  requirement: Machine wall-clock ETA and actuals are recorded
+  evidence: runtime metrics
+- id: G-08
+  requirement: No secrets/passwords in logs, traces, events or prompts
+  evidence: redaction scans
+skills:
+- ordinal: 1
+  name: elmos-multimodal-input-orchestrator
+  title: 统一多模态输入总控
+  acceptance:
+  - id: S01-01
+    criterion: 同一幂等键不会创建重复任务或副作用
+  - id: S01-02
+    criterion: 单资产失败不阻塞同包其他资产，包状态准确反映部分就绪
+  - id: S01-03
+    criterion: 所有 READY 内容具备来源锚点和处理报告
+  - id: S01-04
+    criterion: 下游无需感知 PDF、Word、音频等原始格式
+  required_deliverables:
+  - 编排服务与端口适配器
+  - 状态机、事件和数据库迁移
+  - 跨模态端到端测试与运行手册
+- ordinal: 2
+  name: elmos-secure-resumable-upload
+  title: 安全断点续传
+  acceptance:
+  - id: S02-01
+    criterion: 任意分片重复上传不产生重复字节计费
+  - id: S02-02
+    criterion: 页面关闭重连后从已确认分片继续
+  - id: S02-03
+    criterion: 最终对象哈希不一致时不得进入解析
+  - id: S02-04
+    criterion: 跨租户无法猜测、读取或覆盖上传对象
+  required_deliverables:
+  - 上传 API/SDK 与状态迁移
+  - 对象存储适配器和数据库迁移
+  - 断网、乱序、重复分片和校验失败测试
+- ordinal: 3
+  name: elmos-file-type-detection-and-validation
+  title: 文件类型识别与验证
+  acceptance:
+  - id: S03-01
+    criterion: 仅改扩展名无法绕过识别
+  - id: S03-02
+    criterion: 未知格式不会被错误交给宽松解析器
+  - id: S03-03
+    criterion: 识别结果包含依据、置信度和注册表版本
+  - id: S03-04
+    criterion: 检测过程有资源上限且不会执行文件内容
+  required_deliverables:
+  - FileTypeDetector 接口与适配器
+  - 格式注册表和决策规则
+  - 伪扩展名、截断文件和 polyglot 文件测试
+- ordinal: 4
+  name: elmos-malware-quarantine-and-sandbox
+  title: 恶意文件隔离与解析沙箱
+  acceptance:
+  - id: S04-01
+    criterion: Office 宏、PDF JavaScript 和归档脚本在接入阶段绝不执行
+  - id: S04-02
+    criterion: 沙箱无法读取宿主机或其他租户数据
+  - id: S04-03
+    criterion: 超时/OOM 后主服务保持稳定
+  - id: S04-04
+    criterion: 隔离资产不能被普通预览、索引或模型读取
+  required_deliverables:
+  - QuarantineService 与 SandboxRunner
+  - 安全策略和运行时配置
+  - 恶意样本模拟、超时、OOM 和逃逸回归测试
+- ordinal: 5
+  name: elmos-audio-asr-and-diarization
+  title: 音频识别与说话人分离
+  acceptance:
+  - id: S05-01
+    criterion: 每个转录片段包含 start/end、speaker、language、confidence
+  - id: S05-02
+    criterion: 点击文本可跳转原音频位置
+  - id: S05-03
+    criterion: 长音频可断点恢复且重试不重复片段
+  - id: S05-04
+    criterion: 低置信度片段被明确标记
+  required_deliverables:
+  - AudioPipeline 与 provider 接口
+  - audio_segments 数据模型和编辑 API
+  - 清晰、噪声、中英混合和多说话人测试集
+- ordinal: 6
+  name: elmos-image-ocr-and-preprocessing
+  title: 图片 OCR 与预处理
+  acceptance:
+  - id: S06-01
+    criterion: OCR 块可精确回到原图 bounding box
+  - id: S06-02
+    criterion: 大图切片后坐标可还原到全图
+  - id: S06-03
+    criterion: 低置信度和不可读区域显式呈现
+  - id: S06-04
+    criterion: 预处理不会覆盖不可变原始资产
+  required_deliverables:
+  - ImagePreprocessor/OCRProvider 接口
+  - OCRDocument 数据模型和纠错 API
+  - 清晰、模糊、旋转、长截图和表格图片评测
+- ordinal: 7
+  name: elmos-visual-ui-understanding
+  title: UI 截图理解
+  acceptance:
+  - id: S07-01
+    criterion: 每个 UI 元素包含截图区域与层级关系
+  - id: S07-02
+    criterion: 事实识别与推断内容被区分
+  - id: S07-03
+    criterion: 生成代码由视觉回归验证而非只看编译
+  - id: S07-04
+    criterion: 不从单张截图臆造关键业务规则
+  required_deliverables:
+  - UIVisualIR schema 与解析服务
+  - 截图到组件清单和页面需求的转换器
+  - 多分辨率和视觉回归测试
+- ordinal: 8
+  name: elmos-diagram-and-architecture-understanding
+  title: 图表与架构图理解
+  acceptance:
+  - id: S08-01
+    criterion: 箭头方向和节点关系可追溯到原图
+  - id: S08-02
+    criterion: 无法确定的连线不会被强行确定
+  - id: S08-03
+    criterion: 导出后可重新渲染并做结构对比
+  - id: S08-04
+    criterion: 图模型可被架构和数据流工作流消费
+  required_deliverables:
+  - DiagramIR schema 与解析管线
+  - 可导出 Mermaid、PlantUML、JSON 的转换器
+  - 标准图、交叉线和手绘图评测
+- ordinal: 9
+  name: elmos-pdf-layout-table-parser
+  title: PDF 版面与表格解析
+  acceptance:
+  - id: S09-01
+    criterion: 所有内容块包含 page 和 bbox 或明确逻辑锚点
+  - id: S09-02
+    criterion: 扫描与原生页面可正确混用
+  - id: S09-03
+    criterion: 表格单元格关系不会被扁平化
+  - id: S09-04
+    criterion: 密码不会进入日志、普通字段或模型上下文
+  required_deliverables:
+  - PDFParser 适配器与 page/block/table 模型
+  - 原生与 OCR 混合决策器
+  - 多栏、跨页表格、扫描页、加密 PDF 测试
+- ordinal: 10
+  name: elmos-word-document-parser
+  title: Word 文档解析
+  acceptance:
+  - id: S10-01
+    criterion: 宏与嵌入可执行对象绝不运行
+  - id: S10-02
+    criterion: 用户可选择修订视图且输出可复现
+  - id: S10-03
+    criterion: 批注、删除和插入内容不被静默丢弃
+  - id: S10-04
+    criterion: 关键块可定位到段落、表格、书签或页面近似位置
+  required_deliverables:
+  - WordParser 与修订策略接口
+  - WordBlock、Revision、Comment 模型
+  - 复杂表格、批注、修订和旧 DOC 安全转换测试
+- ordinal: 11
+  name: elmos-markdown-text-log-parser
+  title: Markdown、TXT 与日志解析
+  acceptance:
+  - id: S11-01
+    criterion: 所有文本块保留行号范围
+  - id: S11-02
+    criterion: 代码块不会被当作系统命令执行
+  - id: S11-03
+    criterion: 重复日志可聚合但原始行仍可回查
+  - id: S11-04
+    criterion: 流式解析受内存上限约束
+  required_deliverables:
+  - TextParser/LogParser 适配器
+  - line-range 来源锚点与日志事件模型
+  - 多编码、超大文件、混合日志和恶意 Markdown 测试
+- ordinal: 12
+  name: elmos-unified-multimodal-content-ir
+  title: 统一多模态内容 IR
+  acceptance:
+  - id: S12-01
+    criterion: 任何解析器输出都能映射到统一 IR 且无关键结构丢失
+  - id: S12-02
+    criterion: 未知扩展字段可安全保留
+  - id: S12-03
+    criterion: 旧版本数据可迁移或兼容读取
+  - id: S12-04
+    criterion: 下游不需读取格式专有内部对象
+  required_deliverables:
+  - JSON Schema、语言类型和验证器
+  - IR 版本迁移与兼容测试
+  - 各解析器到 IR 的适配契约
+- ordinal: 13
+  name: elmos-source-anchor-and-provenance
+  title: 来源锚点与证据链
+  acceptance:
+  - id: S13-01
+    criterion: 关键需求与决策来源锚点覆盖率 100%
+  - id: S13-02
+    criterion: 锚点能解析到不可变原始资产或明确失效状态
+  - id: S13-03
+    criterion: 派生链包含处理版本与哈希
+  - id: S13-04
+    criterion: 任何压缩或融合不会删除证据引用
+  required_deliverables:
+  - SourceAnchor、ProvenanceEdge schema
+  - 来源解析与预览 API
+  - 锚点迁移和内容哈希完整性测试
+- ordinal: 14
+  name: elmos-multimodal-requirement-extraction
+  title: 多模态需求提取
+  acceptance:
+  - id: S14-01
+    criterion: 所有已接受需求具备来源锚点或用户新决策 ID
+  - id: S14-02
+    criterion: 推断字段与原文字段可区分
+  - id: S14-03
+    criterion: 矛盾需求不会被静默覆盖
+  - id: S14-04
+    criterion: 验收标准可被测试生成器直接消费
+  required_deliverables:
+  - Requirement schema 与提取流水线
+  - 审阅 API 和需求变更历史
+  - 跨模态需求评测集
+- ordinal: 15
+  name: elmos-multi-asset-content-fusion
+  title: 多资产内容融合
+  acceptance:
+  - id: S15-01
+    criterion: 重复内容不会在上下文中无意义占用多份
+  - id: S15-02
+    criterion: 来源差异仍可单独查看
+  - id: S15-03
+    criterion: 自动角色分类可被用户覆盖并审计
+  - id: S15-04
+    criterion: 融合结果不改变原始资产
+  required_deliverables:
+  - FusionService 与角色分类器
+  - AssetRelation、EntityLink 模型
+  - 重复、互补和矛盾资料融合测试
+- ordinal: 16
+  name: elmos-document-version-and-conflict-detection
+  title: 文档版本与冲突检测
+  acceptance:
+  - id: S16-01
+    criterion: 任何被覆盖陈述仍保留来源和版本
+  - id: S16-02
+    criterion: 未解决冲突不能被标记为已确定需求
+  - id: S16-03
+    criterion: 优先级规则可配置并有审计记录
+  - id: S16-04
+    criterion: 用户决策后能更新依赖需求和上下文
+  required_deliverables:
+  - VersionGraph、Conflict schema
+  - 差异与冲突检测服务
+  - 冲突审阅 UI、API 和测试集
+- ordinal: 17
+  name: elmos-human-review-and-correction
+  title: 人工审阅与纠错
+  acceptance:
+  - id: S17-01
+    criterion: 任何修正可回退并保留历史
+  - id: S17-02
+    criterion: 并发修改有乐观锁或等效控制
+  - id: S17-03
+    criterion: 低置信度结果可被批量定位
+  - id: S17-04
+    criterion: 批准修正后相关索引和需求一致更新
+  required_deliverables:
+  - ReviewTask、Correction 模型与 API
+  - 音频、图片和文档审阅界面契约
+  - 并发编辑、撤销和传播测试
+- ordinal: 18
+  name: elmos-prompt-injection-defense
+  title: 多模态提示注入防护
+  acceptance:
+  - id: S18-01
+    criterion: 文档内容不能修改系统策略或租户权限
+  - id: S18-02
+    criterion: 高风险动作必须经过独立授权或审批
+  - id: S18-03
+    criterion: 检测器失效时默认保持最小权限
+  - id: S18-04
+    criterion: 安全拦截有可审计原因且不泄露内部策略细节
+  required_deliverables:
+  - InjectionClassifier 与 trust metadata
+  - 工具调用策略执行点
+  - 跨模态红队样本与防绕过测试
+- ordinal: 19
+  name: elmos-provider-routing-and-fallback
+  title: 解析与模型供应商路由
+  acceptance:
+  - id: S19-01
+    criterion: 单 provider 故障不会导致无界重试
+  - id: S19-02
+    criterion: 未经授权的数据不会回退到外部云模型
+  - id: S19-03
+    criterion: 相同请求可复现所用 provider、版本和参数
+  - id: S19-04
+    criterion: 路由决策和成本可审计
+  required_deliverables:
+  - ProviderRegistry、Router
+  - 策略配置与 provider 适配器
+  - 故障、限流、隐私禁止和成本预算测试
+- ordinal: 20
+  name: elmos-storage-index-and-retrieval
+  title: 存储、索引与检索
+  acceptance:
+  - id: S20-01
+    criterion: 搜索结果始终返回来源锚点和权限上下文
+  - id: S20-02
+    criterion: 删除或保留策略能传播到所有派生索引
+  - id: S20-03
+    criterion: 索引失败可重放且不丢原始数据
+  - id: S20-04
+    criterion: 跨租户检索结果为零泄露
+  required_deliverables:
+  - StoragePorts 与索引作业
+  - 查询 API 和一致性修复器
+  - 索引延迟、删除传播、权限过滤和召回评测
+- ordinal: 21
+  name: elmos-durable-processing-and-recovery
+  title: 持久任务执行与恢复
+  acceptance:
+  - id: S21-01
+    criterion: 客户端断开不终止服务端任务
+  - id: S21-02
+    criterion: worker 崩溃后从检查点继续而非全部重做
+  - id: S21-03
+    criterion: 重复事件不会重复写入或重复收费
+  - id: S21-04
+    criterion: 取消和超时最终收敛到明确终态
+  required_deliverables:
+  - 工作流编排适配器
+  - processing_checkpoints、attempts 数据模型
+  - kill、restart、network partition、duplicate delivery 测试
+- ordinal: 22
+  name: elmos-processing-cost-and-eta-estimation
+  title: 处理成本与机器 ETA
+  acceptance:
+  - id: S22-01
+    criterion: 所有 ETA 指 Elmos 机器执行墙钟时间而非人工时间
+  - id: S22-02
+    criterion: 进行中任务随真实进度更新 ETA
+  - id: S22-03
+    criterion: 最终账单可按 asset、stage、provider 解释
+  - id: S22-04
+    criterion: 估算误差被持续监控并有置信区间
+  required_deliverables:
+  - CostLedger、ETAEstimator
+  - 任务进度与成本 API
+  - 回放评估和校准报表
+- ordinal: 23
+  name: elmos-multimodal-observability
+  title: 多模态可观测性
+  acceptance:
+  - id: S23-01
+    criterion: 单个任务可从上传追踪到下游交付
+  - id: S23-02
+    criterion: 日志不包含密码、密钥或未经批准的原文
+  - id: S23-03
+    criterion: 失败可按阶段、provider、文件类型聚合
+  - id: S23-04
+    criterion: 高基数标签受控且不拖垮监控系统
+  required_deliverables:
+  - Telemetry 规范与 instrumentation
+  - 告警、SLO 规则和仪表盘定义
+  - 链路完整性与日志泄露测试
+- ordinal: 24
+  name: elmos-multimodal-evaluation-framework
+  title: 多模态评测框架
+  acceptance:
+  - id: S24-01
+    criterion: 每个核心技能至少有正向、边界、失败和安全用例
+  - id: S24-02
+    criterion: 模型或解析器升级必须跑兼容评测
+  - id: S24-03
+    criterion: 评测数据不含未经授权生产隐私
+  - id: S24-04
+    criterion: 回归超过阈值会阻止发布或要求批准
+  required_deliverables:
+  - EvalRunner 与数据集清单
+  - 确定性检查和 rubric grader
+  - CI 报告、基线和回归阈值
+- ordinal: 25
+  name: elmos-multimodal-input-workbench-ui
+  title: 多模态输入工作台 UI
+  acceptance:
+  - id: S25-01
+    criterion: 用户能区分已上传、已解析、已索引、已装入上下文和仅可检索
+  - id: S25-02
+    criterion: 错误信息可操作且不泄露内部路径或敏感值
+  - id: S25-03
+    criterion: 大目录树和长转录保持可用性能
+  - id: S25-04
+    criterion: 刷新或重连后状态与服务端一致
+  required_deliverables:
+  - 前端页面与组件
+  - SSE、WebSocket 状态同步层
+  - 组件、E2E、视觉回归和可访问性测试
+- ordinal: 26
+  name: elmos-ingestion-api-and-sdk
+  title: 接入 API 与 SDK
+  acceptance:
+  - id: S26-01
+    criterion: API 版本升级不静默破坏现有客户端
+  - id: S26-02
+    criterion: 错误包含稳定代码、trace id 和可操作说明
+  - id: S26-03
+    criterion: Webhook 可验证、可重放且防重复
+  - id: S26-04
+    criterion: SDK 与服务端 schema 在 CI 中保持一致
+  required_deliverables:
+  - OpenAPI、AsyncAPI 规范
+  - SDK、示例和鉴权中间件
+  - 向后兼容、幂等、分页和 webhook 重放测试
+- ordinal: 27
+  name: elmos-data-retention-and-governance
+  title: 数据保留与治理
+  acceptance:
+  - id: S27-01
+    criterion: 用户删除请求能覆盖所有派生副本或明确受法律保留限制
+  - id: S27-02
+    criterion: 未经许可的资产不发送第三方模型
+  - id: S27-03
+    criterion: 租户可配置保留期限且新策略可追踪
+  - id: S27-04
+    criterion: 审计日志防篡改并与业务内容隔离
+  required_deliverables:
+  - GovernancePolicyEngine
+  - retention、delete、export workflows
+  - 删除传播、法律保留和跨租户测试
+- ordinal: 28
+  name: elmos-downstream-agent-integration
+  title: 下游 Agent 集成
+  acceptance:
+  - id: S28-01
+    criterion: 下游 Agent 不直接调用格式专有解析器
+  - id: S28-02
+    criterion: 每项关键实现可追溯到需求和源文件
+  - id: S28-03
+    criterion: 文件内提示不能授予工具权限
+  - id: S28-04
+    criterion: 结果回写不会篡改原始输入
+  required_deliverables:
+  - AgentContextBuilder 与 tool policy adapter
+  - 下游工作流契约和示例
+  - 需求到实现再到测试的端到端测试
+- ordinal: 29
+  name: elmos-codex-context-capacity-parity
+  title: Codex 同级上下文容量
+  acceptance:
+  - id: S29-01
+    criterion: 当前基线仅位于版本化能力配置而非业务代码常量
+  - id: S29-02
+    criterion: 总上传语料可超过窗口并通过检索使用
+  - id: S29-03
+    criterion: 任何模型调用在发送前完成预算校验
+  - id: S29-04
+    criterion: 超限不会丢弃用户最新要求或验收标准
+  required_deliverables:
+  - CodexParityPolicy 与配置
+  - 兼容性检查 API、前端状态
+  - 多模型容量切换和超限测试
+- ordinal: 30
+  name: elmos-context-budget-manager
+  title: 上下文预算管理器
+  acceptance:
+  - id: S30-01
+    criterion: 总输入加预留输出加安全余量不超过模型窗口
+  - id: S30-02
+    criterion: P0、P1 内容不能被普通驱逐策略移除
+  - id: S30-03
+    criterion: 预算包含工具 schema、工具结果和多模态等价 token
+  - id: S30-04
+    criterion: 前端显示值与实际调用计量一致
+  required_deliverables:
+  - ContextBudgetManager 服务
+  - 预算策略、快照和审计模型
+  - 边界值、并发工具调用和模型切换测试
+- ordinal: 31
+  name: elmos-multimodal-token-accounting
+  title: 多模态 Token 计量
+  acceptance:
+  - id: S31-01
+    criterion: 同一输入与模型版本重复计量结果确定且可审计
+  - id: S31-02
+    criterion: 文本计量与目标 tokenizer 的误差在定义阈值内，近似计量明确给出误差上界
+  - id: S31-03
+    criterion: 图像、音频等不确定模态不得被记为零
+  - id: S31-04
+    criterion: 当前活动上下文、累计输入输出消耗和费用三者不会混用
+  - id: S31-05
+    criterion: 模型切换或内容变更后预算自动重算
+  - id: S31-06
+    criterion: 每项计量可追溯到来源、计量器版本和时间
+  required_deliverables:
+  - ContextUsage/TokenEstimate schema 与数据库迁移
+  - 各模态 tokenizer adapter 和模型特定计量器
+  - 预算预检 API、事件与可观测面板
+  - 黄金样本、误差校准和回归测试
+- ordinal: 32
+  name: elmos-long-context-packing-and-ranking
+  title: 长上下文装箱与排序
+  acceptance:
+  - id: S32-01
+    criterion: P0/P1 内容在任何正常压缩或驱逐路径中都不被移除
+  - id: S32-02
+    criterion: 装载总量不超过有效输入预算且保留输出与安全余量
+  - id: S32-03
+    criterion: 关键需求、直接依赖、测试失败和安全发现召回率达到验收门槛
+  - id: S32-04
+    criterion: 每个纳入或排除决定都有机器可读理由
+  - id: S32-05
+    criterion: 相同快照与配置产生确定性计划
+  - id: S32-06
+    criterion: 超大候选集处理不会退化为随机截断或按上传顺序截断
+  required_deliverables:
+  - ContextCandidate/ContextLoadPlan schema
+  - 混合排序、去重、多样性和预算装箱实现
+  - 可解释装载清单与调试界面
+  - 长仓库与多文档检索评测集
+- ordinal: 33
+  name: elmos-context-pressure-monitor
+  title: 上下文压力监控
+  acceptance:
+  - id: S33-01
+    criterion: 达到硬限制前必然进入 HIGH 或 CRITICAL 并执行保护动作
+  - id: S33-02
+    criterion: 阈值可配置且变更有版本与审计
+  - id: S33-03
+    criterion: 状态迟滞避免反复压缩和事件风暴
+  - id: S33-04
+    criterion: 压力保护不删除 P0/P1 内容
+  - id: S33-05
+    criterion: 计量缺失时采取保守失败而非继续无限装载
+  - id: S33-06
+    criterion: 每次自动动作可关联压力快照、执行结果和恢复路径
+  required_deliverables:
+  - ContextPressure 状态机与策略配置
+  - 增长预测器和告警规则
+  - 压力事件、仪表盘和审计记录
+  - 阈值/迟滞/故障注入测试
+- ordinal: 34
+  name: elmos-structured-context-compaction
+  title: 结构化上下文压缩
+  acceptance:
+  - id: S34-01
+    criterion: 压缩后目标、最新要求、约束、验收标准和待办完整率为100%
+  - id: S34-02
+    criterion: 所有关键事实至少有一个有效来源锚点
+  - id: S34-03
+    criterion: 原始内容仍可按哈希和定位符恢复
+  - id: S34-04
+    criterion: 压缩失败不改变有效活动上下文
+  - id: S34-05
+    criterion: 多轮压缩的事实漂移低于定义门槛且被自动检测
+  - id: S34-06
+    criterion: 不得使用单段自由文本摘要替代结构化契约
+  required_deliverables:
+  - CompactionCheckpoint schema 与持久化
+  - 分区、压缩、事实对齐和完整性校验实现
+  - 原始历史外置与可追溯检索
+  - 压缩回滚和多轮漂移评测
+- ordinal: 35
+  name: elmos-context-checkpoint-and-recovery
+  title: 上下文检查点与恢复
+  acceptance:
+  - id: S35-01
+    criterion: 客户端断线后任务按策略继续并可重新订阅进度
+  - id: S35-02
+    criterion: 服务进程被终止后可从最后安全点恢复
+  - id: S35-03
+    criterion: 同一检查点重复恢复不会重复外部副作用或成本记账
+  - id: S35-04
+    criterion: 恢复前后 P0/P1、待办、修改文件和测试状态一致
+  - id: S35-05
+    criterion: 损坏或不兼容检查点被拒绝并给出安全恢复路径
+  - id: S35-06
+    criterion: 所有恢复尝试有 trace、操作者、原因和结果
+  required_deliverables:
+  - TaskCheckpoint/RecoveryAttempt 数据模型
+  - 检查点创建、恢复、回滚和幂等协调器
+  - 事务事件/outbox 与重复投递防护
+  - 故障注入与恢复一致性报告
+- ordinal: 36
+  name: elmos-context-rehydration
+  title: 上下文重新水化
+  acceptance:
+  - id: S36-01
+    criterion: 可从 PDF 页、Word 段落、音频时间段、图片框、文本行和代码符号准确恢复
+  - id: S36-02
+    criterion: 恢复前执行租户权限与版本检查
+  - id: S36-03
+    criterion: 加载后上下文不超过预算且不移除 P0/P1
+  - id: S36-04
+    criterion: 被恢复内容与原始哈希或可验证派生链一致
+  - id: S36-05
+    criterion: 找不到来源时不得把摘要当原始事实
+  - id: S36-06
+    criterion: 关键水化请求成功率和延迟满足SLO
+  required_deliverables:
+  - RehydrationRequest/Result schema
+  - 按各类 SourceAnchor 的精确加载适配器
+  - 版本/权限/哈希校验与预算集成
+  - 水化事件、审计和端到端测试
+- ordinal: 37
+  name: elmos-project-memory-and-retrieval
+  title: 项目长期记忆与检索
+  acceptance:
+  - id: S37-01
+    criterion: 项目语料总量不受单次模型窗口限制，只受明确租户配额与治理策略限制
+  - id: S37-02
+    criterion: 所有检索结果携带来源、版本、可信度和权限上下文
+  - id: S37-03
+    criterion: 删除原始资产后派生索引按策略同步清除
+  - id: S37-04
+    criterion: 跨租户、跨项目和错误分支检索泄露为零
+  - id: S37-05
+    criterion: 过期和冲突事实不会无标记地覆盖当前事实
+  - id: S37-06
+    criterion: 关键查询的召回率、精度和新鲜度达到门槛
+  required_deliverables:
+  - ProjectMemoryItem schema 与多索引实现
+  - 记忆写入/检索/删除/重建 API
+  - 决策、需求、事实和任务状态的版本模型
+  - 检索评测和隔离安全测试
+- ordinal: 38
+  name: elmos-repository-context-map
+  title: 仓库上下文地图
+  acceptance:
+  - id: S38-01
+    criterion: 可识别 monorepo、多模块和多语言仓库
+  - id: S38-02
+    criterion: 变更后仅重建受影响节点并保持图一致性
+  - id: S38-03
+    criterion: 任务影响范围包含直接修改点、依赖和关键测试
+  - id: S38-04
+    criterion: 动态/不可解析关系明确标为不确定而非伪造
+  - id: S38-05
+    criterion: 所有地图节点可回到文件路径和代码范围
+  - id: S38-06
+    criterion: 超大仓库地图生成和查询满足性能SLO
+  required_deliverables:
+  - RepositoryContextMap schema 与分层图
+  - 多语言/框架扫描和增量更新器
+  - 任务影响范围查询 API
+  - 仓库地图可视化与准确度评测
+- ordinal: 39
+  name: elmos-model-capability-discovery
+  title: 模型能力发现与注册
+  acceptance:
+  - id: S39-01
+    criterion: 当前 Codex 对齐基线通过注册表配置，升级无需修改业务逻辑
+  - id: S39-02
+    criterion: 每个能力值有来源、获取时间、版本和可信状态
+  - id: S39-03
+    criterion: 上下文窗口和最大输出分开建模
+  - id: S39-04
+    criterion: 未知或过期能力不会被当作无限制
+  - id: S39-05
+    criterion: 模型切换会触发预算重算和兼容性检查
+  - id: S39-06
+    criterion: 能力快照可回滚并能解释历史任务当时采用的限制
+  required_deliverables:
+  - ModelCapabilitySnapshot schema 与注册表
+  - 供应商适配器、管理员覆写和缓存刷新
+  - 能力查询/兼容判断 API 与事件
+  - 边界探测和配置漂移测试
+- ordinal: 40
+  name: elmos-context-integrity-and-loss-detection
+  title: 上下文完整性与丢失检测
+  acceptance:
+  - id: S40-01
+    criterion: 目标、最新用户指令、不可违反约束和验收标准保留率为100%
+  - id: S40-02
+    criterion: 任何关键事实缺失会阻断高风险执行并生成明确告警
+  - id: S40-03
+    criterion: 压缩、恢复、模型切换前后都有可查询完整性报告
+  - id: S40-04
+    criterion: 来源不可达或哈希不符不会被静默接受
+  - id: S40-05
+    criterion: 自动重新水化或回滚后重新通过完整性门才可继续
+  - id: S40-06
+    criterion: 对否定、数值、权限、删除和版本变化的测试全部通过
+  required_deliverables:
+  - CriticalFactSet/ContextIntegrityReport schema
+  - 阶段性完整性门与自动修复/回滚
+  - 语义漂移和来源可达性检查
+  - 对抗回归测试与完成报告集成
+- ordinal: 41
+  name: elmos-folder-tree-input
+  title: 文件夹树输入
+  acceptance:
+  - id: S41-01
+    criterion: 相对路径和目录层次100%保留，同名不同路径文件不覆盖
+  - id: S41-02
+    criterion: 请求、日志、数据库和模型上下文中不出现用户本地绝对路径
+  - id: S41-03
+    criterion: Unicode、大小写、点文件和空目录行为有明确且通过测试的规则
+  - id: S41-04
+    criterion: 符号链接默认不跟随，目标仅作为安全元数据
+  - id: S41-05
+    criterion: 客户端与服务端清单不一致时包不能被标为完整
+  - id: S41-06
+    criterion: 多根目录可独立标记项目角色和根名称
+  required_deliverables:
+  - FolderManifest/FolderEntry schema
+  - 浏览器、CLI 和 SDK 的文件夹扫描/提交实现
+  - 目录树校验、差异和绝对路径泄露防护
+  - 跨平台路径与大目录测试
+- ordinal: 42
+  name: elmos-resumable-multi-file-folder-upload
+  title: 多文件夹断点续传
+  acceptance:
+  - id: S42-01
+    criterion: 网络中断和页面重开后可从服务端确认位置继续
+  - id: S42-02
+    criterion: 相同分片重复提交不会产生重复对象或重复费用
+  - id: S42-03
+    criterion: 单文件失败不要求重传已完成文件
+  - id: S42-04
+    criterion: 服务端最终对象哈希与 manifest 一致，否则拒绝完成
+  - id: S42-05
+    criterion: 上传期间变化的文件不会以混合版本进入包
+  - id: S42-06
+    criterion: 10万级文件目录在定义硬件基线上满足吞吐与内存SLO
+  required_deliverables:
+  - 目录 manifest 协商与去重 API
+  - 小文件批量/大文件分片上传器
+  - 暂停恢复、重连和过期会话清理
+  - 大目录、断网、重复分片和并发压力测试
+- ordinal: 43
+  name: elmos-project-package-manifest
+  title: 项目包清单
+  acceptance:
+  - id: S43-01
+    criterion: 相同条目集无论遍历顺序都产生相同 manifest digest
+  - id: S43-02
+    criterion: 原始清单不可变，策略变化只产生新分析视图或版本
+  - id: S43-03
+    criterion: 大小写与 Unicode 路径碰撞被显式检测
+  - id: S43-04
+    criterion: 每个分析文件可追溯到上传或归档条目
+  - id: S43-05
+    criterion: 多项目根和资料角色可配置且进入清单
+  - id: S43-06
+    criterion: 清单规模大时支持分页/流式处理，不需全部载入内存
+  required_deliverables:
+  - ProjectPackageManifest JSON Schema
+  - 规范化、碰撞检测、digest/Merkle 计算实现
+  - 原始/解压/分析视图和版本数据库模型
+  - 清单 API、差异和完整性测试
+- ordinal: 44
+  name: elmos-secure-zip-tar-extraction
+  title: 安全 ZIP/TAR 解压
+  acceptance:
+  - id: S44-01
+    criterion: 支持格式的正常归档正确展开并保留目录
+  - id: S44-02
+    criterion: 归档处理期间不执行脚本、宏、安装钩子、Dockerfile 或二进制
+  - id: S44-03
+    criterion: 所有写入目标在写入前确认位于沙箱根内
+  - id: S44-04
+    criterion: 密码不出现在普通日志、持久明文、trace 或模型上下文
+  - id: S44-05
+    criterion: 嵌套归档每层重新扫描并受累计限额
+  - id: S44-06
+    criterion: 任一危险条目不会造成沙箱外文件创建或主机访问
+  required_deliverables:
+  - ZIP/TAR/TAR.GZ/TGZ/GZIP 流式检查与解压适配器
+  - 隔离沙箱和资源限制配置
+  - 加密密码短期秘密处理
+  - 恶意归档语料与跨平台回归测试
+- ordinal: 45
+  name: elmos-archive-bomb-and-path-traversal-defense
+  title: 归档炸弹与路径穿越防御
+  acceptance:
+  - id: S45-01
+    criterion: '`../`、绝对路径、盘符、UNC、编码变体和链接链均不能逃逸'
+  - id: S45-02
+    criterion: 压缩炸弹在超过策略前终止，不导致节点磁盘或内存耗尽
+  - id: S45-03
+    criterion: 限额按租户/套餐可配置并带安全上下界和版本
+  - id: S45-04
+    criterion: 嵌套归档共享累计预算
+  - id: S45-05
+    criterion: 特殊文件和链接默认不被创建或跟随
+  - id: S45-06
+    criterion: 攻击回归集和 fuzz 测试无路径逃逸、宿主写入或资源失控
+  required_deliverables:
+  - ArchiveSafetyDecision 与限额策略
+  - 安全路径解析、累计资源计数和终止机制
+  - 攻击语料、fuzz/property 测试与沙箱逃逸测试
+  - 安全告警、隔离和审计输出
+- ordinal: 46
+  name: elmos-project-root-language-framework-detection
+  title: 项目根、语言与框架识别
+  acceptance:
+  - id: S46-01
+    criterion: Java/Kotlin/Python/C#/Go/Rust/C++/PHP/TS/JS/React/Vue/ObjC/Swift/Flutter 等目标语言有探测覆盖
+  - id: S46-02
+    criterion: 能正确识别 monorepo、多模块和多个独立项目
+  - id: S46-03
+    criterion: 每个结论都有文件证据与置信度
+  - id: S46-04
+    criterion: 低置信度或冲突不会静默选择错误根
+  - id: S46-05
+    criterion: vendor、node_modules、build 输出不会主导项目画像
+  - id: S46-06
+    criterion: 用户修正可追溯、可撤销并在新版本中重新验证
+  required_deliverables:
+  - ProjectProfile/ProjectRootCandidate schema
+  - 语言、框架、构建系统和根目录探测器
+  - monorepo/多项目分类与用户修正流程
+  - 多语言公开/合成仓库基准测试
+- ordinal: 47
+  name: elmos-ignore-generated-vendored-file-classification
+  title: 忽略、生成与第三方文件分类
+  acceptance:
+  - id: S47-01
+    criterion: 原始 manifest 条目不会因 ignore 被删除
+  - id: S47-02
+    criterion: 规则匹配可解释到具体规则文件和行
+  - id: S47-03
+    criterion: 安全隔离不能被普通 ignore/include 规则绕过
+  - id: S47-04
+    criterion: 常见 build、cache、vendor、node_modules 和生成目录正确分类
+  - id: S47-05
+    criterion: 第三方依赖只按任务需要加载，默认不挤占活动上下文
+  - id: S47-06
+    criterion: 规则变化产生新分析视图并可比较/回滚
+  required_deliverables:
+  - PackageEntryClassification schema 与规则引擎
+  - ignore 文件兼容解析器和规则优先级
+  - 生成/第三方/二进制/密钥疑似探测器
+  - 预览、覆盖、增量重算和回归测试
+- ordinal: 48
+  name: elmos-repository-map-and-symbol-indexing
+  title: 仓库地图与符号索引
+  acceptance:
+  - id: S48-01
+    criterion: 每个符号可追溯到具体项目版本、文件和源码范围
+  - id: S48-02
+    criterion: 增量索引后无陈旧/孤儿边且结果与全量重建一致
+  - id: S48-03
+    criterion: 解析失败被显式报告，不伪造完整覆盖
+  - id: S48-04
+    criterion: 不在索引阶段执行 install、postinstall、Makefile、Dockerfile 或用户脚本
+  - id: S48-05
+    criterion: 目标语言和框架达到定义的符号/关系覆盖门槛
+  - id: S48-06
+    criterion: 大型仓库的索引吞吐、存储和查询延迟满足SLO
+  required_deliverables:
+  - RepositoryMap/Symbol/Edge schema 与数据库迁移
+  - 目标语言/框架解析适配器与调度器
+  - 增量索引、影响分析和查询 API
+  - 多语言仓库黄金集、性能和准确率报告
+- ordinal: 49
+  name: elmos-project-package-version-and-incremental-update
+  title: 项目包版本与增量更新
+  acceptance:
+  - id: S49-01
+    criterion: 新增、修改、删除和未变文件识别准确；重命名以候选和置信度表达
+  - id: S49-02
+    criterion: 未变化文件不重复上传或解析
+  - id: S49-03
+    criterion: 运行中任务不会静默切换项目版本
+  - id: S49-04
+    criterion: 增量结果与相同版本全量重建在定义字段上一致
+  - id: S49-05
+    criterion: 历史版本可恢复且来源锚点仍有效
+  - id: S49-06
+    criterion: 删除/保留策略可正确传播到派生索引和对象
+  required_deliverables:
+  - PackageVersion/PackageDiff schema 与版本存储
+  - hash diff、rename detection 和影响分析
+  - 增量重建协调器与一致性门
+  - 版本比较/回滚 API 和端到端测试
+- ordinal: 50
+  name: elmos-project-package-preview-and-review-ui
+  title: 项目包预览与审查界面
+  acceptance:
+  - id: S50-01
+    criterion: 用户能在提交前准确看到系统纳入、排除、隔离和未完成的内容
+  - id: S50-02
+    criterion: 10万级目录树不一次性渲染全部节点且交互满足SLO
+  - id: S50-03
+    criterion: 密码、密钥和被遮蔽值不进入前端日志、分析或错误追踪
+  - id: S50-04
+    criterion: 安全隔离不能通过普通选择框解除
+  - id: S50-05
+    criterion: PARTIALLY_READY 不会被展示为完整完成，下游状态清楚
+  - id: S50-06
+    criterion: 每项用户覆盖可追溯、可撤销并生成新分析视图
+  required_deliverables:
+  - 项目包预览页面与虚拟化目录树
+  - 项目角色、分析视图和模型读取权限交互
+  - 安全发现/低置信度/部分就绪状态组件
+  - 无障碍、前端安全、10万条目性能和端到端测试

@@ -1,0 +1,1 @@
+python3 scripts/test-suite/run_case.py --suite test-suites/batch1-37-strict --run-id <new-run-id> --executor-id elmos-strict-runner@automation B23-006

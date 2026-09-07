@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "total_results": 4,
+  "executable_results": 4,
+  "statuses": {
+    "passed": 4
+  },
+  "by_business_line": {
+    "spring-modernization": {
+      "passed": 1
+    },
+    "cross-language": {
+      "passed": 1
+    },
+    "project-generation": {
+      "passed": 1
+    },
+    "sql-conversion": {
+      "passed": 1
+    }
+  },
+  "metrics": {
+    "weighted_pass_rate": 1.0,
+    "silent_semantic_error_rate": 0.0,
+    "critical_oracle_pass_rate": 1.0,
+    "evidence_completeness": 1.0,
+    "data_corruption_count": 0,
+    "security_regression_count": 0,
+    "transaction_mismatch_count": 0,
+    "flaky_case_count": 0,
+    "unapproved_corpus_count": 17
+  },
+  "partial_run": false,
+  "interpretation": "Release gates are authoritative only for a complete release/golden run; smoke and partial runs validate the harness, not product readiness."
+}

@@ -1,0 +1,57 @@
+{
+  "snapshot_id": "cap-snap-001",
+  "repository_revision": "git:abc123",
+  "capabilities": [
+    {
+      "id": "CAP-00001",
+      "kind": "api",
+      "title": "Create order",
+      "risk": "critical",
+      "state": "verified",
+      "source_refs": [
+        "src:OrderController#create"
+      ],
+      "target_refs": [
+        "target:orders/create"
+      ],
+      "dependencies": [
+        "CAP-00002"
+      ],
+      "confidence": 0.99,
+      "provenance": [
+        {
+          "kind": "ast",
+          "ref": "artifact://ast/1"
+        }
+      ],
+      "evidence_refs": [
+        "evidence://diff/order-create"
+      ]
+    },
+    {
+      "id": "CAP-00002",
+      "kind": "transaction",
+      "title": "Atomic order and stock update",
+      "risk": "critical",
+      "state": "tested",
+      "source_refs": [
+        "src:OrderService#create"
+      ],
+      "target_refs": [
+        "target:order_service.create"
+      ],
+      "dependencies": [],
+      "confidence": 0.95,
+      "provenance": [
+        {
+          "kind": "annotation",
+          "ref": "@Transactional"
+        }
+      ],
+      "evidence_refs": [
+        "evidence://integration/rollback"
+      ]
+    }
+  ],
+  "blind_spots": []
+}

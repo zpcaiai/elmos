@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","policyId":"orders-v3","deliverySemantics":"EFFECTIVELY_ONCE_WITH_IDEMPOTENCY","ordering":{"scope":"KEY","keyRef":"orderId"},"retry":{"maximumAttempts":5},"deadLetter":{"owner":"orders-operations","retentionDays":30,"replayRequiresApproval":true},"idempotency":{"boundary":"ORDER_SIDE_EFFECT","keyRef":"eventId"}}

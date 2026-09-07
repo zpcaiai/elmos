@@ -1,0 +1,33 @@
+{
+  "$id": "elmos.pipeline-component.v1",
+  "type": "object",
+  "required": [
+    "componentId",
+    "version",
+    "componentType",
+    "inputs",
+    "outputs",
+    "permissions"
+  ],
+  "properties": {
+    "componentId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "componentType": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "array"
+    },
+    "outputs": {
+      "type": "array"
+    },
+    "permissions": {
+      "type": "array"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

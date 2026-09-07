@@ -1,0 +1,142 @@
+{
+  "caseId": "20-evidence-bundle-failed-run",
+  "description": "A bundle for a run that did not pass must say so, not present itself as a pass.",
+  "evidence": {
+    "bundleDigest": "sha256:3171ee950519f05be277627d95474f515e06be6683b86972920a0f27f8ef5d37",
+    "manifestDigest": "sha256:27e458490e010fe6a47573557bc64d8f4c946d71152d3031068c0f63176c7f9c"
+  },
+  "failureClass": "terminal",
+  "inputDigest": "sha256:e037b1aae06490b6481a080f5740dadb5068c34939bf9c1d900e74530070f9dc",
+  "outputDigest": "sha256:468dca446dd4276615ac824b99a3026c15f2f49d8f0f038acd40e32242cc893c",
+  "projections": {
+    "output.evidence_bundle.gateDecisions": [
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "anti-cheat"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "api-compatibility"
+      },
+      {
+        "decision": "fail",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "build"
+      },
+      {
+        "decision": "fail",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "changed-target-tests"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "evidence-completeness"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "full-tests"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "idempotence"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "license-scan"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "parse"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "performance"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "rollback-proof"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "round-trip"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "schema-compatibility"
+      },
+      {
+        "decision": "pass",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "scope-containment"
+      },
+      {
+        "decision": "not-applicable",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "security-scan"
+      },
+      {
+        "decision": "fail",
+        "evidenceRefs": [
+          "sha256:8dd91e593a917fdd7175f0ff7032f872bf7beb4a66de0935e3dc8acf4af33e2a"
+        ],
+        "gate": "typecheck"
+      }
+    ],
+    "output.evidence_bundle.incompleteReasons": [
+      "verification did not pass; the bundle documents a failed run"
+    ],
+    "output.signed_manifest.signed": false,
+    "output.signed_manifest.verification": {
+      "reasons": [],
+      "signatureChecked": false,
+      "valid": true
+    },
+    "status": "blocked"
+  },
+  "reasonCount": 1,
+  "riskClass": "R0",
+  "sideEffectsPerformed": false,
+  "skill": "evidence-and-audit",
+  "status": "blocked"
+}

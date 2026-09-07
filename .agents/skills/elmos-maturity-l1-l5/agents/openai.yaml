@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Maturity L1 L5"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $elmos-maturity-l1-l5 for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

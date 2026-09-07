@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Task Sandbox Execution Plane Orchestrator"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $task-sandbox-execution-plane-orchestrator to implement its fail-closed ELMOS Product B36 contract."

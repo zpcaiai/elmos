@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.sample",
+  "owner": "TODO",
+  "targets": [
+    "parser.sample"
+  ],
+  "seed_corpus": [
+    "corpus/development/seed.json"
+  ],
+  "coverage_signal": "edge-coverage",
+  "budgets": {
+    "max_seconds": 60,
+    "max_memory_mb": 1024
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "dictionary_refs": []
+}

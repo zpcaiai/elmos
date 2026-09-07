@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Product Governance Accountability"
+  short_description: "Run evidence-bound Batch 45 product governance accountability wo"
+  default_prompt: "Use $b45-product-governance-accountability to implement and verify this capability with fail-closed evidence."

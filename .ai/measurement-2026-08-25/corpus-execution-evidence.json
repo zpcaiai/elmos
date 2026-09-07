@@ -1,0 +1,19 @@
+{
+  "kind": "elmos.sql-dialect.corpus-execution-evidence",
+  "date": "2026-08-26",
+  "note": "every admitted statement emitted and really executed, in migration order; transaction; Oracle and SQL Server have no rootless local instance so they are EXECUTION_NOT_AVAILABLE, not passing",
+  "emissions_attempted": 718,
+  "postgres": {
+    "MISSING_OBJECT": 4,
+    "EXECUTED": 3
+  },
+  "mysql": {
+    "MISSING_OBJECT": 417,
+    "EXECUTED": 294,
+    "BLOCKED:CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX": 207,
+    "BLOCKED:CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 32,
+    "BLOCKED:CERTIFIED_DDL_TARGET_RESERVED_IDENTIFIER": 7,
+    "BLOCKED:CERTIFIED_DDL_MYSQL_TEXT_DEFAULT_UNSUPPORTED": 7
+  },
+  "server_refusals": []
+}

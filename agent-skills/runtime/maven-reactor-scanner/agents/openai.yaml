@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maven Reactor Scanner"
+  short_description: "Scan Maven modules and declarations"
+  default_prompt: "Use $maven-reactor-scanner for ELMOS Batch 3 Maven analysis."

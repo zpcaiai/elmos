@@ -1,0 +1,44 @@
+{
+  "debug_session_id": "dbg-session-001",
+  "tenant_id": "tenant-demo",
+  "project_id": "project-orders",
+  "revision_id": "rev-abc123",
+  "runtime_profile": {
+    "runtime_profile_id": "java-21-maven",
+    "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "toolchain": {
+      "java": "21",
+      "maven": "3.9"
+    }
+  },
+  "target": {
+    "kind": "test",
+    "ref": "OrderServiceTest#createOrder"
+  },
+  "mode": "guided",
+  "state": "paused",
+  "adapter": {
+    "adapter_id": "jvm-dap",
+    "version": "2.4.0",
+    "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  },
+  "capabilities": [
+    "launch",
+    "line_breakpoints",
+    "conditional_breakpoints",
+    "threads",
+    "stack",
+    "scopes",
+    "variables",
+    "evaluate_readonly",
+    "step"
+  ],
+  "policy": {
+    "policy_id": "debug-default-deny",
+    "environment": "ephemeral",
+    "evaluate_mode": "read_only"
+  },
+  "expires_at": "2026-08-20T08:00:00Z",
+  "created_at": "2026-08-20T07:00:00Z",
+  "updated_at": "2026-08-20T07:10:00Z"
+}

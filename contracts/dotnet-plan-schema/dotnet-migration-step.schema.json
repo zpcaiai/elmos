@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/dotnet-migration-step.v1.json",
+  "title": ".NET Migration Step",
+  "type": "object",
+  "required": ["stepId", "stepType", "projectIds", "executorType", "runnerProfile", "dependsOn", "validation", "requiresApproval"],
+  "properties": {
+    "stepId": {"type": "string", "minLength": 1},
+    "stepType": {"type": "string", "minLength": 1},
+    "projectIds": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "executorType": {"enum": ["SCANNER", "MSBUILD_EVALUATION", "ROSLYN_TRANSFORMATION", "PROJECT_SYSTEM_TRANSFORMATION", "ASPNET_MIGRATION", "WCF_MIGRATION", "EF_MIGRATION", "BUILD_TOOL", "TEST_RUNNER", "CODING_AGENT", "CONTRACT_CHECKER", "HUMAN_REVIEW"]},
+    "runnerProfile": {"enum": ["WINDOWS_LEGACY", "MODERN_WINDOWS", "MODERN_LINUX"]},
+    "dependsOn": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "validation": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "requiresApproval": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

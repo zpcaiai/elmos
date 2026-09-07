@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JudgeCalibration",
+  "type": "object",
+  "required": [
+    "judgeId",
+    "modelFingerprint",
+    "datasetVersion",
+    "humanAgreement",
+    "falsePassRate",
+    "status"
+  ],
+  "properties": {
+    "judgeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modelFingerprint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "datasetVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "humanAgreement": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "falsePassRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "confidenceLevel": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "allowedUses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "calibrated",
+        "bounded",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

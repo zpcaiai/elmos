@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 552: agent simulation and business sandbox"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-simulation-and-business-sandbox to evaluate this capability with evidence."

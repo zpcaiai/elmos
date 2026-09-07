@@ -1,0 +1,4 @@
+{
+  "eval_id": 2,
+  "prompt": "基于 legacy-shop 的健康报告，按默认组织策略生成 Java/Spring 迁移计划。必须给出目标理由、兼容矩阵、DAG、三点人力区间、Wave 和阻塞审批 Gate；不得授权执行。"
+}

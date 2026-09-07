@@ -1,0 +1,704 @@
+{
+  "version": "1.0.0",
+  "notes": [
+    "Coefficients are seeds, not measurements. They exist so that a task DAG is derived from measurable repository facts instead of being hand-typed.",
+    "minutes = base + coefficient x driver, clamped to [floor, ceiling]. Tokens work the same way, per category.",
+    "After the first executed milestone, run `calibrate` and `apply-calibration`; the multipliers correct these seeds with real telemetry.",
+    "peak_context declares the largest single-call context a task is expected to need. It gates model routing: a model whose window is narrower is ineligible. Omit it and the constraint is reported as unchecked rather than silently assumed to pass."
+  ],
+  "drivers": {
+    "routes": "declared directed routes in the route matrix (1 if absent)",
+    "languages": "language identities in the matrix, else distinct languages by file census",
+    "pending_languages": "languages declared but without an analyzer",
+    "pending_routes": "routes that touch at least one pending-analyzer language",
+    "language_pairs": "languages x (languages - 1)",
+    "corpus_mtokens": "one-pass corpus tokens, in millions",
+    "kfiles": "scanned files, in thousands"
+  },
+  "token_split": {
+    "comment": "How a task's total token estimate is divided across the five disjoint categories. Cache-heavy because agentic coding re-reads the same context across turns.",
+    "input": 0.24,
+    "cached_input": 0.63,
+    "cache_write": 0.07,
+    "output": 0.04,
+    "reasoning_output": 0.02
+  },
+  "templates": [
+    {
+      "id": "scope-authority-audit",
+      "name": "范围与权威源审计",
+      "category": "discovery",
+      "complexity": "medium",
+      "priority": 100,
+      "depends_on": [],
+      "when": {},
+      "minutes": {
+        "base": 30,
+        "per": {
+          "kfiles": 0.6,
+          "corpus_mtokens": 0.25
+        },
+        "floor": 30,
+        "ceiling": 240
+      },
+      "spread": {
+        "optimistic": 0.6,
+        "pessimistic": 2.1
+      },
+      "total_tokens": {
+        "base": 3000000,
+        "per": {
+          "corpus_mtokens": 70000,
+          "kfiles": 60000
+        },
+        "floor": 3000000,
+        "ceiling": 40000000
+      },
+      "worker_units": 1,
+      "rework_probability": 0.1,
+      "failure_probability": 0.02,
+      "human_hours": {
+        "architect": {
+          "base": 8,
+          "per": {
+            "kfiles": 0.1
+          }
+        },
+        "backend": {
+          "base": 8
+        },
+        "qa": {
+          "base": 4
+        },
+        "product": {
+          "base": 6
+        }
+      },
+      "peak_context": {
+        "base": 60000,
+        "per": {
+          "corpus_mtokens": 400
+        },
+        "floor": 60000,
+        "ceiling": 400000
+      }
+    },
+    {
+      "id": "analyzer",
+      "name": "{language} analyzer 补齐（PENDING_ANALYZER）",
+      "per_item": "pending_languages",
+      "category": "engine",
+      "complexity": "high",
+      "priority": 92,
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "when": {
+        "min_pending_languages": 1
+      },
+      "minutes": {
+        "base": 420,
+        "per": {
+          "languages": 14
+        },
+        "floor": 300,
+        "ceiling": 1800
+      },
+      "spread": {
+        "optimistic": 0.5,
+        "pessimistic": 2.4
+      },
+      "total_tokens": {
+        "base": 30000000,
+        "per": {
+          "languages": 900000
+        },
+        "floor": 20000000,
+        "ceiling": 90000000
+      },
+      "worker_units": 2,
+      "rework_probability": 0.3,
+      "rework_multiplier_max": 1.2,
+      "failure_probability": 0.15,
+      "human_hours": {
+        "architect": {
+          "base": 20
+        },
+        "compiler": {
+          "base": 120,
+          "per": {
+            "languages": 2
+          }
+        },
+        "backend": {
+          "base": 50
+        },
+        "qa": {
+          "base": 40
+        }
+      },
+      "peak_context": {
+        "base": 120000,
+        "per": {
+          "languages": 2000
+        },
+        "floor": 100000,
+        "ceiling": 400000
+      }
+    },
+    {
+      "id": "route-packs",
+      "name": "待补路由包生成与登记",
+      "category": "generation",
+      "complexity": "high",
+      "priority": 85,
+      "depends_on": [
+        "analyzer"
+      ],
+      "when": {
+        "min_pending_routes": 1
+      },
+      "minutes": {
+        "base": 180,
+        "per": {
+          "pending_routes": 8
+        },
+        "floor": 180,
+        "ceiling": 2400
+      },
+      "spread": {
+        "optimistic": 0.55,
+        "pessimistic": 2.3
+      },
+      "total_tokens": {
+        "base": 12000000,
+        "per": {
+          "pending_routes": 800000
+        },
+        "floor": 12000000,
+        "ceiling": 140000000
+      },
+      "worker_units": 3,
+      "rework_probability": 0.25,
+      "failure_probability": 0.1,
+      "human_hours": {
+        "architect": {
+          "base": 20
+        },
+        "backend": {
+          "base": 60,
+          "per": {
+            "pending_routes": 1.6
+          }
+        },
+        "frontend": {
+          "base": 40,
+          "per": {
+            "pending_routes": 1.0
+          }
+        },
+        "qa": {
+          "base": 30,
+          "per": {
+            "pending_routes": 0.5
+          }
+        }
+      },
+      "peak_context": {
+        "base": 100000,
+        "per": {
+          "pending_routes": 300
+        },
+        "floor": 100000,
+        "ceiling": 400000
+      }
+    },
+    {
+      "id": "semantic-divergence",
+      "name": "两两语义分歧表与 IR 归一",
+      "category": "engine",
+      "complexity": "high",
+      "priority": 80,
+      "depends_on": [
+        "route-packs"
+      ],
+      "when": {
+        "min_languages": 2
+      },
+      "minutes": {
+        "base": 240,
+        "per": {
+          "language_pairs": 3.0
+        },
+        "floor": 240,
+        "ceiling": 2400
+      },
+      "spread": {
+        "optimistic": 0.55,
+        "pessimistic": 2.2
+      },
+      "total_tokens": {
+        "base": 15000000,
+        "per": {
+          "language_pairs": 320000
+        },
+        "floor": 15000000,
+        "ceiling": 120000000
+      },
+      "worker_units": 2,
+      "rework_probability": 0.28,
+      "failure_probability": 0.08,
+      "human_hours": {
+        "architect": {
+          "base": 40
+        },
+        "compiler": {
+          "base": 80,
+          "per": {
+            "language_pairs": 0.4
+          }
+        },
+        "backend": {
+          "base": 60
+        },
+        "qa": {
+          "base": 30
+        }
+      },
+      "peak_context": {
+        "base": 140000,
+        "per": {
+          "language_pairs": 250
+        },
+        "floor": 120000,
+        "ceiling": 400000
+      }
+    },
+    {
+      "id": "analyzer-performance",
+      "name": "Analyzer 缓存、批量化与仓库级并行",
+      "category": "performance",
+      "complexity": "medium",
+      "priority": 76,
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "when": {},
+      "minutes": {
+        "base": 240,
+        "per": {
+          "languages": 12
+        },
+        "floor": 180,
+        "ceiling": 1200
+      },
+      "spread": {
+        "optimistic": 0.6,
+        "pessimistic": 2.1
+      },
+      "total_tokens": {
+        "base": 14000000,
+        "per": {
+          "languages": 500000
+        },
+        "floor": 10000000,
+        "ceiling": 60000000
+      },
+      "worker_units": 2,
+      "rework_probability": 0.2,
+      "failure_probability": 0.07,
+      "human_hours": {
+        "backend": {
+          "base": 70
+        },
+        "compiler": {
+          "base": 40
+        },
+        "qa": {
+          "base": 24
+        }
+      },
+      "peak_context": {
+        "base": 90000,
+        "per": {
+          "languages": 1500
+        },
+        "floor": 80000,
+        "ceiling": 300000
+      }
+    },
+    {
+      "id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通",
+      "category": "verification",
+      "complexity": "high",
+      "priority": 70,
+      "depends_on": [
+        "semantic-divergence",
+        "analyzer-performance"
+      ],
+      "when": {
+        "min_routes": 1
+      },
+      "minutes": {
+        "base": 120,
+        "per": {
+          "routes": 3.0
+        },
+        "floor": 120,
+        "ceiling": 2400
+      },
+      "spread": {
+        "optimistic": 0.6,
+        "pessimistic": 2.4
+      },
+      "total_tokens": {
+        "base": 8000000,
+        "per": {
+          "routes": 380000
+        },
+        "floor": 8000000,
+        "ceiling": 120000000
+      },
+      "worker_units": 4,
+      "rework_probability": 0.25,
+      "failure_probability": 0.18,
+      "recovery_minutes": [
+        10,
+        30,
+        120
+      ],
+      "human_hours": {
+        "qa": {
+          "base": 60,
+          "per": {
+            "routes": 0.7
+          }
+        },
+        "backend": {
+          "base": 40
+        },
+        "devops": {
+          "base": 24
+        }
+      },
+      "peak_context": {
+        "base": 60000,
+        "per": {
+          "routes": 200
+        },
+        "floor": 60000,
+        "ceiling": 250000
+      }
+    },
+    {
+      "id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通",
+      "category": "verification",
+      "complexity": "high",
+      "priority": 68,
+      "depends_on": [
+        "matrix-small"
+      ],
+      "when": {
+        "min_routes": 1
+      },
+      "minutes": {
+        "base": 240,
+        "per": {
+          "routes": 6.2
+        },
+        "floor": 240,
+        "ceiling": 4800
+      },
+      "spread": {
+        "optimistic": 0.6,
+        "pessimistic": 2.5
+      },
+      "total_tokens": {
+        "base": 14000000,
+        "per": {
+          "routes": 720000
+        },
+        "floor": 14000000,
+        "ceiling": 200000000
+      },
+      "worker_units": 4,
+      "rework_probability": 0.3,
+      "failure_probability": 0.22,
+      "recovery_minutes": [
+        15,
+        45,
+        180
+      ],
+      "human_hours": {
+        "qa": {
+          "base": 90,
+          "per": {
+            "routes": 1.1
+          }
+        },
+        "backend": {
+          "base": 70
+        },
+        "devops": {
+          "base": 36
+        }
+      },
+      "peak_context": {
+        "base": 90000,
+        "per": {
+          "routes": 350
+        },
+        "floor": 90000,
+        "ceiling": 350000
+      }
+    },
+    {
+      "id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "category": "verification",
+      "complexity": "medium",
+      "priority": 64,
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "when": {
+        "min_routes": 1
+      },
+      "minutes": {
+        "base": 180,
+        "per": {
+          "routes": 3.4
+        },
+        "floor": 180,
+        "ceiling": 2400
+      },
+      "spread": {
+        "optimistic": 0.65,
+        "pessimistic": 2.2
+      },
+      "total_tokens": {
+        "base": 6000000,
+        "per": {
+          "routes": 160000
+        },
+        "floor": 6000000,
+        "ceiling": 60000000
+      },
+      "worker_units": 3,
+      "rework_probability": 0.18,
+      "failure_probability": 0.2,
+      "recovery_minutes": [
+        15,
+        45,
+        180
+      ],
+      "human_hours": {
+        "qa": {
+          "base": 60,
+          "per": {
+            "routes": 0.4
+          }
+        },
+        "devops": {
+          "base": 40
+        },
+        "architect": {
+          "base": 20
+        }
+      },
+      "peak_context": {
+        "base": 70000,
+        "per": {
+          "routes": 150
+        },
+        "floor": 60000,
+        "ceiling": 250000
+      }
+    },
+    {
+      "id": "independent-client-verification",
+      "name": "独立客户仓库验证",
+      "category": "verification",
+      "complexity": "high",
+      "priority": 60,
+      "depends_on": [
+        "frozen-rerun-evidence"
+      ],
+      "when": {
+        "min_routes": 1
+      },
+      "minutes": {
+        "base": 480,
+        "per": {
+          "routes": 6.0
+        },
+        "floor": 480,
+        "ceiling": 5400
+      },
+      "spread": {
+        "optimistic": 0.55,
+        "pessimistic": 2.6
+      },
+      "total_tokens": {
+        "base": 30000000,
+        "per": {
+          "routes": 620000
+        },
+        "floor": 30000000,
+        "ceiling": 220000000
+      },
+      "worker_units": 3,
+      "rework_probability": 0.35,
+      "rework_multiplier_max": 1.3,
+      "failure_probability": 0.25,
+      "recovery_minutes": [
+        20,
+        60,
+        240
+      ],
+      "human_hours": {
+        "qa": {
+          "base": 100,
+          "per": {
+            "routes": 0.8
+          }
+        },
+        "backend": {
+          "base": 90
+        },
+        "architect": {
+          "base": 30
+        },
+        "product": {
+          "base": 30
+        }
+      },
+      "peak_context": {
+        "base": 120000,
+        "per": {
+          "routes": 400
+        },
+        "floor": 120000,
+        "ceiling": 400000
+      }
+    },
+    {
+      "id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "category": "compliance",
+      "complexity": "medium",
+      "priority": 56,
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "when": {},
+      "minutes": {
+        "base": 150,
+        "per": {
+          "languages": 10
+        },
+        "floor": 120,
+        "ceiling": 900
+      },
+      "spread": {
+        "optimistic": 0.65,
+        "pessimistic": 2.0
+      },
+      "total_tokens": {
+        "base": 7000000,
+        "per": {
+          "languages": 350000
+        },
+        "floor": 6000000,
+        "ceiling": 40000000
+      },
+      "worker_units": 1,
+      "rework_probability": 0.15,
+      "failure_probability": 0.05,
+      "human_hours": {
+        "security": {
+          "base": 60,
+          "per": {
+            "languages": 2.5
+          }
+        },
+        "devops": {
+          "base": 24
+        },
+        "backend": {
+          "base": 16
+        }
+      },
+      "peak_context": {
+        "base": 60000,
+        "per": {
+          "languages": 1200
+        },
+        "floor": 50000,
+        "ceiling": 200000
+      }
+    },
+    {
+      "id": "certification-package",
+      "name": "认证材料与交付包",
+      "category": "delivery",
+      "complexity": "medium",
+      "priority": 50,
+      "depends_on": [
+        "independent-client-verification",
+        "security-license"
+      ],
+      "when": {},
+      "minutes": {
+        "base": 180,
+        "per": {
+          "routes": 1.2
+        },
+        "floor": 150,
+        "ceiling": 1200
+      },
+      "spread": {
+        "optimistic": 0.65,
+        "pessimistic": 2.1
+      },
+      "total_tokens": {
+        "base": 8000000,
+        "per": {
+          "routes": 90000
+        },
+        "floor": 7000000,
+        "ceiling": 45000000
+      },
+      "worker_units": 1,
+      "rework_probability": 0.15,
+      "failure_probability": 0.04,
+      "human_hours": {
+        "architect": {
+          "base": 40
+        },
+        "product": {
+          "base": 50
+        },
+        "qa": {
+          "base": 40
+        },
+        "devops": {
+          "base": 24
+        },
+        "security": {
+          "base": 16
+        }
+      },
+      "peak_context": {
+        "base": 60000,
+        "per": {
+          "routes": 120
+        },
+        "floor": 50000,
+        "ceiling": 200000
+      }
+    }
+  ]
+}

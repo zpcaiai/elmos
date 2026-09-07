@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Sandbox Security Escape Compatibility Chaos And Release Gates"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $sandbox-security-escape-compatibility-chaos-and-release-gates to implement its fail-closed ELMOS Product B36 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Sonarqube Server Cloud Analysis Quality Gate Measure Issue And Webhook Connector"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $sonarqube-server-cloud-analysis-quality-gate-measure-is-96da2ea4 to implement its fail-closed ELMOS Product B37 contract."

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_key",
+    "owner",
+    "plan",
+    "apply",
+    "p0_workloads",
+    "security",
+    "drift",
+    "cost",
+    "rollback",
+    "representative_workloads",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "object"
+    },
+    "apply": {
+      "type": "object"
+    },
+    "p0_workloads": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "security": {
+      "type": "object"
+    },
+    "drift": {
+      "type": "object"
+    },
+    "cost": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object"
+    },
+    "representative_workloads": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

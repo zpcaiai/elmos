@@ -1,0 +1,62 @@
+{
+  "id": "B108-S08",
+  "batch": 108,
+  "name": "test-and-coverage-before-after-summarizer",
+  "dependencies": [
+    "B105-S12",
+    "B108-S02"
+  ],
+  "inputs": [
+    "baseline/candidate test and performance evidence"
+  ],
+  "outputs": [
+    "BeforeAfterSummary",
+    "metric deltas"
+  ],
+  "implementation": {
+    "modules": [
+      "reporting/metrics/BeforeAfterSummaryService.java",
+      "analytics/modernization/before_after.sql"
+    ],
+    "interfaces": [
+      "GET /api/projects/{id}/before-after-summary",
+      "event report.before-after.completed"
+    ],
+    "data": [
+      "before_after_metric",
+      "metric_delta"
+    ]
+  },
+  "workflow": [
+    "标准化测试/覆盖率/API/构建/启动指标",
+    "校验两侧口径和工具版本",
+    "计算绝对和相对变化",
+    "对缺失/不同比较口径标UNKNOWN",
+    "生成表格与机器JSON",
+    "链接到原始证据"
+  ],
+  "tests": [
+    "测试框架版本变化但口径兼容",
+    "缺基线不计算百分比",
+    "负数/无穷异常处理",
+    "跳过增加醒目标记",
+    "每项可下钻"
+  ],
+  "evidence": [
+    "before-after-summary.json",
+    "before-after-summary.md",
+    "metric-lineage.json"
+  ],
+  "definition_of_done": [
+    "口径一致",
+    "UNKNOWN显式",
+    "无夸大百分比",
+    "每项有证据",
+    "管理层可读"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

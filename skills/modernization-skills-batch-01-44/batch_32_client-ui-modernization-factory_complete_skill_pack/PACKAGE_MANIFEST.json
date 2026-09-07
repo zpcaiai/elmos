@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-32-client-ui-modernization-factory-complete-skill-pack",
+  "batch": 32,
+  "title": "Client, UI, Desktop and Mobile Modernization Factory",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b32-client-ui-modernization-factory-orchestrator",
+    "b32-client-ui-modernization-factory-domain-model",
+    "b32-client-ui-modernization-factory-discovery-inventory",
+    "b32-client-ui-modernization-factory-capability-planning",
+    "b32-client-ui-modernization-factory-deterministic-engine",
+    "b32-client-ui-modernization-factory-adapter-provider",
+    "b32-client-ui-modernization-factory-workflow-runtime",
+    "b32-client-ui-modernization-factory-lineage-reconciliation",
+    "b32-client-ui-modernization-factory-security-policy",
+    "b32-client-ui-modernization-factory-human-approval",
+    "b32-client-ui-modernization-factory-observability-economics",
+    "b32-client-ui-modernization-factory-corpus-benchmark",
+    "b32-client-ui-modernization-factory-failure-recovery",
+    "b32-client-ui-modernization-factory-integration-api",
+    "b32-client-ui-modernization-factory-lifecycle-recertification",
+    "b32-client-ui-modernization-factory-certification-gate"
+  ],
+  "upstream_batch": 31,
+  "files": [
+    {
+      "path": "BATCH31_COMPATIBILITY.md",
+      "sha256": "08b4689639fb451780de92fb268d3fed4903fc9452633558019fd47f6f15092d",
+      "size": 2108
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "a149a83c36d01e2ab1ce632c26b96e6a6f2cff8ac1ccacdd5ff4f2bfa61f7fb2",
+      "size": 2309
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "2ab8ddc349ac4cb4a5555a6d523df5f76c091ba16f2e818d69cd10c54195ab8f",
+      "size": 1771
+    },
+    {
+      "path": "README.md",
+      "sha256": "12bc500cc3a3a5a2a2361e3660fd46162cf15b099cbf381bfd8ed97b0bee39d2",
+      "size": 1092
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "dd990931a6f83375734140011d8cb892f3a82dd1916a677e78bb4b5af836a088",
+      "size": 3594
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "7cfc860e8a0a1cfb3c9fe12a2373b0c2def4f96ffc077949fb5e7f225e2f1abd",
+      "size": 3117
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "a73c37394601f939c2da599a1206f02774c7ef0910c04db2a9338eb8ffa4a06c",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "1e95187056afc759bc0bbb190af3c4781ac1dd00721093f98a17ffc996584c02",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "264f65510c10ee2b8efe0c2322bda0b9e6eb91004ca51b46d047eb25fe75c7dc",
+      "size": 286
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "93e3ad018c4b11d8cce395dd59d779a9765e6d9db72ad7125e5c9a32daa74c01",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "76bea556717a1a570ba0876e1426a6621a148fd0ea88e2efb2fdd88f37eb939f",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "5b619056863eb656a1b33eb6b4b13418c481b67a8b851ae770aaccf430cd49a3",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "076e93e488344a571ba3365d135987d2de8736e0f3e19e45c3a328a76b72e9cc",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "75aaaff07d6749aba5978beed58d0525a1cd5261069cc8377c4617d1e2e436e8",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "4061efcd8553bdcaeefcbb0b4f2e47eb0974fafc5b3f5681725d58c8967abc25",
+      "size": 848
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-adapter-provider/SKILL.md",
+      "sha256": "96c97ec9473c3f239e8227d15741cae8e74dbe706704a8d0397c91309a378184",
+      "size": 3887
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-capability-planning/SKILL.md",
+      "sha256": "d387de4681912e0a4bb4b56943df5408fca262ff64e6853d3083d89df2f374ed",
+      "size": 3789
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-certification-gate/SKILL.md",
+      "sha256": "cc696b08523ac93d1eb6d918c62ee3b78203c6ec8952f6c98dcb0d97a195bc30",
+      "size": 3918
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-corpus-benchmark/SKILL.md",
+      "sha256": "91418d16fcbc49cb8c283e10d8e4b2f883b97c438b83b630b98d3a21343d8484",
+      "size": 3828
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-deterministic-engine/SKILL.md",
+      "sha256": "cc05b04c2825eaaa9863cfe66e8fa4610f34ba25ad8ebedd67466fbd00b5d614",
+      "size": 3805
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-discovery-inventory/SKILL.md",
+      "sha256": "554808362387d960af33820d1a9dafa9f5bdbc72bcad73c4b3badfaf4f5852b8",
+      "size": 3832
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-domain-model/SKILL.md",
+      "sha256": "fc58108d540356ffa479604bc3810393bd358638194d31bb2dada9909a8a7548",
+      "size": 3859
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-failure-recovery/SKILL.md",
+      "sha256": "56d7ea9015c502b0ff3be4192f65d8e4bfb13e511921eca41e77765a200699a5",
+      "size": 3836
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-human-approval/SKILL.md",
+      "sha256": "9f13d380f30e03ee69db330f8431a9222cd4a70895c88a5f7b5bdccf4d7b35be",
+      "size": 3821
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-integration-api/SKILL.md",
+      "sha256": "e86d5f8d7e1f1716e036edbf662655748391f85ffc4d21d22bd55df3688292cc",
+      "size": 3806
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-lifecycle-recertification/SKILL.md",
+      "sha256": "d78343b9f64a526a40ea8420ecc113d27a5fedd31e4ffd40701f893a4b85abfe",
+      "size": 3896
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-lineage-reconciliation/SKILL.md",
+      "sha256": "c340e13143325adc2e48d9fdc19520f76a68017b94b904dfaf06a39769b867fe",
+      "size": 3847
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-observability-economics/SKILL.md",
+      "sha256": "c94013eb66f9805fe927836cb85d35860a1cc4939fe598cfc9dfafad882f9771",
+      "size": 3862
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-orchestrator/SKILL.md",
+      "sha256": "acf6209a4fc225886410896a274699b20d16c981f9d045eabc9f134e9b9f9122",
+      "size": 3884
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-security-policy/SKILL.md",
+      "sha256": "66a75f1fd6ca103d099f3aaa90d15dfea3963d5fa796443560cfb3ad7e322fd7",
+      "size": 3841
+    },
+    {
+      "path": "skills/b32-client-ui-modernization-factory-workflow-runtime/SKILL.md",
+      "sha256": "722266ba8611ad3b5215047f5546afee1423374208b7ee81a97eb89505bde94e",
+      "size": 3850
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "ac89ee4d751ca4afdcbdf7c0b71b0e46e51b471c588b792175472993431646be",
+      "size": 383
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "224a5506a8c431db5341ae900ed05b8017a5a767cababb6eb084f0cecca534b3",
+      "size": 1930
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

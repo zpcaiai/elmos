@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Sandbox Filesystem Mount Path Device Proc And Sys Isolation"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $sandbox-filesystem-mount-path-device-proc-and-sys-isolation to implement its fail-closed ELMOS Product B36 contract."

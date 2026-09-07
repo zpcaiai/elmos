@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Cicd Pipeline Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-cicd-pipeline-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

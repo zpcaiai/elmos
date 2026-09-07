@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/external-preflight/1.0",
+  "title": "External execution structural preflight input",
+  "type": "object",
+  "required": [
+    "schema_version", "scope", "release_digest", "provider_adapter",
+    "independent_holdout", "representative_workload", "production_change"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "release_digest": {"$ref": "#/$defs/digest"},
+    "provider_adapter": {"$ref": "#/$defs/providerAdapter"},
+    "independent_holdout": {"$ref": "#/$defs/independentHoldout"},
+    "representative_workload": {"$ref": "#/$defs/representativeWorkload"},
+    "production_change": {"$ref": "#/$defs/productionChange"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "role": {
+      "type": "object",
+      "required": ["principal_id", "organization_id"],
+      "properties": {
+        "principal_id": {"$ref": "#/$defs/token"},
+        "organization_id": {"$ref": "#/$defs/token"}
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "tenant_id", "project_id", "campaign_id", "policy_revision", "source_revision"
+      ],
+      "properties": {
+        "tenant_id": {"$ref": "#/$defs/token"},
+        "project_id": {"$ref": "#/$defs/token"},
+        "campaign_id": {"$ref": "#/$defs/token"},
+        "policy_revision": {"$ref": "#/$defs/token"},
+        "source_revision": {"$ref": "#/$defs/token"}
+      },
+      "additionalProperties": false
+    },
+    "providerAdapter": {
+      "type": "object",
+      "required": [
+        "provider_id", "adapter_id", "adapter_registry_digest", "executable_digest",
+        "effect_class", "rollback_adapter_id", "authorization_digest"
+      ],
+      "properties": {
+        "provider_id": {"$ref": "#/$defs/token"},
+        "adapter_id": {"$ref": "#/$defs/token"},
+        "adapter_registry_digest": {"$ref": "#/$defs/digest"},
+        "executable_digest": {"$ref": "#/$defs/digest"},
+        "effect_class": {"const": "REVERSIBLE"},
+        "rollback_adapter_id": {"$ref": "#/$defs/token"},
+        "authorization_digest": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "independentHoldout": {
+      "type": "object",
+      "required": [
+        "manifest_digest", "case_count", "owner", "executor", "verifier",
+        "authorization_digest"
+      ],
+      "properties": {
+        "manifest_digest": {"$ref": "#/$defs/digest"},
+        "case_count": {"type": "integer", "minimum": 1},
+        "owner": {"$ref": "#/$defs/role"},
+        "executor": {"$ref": "#/$defs/role"},
+        "verifier": {"$ref": "#/$defs/role"},
+        "authorization_digest": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "representativeWorkload": {
+      "type": "object",
+      "required": [
+        "manifest_digest", "case_count", "customer_authorizer", "authorization_digest"
+      ],
+      "properties": {
+        "manifest_digest": {"$ref": "#/$defs/digest"},
+        "case_count": {"type": "integer", "minimum": 1},
+        "customer_authorizer": {"$ref": "#/$defs/role"},
+        "authorization_digest": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "productionChange": {
+      "type": "object",
+      "required": [
+        "environment", "pkcs11_secret_reference", "canary_plan_digest",
+        "rollback_plan_digest", "authorization_digest"
+      ],
+      "properties": {
+        "environment": {"$ref": "#/$defs/token"},
+        "pkcs11_secret_reference": {
+          "type": "string", "pattern": "^pkcs11:.+$", "minLength": 8, "maxLength": 2048
+        },
+        "canary_plan_digest": {"$ref": "#/$defs/digest"},
+        "rollback_plan_digest": {"$ref": "#/$defs/digest"},
+        "authorization_digest": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

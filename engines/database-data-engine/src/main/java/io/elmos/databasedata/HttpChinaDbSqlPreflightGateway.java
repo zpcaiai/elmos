@@ -1,0 +1,198 @@
+package io.elmos.databasedata;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import static io.elmos.databasedata.ChinaDbSqlPreflightFailure.Kind.PROTOCOL_ERROR;
+import static io.elmos.databasedata.ChinaDbSqlPreflightFailure.Kind.REQUEST_REJECTED;
+import static io.elmos.databasedata.ChinaDbSqlPreflightFailure.Kind.REQUEST_TOO_LARGE;
+import static io.elmos.databasedata.ChinaDbSqlPreflightFailure.Kind.STALE_SNAPSHOT;
+import static io.elmos.databasedata.ChinaDbSqlPreflightFailure.Kind.UNAVAILABLE;
+
+/** Fixed-destination, bounded HTTP client for the Python SQL preflight sidecar. */
+final class HttpChinaDbSqlPreflightGateway implements ChinaDbSqlPreflightGateway {
+    private static final Pattern ORGANIZATION = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
+    private static final Pattern ACTOR = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}");
+
+    private final URI capabilitiesUri;
+    private final URI assessUri;
+    private final Duration requestTimeout;
+    private final ChinaDbSqlPreflightProtocol protocol;
+    private final HttpClient client;
+
+    HttpChinaDbSqlPreflightGateway(
+            boolean enabled,
+            String baseUrl,
+            Duration connectTimeout,
+            Duration requestTimeout,
+            ObjectMapper json
+    ) {
+        this.protocol = new ChinaDbSqlPreflightProtocol(Objects.requireNonNull(json));
+        this.requestTimeout = boundedTimeout(requestTimeout, Duration.ofSeconds(60));
+        Duration connect = boundedTimeout(connectTimeout, Duration.ofSeconds(30));
+        this.client = HttpClient.newBuilder()
+                .connectTimeout(connect)
+                .followRedirects(HttpClient.Redirect.NEVER)
+                .build();
+        URI base = enabled && baseUrl != null && !baseUrl.isBlank() ? safeBase(baseUrl) : null;
+        this.capabilitiesUri = base == null ? null : base.resolve("internal/v1/chinadb-sql/capabilities");
+        this.assessUri = base == null ? null : base.resolve("internal/v1/chinadb-sql/assess");
+    }
+
+    @Override
+    public JsonNode capabilities() {
+        return protocol.capabilities(call(capabilitiesUri, null, null, null));
+    }
+
+    @Override
+    public JsonNode assess(byte[] request, String organizationId, String actorId) {
+        JsonNode parsed = protocol.request(request);
+        if (!ORGANIZATION.matcher(Objects.requireNonNullElse(organizationId, "")).matches()
+                || !ACTOR.matcher(Objects.requireNonNullElse(actorId, "")).matches()) {
+            throw new ChinaDbSqlPreflightFailure(REQUEST_REJECTED);
+        }
+        return protocol.assessment(parsed, call(assessUri, request, organizationId, actorId));
+    }
+
+    private JsonNode call(URI uri, byte[] body, String organizationId, String actorId) {
+        if (uri == null) throw new ChinaDbSqlPreflightFailure(UNAVAILABLE);
+        HttpRequest.Builder request = HttpRequest.newBuilder(uri)
+                .timeout(requestTimeout)
+                .header("Accept", "application/json")
+                .header("Accept-Encoding", "identity");
+        if (body == null) {
+            request.GET();
+        } else {
+            if (body.length > ChinaDbSqlPreflightProtocol.MAX_REQUEST_BYTES) {
+                throw new ChinaDbSqlPreflightFailure(REQUEST_TOO_LARGE);
+            }
+            request.header("Content-Type", "application/json")
+                    .header("X-ELMOS-Organization-ID", organizationId)
+                    .header("X-ELMOS-Actor-ID", actorId)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(body));
+        }
+        final HttpResponse<InputStream> response;
+        try {
+            response = client.send(request.build(), HttpResponse.BodyHandlers.ofInputStream());
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw new ChinaDbSqlPreflightFailure(UNAVAILABLE);
+        } catch (IOException | IllegalArgumentException error) {
+            throw new ChinaDbSqlPreflightFailure(UNAVAILABLE);
+        }
+        int status = response.statusCode();
+        if (status != 200) {
+            close(response.body());
+            if (status == 400 || status == 422) throw new ChinaDbSqlPreflightFailure(REQUEST_REJECTED);
+            if (status == 413) throw new ChinaDbSqlPreflightFailure(REQUEST_TOO_LARGE);
+            if (status == 409) throw new ChinaDbSqlPreflightFailure(STALE_SNAPSHOT);
+            if (status == 503 || status == 504) throw new ChinaDbSqlPreflightFailure(UNAVAILABLE);
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+        String contentType = response.headers().firstValue("Content-Type").orElse("");
+        String mediaType = contentType.split(";", 2)[0].trim();
+        String contentEncoding = response.headers().firstValue("Content-Encoding").orElse("identity");
+        if (!"application/json".equalsIgnoreCase(mediaType)
+                || !"identity".equalsIgnoreCase(contentEncoding.trim())) {
+            close(response.body());
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+        final long declared;
+        try {
+            declared = contentLength(response);
+        } catch (ChinaDbSqlPreflightFailure error) {
+            close(response.body());
+            throw error;
+        }
+        if (declared > ChinaDbSqlPreflightProtocol.MAX_RESPONSE_BYTES) {
+            close(response.body());
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+        byte[] bytes = readBounded(response.body());
+        requireMatchingContentLength(declared, bytes.length);
+        return protocol.response(bytes);
+    }
+
+    static void requireMatchingContentLength(long declared, int actual) {
+        if (declared >= 0 && declared != actual) {
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+    }
+
+    private static long contentLength(HttpResponse<?> response) {
+        String value = response.headers().firstValue("Content-Length").orElse("");
+        if (value.isEmpty()) return -1;
+        if (!value.matches("(?:0|[1-9][0-9]*)")) {
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException error) {
+            throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+        }
+    }
+
+    private static byte[] readBounded(InputStream body) {
+        try (body) {
+            byte[] bytes = body.readNBytes(ChinaDbSqlPreflightProtocol.MAX_RESPONSE_BYTES + 1);
+            if (bytes.length > ChinaDbSqlPreflightProtocol.MAX_RESPONSE_BYTES) {
+                throw new ChinaDbSqlPreflightFailure(PROTOCOL_ERROR);
+            }
+            return bytes;
+        } catch (IOException error) {
+            throw new ChinaDbSqlPreflightFailure(UNAVAILABLE);
+        }
+    }
+
+    private static void close(InputStream body) {
+        try {
+            body.close();
+        } catch (IOException ignored) {
+            // No response bytes are trusted or returned on an error status.
+        }
+    }
+
+    private static URI safeBase(String configured) {
+        final URI base;
+        try {
+            base = URI.create(configured.endsWith("/") ? configured : configured + "/");
+        } catch (IllegalArgumentException error) {
+            throw new IllegalStateException("CHINADB_SQL_PREFLIGHT_BASE_URL_INVALID", error);
+        }
+        if (!("http".equals(base.getScheme()) || "https".equals(base.getScheme()))
+                || base.getHost() == null || base.getUserInfo() != null
+                || base.getQuery() != null || base.getFragment() != null
+                || !(base.getPath().isEmpty() || "/".equals(base.getPath()))
+                || ("http".equals(base.getScheme()) && !allowedPlainHttpBase(base))) {
+            throw new IllegalStateException("CHINADB_SQL_PREFLIGHT_BASE_URL_INVALID");
+        }
+        return base;
+    }
+
+    private static boolean allowedPlainHttpBase(URI base) {
+        String host = base.getHost().toLowerCase(java.util.Locale.ROOT);
+        if ("chinadb-sql-preflight".equals(host)) {
+            return base.getPort() == 8101;
+        }
+        return Set.of("localhost", "127.0.0.1", "::1").contains(host)
+                && base.getPort() >= 1 && base.getPort() <= 65_535;
+    }
+
+    private static Duration boundedTimeout(Duration value, Duration maximum) {
+        if (value == null || value.isZero() || value.isNegative() || value.compareTo(maximum) > 0) {
+            throw new IllegalStateException("CHINADB_SQL_PREFLIGHT_TIMEOUT_INVALID");
+        }
+        return value;
+    }
+}

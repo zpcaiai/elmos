@@ -1,0 +1,21 @@
+schema_version: 1
+correlation_keys:
+  - traceparent
+  - tracestate
+  - request_id
+  - message_id
+  - workflow_id
+  - task_id
+  - debug_session_id
+edge_confidence:
+  explicit_context: 1.0
+  protocol_header: 0.95
+  runtime_span_link: 0.9
+  temporal_inference: 0.5
+  name_only_inference: 0.2
+coordinated_pause:
+  environments: [ephemeral, ci-preview]
+  max_global_pause_seconds: 30
+  lease_required: true
+  automatic_resume: true
+  production: denied

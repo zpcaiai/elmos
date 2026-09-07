@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency and Toolchain Resolver"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0608-dependency-and-toolchain-resolver to run FRT-0608 through the governed FRT runtime with exact scope and fail-closed evidence."

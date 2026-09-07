@@ -1,0 +1,12 @@
+{
+  "request_id": "b37-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Extension SDK, Marketplace and Supply-Chain Governance",
+  "upstream_certificate_refs": [
+    "batch-36-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

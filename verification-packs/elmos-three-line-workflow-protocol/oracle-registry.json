@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-three-line-workflow-protocol",
+  "oracles": [
+    {
+      "oracle_id": "oracle.protocol-spec",
+      "type": "contract",
+      "owner": "elmos-workflow-engineering",
+      "scope": [
+        "claim.protocol-local"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "1",
+      "evidence_refs": [
+        "state-machines/workflow-protocol.json"
+      ]
+    },
+    {
+      "oracle_id": "oracle.runtime-tests",
+      "type": "test",
+      "owner": "elmos-verification-engineering",
+      "scope": [
+        "claim.protocol-local"
+      ],
+      "independence": "dependent",
+      "trust_level": "supporting",
+      "version": "1",
+      "evidence_refs": [
+        "certification/local-test-manifest.json"
+      ]
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "local-protocol",
+      "ordered_oracles": [
+        "oracle.protocol-spec",
+        "oracle.runtime-tests"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

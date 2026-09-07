@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/toolchain-manifest.schema.json",
+  "title": "Toolchain Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "toolchain_id",
+    "version",
+    "image_digest",
+    "os",
+    "architecture",
+    "components",
+    "locale",
+    "timezone",
+    "network_policy_digest",
+    "determinism"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "toolchain_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "image_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "os": {
+      "type": "string"
+    },
+    "architecture": {
+      "type": "string"
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "digest": {
+            "$ref": "digest.schema.json"
+          }
+        }
+      }
+    },
+    "locale": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "network_policy_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "dependency_snapshot_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_date_epoch",
+        "random_seed_policy"
+      ],
+      "properties": {
+        "source_date_epoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "random_seed_policy": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "gpu": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

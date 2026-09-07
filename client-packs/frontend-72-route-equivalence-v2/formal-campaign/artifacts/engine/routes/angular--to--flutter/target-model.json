@@ -1,0 +1,980 @@
+{
+  "schema_version": "1.0",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "profile_id": "flutter",
+  "parser": "DART_BOUNDED_BASE64",
+  "source_path": "lib/elmos_bounded_interaction.dart",
+  "source_hash": "sha256:f0ea67f1df331f695dabbef6ad1fb3b493885f0af5c61c4948fcd97d6e9a887b",
+  "model": {
+    "schemaVersion": "1.0",
+    "profile": "bounded-frontend-interaction-v1",
+    "projectTitle": "ELMOS 有界前端交互验证",
+    "navigation": {
+      "label": "主要导航",
+      "fallback": "FIRST_DECLARED_ROUTE",
+      "routes": [
+        {
+          "id": "route.home",
+          "path": "/",
+          "title": "首页",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        {
+          "id": "route.account",
+          "path": "/account",
+          "title": "账户",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        {
+          "id": "route.help",
+          "path": "/help",
+          "title": "帮助",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        }
+      ]
+    },
+    "componentTemplate": {
+      "componentId": "interaction.shell",
+      "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+      "keyedBy": "route.id",
+      "titleBinding": "route.title",
+      "textBinding": "route.text"
+    },
+    "stateManagement": {
+      "stateId": "bounded.counter",
+      "initial": 0,
+      "minimum": 0,
+      "maximum": 2,
+      "transition": "SATURATING_INCREMENT"
+    },
+    "actionEvent": {
+      "acceptedEvents": [
+        "BOOT",
+        "NAVIGATE",
+        "AUTHENTICATE",
+        "SUBMIT",
+        "CANCEL",
+        "HYDRATE",
+        "DISPLAY_CHANGE",
+        "NATIVE_DEEPLINK"
+      ],
+      "deniedAction": "BLOCK",
+      "keyboardSubmit": "Enter"
+    },
+    "effectLifecycle": {
+      "mountEffect": "LOAD_ON_MOUNT",
+      "cleanupEffect": "CANCEL_ON_UNMOUNT",
+      "maxExecutionsPerMount": 1,
+      "staleResponsePolicy": "IGNORE_AFTER_CANCEL"
+    },
+    "formBindingValidation": {
+      "formId": "search",
+      "fieldId": "query",
+      "initialValue": "",
+      "required": true,
+      "minimumLength": 2,
+      "validation": "ON_SUBMIT",
+      "invalidCode": "QUERY_TOO_SHORT"
+    },
+    "apiNetwork": {
+      "operationId": "search",
+      "method": "POST",
+      "path": "/api/search",
+      "timeoutMs": 1000,
+      "retry": "NEVER",
+      "cacheScope": "TENANT_QUERY",
+      "cancelOnUnmount": true
+    },
+    "identityPermission": {
+      "anonymousRole": "ANONYMOUS",
+      "authenticatedRole": "MEMBER",
+      "requiredPermission": "search:execute",
+      "deniedBehavior": "HIDE_AND_BLOCK",
+      "tenantIsolation": "EXACT_TENANT_MATCH",
+      "serverAuthorityRequired": true
+    },
+    "renderingHydration": {
+      "mode": "HYDRATABLE_CSR",
+      "hydrationPolicy": "REQUIRE_MATCH",
+      "mismatchBehavior": "RENDER_ERROR",
+      "duplicateEffectsAllowed": false
+    },
+    "accessibilityFocus": {
+      "mainRole": "main",
+      "headingLevel": 1,
+      "formLabel": "搜索",
+      "errorRole": "alert",
+      "liveRegion": "polite",
+      "invalidFocusTarget": "query",
+      "keyboardSubmit": "Enter"
+    },
+    "i18nThemeResponsive": {
+      "supportedLocales": [
+        "zh-CN",
+        "en-US"
+      ],
+      "fallbackLocale": "en-US",
+      "themes": [
+        "LIGHT",
+        "DARK"
+      ],
+      "defaultTheme": "LIGHT",
+      "compactBreakpoint": 720,
+      "compactColumns": 1,
+      "wideColumns": 2
+    },
+    "nativePlatform": {
+      "boundary": "ADAPTER",
+      "capability": "OPEN_DEEP_LINK",
+      "lifecycleStates": [
+        "FOREGROUND",
+        "BACKGROUND"
+      ],
+      "permission": "DEEPLINK_OPEN",
+      "deniedBehavior": "NO_OP_REPORTED",
+      "recovery": "FOREGROUND_RETRY"
+    }
+  },
+  "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "block_digests": {
+    "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+    "component-template-view": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+    "state-management": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+    "action-event": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+    "effect-lifecycle": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+    "form-binding-validation": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+    "api-network": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+    "identity-permission": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+    "rendering-hydration": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+    "accessibility-focus": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+    "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+    "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+  },
+  "spans": {
+    "": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
+    },
+    "/accessibilityFocus": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df"
+    },
+    "/accessibilityFocus/errorRole": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:cf170110abc5849f756d7abf9a6131f853d2f68ba1ca7a10497850f973dc7ef0"
+    },
+    "/accessibilityFocus/formLabel": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:67be6d16aebf9040a5891d21c3bd560a19401b200e732ee826b56f786869c6dd"
+    },
+    "/accessibilityFocus/headingLevel": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "/accessibilityFocus/invalidFocusTarget": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:4c4f28a0fc9a4f2950029d5207744506cb1a6c2a836be46bdd126cf6ff507309"
+    },
+    "/accessibilityFocus/keyboardSubmit": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:ed9140d42148c99bd98add4a4c0029903b21f19b30d06f090a14e6177118cb1a"
+    },
+    "/accessibilityFocus/liveRegion": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b717f458d02594cc2d44a9326ddb729ca763f84620b1afa5bcf2945d30780c57"
+    },
+    "/accessibilityFocus/mainRole": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30"
+    },
+    "/actionEvent": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba"
+    },
+    "/actionEvent/acceptedEvents": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:75650c17c5caa7beded017ba7154444e3b1905c110e83c8b23aafffc2fffa094"
+    },
+    "/actionEvent/acceptedEvents/0": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:967abdaa7067e7ffc96a7501c8a25003a49717e94cc5461e5ad5b1bf573ba4c4"
+    },
+    "/actionEvent/acceptedEvents/1": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:1a448ed62226bb81646c237d6e2aaf994d5961859de97ca680bd056b0791555d"
+    },
+    "/actionEvent/acceptedEvents/2": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:774b5fdb719de58a22023998e22fb5218ff520a14d0da3246e16158fac653678"
+    },
+    "/actionEvent/acceptedEvents/3": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:f4f2b6493c52567d0f919da58e8572bf32ae165506509eb12092d52f87241aa8"
+    },
+    "/actionEvent/acceptedEvents/4": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2625e2fe2d8986b8d2d4f614fee11265ea588f62e7686caa6c938433c5e7792b"
+    },
+    "/actionEvent/acceptedEvents/5": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:389aaea5890da075190aa6009cac37c6d5ee03010705ba65f96a3805bbc298c5"
+    },
+    "/actionEvent/acceptedEvents/6": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:8c8ab09885530b11fccf73d613b710ceba2d6e2cdf9a7113a1f1a0fff8a93613"
+    },
+    "/actionEvent/acceptedEvents/7": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:34099f7bc3eff3d6213e4715a91ecc935854019640e2040469210ded39137339"
+    },
+    "/actionEvent/deniedAction": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6fdebd5c11d5ce978dd5a2bb4c1dbac69a593b90380d3d926834cba70f6f74a9"
+    },
+    "/actionEvent/keyboardSubmit": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:ed9140d42148c99bd98add4a4c0029903b21f19b30d06f090a14e6177118cb1a"
+    },
+    "/apiNetwork": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d"
+    },
+    "/apiNetwork/cacheScope": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2db2b6307f75ecf2621faa0a7ca8d4e0ad50ed5ee0eb5159a76e50fd66f7c61d"
+    },
+    "/apiNetwork/cancelOnUnmount": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/apiNetwork/method": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:e46d3ae943664116b752137af856edb5f377c6d8012a39e3ef7f39f80a802cac"
+    },
+    "/apiNetwork/operationId": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6ad21f9d2ea182f9fe66f7791944c3bfa4eb4281c1609ca95e82a89c65e6a413"
+    },
+    "/apiNetwork/path": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:63f77e94b99603af05e13f406234063d5123dfa5c942c155467fd912b6251254"
+    },
+    "/apiNetwork/retry": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2793926495159609106ae651ff9a7ae5bbaeeb4d33599f7dfb281d594b045bf5"
+    },
+    "/apiNetwork/timeoutMs": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:40510175845988f13f6162ed8526f0b09f73384467fa855e1e79b44a56562a58"
+    },
+    "/componentTemplate": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f"
+    },
+    "/componentTemplate/componentId": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fbf9aa16fbb8c7611e4bbe754ec47c1b8cff09ecc54d51085859deb42914f46f"
+    },
+    "/componentTemplate/keyedBy": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fb47875bc07055fdb684d88b5bc31c99e0a955aec945bc7a39a693e07d4c35fa"
+    },
+    "/componentTemplate/templateKind": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b80fa68b226b62b2493b25eed641c5bd22128b0acdc3909cba9bab34c186bd16"
+    },
+    "/componentTemplate/textBinding": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5baa95ee43442a500a246652358ef8b5ee32fb381caf4abb01057075ab4a0e57"
+    },
+    "/componentTemplate/titleBinding": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2e2e1f1c25bbbcaea75aee6d5d04fd43c49cb3ccc572a5862a04ef13d2999268"
+    },
+    "/effectLifecycle": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4"
+    },
+    "/effectLifecycle/cleanupEffect": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d5fb2d76a5ca595bbdb5cf14d2becd566792c1feca37eb705c4584b252b687f3"
+    },
+    "/effectLifecycle/maxExecutionsPerMount": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "/effectLifecycle/mountEffect": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:45d163223459fd30c9414a66a8c799600cc16cae82bab91b9568ea6757deaf10"
+    },
+    "/effectLifecycle/staleResponsePolicy": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c3288f76d13c6b97ac57d51aaae8449806f2c0ef1d2023aab481d55fff892cf7"
+    },
+    "/formBindingValidation": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e"
+    },
+    "/formBindingValidation/fieldId": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:4c4f28a0fc9a4f2950029d5207744506cb1a6c2a836be46bdd126cf6ff507309"
+    },
+    "/formBindingValidation/formId": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6ad21f9d2ea182f9fe66f7791944c3bfa4eb4281c1609ca95e82a89c65e6a413"
+    },
+    "/formBindingValidation/initialValue": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126"
+    },
+    "/formBindingValidation/invalidCode": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:49a9bcb244ee80d3c01e4caf192f60aeee7c61d3cbd7d6f38a645939b21fcacf"
+    },
+    "/formBindingValidation/minimumLength": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+    },
+    "/formBindingValidation/required": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/formBindingValidation/validation": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:63c9a1fd33881d745352c41713cdd9a994f183a0fe6b404d1f23f8395f03f96b"
+    },
+    "/i18nThemeResponsive": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957"
+    },
+    "/i18nThemeResponsive/compactBreakpoint": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d829857eb1366e70be857a69886d1555af0d32681beab068afb93492c2e2b843"
+    },
+    "/i18nThemeResponsive/compactColumns": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "/i18nThemeResponsive/defaultTheme": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b7f4def8a013893d9ece6e582b2b8d7b6d45ec6b76202f5409e772f2b509682c"
+    },
+    "/i18nThemeResponsive/fallbackLocale": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c528452300440f47b4505e15d80ef5fb68d030675ad944dd54d1b8b6b9d45294"
+    },
+    "/i18nThemeResponsive/supportedLocales": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d289eaf3d3dd9fd16fdd7cf3a1ccfd02071f21ae21938c6d00504caf289bc64b"
+    },
+    "/i18nThemeResponsive/supportedLocales/0": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:cb6ad26bff207781ff22d264c287efef6765b9ca8f90d29c39244f73827fedcc"
+    },
+    "/i18nThemeResponsive/supportedLocales/1": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c528452300440f47b4505e15d80ef5fb68d030675ad944dd54d1b8b6b9d45294"
+    },
+    "/i18nThemeResponsive/themes": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:43fa9035e277655d16da146b510265ffe0f25ce72ff616996e6cd5b292fb80b7"
+    },
+    "/i18nThemeResponsive/themes/0": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b7f4def8a013893d9ece6e582b2b8d7b6d45ec6b76202f5409e772f2b509682c"
+    },
+    "/i18nThemeResponsive/themes/1": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:8a19f2ecd4a997c1471e09c6133b4176ff295b42bad615d7530b38e8a96b7b61"
+    },
+    "/i18nThemeResponsive/wideColumns": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+    },
+    "/identityPermission": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b"
+    },
+    "/identityPermission/anonymousRole": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:9f338305856ad2aed6b6e44373ca75b042118b520cbe78f649704bd6bd131596"
+    },
+    "/identityPermission/authenticatedRole": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:37af56238b5e5525731f9bbb951a396cb3fb081295066fac5eba53dbca2be805"
+    },
+    "/identityPermission/deniedBehavior": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:aa94282432d8461aca77b205939309410ecf4dd930a273939384493c882c02b1"
+    },
+    "/identityPermission/requiredPermission": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:e7f67b541849b4c5a1e18c5653ba29c3df6ffd963bb35b57705fc08eb5db7ad7"
+    },
+    "/identityPermission/serverAuthorityRequired": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/identityPermission/tenantIsolation": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2344f544611979d600f2cb67ea395bb9300a37d1a1f6989ec38103392d5b3e4d"
+    },
+    "/nativePlatform": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+    },
+    "/nativePlatform/boundary": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5f61175024f601ee12bd663d6b2eecd1dc420e7f19c7a816fee09f9ca40b1795"
+    },
+    "/nativePlatform/capability": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c75f2881e1bbfa22930a98d0f2f6b701ecd69f667e65c58716e2445d952a02de"
+    },
+    "/nativePlatform/deniedBehavior": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:f78e4d159f7e24523b2128a94e7c3b02a69802f53d2c38bec886b4b6ff0b189b"
+    },
+    "/nativePlatform/lifecycleStates": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d5e9e604e32e93a5d94516cf3783434db20939964cf78dd8ae15eedc315e6e0e"
+    },
+    "/nativePlatform/lifecycleStates/0": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:7ce592b948832e0bb079a05b3c530222faf5dc319c00439d15d98e3ddcca0107"
+    },
+    "/nativePlatform/lifecycleStates/1": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5cacf473bb4a4d32c3ecb19780f56ebdd8e6478af5b5d4b04f4f5296101394ab"
+    },
+    "/nativePlatform/permission": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:a9347729a6249ee89938058a3f6892cffecb09d7042b6aca1e7d301bd34d4742"
+    },
+    "/nativePlatform/recovery": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:012203952e421a039291112c71c4cd66183cf8abdb98108f9741739a5ef163c2"
+    },
+    "/navigation": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330"
+    },
+    "/navigation/fallback": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07"
+    },
+    "/navigation/label": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b"
+    },
+    "/navigation/routes": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:8cc6b4b5c51c9e3ad468ee61a805f21ae30646b752b9aa25bacc41292ae1124e"
+    },
+    "/navigation/routes/0": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c26c12fe5090fad4ffa57914002afc3e9c587ebe7d808b97791e771ad251c70b"
+    },
+    "/navigation/routes/0/deepLink": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/navigation/routes/0/id": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35"
+    },
+    "/navigation/routes/0/path": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952"
+    },
+    "/navigation/routes/0/requiresAuth": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/navigation/routes/0/text": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9"
+    },
+    "/navigation/routes/0/title": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:51ad103901a64833d1d5386ce1659891d1625d2aa2082b4b148f33292f9d7010"
+    },
+    "/navigation/routes/1": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:c535029b505e0f6dcbfc384b5fd136ed4911d5cc75a4bcb9e1b85e02ac4fa78f"
+    },
+    "/navigation/routes/1/deepLink": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/navigation/routes/1/id": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d"
+    },
+    "/navigation/routes/1/path": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051"
+    },
+    "/navigation/routes/1/requiresAuth": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/navigation/routes/1/text": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44"
+    },
+    "/navigation/routes/1/title": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:24cb9f833fa56bedc2b53fe3c97c6669b98c79fd934d0ca32baff7b0bfbd0b28"
+    },
+    "/navigation/routes/2": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:17c6ded5f25e19df3fdd4f1880c08bf2c86a87c79e7d90a01521fa4453c0a8ec"
+    },
+    "/navigation/routes/2/deepLink": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/navigation/routes/2/id": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976"
+    },
+    "/navigation/routes/2/path": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08"
+    },
+    "/navigation/routes/2/requiresAuth": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/navigation/routes/2/text": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6"
+    },
+    "/navigation/routes/2/title": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:8065d0033a609e40755429bd4657c3921b2d94100c358438906a533b5e17239e"
+    },
+    "/profile": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:edc15edf2d0381974356204b3dfcbe1675d9b7a42ac01865393de0638dfe7072"
+    },
+    "/projectTitle": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:6e63337b7d2a876117aa0dd6015741008146b5bc5d29da98c7f9d14de49f06f0"
+    },
+    "/renderingHydration": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99"
+    },
+    "/renderingHydration/duplicateEffectsAllowed": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/renderingHydration/hydrationPolicy": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:08b36709893c492c1a47111f82c46c68ce3b340ed39e3dac97b159da840d692f"
+    },
+    "/renderingHydration/mismatchBehavior": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:51411924059964251d051bc0a4625dc63f1988b54819ee62cc8dbb50865e69c5"
+    },
+    "/renderingHydration/mode": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:236839cbecec33e47a216bab66a2e08056b1894febe8fa2643a0173a3b8bc0b0"
+    },
+    "/schemaVersion": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc"
+    },
+    "/stateManagement": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f"
+    },
+    "/stateManagement/initial": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+    },
+    "/stateManagement/maximum": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+    },
+    "/stateManagement/minimum": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+    },
+    "/stateManagement/stateId": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:f99138ae44976be3aea4881121f9f2f044fd0e1459ed9f18033e94242a83b86a"
+    },
+    "/stateManagement/transition": {
+      "path": "lib/elmos_bounded_interaction.dart",
+      "start_byte": 155,
+      "end_byte": 3427,
+      "content_hash": "sha256:2505af9689d40ad5cd7b3b0a2b604d4b934f433770f1d2603d054d4ecc4ff8a7",
+      "subtree_hash": "sha256:08dc2c287c5b046865d5255dc6c7444dc5ddec5e2a05e7b395f7178f9d09f5ad"
+    }
+  },
+  "consumer_binding": {
+    "sole_contract_literal": true,
+    "navigation_identity_projection": true,
+    "reducer_reachable": true,
+    "state_dispatch_reachable": true,
+    "effect_command_reachable": true,
+    "form_and_focus_reachable": true,
+    "api_adapter_reachable": true,
+    "identity_tenant_guard_reachable": true,
+    "hydration_observation_reachable": true,
+    "i18n_theme_viewport_reachable": true,
+    "native_adapter_reachable": true,
+    "strict_generated_grammar": true
+  }
+}

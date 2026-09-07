@@ -1,0 +1,13 @@
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate
+
+b30-skills-test:
+	python3 scripts/batch30/validate_skill_bundle.py
+	python3 -m unittest tests/batch30/test_toolkit.py
+
+b30-pack-validate:
+	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
+	python3 scripts/batch30/validate_framework_pack.py framework-packs/$(PACK)
+
+b30-pack-gate:
+	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
+	python3 scripts/batch30/run_framework_gate.py framework-packs/$(PACK)

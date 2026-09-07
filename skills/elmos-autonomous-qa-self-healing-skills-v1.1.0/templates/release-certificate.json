@@ -1,0 +1,25 @@
+{
+  "certificate_id": "<certificate-id>",
+  "project_id": "<project-id>",
+  "snapshot_id": "<snapshot-id>",
+  "commit": "<commit>",
+  "quality_gate_version": "strict-default-v2",
+  "decision": "failed",
+  "issued_at": "<RFC3339>",
+  "required_test_summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 0,
+    "flaky_confirmed": 0
+  },
+  "unresolved_defects": {
+    "critical": 0,
+    "high": 0
+  },
+  "evidence_manifest_hash": "<sha256>",
+  "project_output_manifest_hash": "<sha256>",
+  "input_manifest_hash": "<sha256>",
+  "machine_wall_clock_seconds": 0,
+  "signature": "<signature-or-null>"
+}

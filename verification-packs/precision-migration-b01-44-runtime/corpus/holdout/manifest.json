@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "corpus_id": "pm-holdout-v1",
+  "purpose": "Frozen trust-boundary cases excluded from implementation tuning",
+  "frozen": true,
+  "case_file": "cases.json",
+  "may_tune_implementation": false,
+  "execution_status": "NOT_RUN",
+  "independent_verifier": "REQUIRED_NOT_ASSIGNED"
+}

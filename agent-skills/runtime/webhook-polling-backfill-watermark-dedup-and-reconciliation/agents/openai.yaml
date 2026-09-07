@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Webhook Polling Backfill Watermark Dedup And Reconciliation"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $webhook-polling-backfill-watermark-dedup-and-reconciliation to implement its fail-closed ELMOS Product B37 contract."

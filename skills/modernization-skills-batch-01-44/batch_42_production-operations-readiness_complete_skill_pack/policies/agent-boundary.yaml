@@ -1,0 +1,7 @@
+agent_boundary:
+  proposal_only: true
+  direct_commit: false
+  self_approval: false
+  modify_tests: false
+  modify_golden: false
+  modify_gate: false

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/3.0.0/sql-catalog-ir.schema.json",
+  "title": "SqlCatalogIR",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v3alpha1"
+    },
+    "kind": {
+      "const": "SqlCatalogIR"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "revisionSetId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisionSetId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "schemas",
+        "tables",
+        "constraints",
+        "indexes"
+      ],
+      "properties": {
+        "schemas": {
+          "type": "array"
+        },
+        "tables": {
+          "type": "array"
+        },
+        "constraints": {
+          "type": "array"
+        },
+        "indexes": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

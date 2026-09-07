@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "elmos-platform-finops",
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "packType": "finops-economics",
+  "version": "0.1.0",
+  "owner": "elmos-platform-maintainers",
+  "status": "experimental",
+  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "requiredBatches": [
+    13,
+    15,
+    27,
+    34,
+    37,
+    39
+  ],
+  "supportMatrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification.json",
+  "evidenceRefs": [],
+  "metadata": {}
+}

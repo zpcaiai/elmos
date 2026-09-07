@@ -1,0 +1,35 @@
+{
+  "assertion": {
+    "expected_exception": "VerificationPackError",
+    "kind": "fail-closed-no-output-publication"
+  },
+  "claim_id": "claim.local.qualification-binding",
+  "execution_status": "DECLARED_NOT_RUN",
+  "generator": {
+    "constraints": [
+      "mutate-one-of-archive-engine-registry-qualifier-raw-log-status",
+      "never-execute-mutated-content",
+      "bounded-to-one-receipt-per-case"
+    ],
+    "kind": "fixed-field-mutation"
+  },
+  "limitations": [
+    "A fixed negative unittest exists, but no property generator campaign with per-case replay traces was executed."
+  ],
+  "oracle_refs": [
+    "oracle.fixed-qualification-contract",
+    "oracle.local-negative-tests"
+  ],
+  "owner": "elmos-proof-harness-engineering",
+  "property_id": "property.invalid-receipt-never-publishes",
+  "replay": {
+    "command": "python3 -m unittest discover -s engines/proof-driven-harness-engine/tests -p test_publish_verification_pack.py",
+    "execution_status": "NOT_RUN",
+    "seed": "proof-harness-v3-receipt-v1",
+    "trace_ref": null
+  },
+  "schema_version": 1,
+  "shrinker": {
+    "kind": "single-field-delta"
+  }
+}

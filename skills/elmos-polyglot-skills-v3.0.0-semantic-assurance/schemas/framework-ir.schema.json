@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework-ir.schema.json",
+  "title": "ELMOS Framework IR",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "frameworks",
+    "capabilities",
+    "lifecycles",
+    "losses"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.framework-ir/v1"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "frameworks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "version",
+          "confidence"
+        ]
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "source",
+          "configuration"
+        ]
+      }
+    },
+    "lifecycles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "owner",
+          "orderedCallbacks"
+        ]
+      }
+    },
+    "losses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "severity",
+          "status"
+        ]
+      }
+    }
+  }
+}

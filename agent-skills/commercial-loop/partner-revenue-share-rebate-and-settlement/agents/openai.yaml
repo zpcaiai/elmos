@@ -1,0 +1,4 @@
+interface:
+  display_name: "partner-revenue-share-rebate-and-settlement"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $partner-revenue-share-rebate-and-settlement to evaluate this Batch 13 commercial capability with evidence."

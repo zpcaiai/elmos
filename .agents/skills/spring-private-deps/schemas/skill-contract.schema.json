@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/skill-contract.schema.json",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "id",
+    "name",
+    "description",
+    "batch",
+    "priority",
+    "risk",
+    "permissions",
+    "tests",
+    "evidence",
+    "definition_of_done",
+    "production_claim_boundary"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "type": "string"
+    },
+    "priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "permissions": {
+      "type": "object"
+    },
+    "tests": {
+      "type": "array"
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "definition_of_done": {
+      "type": "array"
+    },
+    "production_claim_boundary": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

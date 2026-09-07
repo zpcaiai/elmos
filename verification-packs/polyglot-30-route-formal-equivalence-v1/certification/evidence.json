@@ -1,0 +1,30 @@
+{
+  "evidence_refs": [
+    "formal-route-campaign.json",
+    "solver/arithmetic-campaign.json",
+    "evidence/route-set.json"
+  ],
+  "metrics": {
+    "arithmetic_axiom": 30,
+    "arithmetic_bounded": 3,
+    "arithmetic_proved_64_bit": 7,
+    "arithmetic_proved_under_assumptions": 5,
+    "directed_route_count": 30,
+    "independent_verification_pass_rate": 0.0,
+    "local_behavior_case_count": 270,
+    "locally_exercised_semantic_block_count": 7,
+    "representative_customer_workload_pass_rate": 0.0,
+    "semantic_block_count": 12
+  },
+  "notes": [
+    "Local engineering evidence only.",
+    "Independent verifier, customer workload, production execution, and external certification remain NOT_RUN."
+  ],
+  "pack_key": "polyglot-30-route-formal-equivalence-v1",
+  "schema_version": 1,
+  "zero_tolerance": {
+    "critical_unknown_obligations": 1,
+    "invalid_or_unknown_required_proofs": 1,
+    "test_integrity_violations": 0
+  }
+}

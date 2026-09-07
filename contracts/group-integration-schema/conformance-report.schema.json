@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-18/conformance-report.schema.json",
+  "title": "Batch 18 Conformance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "model",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate",
+    "status",
+    "ready",
+    "evidence_complete",
+    "supported_dimensions",
+    "blockers",
+    "restrictions",
+    "evaluated_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 18
+    },
+    "model": {
+      "const": "GITM"
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate": {
+      "enum": [
+        "BLOCKED",
+        "M18-A",
+        "M18-B",
+        "M18-C",
+        "M18-D",
+        "M18-E",
+        "M18-F",
+        "M18-G",
+        "M18-H"
+      ]
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "PARTIAL",
+        "group-integration-completed"
+      ]
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "evidence_complete": {
+      "type": "boolean"
+    },
+    "supported_dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "business-capability",
+          "application-portfolio",
+          "data-domain",
+          "identity",
+          "integration",
+          "technology-standards",
+          "infrastructure",
+          "operating-model",
+          "governance",
+          "synergy"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ready": {
+            "const": true
+          }
+        },
+        "required": [
+          "ready"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate": {
+            "const": "M18-H"
+          },
+          "status": {
+            "const": "group-integration-completed"
+          },
+          "evidence_complete": {
+            "const": true
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

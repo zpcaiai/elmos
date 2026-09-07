@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ims Tm Db Message And Hierarchical Data Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $ims-tm-db-message-and-hierarchical-data-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

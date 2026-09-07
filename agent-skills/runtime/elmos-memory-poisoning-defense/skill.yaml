@@ -1,0 +1,124 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: memory-poisoning-defense
+  version: 3.0.0
+  pack: 04-memory-experience-flywheel
+  priority: P0
+  owner: experience-platform-team
+spec:
+  description: 检测恶意、错误或低置信记忆，阻止其进入规划、检索与训练。
+  kernel: K4 Memory and Experience Kernel
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: agent trace
+    required: true
+  - name: tool event
+    required: true
+  - name: patch
+    required: true
+  - name: test result
+    required: true
+  - name: human feedback
+    required: true
+  outputs:
+  - name: experience episode
+    contentAddressed: true
+  - name: memory record
+    contentAddressed: true
+  - name: failure signature
+    contentAddressed: true
+  - name: repair pattern
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - trace.capture
+    - episode.write
+    - memory.query
+    - sandbox.replay
+    - diff.analyze
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - episode-complete
+    - tenant-isolated
+    - outcome-verified
+    - retention-policy-applied
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+  businessLines:
+  - memory-experience
+  capabilityTags:
+  - 04-memory-experience-flywheel
+  - defense
+  - memory
+  - memory-experience
+  - poisoning
+  triggers:
+  - 任务需要：检测恶意、错误或低置信记忆，阻止其进入规划、检索与训练。
+  - 任务属于 memory-experience 且需要仓库级执行、证据与回滚。
+  negativeTriggers:
+  - 仅解释普通概念且不需要访问仓库、数据、模型或工具。
+  - 没有租户授权、版本锁定、验收标准或可用验证环境。
+  - 请求绕过测试、权限、证据、签名或回滚门。
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  invariants:
+  - episode-complete
+  - tenant-isolated
+  - outcome-verified
+  - retention-policy-applied
+  - tenant-boundary-preserved
+  - no-evidence-fabrication
+  - hard-gates-not-weakened
+  failureModes:
+  - unsupported-version-or-environment
+  - insufficient-semantic-coverage
+  - deterministic-verification-failure
+  - authorization-or-data-rights-failure
+  - rollback-target-unavailable
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

@@ -1,0 +1,19 @@
+id: repository-language-conversion-v1
+job_type: LANGUAGE_CONVERSION
+stages:
+  - inventory
+  - semantic-ir
+  - compatibility-plan
+  - shared-types-schema
+  - leaf-symbol-conversion
+  - module-conversion
+  - framework-adapters
+  - integration
+  - compile
+  - contract-test
+  - behavior-diff
+  - auto-repair
+  - package-report
+completion_gates:
+  api_contract_preserved: true
+  schema_contract_preserved: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B75 Graphql Schema Resolver Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b75-graphql-schema-resolver-generator to execute this ELMOS project Skill with fail-closed evidence."

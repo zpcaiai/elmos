@@ -1,0 +1,11 @@
+{
+  "routeId": "angular--to--harmony-arkui",
+  "source": "angular",
+  "target": "harmony-arkui",
+  "sourceProfileVersion": "22.0.8",
+  "targetProfileVersion": "6.0.0(20)",
+  "supportState": "ADAPTER_REQUIRED",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

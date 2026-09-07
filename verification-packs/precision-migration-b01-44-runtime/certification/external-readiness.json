@@ -1,0 +1,42 @@
+{
+  "canary": "NOT_RUN",
+  "checks": {
+    "canary_plan": {
+      "reason": "ELMOS_PRECISION_CANARY_PLAN is not configured",
+      "state": "NOT_RUN"
+    },
+    "customer_workload_manifest": {
+      "reason": "ELMOS_PRECISION_CUSTOMER_WORKLOAD_MANIFEST is not configured",
+      "state": "NOT_RUN"
+    },
+    "hsm_key_reference": {
+      "reason": "ELMOS_PRECISION_HSM_KEY_REFERENCE is not configured",
+      "state": "NOT_RUN"
+    },
+    "hsm_provider": {
+      "reason": "ELMOS_PRECISION_HSM_PROVIDER is not configured",
+      "state": "NOT_RUN"
+    },
+    "independent_verifier_trust_store": {
+      "reason": "ELMOS_PRECISION_INDEPENDENT_TRUST_STORE is not configured",
+      "state": "NOT_RUN"
+    },
+    "production_authorization": {
+      "reason": "ELMOS_PRECISION_PRODUCTION_AUTHORIZATION is not configured",
+      "state": "NOT_RUN"
+    },
+    "rollback_plan": {
+      "reason": "ELMOS_PRECISION_ROLLBACK_PLAN is not configured",
+      "state": "NOT_RUN"
+    }
+  },
+  "customer_workload": "NOT_RUN",
+  "external_operations_executed": false,
+  "hsm_signing": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "production_evidence": "NOT_RUN",
+  "rollback": "NOT_RUN",
+  "schema_version": 1,
+  "status": "BLOCKED"
+}

@@ -1,0 +1,4998 @@
+{
+  "schema_version": "1.0",
+  "namespace": "repository-migration-platform-b01-38",
+  "entry_count": 347,
+  "entries": [
+    {
+      "batch": 1,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Repository snapshot",
+      "claim_sha256": "sha256:736b91c9e584351952611e335128083fd93388377dcb4478bc7aec775dddd01b",
+      "oracle_id": "rmp-b01-output-0-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Source executable specification",
+      "claim_sha256": "sha256:2ab716f508c25ad6fbf419767cc63313394c78efa1d261f617fb437a1591dacb",
+      "oracle_id": "rmp-b01-output-1-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Project fingerprint",
+      "claim_sha256": "sha256:8cad1ae4d958581debdb150721e050e42a5c5e5ecde37081b571526bf1f5170f",
+      "oracle_id": "rmp-b01-output-2-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Dependency/build/runtime graphs",
+      "claim_sha256": "sha256:65adafcc257d347438793ddc3f99408c2cabe82c4e9203c153b71cd2512244f6",
+      "oracle_id": "rmp-b01-output-3-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Baseline evidence",
+      "claim_sha256": "sha256:b658403acea64d971b4b839cb5c30353cc6f3c1328fcba9caaea391cd8db14f0",
+      "oracle_id": "rmp-b01-output-4-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "快照可重复",
+      "claim_sha256": "sha256:985ec1b3871420a39fd5ab106b5aa882a9ba8bcec1b07bc9c05805c03f663d42",
+      "oracle_id": "rmp-b01-test-0-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Clean checkout可重建基线",
+      "claim_sha256": "sha256:7946e7c2a38494154d342e229242dd83f06661ada4b2498f6698ece2686531dc",
+      "oracle_id": "rmp-b01-test-1-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "未知项显式登记",
+      "claim_sha256": "sha256:29f7fbe178be894e7a50f0aead65f1f1b10d622bd9d80cf8bf1e0fd4c184f3e9",
+      "oracle_id": "rmp-b01-test-2-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 1,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "既有失败不可被误判为迁移回归",
+      "claim_sha256": "sha256:8d0eb97f2cccdfc0882227f143f77e18dd958775a5d05490b4b86b779c8d4b21",
+      "oracle_id": "rmp-b01-test-3-oracle-v1",
+      "executor_id": "b01-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Differential execution runtime",
+      "claim_sha256": "sha256:1fcc525e8633904a57d335849ee5fe7d4a85e79f486ae897cd15fed703da9594",
+      "oracle_id": "rmp-b02-output-0-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Deterministic environment profiles",
+      "claim_sha256": "sha256:514702f7be5867c1a213da6ba2dd99f318588f1ae63f70a67f798ee5a5abf2a6",
+      "oracle_id": "rmp-b02-output-1-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Raw/normalized observations",
+      "claim_sha256": "sha256:cfba32f2afe25b5f8ce6bbf45885635b2af250102faa3f046cc51c00f0d0e986",
+      "oracle_id": "rmp-b02-output-2-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Minimal divergence cases",
+      "claim_sha256": "sha256:651869f974420813ba01944ece8dea84cb9e5c412dc59dd88cc662b7fea6f6ff",
+      "oracle_id": "rmp-b02-output-3-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "相同Seed结果稳定",
+      "claim_sha256": "sha256:c05de848fafebaf358eaa4b08cab2acecc5765e548f3e2548d039981e9ee53b0",
+      "oracle_id": "rmp-b02-test-0-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Normalizer不隐藏关键差异",
+      "claim_sha256": "sha256:c8cdc87301e7008d5cbac5b8c3973f1059f36a904c62510dd54e2882189da21e",
+      "oracle_id": "rmp-b02-test-1-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "取消/超时/故障可复现",
+      "claim_sha256": "sha256:f44d7259bae5bb22b77da8ed728e5021e445e7e4647ffc2cf7a8e1f74f34d919",
+      "oracle_id": "rmp-b02-test-2-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "失败Attempt完整保留",
+      "claim_sha256": "sha256:8afb393c1647786808c6558f3b8f719e8207caaeb43c67d18cf25b949ca2735e",
+      "oracle_id": "rmp-b02-test-3-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 2,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "independent clean-environment replay",
+      "claim_sha256": "sha256:1bf86385cc80507f6264a89b6e69e505c899a3505061fb6448bcb14afc6cf63a",
+      "oracle_id": "rmp-b02-external-0-oracle-v1",
+      "executor_id": "b02-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "AST/CST与symbol tables",
+      "claim_sha256": "sha256:ac8be2f25d7ad2919ec2f73c870754d77a4de2c6e3618eb5a78406b35b1f1347",
+      "oracle_id": "rmp-b03-output-0-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Unified Semantic IR",
+      "claim_sha256": "sha256:e949f36f8f7ea9a0539969690949a086056a9d635892a26271f94243f79b2d2a",
+      "oracle_id": "rmp-b03-output-1-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Call/effect/data-flow graphs",
+      "claim_sha256": "sha256:f013757393158fd8f3481e2f22ebe97dd3818de8e13e17be9fb5cb19c1303893",
+      "oracle_id": "rmp-b03-output-2-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Source maps",
+      "claim_sha256": "sha256:b4dd73117cf65d6fdb0fa4f64fc195d3f1b6ec4abd2e62bd68a41d196fdf6f4c",
+      "oracle_id": "rmp-b03-output-3-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Unsupported semantics registry",
+      "claim_sha256": "sha256:a5cffcd4a18ddbe4787f280f4fc855b6ebdee8ec7fdca54e011b79531743313d",
+      "oracle_id": "rmp-b03-output-4-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "十语言Frontend可独立运行",
+      "claim_sha256": "sha256:7a3baed001fe061c66b62a2ef8795e923d7dd4d91dd3f8ad7e84cbcd9f5bcad7",
+      "oracle_id": "rmp-b03-test-0-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "关键符号Source Map完整",
+      "claim_sha256": "sha256:39a2099d017ed8d3bbe467523bf9b7b7a9bf7d2953978ee2ca3034914878aad5",
+      "oracle_id": "rmp-b03-test-1-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "动态语义有置信度",
+      "claim_sha256": "sha256:a4fb139a1743e66225af79e6adb1ae19d7638f0f6e7132792a93cea619f79673",
+      "oracle_id": "rmp-b03-test-2-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 3,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Unsupported不静默丢弃",
+      "claim_sha256": "sha256:f53a370103ae2ee7dc3664d9f47221de367cc69317157c43d039267d71c62944",
+      "oracle_id": "rmp-b03-test-3-oracle-v1",
+      "executor_id": "b03-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "90 directional rule packs",
+      "claim_sha256": "sha256:aa51d5d65db3e43858d8b45c89fe612789761081f8cd449daac80ecfcb7ca43a",
+      "oracle_id": "rmp-b04-output-0-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Path-specific mutations/tests",
+      "claim_sha256": "sha256:6072b9140b11f9cb9f2a02784ccecb3ccece2f544f378f80fe61e3550c8585a1",
+      "oracle_id": "rmp-b04-output-1-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Lowering manifests",
+      "claim_sha256": "sha256:aff4a5015e8ac2fd608cf952cf9127575a4631b8c52df722eb7be0dd13c8b902",
+      "oracle_id": "rmp-b04-output-2-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "DP1–DP5 certificates",
+      "claim_sha256": "sha256:185fcd2bce85fb9eefc2727a73575347fb0434e56b2c3946ddb664c8bdf12eca",
+      "oracle_id": "rmp-b04-output-3-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "90条路径均有独立Manifest",
+      "claim_sha256": "sha256:0594e49df867d6d084135610adabd6ab2862856d7ceba2b3bd0af9a98d37e199",
+      "oracle_id": "rmp-b04-test-0-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Critical mutation存活为零",
+      "claim_sha256": "sha256:a74d84bb60db2d630a0714bc20214f3240e98e8cdb345744958d3815a9887e38",
+      "oracle_id": "rmp-b04-test-1-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "逆向路径不自动继承",
+      "claim_sha256": "sha256:883b5c796db6a6be14b21e86abd77c350320b5bbad46bee466e5705c37e417ef",
+      "oracle_id": "rmp-b04-test-2-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Scope与版本明确",
+      "claim_sha256": "sha256:02f06dcc5c3a874e89a8af36a31942b218d3bada7049d7c6682c64aa3ff0527b",
+      "oracle_id": "rmp-b04-test-3-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 4,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "real source and target toolchain execution for each claimed route",
+      "claim_sha256": "sha256:9bc6e85371b138e3afba91219d0c3df24a2126bd451ae9b4da96e6b3e10b4f66",
+      "oracle_id": "rmp-b04-external-0-oracle-v1",
+      "executor_id": "b04-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Framework IR",
+      "claim_sha256": "sha256:e98cdb8e2a8ece0e62a8f731c49637ea3fc8a29ed7748b5083db4eb637126c38",
+      "oracle_id": "rmp-b05-output-0-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Source adapters",
+      "claim_sha256": "sha256:543f0ed24190d42c7f6f98e1053279ab83ec89fd16bf4cd09458e8c02b6d53d3",
+      "oracle_id": "rmp-b05-output-1-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Target generators",
+      "claim_sha256": "sha256:7f90e557cb3f4df2c3d0764d52fca862893c7f0793f6bae829d16a1f155d751c",
+      "oracle_id": "rmp-b05-output-2-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Combination matrix",
+      "claim_sha256": "sha256:d2b41d80726d1c47c3bbcc1563d5b3671c8635895a37634c188cdb3b3a155d90",
+      "oracle_id": "rmp-b05-output-3-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "FA certification evidence",
+      "claim_sha256": "sha256:e31eee928870dc992c47165bf5d55625c3bd546d5360a574260c51cde517d56e",
+      "oracle_id": "rmp-b05-output-4-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "声明组合均有Golden与Hidden",
+      "claim_sha256": "sha256:5bab62ddd338e8b1b9b865b6ac01f9bc44b20ebf6b27f7b22f77b5ae4d560e40",
+      "oracle_id": "rmp-b05-test-0-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "DI Scope和Middleware order正确",
+      "claim_sha256": "sha256:8ca058982b757ce9aa5f67ad4d9cda07ed8e5278e56dce098422e8230e42a066",
+      "oracle_id": "rmp-b05-test-1-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Security与Transaction不弱化",
+      "claim_sha256": "sha256:90b30c34c46f9665184cee94454061d1355c949eb381745f3cdef03fc29f83b7",
+      "oracle_id": "rmp-b05-test-2-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 5,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "版本矩阵完整",
+      "claim_sha256": "sha256:8e0b86e48f7582a70d52331c102b08da09ca5f114e839a33c22c5b60489da13b",
+      "oracle_id": "rmp-b05-test-3-oracle-v1",
+      "executor_id": "b05-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Dependency replacement plans",
+      "claim_sha256": "sha256:e6b2ab22a1cbe856642f6a80fbe9731d2323f9cef7b19aba5bc2ed5cb0fdc22a",
+      "oracle_id": "rmp-b06-output-0-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "SBOM/provenance",
+      "claim_sha256": "sha256:c856bd7e1f4a8afca2faee8df0eff94a2e376008dabdf55a8f21269b93e84414",
+      "oracle_id": "rmp-b06-output-1-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Native asset plan",
+      "claim_sha256": "sha256:63a774d841a2ef4d3fa87f4b2085fe45d0ec8713bb681f9f51d21920f391e643",
+      "oracle_id": "rmp-b06-output-2-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "License report",
+      "claim_sha256": "sha256:759c2baad4bf1a953e305ed7d2e974cae01c9b5206662fbe37cbe706083d4417",
+      "oracle_id": "rmp-b06-output-3-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "DA/DR evidence",
+      "claim_sha256": "sha256:21790c4dc620e17c543fbab7c09e3613816d248712a33ff7a4b4cd2dffd65540",
+      "oracle_id": "rmp-b06-output-4-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "依赖闭包可解析",
+      "claim_sha256": "sha256:706e9b1a7a38e0e6fa97381f83dca59d30e8bccdead5088cd9bee416e0f5dc58",
+      "oracle_id": "rmp-b06-test-0-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "未知Native binary为零",
+      "claim_sha256": "sha256:5b88d387c1b5b7bb12b3ab9707e0dc24d9661d78a2f6768fc8d1f5c6dc435c18",
+      "oracle_id": "rmp-b06-test-1-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "License冲突为零",
+      "claim_sha256": "sha256:f41d44562a6fef946452ba962794d26ccbb2d13f2e417695b1c6769f9d3ab4bf",
+      "oracle_id": "rmp-b06-test-2-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 6,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Critical组件有签名和来源",
+      "claim_sha256": "sha256:097522d1d639cea2c53721897d2138a623bef78fc478091c9495d10b28e3e708",
+      "oracle_id": "rmp-b06-test-3-oracle-v1",
+      "executor_id": "b06-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Target schemas/migrations",
+      "claim_sha256": "sha256:52f6e18e973cf6981b3387efc2f680173d06ce660ab428ec99c18006ba26729c",
+      "oracle_id": "rmp-b07-output-0-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "CDC/backfill plans",
+      "claim_sha256": "sha256:cc79eb5f382524b0d415da3cb9e344c1735bec5a46e83281bd258f9f0aec5954",
+      "oracle_id": "rmp-b07-output-1-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Outbox/inbox",
+      "claim_sha256": "sha256:b1837ccb7776bfadb938d0bd76b6c13bb91c965bde19cf67b93d4173d79ade60",
+      "oracle_id": "rmp-b07-output-2-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Cache/search/object plans",
+      "claim_sha256": "sha256:49959441bd455addadee9f8c501597e6d9d06fb44159d5da3f0d8e36db6b11c9",
+      "oracle_id": "rmp-b07-output-3-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "DI evidence",
+      "claim_sha256": "sha256:6b01eaccc1d6f6df371942ab33c0835bd5c3e881a63d1696b0aa7a05c6151ff9",
+      "oracle_id": "rmp-b07-output-4-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "金额/库存/身份数据零差异",
+      "claim_sha256": "sha256:e610a96b9467e2719da10c3be892cebba1e856affc58f026e40dfa99fcbfa300",
+      "oracle_id": "rmp-b07-test-0-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Outbox/Inbox原子性",
+      "claim_sha256": "sha256:31d4e07599705594c250b6b76b31adff186429937aba60a332343f8960061b8b",
+      "oracle_id": "rmp-b07-test-1-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "消息重放不重复业务Effect",
+      "claim_sha256": "sha256:e126dcbcd461e6a8bd2ca3e6ff4061bd961786135f925c02c564bddb173dfd8f",
+      "oracle_id": "rmp-b07-test-2-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Backup/Restore已演练",
+      "claim_sha256": "sha256:31f86b81625a6d5c0e9cb42c4bff85451042a26faaf46e5021e800921c4e445b",
+      "oracle_id": "rmp-b07-test-3-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 7,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "real source and target database/messaging reconciliation",
+      "claim_sha256": "sha256:bd3bf2bbcdc6d9aaa0dfbbe33453cebfff541a36a8c9902666ef3ffd0135c066",
+      "oracle_id": "rmp-b07-external-0-oracle-v1",
+      "executor_id": "b07-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Target contracts/SDKs",
+      "claim_sha256": "sha256:5bd47b1133a7acf090ee4d51eca9248c2951039c1587e5c6aa80934404e5ff12",
+      "oracle_id": "rmp-b08-output-0-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Gateway routes",
+      "claim_sha256": "sha256:363954fb7223d891b94213b9ca688d86b5c6dd4821bc7c8b9e45677e86c67290",
+      "oracle_id": "rmp-b08-output-1-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Mesh policies",
+      "claim_sha256": "sha256:85ab3bf7ee9afad1d329a0ff4fed12d9e0feda4fa4fe68916196ae075622ffcb",
+      "oracle_id": "rmp-b08-output-2-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Compatibility matrices",
+      "claim_sha256": "sha256:465362428da78749c8089b5afd55a079431132407e8106ff28e6e8e14ea2f7ea",
+      "oracle_id": "rmp-b08-output-3-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "CI evidence",
+      "claim_sha256": "sha256:a92e9a0875e7e1779244499e85c14e062703f16b267119a2073869c86eda7000",
+      "oracle_id": "rmp-b08-output-4-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "对象授权不丢失",
+      "claim_sha256": "sha256:9536941ef3e96df126c57fbe5b5e03c6bd87bd69ee2073f3b068ca2f5360d8c9",
+      "oracle_id": "rmp-b08-test-0-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "非幂等操作无危险Retry",
+      "claim_sha256": "sha256:a426274270642222de50186133896e3696587bdcf7c8d84d354d283e853a487d",
+      "oracle_id": "rmp-b08-test-1-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Deadline单调传播",
+      "claim_sha256": "sha256:b492dc8dd2ba1ebab1357047f629ccdeccc1e99c35cddc16c04abc3210af157a",
+      "oracle_id": "rmp-b08-test-2-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 8,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "旧新版本兼容",
+      "claim_sha256": "sha256:8f5418a81cdda020ea555a20beb585fb6963352f84074e0a00e7dae399b4996a",
+      "oracle_id": "rmp-b08-test-3-oracle-v1",
+      "executor_id": "b08-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Concurrency IR",
+      "claim_sha256": "sha256:f8ef1efcaf48ace601c3b4407a513bfe44115024698edb1d03e385e64f7c6b3a",
+      "oracle_id": "rmp-b09-output-0-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Ownership/lifetime plans",
+      "claim_sha256": "sha256:7d230d59d2cf4d8c38a326c09b64b960dae5df8c530cf5ae2a898eaadd4bf942",
+      "oracle_id": "rmp-b09-output-1-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "FFI wrappers",
+      "claim_sha256": "sha256:151babe0500ecee673e80bc7c8728eff39289d8d033d187d37242355cbf21545",
+      "oracle_id": "rmp-b09-output-2-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Schedule tests",
+      "claim_sha256": "sha256:979eefcd50f62be6ef3628d8455804943ddf46629d4962f4b07479bec1083ff6",
+      "oracle_id": "rmp-b09-output-3-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "CM evidence",
+      "claim_sha256": "sha256:314d6019b2788b18a8e8bb5ce047bf2a79a783842261c03178746f7bee6c7dae",
+      "oracle_id": "rmp-b09-output-4-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Race/Deadlock关键Finding为零",
+      "claim_sha256": "sha256:b8094cb480b82235608885e389382aabdac2b4f50c873c614096c87505849554",
+      "oracle_id": "rmp-b09-test-0-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "旧Generation不可提交",
+      "claim_sha256": "sha256:3f02ae03bf4da0dc38fc5aa1114819b1559bd0282c28dcfa95aa92f7d28990c3",
+      "oracle_id": "rmp-b09-test-1-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "资源所有终止路径释放",
+      "claim_sha256": "sha256:f1675c909e7f01d36f042521e244e3e7b366a795006d360d2e32ed3bbd1fca12",
+      "oracle_id": "rmp-b09-test-2-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 9,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Native边界可重放",
+      "claim_sha256": "sha256:850f7a3a40cc5348814b43cef61efa8b98a1e1a0f9165f3263b5688849ac92e6",
+      "oracle_id": "rmp-b09-test-3-oracle-v1",
+      "executor_id": "b09-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Unit/integration/contract/journey tests",
+      "claim_sha256": "sha256:553b22e500d66bd143d7d9c95589c41597ce4347b517c9c7cf24b6e31d9463ac",
+      "oracle_id": "rmp-b10-output-0-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Mutation packs",
+      "claim_sha256": "sha256:46854e30f5be93b36e39fb040377d1b23c87fafaceb18d6ebc779d0a45f460a2",
+      "oracle_id": "rmp-b10-output-1-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Fuzz corpus",
+      "claim_sha256": "sha256:d85fa66248a90824d64322e65bcde95c91be2c45847be19ab19f3bb54236144a",
+      "oracle_id": "rmp-b10-output-2-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Fault campaigns",
+      "claim_sha256": "sha256:4322fbd1b3fd0d69f720786b97d68b9b3daa940c14d7258615ec69af44a3e812",
+      "oracle_id": "rmp-b10-output-3-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "TQ certificates",
+      "claim_sha256": "sha256:1ca3e829f47bcf8c04e5031a98bc1e9fdde35a3e28d2d8d10e4f95bce2323fdc",
+      "oracle_id": "rmp-b10-output-4-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical mutations 100% killed",
+      "claim_sha256": "sha256:88ee3f59a80d2c153d0ff61303f50a8adbd8e4694f48dab8bc93c2c8359709b5",
+      "oracle_id": "rmp-b10-test-0-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "真实Crash和事故有Regression",
+      "claim_sha256": "sha256:e22e006f00db2f86fcd04a1a0a17eb98a140d52660b184cc029df0d16701c126",
+      "oracle_id": "rmp-b10-test-1-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Flaky失败不隐藏",
+      "claim_sha256": "sha256:595cd4586449883a3622438d8a7239ff4afaaadaafba20dea3864a33666e0b05",
+      "oracle_id": "rmp-b10-test-2-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 10,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "测试环境可重复",
+      "claim_sha256": "sha256:08823d56f5a1daf593b1fd7e104137bf3e400b45200ac2d01e6197f282a94456",
+      "oracle_id": "rmp-b10-test-3-oracle-v1",
+      "executor_id": "b10-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "9 Domain Packs",
+      "claim_sha256": "sha256:43f1f1d7c56037925aaf012ea41c7e87c056ded102339ad32dc1edce1bd650b1",
+      "oracle_id": "rmp-b11-output-0-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Journey runtime",
+      "claim_sha256": "sha256:d3d7d6ae6367294ac5e82b3047c087029cfdbe0b1a567b5637bfeeceec9bebb1",
+      "oracle_id": "rmp-b11-output-1-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Cross-layer oracles",
+      "claim_sha256": "sha256:d39e39acc49fb158929737d9c8f1e9ed5093d7459f0f0c72827aa30ad01622fc",
+      "oracle_id": "rmp-b11-output-2-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Domain mutations",
+      "claim_sha256": "sha256:673c77e73d5a27a8205d20d6ed83a39339e34dfea20f43d8d85c480d3894db98",
+      "oracle_id": "rmp-b11-output-3-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "DV1–DV5",
+      "claim_sha256": "sha256:ad8f0c231cbf28d9e5f4d4fbdd65ee18bbee8c2523a1555deacd2ddfadb7711c",
+      "oracle_id": "rmp-b11-output-4-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "金额不平/超卖/患者串档/设备越界/跨租户为零",
+      "claim_sha256": "sha256:832b023313387d86c51b6e26ee696bf16a53825e1f909718e7046f43d41b949a",
+      "oracle_id": "rmp-b11-test-0-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Journey状态和Effect完整",
+      "claim_sha256": "sha256:c2c268eebadd06c94588a78ca8c236a7f4016f680623c24e93d9deb80fc96b9b",
+      "oracle_id": "rmp-b11-test-1-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "人工终态可处理",
+      "claim_sha256": "sha256:93170f2203dd96a475ce37a05c5f79587179e8909e3ee447169f7c1d236fe1ce",
+      "oracle_id": "rmp-b11-test-2-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "领域Owner审批",
+      "claim_sha256": "sha256:ce4b32590fcafd8d88156d1fb807c636ad176c4de10c2900b16b067bcafcb777",
+      "oracle_id": "rmp-b11-test-3-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 11,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "representative domain journey execution",
+      "claim_sha256": "sha256:8a5d4dc80e60f3bb0599a62f3691735cbf7c667f9a91da7083d2b85f6735d99e",
+      "oracle_id": "rmp-b11-external-0-oracle-v1",
+      "executor_id": "b11-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Shadow evidence",
+      "claim_sha256": "sha256:9475515435a7929d0dacac58b8b4e6f1a17bc34bf1bf05b8d220ba113b04e391",
+      "oracle_id": "rmp-b12-output-0-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Routing plans",
+      "claim_sha256": "sha256:a24696d95da121cad30b3000a40bbdc5088b98b6b09a8a13767c58c087a59461",
+      "oracle_id": "rmp-b12-output-1-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Canary gates",
+      "claim_sha256": "sha256:78b0b23d11836071cfd9a31416a6e6dfaf3271e61e29b5c23411a4098474fbea",
+      "oracle_id": "rmp-b12-output-2-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Rollback bundles",
+      "claim_sha256": "sha256:61c8560d57c6156cb13f43acd9ec9d19fc845df1e3a157b456500af4638a0aa2",
+      "oracle_id": "rmp-b12-output-3-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "E1–E5 certificates",
+      "claim_sha256": "sha256:76bf0d55bc4e9e11a5db1960cc472fe44743bf3fa190cd20461f0047fae62fd4",
+      "oracle_id": "rmp-b12-output-4-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Shadow不影响Primary",
+      "claim_sha256": "sha256:1d727f1013d530afdd55303a8639365f4e1dd2f20c57563e823e65e879becf0b",
+      "oracle_id": "rmp-b12-test-0-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "不可逆Effect结构化隔离",
+      "claim_sha256": "sha256:b633337e2520042ea21125bc2527f6c7066291dd5aa2465cce6a0840316ba1f9",
+      "oracle_id": "rmp-b12-test-1-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Canary业务指标通过",
+      "claim_sha256": "sha256:a2e4d454bfa6a96c22d1f1b410109f7866cfef00ad0b40d0f491548852b7630d",
+      "oracle_id": "rmp-b12-test-2-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "应用/数据/消息/Provider回滚均验证",
+      "claim_sha256": "sha256:361939efa91b5b1af190d4fa0d10637d7d893b8c1ba18260125850a90a4710c0",
+      "oracle_id": "rmp-b12-test-3-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 12,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "authorized shadow/canary/rollback exercise",
+      "claim_sha256": "sha256:95860cc492a27b58bf3a22421ac2de373511ed2f7552b00c7b0cb77ff2e2872c",
+      "oracle_id": "rmp-b12-external-0-oracle-v1",
+      "executor_id": "b12-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Immutable evidence graph",
+      "claim_sha256": "sha256:d50dd1c93813e5ead0e3cbce63e0c52dce9ee27a6006e12a15fdb4fbb8bde427",
+      "oracle_id": "rmp-b13-output-0-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Independent replay bundles",
+      "claim_sha256": "sha256:623a72db1952c1651f3a2f3edcce7046efe276db01c6856b3c1fab5c07c716a9",
+      "oracle_id": "rmp-b13-output-1-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "CA/transparency log",
+      "claim_sha256": "sha256:b98b62d53d9be3f1314cd134b2f0728459901ba016b8f9573a3dfde30bde4e1a",
+      "oracle_id": "rmp-b13-output-2-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Red-team reports",
+      "claim_sha256": "sha256:24c87399c3cddc1634d980a3b39fb811e8bbae3072c2deaf43c83a7dc7dde4db",
+      "oracle_id": "rmp-b13-output-3-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "EA1–EA5",
+      "claim_sha256": "sha256:017de37e5ca616c52449f58d7821026b87aed309a6be1f2f7caba67c257f5ddc",
+      "oracle_id": "rmp-b13-output-4-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical evidence均签名",
+      "claim_sha256": "sha256:edabf525846e57b1705c32fda6656eb340e98c3edb52ca44071e2e39e755523d",
+      "oracle_id": "rmp-b13-test-0-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "角色冲突为零",
+      "claim_sha256": "sha256:a47df73bfb9b71fb2d9bc41308010d5477d2386204cf01d257061d08074148fb",
+      "oracle_id": "rmp-b13-test-1-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Scope/Assumption完整",
+      "claim_sha256": "sha256:ff5b1808b46e5626ccf7beabc36f7b1d065b240c064815913efbf88336e716a7",
+      "oracle_id": "rmp-b13-test-2-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "伪造或过期证书不可用",
+      "claim_sha256": "sha256:c9ff774c8a00ec74a3264945bafd666c15e2647f555a07f7f7d9963392d44fb6",
+      "oracle_id": "rmp-b13-test-3-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 13,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "independent verifier and certificate-authority review",
+      "claim_sha256": "sha256:b1a056d0644d5f532c071e20769c532501211e87d5878985bdedca68529446a7",
+      "oracle_id": "rmp-b13-external-0-oracle-v1",
+      "executor_id": "b13-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Formal IR",
+      "claim_sha256": "sha256:d266e67f9477f599eefabd22eaf4d62c1fb14ca2bf3191d9eb87fd3fbb451e41",
+      "oracle_id": "rmp-b14-output-0-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Operational/state-machine semantics",
+      "claim_sha256": "sha256:27b6458ef73db5b409c33d3af599fb09e649eccee082593480eb41d4e3e4904a",
+      "oracle_id": "rmp-b14-output-1-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Proof obligations",
+      "claim_sha256": "sha256:166d09e4e8d92665622dd6d72b32a2bc9533dbf3798880230441f95e6a8e0c5d",
+      "oracle_id": "rmp-b14-output-2-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Lean proofs/kernel results",
+      "claim_sha256": "sha256:8986d07de9280022ac8c616f200f23a8c403887d035cc40f63bc95cab3e09d3c",
+      "oracle_id": "rmp-b14-output-3-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "PCA/PCM",
+      "claim_sha256": "sha256:279a074d9c453a53cd913aaaeb46d8ff401381a5994149f1a1231fdf75086d37",
+      "oracle_id": "rmp-b14-output-4-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "F1–F5",
+      "claim_sha256": "sha256:2e8a34a1f341fe76375f2e27969b8ea9bf309a462834d708a1204b73573d00b7",
+      "oracle_id": "rmp-b14-output-5-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "UNKNOWN不当PASS",
+      "claim_sha256": "sha256:7465bbfb507c74ba9076608fc88bc42e8586b4ef6e0c376090624674959b5907",
+      "oracle_id": "rmp-b14-test-0-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Bound显式披露",
+      "claim_sha256": "sha256:701bc1b834771915261c28aba0ae18b7498d0adc8c8788ee999d32c403259ba1",
+      "oracle_id": "rmp-b14-test-1-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "sorry/admit为零",
+      "claim_sha256": "sha256:e1855f78628f1a5f76f78a140d843721438a9a787c541302aea3333873e7aa0c",
+      "oracle_id": "rmp-b14-test-2-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Proof→IR→Code→Artifact完整",
+      "claim_sha256": "sha256:eefc71f278d2c980266c5e178b607ba99257c6dd9347fe253e43ccd310ba0870",
+      "oracle_id": "rmp-b14-test-3-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 14,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "kernel-checked proof bound to exact artifacts",
+      "claim_sha256": "sha256:8a4c0035437eee3f098ab8227189d41df74d44553485da5c44c08a4789581202",
+      "oracle_id": "rmp-b14-external-0-oracle-v1",
+      "executor_id": "b14-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Unified counterexample IR",
+      "claim_sha256": "sha256:5450cacb9e6777de7be9c8a01ba91679d2c1540d32196613da124f62f492ab39",
+      "oracle_id": "rmp-b15-output-0-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Root-cause graph",
+      "claim_sha256": "sha256:1c86fb73c40198935a26f74d9b9ee1c7394bffb2254075a80a52a6fc25ac3713",
+      "oracle_id": "rmp-b15-output-1-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Repair candidates",
+      "claim_sha256": "sha256:d492beafaa2a0a3080f42797d3d371dfe75222173e1da5b70ac4118cad83382d",
+      "oracle_id": "rmp-b15-output-2-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Transformation rules",
+      "claim_sha256": "sha256:6720c5382125e5fce97b91a6afb4c4716f543182fb6c082942f9ee224cbee303",
+      "oracle_id": "rmp-b15-output-3-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Regression/Oracle/Mutation additions",
+      "claim_sha256": "sha256:213723933dd4e554b604bb714a914ded705a6f06faafbfb498249984c8a86d83",
+      "oracle_id": "rmp-b15-output-4-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "CR1–CR5",
+      "claim_sha256": "sha256:e21eccb1c0d45144fe38b453f59accb1c9d59b153fc11c53ca852b0aae23f0e3",
+      "oracle_id": "rmp-b15-output-5-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "旧错误版本必须被Regression捕获",
+      "claim_sha256": "sha256:daf22a12e47d4ce25cf43d2aff5950283406bef2787c195ea0fad5d48081a8b7",
+      "oracle_id": "rmp-b15-test-0-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Critical repair零安全回归",
+      "claim_sha256": "sha256:e8b1a2bc72b3646a586a826df74cdfd81f0937d7542709b6484317a052a06326",
+      "oracle_id": "rmp-b15-test-1-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Rule有负例和适用前提",
+      "claim_sha256": "sha256:3588671b21800b70123e7b00d06e7203c677217b0e478515a3632f4ba8cb8d4e",
+      "oracle_id": "rmp-b15-test-2-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 15,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "自演进不可降低标准",
+      "claim_sha256": "sha256:881af021aeb7a64f0b601043c65f1b7c4a55bc16d7fecf7a8432bcb75795ccea",
+      "oracle_id": "rmp-b15-test-3-oracle-v1",
+      "executor_id": "b15-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Candidate portfolio",
+      "claim_sha256": "sha256:fcdb051c2b083d6375796d51e11a42f2ed360b0ce6e8118aed0cd76d6a0c7b00",
+      "oracle_id": "rmp-b16-output-0-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Pareto frontier",
+      "claim_sha256": "sha256:2a2110b353aac9b83a0f6ed31d4573fa6e54bb684d7d89eb43f412b77a8467fd",
+      "oracle_id": "rmp-b16-output-1-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "ADRs",
+      "claim_sha256": "sha256:ca902b648c36141afa2d82247b9aa4fca0bd5d2cbf5fdd0f587aca260cd6e290",
+      "oracle_id": "rmp-b16-output-2-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Migration boundaries/waves",
+      "claim_sha256": "sha256:75e7c4203bd66745f77574772e53d61a4b6ee85f9b6ed64b0dfaf135681114ba",
+      "oracle_id": "rmp-b16-output-3-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Task DAG",
+      "claim_sha256": "sha256:a6c3ed51b29fe49976db4ab2bd7b81e282d0838ed6b87d53975eb07a9dd92d88",
+      "oracle_id": "rmp-b16-output-4-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "Target Blueprint",
+      "claim_sha256": "sha256:793554e43d03c8679a80e9a09eca23a7b83467bc638112d1968e090febc3973f",
+      "oracle_id": "rmp-b16-output-5-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "output",
+      "claim_index": 6,
+      "claim": "AP1–AP5",
+      "claim_sha256": "sha256:4dce37eb4aee89b6205f1dbaa9c654d7a03710d92a8854af110a0fda0bab5492",
+      "oracle_id": "rmp-b16-output-6-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "至少多候选比较",
+      "claim_sha256": "sha256:d747120714a2b9dccdf9faee691fc0da4110a1aa40d930e17690788c6fc4668e",
+      "oracle_id": "rmp-b16-test-0-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "硬约束不可加权抵消",
+      "claim_sha256": "sha256:1b7b75283c40e13209617268dc3f664a6e2948e5d2f50da4fa26faa011f8ac86",
+      "oracle_id": "rmp-b16-test-1-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "关键路径Prototype",
+      "claim_sha256": "sha256:907505ea1e852bda96b3ae1fe51f3399c13ffde6d587ca677b8e6a5f9babec04",
+      "oracle_id": "rmp-b16-test-2-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 16,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "每个Wave有Entry/Exit/Rollback",
+      "claim_sha256": "sha256:96abcf31c4d0dcf332e28e48d60865346c5c225bd4b5dab8a7059f6e6179eb14",
+      "oracle_id": "rmp-b16-test-3-oracle-v1",
+      "executor_id": "b16-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Workflow histories",
+      "claim_sha256": "sha256:da9b88e975a9ca759be4ee94ec3951b4ea0db7f4c9ec731784a2faa6d730caaf",
+      "oracle_id": "rmp-b17-output-0-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Checkpoints",
+      "claim_sha256": "sha256:e2052a36241a04e4567a36079599ed65998a29dbdd1a59d2fbb3a38d123c1de6",
+      "oracle_id": "rmp-b17-output-1-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Worker leases",
+      "claim_sha256": "sha256:0640fd6bfa1d1f8d31a00b392325b5fc6f3d1d4ba4454d29451878677635111d",
+      "oracle_id": "rmp-b17-output-2-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Approval records",
+      "claim_sha256": "sha256:d0d163144395a8958aaaff110bb926573349d1ff86a97c0924627e0bcb5926d9",
+      "oracle_id": "rmp-b17-output-3-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Effect ledger",
+      "claim_sha256": "sha256:252c867cac05f4f505d841ba889f6d949bc3a8faaffa97ea3af001bdc181f41e",
+      "oracle_id": "rmp-b17-output-4-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "Artifact/evidence commits",
+      "claim_sha256": "sha256:7852a85af2fbbd81c6a337e85fc62fe93d12c341002f56225063f384d3875a7c",
+      "oracle_id": "rmp-b17-output-5-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "output",
+      "claim_index": 6,
+      "claim": "MX1–MX5",
+      "claim_sha256": "sha256:1beec7f5dfd0276f4f0c196d3ef95c94ec448e2863989f446c31b5f25ebaa93e",
+      "oracle_id": "rmp-b17-output-6-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Lease/Fencing有效",
+      "claim_sha256": "sha256:c372f99d5c9f7ba0e232e772ac531ad59327ed0e23913d0a091d39e4d9109800",
+      "oracle_id": "rmp-b17-test-0-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "History可确定重放",
+      "claim_sha256": "sha256:5bda14df51c1ba657d0d14609ebc63faef50e3dc6b0ae48e5e340ec6f624c234",
+      "oracle_id": "rmp-b17-test-1-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "非幂等Effect不自动Retry",
+      "claim_sha256": "sha256:3550842c459ab534f71ff7cf7dd057a02877bf8771d2ea45080cead7a4bac733",
+      "oracle_id": "rmp-b17-test-2-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "长任务跨Worker恢复",
+      "claim_sha256": "sha256:ca8db39a3907aeb7592b2b2ca91453586d82c0a56c80687fd775f8b4f087ec6d",
+      "oracle_id": "rmp-b17-test-3-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 17,
+      "claim_type": "test",
+      "claim_index": 4,
+      "claim": "预算不降低质量",
+      "claim_sha256": "sha256:4371f859b49ea3745c94f60ad86aac28f9fcf3596155c04fe87359f4c9c52bb7",
+      "oracle_id": "rmp-b17-test-4-oracle-v1",
+      "executor_id": "b17-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Complete Project Manifest",
+      "claim_sha256": "sha256:9c40057157f43739d3ba49eacae09093b5dc73c3df9520ebba73f6ac6d15838b",
+      "oracle_id": "rmp-b18-output-0-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Complete repositories",
+      "claim_sha256": "sha256:3258aca951ebfb3a6eef9399f219e306b2c9e75e6b8bf0e3a79102109e1ad838",
+      "oracle_id": "rmp-b18-output-1-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "CI/CD/tests/proofs",
+      "claim_sha256": "sha256:11fc229dccf26059f9cf4f50a3a4612c75f2b6c5816924c2d70161e3bfefecc9",
+      "oracle_id": "rmp-b18-output-2-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Runbooks/docs",
+      "claim_sha256": "sha256:f08533fd937c16376e42c255a569286e90a08871e3dcfd3ab4184839f1b391de",
+      "oracle_id": "rmp-b18-output-3-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "One-click lifecycle",
+      "claim_sha256": "sha256:efb136c979f94710ef492156357c222c43511df893e4608a4b32813687ba85b6",
+      "oracle_id": "rmp-b18-output-4-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "CP1–CP5",
+      "claim_sha256": "sha256:2d12b6407b8a9bb924f153db4f8cc655135d978ccb1b4933a420f57794345674",
+      "oracle_id": "rmp-b18-output-5-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Clean environment可Bootstrap/Build/Start/Test/Deploy/Rollback",
+      "claim_sha256": "sha256:c925763fb9662b5ad0fd877f45f9d10294ab8550aae70fd00fa3192887b7e9b2",
+      "oracle_id": "rmp-b18-test-0-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "关键Placeholder为零",
+      "claim_sha256": "sha256:da35f844a3a5809526580a2032e883cc531dbb5aeea4d913c34936de1fc30fc0",
+      "oracle_id": "rmp-b18-test-1-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Backup有Restore测试",
+      "claim_sha256": "sha256:feb9e1a4f2063f441d18986f79e645189a5971cfd64283db5f18e7822734331d",
+      "oracle_id": "rmp-b18-test-2-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 18,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "文档命令可执行",
+      "claim_sha256": "sha256:144299d0272b742b90491d9498876c4ff4d4c24c5e7f6f5f83704c126daa5a51",
+      "oracle_id": "rmp-b18-test-3-oracle-v1",
+      "executor_id": "b18-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "90 executable packs",
+      "claim_sha256": "sha256:2c3ab267872a83077a7d7cdfc7c58f19478094b57a314c9b191ea5769f3b06fd",
+      "oracle_id": "rmp-b19-output-0-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Path lowerings",
+      "claim_sha256": "sha256:180932d690cd4c7a94dbcf1a11c337d55930fa9cbc3f05827c2385435cca694c",
+      "oracle_id": "rmp-b19-output-1-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Idiomatic target projects",
+      "claim_sha256": "sha256:9b22d4bb38a004ced32454174191726ae0354bbc24fdf4efd1d90e9d5a8b5b6e",
+      "oracle_id": "rmp-b19-output-2-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Golden/Hidden corpora",
+      "claim_sha256": "sha256:0b8c0c8138ca46a5fd7d1fd2d9ddcd73efda4eea16a6c7f693032194e90f54ab",
+      "oracle_id": "rmp-b19-output-3-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Benchmarks",
+      "claim_sha256": "sha256:9b73ced155cd975ec01e371f8d21726431c19e3b5fdf771d1410b423f869d64d",
+      "oracle_id": "rmp-b19-output-4-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "GP1–GP5",
+      "claim_sha256": "sha256:0df74daf10baa18fa2e0e435a545aa0e670dcf3e02e34fe87d9bd889758b2688",
+      "oracle_id": "rmp-b19-output-5-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "90个独立Pack",
+      "claim_sha256": "sha256:d39655198f6a121f9f9c4f4e6b488f18d248541823e5ebd1a5401de6b7d4b544",
+      "oracle_id": "rmp-b19-test-0-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Target reparse和Semantic roundtrip",
+      "claim_sha256": "sha256:c1cf05cec56f8b23fed5b9f02d345b95fcd9e54f6a60fb7f5ef4bb09e65ad0fe",
+      "oracle_id": "rmp-b19-test-1-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Hidden项目通过",
+      "claim_sha256": "sha256:3c3b2106de55c711f67e2130e106d6ea047c769d2989b0a6bc6f180856e1bc3c",
+      "oracle_id": "rmp-b19-test-2-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "关键语义/完整性Floor通过",
+      "claim_sha256": "sha256:db2a3e17c95baa5faca2046f6b60c80680cfc42691f4cb256b22c50115b836ec",
+      "oracle_id": "rmp-b19-test-3-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 19,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "real toolchain execution over independent route corpora",
+      "claim_sha256": "sha256:a39e49d8ed1d30ca540f93b5a3cd6648fd40effa28b4561a250b3d5c9d9905ef",
+      "oracle_id": "rmp-b19-external-0-oracle-v1",
+      "executor_id": "b19-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Skill manifests/SDKs/runtime",
+      "claim_sha256": "sha256:e606cc87a284fbd11e9b715b874e3ad15d49850254472a56678e254b5ea497cf",
+      "oracle_id": "rmp-b20-output-0-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Plugin runtime",
+      "claim_sha256": "sha256:c25b82ded6e135f3d7526cc0f68889a9b31352ef156b5acef3638aa8c5bb917c",
+      "oracle_id": "rmp-b20-output-1-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Registry/Marketplace",
+      "claim_sha256": "sha256:7f2f735546fcd0b7708bd1ebd52f416df3093d7ee2b56f412c82d744870e2ad4",
+      "oracle_id": "rmp-b20-output-2-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "CLI/API/IDE/Web",
+      "claim_sha256": "sha256:fdee4a3c80afca6f5b045660e81cb69e0623c29f2c6cb55e069dee4a4b59467d",
+      "oracle_id": "rmp-b20-output-3-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Metering/billing",
+      "claim_sha256": "sha256:9da068be09a0a213a0225ccb59d1908f1278ceb339ecab0618d18aecce809a7f",
+      "oracle_id": "rmp-b20-output-4-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "output",
+      "claim_index": 5,
+      "claim": "SC1–SC5",
+      "claim_sha256": "sha256:6b9484be7c47b8084f096f06862213433b4f3935777a2d854e18ba452a0f37ea",
+      "oracle_id": "rmp-b20-output-5-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Skill不可自由文本隐式要权限",
+      "claim_sha256": "sha256:44c17831433e627a7dc3d0251c4b0bf9c8c0100a6b74ace2186e613e16bf6f35",
+      "oracle_id": "rmp-b20-test-0-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Revoked Skill不可执行",
+      "claim_sha256": "sha256:c047eac914e4bb68df690621f548e63998cd5b452bccdbfa8379776f9b26e86d",
+      "oracle_id": "rmp-b20-test-1-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "计量不可由Skill篡改",
+      "claim_sha256": "sha256:40cf70661ca9d0e25a8375b19483471c5169eb1e404a5f1926bef9860d672ab9",
+      "oracle_id": "rmp-b20-test-2-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 20,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "商业排序不影响认证",
+      "claim_sha256": "sha256:17549ed1fba155e68757a143ec42456fbea3e9216138a23e553fcfa563333182",
+      "oracle_id": "rmp-b20-test-3-oracle-v1",
+      "executor_id": "b20-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Capability registry",
+      "claim_sha256": "sha256:5961162ed6ae24c2689980a14efab780080418bb706e03e08c13e6b3b5a20e5a",
+      "oracle_id": "rmp-b21-output-0-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Closure maps",
+      "claim_sha256": "sha256:4702b3298ab019d941603527f37c1c293ef79e25ee841449586741a4dbe70611",
+      "oracle_id": "rmp-b21-output-1-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Missing/orphan/duplicate findings",
+      "claim_sha256": "sha256:5c2f684a04ae35f1163a5c03782e85bde3ac166edd7bd9abc1e7598f8da20473",
+      "oracle_id": "rmp-b21-output-2-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Capability Closure Score",
+      "claim_sha256": "sha256:ffd77036f019cedabe5715e059305a49e5c29a50e70fbaac3b55cbba9f63076f",
+      "oracle_id": "rmp-b21-output-3-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "关键能力映射100%",
+      "claim_sha256": "sha256:b872747aed00cc7e18f896969e95aec22a5fb8ba5587009f6f8f29ac0a7d2c57",
+      "oracle_id": "rmp-b21-test-0-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Orphan API/UI/Data为零",
+      "claim_sha256": "sha256:bc0c43e9e31af9ee16413145a10c71e47868bb2b06670b35f4da93f00d18c1b4",
+      "oracle_id": "rmp-b21-test-1-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 21,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "每项能力有Owner/Test/Metric/Runbook",
+      "claim_sha256": "sha256:5c48f61acbfe5c39887fc5d311898af32b66e95a274c8eb0cc7b106316de6003",
+      "oracle_id": "rmp-b21-test-2-oracle-v1",
+      "executor_id": "b21-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Business-line manifests",
+      "claim_sha256": "sha256:8eb3669340ee77ea9099b366a4d7fbd302f677187f1887db4f71636fa721822b",
+      "oracle_id": "rmp-b22-output-0-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "State machines",
+      "claim_sha256": "sha256:d78bcf85de59a1a9efa2d1f749685d05bab97645235c42c7c8306303b0825854",
+      "oracle_id": "rmp-b22-output-1-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Command/query/event registries",
+      "claim_sha256": "sha256:6f08de44d06170eda5b7f42e8d04c670cae46ff34a483b078d374fead67ec581",
+      "oracle_id": "rmp-b22-output-2-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Admin/test/runbook packs",
+      "claim_sha256": "sha256:9f81ccdad8fbc49cea4806eb5ade042b583c3ab2a18780c70a990b54564b1b8e",
+      "oracle_id": "rmp-b22-output-3-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "每条业务线正常/异常/撤销/补偿闭环",
+      "claim_sha256": "sha256:9aba3eca17059b8de269ff457625f1f215658cedb16f95d6f2a9a5c26b93fc21",
+      "oracle_id": "rmp-b22-test-0-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "业务Owner审批",
+      "claim_sha256": "sha256:08545f13268c59d4024d444f560656e787b0133e27ed900f475142e99808a526",
+      "oracle_id": "rmp-b22-test-1-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 22,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "关键对象终态可解释",
+      "claim_sha256": "sha256:481b7a4003be111e45c2e367bfe402504b364486b261c79e5706bd88b1b8e559",
+      "oracle_id": "rmp-b22-test-2-oracle-v1",
+      "executor_id": "b22-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Cross-domain journey IR",
+      "claim_sha256": "sha256:2fe5e13c3885c9fe8c4bf63becd8a5974e4fe6ac3d5e6b79dc74a6b7b7839d3a",
+      "oracle_id": "rmp-b23-output-0-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Saga/compensation plans",
+      "claim_sha256": "sha256:19cc2b5e30cbe26d8e2ec241ea1f3ddd69a0936895c0222b2d4bdae72aa3e1c8",
+      "oracle_id": "rmp-b23-output-1-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Journey tests/replay",
+      "claim_sha256": "sha256:43123e866539b89e3a087891fac4d9b85d0c5104bf87bcccf0b73fefed81daf7",
+      "oracle_id": "rmp-b23-output-2-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Journey certificates",
+      "claim_sha256": "sha256:2cc4d63e450a307c673879708e1c6da632c63393bae7aa4afe235358ce29e775",
+      "oracle_id": "rmp-b23-output-3-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "单Service成功不误报Journey成功",
+      "claim_sha256": "sha256:32a0ebef3a32051d2337c5f7da6288000436b1d1a28fb55936c7be42f7c80239",
+      "oracle_id": "rmp-b23-test-0-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Unknown Outcome可查询/恢复",
+      "claim_sha256": "sha256:589413ba1cf0f7c46364d1ddcf5e809dd48ae832fb6887e07487af1b18a5d2a8",
+      "oracle_id": "rmp-b23-test-1-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 23,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "跨版本Journey通过",
+      "claim_sha256": "sha256:257534eec540a9eced45ff4c0fe62724ad3871c1f0d11e810360532b589dd121",
+      "oracle_id": "rmp-b23-test-2-oracle-v1",
+      "executor_id": "b23-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Enterprise data catalog",
+      "claim_sha256": "sha256:0b4e87ea9612ff1725dff66b05f55d053beb4020e6fa976df73d5938cf49cdaa",
+      "oracle_id": "rmp-b24-output-0-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Field-level lineage",
+      "claim_sha256": "sha256:d1edefdf34d975e388c86b5a562a3ba55ab747f63ec4c92735661cf04cc5cfa2",
+      "oracle_id": "rmp-b24-output-1-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Ownership/classification",
+      "claim_sha256": "sha256:f8437f8970c43354844b1a4030e4ceacd4992c16b7bdcf95e606900528612113",
+      "oracle_id": "rmp-b24-output-2-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Broken/orphan/duplicate-authority findings",
+      "claim_sha256": "sha256:220047b351ea7004f65297304ea5037ec4b965eabb57a8488a81104916882c5b",
+      "oracle_id": "rmp-b24-output-3-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical field lineage完整",
+      "claim_sha256": "sha256:37b74edb4ec2f733b27355abaa8cc88b951b768f553e2b93624c60763016fd41",
+      "oracle_id": "rmp-b24-test-0-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "无重复权威Owner",
+      "claim_sha256": "sha256:5fd107703d7128c9105883af1d4cf69a19fb6d3ad427ebda588fb92228115ac9",
+      "oracle_id": "rmp-b24-test-1-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 24,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "数据跨区和保留规则显式",
+      "claim_sha256": "sha256:9df10e84b91a7407a511658b28572fcbdcac78fc7c16c1a5a9502ef1de49fb91",
+      "oracle_id": "rmp-b24-test-2-oracle-v1",
+      "executor_id": "b24-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Quality rule registry",
+      "claim_sha256": "sha256:2d1761c8f4545b32590e4f03ce1a26a0f136428560912248d8fd3bf07963a4dc",
+      "oracle_id": "rmp-b25-output-0-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Reconciliation jobs/reports",
+      "claim_sha256": "sha256:2bb12a5628076c0dc6baa56cb4fe94a919cb6b88278abaa36aad6406a98d16fd",
+      "oracle_id": "rmp-b25-output-1-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Repair workflows",
+      "claim_sha256": "sha256:f345d0e66a6e2954ddd40f617f7178371dfdd8a2311f80c4b3fbb9472a4f9e45",
+      "oracle_id": "rmp-b25-output-2-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Data Quality SLO",
+      "claim_sha256": "sha256:92985137caafc80ac4bf3e954ef04d98087dd15200d2e2c2d4f4bee0e20e8653",
+      "oracle_id": "rmp-b25-output-3-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "金额/账本/库存/Tenant/Safety差异为零",
+      "claim_sha256": "sha256:859f50f53315b10d2e531c789d665725e97a083da86aa339d0deffb80a7eb6cc",
+      "oracle_id": "rmp-b25-test-0-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "对账可重放",
+      "claim_sha256": "sha256:7357cef9b8efee9377275f865303c9a5acb0a8ac0934387159a8a7e7603e0001",
+      "oracle_id": "rmp-b25-test-1-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 25,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "修复有Audit和Rollback",
+      "claim_sha256": "sha256:78876bad1f64febc110d53d51789680b3c73f4d16507d7e934d18acd4a01a794",
+      "oracle_id": "rmp-b25-test-2-oracle-v1",
+      "executor_id": "b25-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Admin capability registry",
+      "claim_sha256": "sha256:a730e84a4390199a5b10531a82fa8b08e9bd35938d20990a44bdfab62196fdc4",
+      "oracle_id": "rmp-b26-output-0-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Complete admin journeys",
+      "claim_sha256": "sha256:4fb0d98ce556a459995904034b5974ea155234039a5916857b4fa3d7fb15d1d4",
+      "oracle_id": "rmp-b26-output-1-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Permission matrix",
+      "claim_sha256": "sha256:521635af42015765c97a033115a22f8ba875b90a9c7aed9acd4224ca09a08206",
+      "oracle_id": "rmp-b26-output-2-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Admin completeness score",
+      "claim_sha256": "sha256:121c104d866dabd6fb86cef2152fbc70f1acaebbdc803cf442b2b8afee093d36",
+      "oracle_id": "rmp-b26-output-3-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical业务有管理入口",
+      "claim_sha256": "sha256:725099416caee34d8000eaea15d9f2b57482ca1bd36025268fa9c30a39ccf903",
+      "oracle_id": "rmp-b26-test-0-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "危险操作有Preview和Approval",
+      "claim_sha256": "sha256:a3fc38c3bf82bb14c26ac160aa02902c661881daa74e6d50e9048fd742726052",
+      "oracle_id": "rmp-b26-test-1-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "UI/API权限一致",
+      "claim_sha256": "sha256:c9261bf248f4e03f3b432d61d8787c535da7cc7031e531e27c238d9206c7ef07",
+      "oracle_id": "rmp-b26-test-2-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 26,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Audit完整",
+      "claim_sha256": "sha256:1a1682cf909cce6a40c884dbf7e73449b1c3f5f2456dc4ae227da42bc9c3ce76",
+      "oracle_id": "rmp-b26-test-3-oracle-v1",
+      "executor_id": "b26-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Principal registry",
+      "claim_sha256": "sha256:bdeac3ac5329deb960e8a40ffb0b0887fac73ff666e61c7d867755624ce400ba",
+      "oracle_id": "rmp-b27-output-0-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Authorization policies/matrices",
+      "claim_sha256": "sha256:cc882e478574d3cb23351466f5304c7c40273c2d68672d44136ec54615db05f6",
+      "oracle_id": "rmp-b27-output-1-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Approval workflows",
+      "claim_sha256": "sha256:42e83ddcae55fff6e5594614fd407d929912f6ecdee917397d320085d2dc09e7",
+      "oracle_id": "rmp-b27-output-2-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Immutable audit",
+      "claim_sha256": "sha256:1ffe40cc90f6bb43057ac7cc46e7e333fe7462ec65768054ee551184bea3f416",
+      "oracle_id": "rmp-b27-output-3-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Identity certificates",
+      "claim_sha256": "sha256:826b7961c76083708edb53a02774b2873bcfd9919a77ed4a0ed49f207fd8c2d6",
+      "oracle_id": "rmp-b27-output-4-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Horizontal/vertical privilege findings为零",
+      "claim_sha256": "sha256:1162d3cd04c226324e797152af87e17f3e5180881bdb0f7de1f99f5424c44281",
+      "oracle_id": "rmp-b27-test-0-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Service/User身份分离",
+      "claim_sha256": "sha256:fbbafc444a7d26f7ebea115b5beee0e68128beaa1d8be13efd488973c39ba622",
+      "oracle_id": "rmp-b27-test-1-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 27,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Denied和Privileged action可审计",
+      "claim_sha256": "sha256:c4e9a90d4ef331a863cee21fba7a69c168a5c0228aad6955c05e1ee08fe5a55e",
+      "oracle_id": "rmp-b27-test-2-oracle-v1",
+      "executor_id": "b27-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Usability test packs",
+      "claim_sha256": "sha256:37d2559b1868de2fb99473e0dbaebad272c673ec9b09ba83c713dd8cd147bed8",
+      "oracle_id": "rmp-b28-output-0-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "State coverage matrix",
+      "claim_sha256": "sha256:0534dd8dc83de91cc5e39d5f151a2120bbfdf3006808897eac728ff2af49f67d",
+      "oracle_id": "rmp-b28-output-1-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "CLI/API usability assets",
+      "claim_sha256": "sha256:7cd381a2dac052f02cadebf4f3c36dcdc085ab9b1373560e1c9ede3652866a5c",
+      "oracle_id": "rmp-b28-output-2-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Operational diagnostics",
+      "claim_sha256": "sha256:b6d98fc72db93222517998dbfe21fa12d578f1b1bd51d891aee1ef0bc1c00991",
+      "oracle_id": "rmp-b28-output-3-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "P0任务可被目标角色独立完成",
+      "claim_sha256": "sha256:b6eccef1b2b66f3700ef6636849b69a7a25f136fa9ae86e9327601951d23a56a",
+      "oracle_id": "rmp-b28-test-0-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "错误信息可行动",
+      "claim_sha256": "sha256:9cbdeb1ff4576b14d2e6afc802c43dd7f5c16d54147283adc1c0ea34461df833",
+      "oracle_id": "rmp-b28-test-1-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "危险动作不可误触",
+      "claim_sha256": "sha256:9849937e4655d402de9bd0fe87670abd0155ecca0b6ad6a098bf977c6cd2610d",
+      "oracle_id": "rmp-b28-test-2-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 28,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "关键流程可键盘/辅助技术使用",
+      "claim_sha256": "sha256:77805f9424c26f5fc127f5870443d39d4fbcb1206386849fd369ae623f79448e",
+      "oracle_id": "rmp-b28-test-3-oracle-v1",
+      "executor_id": "b28-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Change impact graph",
+      "claim_sha256": "sha256:b449fe560aaef279ed2251c331357d98acfb2161e47518b874ad2866c57a4852",
+      "oracle_id": "rmp-b29-output-0-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Required test plan",
+      "claim_sha256": "sha256:a7e23fdd2f82bff20f4d51ffaa4fbc24e20dac24dca16fd1328c518c0dd1b65c",
+      "oracle_id": "rmp-b29-output-1-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Regression evidence",
+      "claim_sha256": "sha256:9b6bc7ff25ae818e4419a9defad126d32502cfea4399a96f7f4695353eacc67d",
+      "oracle_id": "rmp-b29-output-2-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Release confidence score",
+      "claim_sha256": "sha256:5781985c4572f689c7298603a5f46764f875e63a08602eec2262ac3eb52a696b",
+      "oracle_id": "rmp-b29-output-3-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical feature均有Regression",
+      "claim_sha256": "sha256:8de6bcbe1546c4b411b1e509e5a94ddbb67fc2801dfbf600f4fd97138d3de3d9",
+      "oracle_id": "rmp-b29-test-0-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "测试选择可解释",
+      "claim_sha256": "sha256:40d085c49125ac60d3b7fb2853fafe46d281466016f9c3ba24ffeee7bf3b7e28",
+      "oracle_id": "rmp-b29-test-1-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Flaky不被隐藏",
+      "claim_sha256": "sha256:9f17c59359cf99efb2f0b23525a0a36f77fda902f390fae030d6d17d8b546639",
+      "oracle_id": "rmp-b29-test-2-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 29,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Release Gate覆盖所有影响",
+      "claim_sha256": "sha256:1d4ceba576a4a6f0eda84c5f97789f0e990838d5e354864151d9fba8179e38d2",
+      "oracle_id": "rmp-b29-test-3-oracle-v1",
+      "executor_id": "b29-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "HA/DR plans",
+      "claim_sha256": "sha256:3411cbd15f7d5a7b5d5c035eb8952202ebda99bba35245fc2c639b3c1cf83a3b",
+      "oracle_id": "rmp-b30-output-0-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Chaos/failover tests",
+      "claim_sha256": "sha256:69198b77a5fbeca7d139cd417db6d29a5b146ca56be75129d6062ee73d4c6d12",
+      "oracle_id": "rmp-b30-output-1-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Backup/restore evidence",
+      "claim_sha256": "sha256:60b3ec5038cb1d51dd695b1b000e4593e003436aa6431f91cbe77982eef5e862",
+      "oracle_id": "rmp-b30-output-2-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Resilience certificates",
+      "claim_sha256": "sha256:744019f64595eb8bf0083276372dbb5797cc640b32bcff5477b684a44af1c6d1",
+      "oracle_id": "rmp-b30-output-3-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "无单点关键服务",
+      "claim_sha256": "sha256:ccc1d378760a7170aa06d3406dfb88fab0edd2780a5655d0312e31825b784549",
+      "oracle_id": "rmp-b30-test-0-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Backup可恢复",
+      "claim_sha256": "sha256:df3c2c028d8c4f6775ef48b01d6fd3cfc750ebb17f3499195db1c983895b1dda",
+      "oracle_id": "rmp-b30-test-1-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "RTO/RPO实测通过",
+      "claim_sha256": "sha256:6fb84f7609c113bde45c6c322fb7b2e133493a35ebe6bbaebb97a8d7eea7f08d",
+      "oracle_id": "rmp-b30-test-2-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "故障时不扩大权限或重复Effect",
+      "claim_sha256": "sha256:1a47ed51074da0ffe65a26ba0bed7ea89552628bf232d55cc4d643a9d0ddd70b",
+      "oracle_id": "rmp-b30-test-3-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 30,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "authorized restore/failover/DR exercise",
+      "claim_sha256": "sha256:46161d50a47e026ca68c26d0d229e62ad3c4ca69470869df51ad15334bb6e3f0",
+      "oracle_id": "rmp-b30-external-0-oracle-v1",
+      "executor_id": "b30-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Concurrency schedules",
+      "claim_sha256": "sha256:9cea33405e5fd7d16a76230d0fdaeab07662a049763a03b7e502839f3edaecbf",
+      "oracle_id": "rmp-b31-output-0-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Transaction proofs/tests",
+      "claim_sha256": "sha256:be807d09bded0d8a0ad1c5d184cfdc8a52f1701a6b1f24bd5befcebcb41198b6",
+      "oracle_id": "rmp-b31-output-1-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Idempotency evidence",
+      "claim_sha256": "sha256:036eaaee781a87884005eb9ed64893180d4af4915374709ed5e6703538fb2bb7",
+      "oracle_id": "rmp-b31-output-2-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Concurrency certification",
+      "claim_sha256": "sha256:633e6f0edc5a2136bd73a12cf7416692f8ebc41b5c4821d3560c4a0d480aa214",
+      "oracle_id": "rmp-b31-output-3-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Race/Lost update/Partial commit为零",
+      "claim_sha256": "sha256:91f0abf507bdf05cafe61df4e20063fa302edb889b43a7ead58be0a0a59b65dd",
+      "oracle_id": "rmp-b31-test-0-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "At-most-once business effect",
+      "claim_sha256": "sha256:ca217701540a718314007b271a9b1c10f7d0bcca582069f5b5108661d5a1808f",
+      "oracle_id": "rmp-b31-test-1-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Unknown commit不盲目重试",
+      "claim_sha256": "sha256:5331cecbf1e30ee4c01b77dd19c646b1d59bc3be40092ce9e5239a7a576b8235",
+      "oracle_id": "rmp-b31-test-2-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 31,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "死锁有检测/恢复",
+      "claim_sha256": "sha256:041139ee5d4b33015fc31fcd2f2a970f35e0ff9a78599416c9015c4a6a84e976",
+      "oracle_id": "rmp-b31-test-3-oracle-v1",
+      "executor_id": "b31-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Load/stress/spike/soak reports",
+      "claim_sha256": "sha256:32b7ef2efd8efd2f3a73c33f7d76bfd64277c6f7efabecb09ec1f3df147a2fac",
+      "oracle_id": "rmp-b32-output-0-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Capacity plan",
+      "claim_sha256": "sha256:6637237a917791701b9ce1959e7d542187ad06e5d25f1feb9068d2a6190d10c5",
+      "oracle_id": "rmp-b32-output-1-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Performance baselines",
+      "claim_sha256": "sha256:1efd85d8f0985a2f5f0f20f1d85eed9ea71e0e9ab11e1f491e6d543796d7b063",
+      "oracle_id": "rmp-b32-output-2-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Cost Pareto",
+      "claim_sha256": "sha256:f0543a36be73f7372169fc05029dfa576a89789710c5cc1fe359c4c819d92865",
+      "oracle_id": "rmp-b32-output-3-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Performance certificate",
+      "claim_sha256": "sha256:27730fabe1b02fa676b6934e0ef9697ffdfa8e370622ddc774a658f3a3870089",
+      "oracle_id": "rmp-b32-output-4-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "P95/P99和Throughput通过",
+      "claim_sha256": "sha256:8f81f0796832b81662e257c82f440690992139ce79d405fdd3b4d36644861e2b",
+      "oracle_id": "rmp-b32-test-0-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "容量有安全边际",
+      "claim_sha256": "sha256:b2995768854d410bfd9be960f80834c0214403a5d2e3df681b8b933cce19188e",
+      "oracle_id": "rmp-b32-test-1-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "无无界Queue",
+      "claim_sha256": "sha256:d96cef180c1b251fe976ee134ee16255294bd4f50fe60270e8045dc955d6058f",
+      "oracle_id": "rmp-b32-test-2-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "性能优化不破坏正确性",
+      "claim_sha256": "sha256:93a4bdf40a1da4ad4a95dce758707087a7855b7d8584f68a8038619a452d2958",
+      "oracle_id": "rmp-b32-test-3-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 32,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "representative production-equivalent workload evidence",
+      "claim_sha256": "sha256:56edb8184822b497752f038254bb69bd70cfde6c9c3c98cbbdc82b1a2430030a",
+      "oracle_id": "rmp-b32-external-0-oracle-v1",
+      "executor_id": "b32-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Migration threat model",
+      "claim_sha256": "sha256:8606cad66bc884cd2b6aec365c02e010c7d4d8397e8e4f383e23bce5ab48c347",
+      "oracle_id": "rmp-b33-output-0-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Security controls/tests",
+      "claim_sha256": "sha256:14be4df33a8286372b201db38a2c0e00b3e0c402cfa141f6993dfcb06945ba7f",
+      "oracle_id": "rmp-b33-output-1-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Audit and incident plans",
+      "claim_sha256": "sha256:2391a10a79887abde4eefa2f18e8e23a29ec37b606038da4c96b005954e95029",
+      "oracle_id": "rmp-b33-output-2-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Migration security certificate",
+      "claim_sha256": "sha256:f381837224bdea135c5933c20c8ba48d11ec0e6e1ea6229eeb2c495b5325bdf5",
+      "oracle_id": "rmp-b33-output-3-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "迁移临时环境不含明文生产Secret",
+      "claim_sha256": "sha256:2f18401070a4cdae1c75449aa48ff924a6a3d943cfad6fd85e1b77d5c0ace295",
+      "oracle_id": "rmp-b33-test-0-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "权限Parity通过",
+      "claim_sha256": "sha256:5cd2aacdc6d4f9a63d047190aa98294b1c1c3573145193db089b27e65e8ff1c9",
+      "oracle_id": "rmp-b33-test-1-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "跨Tenant迁移为零",
+      "claim_sha256": "sha256:f09edd912a7a5bb4666694466ea114c59d5ce4f54ec94c7b169785f1f5540227",
+      "oracle_id": "rmp-b33-test-2-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "所有高风险操作有Audit",
+      "claim_sha256": "sha256:570e2031e64577250f528a7e22efbdb690f1d7c5737c49236c5c2b0cff8b93e1",
+      "oracle_id": "rmp-b33-test-3-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 33,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "independent security assessment",
+      "claim_sha256": "sha256:86e40525d8e02e98e164c3e24e3b7dde4ce10e35a9cff3181992c1fb8c5ad89c",
+      "oracle_id": "rmp-b33-external-0-oracle-v1",
+      "executor_id": "b33-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Provider profiles/simulators",
+      "claim_sha256": "sha256:6897d4052bc37c3f9439ed9c7913e92f3a62cdbc0de7e8dc919e3b9b1867d944",
+      "oracle_id": "rmp-b34-output-0-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Contract/fault tests",
+      "claim_sha256": "sha256:80060f966baf50617415fecd196dba6264143ced4764445d9a97cefa4a4a72f3",
+      "oracle_id": "rmp-b34-output-1-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Reconciliation/compensation",
+      "claim_sha256": "sha256:8622e294f7f647ad4c32dff0677d2e4ae2cecb5de5a37b1aa66908ade83a436b",
+      "oracle_id": "rmp-b34-output-2-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Provider runbooks/certificates",
+      "claim_sha256": "sha256:39017bc4d53ad8e0799d1c23007bcd8ed015b857b675509ea0a35b1b7e7ef1e8",
+      "oracle_id": "rmp-b34-output-3-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "不可逆Effect有幂等和Receipt",
+      "claim_sha256": "sha256:691d6d1a712de1461ef1b1a5f2d6103715181c7a54277cdf1406351008ab76b7",
+      "oracle_id": "rmp-b34-test-0-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Callback可去重",
+      "claim_sha256": "sha256:56c41bd3b1b22d3e6c6dadbbb1872920594857488b6ba1c3838e16f380fa45dc",
+      "oracle_id": "rmp-b34-test-1-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "Provider Drift可检测",
+      "claim_sha256": "sha256:e3f6bde22f4f52b3286dd30b3295e1ddc09e9d885015668db3595e70d27f2c12",
+      "oracle_id": "rmp-b34-test-2-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Fallback不扩大权限",
+      "claim_sha256": "sha256:48a979af9b6deed1d841b8872bf900ad09fd4073f5c3906d000c9888dc1ce440",
+      "oracle_id": "rmp-b34-test-3-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 34,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "real provider sandbox or authorized endpoint evidence",
+      "claim_sha256": "sha256:121db5c722c462be0592ddc52e8f097c2c96619f0c35eeca11e073793210cdd7",
+      "oracle_id": "rmp-b34-external-0-oracle-v1",
+      "executor_id": "b34-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Release readiness report",
+      "claim_sha256": "sha256:9c1df63d0074143fed18d81db46ff5442f317cffe1820118dc2bbf45b2aa8782",
+      "oracle_id": "rmp-b35-output-0-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Go/No-Go decision",
+      "claim_sha256": "sha256:078f37fb05271ff496b91f6c533c3db95de3db6588917eb0890cfe4c4ec7330e",
+      "oracle_id": "rmp-b35-output-1-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Launch plan/hypercare",
+      "claim_sha256": "sha256:234ae3f6486683c2ad560197017e75f5bf1c1868ef7ed3286a8ccac534b8b2f6",
+      "oracle_id": "rmp-b35-output-2-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Production acceptance certificate",
+      "claim_sha256": "sha256:a8454d5a0f63ec47e1064d3315d2e44ff2d8d278b51aff34f5cd0244cbd10ab2",
+      "oracle_id": "rmp-b35-output-3-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "所有P0/P1 Gate通过",
+      "claim_sha256": "sha256:9584adabf1a80a3122aa7dead1bfcb77c5194d453679df74d5cbfc99fa12b0c7",
+      "oracle_id": "rmp-b35-test-0-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "关键证书有效",
+      "claim_sha256": "sha256:b7e35afc7caffd8aefdf0bed0eb94707da6babaea5ac5da3c1d0ddebf9f85e17",
+      "oracle_id": "rmp-b35-test-1-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "支持与On-call准备",
+      "claim_sha256": "sha256:fbde69975b177354e4023a896c4dc1cfeae34ada9e57fcbe5ade90d4074afc50",
+      "oracle_id": "rmp-b35-test-2-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "自动暂停/回滚可用",
+      "claim_sha256": "sha256:17df6a1343ba9dbd04653645d963eacbeef2a6991e86a86a5c43319a270a7ce5",
+      "oracle_id": "rmp-b35-test-3-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 35,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "accountable production go/no-go approval",
+      "claim_sha256": "sha256:6a9d19aae77b92c62d42d4b197e72db113f55ff63dda6f5c635cf0b2b92be419",
+      "oracle_id": "rmp-b35-external-0-oracle-v1",
+      "executor_id": "b35-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Service catalog",
+      "claim_sha256": "sha256:505bb7ae9e6671a0cc19bee7c33a146a8df2e4f3252cf3dfb5b4e8463d327d77",
+      "oracle_id": "rmp-b36-output-0-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "On-call/incident workflows",
+      "claim_sha256": "sha256:ada6b2a5c894303cc76f2eb9648f712172b5aae265af7d77f9773ce9dffbea49",
+      "oracle_id": "rmp-b36-output-1-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Support diagnostics",
+      "claim_sha256": "sha256:ec37d348a58f8df0cb84a10a7a891ee232cab13fd142a32371bbf9f7b2aa2266",
+      "oracle_id": "rmp-b36-output-2-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Operational health reviews",
+      "claim_sha256": "sha256:4275a0fee60ec493b4f3f7305976d1a8c318785992321e39fc9944ca727ef33e",
+      "oracle_id": "rmp-b36-output-3-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Operational certification",
+      "claim_sha256": "sha256:e541ba1c3d4e5168df6588d112bc70df63e02b7e4471cc5765de4a8baf0607b1",
+      "oracle_id": "rmp-b36-output-4-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "P0服务有Owner和On-call",
+      "claim_sha256": "sha256:07e4546561d2aec0c7af2593ecbd8aa5cd651d776ec1ed149a319a3079deb0b5",
+      "oracle_id": "rmp-b36-test-0-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Alert可行动",
+      "claim_sha256": "sha256:f3e473bb603e7c40358081e00cf7fe4b61d6c795072ccd87dce6777ab0f820f7",
+      "oracle_id": "rmp-b36-test-1-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "客户问题可关联实际Release/Trace",
+      "claim_sha256": "sha256:462dc1195a340598e52c2b99605cac4365c2cdce436d5e3d031a8f50652e2fcf",
+      "oracle_id": "rmp-b36-test-2-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "证书按期续期",
+      "claim_sha256": "sha256:6c1acfe00f125c1ee29e2575e39d37cfa4ab723c9da61248823f42b7e7d1e145",
+      "oracle_id": "rmp-b36-test-3-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 36,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "real operational period, incident and support evidence",
+      "claim_sha256": "sha256:b4710f56af89f91e763e818f35136fb04875190644d1a1f5d0e116a58d0c8ea0",
+      "oracle_id": "rmp-b36-external-0-oracle-v1",
+      "executor_id": "b36-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "Stability report",
+      "claim_sha256": "sha256:dea48df06df0eaf7aa484701f7a77f8bbc2cedb2996e9892f1b9c846c31a4533",
+      "oracle_id": "rmp-b37-output-0-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Source caller inventory",
+      "claim_sha256": "sha256:81074f90402d40656cea7f8895a24d65f14191c86e9522af395541e907360d46",
+      "oracle_id": "rmp-b37-output-1-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Final reconciliation",
+      "claim_sha256": "sha256:ddda91cd4ed04144bd25cd985fced19d1f0ffa111578b370a4afacdc784bd10d",
+      "oracle_id": "rmp-b37-output-2-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Retirement/archival evidence",
+      "claim_sha256": "sha256:4e359593cd6fb1bfb32df89ec5ad5e510ee07c7ecc676af3177b32bdde2f66a7",
+      "oracle_id": "rmp-b37-output-3-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "output",
+      "claim_index": 4,
+      "claim": "Retirement certificate",
+      "claim_sha256": "sha256:e4a9fbde890a62d2795f51de7f1483b63c0a3ee82cecdcac466b4e58e0f123c8",
+      "oracle_id": "rmp-b37-output-4-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "未知Source caller为零",
+      "claim_sha256": "sha256:70c89616ace1ce9657372669df2ff05e0135859f40cf060f4d35309bbb8f9c18",
+      "oracle_id": "rmp-b37-test-0-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "Source生产Credential为零",
+      "claim_sha256": "sha256:e21b68d91e967687f0ecf39b5b062cb5bfd63d958c82bc9bd77e6d08aea2e8da",
+      "oracle_id": "rmp-b37-test-1-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "最终对账通过",
+      "claim_sha256": "sha256:8d4f4dc7eceab9d125aa949407d9273332ec5139c0efc6af3bd476a039124e13",
+      "oracle_id": "rmp-b37-test-2-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "Archive可恢复",
+      "claim_sha256": "sha256:2c74382f50b082e2f491002f5b1eae989d0053097ad9b63fc06f251036df6ccb",
+      "oracle_id": "rmp-b37-test-3-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "test",
+      "claim_index": 4,
+      "claim": "Rollback窗口正式关闭",
+      "claim_sha256": "sha256:b10c3cf13e83f374f974e04ab9f34003e1a36f963a990a3409a1ee26ee3025cb",
+      "oracle_id": "rmp-b37-test-4-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 37,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "authorized source retirement and final reconciliation evidence",
+      "claim_sha256": "sha256:33c357718107b32318fa15366ab010c1d075ee0035f556065220d270ffc02b28",
+      "oracle_id": "rmp-b37-external-0-oracle-v1",
+      "executor_id": "b37-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "output",
+      "claim_index": 0,
+      "claim": "SA1–SA5 certificates",
+      "claim_sha256": "sha256:5e13c2f7915dd588e6f296c16a8f4b794ece5ca14160f3b742a3565cec081d35",
+      "oracle_id": "rmp-b38-output-0-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "output",
+      "claim_index": 1,
+      "claim": "Final system assurance report",
+      "claim_sha256": "sha256:7e0e4926ebfbf2fa6d302d9fa9ebe5beffae088241daa3ca38c076c277a24978",
+      "oracle_id": "rmp-b38-output-1-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "output",
+      "claim_index": 2,
+      "claim": "Production closure certificate",
+      "claim_sha256": "sha256:61db04e583d0d988a2e168d42213b940f8fa391f631cef373d376818991c61cc",
+      "oracle_id": "rmp-b38-output-2-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "output",
+      "claim_index": 3,
+      "claim": "Continuous recertification plan",
+      "claim_sha256": "sha256:d224d3ea6f8273833518683179c13ce0d501df0b8d5af25821028ff40a8ba99b",
+      "oracle_id": "rmp-b38-output-3-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "test",
+      "claim_index": 0,
+      "claim": "Critical业务/数据/安全/Safety Finding为零",
+      "claim_sha256": "sha256:ba454363bf36b40ad57a252bc376d32eba72694b77b270cee4b08996a8c357fb",
+      "oracle_id": "rmp-b38-test-0-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "test",
+      "claim_index": 1,
+      "claim": "所有前置证书有效",
+      "claim_sha256": "sha256:e7db188ff317f5ad39c93eb2d092a93cd37e741abc6a868ba4e8b604980d58d8",
+      "oracle_id": "rmp-b38-test-1-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "test",
+      "claim_index": 2,
+      "claim": "生产责任和Source退出有Evidence",
+      "claim_sha256": "sha256:6c480fc7beffb8d405a14d389c3fd3a9ba1562d72b1974186f1554eff8d734a9",
+      "oracle_id": "rmp-b38-test-2-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "test",
+      "claim_index": 3,
+      "claim": "持续认证生效",
+      "claim_sha256": "sha256:1d36a3b5201bd4ea96928f451c6fe47212b7380043101c8306dc6b71047eb2b8",
+      "oracle_id": "rmp-b38-test-3-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "development",
+        "negative",
+        "holdout"
+      ],
+      "subject_type": "claim-oracle-result"
+    },
+    {
+      "batch": 38,
+      "claim_type": "external",
+      "claim_index": 0,
+      "claim": "independent final assurance review and external CA decision",
+      "claim_sha256": "sha256:142ed0a04331f6a70176881237600fc8aef7b42c2569b4adee72513ec0116e82",
+      "oracle_id": "rmp-b38-external-0-oracle-v1",
+      "executor_id": "b38-domain-executor-v1",
+      "required_corpora": [
+        "production"
+      ],
+      "subject_type": "claim-oracle-result"
+    }
+  ],
+  "status_boundary": "Registry coverage is executable policy, not evidence that a domain Claim passed."
+}

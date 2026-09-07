@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/domain-profile.schema.json",
+  "title": "EMCOM Domain Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "system_of_record",
+    "owner",
+    "available",
+    "external_operation_required",
+    "evidence_refs"
+  ],
+  "properties": {
+    "domain": {
+      "enum": [
+        "GO_TO_MARKET",
+        "CUSTOMER_DISCOVERY",
+        "SOLUTION_ENGINEERING",
+        "COMMERCIAL_CONTRACT",
+        "CUSTOMER_ONBOARDING",
+        "DELIVERY_MANAGEMENT",
+        "CUSTOMER_SUCCESS_SUPPORT",
+        "PARTNER_REVENUE_OPERATIONS"
+      ]
+    },
+    "system_of_record": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "available": {
+      "const": true
+    },
+    "external_operation_required": {
+      "const": true
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

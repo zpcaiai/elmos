@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Canonical Database Ir"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-canonical-database-ir to execute this ELMOS Runtime Skill with fail-closed evidence."

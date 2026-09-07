@@ -1,0 +1,52 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: continuous-agent-certification
+  version: 4.0.0
+  status: not-certified
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-ai-provider-behavior-fingerprint-recertifier
+  workflow: workflows/continuous-agent-certification.yaml
+  source: Production agent, RAG or multi-agent system with changing models, prompts, datasets, tools or providers
+  targets:
+  - mlflow-genai
+  - arize-phoenix
+  - langsmith
+  - openinference-compatible
+  - opentelemetry
+  eligibility:
+  - baseline evidence and exact RevisionSet exist
+  - production trace privacy policy is approved
+  - rollback candidate remains deployable
+  requiredEvidence:
+  - dataset lineage and holdout isolation
+  - judge calibration
+  - provider fingerprint
+  - side-effect-free shadow comparison
+  - drift decision
+  - re-certification or rollback proof
+  holdoutScenarios:
+  - silent model drift
+  - judge self-preference
+  - quality gain with cost/SLO regression
+  - production-data consent failure
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+    faultInjectionRequired: true
+    upgradeAndRollbackRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route remains a production implementation contract until exact source/target revisions execute with sealed
+    independent evidence.

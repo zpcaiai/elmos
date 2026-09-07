@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-go/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Clamp.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1478,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:e0909baee743ffbbab4a5bd863fb866dce60b8cf3bcd6bc83c6b083ddebea292"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:faed6c0397989123dcc04f285314cd9b70a8b762ca44b0d72f4431a1de88b30b"
+    },
+    {
+      "bytes": 2942,
+      "path": "formal-composition.json",
+      "sha256": "sha256:bb99b8ad0a2d4f856ceaee012b645b9ad98d2217a12cb7dee294ab45b4a31da1"
+    },
+    {
+      "bytes": 977,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:ed01739baa9cac90bb27039f5d348536bb2da5a5a1ed477c7636d25b6c4b6370"
+    },
+    {
+      "bytes": 7099,
+      "path": "formal-input.json",
+      "sha256": "sha256:3acb2b7e9124f90610478482bfc440634c25a28d9976cd941dae4b7fd856a684"
+    },
+    {
+      "bytes": 2320,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:5b44ba2b2ea80a63d8e83897902e7e20bcf8d30c9b3542378961d66b3b7665d0"
+    },
+    {
+      "bytes": 258,
+      "path": "inputs/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 3425,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:2ef2d0738b54bcee0d85f5b14cc290e0b0c44465e3d39dfcd4a29a55ef165315"
+    },
+    {
+      "bytes": 174,
+      "path": "migrated.go",
+      "sha256": "sha256:8722e81c3ce037f65fdedcc2229f83b8a0580889ac4b74bd6264beab4cbdf077"
+    },
+    {
+      "bytes": 6767,
+      "path": "route-evidence.json",
+      "sha256": "sha256:76e8ded975aa5a2a5c5caf8563b385ffc35b9d159242e8c9b0a736f2193aa76b"
+    },
+    {
+      "bytes": 623,
+      "path": "route_harness.go",
+      "sha256": "sha256:1e934cde9220337c6bdd43495b06b359522fe0e19d26c2d5eaf7e96a12eafe1b"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 805,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:f6a64022d4896dd6860e189f4bc790da78dd293614f1937e6a18bd51466b86a2"
+    },
+    {
+      "bytes": 258,
+      "path": "source-runtime/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 945,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:30d13b0f33a893055a43c6caae9dddcae142b99e0ae5892d54525a23261d2dae"
+    },
+    {
+      "bytes": 805,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:f6a64022d4896dd6860e189f4bc790da78dd293614f1937e6a18bd51466b86a2"
+    },
+    {
+      "bytes": 796,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:3184f7d2b4c538149c8771c49e15df82173847767629aff98771cc99a8ea1dbd"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-go",
+  "schema_version": 1,
+  "total_bytes": 40672
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 622: manufacturing security and safety control pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $manufacturing-security-and-safety-control-pack to evaluate this capability with evidence."

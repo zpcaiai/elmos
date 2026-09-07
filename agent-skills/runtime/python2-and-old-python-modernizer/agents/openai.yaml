@@ -1,0 +1,4 @@
+interface:
+  display_name: "Old Python Modernizer"
+  short_description: "Modernize Python 2 and obsolete Python behavior"
+  default_prompt: "Use $python2-and-old-python-modernizer to modernize this legacy Python code safely."

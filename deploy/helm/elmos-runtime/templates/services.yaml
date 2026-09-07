@@ -1,0 +1,39 @@
+{{- range $component := list "scheduler" "billing" }}
+{{- $settings := index $.Values.components $component }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elmos-runtime.name" $ }}-{{ $component }}
+  labels:
+    {{- include "elmos-runtime.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "elmos-runtime.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+  ports:
+    - name: http
+      port: {{ $settings.port }}
+      targetPort: http
+      protocol: TCP
+---
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elmos-runtime.name" . }}-{{ .Values.worker.serviceName }}
+  labels:
+    {{- include "elmos-runtime.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: false
+  selector:
+    {{- include "elmos-runtime.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+  ports:
+    - name: worker
+      port: 8090
+      targetPort: worker
+      protocol: TCP

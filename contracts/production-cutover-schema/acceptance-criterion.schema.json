@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/acceptance-criterion.schema.json",
+  "title": "Migration Acceptance Criterion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dimension", "status", "approver", "expires_at", "evidence_ref"],
+  "properties": {
+    "dimension": {"enum": ["business", "engineering", "security", "operations", "compliance", "irreversibility", "decommission"]},
+    "status": {"enum": ["pending", "accepted", "accepted_with_conditions", "rejected", "expired"]},
+    "approver": {"type": "string", "minLength": 1},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "conditions": {"type": "string"},
+    "evidence_ref": {"type": "string", "minLength": 1},
+    "accepted_at": {"type": "string", "format": "date-time"}
+  }
+}

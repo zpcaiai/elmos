@@ -1,0 +1,63 @@
+# case TS-GOV-04-003
+# started_at 2026-08-06T10:11:36Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py evidence-tamper
+=== probe: evidence-tamper ===
+[PASS] detect-wrong-manifest-version
+[PASS] detect-placeholder-case-digest
+[PASS] detect-truncated-digest
+[PASS] detect-simulated-execution
+[PASS] detect-no-authorization
+[PASS] detect-mutable-evidence-file
+[PASS] detect-zero-byte-evidence
+[PASS] detect-bad-file-digest
+[PASS] detect-duplicate-corpus-digest
+[PASS] detect-duplicate-corpus-kind
+[PASS] detect-holdout-not-independent
+[PASS] detect-holdout-authored-by-executor
+[PASS] detect-raw-log-byte-tamper
+[PASS] gate-detects-post-hoc-raw-evidence-rewrite :: ['TS-GOV-01-001: raw evidence size mismatch for raw-log.txt']
+[PASS] summary-status-cannot-override-raw-evidence
+
+15/15 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py environment-invalid
+=== probe: environment-invalid ===
+[PASS] well-formed-result-accepted
+[PASS] reject-placeholder-artifact-digest
+[PASS] reject-placeholder-environment-digest
+[PASS] reject-naive-timestamp
+[PASS] reject-reversed-interval
+[PASS] reject-simulated-execution-kind
+[PASS] reject-passed-without-evidence
+[PASS] reject-passed-without-replay
+[PASS] reject-not-run-carrying-evidence
+
+9/9 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py identity-separation
+=== probe: identity-separation ===
+[PASS] reject-self-verified
+[PASS] reject-verifier-not-independent
+[PASS] reject-verifier-wrong-role
+[PASS] reject-executor-missing-id
+[PASS] distinct-identities-accepted
+
+5/5 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

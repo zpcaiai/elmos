@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch44/support-matrix.schema.json",
+  "title": "Batch 44 support-matrix",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "capabilities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 44
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "capabilityId",
+          "status",
+          "owner",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "capabilityId": {
+            "enum": [
+              "b44-artifact-retention-egress-economics",
+              "b44-assessment-poc-project-quote",
+              "b44-budget-quota-cost-guardrail",
+              "b44-cache-incremental-cost-optimization",
+              "b44-cost-scenario-forecast",
+              "b44-cost-taxonomy-economic-model",
+              "b44-customer-roi-tco-value",
+              "b44-customer-route-edition-margin",
+              "b44-economics-maturity-gate",
+              "b44-human-expert-cost",
+              "b44-migration-finops-factory",
+              "b44-model-agent-economics",
+              "b44-packaging-pricing-model",
+              "b44-provider-resource-routing",
+              "b44-resource-metering",
+              "b44-runner-fleet-economics",
+              "b44-showback-chargeback",
+              "b44-support-hypercare-operations-cost",
+              "b44-usage-billing-reconciliation",
+              "b44-verified-workload-unit-cost"
+            ]
+          },
+          "status": {
+            "enum": [
+              "research",
+              "experimental",
+              "limited",
+              "certified",
+              "deprecated",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

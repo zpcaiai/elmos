@@ -1,0 +1,15 @@
+flowchart LR
+    X[Task / Node Attempt] --> U[Immutable Usage Event]
+    P[Versioned Price Book] --> U
+    FX[FX Snapshot] --> U
+    U --> C[Task Cost Projection]
+    C --> TC[Posted / Final System Cost]
+
+    B[Billing / Payment / Contract] --> R[Immutable Revenue Entry]
+    R --> A[Task / Project Revenue Allocation]
+    A --> TR[Recognized Revenue / Collected Cash]
+
+    TC --> M[Profitability View]
+    TR --> M
+    M --> G[Gross Profit + Gross Margin]
+    G --> D[Task / Account / Tenant / Period Dashboard]

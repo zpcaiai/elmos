@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExecutionBudget",
+  "type": "object",
+  "required": [
+    "runId",
+    "wallClockSeconds",
+    "steps",
+    "tokens",
+    "toolCalls",
+    "fanout",
+    "cost",
+    "onExhaustion"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "wallClockSeconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "steps": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tokens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "toolCalls": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fanout": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "cost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "onExhaustion": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "block",
+        "cancel",
+        "degrade"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

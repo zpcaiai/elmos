@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 012"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $openrewrite-catalog-license-dryrun-execution-and-idempotency to implement its fail-closed ELMOS Product Batch 33-mature contract."

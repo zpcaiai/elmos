@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 与 Elmos 生成、转换、翻新引擎集成"
+  short_description: "Guide 与 Elmos 生成、转换、翻新引擎集成 with evidence controls"
+  default_prompt: "Use $elmos-conversion-integration as guidance for 与 Elmos 生成、转换、翻新引擎集成 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

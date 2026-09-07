@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssuranceContract",
+  "type": "object",
+  "required": [
+    "level",
+    "obligations",
+    "thresholds",
+    "acceptedEvidence"
+  ],
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": [
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ]
+    },
+    "obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "claim",
+          "criticality"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "criticality": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "acceptedStatuses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PROVED",
+                "TESTED",
+                "BOUNDED",
+                "RUNTIME_MONITORED",
+                "WAIVED",
+                "UNKNOWN",
+                "UNSUPPORTED",
+                "REFUTED"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "acceptedEvidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "independentCertifier": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

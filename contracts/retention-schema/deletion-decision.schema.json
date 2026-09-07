@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.deletion-decision.v1",
+  "title": "ELMOS Deletion Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "reasonCodes",
+    "requiredTargets",
+    "cryptoShredAllowed"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "REQUESTED",
+        "VALIDATING",
+        "BLOCKED_BY_LEGAL_HOLD",
+        "SCHEDULED",
+        "DELETING_PRIMARY",
+        "DELETING_REPLICAS",
+        "BACKUP_EXPIRATION_PENDING",
+        "CRYPTO_SHREDDED",
+        "COMPLETED",
+        "COMPLETED_WITH_LIMITATIONS",
+        "FAILED"
+      ]
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredTargets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cryptoShredAllowed": {
+      "type": "boolean"
+    }
+  }
+}
+

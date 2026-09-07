@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch-job-ir.schema.json",
+  "title": "Batch Job IR",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "jobs",
+    "steps",
+    "restart_semantics"
+  ],
+  "properties": {
+    "jobs": {},
+    "steps": {},
+    "restart_semantics": {}
+  }
+}

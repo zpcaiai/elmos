@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/migration-plan.schema.json",
+  "title": "ELMOS Migration Plan",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "planId",
+    "snapshotId",
+    "targetProfileId",
+    "routeId",
+    "nodes",
+    "edges",
+    "rollback"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.migration-plan/v1"
+    },
+    "planId": {
+      "type": "string"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "targetProfileId": {
+      "type": "string"
+    },
+    "routeId": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "skill",
+          "inputs",
+          "outputs",
+          "tests",
+          "idempotencyKey",
+          "risk"
+        ]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ]
+      }
+    },
+    "rollback": {
+      "type": "object"
+    }
+  }
+}

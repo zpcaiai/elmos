@@ -1,0 +1,522 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/external-evidence-document.schema.json",
+  "title": "ELMOS Batch 30 signed external evidence content",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "evidence_type", "campaign_digest", "binding_digest", "execution_id", "executed_at",
+    "executor_actor_id", "executor_organization_id", "result", "environment", "metrics",
+    "raw_evidence", "unknowns", "not_run", "waivers", "test_integrity"
+  ],
+  "properties": {
+    "schema_version": {"const": "elmos.batch30.external-evidence.v1"},
+    "evidence_type": {"$ref": "#/$defs/evidenceType"},
+    "campaign_digest": {"$ref": "#/$defs/digest"},
+    "binding_digest": {"$ref": "#/$defs/digest"},
+    "execution_id": {"$ref": "#/$defs/identity"},
+    "executed_at": {"type": "string", "format": "date-time"},
+    "executor_actor_id": {"$ref": "#/$defs/identity"},
+    "executor_organization_id": {"$ref": "#/$defs/identity"},
+    "result": {"enum": ["PASS", "ACCEPTED", "CERTIFIED"]},
+    "environment": {"$ref": "#/$defs/environment"},
+    "metrics": {"type": "object"},
+    "raw_evidence": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/contentReference"}
+    },
+    "unknowns": {"type": "array", "maxItems": 0},
+    "not_run": {"type": "array", "maxItems": 0},
+    "waivers": {"type": "array", "maxItems": 0},
+    "test_integrity": {
+      "const": {"skipped": 0, "flaky": 0, "weakened": 0, "synthetic": false}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"evidence_type": {"const": "customer_acceptance"}}},
+      "then": {"properties": {"result": {"const": "ACCEPTED"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "external_certification"}}},
+      "then": {"properties": {"result": {"const": "CERTIFIED"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"enum": [
+        "source_build", "target_build", "source_startup", "target_startup",
+        "behavioral_equivalence", "security", "performance", "operability", "sbom",
+        "rollback", "independent_review"
+      ]}}},
+      "then": {"properties": {"result": {"const": "PASS"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "source_build"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/sourceBuildMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "target_build"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/targetBuildMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "source_startup"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/sourceStartupMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "target_startup"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/targetStartupMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "behavioral_equivalence"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/behavioralEquivalenceMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "security"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/securityMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "performance"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/performanceMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "operability"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/operabilityMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "sbom"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/sbomMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "rollback"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/rollbackMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "independent_review"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/independentReviewMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "customer_acceptance"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/customerAcceptanceMetrics"}}}
+    },
+    {
+      "if": {"properties": {"evidence_type": {"const": "external_certification"}}},
+      "then": {"properties": {"metrics": {"$ref": "#/$defs/externalCertificationMetrics"}}}
+    }
+  ],
+  "$defs": {
+    "identity": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "version": {"type": "string", "minLength": 1, "not": {"pattern": "(?:[Ll][Aa][Tt][Ee][Ss][Tt]|\\*|^[Xx]$)"}},
+    "evidenceType": {
+      "enum": [
+        "source_build", "target_build", "source_startup", "target_startup",
+        "behavioral_equivalence", "security", "performance", "operability", "sbom",
+        "rollback", "independent_review", "customer_acceptance", "external_certification"
+      ]
+    },
+    "zero": {"const": 0},
+    "positiveInteger": {"type": "integer", "minimum": 1},
+    "nonNegativeNumber": {"type": "number", "minimum": 0},
+    "sourceBuildMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "builds_total", "builds_passed", "tests_total", "failures", "errors",
+        "skipped", "native", "exact_toolchain"
+      ],
+      "properties": {
+        "builds_total": {"type": "integer", "minimum": 2},
+        "builds_passed": {"type": "integer", "minimum": 2},
+        "tests_total": {"$ref": "#/$defs/positiveInteger"},
+        "failures": {"$ref": "#/$defs/zero"},
+        "errors": {"$ref": "#/$defs/zero"},
+        "skipped": {"$ref": "#/$defs/zero"},
+        "native": {"const": true},
+        "exact_toolchain": {"const": true}
+      }
+    },
+    "targetBuildMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "builds_total", "builds_passed", "tests_total", "failures", "errors",
+        "skipped", "native", "exact_toolchain", "artifact_digest", "rootless",
+        "privileged"
+      ],
+      "properties": {
+        "builds_total": {"type": "integer", "minimum": 2},
+        "builds_passed": {"type": "integer", "minimum": 2},
+        "tests_total": {"$ref": "#/$defs/positiveInteger"},
+        "failures": {"$ref": "#/$defs/zero"},
+        "errors": {"$ref": "#/$defs/zero"},
+        "skipped": {"$ref": "#/$defs/zero"},
+        "native": {"const": true},
+        "exact_toolchain": {"const": true},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "rootless": {"const": true},
+        "privileged": {"const": false}
+      }
+    },
+    "sourceStartupMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "startup_attempts", "startup_passed", "readiness_probes", "readiness_passed",
+        "shutdown_attempts", "shutdown_passed", "startup_seconds", "shutdown_seconds",
+        "native"
+      ],
+      "properties": {
+        "startup_attempts": {"type": "integer", "minimum": 2},
+        "startup_passed": {"type": "integer", "minimum": 2},
+        "readiness_probes": {"$ref": "#/$defs/positiveInteger"},
+        "readiness_passed": {"$ref": "#/$defs/positiveInteger"},
+        "shutdown_attempts": {"$ref": "#/$defs/positiveInteger"},
+        "shutdown_passed": {"$ref": "#/$defs/positiveInteger"},
+        "startup_seconds": {"$ref": "#/$defs/nonNegativeNumber"},
+        "shutdown_seconds": {"$ref": "#/$defs/nonNegativeNumber"},
+        "native": {"const": true}
+      }
+    },
+    "targetStartupMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "startup_attempts", "startup_passed", "readiness_probes", "readiness_passed",
+        "shutdown_attempts", "shutdown_passed", "startup_seconds", "shutdown_seconds",
+        "native", "rootless", "privileged", "effective_uid"
+      ],
+      "properties": {
+        "startup_attempts": {"type": "integer", "minimum": 2},
+        "startup_passed": {"type": "integer", "minimum": 2},
+        "readiness_probes": {"$ref": "#/$defs/positiveInteger"},
+        "readiness_passed": {"$ref": "#/$defs/positiveInteger"},
+        "shutdown_attempts": {"$ref": "#/$defs/positiveInteger"},
+        "shutdown_passed": {"$ref": "#/$defs/positiveInteger"},
+        "startup_seconds": {"$ref": "#/$defs/nonNegativeNumber"},
+        "shutdown_seconds": {"$ref": "#/$defs/nonNegativeNumber"},
+        "native": {"const": true},
+        "rootless": {"const": true},
+        "privileged": {"const": false},
+        "effective_uid": {"type": "integer", "minimum": 1}
+      }
+    },
+    "behavioralEquivalenceMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "routes_total", "routes_passed", "p0_contracts_total", "p0_contracts_passed",
+        "holdout_projects", "representative_projects", "customer_projects", "route_coverage",
+        "source_fingerprint_coverage", "framework_contract_coverage", "source_map_coverage",
+        "critical_mismatch_count", "silent_framework_drops",
+        "critical_transaction_regressions", "critical_data_regressions",
+        "duplicate_message_or_job_effects", "test_integrity_violations",
+        "rules_frozen_before_holdout", "rules_digest", "corpus_digests",
+        "project_outcome_evidence_digests"
+      ],
+      "properties": {
+        "routes_total": {"$ref": "#/$defs/positiveInteger"},
+        "routes_passed": {"$ref": "#/$defs/positiveInteger"},
+        "p0_contracts_total": {"$ref": "#/$defs/positiveInteger"},
+        "p0_contracts_passed": {"$ref": "#/$defs/positiveInteger"},
+        "holdout_projects": {"$ref": "#/$defs/positiveInteger"},
+        "representative_projects": {"$ref": "#/$defs/positiveInteger"},
+        "customer_projects": {"$ref": "#/$defs/positiveInteger"},
+        "route_coverage": {"const": 1.0},
+        "source_fingerprint_coverage": {"const": 1.0},
+        "framework_contract_coverage": {"const": 1.0},
+        "source_map_coverage": {"const": 1.0},
+        "critical_mismatch_count": {"$ref": "#/$defs/zero"},
+        "silent_framework_drops": {"$ref": "#/$defs/zero"},
+        "critical_transaction_regressions": {"$ref": "#/$defs/zero"},
+        "critical_data_regressions": {"$ref": "#/$defs/zero"},
+        "duplicate_message_or_job_effects": {"$ref": "#/$defs/zero"},
+        "test_integrity_violations": {"$ref": "#/$defs/zero"},
+        "rules_frozen_before_holdout": {"const": true},
+        "rules_digest": {"$ref": "#/$defs/digest"},
+        "corpus_digests": {
+          "type": "object", "additionalProperties": false,
+          "required": ["development", "holdout", "representative", "customer"],
+          "properties": {
+            "development": {"$ref": "#/$defs/digest"},
+            "holdout": {"$ref": "#/$defs/digest"},
+            "representative": {"$ref": "#/$defs/digest"},
+            "customer": {"$ref": "#/$defs/digest"}
+          }
+        },
+        "project_outcome_evidence_digests": {
+          "type": "object", "additionalProperties": false,
+          "required": ["holdout", "representative", "customer"],
+          "properties": {
+            "holdout": {"$ref": "#/$defs/digest"},
+            "representative": {"$ref": "#/$defs/digest"},
+            "customer": {"$ref": "#/$defs/digest"}
+          }
+        }
+      }
+    },
+    "securityMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "scanners", "critical_findings", "high_findings", "authentication_regressions",
+        "authorization_regressions", "critical_dependency_vulnerabilities",
+        "critical_data_exposure_findings"
+      ],
+      "properties": {
+        "scanners": {
+          "type": "array", "minItems": 3, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 200}
+        },
+        "critical_findings": {"$ref": "#/$defs/zero"},
+        "high_findings": {"$ref": "#/$defs/zero"},
+        "authentication_regressions": {"$ref": "#/$defs/zero"},
+        "authorization_regressions": {"$ref": "#/$defs/zero"},
+        "critical_dependency_vulnerabilities": {"$ref": "#/$defs/zero"},
+        "critical_data_exposure_findings": {"$ref": "#/$defs/zero"}
+      }
+    },
+    "performanceMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "capacity_validated", "request_count", "error_count", "p95_ms", "slo_p95_ms",
+        "throughput_rps", "slo_throughput_rps", "soak_seconds"
+      ],
+      "properties": {
+        "capacity_validated": {"const": true},
+        "request_count": {"type": "integer", "minimum": 10000},
+        "error_count": {"$ref": "#/$defs/zero"},
+        "p95_ms": {"type": "number", "minimum": 0, "maximum": 100.0},
+        "slo_p95_ms": {"const": 100.0},
+        "throughput_rps": {"type": "number", "minimum": 400.0},
+        "slo_throughput_rps": {"const": 400.0},
+        "soak_seconds": {"type": "integer", "minimum": 3600}
+      }
+    },
+    "operabilityMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "endpoints_verified", "failed_probes", "alert_failures", "runbook_failures",
+        "trace_correlation_verified"
+      ],
+      "properties": {
+        "endpoints_verified": {"const": ["/livez", "/readyz", "/metrics", "/version"]},
+        "failed_probes": {"$ref": "#/$defs/zero"},
+        "alert_failures": {"$ref": "#/$defs/zero"},
+        "runbook_failures": {"$ref": "#/$defs/zero"},
+        "trace_correlation_verified": {"const": true}
+      }
+    },
+    "technicalEvidenceTypes": {
+      "type": "array", "minItems": 10, "maxItems": 10,
+      "prefixItems": [
+        {"const": "source_build"}, {"const": "target_build"},
+        {"const": "source_startup"}, {"const": "target_startup"},
+        {"const": "behavioral_equivalence"}, {"const": "security"},
+        {"const": "performance"}, {"const": "operability"},
+        {"const": "sbom"}, {"const": "rollback"}
+      ],
+      "items": false
+    },
+    "preCertificationEvidenceTypes": {
+      "type": "array", "minItems": 12, "maxItems": 12,
+      "prefixItems": [
+        {"const": "source_build"}, {"const": "target_build"},
+        {"const": "source_startup"}, {"const": "target_startup"},
+        {"const": "behavioral_equivalence"}, {"const": "security"},
+        {"const": "performance"}, {"const": "operability"},
+        {"const": "sbom"}, {"const": "rollback"},
+        {"const": "independent_review"}, {"const": "customer_acceptance"}
+      ],
+      "items": false
+    },
+    "technicalDigestMap": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "source_build", "target_build", "source_startup", "target_startup",
+        "behavioral_equivalence", "security", "performance", "operability", "sbom",
+        "rollback"
+      ],
+      "properties": {
+        "source_build": {"$ref": "#/$defs/digest"},
+        "target_build": {"$ref": "#/$defs/digest"},
+        "source_startup": {"$ref": "#/$defs/digest"},
+        "target_startup": {"$ref": "#/$defs/digest"},
+        "behavioral_equivalence": {"$ref": "#/$defs/digest"},
+        "security": {"$ref": "#/$defs/digest"},
+        "performance": {"$ref": "#/$defs/digest"},
+        "operability": {"$ref": "#/$defs/digest"},
+        "sbom": {"$ref": "#/$defs/digest"},
+        "rollback": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "preCertificationDigestMap": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "source_build", "target_build", "source_startup", "target_startup",
+        "behavioral_equivalence", "security", "performance", "operability", "sbom",
+        "rollback", "independent_review", "customer_acceptance"
+      ],
+      "properties": {
+        "source_build": {"$ref": "#/$defs/digest"},
+        "target_build": {"$ref": "#/$defs/digest"},
+        "source_startup": {"$ref": "#/$defs/digest"},
+        "target_startup": {"$ref": "#/$defs/digest"},
+        "behavioral_equivalence": {"$ref": "#/$defs/digest"},
+        "security": {"$ref": "#/$defs/digest"},
+        "performance": {"$ref": "#/$defs/digest"},
+        "operability": {"$ref": "#/$defs/digest"},
+        "sbom": {"$ref": "#/$defs/digest"},
+        "rollback": {"$ref": "#/$defs/digest"},
+        "independent_review": {"$ref": "#/$defs/digest"},
+        "customer_acceptance": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "sbomMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "artifact_digest", "format", "component_count", "unknown_licenses",
+        "critical_vulnerabilities", "artifact_bound"
+      ],
+      "properties": {
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "format": {"enum": ["CycloneDX-1.5", "SPDX-2.3"]},
+        "component_count": {"$ref": "#/$defs/positiveInteger"},
+        "unknown_licenses": {"$ref": "#/$defs/zero"},
+        "critical_vulnerabilities": {"$ref": "#/$defs/zero"},
+        "artifact_bound": {"const": true}
+      }
+    },
+    "rollbackMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "rehearsed", "attempts", "passed", "actual_rto_seconds",
+        "rto_objective_seconds", "data_loss_records", "orphan_effects"
+      ],
+      "properties": {
+        "rehearsed": {"const": true},
+        "attempts": {"type": "integer", "minimum": 3},
+        "passed": {"type": "integer", "minimum": 3},
+        "actual_rto_seconds": {"type": "number", "minimum": 0, "maximum": 60.0},
+        "rto_objective_seconds": {"const": 60.0},
+        "data_loss_records": {"$ref": "#/$defs/zero"},
+        "orphan_effects": {"$ref": "#/$defs/zero"}
+      }
+    },
+    "independentReviewMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "organizationally_independent", "reviewed_evidence_types",
+        "reviewed_content_digests", "critical_findings", "unresolved_findings"
+      ],
+      "properties": {
+        "organizationally_independent": {"const": true},
+        "reviewed_evidence_types": {"$ref": "#/$defs/technicalEvidenceTypes"},
+        "reviewed_content_digests": {"$ref": "#/$defs/technicalDigestMap"},
+        "critical_findings": {"$ref": "#/$defs/zero"},
+        "unresolved_findings": {"$ref": "#/$defs/zero"}
+      }
+    },
+    "customerAcceptanceMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "scenarios_total", "scenarios_passed", "accepted_artifact_digest",
+        "accepted_execution_profile_digest", "customer_owned_holdout", "unresolved_findings"
+      ],
+      "properties": {
+        "scenarios_total": {"$ref": "#/$defs/positiveInteger"},
+        "scenarios_passed": {"$ref": "#/$defs/positiveInteger"},
+        "accepted_artifact_digest": {"$ref": "#/$defs/digest"},
+        "accepted_execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "customer_owned_holdout": {"const": true},
+        "unresolved_findings": {"$ref": "#/$defs/zero"}
+      }
+    },
+    "externalCertificationMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "decision", "scope_bound", "certified_capability_ids", "reviewed_evidence_types",
+        "reviewed_content_digests", "certificate_valid_until", "manual_hours",
+        "cost_per_verified_workload"
+      ],
+      "properties": {
+        "decision": {"const": "CERTIFIED"},
+        "scope_bound": {"const": true},
+        "certified_capability_ids": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity"}
+        },
+        "reviewed_evidence_types": {"$ref": "#/$defs/preCertificationEvidenceTypes"},
+        "reviewed_content_digests": {"$ref": "#/$defs/preCertificationDigestMap"},
+        "certificate_valid_until": {"type": "string", "format": "date-time"},
+        "manual_hours": {"$ref": "#/$defs/nonNegativeNumber"},
+        "cost_per_verified_workload": {"$ref": "#/$defs/nonNegativeNumber"}
+      }
+    },
+    "contentReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": {"type": "string", "pattern": "^file://"},
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "versionSideSource": {
+      "type": "object", "additionalProperties": false,
+      "required": ["framework", "framework_version", "java", "maven", "servlet_namespace", "servlet_api", "container"],
+      "properties": {
+        "framework": {"$ref": "#/$defs/identity"},
+        "framework_version": {"$ref": "#/$defs/version"},
+        "java": {"$ref": "#/$defs/version"},
+        "maven": {"$ref": "#/$defs/version"},
+        "servlet_namespace": {"$ref": "#/$defs/identity"},
+        "servlet_api": {"$ref": "#/$defs/version"},
+        "container": {"$ref": "#/$defs/version"}
+      }
+    },
+    "versionSideTarget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["framework", "framework_version", "spring_framework_version", "java", "maven", "servlet_namespace", "servlet_api", "container"],
+      "properties": {
+        "framework": {"$ref": "#/$defs/identity"},
+        "framework_version": {"$ref": "#/$defs/version"},
+        "spring_framework_version": {"$ref": "#/$defs/version"},
+        "java": {"$ref": "#/$defs/version"},
+        "maven": {"$ref": "#/$defs/version"},
+        "servlet_namespace": {"$ref": "#/$defs/identity"},
+        "servlet_api": {"$ref": "#/$defs/version"},
+        "container": {"$ref": "#/$defs/version"}
+      }
+    },
+    "environment": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "environment_id", "isolation", "source_commit", "source_snapshot_digest",
+        "target_artifact_digest", "target_profile_digest", "policy_digest", "version_tuple",
+        "toolchains"
+      ],
+      "properties": {
+        "environment_id": {"$ref": "#/$defs/identity"},
+        "isolation": {"const": "AUTHORIZED_ISOLATED"},
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_snapshot_digest": {"$ref": "#/$defs/digest"},
+        "target_artifact_digest": {"$ref": "#/$defs/digest"},
+        "target_profile_digest": {"$ref": "#/$defs/digest"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "version_tuple": {
+          "type": "object", "additionalProperties": false, "required": ["source", "target"],
+          "properties": {
+            "source": {"$ref": "#/$defs/versionSideSource"},
+            "target": {"$ref": "#/$defs/versionSideTarget"}
+          }
+        },
+        "toolchains": {
+          "type": "array", "minItems": 6, "maxItems": 6,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["name", "version", "digest"],
+            "properties": {
+              "name": {"enum": ["source-java", "source-maven", "source-container", "target-java", "target-maven", "target-container"]},
+              "version": {"$ref": "#/$defs/version"},
+              "digest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

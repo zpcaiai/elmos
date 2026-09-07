@@ -1,0 +1,5 @@
+interface:
+  display_name: "Community Content Question And Knowledge Architecture"
+  short_description: "Authoritative Batch 14 Skill 431 workflow"
+  default_prompt: "Use $community-content-question-and-knowledge-architecture to execute its evidence-bound Batch 14 workflow."
+

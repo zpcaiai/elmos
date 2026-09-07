@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1802",
+  "skill_name": "frt-1802-framework-pack-framework",
+  "batch": "G18",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g18/frt-1802-framework-pack-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "capability_key": "frt.g18.framework-pack-framework",
+  "execution_contract_sha256": "sha256:1e96178a702b713b8542cccf6293730f4a696001e79f02750ac96c121a5df708",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:d20c5678780ba5adbd7c21ac241ddac6cdd17c9128869015acccadaa15249b29",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

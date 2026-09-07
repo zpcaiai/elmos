@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:target-typed-ir",
+  "title": "TargetTypedIR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "node_id",
+    "record_id",
+    "schema_version",
+    "scope",
+    "shim_required",
+    "target_kind",
+    "type_ref"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "node_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idiom": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shim_required": {
+      "type": "boolean"
+    }
+  }
+}

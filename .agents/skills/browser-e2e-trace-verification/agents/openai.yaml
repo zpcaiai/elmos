@@ -1,0 +1,6 @@
+interface:
+  display_name: "Browser E2e Trace Verification"
+  short_description: "Run browser-e2e-trace-verification with bounded commercial controls"
+  default_prompt: "Use $browser-e2e-trace-verification through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

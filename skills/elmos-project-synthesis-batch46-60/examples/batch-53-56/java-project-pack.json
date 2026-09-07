@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "language": "java",
+  "profiles": [
+    {
+      "id": "java-spring-modular-monolith",
+      "skills": [
+        "PG077",
+        "PG078",
+        "PG079",
+        "PG080",
+        "PG081",
+        "PG082",
+        "PG083",
+        "PG084",
+        "PG085",
+        "PG086",
+        "PG087",
+        "PG088"
+      ]
+    }
+  ],
+  "runtime": {
+    "version": "21",
+    "support_policy": "LTS",
+    "framework": "spring-boot",
+    "framework_version": "platform-pinned"
+  },
+  "build": {
+    "system": "gradle",
+    "wrapper": true,
+    "dependency_locking": true
+  },
+  "quality": {
+    "formatter": "spotless",
+    "analyzers": [
+      "errorprone",
+      "spotbugs"
+    ],
+    "warnings_as_errors": true
+  },
+  "generators": [
+    {
+      "skill_id": "PG081",
+      "artifact_kinds": [
+        "controller",
+        "dto",
+        "error-handler"
+      ],
+      "ownership_modes": [
+        "managed",
+        "protected"
+      ]
+    },
+    {
+      "skill_id": "PG082",
+      "artifact_kinds": [
+        "domain",
+        "application",
+        "ports"
+      ],
+      "ownership_modes": [
+        "protected"
+      ]
+    }
+  ]
+}

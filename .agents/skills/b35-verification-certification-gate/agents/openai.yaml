@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Verification Gate"
+  short_description: "Run the conservative advanced verification gate"
+  default_prompt: "Use $b35-verification-certification-gate to implement and verify this capability with fail-closed evidence."

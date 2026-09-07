@@ -1,0 +1,11 @@
+{
+  "policy": "certified_route_selection",
+  "positive": {
+    "route_exact_version_supported": true,
+    "route_evidence_fresh": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

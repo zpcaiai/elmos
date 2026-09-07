@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/semantic-profile.schema.json",
+  "title": "Semantic Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "language",
+    "version",
+    "runtime",
+    "features",
+    "numericModel",
+    "nullModel",
+    "concurrencyModel",
+    "digest"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "language": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "runtime": {
+      "type": "string"
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "VERIFIED",
+          "BOUNDED",
+          "RUNTIME_MONITORED",
+          "UNSUPPORTED"
+        ]
+      }
+    },
+    "numericModel": {
+      "type": "object"
+    },
+    "nullModel": {
+      "type": "string"
+    },
+    "concurrencyModel": {
+      "type": "string"
+    },
+    "undefinedBehaviorPolicy": {
+      "enum": [
+        "PROVE_UNREACHABLE",
+        "REJECT",
+        "RUNTIME_MONITOR"
+      ]
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    }
+  }
+}

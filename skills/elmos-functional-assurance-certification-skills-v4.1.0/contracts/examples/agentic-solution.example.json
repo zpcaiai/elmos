@@ -1,0 +1,37 @@
+{
+  "apiVersion": "elmos.ai/v1",
+  "kind": "AgenticSolution",
+  "metadata": {
+    "name": "contract-assistant",
+    "tenantId": "tenant-demo",
+    "projectId": "project-demo",
+    "labels": {
+      "risk": "high"
+    }
+  },
+  "spec": {
+    "archetype": "agentic-rag",
+    "contracts": {
+      "solution": "solution-contract.json",
+      "model": "model-contract.json",
+      "agent": "agent-contract.json",
+      "workflow": "workflow-contract.json",
+      "tool": "tool-contract.json",
+      "rag": "rag-contract.json",
+      "memory": "memory-contract.json",
+      "interaction": "interaction-contract.json",
+      "security": "security-governance.json",
+      "runtime": "runtime-operations.json",
+      "assurance": "assurance-contract.json"
+    },
+    "targets": [
+      "dify",
+      "langgraph-python",
+      "spring-ai-java",
+      "openclaw"
+    ],
+    "allowedDeltas": [
+      "visual-layout"
+    ]
+  }
+}

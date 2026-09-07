@@ -1,0 +1,4 @@
+interface:
+  display_name: "gross-margin-project-profitability-and-unit-economics"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $gross-margin-project-profitability-and-unit-economics to evaluate this Batch 13 commercial capability with evidence."

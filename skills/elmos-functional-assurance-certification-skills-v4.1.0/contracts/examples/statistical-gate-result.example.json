@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "StatisticalGateResult",
+  "metadata": {
+    "id": "statistical-gate-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "metric": "example-metric",
+    "baseline": {},
+    "candidate": {},
+    "confidence": 0.99,
+    "decision": "example-decision"
+  }
+}

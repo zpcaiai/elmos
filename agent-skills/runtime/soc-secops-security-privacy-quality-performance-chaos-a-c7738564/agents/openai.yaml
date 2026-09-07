@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Soc Secops Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $soc-secops-security-privacy-quality-performance-chaos-a-c7738564 to implement its fail-closed ELMOS Product B48 contract."

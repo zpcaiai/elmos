@@ -1,0 +1,43 @@
+activation:
+  positiveRequired: 8
+  negativeRequired: 8
+  ambiguousRequired: 4
+  adversarialRequired: 4
+  split: repo-org-time-disjoint
+outcome:
+- gate: workload-representative
+  type: deterministic-first
+- gate: functional-behavior-preserved
+  type: deterministic-first
+- gate: slo-met
+  type: deterministic-first
+- gate: recovery-objectives-met
+  type: deterministic-first
+- gate: cost-regression-acceptable
+  type: deterministic-first
+process:
+- authorized-tools-only
+- environment-owned-authority
+- checkpoint-created
+- source-target-lineage
+- independent-verification
+- rollback-on-hard-failure
+efficiency:
+- wall_clock_ms
+- queue_ms
+- input_tokens
+- output_tokens
+- tool_calls
+- build_minutes
+- cost
+security:
+- tenant-isolation
+- prompt-injection
+- secret-leakage
+- artifact-integrity
+- supply-chain
+learning:
+- training-rights
+- dataset-tier
+- eval-leakage
+- human-acceptance

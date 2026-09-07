@@ -1,0 +1,66 @@
+{
+  "BATCH": 44,
+  "TITLE": "FinOps与迁移经济优化",
+  "PACK_TYPE": "finops-economics",
+  "SKILL_COUNT": 20,
+  "SKILL_NAMES": [
+    "b44-migration-finops-economics-factory",
+    "b44-cost-taxonomy-cost-center-economic-model",
+    "b44-runner-model-storage-network-metering",
+    "b44-cost-allocation-showback-chargeback",
+    "b44-verified-migrated-workload-unit-cost",
+    "b44-runner-compute-fleet-economics",
+    "b44-model-token-provider-agent-economics",
+    "b44-artifact-storage-retention-egress-economics",
+    "b44-human-review-expert-cost",
+    "b44-support-hypercare-production-operations-cost",
+    "b44-product-packaging-pricing-model",
+    "b44-assessment-poc-project-quoting",
+    "b44-customer-project-route-edition-margin",
+    "b44-budget-quota-cost-guardrail",
+    "b44-cache-incremental-analysis-cost-optimization",
+    "b44-model-runner-provider-intelligent-routing",
+    "b44-cost-scenario-rolling-forecast",
+    "b44-customer-roi-tco-value-model",
+    "b44-usage-billing-financial-reconciliation",
+    "b44-economics-maturity-certification-gate"
+  ],
+  "METRICS": {
+    "metering_completeness": 1.0,
+    "cost_allocation_reconciliation_rate": 1.0,
+    "unit_cost_trace_coverage": 1.0,
+    "billing_reconciliation_rate": 1.0,
+    "margin_model_accuracy_rate": 0.98,
+    "budget_guardrail_pass_rate": 1.0,
+    "forecast_interval_coverage": 0.9,
+    "customer_value_evidence_coverage": 0.95,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "duplicate_meter_events",
+    "unallocated_material_costs",
+    "nonzero_billing_reconciliation_difference",
+    "security_gate_bypasses_for_cost",
+    "unapproved_negative_margin_deals",
+    "customer_data_loss_from_budget_stops",
+    "unexplained_price_overrides",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "cost-model",
+    "meter-event",
+    "pricing-policy",
+    "quote",
+    "margin-report",
+    "roi-model",
+    "reconciliation-report"
+  ],
+  "REQUIRED_BATCHES": [
+    13,
+    15,
+    27,
+    34,
+    37,
+    39
+  ]
+}

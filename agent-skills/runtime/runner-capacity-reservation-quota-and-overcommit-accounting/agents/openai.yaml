@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Capacity Reservation Quota And Overcommit Accounting"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-capacity-reservation-quota-and-overcommit-accounting to implement its fail-closed ELMOS Product B36 contract."

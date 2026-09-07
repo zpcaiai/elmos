@@ -1,0 +1,14 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalEvidenceIndexTemplate
+metadata: {subjectId: replace-me, release: replace-me}
+spec:
+  sourceRevision: replace-me
+  targetRevision: replace-me
+  modelVersion: replace-me
+  policyRevision: replace-me
+  assumptionHash: REPLACE_WITH_SHA256
+  tcbHash: REPLACE_WITH_SHA256
+  obligations: []
+  gateDecisions: []
+  artifacts: []
+  signed: false

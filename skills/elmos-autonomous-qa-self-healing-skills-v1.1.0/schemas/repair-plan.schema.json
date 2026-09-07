@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-plan.schema.json",
+  "title": "RepairPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "repair_plan_id",
+    "defect_id",
+    "risk_level",
+    "summary",
+    "candidate_changes",
+    "verification_plan",
+    "rollback_plan",
+    "approval"
+  ],
+  "properties": {
+    "repair_plan_id": {
+      "type": "string"
+    },
+    "defect_id": {
+      "type": "string"
+    },
+    "risk_level": {
+      "enum": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "candidate_changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "change_intent"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "change_intent": {
+            "type": "string"
+          },
+          "expected_diff_size": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "forbidden_changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification_plan": {
+      "type": "object",
+      "required": [
+        "failing_tests",
+        "impact_tests",
+        "full_regression"
+      ],
+      "properties": {
+        "failing_tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "impact_tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "security_checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mutation_checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "full_regression": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rollback_plan": {
+      "type": "string"
+    },
+    "approval": {
+      "type": "object",
+      "required": [
+        "required",
+        "policy_reason"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "policy_reason": {
+          "type": "string"
+        },
+        "approver_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    }
+  }
+}

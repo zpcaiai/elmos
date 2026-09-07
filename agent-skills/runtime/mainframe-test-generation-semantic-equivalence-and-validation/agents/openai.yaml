@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Test Generation Semantic Equivalence And Validation"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-test-generation-semantic-equivalence-and-validation to execute this ELMOS Runtime Skill with fail-closed evidence."

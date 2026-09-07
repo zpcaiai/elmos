@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "direction": "spring-family-to-spring-boot",
+  "target": {"spring_boot": "4.1.1", "java": "21"},
+  "coexistence": "target-authority-after-verified-cutover",
+  "rollback": "restore immutable source snapshot and source dependency locks",
+  "compatibility_budget": {
+    "unknown_critical_capabilities": 0,
+    "security_regressions": 0,
+    "data_regressions": 0,
+    "transaction_regressions": 0,
+    "message_duplicate_or_loss_regressions": 0
+  },
+  "status": "NOT_RUN",
+  "owner": "ELMOS Framework Pack Maintainers"
+}

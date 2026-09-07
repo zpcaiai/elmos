@@ -1,0 +1,31 @@
+{
+  "caseId": "06-schema-expand-contract",
+  "description": "An online column rename must stay expand / index / backfill / contract.",
+  "evidence": {
+    "schemaPlanDigest": "sha256:eca69f60781dcf18a6c067a7e90aa4e90cd1afeecc445040b420e90309105c9b"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:2e9c595c27305120f29e7e4cb69735aee64991e0e74e8a972d5504676c72620c",
+  "outputDigest": "sha256:bbfe14bb04bf69c6ecb40e4e141d45302c7cb5c89ac5df7f8a43d4959da33fec",
+  "projections": {
+    "output.backfill.resumable": true,
+    "output.executable": true,
+    "output.files[3].destructive": true,
+    "output.phaseOrder": {
+      "destructiveOutsideContract": [],
+      "ordered": true,
+      "violations": []
+    },
+    "output.phases": [
+      "expand",
+      "expand",
+      "backfill",
+      "contract"
+    ]
+  },
+  "reasonCount": 0,
+  "riskClass": "R4",
+  "sideEffectsPerformed": false,
+  "skill": "data-schema-refactor",
+  "status": "succeeded"
+}

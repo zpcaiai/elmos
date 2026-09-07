@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/tool-result-commit.schema.json",
+  "title": "Committed Tool Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "callIdentity",
+    "rawResultRef",
+    "effectiveResultRef",
+    "interceptorChain",
+    "commitState"
+  ],
+  "properties": {
+    "callIdentity": {
+      "type": "object",
+      "required": [
+        "invocationId",
+        "callId",
+        "executionPlanHash",
+        "environmentId",
+        "authoritySnapshotId"
+      ],
+      "properties": {
+        "invocationId": {
+          "type": "string"
+        },
+        "callId": {
+          "type": "string"
+        },
+        "executionPlanHash": {
+          "type": "string"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "authoritySnapshotId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rawResultRef": {
+      "type": "string"
+    },
+    "effectiveResultRef": {
+      "type": "string"
+    },
+    "interceptorChain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "interceptorId",
+          "version",
+          "decisionHash"
+        ],
+        "properties": {
+          "interceptorId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "decisionHash": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "commitState": {
+      "enum": [
+        "RAW_CAPTURED",
+        "INTERCEPTING",
+        "COMMITTED",
+        "PUBLISHED",
+        "ABORTED"
+      ]
+    },
+    "mutationProvenanceRef": {
+      "type": "string"
+    }
+  }
+}

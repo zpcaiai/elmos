@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 15
+name: elmos-multi-asset-content-fusion
+title: 多资产内容融合
+objective: 建立可解释的资产角色、实体关系和内容聚合，保留每个来源而不把差异抹平。
+dependencies:
+- elmos-unified-multimodal-content-ir
+- elmos-source-anchor-and-provenance
+inputs:
+- 多个 Asset、Content IR
+outputs:
+- FusedInputPackage、AssetRole、EntityLink
+responsibilities:
+- 识别主需求、补充资料、UI 参考、测试报告、日志和历史版本等角色
+- 基于内容哈希、语义和结构去重但保留版本关系
+- 关联跨文件实体、接口、页面、模块和决策
+- 输出融合包、未解析关联和质量报告
+deliverables:
+- FusionService 与角色分类器
+- AssetRelation、EntityLink 模型
+- 重复、互补和矛盾资料融合测试
+acceptance:
+- 重复内容不会在上下文中无意义占用多份
+- 来源差异仍可单独查看
+- 自动角色分类可被用户覆盖并审计
+- 融合结果不改变原始资产
+data_entities:
+- asset_roles
+- asset_relations
+- fusion_runs
+events:
+- asset.fusion.completed
+- asset.role.inferred
+metrics:
+- deduplication_precision
+- entity_link_f1
+failure_modes:
+- 错误合并
+- 实体同名异义
+- 版本顺序不明
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

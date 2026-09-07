@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "database_profile": "postgresql",
+  "schemas": [
+    "maintenance"
+  ],
+  "tables": [
+    {
+      "id": "TBL-ALERT",
+      "name": "alerts",
+      "owner_module": "MOD-ALERT",
+      "tenant_scoped": true,
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "equipment_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "version",
+          "type": "integer",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "constraints": [
+        {
+          "name": "ck_alert_status",
+          "expression": "status in ('OPEN','CONFIRMED','ASSIGNED','CLOSED')"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ix_alert_tenant_status",
+          "columns": [
+            "tenant_id",
+            "status"
+          ],
+          "reason": "REQ-ALERT-LIST"
+        }
+      ]
+    }
+  ]
+}

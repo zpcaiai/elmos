@@ -1,0 +1,22 @@
+request_id: conv-flutter-dashboard
+tenant_id: fixture
+source:
+  root: ./source
+  revision: fixture-flutter-dashboard-v1
+  framework_hint: flutter
+  include: ["lib/**/*", "pubspec.yaml"]
+  exclude: ["build/**"]
+targets: [wechat, alipay, douyin, xiaohongshu]
+strategy:
+  priority: fidelity
+  webview_fallback: deny
+  full_page_canvas_fallback: deny
+  unsupported_policy: ask-decision
+quality:
+  critical_flow_pass_rate: 1.0
+  visual_similarity_min: 0.95
+  max_auto_repair_iterations: 3
+release:
+  mode: build-only
+  human_approval_required: true
+  credential_refs: {}

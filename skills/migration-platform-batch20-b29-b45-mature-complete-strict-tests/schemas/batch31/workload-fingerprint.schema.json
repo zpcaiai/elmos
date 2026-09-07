@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "pack_key",
+    "snapshot_digest",
+    "engine_facts",
+    "object_counts",
+    "runtime_workload",
+    "unknowns",
+    "coverage"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "snapshot_digest": {
+      "type": "string"
+    },
+    "engine_facts": {
+      "type": "object"
+    },
+    "object_counts": {
+      "type": "object"
+    },
+    "runtime_workload": {
+      "type": "object"
+    },
+    "unknowns": {
+      "type": "array"
+    },
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

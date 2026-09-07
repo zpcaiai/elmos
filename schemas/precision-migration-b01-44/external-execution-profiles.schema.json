@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/external-execution-profiles.schema.json",
+  "title": "Precision Migration External Execution Profiles",
+  "type": "object",
+  "required": ["schema_version", "namespace", "registry_key", "profile_count", "excluded_native_b16_routes", "required_stages", "release_stages", "profiles", "registry_digest"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "registry_key": { "const": "precision-migration-external-execution-v1" },
+    "profile_count": { "const": 557 },
+    "excluded_native_b16_routes": { "const": 30 },
+    "required_stages": { "$ref": "#/$defs/requiredStages" },
+    "release_stages": {
+      "const": ["production_hsm", "authorized_canary", "verified_rollback", "external_certification"]
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 557,
+      "maxItems": 557,
+      "items": {
+        "type": "object",
+        "required": ["schema_version", "skill", "source_skill", "batch", "risk_tier", "handler_id", "handler_entrypoint", "contract_digest", "implementation_digest", "execution_kind", "native_tools", "required_stages", "release_stages", "corpus_policy", "operation_policy", "profile_digest"],
+        "properties": {
+          "schema_version": { "const": 1 },
+          "skill": { "type": "string", "pattern": "^pm-b[0-9]{2}-", "maxLength": 200 },
+          "source_skill": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "batch": { "type": "integer", "minimum": 1, "maximum": 44 },
+          "risk_tier": { "enum": ["P0", "P1"] },
+          "handler_id": { "type": "string", "minLength": 1 },
+          "handler_entrypoint": { "type": "string", "minLength": 3 },
+          "contract_digest": { "$ref": "#/$defs/digest" },
+          "implementation_digest": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+          "execution_kind": { "enum": ["NATIVE_TOOLCHAIN", "DOMAIN_RUNTIME", "REPOSITORY_RUNTIME", "EVIDENCE_RUNTIME", "CUTOVER_RUNTIME"] },
+          "native_tools": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "required_stages": { "$ref": "#/$defs/requiredStages" },
+          "release_stages": { "const": ["production_hsm", "authorized_canary", "verified_rollback", "external_certification"] },
+          "corpus_policy": { "type": "object", "minProperties": 5 },
+          "operation_policy": { "type": "object", "minProperties": 6 },
+          "profile_digest": { "$ref": "#/$defs/digest" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "registry_digest": { "$ref": "#/$defs/digest" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "requiredStages": {
+      "const": ["native_source_execution", "native_target_execution", "independent_holdout", "representative_customer_workload"]
+    }
+  }
+}

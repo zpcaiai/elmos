@@ -1,0 +1,4 @@
+interface:
+  display_name: "human escalation packet builder"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $human-escalation-packet-builder to perform this Batch 8 repair step."

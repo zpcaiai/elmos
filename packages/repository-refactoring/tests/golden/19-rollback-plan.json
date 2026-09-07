@@ -1,0 +1,68 @@
+{
+  "caseId": "19-rollback-plan",
+  "description": "Source rolls back by inverted patch; external effects compensate in reverse order.",
+  "evidence": {
+    "incidentDigest": "sha256:a56a7d7086a0dd1b5e2d1643a45be3ab48f6c0e7f8f314b117a64551bb6512dd",
+    "restoredTreeDigest": "sha256:aa2275886926d6c5c71860610583951379a8398ebf06fd87b040807463401989"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:6b1069d6381c7eead19c18b2744c2a06ed8e3aaec791522bfff0fa45cac2cfe1",
+  "outputDigest": "sha256:38b676aa89a5f5982fe73dc6e5ec2c99b57fcc24b2f63c7504c30bb065c1c293",
+  "projections": {
+    "output.incidentReport.failureBoundary": "transform",
+    "output.incidentReport.preservedEvidence": [
+      "journal:sha256:a8b6cf61124008196563e76a9fccd26d5b6a966176ac6388229f586566040608",
+      "events:4"
+    ],
+    "output.incidentReport.rollbackPlan": {
+      "approvalSteps": 0,
+      "automaticSteps": 1,
+      "blockedReason": "",
+      "checkpoint": {
+        "artifactManifestDigest": "sha256:bf551427bb93b2762e29fc326bedde7a8e2cac4e25b3126cea8fc66f46d2e55b",
+        "checkpointId": "recovery:00000002",
+        "createdAt": "2026-01-15T09:30:00Z",
+        "resumeToken": "sha256:fec9877f583ade7bea3d46820f13ed3ba48eeeda07b2207bd08b3cbc994a3050",
+        "runId": "recovery",
+        "sequence": 2,
+        "sideEffectCursor": 0,
+        "stateVersion": 1,
+        "stepId": "transform",
+        "workspaceTreeDigest": "sha256:aa2275886926d6c5c71860610583951379a8398ebf06fd87b040807463401989"
+      },
+      "executable": true,
+      "steps": [
+        {
+          "action": "reverse-patch",
+          "approvalReason": "",
+          "automatic": true,
+          "detail": "apply the inverse patch; this composes with unrelated changes, unlike a whole-tree restore",
+          "idempotencyKey": "sha256:783a0d23ec51df75654118e8e",
+          "order": 1,
+          "target": "4 file(s)"
+        }
+      ]
+    },
+    "output.rollbackExecution": {
+      "automatic": 1,
+      "pendingApproval": [],
+      "steps": [
+        {
+          "action": "reverse-patch",
+          "approvalReason": "",
+          "automatic": true,
+          "detail": "apply the inverse patch; this composes with unrelated changes, unlike a whole-tree restore",
+          "idempotencyKey": "sha256:783a0d23ec51df75654118e8e",
+          "order": 1,
+          "target": "4 file(s)"
+        }
+      ]
+    },
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R4",
+  "sideEffectsPerformed": true,
+  "skill": "rollback-and-recovery",
+  "status": "succeeded"
+}

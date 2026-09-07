@@ -1,0 +1,4 @@
+interface:
+  display_name: "Target Profile Selector"
+  short_description: "Select policy-approved migration targets"
+  default_prompt: "Use $target-profile-selector for ELMOS Batch 4 target selection."

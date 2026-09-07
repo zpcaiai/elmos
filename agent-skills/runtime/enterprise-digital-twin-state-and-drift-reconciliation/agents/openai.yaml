@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 004"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $enterprise-digital-twin-state-and-drift-reconciliation to implement its evidence-bound ELMOS Product Batch 30 contract."

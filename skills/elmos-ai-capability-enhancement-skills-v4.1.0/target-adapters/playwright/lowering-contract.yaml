@@ -1,0 +1,29 @@
+apiVersion: elmos.ai/v3alpha1
+kind: LoweringContract
+metadata:
+  adapter: playwright
+  version: 4.0.0
+spec:
+  input: AI-SIR@v2
+  stages:
+  - id: capability-negotiation
+    mustComplete: true
+  - id: semantic-gap-allocation
+    mustComplete: true
+  - id: target-native-lowering
+    mustComplete: true
+  - id: repository-emission
+    mustComplete: true
+  - id: native-validation
+    mustComplete: true
+  - id: evidence-sealing
+    mustComplete: true
+  deterministicFirst: true
+  allowedGenerativeScope: bounded unresolved mappings only
+  requiredLineage:
+  - ai_sir_node_id
+  - source_evidence
+  - target_file_range
+  - lowering_rule_id
+  - adapter_digest
+  upgradeStrategy: three-way semantic merge; preserve user-owned regions

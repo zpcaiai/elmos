@@ -1,0 +1,207 @@
+{
+  "corpora": [
+    {
+      "corpus": "development",
+      "functions": [
+        {
+          "body": [
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "subtotal"
+                },
+                "operator": "<",
+                "right": {
+                  "kind": "literal",
+                  "value": 0
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "expression": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "subtotal"
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "name",
+                  "value": "tax"
+                }
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "calculate",
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        }
+      ]
+    },
+    {
+      "corpus": "holdout",
+      "functions": [
+        {
+          "body": [
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "value"
+                },
+                "operator": ">",
+                "right": {
+                  "kind": "name",
+                  "value": "upper"
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "name",
+                    "value": "upper"
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "value"
+                },
+                "operator": "<",
+                "right": {
+                  "kind": "literal",
+                  "value": 0
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "expression": {
+                "kind": "name",
+                "value": "value"
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "clamp",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer"
+            },
+            {
+              "name": "upper",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        }
+      ]
+    },
+    {
+      "corpus": "real-repository",
+      "functions": [
+        {
+          "body": [
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "left"
+                },
+                "operator": "<",
+                "right": {
+                  "kind": "name",
+                  "value": "right"
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "expression": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "left"
+                },
+                "operator": "-",
+                "right": {
+                  "kind": "name",
+                  "value": "right"
+                }
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "difference",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        }
+      ]
+    }
+  ],
+  "route_key": "go-to-csharp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1"
+}

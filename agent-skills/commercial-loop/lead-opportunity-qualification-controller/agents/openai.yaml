@@ -1,0 +1,4 @@
+interface:
+  display_name: "lead-opportunity-qualification-controller"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $lead-opportunity-qualification-controller to evaluate this Batch 13 commercial capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Schema Expand Migrate Contract Planner"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $schema-expand-migrate-contract-planner to perform this Batch 11 production-cutover task."

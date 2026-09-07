@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 709: event message and schema harmonizer"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $event-message-and-schema-harmonizer to evaluate this capability with evidence."

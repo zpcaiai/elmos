@@ -1,0 +1,27 @@
+{
+  "budgets": {
+    "max_memory_mb": 2048,
+    "max_seconds": 600
+  },
+  "campaign_key": "fuzz.typed-l0-semantic-ir",
+  "coverage_signal": "semantic-production-and-error-class-coverage",
+  "dictionary_refs": [],
+  "owner": "elmos-polyglot-verification-engineering",
+  "sanitizers": [
+    "schema-validation",
+    "native-parser-diagnostics",
+    "counterexample-replay"
+  ],
+  "schema_version": 1,
+  "seed_corpus": [
+    "corpus/development/manifest.json",
+    "corpus/negative/manifest.json"
+  ],
+  "targets": [
+    "native-analyzers",
+    "canonical-ir",
+    "emitters",
+    "target-relift",
+    "evidence-validator"
+  ]
+}

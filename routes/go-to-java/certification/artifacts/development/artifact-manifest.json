@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/go-to-java/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 205,
+      "path": "Migrated.java",
+      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+    },
+    {
+      "bytes": 967,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:a520c7d1458d2e39d500d51d2375dfa043341270bc3a157f344a4e62fde22182"
+    },
+    {
+      "bytes": 1482,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:22ffddd938e01a1f7da1bfd1efd616a4e70051da06d215ac43da475674903346"
+    },
+    {
+      "bytes": 8193,
+      "path": "chunk-map.json",
+      "sha256": "sha256:757c7eb4a2bbdc07b1ad7961650c26dd6c7421c78c3a28de3afd646f7b959d81"
+    },
+    {
+      "bytes": 2948,
+      "path": "formal-composition.json",
+      "sha256": "sha256:13c6766d1bcf04642eba47c583d9f2750d59f5cb2606670345981e5ace07a5cf"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:1da3e2b5fa3896b337711967faa4b13908676c48d25c2a4f67d7391d9d66f1f7"
+    },
+    {
+      "bytes": 6490,
+      "path": "formal-input.json",
+      "sha256": "sha256:1b922cf8e31a85ee06e60f649740d4c9d886bbea14858a188c8260e64d643121"
+    },
+    {
+      "bytes": 2326,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:d85a910c01f61d90b7cdb13ded395d1149e502e72d74cbc35e520c1d9cb6e26a"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 125,
+      "path": "inputs/pricing.go",
+      "sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf"
+    },
+    {
+      "bytes": 3431,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:393af0cd624fb2da2ade0010ff5e3a257f0c97fa4a2a7ff50a6e5fdcecd566bd"
+    },
+    {
+      "bytes": 6829,
+      "path": "route-evidence.json",
+      "sha256": "sha256:d925439b7f42daad7c96c6b8e992a968368f6ba00314b9b33e9766d8873cf4d4"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 664,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798"
+    },
+    {
+      "bytes": 125,
+      "path": "source-runtime/pricing.go",
+      "sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf"
+    },
+    {
+      "bytes": 693,
+      "path": "source-runtime/source_behavior_test.go",
+      "sha256": "sha256:f186411ab094152f64de766349f95eac08c8673d27f21dc144b1352f5956bd03"
+    },
+    {
+      "bytes": 664,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798"
+    },
+    {
+      "bytes": 677,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:6eeace3446cfa818fdc03e1e3f4e05f76fe74488101641858ace58e74b14d306"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "go-to-java",
+  "schema_version": 1,
+  "total_bytes": 37260
+}

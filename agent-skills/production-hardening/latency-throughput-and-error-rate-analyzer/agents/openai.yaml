@@ -1,0 +1,4 @@
+interface:
+  display_name: "Latency Throughput and Error Rate Analyzer"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $latency-throughput-and-error-rate-analyzer to perform this Batch 10 production-hardening task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Compliance Engine Contract and Worker"
+  short_description: "Help with Security Compliance Engine Contract and Worker tasks"
+  default_prompt: "Use $security-compliance-engine-contract-and-worker to execute its ELMOS Batch 17 workflow safely."

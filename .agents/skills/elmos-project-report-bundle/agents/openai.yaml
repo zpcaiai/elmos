@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 项目全景报告与交付证据包"
+  short_description: "Guide 项目全景报告与交付证据包 with evidence controls"
+  default_prompt: "Use $elmos-project-report-bundle as guidance for 项目全景报告与交付证据包 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

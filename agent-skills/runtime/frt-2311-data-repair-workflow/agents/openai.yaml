@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Repair Workflow"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2311-data-repair-workflow to run FRT-2311 through the governed FRT runtime with exact scope and fail-closed evidence."

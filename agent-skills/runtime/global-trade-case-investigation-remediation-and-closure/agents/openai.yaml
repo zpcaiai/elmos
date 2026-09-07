@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Global Trade Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $global-trade-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B51 contract."

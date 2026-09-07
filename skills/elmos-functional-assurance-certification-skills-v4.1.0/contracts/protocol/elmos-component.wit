@@ -1,0 +1,10 @@
+package elmos:project-factory@4.0.0;
+
+interface evidence {
+  record artifact-ref { digest: string, uri: string }
+  seal: func(items: list<artifact-ref>) -> result<string, string>;
+}
+
+world certified-component {
+  export evidence;
+}

@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "package": "elmos-v3-harness-runtime-assurance-delta-v3.1.0",
+  "incrementalOnly": true,
+  "counts": {
+    "extensionSkills": 13,
+    "P0": 10,
+    "P1": 3,
+    "schemas": 15,
+    "payloadFiles": 130,
+    "referenceTests": 31,
+    "adapterProfiles": 4,
+    "regoModules": 5,
+    "databaseMigrations": 1
+  }
+}

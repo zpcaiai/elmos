@@ -1,0 +1,9 @@
+{
+  "tagId": "tagId-fixture",
+  "assetId": "assetId-fixture",
+  "sourceEndpointId": "sourceEndpointId-fixture",
+  "address": "address-fixture",
+  "dataType": "dataType-fixture",
+  "qualityProfile": "qualityProfile-fixture",
+  "writePolicy": "writePolicy-fixture"
+}

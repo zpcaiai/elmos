@@ -1,0 +1,65 @@
+{
+  "contract": {
+    "id": "B108-S06",
+    "batch": 108,
+    "name": "runtime-preview-evidence-schema",
+    "dependencies": [
+      "B107-S15",
+      "B108-S01"
+    ],
+    "inputs": [
+      "LiveValidationBundle",
+      "runtime lifecycle receipts"
+    ],
+    "outputs": [
+      "RuntimePreviewEvidence"
+    ],
+    "implementation": {
+      "modules": [
+        "evidence/runtime/RuntimePreviewEvidenceService.java",
+        "schemas/runtime-preview-evidence.schema.json"
+      ],
+      "interfaces": [
+        "POST /api/evidence/runtime-preview",
+        "event evidence.runtime-preview.created"
+      ],
+      "data": [
+        "runtime_preview_evidence"
+      ]
+    },
+    "workflow": [
+      "\u6620\u5c04Run\u4e0eImage\u8840\u7f18",
+      "\u7eb3\u5165ready/expires/destroyed\u65f6\u95f4",
+      "\u4ec5\u4fdd\u5b58Endpoint hash\u6216\u53d7\u63a7\u5f15\u7528",
+      "\u5173\u8054\u5065\u5eb7/API/\u6d4f\u89c8\u5668Claims",
+      "\u8bb0\u5f55\u8d44\u6e90/Provider/Policy\u6458\u8981",
+      "Schema\u9a8c\u8bc1\u5e76\u7b7e\u540d"
+    ],
+    "tests": [
+      "destroyed_at\u65e9\u4e8eready_at\u62d2\u7edd",
+      "URL\u660e\u6587\u6309Policy\u7981\u6b62",
+      "Claims\u65e0\u8bc1\u636e\u94fe\u63a5\u62d2\u7edd",
+      "Image digest\u7f3a\u5931\u62d2\u7edd",
+      "Provider receipt\u7b7e\u540d\u9a8c\u8bc1"
+    ],
+    "evidence": [
+      "runtime-preview-evidence.json",
+      "runtime-preview-signature.json",
+      "schema-validation.json"
+    ],
+    "definition_of_done": [
+      "Schema\u6709\u6548",
+      "\u65f6\u95f4\u7ebf\u4e00\u81f4",
+      "\u654f\u611fURL\u53d7\u63a7",
+      "Claims\u6709\u8bc1\u636e",
+      "\u4e3b\u4f53\u7ed1\u5b9a\u51c6\u786e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:55cd333ddba0b1a5e3049f329afcf8298f9b73fa2d8c9be57f5888b4f9de82ca",
+  "compiledVersion": 1
+}

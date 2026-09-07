@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bulkhead Backpressure and Load Shedding Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $bulkhead-backpressure-and-load-shedding-validator to perform this Batch 10 production-hardening task."

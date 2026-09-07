@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-spring-exception-mapping-refinement
+  title: Spring Exception Mapping Refinement
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: spring-modernization
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 证明异常类型到 HTTP 状态、错误码、响应体、日志等级和事务回滚决策的映射保持。
+  dependencies:
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  capabilities:
+  - sum-type equivalence
+  - decision-table completeness
+  - SMT relation checks
+  inputs:
+  - name: exception hierarchy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: handlers
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: API error schema
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: transaction policy
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: exception relation
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: unmapped cases
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: counterexample input
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

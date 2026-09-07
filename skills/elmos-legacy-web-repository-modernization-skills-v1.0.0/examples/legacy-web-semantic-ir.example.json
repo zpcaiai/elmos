@@ -1,0 +1,308 @@
+{
+  "irVersion": "1.0.0",
+  "repositorySnapshotId": "snapshot-demo-001",
+  "targetBaselineHint": {
+    "springBoot": "4.x",
+    "java": 21
+  },
+  "modules": [
+    {
+      "id": "module:web",
+      "name": "legacy-web",
+      "packaging": "war",
+      "frameworks": [
+        "struts1",
+        "servlet",
+        "jsp"
+      ],
+      "dependsOn": [],
+      "evidenceRefs": [
+        "ev:module-web"
+      ]
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "endpoint:orders-create",
+      "pathPattern": "/orders/create.do",
+      "methods": [
+        "POST"
+      ],
+      "dispatcherTypes": [
+        "REQUEST"
+      ],
+      "owner": {
+        "framework": "struts1",
+        "symbol": "com.acme.orders.CreateOrderAction"
+      },
+      "pipelineId": "pipeline:orders-create",
+      "bindingIds": [
+        "binding:customerId"
+      ],
+      "stateReadIds": [
+        "state:loginUser"
+      ],
+      "stateWriteIds": [
+        "state:currentOrder"
+      ],
+      "securityRuleIds": [
+        "security:authenticated"
+      ],
+      "transactionIds": [
+        "tx:create-order"
+      ],
+      "sideEffectIds": [
+        "effect:insert-order"
+      ],
+      "navigation": [
+        {
+          "when": "SUCCESS",
+          "kind": "forward",
+          "target": "/WEB-INF/jsp/order/success.jsp",
+          "status": 200,
+          "preserveRequestAttributes": true
+        },
+        {
+          "when": "ERROR",
+          "kind": "forward",
+          "target": "/WEB-INF/jsp/order/error.jsp",
+          "status": 200,
+          "preserveRequestAttributes": true
+        }
+      ],
+      "criticality": "critical",
+      "evidenceRefs": [
+        "route:orders-create",
+        "symbol:CreateOrderAction"
+      ]
+    }
+  ],
+  "pipelines": [
+    {
+      "id": "pipeline:orders-create",
+      "steps": [
+        {
+          "id": "step:roles",
+          "kind": "roles",
+          "order": 100,
+          "phase": "before",
+          "condition": null,
+          "shortCircuit": {
+            "onDeny": "error"
+          },
+          "reads": [
+            "state:loginUser"
+          ],
+          "writes": [],
+          "sideEffects": [],
+          "evidenceRefs": [
+            "ev:roles"
+          ]
+        },
+        {
+          "id": "step:form-reset",
+          "kind": "form-reset",
+          "order": 200,
+          "phase": "before",
+          "condition": null,
+          "shortCircuit": {},
+          "reads": [],
+          "writes": [],
+          "sideEffects": [],
+          "evidenceRefs": [
+            "ev:form-reset"
+          ]
+        },
+        {
+          "id": "step:populate",
+          "kind": "populate",
+          "order": 300,
+          "phase": "before",
+          "condition": null,
+          "shortCircuit": {},
+          "reads": [],
+          "writes": [],
+          "sideEffects": [],
+          "evidenceRefs": [
+            "ev:populate"
+          ]
+        },
+        {
+          "id": "step:validate",
+          "kind": "validation",
+          "order": 400,
+          "phase": "before",
+          "condition": null,
+          "shortCircuit": {
+            "onFailure": "input"
+          },
+          "reads": [],
+          "writes": [],
+          "sideEffects": [],
+          "evidenceRefs": [
+            "ev:validate"
+          ]
+        },
+        {
+          "id": "step:action",
+          "kind": "action",
+          "order": 500,
+          "phase": "invoke",
+          "condition": null,
+          "shortCircuit": {},
+          "reads": [
+            "state:loginUser"
+          ],
+          "writes": [
+            "state:currentOrder"
+          ],
+          "sideEffects": [
+            "effect:insert-order"
+          ],
+          "evidenceRefs": [
+            "symbol:CreateOrderAction"
+          ]
+        },
+        {
+          "id": "step:forward",
+          "kind": "navigation",
+          "order": 600,
+          "phase": "result",
+          "condition": null,
+          "shortCircuit": {},
+          "reads": [],
+          "writes": [],
+          "sideEffects": [],
+          "evidenceRefs": [
+            "ev:forward"
+          ]
+        }
+      ],
+      "evidenceRefs": [
+        "ev:request-processor-sequence"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "binding:customerId",
+      "sourceName": "customerId",
+      "aliases": [],
+      "targetPath": "customerId",
+      "targetType": "java.lang.Long",
+      "scope": "request",
+      "required": true,
+      "resetBeforePopulate": false,
+      "conversion": {
+        "kind": "long",
+        "onError": "validation"
+      },
+      "allowlisted": true,
+      "evidenceRefs": [
+        "ev:form-property"
+      ]
+    }
+  ],
+  "stateObjects": [
+    {
+      "id": "state:loginUser",
+      "key": "loginUser",
+      "scope": "session",
+      "type": "com.acme.User",
+      "lifetime": "session",
+      "serializable": true,
+      "reads": [
+        "step:roles",
+        "step:action"
+      ],
+      "writes": [],
+      "evidenceRefs": [
+        "ev:session-user"
+      ]
+    },
+    {
+      "id": "state:currentOrder",
+      "key": "currentOrder",
+      "scope": "session",
+      "type": "com.acme.Order",
+      "lifetime": "session",
+      "serializable": true,
+      "reads": [],
+      "writes": [
+        "step:action"
+      ],
+      "evidenceRefs": [
+        "state:currentOrder"
+      ]
+    }
+  ],
+  "views": [
+    {
+      "id": "view:order-success",
+      "kind": "jsp",
+      "path": "/WEB-INF/jsp/order/success.jsp",
+      "reads": [
+        "currentOrder"
+      ],
+      "taglibs": [
+        "struts-bean"
+      ],
+      "sideEffects": [],
+      "evidenceRefs": [
+        "ev:jsp-success"
+      ]
+    }
+  ],
+  "securityRules": [
+    {
+      "id": "security:authenticated",
+      "kind": "authentication",
+      "decisionPoint": "before-action",
+      "roles": [],
+      "onDeny": {
+        "kind": "redirect",
+        "target": "/login.do"
+      },
+      "evidenceRefs": [
+        "ev:auth-check"
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx:create-order",
+      "boundary": "CreateOrderService.create",
+      "propagation": "REQUIRED",
+      "isolation": "DEFAULT",
+      "commit": "normal return",
+      "rollback": "OrderException",
+      "evidenceRefs": [
+        "ev:tx"
+      ]
+    }
+  ],
+  "sideEffects": [
+    {
+      "id": "effect:insert-order",
+      "kind": "database",
+      "destination": "orders",
+      "operation": "insert",
+      "order": 1,
+      "idempotency": "none",
+      "transactionId": "tx:create-order",
+      "evidenceRefs": [
+        "ev:sql-insert"
+      ]
+    }
+  ],
+  "deployment": {
+    "contextPath": "/legacy",
+    "packaging": "war",
+    "jsp": true
+  },
+  "concurrency": [],
+  "unknownRefs": [],
+  "evidenceCoverage": {
+    "critical": 1.0
+  }
+}

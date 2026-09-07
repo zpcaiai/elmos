@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "CertificationScope",
+  "metadata": {
+    "id": "certification-scope-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "subject": "example-subject",
+    "revisionSet": "example-revisionSet",
+    "assumptions": [],
+    "excludedClaims": []
+  }
+}

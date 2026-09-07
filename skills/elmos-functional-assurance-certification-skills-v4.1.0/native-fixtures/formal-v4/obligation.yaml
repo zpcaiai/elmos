@@ -1,0 +1,6 @@
+claim: no double commit
+methodCandidates:
+- tla-plus
+- z3
+- runtime-monitor
+criticality: critical

@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "MaintainabilityCertificate",
+  "metadata": {
+    "id": "maintainability-certificate-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "repository": "example-repository",
+    "fitnessResults": [],
+    "changeBenchmark": {},
+    "technicalDebt": []
+  }
+}

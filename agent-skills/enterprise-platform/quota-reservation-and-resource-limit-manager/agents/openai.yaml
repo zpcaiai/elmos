@@ -1,0 +1,4 @@
+interface:
+  display_name: "quota-reservation-and-resource-limit-manager"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $quota-reservation-and-resource-limit-manager to evaluate this enterprise platform capability with evidence."

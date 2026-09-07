@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-event-sourced-session-runtime"
+  short_description: "Use this imported Elmos commercial blueprint"
+  default_prompt: "Use $elmos-event-sourced-session-runtime within its imported blueprint boundary; require real runtime and external evidence before completion claims."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Aspnet Framework To Aspnet Core Migrator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $aspnet-framework-to-aspnet-core-migrator to execute this ELMOS Runtime Skill with fail-closed evidence."

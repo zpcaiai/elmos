@@ -1,0 +1,4 @@
+interface:
+  display_name: "B76 Build Proxy Configuration Certifier"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b76-build-proxy-configuration-certifier to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Developer Telemetry Privacy"
+  short_description: "Run evidence-bound Batch 36 developer telemetry privacy work"
+  default_prompt: "Use $b36-developer-telemetry-privacy to implement and verify this capability with fail-closed evidence."

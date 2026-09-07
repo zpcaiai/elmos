@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 662: vertical poc and demo factory"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $vertical-poc-and-demo-factory to evaluate this capability with evidence."

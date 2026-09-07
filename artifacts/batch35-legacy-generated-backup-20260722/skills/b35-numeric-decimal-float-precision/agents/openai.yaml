@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Numeric Decimal Float Precision"
+  short_description: "Run evidence-bound Batch 35 numeric decimal float precision work"
+  default_prompt: "Use $b35-numeric-decimal-float-precision to implement and verify this capability with fail-closed evidence."

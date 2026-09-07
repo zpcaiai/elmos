@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/structured-patch.schema.json",
+  "title": "Batch 8 Structured Patch",
+  "type": "object",
+  "required": ["patchId", "clusterId", "planId", "baseSnapshotId", "modifications", "agentGenerated", "highRisk", "humanReviewApproved", "agentTokens", "costMicros", "expectedDiagnosticsRemoved", "patchArtifactRef"],
+  "properties": {
+    "patchId": {"type": "string", "minLength": 1}, "clusterId": {"type": "string", "minLength": 1},
+    "planId": {"type": "string", "minLength": 1}, "baseSnapshotId": {"type": "string", "minLength": 1},
+    "modifications": {"type": "array", "items": {"$ref": "#/$defs/modification"}, "minItems": 1},
+    "agentGenerated": {"type": "boolean"}, "highRisk": {"type": "boolean"},
+    "humanReviewApproved": {"type": "boolean"}, "reviewEvidenceRef": {"type": ["string", "null"]},
+    "agentTokens": {"type": "integer", "minimum": 0}, "costMicros": {"type": "integer", "minimum": 0},
+    "expectedDiagnosticsRemoved": {"type": "array", "items": {"type": "string"}},
+    "patchArtifactRef": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "modification": {
+      "type": "object",
+      "required": ["file", "operation", "beforeHash", "afterHash", "linesChanged", "touchesManualRegion", "publicApiChanged", "securityBehaviorChanged", "transactionBehaviorChanged", "deletesTest", "weakensAssertion", "suppressDelta", "dynamicOrAnyDelta", "dependenciesAdded"],
+      "properties": {
+        "file": {"type": "string", "minLength": 1}, "targetDeclarationId": {"type": ["string", "null"]},
+        "operation": {"type": "string", "minLength": 1}, "beforeHash": {"$ref": "#/$defs/hash"},
+        "afterHash": {"$ref": "#/$defs/hash"}, "linesChanged": {"type": "integer", "minimum": 0},
+        "touchesManualRegion": {"type": "boolean"}, "publicApiChanged": {"type": "boolean"},
+        "securityBehaviorChanged": {"type": "boolean"}, "transactionBehaviorChanged": {"type": "boolean"},
+        "deletesTest": {"type": "boolean"}, "weakensAssertion": {"type": "boolean"},
+        "suppressDelta": {"type": "integer", "minimum": 0}, "dynamicOrAnyDelta": {"type": "integer", "minimum": 0},
+        "dependenciesAdded": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

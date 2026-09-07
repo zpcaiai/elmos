@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Identity Security Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $identity-security-workflow-orchestration-assignment-esc-27d04dc2 to implement its fail-closed ELMOS Product B48 contract."

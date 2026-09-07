@@ -1,0 +1,1180 @@
+{
+  "schemaVersion": "elmos.route-certification-registry/v1",
+  "metadata": {
+    "name": "elmos-route-certification-v3",
+    "version": "3.0.0"
+  },
+  "spec": {
+    "levelsReference": "references/e0-e5-certification-standard-v3.md",
+    "routes": [
+      {
+        "route": "route-java-spring-to-csharp-aspnet-core",
+        "source": "java",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-java-spring-to-csharp-aspnet-core.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-csharp-aspnet-core-to-java-spring",
+        "source": "csharp",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-csharp-aspnet-core-to-java-spring.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-java-to-kotlin",
+        "source": "java",
+        "target": "kotlin",
+        "referenceProfile": "route-profiles/route-java-to-kotlin.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-kotlin-to-java",
+        "source": "kotlin",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-kotlin-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-javascript-to-typescript",
+        "source": "javascript",
+        "target": "typescript",
+        "referenceProfile": "route-profiles/route-javascript-to-typescript.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "browser-js-wasm"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-objective-c-to-swift",
+        "source": "objc",
+        "target": "swift",
+        "referenceProfile": "route-profiles/route-objective-c-to-swift.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mobile-native"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-cpp-to-rust",
+        "source": "cpp",
+        "target": "rust",
+        "referenceProfile": "route-profiles/route-cpp-to-rust.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-formal-assurance-gate"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-rust-to-cpp",
+        "source": "rust",
+        "target": "cpp",
+        "referenceProfile": "route-profiles/route-rust-to-cpp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-php-laravel-to-typescript-nest",
+        "source": "php",
+        "target": "typescript",
+        "referenceProfile": "route-profiles/route-php-laravel-to-typescript-nest.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "browser-js-wasm"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-python-fastapi-to-go",
+        "source": "python",
+        "target": "go",
+        "referenceProfile": "route-profiles/route-python-fastapi-to-go.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-python-django-to-typescript-nest",
+        "source": "python",
+        "target": "typescript",
+        "referenceProfile": "route-profiles/route-python-django-to-typescript-nest.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "browser-js-wasm"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-java-android-to-flutter",
+        "source": "java",
+        "target": "flutter",
+        "referenceProfile": "route-profiles/route-java-android-to-flutter.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mobile-native"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-kotlin-android-to-flutter",
+        "source": "kotlin",
+        "target": "flutter",
+        "referenceProfile": "route-profiles/route-kotlin-android-to-flutter.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mobile-native"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-swift-uikit-to-flutter",
+        "source": "swift",
+        "target": "flutter",
+        "referenceProfile": "route-profiles/route-swift-uikit-to-flutter.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mobile-native"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-react-to-flutter",
+        "source": "react",
+        "target": "flutter",
+        "referenceProfile": "route-profiles/route-react-to-flutter.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "browser-js-wasm",
+          "mobile-native"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-php-laravel-to-python-fastapi",
+        "source": "php",
+        "target": "python",
+        "referenceProfile": "route-profiles/route-php-laravel-to-python-fastapi.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-go-to-rust",
+        "source": "go",
+        "target": "rust",
+        "referenceProfile": "route-profiles/route-go-to-rust.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-spring-in-place-modernization",
+        "source": "java",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-spring-in-place-modernization.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-mainframe-cobol-to-java",
+        "source": "cobol",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-mainframe-cobol-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mainframe"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-mainframe-cobol-to-csharp",
+        "source": "cobol",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-mainframe-cobol-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics"
+        ],
+        "requiredLabs": [
+          "mainframe"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-ibmi-rpg-to-java",
+        "source": "rpg",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-ibmi-rpg-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "ibmi"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-ibmi-rpg-to-csharp",
+        "source": "rpg",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-ibmi-rpg-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics"
+        ],
+        "requiredLabs": [
+          "ibmi"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-pli-to-java",
+        "source": "pli",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-pli-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "mainframe"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-pli-to-csharp",
+        "source": "pli",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-pli-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics"
+        ],
+        "requiredLabs": [
+          "mainframe"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-vb6-to-csharp",
+        "source": "vb6",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-vb6-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate"
+        ],
+        "requiredLabs": [
+          "windows-legacy"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-vbscript-to-csharp",
+        "source": "vbscript",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-vbscript-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate"
+        ],
+        "requiredLabs": [
+          "windows-legacy"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-powerbuilder-to-csharp-react",
+        "source": "powerscript",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-powerbuilder-to-csharp-react.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate"
+        ],
+        "requiredLabs": [
+          "windows-legacy"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-delphi-to-csharp",
+        "source": "object-pascal",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-delphi-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator"
+        ],
+        "requiredLabs": [
+          "windows-legacy"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-abap-to-java",
+        "source": "abap",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-abap-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "sap-abap"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-natural-adabas-to-java",
+        "source": "natural",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-natural-adabas-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-abl-openedge-to-java",
+        "source": "abl",
+        "target": "java",
+        "referenceProfile": "route-profiles/route-abl-openedge-to-java.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ui-interaction-equivalence"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-c-to-rust",
+        "source": "c",
+        "target": "rust",
+        "referenceProfile": "route-profiles/route-c-to-rust.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-formal-assurance-gate"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-c-to-cpp-modernization",
+        "source": "c",
+        "target": "cpp",
+        "referenceProfile": "route-profiles/route-c-to-cpp-modernization.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-ada-spark-to-rust",
+        "source": "ada-spark",
+        "target": "rust",
+        "referenceProfile": "route-profiles/route-ada-spark-to-rust.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-formal-assurance-gate"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-rust-to-ada-spark-assurance",
+        "source": "rust",
+        "target": "ada-spark",
+        "referenceProfile": "route-profiles/route-rust-to-ada-spark-assurance.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-formal-assurance-gate"
+        ],
+        "requiredLabs": [
+          "standard-polyglot"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-fortran-to-cpp",
+        "source": "fortran",
+        "target": "cpp",
+        "referenceProfile": "route-profiles/route-fortran-to-cpp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-runtime-edge-semantics-gate",
+          "elmos-native-ub-sanitizer-orchestrator",
+          "elmos-ieee754-floating-point-semantics"
+        ],
+        "requiredLabs": [
+          "scientific-hpc"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-fortran-to-python-numerical",
+        "source": "fortran",
+        "target": "python",
+        "referenceProfile": "route-profiles/route-fortran-to-python-numerical.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-dynamic-language-shape-inference",
+          "elmos-reflection-dynamic-dispatch-semantics"
+        ],
+        "requiredLabs": [
+          "scientific-hpc"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-xbase-foxpro-to-csharp",
+        "source": "xbase",
+        "target": "csharp",
+        "referenceProfile": "route-profiles/route-xbase-foxpro-to-csharp.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate"
+        ],
+        "requiredLabs": [
+          "windows-legacy"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-cobol-in-place-modernization",
+        "source": "cobol",
+        "target": "cobol",
+        "referenceProfile": "route-profiles/route-cobol-in-place-modernization.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics"
+        ],
+        "requiredLabs": [
+          "mainframe"
+        ],
+        "readiness": "not-run"
+      },
+      {
+        "route": "route-rpg-in-place-modernization",
+        "source": "rpg",
+        "target": "rpg",
+        "referenceProfile": "route-profiles/route-rpg-in-place-modernization.yaml",
+        "targetLevels": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5"
+        ],
+        "requiredSemanticSkills": [
+          "elmos-frontend-consistency-gate",
+          "elmos-type-semantic-loss-gate",
+          "elmos-control-data-effect-equivalence-gate",
+          "elmos-behavior-equivalence-verdict-aggregator",
+          "elmos-certification-corpus-readiness-gate",
+          "elmos-native-runtime-lab-evidence-attestor",
+          "elmos-semantic-stress-certification-gate",
+          "elmos-ieee754-floating-point-semantics",
+          "elmos-decimal-money-arithmetic-semantics",
+          "elmos-binary-record-wire-layout-semantics"
+        ],
+        "requiredLabs": [
+          "ibmi"
+        ],
+        "readiness": "not-run"
+      }
+    ]
+  }
+}

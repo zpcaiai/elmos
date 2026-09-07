@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B14: Rust Code Generator"
+  short_description: "Run Precision Migration B14 with evidence controls"
+  default_prompt: "Use $pm-b14-rust-code-generator to execute this Precision Migration contract with fail-closed evidence."

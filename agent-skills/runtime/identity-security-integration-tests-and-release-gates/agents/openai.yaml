@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 024"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $identity-security-integration-tests-and-release-gates to implement its fail-closed ELMOS Product Batch 34 contract."

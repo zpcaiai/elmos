@@ -1,0 +1,32 @@
+skill: miniapp-semantic-ir
+version: 1.0.0
+task_ids:
+- MAPP-011
+- MAPP-012
+required_outputs:
+- path: semantic-ir.json
+  required: true
+- path: ir-validation.json
+  required: true
+- path: ir-trace-index.json
+  required: true
+- path: ir-migration-log.json
+  required: true
+gates:
+- name: Draft 2020-12 Schema 通过
+  required: true
+- name: 引用闭合
+  required: true
+- name: 序列化稳定
+  required: true
+- name: trace 覆盖率=100%
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

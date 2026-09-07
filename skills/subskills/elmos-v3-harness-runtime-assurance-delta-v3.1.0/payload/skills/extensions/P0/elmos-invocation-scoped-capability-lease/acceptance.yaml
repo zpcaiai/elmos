@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-invocation-scoped-capability-lease
+  version: 3.1.0
+spec:
+  hardGates:
+  - capability lease is bound to invocation, environment, authority snapshot and execution epoch
+  - returned future cannot outlive the invocation lease
+  - cancel, timeout, turn abort and executor replacement revoke all borrowed capabilities
+  - plugins cannot persist or deserialize a live host capability
+  - use-after-revoke is rejected and audited
+  scenarios:
+  - id: ELMOS-V3D-004-A01
+    title: capability lease is bound to invocation, environment, authority snapshot and execution epoch
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-invocation-scoped-capability-lease processes a production lifecycle transition
+    then:
+    - capability lease is bound to invocation, environment, authority snapshot and execution epoch is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-004-A02
+    title: returned future cannot outlive the invocation lease
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-invocation-scoped-capability-lease processes a production lifecycle transition
+    then:
+    - returned future cannot outlive the invocation lease is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-004-A03
+    title: cancel, timeout, turn abort and executor replacement revoke all borrowed capabilities
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-invocation-scoped-capability-lease processes a production lifecycle transition
+    then:
+    - cancel, timeout, turn abort and executor replacement revoke all borrowed capabilities is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-004-A04
+    title: plugins cannot persist or deserialize a live host capability
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-invocation-scoped-capability-lease processes a production lifecycle transition
+    then:
+    - plugins cannot persist or deserialize a live host capability is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-004-A05
+    title: use-after-revoke is rejected and audited
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-invocation-scoped-capability-lease processes a production lifecycle transition
+    then:
+    - use-after-revoke is rejected and audited is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-004-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-004-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-004-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

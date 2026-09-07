@@ -1,0 +1,4 @@
+interface:
+  display_name: "Timeout, Retry and Circuit Breaker Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2802-timeout-retry-and-circuit-breaker-validator to run FRT-2802 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-090",
+  "name": "gr-multirepo",
+  "title": "Multi-repository Campaign",
+  "description": "跨仓管理共享 API、数据库、库版本、依赖顺序、发布波次和回滚。",
+  "batch": "22",
+  "batch_slug": "scale-factory-learning-flywheel",
+  "priority": "P1",
+  "risk": "high",
+  "path": "skills/gr-multirepo/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "gr-large-repo"
+  ],
+  "outputs": [
+    "campaign-dag.json",
+    "wave-plans",
+    "portfolio-proofs"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "Portfolio graph",
+    "Wave DAG",
+    "Cross-repo compatibility",
+    "Shared DB ownership",
+    "Per-repo+portfolio proof"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "S3/S4/S5 scale 与 fault injection",
+    "缓存 stale/poison/tenant leakage",
+    "候选 Recipe positive/negative/holdout/idempotency",
+    "多仓共享 DB/API compatibility"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: campaign-dag.json, wave-plans, portfolio-proofs"
+  ],
+  "stop_conditions": [
+    "资源预算持续超限",
+    "跨仓合同无兼容/rollback",
+    "客户无学习授权",
+    "候选 Recipe 有 P0 regression/许可问题"
+  ],
+  "definition_of_done": [
+    ">500k/>1M flagship clean-room 案例满足 L3",
+    "Certified Recipe 默认最小权限且可撤销",
+    "下一路线使用独立 Contract/Benchmark/L3 Gate"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

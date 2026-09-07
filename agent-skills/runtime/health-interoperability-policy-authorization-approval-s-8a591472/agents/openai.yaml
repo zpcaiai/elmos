@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Health Interoperability Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-policy-authorization-approval-s-8a591472 to implement its fail-closed ELMOS Product B52 contract."

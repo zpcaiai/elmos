@@ -1,0 +1,4 @@
+interface:
+  display_name: "unified diagnostic protocol"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $unified-diagnostic-protocol to perform this Batch 8 repair step."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "product-usage-customer-value-and-adoption-analytics"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $product-usage-customer-value-and-adoption-analytics to evaluate this Batch 13 commercial capability with evidence."

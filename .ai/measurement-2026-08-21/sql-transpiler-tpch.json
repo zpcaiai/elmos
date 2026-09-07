@@ -1,0 +1,223 @@
+{
+  "kind": "elmos.sql-transpiler-real-query-measurement",
+  "schema_version": "1.0.0",
+  "instrument": "elmos_sql_transpiler.transpiler.transpile",
+  "corpus": {
+    "label": "tpch-22",
+    "queries": 22,
+    "note": "TPC-H benchmark queries, substitution points bound to literals. Not seen by the engine's synthetic development/holdout/representative corpora."
+  },
+  "routes": 42,
+  "cells": 924,
+  "buckets": {
+    "SUPPORTED": 924
+  },
+  "rates": {
+    "supported_over_cells": 1.0,
+    "supported_over_decided": 1.0,
+    "engine_error_share": 0.0
+  },
+  "top_reasons": {},
+  "per_route": {
+    "duckdb-1.5.4--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "duckdb-1.5.4--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "duckdb-1.5.4--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "duckdb-1.5.4--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "duckdb-1.5.4--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    },
+    "duckdb-1.5.4--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    },
+    "mysql-8.4.10-lts--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    },
+    "oracle-26ai-ee--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    },
+    "postgresql-17.5--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    },
+    "postgresql-18.4--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "sqlite-3.53.3--to--sqlserver-2022-cu26": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--duckdb-1.5.4": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--mysql-8.4.10-lts": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--oracle-26ai-ee": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--postgresql-17.5": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--postgresql-18.4": {
+      "SUPPORTED": 22
+    },
+    "sqlserver-2022-cu26--to--sqlite-3.53.3": {
+      "SUPPORTED": 22
+    }
+  },
+  "per_query": {
+    "q1": {
+      "SUPPORTED": 42
+    },
+    "q10": {
+      "SUPPORTED": 42
+    },
+    "q11": {
+      "SUPPORTED": 42
+    },
+    "q12": {
+      "SUPPORTED": 42
+    },
+    "q13": {
+      "SUPPORTED": 42
+    },
+    "q14": {
+      "SUPPORTED": 42
+    },
+    "q15": {
+      "SUPPORTED": 42
+    },
+    "q16": {
+      "SUPPORTED": 42
+    },
+    "q17": {
+      "SUPPORTED": 42
+    },
+    "q18": {
+      "SUPPORTED": 42
+    },
+    "q19": {
+      "SUPPORTED": 42
+    },
+    "q2": {
+      "SUPPORTED": 42
+    },
+    "q20": {
+      "SUPPORTED": 42
+    },
+    "q21": {
+      "SUPPORTED": 42
+    },
+    "q22": {
+      "SUPPORTED": 42
+    },
+    "q3": {
+      "SUPPORTED": 42
+    },
+    "q4": {
+      "SUPPORTED": 42
+    },
+    "q5": {
+      "SUPPORTED": 42
+    },
+    "q6": {
+      "SUPPORTED": 42
+    },
+    "q7": {
+      "SUPPORTED": 42
+    },
+    "q8": {
+      "SUPPORTED": 42
+    },
+    "q9": {
+      "SUPPORTED": 42
+    }
+  },
+  "engine_errors_sample": [],
+  "limitations": [
+    "Syntax-level only: this transpiles and re-parses. No source execution, target execution or result equivalence was run -- those are NOT_RUN in the engine too.",
+    "SUPPORTED means the engine produced target SQL that re-parsed, not that the two queries return the same rows.",
+    "ENGINE_ERROR is a defect, never a subset boundary, and is excluded from supported_over_decided."
+  ]
+}

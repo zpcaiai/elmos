@@ -1,0 +1,62 @@
+{
+  "BATCH": 39,
+  "TITLE": "全球SRE与平台运营",
+  "PACK_TYPE": "sre-operations",
+  "SKILL_COUNT": 22,
+  "SKILL_NAMES": [
+    "b39-global-sre-operations-factory",
+    "b39-service-catalog-sli-slo",
+    "b39-error-budget-reliability-investment",
+    "b39-global-observability-business-telemetry",
+    "b39-tenant-project-migration-health",
+    "b39-job-fair-scheduling-resource-isolation",
+    "b39-autoscaling-capacity-control",
+    "b39-multiregion-failover",
+    "b39-backup-restore-data-recovery",
+    "b39-incident-command-major-incident",
+    "b39-problem-management-root-cause",
+    "b39-oncall-escalation-follow-the-sun",
+    "b39-customer-status-incident-communication",
+    "b39-enterprise-support-tiers-sla",
+    "b39-change-management-release-freeze",
+    "b39-platform-cost-anomaly-monitoring",
+    "b39-chaos-resilience-fault-injection",
+    "b39-production-readiness-review",
+    "b39-customer-sla-service-credit",
+    "b39-periodic-restore-dr-exercise",
+    "b39-operational-evidence-customer-report",
+    "b39-global-operations-certification-gate"
+  ],
+  "METRICS": {
+    "service_catalog_coverage": 1.0,
+    "slo_compliance_rate": 0.999,
+    "incident_response_exercise_pass_rate": 1.0,
+    "restore_pass_rate": 1.0,
+    "multiregion_failover_pass_rate": 1.0,
+    "fair_scheduling_pass_rate": 1.0,
+    "support_sla_pass_rate": 1.0,
+    "production_readiness_pass_rate": 1.0,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "unresolved_sev1_incidents",
+    "rpo_breaches",
+    "rto_breaches",
+    "tenant_starvation_events",
+    "unowned_critical_alerts",
+    "missing_critical_runbooks",
+    "cross_tenant_observability_leaks",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "service-catalog",
+    "slo-profile",
+    "incident-plan",
+    "capacity-plan",
+    "dr-exercise"
+  ],
+  "REQUIRED_BATCHES": [
+    27,
+    38
+  ]
+}

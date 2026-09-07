@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 578: ai capability academy and certification manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-capability-academy-and-certification-manager to evaluate this capability with evidence."

@@ -1,0 +1,66 @@
+{
+  "id": "B107-S03",
+  "batch": 107,
+  "name": "openapi-breaking-change-gate",
+  "dependencies": [
+    "B107-S02"
+  ],
+  "inputs": [
+    "baseline OpenAPI",
+    "runtime candidate OpenAPI",
+    "compatibility policy"
+  ],
+  "outputs": [
+    "OpenAPIDiff",
+    "breaking-change decision"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/openapi/OpenApiCompatibilityGate.java",
+      "adapters/oasdiff/",
+      "policies/openapi-compatibility.yaml"
+    ],
+    "interfaces": [
+      "POST /api/validations/openapi-diff",
+      "event gate.openapi.decided"
+    ],
+    "data": [
+      "openapi_diff",
+      "api_breaking_change",
+      "api_gate_decision"
+    ]
+  },
+  "workflow": [
+    "规范化两个版本并冻结工具版本",
+    "执行结构化diff",
+    "分类ERROR/WARN/INFO",
+    "应用允许列表但绑定路径与到期日",
+    "生成面向代码和管理层的报告",
+    "ERROR或策略WARN时拒绝"
+  ],
+  "tests": [
+    "删除endpoint为ERROR",
+    "新增可选字段为INFO",
+    "required参数变化为ERROR",
+    "Security scheme减弱为ERROR",
+    "过期allowlist失效"
+  ],
+  "evidence": [
+    "openapi-diff.json",
+    "api-breaking-changes.md",
+    "allowlist-evaluation.json",
+    "api-gate-decision.json"
+  ],
+  "definition_of_done": [
+    "ERROR=0",
+    "阻断WARN=0",
+    "工具版本固定",
+    "allowlist可审计",
+    "结果进入Required Check"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

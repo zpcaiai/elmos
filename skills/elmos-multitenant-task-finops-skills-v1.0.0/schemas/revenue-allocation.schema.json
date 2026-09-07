@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/revenue-allocation.schema.json",
+  "title": "Elmos Revenue Allocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "allocation_id",
+    "tenant_id",
+    "source_revenue_entry_id",
+    "allocation_scope",
+    "allocated_amount",
+    "currency",
+    "allocation_method",
+    "policy_version",
+    "occurred_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "allocation_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_revenue_entry_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "project_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "task_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "task_run_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "allocation_scope": {
+      "enum": [
+        "TENANT",
+        "ACCOUNT",
+        "PROJECT",
+        "TASK",
+        "TASK_RUN",
+        "UNALLOCATED"
+      ]
+    },
+    "allocated_amount": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "allocation_method": {
+      "enum": [
+        "DIRECT",
+        "MILESTONE",
+        "USAGE_WEIGHTED",
+        "MANUAL_APPROVED"
+      ]
+    },
+    "weight": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "details": {
+      "type": "object"
+    }
+  }
+}

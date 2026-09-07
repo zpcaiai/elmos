@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 035"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $service-principal-oauth-mtls-token-exchange-and-delegation to implement its fail-closed ELMOS Product Batch 34 contract."

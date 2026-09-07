@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "snapshot_key": "elmos-web-console-before-workflow-polish",
+  "captured_for": "workflow-polish-0.3.0",
+  "aggregate_sha256": "f43f1d3302d3a09e1e63bb093b8d6b7c4dfae81282c36b6d69bab1f431b16daf",
+  "files": [
+    {"path":"apps/web-console/app/migration/MigrationStudio.tsx","sha256":"874332a470b6ec0483e601cb6f2593b38fd09a19a391bcd95d1defdca60cf4f7"},
+    {"path":"apps/web-console/app/commercialization/CommercializationConsole.tsx","sha256":"61f014097117113fc19c555c2db3c4b104afd95c6a248907e978b9eb109b5350"},
+    {"path":"apps/web-console/app/styles.css","sha256":"85ef7c14e5cca8d46c3d4155f202e00edf11f161079e72307c36c9ee6a8acfd1"}
+  ],
+  "immutable": true
+}

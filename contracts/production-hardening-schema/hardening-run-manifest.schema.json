@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/hardening-run-manifest.schema.json",
+  "title": "Batch 10 hardening run manifest",
+  "type": "object",
+  "required": [
+    "hardening_run_id",
+    "migration_id",
+    "target_snapshot_id",
+    "target_artifact_id",
+    "batch9_eligible",
+    "artifact",
+    "deployment_units",
+    "risk_profiles",
+    "workload_models",
+    "scenarios",
+    "policy",
+    "observed_at"
+  ],
+  "properties": {
+    "hardening_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "migration_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch9_eligible": {
+      "const": true
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "artifact_digest",
+        "target_snapshot_id",
+        "immutable",
+        "batch8_passed",
+        "batch9_passed",
+        "sbom_ref",
+        "provenance_ref",
+        "evidence_refs"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "target_snapshot_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "immutable": {
+          "const": true
+        },
+        "batch8_passed": {
+          "const": true
+        },
+        "batch9_passed": {
+          "const": true
+        },
+        "sbom_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "deployment_units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "risk_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "workload_models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "open_risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "policy": {
+      "type": "object"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    }
+  }
+}
+

@@ -1,0 +1,50 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceInstallProfile
+metadata:
+  name: cross-language
+  version: 1.0.0
+spec:
+  groups:
+  - core
+  - cross-language
+  - platform
+  skills:
+  - elmos-formal-spec-ir
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-assumption-ledger
+  - elmos-proof-status-policy
+  - elmos-trusted-computing-base-registry
+  - elmos-verifier-portfolio-router
+  - elmos-proof-cache-invalidation
+  - elmos-formal-model-versioning
+  - elmos-formal-assurance-orchestrator
+  - elmos-language-semantic-profile
+  - elmos-semantic-ir-formal-semantics
+  - elmos-rule-preservation-prover
+  - elmos-cross-language-product-program
+  - elmos-repository-refinement-composer
+  - elmos-proof-carrying-conversion
+  - elmos-semantic-gap-obligation-generator
+  - elmos-concurrency-async-refinement
+  - elmos-effect-exception-trace-refinement
+  - elmos-reflection-ffi-boundary-verifier
+  - elmos-tla-task-runtime-model
+  - elmos-credit-billing-invariant-model
+  - elmos-lease-fencing-verifier
+  - elmos-counterexample-to-test
+  - elmos-proof-artifact-store
+  - elmos-formal-release-gate
+  - elmos-formal-assurance-report
+  - elmos-proof-evidence-bundle
+  - elmos-proof-drift-monitor
+  - elmos-waiver-governance
+  - elmos-formal-observability-slo
+  requiredWorkflows:
+  - formal-assurance-master
+  - cross-language-formal-assurance
+  - platform-runtime-formal-assurance
+  - counterexample-repair-loop
+  - proof-cache-invalidation
+  - commercial-certification
+  - waiver-governance

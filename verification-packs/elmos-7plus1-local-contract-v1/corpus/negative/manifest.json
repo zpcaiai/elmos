@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-negative-v1",
+  "status": "passed",
+  "source_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+  "dataset_digest": "sha256:09f9f7c8e16461265340ab49e2aac144ee67b353f48d1d15d3671e9ff922ce9a",
+  "evidence_refs": [
+    "counterexamples/sample.json",
+    "certification/local-runtime-test-result.json",
+    "certification/raw/runtime-tests.txt",
+    "certification/raw/importer-integration-tests.txt"
+  ],
+  "separation": "repository-owned synthetic adversarial controls distinct from development cases",
+  "limitations": [
+    "LOCAL_EXECUTED_SELF_ATTESTED: focused synthetic and repository-owned negative controls only; no mutation, fuzz, independent holdout, or representative workload."
+  ]
+}

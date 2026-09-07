@@ -1,0 +1,104 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Software Delivery Platform Engine
+  version: 1.0.0
+servers:
+  - url: http://localhost:8096
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: capabilities
+      responses:
+        '200': { description: Fail-closed capabilities }
+  /engine/v1/discover:
+    post:
+      operationId: discover
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobRequest' }
+      responses:
+        '202': { description: Accepted or fail-closed result }
+  /engine/v1/plan:
+    post:
+      operationId: plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobRequest' }
+      responses:
+        '202': { description: Accepted or fail-closed result }
+  /engine/v1/execute-step:
+    post:
+      operationId: execute_step
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExecuteStepRequest' }
+      responses:
+        '202': { description: Accepted or fail-closed result }
+  /engine/v1/validate:
+    post:
+      operationId: validate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JobRequest' }
+      responses:
+        '202': { description: Accepted or fail-closed result }
+  /engine/v1/self-service:
+    post:
+      operationId: self_service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExecuteStepRequest' }
+      responses:
+        '202': { description: Accepted or fail-closed result }
+  /engine/v1/jobs/{jobId}:
+    get:
+      operationId: job
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+        - { name: organizationId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Tenant-scoped job }
+  /engine/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancel
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+        - { name: organizationId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Cancellation result }
+components:
+  schemas:
+    JobRequest:
+      type: object
+      required: [organizationId, repositorySnapshotRef, workspaceRef, profile, correlationId, idempotencyKey]
+      properties:
+        organizationId: { type: string }
+        repositorySnapshotRef: { type: string }
+        workspaceRef: { type: string }
+        profile: { type: string }
+        correlationId: { type: string }
+        idempotencyKey: { type: string }
+    ExecuteStepRequest:
+      type: object
+      required: [organizationId, migrationRunId, stepDefinition, workspaceRef, sourceCommit, executionBudget, correlationId, idempotencyKey]
+      properties:
+        organizationId: { type: string }
+        migrationRunId: { type: string }
+        migrationPlanVersion: { type: integer }
+        stepDefinition: { type: object }
+        workspaceRef: { type: string }
+        sourceCommit: { type: string }
+        executionBudget: { type: object }
+        policy: { type: object }
+        correlationId: { type: string }
+        idempotencyKey: { type: string }

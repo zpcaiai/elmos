@@ -1,0 +1,4 @@
+interface:
+  display_name: "immutable-usage-ledger"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $immutable-usage-ledger to evaluate this enterprise platform capability with evidence."

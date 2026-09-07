@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 证据图、可信度与来源追踪"
+  short_description: "Guide 证据图、可信度与来源追踪 with evidence controls"
+  default_prompt: "Use $elmos-evidence-provenance as guidance for 证据图、可信度与来源追踪 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

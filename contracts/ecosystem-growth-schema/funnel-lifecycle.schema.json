@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/funnel-lifecycle.schema.json",
+  "title": "Funnel Lifecycle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "account_id",
+    "tenant_id",
+    "state",
+    "state_rule_version",
+    "entered_at",
+    "source_event_refs"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "account_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "user_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "enum": [
+        "new",
+        "onboarding",
+        "activated",
+        "adopting",
+        "retained",
+        "expanding",
+        "at-risk",
+        "dormant",
+        "churned",
+        "reactivated"
+      ]
+    },
+    "state_rule_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_event_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

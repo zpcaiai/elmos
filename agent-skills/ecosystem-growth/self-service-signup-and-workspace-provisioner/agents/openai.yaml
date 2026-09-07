@@ -1,0 +1,5 @@
+interface:
+  display_name: "Self Service Signup And Workspace Provisioner"
+  short_description: "Authoritative Batch 14 Skill 406 workflow"
+  default_prompt: "Use $self-service-signup-and-workspace-provisioner to execute its evidence-bound Batch 14 workflow."
+

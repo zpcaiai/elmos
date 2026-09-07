@@ -1,0 +1,18 @@
+{
+  "status": "not-run",
+  "criteria": {
+    "unified_core": false,
+    "private_runner": false,
+    "reference_engine": false,
+    "reference_route": false,
+    "validation_lab": false,
+    "maintainability": false,
+    "customer_handoff": false,
+    "unit_economics": false
+  },
+  "design_partner_evidence": [],
+  "independent_review_evidence": [],
+  "zero_tolerance_findings": [],
+  "artifact_sha256": "",
+  "environment_sha256": ""
+}

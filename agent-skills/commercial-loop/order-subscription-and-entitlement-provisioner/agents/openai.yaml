@@ -1,0 +1,4 @@
+interface:
+  display_name: "order-subscription-and-entitlement-provisioner"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $order-subscription-and-entitlement-provisioner to evaluate this Batch 13 commercial capability with evidence."

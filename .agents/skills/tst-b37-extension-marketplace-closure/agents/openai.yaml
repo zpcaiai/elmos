@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B37 Extension Marketplace Closure"
+  short_description: "Help with Tst B37 Extension Marketplace Closure tasks"
+  default_prompt: "Use $tst-b37-extension-marketplace-closure to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/integration-cutover-decision.v1.json",
+  "title": "Integration Cutover Decision",
+  "type": "object",
+  "required": ["schemaVersion", "scopeId", "decision", "producerStatus", "consumerStatus", "partnerStatus", "workflowStatus", "backlogStatus", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "scopeId": {"type": "string"},
+    "decision": {"enum": ["READY", "READY_WITH_CONDITIONS", "BLOCKED", "IN_PROGRESS", "COMPLETED", "ROLLBACK_REQUIRED"]},
+    "producerStatus": {"type": "string"},
+    "consumerStatus": {"type": "string"},
+    "partnerStatus": {"type": "string"},
+    "workflowStatus": {"type": "string"},
+    "backlogStatus": {"type": "string"},
+    "rollbackFeasible": {"type": "boolean"},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

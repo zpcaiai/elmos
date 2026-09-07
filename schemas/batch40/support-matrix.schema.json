@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch40/support-matrix.schema.json",
+  "title": "Batch 40 support-matrix",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "capabilities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 40
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "capabilityId",
+          "status",
+          "owner",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "capabilityId": {
+            "enum": [
+              "b40-ai-model-supply-chain",
+              "b40-artifact-container-signing",
+              "b40-compliance-control-crosswalk",
+              "b40-container-kubernetes-iac-scanning",
+              "b40-customer-audit-evidence",
+              "b40-dast-iast-integration",
+              "b40-dependency-sca-governance",
+              "b40-independent-security-assessment",
+              "b40-isolated-trusted-builder",
+              "b40-license-ip-provenance",
+              "b40-psirt-security-incident",
+              "b40-runner-update-supply-chain",
+              "b40-sast-integration",
+              "b40-sbom-component-identity",
+              "b40-secret-credential-scanning",
+              "b40-secure-code-review-approval",
+              "b40-secure-sdlc-ssdf",
+              "b40-security-architecture-review",
+              "b40-security-supply-chain-gate",
+              "b40-slsa-provenance",
+              "b40-supply-chain-compliance-factory",
+              "b40-threat-modeling",
+              "b40-vex-applicability",
+              "b40-vulnerability-patch-sla"
+            ]
+          },
+          "status": {
+            "enum": [
+              "research",
+              "experimental",
+              "limited",
+              "certified",
+              "deprecated",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

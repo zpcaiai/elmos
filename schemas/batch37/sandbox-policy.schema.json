@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "default_action",
+    "allowed_permissions",
+    "limits",
+    "filesystem",
+    "network",
+    "process",
+    "secrets",
+    "tenant_isolation",
+    "cleanup"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "default_action": {
+      "const": "deny"
+    },
+    "allowed_permissions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "workspace-read",
+          "workspace-write",
+          "artifact-read",
+          "artifact-write",
+          "repository-read",
+          "repository-write",
+          "network-egress",
+          "secret-read",
+          "model-call",
+          "runner-job",
+          "evidence-write",
+          "policy-evaluate",
+          "billing-meter"
+        ]
+      }
+    },
+    "limits": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "cpu_millis",
+        "memory_mb",
+        "wall_time_seconds",
+        "pids",
+        "output_mb"
+      ],
+      "properties": {
+        "cpu_millis": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memory_mb": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "wall_time_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pids": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "output_mb": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "filesystem": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "workspace_mode",
+        "allowed_paths",
+        "deny_host_paths"
+      ],
+      "properties": {
+        "workspace_mode": {
+          "enum": [
+            "read-only",
+            "copy-on-write",
+            "ephemeral"
+          ]
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny_host_paths": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "network": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "mode",
+        "allowlist",
+        "deny_metadata_endpoints"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "allowlist"
+          ]
+        },
+        "allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny_metadata_endpoints": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "process": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "allow_subprocess",
+        "allowed_executables",
+        "deny_privileged"
+      ],
+      "properties": {
+        "allow_subprocess": {
+          "type": "boolean"
+        },
+        "allowed_executables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny_privileged": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "secrets": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "mode",
+        "allowed_secret_names",
+        "short_lived_only"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "brokered"
+          ]
+        },
+        "allowed_secret_names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_lived_only": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "tenant_isolation": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "required",
+        "cross_tenant_refs"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "cross_tenant_refs": {
+          "const": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "cleanup": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": [
+        "kill_processes",
+        "remove_workspace",
+        "revoke_credentials"
+      ],
+      "properties": {
+        "kill_processes": {
+          "const": true
+        },
+        "remove_workspace": {
+          "const": true
+        },
+        "revoke_credentials": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/sandbox-policy.schema.json"
+}

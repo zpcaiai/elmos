@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: Elmos Formal Assurance Evidence API
+  version: 1.0.0
+paths:
+  /v1/proof-artifacts:
+    post:
+      operationId: commitProofArtifact
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-artifact.schema.json
+      responses:
+        '201':
+          description: Committed
+        '409':
+          description: Digest conflict or stale fencing token
+  /v1/proof-counterexamples:
+    post:
+      operationId: commitCounterexample
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/proof-counterexample.schema.json
+      responses:
+        '201':
+          description: Committed
+  /v1/evidence-bundles:
+    post:
+      operationId: buildEvidenceBundle
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - subjectId
+              - redactionPolicy
+              properties:
+                subjectId:
+                  type: string
+                redactionPolicy:
+                  type: string
+                sign:
+                  type: boolean
+                  default: true
+      responses:
+        '202':
+          description: Bundle queued
+  /v1/evidence-bundles/{bundleId}/verify:
+    post:
+      operationId: verifyEvidenceBundle
+      parameters:
+      - name: bundleId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Verification result
+        '422':
+          description: Integrity or replay failure
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.normalization-idempotent",
+  "claim_id": "claim.source-boundaries",
+  "owner": "elmos-project-synthesis-engineering",
+  "preconditions": [
+    "input is any generated Unicode string within the campaign budget"
+  ],
+  "transformation": {
+    "kind": "normalize-normalized-output"
+  },
+  "expected_relation": {
+    "kind": "byte-identical-normalized-text"
+  },
+  "oracle_refs": [
+    "oracle.source-policy",
+    "oracle.playwright-regression"
+  ],
+  "non_applicable": []
+}

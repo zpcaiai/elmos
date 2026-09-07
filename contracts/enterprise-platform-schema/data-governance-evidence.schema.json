@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/data-governance-evidence.schema.json",
+  "title": "T-E Data Governance and Cryptographic Isolation Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_run_id", "platform_version", "status", "classification_coverage", "residency_compliance_passed", "retention_coverage", "legal_hold_passed", "legal_hold_deletion_events", "deletion_certificate_passed", "unexplained_residual_copies", "tenant_key_isolation_coverage", "key_rotation_passed", "backup_key_restore_passed", "cmk_failure_fails_closed", "artifact_provenance_coverage", "support_access_controlled", "authority_id", "observed_at", "evidence_refs"],
+  "properties": {
+    "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1}, "status": {"const": "PASSED"},
+    "classification_coverage": {"const": 1}, "residency_compliance_passed": {"const": true}, "retention_coverage": {"const": 1},
+    "legal_hold_passed": {"const": true}, "legal_hold_deletion_events": {"const": 0}, "deletion_certificate_passed": {"const": true},
+    "unexplained_residual_copies": {"const": 0}, "tenant_key_isolation_coverage": {"const": 1}, "key_rotation_passed": {"const": true},
+    "backup_key_restore_passed": {"const": true}, "cmk_failure_fails_closed": {"const": true}, "artifact_provenance_coverage": {"const": 1},
+    "support_access_controlled": {"const": true}, "authority_id": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"}, "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

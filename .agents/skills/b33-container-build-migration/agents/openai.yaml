@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Container Build Migration"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-container-build-migration to execute this ELMOS Runtime Skill with fail-closed evidence."

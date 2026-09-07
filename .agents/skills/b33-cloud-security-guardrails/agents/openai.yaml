@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Cloud Security Guardrails"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-cloud-security-guardrails to execute this ELMOS Runtime Skill with fail-closed evidence."

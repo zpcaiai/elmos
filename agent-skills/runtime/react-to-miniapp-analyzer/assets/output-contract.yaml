@@ -1,0 +1,32 @@
+skill: react-to-miniapp-analyzer
+version: 1.0.0
+task_ids:
+- MAPP-007
+- MAPP-008
+required_outputs:
+- path: react-analysis.json
+  required: true
+- path: component-graph.json
+  required: true
+- path: hook-effect-graph.json
+  required: true
+- path: route-graph.json
+  required: true
+- path: source-trace-map.json
+  required: true
+gates:
+- name: 组件导入图闭合
+  required: true
+- name: Hook 依赖图可验证
+  required: true
+- name: 关键 effect 与事件均有 trace
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shadow Read and Dual Read Orchestrator"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $shadow-read-and-dual-read-orchestrator to perform this Batch 11 production-cutover task."

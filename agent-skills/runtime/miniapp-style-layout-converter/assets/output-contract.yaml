@@ -1,0 +1,30 @@
+skill: miniapp-style-layout-converter
+version: 1.0.0
+task_ids:
+- MAPP-019
+- MAPP-020
+required_outputs:
+- path: style-plan.json
+  required: true
+- path: token-map.json
+  required: true
+- path: responsive-rules.json
+  required: true
+- path: unsupported-style-report.json
+  required: true
+gates:
+- name: 样式 AST 解析覆盖率=100% 或有错误清单
+  required: true
+- name: 设计 token 可追踪
+  required: true
+- name: 关键页面无未解释溢出
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

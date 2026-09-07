@@ -1,0 +1,152 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: php-java-service-conversion
+  version: 3.0.0
+  pack: 19-cross-language-semantic-conversion
+  priority: P1
+  owner: cross-language-compiler-team
+spec:
+  description: 把 PHP 服务迁移为 Java，处理动态类型、请求生命周期、ORM 和会话语义。
+  kernel: K3 Repository Semantic Compiler + K6 Equivalence
+  riskClass: high
+  exposure: atomic-registry-only
+  businessLines:
+  - cross-language-conversion
+  capabilityTags:
+  - 19-cross-language-semantic-conversion
+  - conversion
+  - cross-language-conversion
+  - java
+  - php
+  - service
+  triggers:
+  - 任务明确要求：把 PHP 服务迁移为 Java，处理动态类型、请求生命周期、ORM 和会话语义。
+  - 任务属于 cross-language-conversion，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 php-java-service-conversion 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: source repository, target language profile and Semantic IR
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - profile-source-target
+  - extract-semantic-ir
+  - measure-loss-and-plan
+  - generate-and-link
+  - compile-and-differential-test
+  - dual-run-and-cutover
+  - certify-or-rollback
+  tools:
+    allowed:
+    - repo.analyze
+    - language.parse
+    - semantic.ir
+    - code.generate
+    - build.execute
+    - differential.run
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - cross-language-semantic-ir-compiler
+  - cross-language-repository-equivalence
+  - semantic-ir-reconciliation
+  invariants:
+  - semantic-coverage-complete
+  - target-build-passes
+  - behavior-equivalent
+  - interop-boundary-safe
+  - rollback-ready
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - semantic-coverage-complete
+    - target-build-passes
+    - behavior-equivalent
+    - interop-boundary-safe
+    - rollback-ready
+    minimumLevel: E2
+    sourceBindingRequired: true
+    independentReplayRequired: false
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E2
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

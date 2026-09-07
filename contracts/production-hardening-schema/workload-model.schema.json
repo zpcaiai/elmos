@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/workload-model.schema.json",
+  "title": "Sanitized production workload model",
+  "type": "object",
+  "required": [
+    "workload_id",
+    "service_id",
+    "kind",
+    "normal_requests_per_second",
+    "peak_requests_per_second",
+    "burst_requests_per_second",
+    "endpoint_distribution_hash",
+    "payload_distribution_hash",
+    "tenant_distribution_hash",
+    "source_baseline_ref",
+    "confidence",
+    "sanitized",
+    "credentials_removed",
+    "version",
+    "evidence_refs"
+  ],
+  "properties": {
+    "workload_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "OPEN",
+        "CLOSED"
+      ]
+    },
+    "normal_requests_per_second": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "peak_requests_per_second": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "burst_requests_per_second": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "burst_duration_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "endpoint_distribution_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "payload_distribution_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "tenant_distribution_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "source_baseline_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "sanitized": {
+      "const": true
+    },
+    "credentials_removed": {
+      "const": true
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    }
+  }
+}
+

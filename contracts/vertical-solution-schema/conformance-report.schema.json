@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-17/conformance-report.schema.json",
+  "title": "Batch 17 Conformance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "model",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate",
+    "status",
+    "ready",
+    "evidence_complete",
+    "supported_dimensions",
+    "blockers",
+    "restrictions",
+    "evaluated_at",
+    "evidence_refs",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 17
+    },
+    "model": {
+      "const": "VSP four-layer model"
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate": {
+      "enum": [
+        "BLOCKED",
+        "V17-A",
+        "V17-B",
+        "V17-C",
+        "V17-D",
+        "V17-E",
+        "V17-F",
+        "V17-G"
+      ]
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "PARTIAL",
+        "vertical-commercial-delivery-ready"
+      ]
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "evidence_complete": {
+      "type": "boolean"
+    },
+    "supported_dimensions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "shared-core",
+          "industry-base-pack",
+          "jurisdiction-overlay",
+          "customer-extension",
+          "finance",
+          "manufacturing",
+          "energy",
+          "healthcare",
+          "government",
+          "commerce",
+          "telecom"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "ready": {
+            "const": true
+          }
+        },
+        "required": [
+          "ready"
+        ]
+      },
+      "then": {
+        "properties": {
+          "gate": {
+            "const": "V17-G"
+          },
+          "status": {
+            "const": "vertical-commercial-delivery-ready"
+          },
+          "evidence_complete": {
+            "const": true
+          },
+          "blockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

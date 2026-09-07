@@ -1,0 +1,22 @@
+# case B29-002
+# started_at 2026-08-06T11:29:44Z
+# run_id run-2026-08-06T03
+
+$ [precondition] python3 scripts/test-suite/b29_route_preconditions.py --route routes/java-to-csharp --report test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+=== Batch 29 route preconditions: routes/java-to-csharp ===
+
+[PASS] route-contract-present: route_key=java-to-csharp status=limited profile=typed-pure-function-v1
+[PASS] route-contract-validates: OK: routes/java-to-csharp
+[PASS] route-gate-runs: GATE PASS: java-to-csharp status=limited decision=NOT_CERTIFIED
+[PASS] route-corpora-present: corpora on disk: ['development', 'holdout', 'real-repository']
+[BLOCK] exact-toolchain::java: REFUSED EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11
+[BLOCK] exact-toolchain::csharp: REFUSED EXACT_TOOLCHAIN_UNAVAILABLE:dotnet
+
+4/6 preconditions hold
+  BLOCKED BY exact-toolchain::java
+  BLOCKED BY exact-toolchain::csharp
+report written to test-suites/batch1-37-strict/evidence/_shared/b29-route-preconditions.json
+# exit=1 expect=exit-zero met=False
+
+# preconditions unmet: ['b29-route-preconditions'] -- the case body is not executed, because the catalog lists these as preconditions rather than assertions
+

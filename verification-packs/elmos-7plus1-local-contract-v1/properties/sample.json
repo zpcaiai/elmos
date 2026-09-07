@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "property_id": "property.untrusted-archive-never-grants-authority",
+  "claim_id": "claim.archive-identity-and-nonexecution",
+  "owner": "elmos-verification-engineering",
+  "generator": {
+    "kind": "bounded-zip-member-generator",
+    "constraints": [
+      "pinned-archive-set",
+      "bounded-members-and-bytes",
+      "path-traversal-case",
+      "casefold-and-unicode-collision-case",
+      "symlink-and-special-file-case",
+      "encrypted-member-case",
+      "embedded-script-sentinel-case"
+    ],
+    "execution_status": "NOT_RUN"
+  },
+  "oracle_refs": [
+    "oracle.archive-identity-contract",
+    "oracle.local-negative-tests"
+  ],
+  "assertion": {
+    "kind": "reject-unsafe-or-drifted-archive-before-install-and-never-execute-members"
+  },
+  "shrinker": {
+    "kind": "single-minimal-malicious-member"
+  },
+  "replay": {
+    "seed": "elmos-7plus1-archive-boundary-v1",
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py'"
+  }
+}

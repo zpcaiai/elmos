@@ -1,0 +1,6 @@
+BATCH35_PYTHON ?= python3
+.PHONY: batch35-validate batch35-test
+batch35-validate:
+	$(BATCH35_PYTHON) scripts/batch35/validate_skill_bundle.py
+batch35-test:
+	$(BATCH35_PYTHON) -m unittest tests/batch35/test_toolkit.py

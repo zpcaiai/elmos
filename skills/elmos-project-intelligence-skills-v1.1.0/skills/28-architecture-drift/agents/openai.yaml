@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 设计—代码—运行架构漂移检测
+  short_description: 比较设计架构、静态实现架构、运行时架构和目标架构，检测新增依赖、边界破坏、未声明服务和文档过期。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-architecture-drift 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

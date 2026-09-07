@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 大型仓库与多仓库系统扩展"
+  short_description: "Guide 大型仓库与多仓库系统扩展 with evidence controls"
+  default_prompt: "Use $elmos-large-repository-scaling as guidance for 大型仓库与多仓库系统扩展 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Enterprise Deployment Upgrade Factory"
+  short_description: "Run evidence-bound Batch 38 enterprise deployment upgrade factor"
+  default_prompt: "Use $b38-enterprise-deployment-upgrade-factory to implement and verify this capability with fail-closed evidence."

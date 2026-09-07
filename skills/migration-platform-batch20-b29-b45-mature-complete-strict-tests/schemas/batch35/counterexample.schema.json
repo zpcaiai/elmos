@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "counterexample_id",
+    "technique",
+    "claim_id",
+    "failure_fingerprint",
+    "environment_digest",
+    "artifact_digests",
+    "replay",
+    "status",
+    "owner"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "counterexample_id": {
+      "type": "string"
+    },
+    "technique": {
+      "type": "string"
+    },
+    "claim_id": {
+      "type": "string"
+    },
+    "failure_fingerprint": {
+      "type": "string"
+    },
+    "environment_digest": {
+      "type": "string"
+    },
+    "artifact_digests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "input_ref": {
+      "type": "string"
+    },
+    "trace_ref": {
+      "type": "string"
+    },
+    "schedule_ref": {
+      "type": "string"
+    },
+    "replay": {
+      "type": "object",
+      "required": [
+        "command",
+        "expected_fingerprint"
+      ],
+      "additionalProperties": true
+    },
+    "status": {
+      "enum": [
+        "open",
+        "reproduced",
+        "fixed",
+        "accepted-risk",
+        "invalid"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

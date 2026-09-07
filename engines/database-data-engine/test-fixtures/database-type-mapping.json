@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "sourceType": "NUMBER",
+  "targetType": "NUMERIC",
+  "compatibility": "LOSSLESS_WITH_CONSTRAINT",
+  "risk": "NUMERIC_RANGE",
+  "conditions": ["precision derived from approved data profile"],
+  "approved": false
+}

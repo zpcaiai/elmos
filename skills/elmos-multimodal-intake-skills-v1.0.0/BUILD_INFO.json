@@ -1,0 +1,13 @@
+{
+  "package_name": "elmos-multimodal-intake-skills",
+  "version": "1.0.0",
+  "as_of": "2026-08-19",
+  "skills": 50,
+  "canonical_root": "skills",
+  "mirrors": [
+    ".agents/skills",
+    ".claude/skills"
+  ],
+  "generator": "OpenAI GPT-5.6 Pro",
+  "deterministic_manifest": true
+}

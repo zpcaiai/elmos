@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3000",
+  "skill_name": "frt-3000-production-readiness-orchestrator",
+  "batch": "G30",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g30/frt-3000-production-readiness-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.production-readiness-orchestrator",
+  "execution_contract_sha256": "sha256:4d5ed0b3a9cfa32a34502606c95e4be32d79d66d957714327ae6c9ccc08953b6",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:c8e0bed39331e04719eff73f4a5660430ebac62d0b6d69aa82a1006a22465214",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

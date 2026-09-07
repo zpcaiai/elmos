@@ -1,0 +1,4 @@
+interface:
+  display_name: "B70 Native Build Run Certifier"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b70-native-build-run-certifier to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic Analysis Orchestrator"
+  short_description: "Run deterministic evidence-bound Batch 2 analysis"
+  default_prompt: "Use $semantic-analysis-orchestrator to analyze this passed Batch 1 snapshot without generating target code."

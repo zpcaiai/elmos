@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-081",
+  "name": "spring-assessment-sku",
+  "title": "Assessment SKU",
+  "description": "将仓库 Profile、Baseline、Eligibility、风险、路线、ETA 和报价选项包装为固定范围付费产品。",
+  "batch": "21",
+  "batch_slug": "commercial-skus-pricing-pilots",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-assessment-sku/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-assessment-report"
+  ],
+  "outputs": [
+    "assessment-package",
+    "pilot-quote.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "Timebox/deliverables",
+    "Data requirements",
+    "Go/No-go",
+    "Pilot proposal",
+    "Deletion policy"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "低置信度仓库不能无条件固定价",
+    "无付费/无签署/无 Proof 的 Pilot 不计成功",
+    "scope diff 必须触发变更单"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: assessment-package, pilot-quote.json"
+  ],
+  "stop_conditions": [
+    "无预算/owner/测试环境/数据授权",
+    "SOW 与技术 Route 不一致",
+    "毛利低于底线或许可成本未知"
+  ],
+  "definition_of_done": [
+    "至少 3 个独立付费客户 Pilot 达到硬门",
+    "客户签署 Completion Proof/UAT",
+    "Pilot 形成可重复 Factory Proposal"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Generation Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0714-code-generation-certification to run FRT-0714 through the governed FRT runtime with exact scope and fail-closed evidence."

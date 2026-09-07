@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "elmos-autonomy.fullname" . }}
+  labels:
+    {{- include "elmos-autonomy.labels" . | nindent 4 }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "elmos-autonomy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}

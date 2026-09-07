@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "ELMOS 有界导航验证"
+    },
+    {
+      "name": "module_desc",
+      "value": "ELMOS generated ArkUI module"
+    },
+    {
+      "name": "ability_desc",
+      "value": "ELMOS generated entry ability"
+    }
+  ]
+}

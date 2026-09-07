@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance Regression Root Cause Agent"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $performance-regression-root-cause-agent to perform this Batch 10 production-hardening task."

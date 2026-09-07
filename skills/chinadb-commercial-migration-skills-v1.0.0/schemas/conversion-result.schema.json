@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConversionResult",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "source_kind",
+    "target_kind",
+    "status",
+    "rules",
+    "risk"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string"
+    },
+    "source_kind": {
+      "type": "string"
+    },
+    "target_kind": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "converted",
+        "rewritten",
+        "lift_to_app",
+        "unsupported",
+        "manual_review"
+      ]
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "source_span": {
+      "type": "object"
+    },
+    "target_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "semantic_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

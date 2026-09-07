@@ -1,0 +1,91 @@
+{
+  "commands": [
+    {
+      "command": "reject-invalid-receipt",
+      "effects": [
+        "publish-nothing"
+      ],
+      "from": [
+        "receipt-unvalidated"
+      ],
+      "guard": "any-required-binding-invalid",
+      "to": "receipt-invalid"
+    },
+    {
+      "command": "accept-valid-receipt",
+      "effects": [
+        "lock-exact-scope"
+      ],
+      "from": [
+        "receipt-unvalidated"
+      ],
+      "guard": "all-required-bindings-recomputed",
+      "to": "receipt-valid"
+    },
+    {
+      "command": "stage-pack",
+      "effects": [
+        "write-private-sibling-stage"
+      ],
+      "from": [
+        "receipt-valid"
+      ],
+      "guard": "all-contracts-generated",
+      "to": "pack-staged"
+    },
+    {
+      "command": "publish-limited",
+      "effects": [
+        "renameat-stage",
+        "retain-not-certified"
+      ],
+      "from": [
+        "pack-staged"
+      ],
+      "guard": "receipt-and-repository-still-stable",
+      "to": "pack-published-limited"
+    },
+    {
+      "command": "fail-publication",
+      "effects": [
+        "rollback-or-preserve-prior-pack"
+      ],
+      "from": [
+        "receipt-valid",
+        "pack-staged"
+      ],
+      "guard": "unsafe-output-or-drift",
+      "to": "publication-failed"
+    }
+  ],
+  "execution_status": "SPECIFIED_NOT_EXECUTED_AS_MODEL_CAMPAIGN",
+  "forbidden_transitions": [
+    {
+      "event": "stage-pack",
+      "from": "receipt-invalid"
+    },
+    {
+      "event": "self-certify",
+      "from": "pack-published-limited"
+    }
+  ],
+  "initial_state": "receipt-unvalidated",
+  "invariants": [
+    "receipt-invalid-never-reaches-pack-staged",
+    "published-pack-status-is-limited",
+    "external-and-independent-evidence-remain-not-run",
+    "certification-remains-not-certified"
+  ],
+  "model_key": "model.proof-harness-v3-pack-publication",
+  "owner": "elmos-proof-harness-engineering",
+  "schema_version": 1,
+  "states": [
+    "receipt-unvalidated",
+    "receipt-invalid",
+    "receipt-valid",
+    "pack-staged",
+    "pack-published-limited",
+    "publication-failed"
+  ],
+  "timeouts": []
+}

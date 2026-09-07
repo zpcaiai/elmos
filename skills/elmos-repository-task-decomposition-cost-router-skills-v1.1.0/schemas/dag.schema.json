@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosTaskDAG",
+  "type": "object",
+  "required": [
+    "run_id",
+    "tasks",
+    "waves"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array"
+    },
+    "waves": {
+      "type": "array"
+    },
+    "critical_path": {
+      "type": "array"
+    },
+    "path_locks": {
+      "type": "object"
+    }
+  }
+}

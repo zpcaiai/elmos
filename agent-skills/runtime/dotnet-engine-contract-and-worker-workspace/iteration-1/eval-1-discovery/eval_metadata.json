@@ -1,0 +1,10 @@
+{
+  "eval_id": 1,
+  "eval_name": "ambiguous-static-discovery",
+  "prompt": "Scan a repository containing two solutions, legacy C# and VB projects, a custom UsingTask, and a parent Directory.Build.props. Decide what can be trusted before any build runs.",
+  "assertions": [
+    "The output does not arbitrarily select a primary solution and records MULTIPLE_SOLUTIONS_AMBIGUOUS.",
+    "The output keeps unsupported languages and custom MSBuild tasks visible rather than omitting them.",
+    "The output separates safe static parsing from dynamic MSBuild and requires an isolated network-denied Windows Runner for the latter."
+  ]
+}

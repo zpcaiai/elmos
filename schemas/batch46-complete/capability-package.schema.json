@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "package_id",
+    "package_type",
+    "version",
+    "lifecycle",
+    "ownership",
+    "compatibility",
+    "contracts",
+    "dependencies",
+    "policies",
+    "evidence",
+    "certification",
+    "economics"
+  ],
+  "properties": {
+    "package_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "package_type": {
+      "enum": [
+        "language-route",
+        "framework",
+        "database",
+        "client",
+        "cloud",
+        "verification",
+        "deployment",
+        "marketplace",
+        "knowledge",
+        "agent",
+        "certification",
+        "extension",
+        "core"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+([+-][A-Za-z0-9.-]+)?$"
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "experimental",
+            "limited",
+            "certified",
+            "deprecated",
+            "retired",
+            "revoked"
+          ]
+        }
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "required": [
+        "product_owner",
+        "engineering_owner",
+        "security_owner",
+        "maintenance_owner"
+      ],
+      "properties": {
+        "product_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "engineering_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "security_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "maintenance_owner": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object"
+    },
+    "contracts": {
+      "type": "array"
+    },
+    "dependencies": {
+      "type": "array"
+    },
+    "policies": {
+      "type": "array"
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "certification": {
+      "type": "object"
+    },
+    "economics": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

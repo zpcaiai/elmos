@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/batch-11-conformance-report.schema.json",
+  "title": "Batch 11 Conformance Report Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report", "migration_id", "source_artifact_id", "target_artifact_id", "conformance", "domain_evidence"],
+  "properties": {
+    "report": {"const": "batch-11-conformance-report.json"},
+    "migration_id": {"type": "string", "minLength": 1},
+    "source_artifact_id": {"type": "string", "minLength": 1},
+    "target_artifact_id": {"type": "string", "minLength": 1},
+    "conformance": {"$ref": "#/$defs/conformance"},
+    "domain_evidence": {"$ref": "#/$defs/conformance"}
+  },
+  "$defs": {
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batch", "cutover_run_id", "migration_id", "source_artifact_id", "target_artifact_id", "observed_phase", "gate", "status", "blockers", "restrictions", "metrics", "target_system_of_record", "legacy_system_decommissioned", "migration_completed", "evaluated_at", "evidence_refs"],
+      "properties": {
+        "batch": {"const": 11},
+        "cutover_run_id": {"type": "string", "minLength": 1},
+        "migration_id": {"type": "string", "minLength": 1},
+        "source_artifact_id": {"type": "string", "minLength": 1},
+        "target_artifact_id": {"type": "string", "minLength": 1},
+        "observed_phase": {"$ref": "cutover-state-machine.schema.json#/$defs/phaseId"},
+        "gate": {"$ref": "cutover-state-machine.schema.json#/$defs/gateId"},
+        "status": {"enum": ["INITIALIZED", "PREPARING", "BACKFILLING", "CATCHING_UP", "SHADOW_READING", "READ_CANARY", "TARGET_READ_PRIMARY", "WRITE_CANARY", "TARGET_WRITE_PRIMARY", "SOURCE_READ_ONLY", "HYPERCARE", "ACCEPTED", "RETIRING", "COMPLETED", "ROLLED_BACK", "FORWARD_FIX_REQUIRED", "BLOCKED", "FAILED_SAFELY"]},
+        "blockers": {"type": "array", "items": {"type": "string"}},
+        "restrictions": {"type": "array", "items": {"type": "string"}},
+        "metrics": {"type": "object"},
+        "target_system_of_record": {"type": "boolean"},
+        "legacy_system_decommissioned": {"type": "boolean"},
+        "migration_completed": {"type": "boolean"},
+        "evaluated_at": {"type": "string", "format": "date-time"},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"migration_completed": {"const": true}}, "required": ["migration_completed"]},
+          "then": {
+            "properties": {
+              "observed_phase": {"const": "P12_DECOMMISSIONED"},
+              "gate": {"const": "C_G"},
+              "status": {"const": "COMPLETED"},
+              "blockers": {"maxItems": 0},
+              "target_system_of_record": {"const": true},
+              "legacy_system_decommissioned": {"const": true}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

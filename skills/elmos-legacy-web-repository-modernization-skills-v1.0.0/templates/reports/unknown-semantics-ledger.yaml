@@ -1,0 +1,15 @@
+ledgerVersion: "1.0.0"
+items:
+  - id: UNK-001
+    category: dynamic-reflection
+    severity: high
+    status: open
+    scope:
+      module: legacy-web
+      routes: []
+    description: ""
+    evidenceRefs: []
+    resolutionPlan:
+      - run instrumented baseline
+      - collect class/method resolution trace
+    blocks: [E4, E5]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validation Policy And Evidence Aggregator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $validation-policy-and-evidence-aggregator to execute this ELMOS Runtime Skill with fail-closed evidence."

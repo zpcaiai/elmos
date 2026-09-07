@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "domains": {
+    "sap": ["ecc-standard", "ecc-heavy-custom", "modification", "user-exit", "badi", "z-table", "idoc", "s4-custom-code", "migration-cockpit", "fiori-role"],
+    "oracle": ["ebs-form", "personalization", "flexfield", "concurrent-program", "workflow", "custom-schema", "ebs-fusion-coexistence", "visual-builder-extension"],
+    "dynamics": ["unmanaged-solution", "managed-solution", "solution-layer-conflict", "plugin", "power-automate", "canvas-app", "model-driven-app", "security-role"],
+    "salesforce": ["unmanaged-metadata", "unlocked-package", "apex-trigger", "record-triggered-flow", "permission-set", "profile", "named-credential", "platform-event", "change-data-capture"],
+    "master-data": ["customer-duplicate", "supplier-conflict", "product-hierarchy", "employee", "id-crosswalk", "merge-split", "golden-record"],
+    "process": ["order-to-cash", "procure-to-pay", "record-to-report", "hire-to-retire", "lead-to-cash", "manual-shadow-process", "process-variant"],
+    "cutover": ["master-data-freeze", "company-wave", "country-wave", "financial-balance", "inventory-balance", "user-role", "rollback", "archive"]
+  }
+}

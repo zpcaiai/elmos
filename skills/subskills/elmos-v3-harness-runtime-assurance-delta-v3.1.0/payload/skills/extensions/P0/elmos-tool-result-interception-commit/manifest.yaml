@@ -1,0 +1,67 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-001
+  name: elmos-tool-result-interception-commit
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: 把 Tool/MCP 结果从 server-returned 提升为 raw→intercepted→committed→published/model-visible 的耐久生命周期。
+  ownerKernels:
+  - K7
+  - K6
+  - K8
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-proof-verification-kernel
+  - elmos-certification-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-proof-verification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-certification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-invocation-scoped-capability-lease
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-host-minted-security-context
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - ResultLifecycleCoordinator
+  - InterceptorChain
+  - ResultIdentityGuard
+  - ResultCommitJournal
+  - ReplayResultProjector
+  invariants:
+  - RESULT_COMMIT occurs at most once for invocation_id + attempt + execution_epoch
+  - effectiveResult is derived only from rawResult plus ordered, signed interceptor decisions
+  - event publication and downstream model visibility happen strictly after RESULT_COMMIT
+  - interceptors may replace content/status but not call_id, authority_snapshot_id, environment_id or execution_plan_hash
+  upstreamEvidence:
+  - openai/codex#41202
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

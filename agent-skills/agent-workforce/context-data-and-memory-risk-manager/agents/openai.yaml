@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 562: context data and memory risk manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $context-data-and-memory-risk-manager to evaluate this capability with evidence."

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.resilience-test-result.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scenarioId", "environment", "approvedBy", "status", "observedRecoveryTime", "rtoSourceRef", "sloImpact", "abortTriggered", "evidenceRefs"],
+  "properties": {
+    "scenarioId": {"type": "string", "minLength": 1},
+    "environment": {"type": "string", "minLength": 1},
+    "approvedBy": {"type": "string", "minLength": 1},
+    "status": {"enum": ["PASS", "PASS_WITH_WARNINGS", "FAIL", "ABORTED", "INCONCLUSIVE"]},
+    "observedRecoveryTime": {"type": "number", "minimum": 0},
+    "rtoSourceRef": {"type": "string", "minLength": 1},
+    "sloImpact": {"type": "object"},
+    "abortTriggered": {"type": "boolean"},
+    "evidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

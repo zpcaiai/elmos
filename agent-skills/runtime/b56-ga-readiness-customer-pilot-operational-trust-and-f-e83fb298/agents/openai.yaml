@@ -1,0 +1,4 @@
+interface:
+  display_name: "B56 Ga Readiness Customer Pilot Operational Trust and F E83fb298"
+  short_description: "Run this Product Batch 56 guidance Skill safely"
+  default_prompt: "Use $b56-ga-readiness-customer-pilot-operational-trust-and-f-e83fb298 as inactive Product Batch 56 guidance; preserve Product 56A authority and fail closed on missing evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Target Profile And Transformation Planner"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-target-profile-and-transformation-planner to govern this enterprise suite modernization task with fail-closed evidence."

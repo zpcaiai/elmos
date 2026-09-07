@@ -1,0 +1,5 @@
+interface:
+  display_name: "API CLI And SDK Developer Experience Manager"
+  short_description: "Authoritative Batch 14 Skill 425 workflow"
+  default_prompt: "Use $api-cli-and-sdk-developer-experience-manager to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: B2B Edi Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-data-quality-dedup-reconciliation-and-certification to implement its fail-closed ELMOS Product B46 contract."

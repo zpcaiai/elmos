@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Sre Reliability Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-observability-sla-cockpit-alerting-and-30160859 to implement its fail-closed ELMOS Product B47 contract."

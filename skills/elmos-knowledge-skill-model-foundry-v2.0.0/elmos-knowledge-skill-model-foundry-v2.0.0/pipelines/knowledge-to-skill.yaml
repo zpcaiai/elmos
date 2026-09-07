@@ -1,0 +1,16 @@
+apiVersion: elmos.ai/v1
+kind: Pipeline
+metadata:
+  name: knowledge-to-skill
+spec:
+  steps:
+  - ingest-authorized-sources
+  - normalize-and-classify
+  - build-semantic-ir
+  - detect-repeated-procedure
+  - mine-candidate-skill
+  - author-contract
+  - run-trigger-evals
+  - run-sandbox-replay
+  - certify-and-sign
+  - publish-meta-index

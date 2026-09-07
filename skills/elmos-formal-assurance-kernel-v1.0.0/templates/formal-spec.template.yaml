@@ -1,0 +1,17 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalSpecTemplate
+metadata: {name: replace-me, version: 0.1.0}
+spec:
+  tenant: {tenantId: replace-me, accountId: replace-me, projectId: replace-me}
+  businessLine: spring-modernization
+  specKind: TRACE
+  source:
+    uri: repo://replace-me
+    revision: replace-me
+    sha256: REPLACE_WITH_SHA256
+  semanticProfile: java-core-21
+  assumptions: []
+  body:
+    property: target trace refines source trace
+  sourceMap: []
+  ambiguityStatus: RESOLVED

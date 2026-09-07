@@ -1,0 +1,21 @@
+{
+  "call_graph": [],
+  "cases_file": "cases.json",
+  "corpus": "module",
+  "customer_repository": false,
+  "evidence_class": "independent-module-composition-fixture",
+  "independent": true,
+  "independent_functions": true,
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "minimum_function_count": 3,
+  "profile": "typed-pure-module-v1",
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "EquivalenceModule.java",
+  "source_language": "java",
+  "type_coverage_required": [
+    "integer",
+    "number",
+    "boolean"
+  ]
+}

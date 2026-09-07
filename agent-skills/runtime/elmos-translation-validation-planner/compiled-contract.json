@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-translation-validation-planner"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_ADAPTER_REQUIRED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_translation_validation_planner",
+    "operation": "FORMAL_EXECUTION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-translation-validation-planner"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-translation-validation-planner",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-translation-validation-planner/SKILL.md",
+    "sourceSha256": "sha256:a644517aa56e82df14503c3f5fcf594d814db9d1c7bd6e707ca6932020538ac6",
+    "sourceSkillId": "ELMOS-POLY-276"
+  }
+}

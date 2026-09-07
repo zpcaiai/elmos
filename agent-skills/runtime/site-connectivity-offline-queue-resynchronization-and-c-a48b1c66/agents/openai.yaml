@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Site Connectivity Offline Queue Resynchronization And Conflict Resolution"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $site-connectivity-offline-queue-resynchronization-and-c-a48b1c66 to implement its fail-closed ELMOS Product B36 contract."

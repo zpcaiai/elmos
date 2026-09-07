@@ -1,0 +1,104 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionAcceptance
+metadata:
+  skill: elmos-environment-attachment-authority
+  version: 3.1.0
+spec:
+  hardGates:
+  - every invocation resolves an explicit authority owner and immutable profile version
+  - unresolved owner authority rejects tool call and elicitation
+  - runtime refresh preserves per-server owner authority
+  - sandbox execution uses the actual owning TurnEnvironment settings
+  - authority can only stay equal or narrow across agent switch, resume and refresh
+  scenarios:
+  - id: ELMOS-V3D-006-A01
+    title: every invocation resolves an explicit authority owner and immutable profile version
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-environment-attachment-authority processes a production lifecycle transition
+    then:
+    - every invocation resolves an explicit authority owner and immutable profile version is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-006-A02
+    title: unresolved owner authority rejects tool call and elicitation
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-environment-attachment-authority processes a production lifecycle transition
+    then:
+    - unresolved owner authority rejects tool call and elicitation is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-006-A03
+    title: runtime refresh preserves per-server owner authority
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-environment-attachment-authority processes a production lifecycle transition
+    then:
+    - runtime refresh preserves per-server owner authority is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-006-A04
+    title: sandbox execution uses the actual owning TurnEnvironment settings
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-environment-attachment-authority processes a production lifecycle transition
+    then:
+    - sandbox execution uses the actual owning TurnEnvironment settings is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-006-A05
+    title: authority can only stay equal or narrow across agent switch, resume and refresh
+    given:
+    - exact v3.1 Revision Set
+    - current owner authority
+    - version-negotiated adapter
+    when: elmos-environment-attachment-authority processes a production lifecycle transition
+    then:
+    - authority can only stay equal or narrow across agent switch, resume and refresh is evaluated
+    - evidence is immutable and revision-bound
+    - failure cannot produce VERIFIED_COMPLETE
+    priority: P0
+  - id: ELMOS-V3D-006-NEG-STALE
+    title: Reject stale authority, generation or lease
+    given:
+    - stale execution context
+    when: an authoritative effect or commit is attempted
+    then:
+    - operation is rejected
+    - audit event is emitted
+    - no completion evidence is accepted
+    priority: P0
+  - id: ELMOS-V3D-006-NEG-REPLAY
+    title: Reject replay divergence
+    given:
+    - committed journal and artifacts
+    when: the execution is replayed or resumed
+    then:
+    - same effective state is reconstructed
+    - provider loss is explicit
+    - divergence blocks certification
+    priority: P0
+  - id: ELMOS-V3D-006-RECOVERY
+    title: Recover after worker, connection or plugin interruption
+    given:
+    - durable checkpoint and fencing state
+    when: a replacement worker resumes
+    then:
+    - committed side effects are not duplicated
+    - stale actors are fenced
+    - lineage remains complete
+    priority: P0
+  releaseRequirement: all P0 scenarios pass in target environment

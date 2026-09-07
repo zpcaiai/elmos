@@ -1,0 +1,35 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 2,
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json"
+  ],
+  "formal_equivalence": {
+    "bytes": 66383,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:b1ebac668ca81a6b241203f8617e68882eceb8400f4d28c67ca618a2ed9bebe3"
+  },
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "PASSED"
+  },
+  "issued_at": "2026-08-09T03:43:22.495804+00:00",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "route_key": "csharp-to-java",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

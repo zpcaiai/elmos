@@ -1,0 +1,4 @@
+interface:
+  display_name: "repair effectiveness evaluator"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $repair-effectiveness-evaluator to perform this Batch 8 repair step."

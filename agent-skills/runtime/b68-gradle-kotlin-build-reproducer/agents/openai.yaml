@@ -1,0 +1,4 @@
+interface:
+  display_name: "B68 Gradle Kotlin Build Reproducer"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b68-gradle-kotlin-build-reproducer to execute this ELMOS project Skill with fail-closed evidence."

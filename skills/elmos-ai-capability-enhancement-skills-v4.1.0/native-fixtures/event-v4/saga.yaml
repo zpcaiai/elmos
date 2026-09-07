@@ -1,0 +1,8 @@
+steps:
+- reserve
+- charge
+- ship
+compensations:
+- release
+- refund
+- cancel

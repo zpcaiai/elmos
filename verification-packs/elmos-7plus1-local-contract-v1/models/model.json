@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "model_key": "model.elmos-7plus1-safe-import-and-runtime-lifecycle-v1",
+  "owner": "elmos-verification-engineering",
+  "states": [
+    "received",
+    "identity-validated",
+    "content-validated",
+    "contract-compiled",
+    "locally-executed",
+    "adapter-required",
+    "blocked",
+    "failed"
+  ],
+  "initial_state": "received",
+  "commands": [
+    {
+      "command": "validate-archive-identity",
+      "from": [
+        "received"
+      ],
+      "to": "identity-validated",
+      "guard": "all-eight-names-sizes-and-sha256-values-match",
+      "effects": [
+        "record-read-only-identity"
+      ]
+    },
+    {
+      "command": "validate-archive-content",
+      "from": [
+        "identity-validated"
+      ],
+      "to": "content-validated",
+      "guard": "canonical-safe-bounded-members-and-consistent-shared-bytes",
+      "effects": [
+        "parse-as-untrusted-data-only"
+      ]
+    },
+    {
+      "command": "compile-local-contracts",
+      "from": [
+        "content-validated"
+      ],
+      "to": "contract-compiled",
+      "guard": "exact-names-dag-and-conservative-evidence-states",
+      "effects": [
+        "materialize-repository-owned-interfaces"
+      ]
+    },
+    {
+      "command": "execute-local-handler",
+      "from": [
+        "contract-compiled"
+      ],
+      "to": "locally-executed",
+      "guard": "exact-scope-policy-source-and-local-operation-binding",
+      "effects": [
+        "return-bounded-local-result"
+      ]
+    },
+    {
+      "command": "require-adapter",
+      "from": [
+        "contract-compiled"
+      ],
+      "to": "adapter-required",
+      "guard": "external-provider-compiler-device-training-or-side-effect-required",
+      "effects": [
+        "return-non-success-without-external-effect"
+      ]
+    },
+    {
+      "command": "block-invalid-or-unknown",
+      "from": [
+        "received",
+        "identity-validated",
+        "content-validated",
+        "contract-compiled"
+      ],
+      "to": "blocked",
+      "guard": "missing-ambiguous-drifted-unsafe-unsupported-or-untrusted-claim",
+      "effects": [
+        "return-fail-closed-result"
+      ]
+    }
+  ],
+  "invariants": [
+    "archive-content-never-grants-authority",
+    "archive-scripts-are-never-executed-by-import",
+    "unknown-or-unsupported-never-becomes-success",
+    "caller-booleans-never-prove-external-execution",
+    "external-action-requires-an-adapter-and-independent-evidence",
+    "tenant-project-correlation-policy-and-source-bindings-fail-closed",
+    "local-engineering-evidence-never-becomes-certification"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "received",
+      "event": "execute-embedded-script"
+    },
+    {
+      "from": "adapter-required",
+      "event": "promote-to-locally-executed-from-caller-assertion"
+    },
+    {
+      "from": "blocked",
+      "event": "promote-to-success-without-new-validated-request"
+    }
+  ],
+  "timeouts": []
+}

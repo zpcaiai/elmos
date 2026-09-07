@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "adapter": "local-spring-upgrade-execution-port",
+  "source": "Spring Boot, Spring Framework and Spring MVC",
+  "target": "Spring Boot 4.1.1",
+  "runtime": "Java 21",
+  "feature_catalog": "SpringFeatureCatalog",
+  "fingerprint": "SpringCapabilityFingerprint",
+  "status": "DECLARED",
+  "permissions": ["isolated-source-snapshot", "local-build-startup", "loopback-health-probe"],
+  "forbidden": ["production-write", "credential-ingest", "provider-side-effect", "certification-claim"]
+}

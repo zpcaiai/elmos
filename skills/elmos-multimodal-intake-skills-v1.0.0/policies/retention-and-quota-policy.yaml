@@ -1,0 +1,47 @@
+schema_version: 1.0.0
+policy_id: elmos-retention-quota-default
+version: 1.0.0
+retention:
+  raw_assets_days_default: 30
+  derived_content_days_default: 30
+  task_checkpoints_days_default: 30
+  audit_events_days_default: 365
+  cost_ledger_days_default: 2555
+  quarantine_days_default: 14
+  ephemeral_upload_parts_hours: 24
+  password_secret_minutes: 30
+  tenant_configurable: true
+  legal_hold_supported: true
+deletion:
+  propagate_to:
+  - RAW_OBJECT
+  - PREVIEW
+  - DERIVED_BLOCK
+  - INDEX
+  - VECTOR
+  - CACHE
+  - PROJECT_MEMORY
+  - CHECKPOINT_ARTIFACT_AS_ALLOWED
+  preserve_under_hold: true
+  reconcile_completion: true
+  produce_deletion_evidence: true
+  delete_audit_record_itself: false
+quota:
+  raw_storage_bytes_default: 107374182400
+  monthly_processed_bytes_default: 536870912000
+  concurrent_tasks_default: 3
+  concurrent_uploads_default: 5
+  max_package_entries_default: 200000
+  hard_unbounded_quota_allowed: false
+  reserve_before_processing: true
+privacy:
+  encrypt_at_rest: true
+  encrypt_in_transit: true
+  tenant_key_option: true
+  access_log_unredacted_content: true
+  export_supported: true
+cleanup:
+  orphan_multipart: true
+  expired_checkpoints: true
+  failed_parser_scratch: true
+  derived_objects_without_lineage: QUARANTINE_AND_RECONCILE

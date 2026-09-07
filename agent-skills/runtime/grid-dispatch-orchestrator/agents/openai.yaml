@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Grid Dispatch Orchestrator"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-orchestrator to implement its fail-closed ELMOS Product B53 contract."

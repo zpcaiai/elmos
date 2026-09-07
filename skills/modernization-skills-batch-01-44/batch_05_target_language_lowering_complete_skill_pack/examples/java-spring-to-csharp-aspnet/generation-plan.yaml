@@ -1,0 +1,11 @@
+# Example instance for batch-05: generation-plan
+intent_refs:
+  - example
+passes:
+  - example
+plan_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+plan_id: example
+profile_id: example
+record_id: example
+schema_version: 1.0.0
+scope: example

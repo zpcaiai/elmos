@@ -1,0 +1,1078 @@
+{
+  "kind": "elmos.repository-conversion-admission-measurement",
+  "schema_version": "1.0.0",
+  "profile": "typed-pure-function-v1",
+  "source_language": "python",
+  "instruments": {
+    "coverage_inventory": "elmos_polyglot_route.project_graph.python_coverage_subjects",
+    "semantic_subset_check": "elmos_polyglot_route.python_analyzer.analyze_python"
+  },
+  "runtime": {
+    "python_version": "3.11.15",
+    "platform": "linux"
+  },
+  "toolchain_attestation": {
+    "status": "NOT_RUN",
+    "reason": "discovery.discover_unit refuses off the pinned toolchain with EXACT_TOOLCHAIN_PLATFORM_MISMATCH:python:expected=Darwin/arm64. The two layers underneath were called directly; analyzer logic is identical, the attestation is not."
+  },
+  "include_tests": false,
+  "aggregate": {
+    "repositories": 20,
+    "counts": {
+      "python_files_found": 999,
+      "python_files_measured": 583,
+      "test_files_excluded": 416,
+      "source_bytes_measured": 7056861,
+      "coverage_subjects": 16046,
+      "candidate_subjects": 2609,
+      "candidates_reaching_semantic_check": 1469,
+      "ready_units": 1,
+      "unparseable_files": 0
+    },
+    "rates": {
+      "ready_over_coverage_subjects": 6.23208276205908e-05,
+      "ready_over_candidate_subjects": 0.0003832886163280951,
+      "ready_over_semantic_checked": 0.0006807351940095302
+    },
+    "structural_blockers": {
+      "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 7784,
+      "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 4596,
+      "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 1995,
+      "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 1114,
+      "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 1009,
+      "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 878,
+      "PYTHON_ASYNC_FUNCTION_CONVERSION_UNCOVERED": 44
+    },
+    "semantic_rejections": {
+      "PYTHON_PARAMETER_TYPE_REQUIRED": 1175,
+      "PYTHON_RETURN_TYPE_REQUIRED": 185,
+      "PYTHON_UNSUPPORTED_EXPRESSION": 57,
+      "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 26,
+      "PYTHON_UNSUPPORTED_STATEMENT": 21,
+      "PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET": 3,
+      "PYTHON_UNSUPPORTED_LOCAL_TYPE": 1
+    }
+  },
+  "repositories": [
+    {
+      "counts": {
+        "python_files_found": 54,
+        "python_files_measured": 22,
+        "test_files_excluded": 32,
+        "source_bytes_measured": 211657,
+        "coverage_subjects": 513,
+        "candidate_subjects": 97,
+        "candidates_reaching_semantic_check": 67,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 225,
+        "function": 204,
+        "class": 84
+      },
+      "declaration_kinds": {
+        "function": 204,
+        "Assign": 90,
+        "class": 84,
+        "ImportFrom": 58,
+        "Expr": 39,
+        "Import": 26,
+        "If": 5,
+        "Try": 4,
+        "With": 2,
+        "AnnAssign": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 225,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 109,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 84,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 77,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 35,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 5
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 57,
+        "PYTHON_RETURN_TYPE_REQUIRED": 7,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 3
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "attrs-26.1.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 20,
+        "python_files_measured": 6,
+        "test_files_excluded": 14,
+        "source_bytes_measured": 50707,
+        "coverage_subjects": 254,
+        "candidate_subjects": 31,
+        "candidates_reaching_semantic_check": 18,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 190,
+        "top-level-effect": 34,
+        "class": 30
+      },
+      "declaration_kinds": {
+        "function": 190,
+        "class": 30,
+        "Assign": 17,
+        "Import": 14,
+        "ImportFrom": 3
+      },
+      "structural_blockers": {
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 175,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 81,
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 34,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 30,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 24,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 13
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 18
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "cachetools-7.1.7"
+    },
+    {
+      "counts": {
+        "python_files_found": 100,
+        "python_files_measured": 49,
+        "test_files_excluded": 51,
+        "source_bytes_measured": 577464,
+        "coverage_subjects": 889,
+        "candidate_subjects": 261,
+        "candidates_reaching_semantic_check": 209,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 591,
+        "function": 284,
+        "class": 14
+      },
+      "declaration_kinds": {
+        "function": 284,
+        "ImportFrom": 196,
+        "Assign": 161,
+        "Import": 125,
+        "AnnAssign": 83,
+        "class": 14,
+        "If": 14,
+        "Expr": 9,
+        "For": 2,
+        "Try": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 591,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 44,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 23,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 14,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 13,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 11
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 145,
+        "PYTHON_RETURN_TYPE_REQUIRED": 36,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 12,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 10,
+        "PYTHON_UNSUPPORTED_STATEMENT": 5,
+        "PYTHON_UNSUPPORTED_LOCAL_TYPE": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "chardet-7.6.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 49,
+        "python_files_measured": 18,
+        "test_files_excluded": 31,
+        "source_bytes_measured": 424673,
+        "coverage_subjects": 1062,
+        "candidate_subjects": 146,
+        "candidates_reaching_semantic_check": 68,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 543,
+        "top-level-effect": 438,
+        "class": 81
+      },
+      "declaration_kinds": {
+        "function": 543,
+        "ImportFrom": 243,
+        "class": 81,
+        "Assign": 78,
+        "Import": 74,
+        "AnnAssign": 19,
+        "If": 18,
+        "Expr": 4,
+        "Assert": 1,
+        "Try": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 438,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 397,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 161,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 81,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 77,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 61
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 48,
+        "PYTHON_RETURN_TYPE_REQUIRED": 12,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 4,
+        "PYTHON_UNSUPPORTED_STATEMENT": 2,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "click-8.4.2"
+    },
+    {
+      "counts": {
+        "python_files_found": 83,
+        "python_files_measured": 35,
+        "test_files_excluded": 48,
+        "source_bytes_measured": 353241,
+        "coverage_subjects": 954,
+        "candidate_subjects": 97,
+        "candidates_reaching_semantic_check": 44,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 511,
+        "function": 395,
+        "class": 48
+      },
+      "declaration_kinds": {
+        "function": 395,
+        "ImportFrom": 296,
+        "Assign": 107,
+        "Import": 75,
+        "class": 48,
+        "If": 21,
+        "AnnAssign": 8,
+        "Expr": 4
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 511,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 300,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 118,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 103,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 48,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 37
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 29,
+        "PYTHON_RETURN_TYPE_REQUIRED": 7,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 4,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 3,
+        "PYTHON_UNSUPPORTED_STATEMENT": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "flask-3.1.3"
+    },
+    {
+      "counts": {
+        "python_files_found": 14,
+        "python_files_measured": 7,
+        "test_files_excluded": 7,
+        "source_bytes_measured": 47596,
+        "coverage_subjects": 101,
+        "candidate_subjects": 35,
+        "candidates_reaching_semantic_check": 22,
+        "ready_units": 1,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.009900990099009901,
+        "ready_over_candidate_subjects": 0.02857142857142857,
+        "ready_over_semantic_checked": 0.045454545454545456
+      },
+      "subject_kinds": {
+        "top-level-effect": 64,
+        "function": 36,
+        "class": 1
+      },
+      "declaration_kinds": {
+        "function": 36,
+        "ImportFrom": 25,
+        "Assign": 24,
+        "AnnAssign": 9,
+        "If": 4,
+        "Import": 2,
+        "class": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 64,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 13,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 1,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 1,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 1
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 9,
+        "PYTHON_RETURN_TYPE_REQUIRED": 6,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 5,
+        "PYTHON_UNSUPPORTED_STATEMENT": 1
+      },
+      "ready_units": [
+        {
+          "path": "src/humanize/i18n.py",
+          "function": "_gettext_noop"
+        }
+      ],
+      "unparseable": [],
+      "repository": "humanize-4.16.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 52,
+        "python_files_measured": 28,
+        "test_files_excluded": 24,
+        "source_bytes_measured": 496489,
+        "coverage_subjects": 1382,
+        "candidate_subjects": 165,
+        "candidates_reaching_semantic_check": 88,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 750,
+        "top-level-effect": 476,
+        "class": 156
+      },
+      "declaration_kinds": {
+        "function": 719,
+        "ImportFrom": 231,
+        "class": 156,
+        "Assign": 143,
+        "Import": 63,
+        "async-function": 31,
+        "If": 21,
+        "AnnAssign": 15,
+        "Assert": 1,
+        "Delete": 1,
+        "Expr": 1
+      },
+      "structural_blockers": {
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 587,
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 476,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 248,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 156,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 127,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 118,
+        "PYTHON_ASYNC_FUNCTION_CONVERSION_UNCOVERED": 31
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 67,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 11,
+        "PYTHON_RETURN_TYPE_REQUIRED": 6,
+        "PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET": 3,
+        "PYTHON_UNSUPPORTED_STATEMENT": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "jinja2-3.1.6"
+    },
+    {
+      "counts": {
+        "python_files_found": 71,
+        "python_files_measured": 34,
+        "test_files_excluded": 37,
+        "source_bytes_measured": 331757,
+        "coverage_subjects": 866,
+        "candidate_subjects": 66,
+        "candidates_reaching_semantic_check": 32,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 388,
+        "top-level-effect": 371,
+        "class": 107
+      },
+      "declaration_kinds": {
+        "function": 388,
+        "ImportFrom": 147,
+        "class": 107,
+        "Assign": 102,
+        "Import": 56,
+        "Expr": 37,
+        "If": 24,
+        "Try": 2,
+        "AnnAssign": 1,
+        "For": 1,
+        "With": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 371,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 322,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 107,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 99,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 73,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 7
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 17,
+        "PYTHON_RETURN_TYPE_REQUIRED": 5,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 5,
+        "PYTHON_UNSUPPORTED_STATEMENT": 3,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "markdown-3.10.3"
+    },
+    {
+      "counts": {
+        "python_files_found": 8,
+        "python_files_measured": 5,
+        "test_files_excluded": 3,
+        "source_bytes_measured": 225804,
+        "coverage_subjects": 358,
+        "candidate_subjects": 180,
+        "candidates_reaching_semantic_check": 81,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 266,
+        "top-level-effect": 77,
+        "class": 15
+      },
+      "declaration_kinds": {
+        "function": 266,
+        "Assign": 33,
+        "ImportFrom": 29,
+        "class": 15,
+        "Import": 6,
+        "Expr": 3,
+        "Try": 3,
+        "With": 2,
+        "If": 1
+      },
+      "structural_blockers": {
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 113,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 86,
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 77,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 15,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 8,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 4
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 81
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "more_itertools-11.1.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 149,
+        "python_files_measured": 111,
+        "test_files_excluded": 38,
+        "source_bytes_measured": 1569641,
+        "coverage_subjects": 2628,
+        "candidate_subjects": 766,
+        "candidates_reaching_semantic_check": 271,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 1288,
+        "function": 1286,
+        "class": 54
+      },
+      "declaration_kinds": {
+        "function": 1286,
+        "Assign": 931,
+        "ImportFrom": 126,
+        "Expr": 122,
+        "Import": 75,
+        "class": 54,
+        "If": 16,
+        "AugAssign": 6,
+        "AnnAssign": 6,
+        "For": 3,
+        "Delete": 1,
+        "Try": 1,
+        "Assert": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 1288,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 522,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 520,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 307,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 54,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 19
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 268,
+        "PYTHON_RETURN_TYPE_REQUIRED": 3
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "mpmath-1.4.1"
+    },
+    {
+      "counts": {
+        "python_files_found": 58,
+        "python_files_measured": 23,
+        "test_files_excluded": 35,
+        "source_bytes_measured": 486490,
+        "coverage_subjects": 854,
+        "candidate_subjects": 182,
+        "candidates_reaching_semantic_check": 145,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 470,
+        "top-level-effect": 303,
+        "class": 81
+      },
+      "declaration_kinds": {
+        "function": 470,
+        "Assign": 117,
+        "ImportFrom": 84,
+        "class": 81,
+        "Import": 62,
+        "If": 18,
+        "AnnAssign": 14,
+        "Expr": 7,
+        "With": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 303,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 288,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 89,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 82,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 81,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 68
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 104,
+        "PYTHON_RETURN_TYPE_REQUIRED": 32,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 6,
+        "PYTHON_UNSUPPORTED_STATEMENT": 2,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "packaging-26.3"
+    },
+    {
+      "counts": {
+        "python_files_found": 153,
+        "python_files_measured": 136,
+        "test_files_excluded": 17,
+        "source_bytes_measured": 1194037,
+        "coverage_subjects": 3606,
+        "candidate_subjects": 274,
+        "candidates_reaching_semantic_check": 220,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 2344,
+        "function": 1042,
+        "class": 220
+      },
+      "declaration_kinds": {
+        "Assign": 1494,
+        "function": 1042,
+        "Expr": 329,
+        "class": 220,
+        "ImportFrom": 179,
+        "Import": 152,
+        "If": 67,
+        "For": 48,
+        "AugAssign": 45,
+        "AnnAssign": 18,
+        "With": 7,
+        "Assert": 2,
+        "Try": 1,
+        "While": 1,
+        "Delete": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 2344,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 795,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 220,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 211,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 158,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 110
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 168,
+        "PYTHON_RETURN_TYPE_REQUIRED": 43,
+        "PYTHON_UNSUPPORTED_STATEMENT": 4,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 4,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "pyparsing-3.3.2"
+    },
+    {
+      "counts": {
+        "python_files_found": 39,
+        "python_files_measured": 23,
+        "test_files_excluded": 16,
+        "source_bytes_measured": 286895,
+        "coverage_subjects": 572,
+        "candidate_subjects": 35,
+        "candidates_reaching_semantic_check": 27,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 302,
+        "top-level-effect": 222,
+        "class": 48
+      },
+      "declaration_kinds": {
+        "function": 302,
+        "Assign": 85,
+        "ImportFrom": 68,
+        "Import": 51,
+        "class": 48,
+        "If": 8,
+        "Try": 6,
+        "Expr": 2,
+        "Delete": 2
+      },
+      "structural_blockers": {
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 273,
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 222,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 63,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 48,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 48,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 35
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 20,
+        "PYTHON_RETURN_TYPE_REQUIRED": 7
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "python-dateutil-2.9.0.post0"
+    },
+    {
+      "counts": {
+        "python_files_found": 35,
+        "python_files_measured": 20,
+        "test_files_excluded": 15,
+        "source_bytes_measured": 217463,
+        "coverage_subjects": 575,
+        "candidate_subjects": 79,
+        "candidates_reaching_semantic_check": 51,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 269,
+        "function": 260,
+        "class": 46
+      },
+      "declaration_kinds": {
+        "function": 260,
+        "ImportFrom": 132,
+        "class": 46,
+        "Assign": 45,
+        "Import": 44,
+        "If": 17,
+        "AnnAssign": 15,
+        "Try": 10,
+        "Expr": 5,
+        "For": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 269,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 181,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 71,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 46,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 38,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 37
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 26,
+        "PYTHON_RETURN_TYPE_REQUIRED": 15,
+        "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 6,
+        "PYTHON_UNSUPPORTED_STATEMENT": 2,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "requests-2.34.2"
+    },
+    {
+      "counts": {
+        "python_files_found": 28,
+        "python_files_measured": 10,
+        "test_files_excluded": 18,
+        "source_bytes_measured": 54482,
+        "coverage_subjects": 172,
+        "candidate_subjects": 27,
+        "candidates_reaching_semantic_check": 10,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "top-level-effect": 99,
+        "function": 71,
+        "class": 2
+      },
+      "declaration_kinds": {
+        "function": 71,
+        "Assign": 63,
+        "ImportFrom": 24,
+        "Import": 10,
+        "class": 2,
+        "If": 2
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 99,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 44,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 37,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 14,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 2,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 1
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 8,
+        "PYTHON_RETURN_TYPE_REQUIRED": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "semver-3.0.4"
+    },
+    {
+      "counts": {
+        "python_files_found": 5,
+        "python_files_measured": 5,
+        "test_files_excluded": 0,
+        "source_bytes_measured": 122748,
+        "coverage_subjects": 182,
+        "candidate_subjects": 3,
+        "candidates_reaching_semantic_check": 2,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 134,
+        "top-level-effect": 39,
+        "class": 9
+      },
+      "declaration_kinds": {
+        "function": 134,
+        "ImportFrom": 20,
+        "class": 9,
+        "Assign": 8,
+        "Import": 5,
+        "Try": 3,
+        "With": 1,
+        "Expr": 1,
+        "If": 1
+      },
+      "structural_blockers": {
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 132,
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 39,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 28,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 14,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 9,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 9
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "sortedcontainers-2.4.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 41,
+        "python_files_measured": 29,
+        "test_files_excluded": 12,
+        "source_bytes_measured": 168880,
+        "coverage_subjects": 467,
+        "candidate_subjects": 68,
+        "candidates_reaching_semantic_check": 45,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 237,
+        "top-level-effect": 184,
+        "class": 46
+      },
+      "declaration_kinds": {
+        "function": 237,
+        "Assign": 84,
+        "ImportFrom": 63,
+        "class": 46,
+        "Import": 27,
+        "If": 8,
+        "Expr": 2
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 184,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 169,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 46,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 43,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 29,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 21
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 44,
+        "PYTHON_RETURN_TYPE_REQUIRED": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "sqlparse-0.6.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 10,
+        "python_files_measured": 2,
+        "test_files_excluded": 8,
+        "source_bytes_measured": 110413,
+        "coverage_subjects": 131,
+        "candidate_subjects": 64,
+        "candidates_reaching_semantic_check": 46,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 74,
+        "top-level-effect": 55,
+        "class": 2
+      },
+      "declaration_kinds": {
+        "function": 74,
+        "Assign": 31,
+        "Import": 11,
+        "ImportFrom": 7,
+        "If": 3,
+        "Try": 3,
+        "class": 2
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 55,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 19,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 10,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 2,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 2,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 2
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 45,
+        "PYTHON_RETURN_TYPE_REQUIRED": 1
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "tabulate-0.10.0"
+    },
+    {
+      "counts": {
+        "python_files_found": 21,
+        "python_files_measured": 14,
+        "test_files_excluded": 7,
+        "source_bytes_measured": 74279,
+        "coverage_subjects": 364,
+        "candidate_subjects": 19,
+        "candidates_reaching_semantic_check": 13,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 160,
+        "top-level-effect": 149,
+        "class": 55
+      },
+      "declaration_kinds": {
+        "function": 147,
+        "ImportFrom": 72,
+        "class": 55,
+        "Import": 36,
+        "Assign": 26,
+        "async-function": 13,
+        "If": 12,
+        "Expr": 2,
+        "Try": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 149,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 141,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 55,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 50,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 36,
+        "PYTHON_DECORATED_SYMBOL_CONVERSION_UNCOVERED": 20,
+        "PYTHON_ASYNC_FUNCTION_CONVERSION_UNCOVERED": 13
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 9,
+        "PYTHON_UNSUPPORTED_EXPRESSION": 2,
+        "PYTHON_RETURN_TYPE_REQUIRED": 2
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "tenacity-9.1.4"
+    },
+    {
+      "counts": {
+        "python_files_found": 9,
+        "python_files_measured": 6,
+        "test_files_excluded": 3,
+        "source_bytes_measured": 52145,
+        "coverage_subjects": 116,
+        "candidate_subjects": 14,
+        "candidates_reaching_semantic_check": 10,
+        "ready_units": 0,
+        "unparseable_files": 0
+      },
+      "rates": {
+        "ready_over_coverage_subjects": 0.0,
+        "ready_over_candidate_subjects": 0.0,
+        "ready_over_semantic_checked": 0.0
+      },
+      "subject_kinds": {
+        "function": 56,
+        "top-level-effect": 45,
+        "class": 15
+      },
+      "declaration_kinds": {
+        "function": 56,
+        "Assign": 21,
+        "class": 15,
+        "ImportFrom": 10,
+        "Import": 8,
+        "Try": 2,
+        "If": 2,
+        "With": 1,
+        "Expr": 1
+      },
+      "structural_blockers": {
+        "PYTHON_TOP_LEVEL_EFFECT_CONVERSION_UNCOVERED": 45,
+        "PYTHON_NESTED_SYMBOL_CONVERSION_UNCOVERED": 43,
+        "PYTHON_CLASS_SYMBOL_CONVERSION_UNCOVERED": 15,
+        "PYTHON_CLASS_DEFINITION_EFFECTS_UNCOVERED": 15,
+        "PYTHON_FUNCTION_SIGNATURE_CONVERSION_UNCOVERED": 13
+      },
+      "semantic_rejections": {
+        "PYTHON_PARAMETER_TYPE_REQUIRED": 10
+      },
+      "ready_units": [],
+      "unparseable": [],
+      "repository": "toml-0.10.2"
+    }
+  ],
+  "limitations": [
+    "Admission measurement only: no conversion, no target build, no behavior comparison was run.",
+    "READY means the unit entered the bounded subset, not that its conversion is correct.",
+    "Pinned-toolchain attestation is NOT_RUN; this is analyzer-logic evidence, not certified route evidence.",
+    "A zero READY count does not prove no authorized corpus contains a positive example."
+  ]
+}

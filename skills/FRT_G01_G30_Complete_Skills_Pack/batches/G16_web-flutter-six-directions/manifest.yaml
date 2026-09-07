@@ -1,0 +1,85 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G16",
+    "slug": "web-flutter-six-directions",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Web与Flutter双向六条转换路径",
+    "transitionFrom": "三种Web框架和Flutter Widget/State模型",
+    "transitionTo": "Vue2/Vue3/React与Flutter六条方向均可生成、构建和差分验证",
+    "certificateFamily": "WF",
+    "skills": [
+      {
+        "id": "FRT-1600",
+        "name": "Web Flutter Route Orchestrator",
+        "path": "skills/frt-1600-web-flutter-route-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1601",
+        "name": "Vue 2 to Flutter Route Pack",
+        "path": "skills/frt-1601-vue-2-to-flutter-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1602",
+        "name": "Flutter to Vue 2 Route Pack",
+        "path": "skills/frt-1602-flutter-to-vue-2-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1603",
+        "name": "Vue 3 to Flutter Route Pack",
+        "path": "skills/frt-1603-vue-3-to-flutter-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1604",
+        "name": "Flutter to Vue 3 Route Pack",
+        "path": "skills/frt-1604-flutter-to-vue-3-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1605",
+        "name": "React to Flutter Route Pack",
+        "path": "skills/frt-1605-react-to-flutter-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1606",
+        "name": "Flutter to React Route Pack",
+        "path": "skills/frt-1606-flutter-to-react-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1607",
+        "name": "Flutter Capability Gap Planner",
+        "path": "skills/frt-1607-flutter-capability-gap-planner/SKILL.md"
+      },
+      {
+        "id": "FRT-1608",
+        "name": "Flutter Widget State and Navigation Mapper",
+        "path": "skills/frt-1608-flutter-widget-state-and-navigation-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1609",
+        "name": "Flutter Plugin and Platform Channel Mapper",
+        "path": "skills/frt-1609-flutter-plugin-and-platform-channel-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1610",
+        "name": "Web Flutter Differential Corpus",
+        "path": "skills/frt-1610-web-flutter-differential-corpus/SKILL.md"
+      },
+      {
+        "id": "FRT-1611",
+        "name": "Web Flutter Route Certification",
+        "path": "skills/frt-1611-web-flutter-route-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "六条路径Analyzer/Test/Build通过",
+      "Widget Identity和Controller Dispose正确",
+      "DOM惯用法不泄漏到Flutter",
+      "Plugin权限和Fallback明确",
+      "Web/Mobile差异有Known Difference"
+    ]
+  }
+}

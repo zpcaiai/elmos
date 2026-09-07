@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.service-level-objective.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sloId", "serviceId", "indicatorId", "queryRef", "target", "window", "missingDataPolicy", "owner", "semanticConventionVersion"],
+  "properties": {
+    "sloId": {"type": "string", "minLength": 1},
+    "serviceId": {"type": "string", "minLength": 1},
+    "indicatorId": {"type": "string", "minLength": 1},
+    "queryRef": {"type": "string", "minLength": 1},
+    "target": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+    "window": {"type": "string", "minLength": 1},
+    "missingDataPolicy": {"enum": ["BAD", "GOOD", "EXCLUDE", "UNKNOWN_BLOCKS"]},
+    "owner": {"type": "string", "minLength": 1},
+    "semanticConventionVersion": {"type": "string", "minLength": 1}
+  }
+}

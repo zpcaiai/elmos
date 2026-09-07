@@ -1,0 +1,15 @@
+{
+  "target": "aws-agentcore",
+  "region": "ap-northeast-1",
+  "artifactDigest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "identityBinding": "workload-identity-1",
+  "networkPolicy": "allowlist",
+  "observability": "otel-export",
+  "capabilityDeltas": [],
+  "rollback": {
+    "supported": true
+  },
+  "exitPlan": {
+    "exportAI_SIR": true
+  }
+}

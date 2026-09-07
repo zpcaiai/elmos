@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dual Write Consistency and Repair Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $dual-write-consistency-and-repair-controller to perform this Batch 11 production-cutover task."

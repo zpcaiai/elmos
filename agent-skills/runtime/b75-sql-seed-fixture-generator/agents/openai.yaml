@@ -1,0 +1,4 @@
+interface:
+  display_name: "B75 SQL Seed Fixture Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b75-sql-seed-fixture-generator to execute this ELMOS project Skill with fail-closed evidence."

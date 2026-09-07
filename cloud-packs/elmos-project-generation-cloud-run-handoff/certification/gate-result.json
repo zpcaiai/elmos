@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "status": "passed",
+  "pack_status": "experimental",
+  "failures": []
+}

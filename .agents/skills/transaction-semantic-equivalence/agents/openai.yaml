@@ -1,0 +1,6 @@
+interface:
+  display_name: "Transaction Semantic Equivalence"
+  short_description: "Run transaction-semantic-equivalence with bounded commercial controls"
+  default_prompt: "Use $transaction-semantic-equivalence through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

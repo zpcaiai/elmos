@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "The output does not recommend Linux while Registry and System.Web blockers remain.", "passed": true, "evidence": "The recommendation is WINDOWS INCREMENTAL_SIDE_BY_SIDE; MODERN_CROSS_PLATFORM and linuxPromotion are BLOCKED with Registry/System.Web blockers."},
+    {"text": "The output marks Web Forms UI as rewrite-required and uses incremental YARP/System.Web adapter steps with an exit decision.", "passed": true, "evidence": "aspnet-side-by-side uses YARP_AND_SYSTEM_WEB_ADAPTER, sets ui REWRITE_REQUIRED, and records an adapter removal/ownership decision."},
+    {"text": "The output treats custom WCF binding as partial/redesign with architecture approval and stages EF6 before per-context EF Core/EDMX regeneration.", "passed": true, "evidence": "wcf-decision is PARTIAL_REQUIRES_REDESIGN with architectureApproval; ef-transition keeps EF6 first, migrates per context, regenerates EDMX, and establishes a new history baseline."}
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "claims": [{"claim": "The plan is not execution evidence", "type": "quality", "verified": true, "evidence": "Transcript and user notes explicitly say no build/runtime validation was claimed."}],
+  "user_notes_summary": {"uncertainties": [], "needs_review": ["Architecture approval for custom WCF binding", "Web Forms rewrite and System.Web adapter ownership", "EDMX regeneration against approved test database"], "workarounds": []},
+  "eval_feedback": {"suggestions": [], "overall": "Assertions discriminate unsafe cross-platform, UI, service and data shortcuts."}
+}

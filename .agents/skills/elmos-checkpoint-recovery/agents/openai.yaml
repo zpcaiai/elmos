@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Checkpoint Recovery"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-checkpoint-recovery to execute its scoped workflow with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bulk Load and CDC Controller"
+  short_description: "Govern CDC frontiers cutover and rollback"
+  default_prompt: "Use $bulk-load-cdc-replication-and-zero-downtime-controller to govern this ELMOS Batch 15 workflow."

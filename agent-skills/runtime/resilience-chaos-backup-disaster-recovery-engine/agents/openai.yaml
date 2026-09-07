@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resilience Chaos Backup Disaster Recovery Engine"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $resilience-chaos-backup-disaster-recovery-engine to produce a governed infrastructure modernization artifact."

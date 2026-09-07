@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-transformation-rule-engine"
+  short_description: "Use this imported Elmos commercial blueprint"
+  default_prompt: "Use $elmos-transformation-rule-engine within its imported blueprint boundary; require real runtime and external evidence before completion claims."

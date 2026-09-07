@@ -1,0 +1,4 @@
+interface:
+  display_name: "Import and Dependency Resolver"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0705-import-and-dependency-resolver to run FRT-0705 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,58 @@
+{
+  "reportVersion": "1.0.0",
+  "mode": "strict",
+  "legacyArtifact": "image://legacy@sha256:aaa",
+  "targetArtifact": "image://target@sha256:bbb",
+  "environment": {
+    "class": "isolated-differential",
+    "clock": "fixed"
+  },
+  "dimensions": {
+    "route": {
+      "denominator": 1,
+      "verified": 1,
+      "equivalent": 1,
+      "normalizedEquivalent": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "confidence": 1.0
+    },
+    "http": {
+      "denominator": 4,
+      "verified": 4,
+      "equivalent": 4,
+      "normalizedEquivalent": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "confidence": 1.0
+    },
+    "session": {
+      "denominator": 2,
+      "verified": 2,
+      "equivalent": 2,
+      "normalizedEquivalent": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "confidence": 0.99
+    },
+    "database": {
+      "denominator": 1,
+      "verified": 1,
+      "equivalent": 1,
+      "normalizedEquivalent": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "confidence": 1.0
+    }
+  },
+  "mismatches": [],
+  "summary": {
+    "equivalence": 1.0,
+    "criticalMismatches": 0,
+    "unknowns": 0
+  },
+  "gate": {
+    "status": "passed",
+    "blockingReasons": []
+  }
+}

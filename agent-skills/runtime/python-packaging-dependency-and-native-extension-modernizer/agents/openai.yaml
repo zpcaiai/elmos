@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Packaging Modernizer"
+  short_description: "Modernize packaging dependencies wheels and ABI"
+  default_prompt: "Use $python-packaging-dependency-and-native-extension-modernizer to modernize this package."

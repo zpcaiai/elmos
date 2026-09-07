@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0201",
+  "skill_name": "frt-0201-workspace-and-package-detector",
+  "batch": "G02",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g02/frt-0201-workspace-and-package-detector/",
+  "status": "shared_implementation",
+  "handler_kind": "estate_discovery",
+  "capability_key": "frt.g02.workspace-and-package-detector",
+  "execution_contract_sha256": "sha256:e60680117d41a4400a71b1ec46447a2d25f0fbb0128ff7e5c869e3e814130f95",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:f5dc341fcebfe303beb1d3a7d2c89adced6820178d4584bd494216033297b5d8",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

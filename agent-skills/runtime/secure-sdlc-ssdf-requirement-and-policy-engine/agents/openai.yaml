@@ -1,0 +1,4 @@
+interface:
+  display_name: "Secure Sdlc Ssdf Requirement and Policy Engine"
+  short_description: "Help with Secure Sdlc Ssdf Requirement and Policy Engine tasks"
+  default_prompt: "Use $secure-sdlc-ssdf-requirement-and-policy-engine to execute its ELMOS Batch 17 workflow safely."

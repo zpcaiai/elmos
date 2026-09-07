@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "result.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "status",
+    "attempts",
+    "source_sha256",
+    "environment_sha256",
+    "fixture_sha256",
+    "started_at",
+    "finished_at",
+    "evidence",
+    "waiver_id",
+    "notes"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "not-run",
+        "passed",
+        "failed",
+        "blocked",
+        "skipped",
+        "waived",
+        "flaky"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "source_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "environment_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fixture_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "started_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "kind"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "waiver_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

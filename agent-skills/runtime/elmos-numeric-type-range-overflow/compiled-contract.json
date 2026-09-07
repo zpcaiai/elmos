@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "archiveMayGrantAuthority": false,
+    "authenticatedTrustedScopeRequired": true,
+    "idempotencyRequired": true,
+    "tenantIsolationRequired": true
+  },
+  "evidence": {
+    "certificationStatus": "NOT_CERTIFIED",
+    "externalEvidenceStatus": "NOT_RUN",
+    "sourceReadiness": "not-run"
+  },
+  "installed": {
+    "aliasApplied": false,
+    "dualRootsByteIdenticalRequired": true,
+    "name": "elmos-numeric-type-range-overflow"
+  },
+  "kind": "REPOSITORY_OWNED_SKILL_INTERFACE",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "runtime": {
+    "capabilityState": "CODE_COMPLETE_LOCAL_BOUNDED",
+    "engine": "engines/semantic-assurance-engine",
+    "genericFallbackAllowed": false,
+    "handlerId": "execute_elmos_numeric_type_range_overflow",
+    "operation": "MODEL_NORMALIZATION",
+    "operationMappingAuthority": "REPOSITORY_OWNED",
+    "registryKey": "elmos-numeric-type-range-overflow"
+  },
+  "schemaVersion": "elmos.semantic-assurance.installed-skill/v1",
+  "source": {
+    "archiveSha256": "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60",
+    "manifestSha256": "sha256:e0aae397b0a72afbcaef4e8e17474c4d67735327dbd67f9fd16c1897c7f56f40",
+    "sourceExecutablesExecuted": false,
+    "sourceInstructionsExecuted": false,
+    "sourceName": "elmos-numeric-type-range-overflow",
+    "sourceOperationMappingPresent": false,
+    "sourcePath": "agent-skills/runtime/elmos-numeric-type-range-overflow/SKILL.md",
+    "sourceSha256": "sha256:905ae400dcfc9c9fbde40ccde731f319ec66aebe6b66b53336a664fb03cef52c",
+    "sourceSkillId": "ELMOS-POLY-188"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 702: data migration cdc and coexistence controller"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $data-migration-cdc-and-coexistence-controller to evaluate this capability with evidence."

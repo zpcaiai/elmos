@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/uir/v1/conformance.schema.json",
+  "title": "UIR v1 Conformance",
+  "type": "object",
+  "required": ["batch", "status", "modules", "coverage", "blockingErrors", "openObligations", "violations", "recommendedActions"],
+  "properties": {
+    "batch": {"const": 3},
+    "status": {"enum": ["passed", "passed_with_restrictions", "blocked", "failed"]},
+    "modules": {"type": "array", "items": {"$ref": "#/$defs/moduleGate"}},
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "blockingErrors": {"$ref": "#/$defs/stringSet"},
+    "openObligations": {"$ref": "#/$defs/stringSet"},
+    "violations": {"$ref": "#/$defs/stringSet"},
+    "recommendedActions": {"$ref": "#/$defs/stringSet"}
+  },
+  "$defs": {
+    "ratio": {"type": "number", "minimum": 0, "maximum": 1},
+    "stringSet": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "coverage": {
+      "type": "object",
+      "required": ["declarationLiftRate", "operationLiftRate", "sourceMapCoverage", "typeCoverage", "callableBodyCoverage", "effectCoverage", "unknownOperationRate", "opaqueOperationRate", "unresolvedCallRate", "dynamicHighRiskRate"],
+      "properties": {
+        "declarationLiftRate": {"$ref": "#/$defs/ratio"}, "operationLiftRate": {"$ref": "#/$defs/ratio"},
+        "sourceMapCoverage": {"$ref": "#/$defs/ratio"}, "typeCoverage": {"$ref": "#/$defs/ratio"},
+        "callableBodyCoverage": {"$ref": "#/$defs/ratio"}, "effectCoverage": {"$ref": "#/$defs/ratio"},
+        "unknownOperationRate": {"$ref": "#/$defs/ratio"}, "opaqueOperationRate": {"$ref": "#/$defs/ratio"},
+        "unresolvedCallRate": {"$ref": "#/$defs/ratio"}, "dynamicHighRiskRate": {"$ref": "#/$defs/ratio"}
+      },
+      "additionalProperties": false
+    },
+    "moduleGate": {
+      "type": "object",
+      "required": ["moduleId", "gate", "eligibleForSkeletonGeneration", "eligibleForAutomaticTranslation", "restrictions", "coverage"],
+      "properties": {
+        "moduleId": {"type": "string", "minLength": 1}, "gate": {"enum": ["NONE", "UIR-A", "UIR-B", "UIR-C", "UIR-D"]},
+        "eligibleForSkeletonGeneration": {"type": "boolean"}, "eligibleForAutomaticTranslation": {"type": "boolean"},
+        "restrictions": {"$ref": "#/$defs/stringSet"}, "coverage": {"$ref": "#/$defs/coverage"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

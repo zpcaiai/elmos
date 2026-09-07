@@ -1,0 +1,12 @@
+{
+  "policy": "database_dialect_exactness",
+  "positive": {
+    "source_profile_exact": true,
+    "target_profile_exact": true,
+    "collation_charset_locked": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

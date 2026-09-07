@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B15: Logging Observability Lowering"
+  short_description: "Run Precision Migration B15 with evidence controls"
+  default_prompt: "Use $pm-b15-logging-observability-lowering to execute this Precision Migration contract with fail-closed evidence."

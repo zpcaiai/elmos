@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: Database Access Discovery"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-database-access-discovery to execute this Precision Migration contract with fail-closed evidence."

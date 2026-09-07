@@ -1,0 +1,152 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: database-cost-capacity-forecast
+  version: 3.0.0
+  pack: 20-sql-database-modernization
+  priority: P1
+  owner: database-modernization-team
+spec:
+  description: 预测存储、计算、IO、复制、许可、云资源和迁移窗口成本。
+  kernel: K3 Database Semantic Compiler + K6 Differential Runtime
+  riskClass: high
+  exposure: atomic-registry-only
+  businessLines:
+  - sql-database-conversion
+  capabilityTags:
+  - 20-sql-database-modernization
+  - capacity
+  - cost
+  - database
+  - forecast
+  - sql-database-conversion
+  triggers:
+  - 任务明确要求：预测存储、计算、IO、复制、许可、云资源和迁移窗口成本。
+  - 任务属于 sql-database-conversion，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 database-cost-capacity-forecast 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: database metadata, workload and migration dataset
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - inventory-workload
+  - extract-database-ir
+  - map-and-plan
+  - convert-and-backfill
+  - differential-and-load-test
+  - cutover-rehearsal
+  - certify-or-fallback
+  tools:
+    allowed:
+    - db.introspect
+    - sql.parse
+    - semantic.transform
+    - db.execute
+    - data.reconcile
+    - plan.compare
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - sql-dialect-parser-and-semantic-ir
+  - sql-schema-data-result-differential
+  - database-schema-and-query-graph
+  invariants:
+  - schema-and-routine-covered
+  - data-equivalent
+  - transaction-semantics-preserved
+  - performance-acceptable
+  - cutover-reversible
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - schema-and-routine-covered
+    - data-equivalent
+    - transaction-semantics-preserved
+    - performance-acceptable
+    - cutover-reversible
+    minimumLevel: E2
+    sourceBindingRequired: true
+    independentReplayRequired: false
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E2
+  support:
+    supportTier: standard
+    deprecationPolicyRequired: true

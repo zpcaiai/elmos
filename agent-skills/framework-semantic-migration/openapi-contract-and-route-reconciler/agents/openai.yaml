@@ -1,0 +1,4 @@
+interface:
+  display_name: "openapi-contract-and-route-reconciler"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $openapi-contract-and-route-reconciler to perform this Batch 7 framework migration step."

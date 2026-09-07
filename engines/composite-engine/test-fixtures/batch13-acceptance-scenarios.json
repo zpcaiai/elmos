@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "batch": 13,
+  "executionTest": "modules/composite-modernization/src/test/java/io/elmos/composite/CompositeModernizationScenariosTest.java",
+  "scenarios": [
+    { "id": 1, "name": "Java HTTP producer and .NET consumer", "expected": "CONTRACT_BREAKING" },
+    { "id": 2, "name": "Python message producer with Java and .NET consumers", "expected": "MULTI_CONSUMER_BREAKING" },
+    { "id": 3, "name": "Protobuf field number change", "expected": "WIRE_BREAKING" },
+    { "id": 4, "name": "Unknown external consumer", "expected": "UNKNOWN_CONSUMER_BLOCKER" },
+    { "id": 5, "name": "Cross-language strongly connected component", "expected": "COMPOSITE_MIGRATION_UNIT" },
+    { "id": 6, "name": "Shared database multiple writers", "expected": "SHARED_DATABASE_COUPLING" },
+    { "id": 7, "name": "Sequential dual-write partial failure", "expected": "PARTIAL_WRITE" },
+    { "id": 8, "name": "CDC lag after backfill", "expected": "CDC_LAG_EXCEEDED" },
+    { "id": 9, "name": "Unsafe shadow write", "expected": "SHADOW_WRITE_BLOCKED" },
+    { "id": 10, "name": "Nondeterministic response fields", "expected": "EXACT_AFTER_NORMALIZATION" },
+    { "id": 11, "name": "Shadow execution failure", "expected": "PRIMARY_UNAFFECTED" },
+    { "id": 12, "name": "Canary business metric failure", "expected": "ROLLBACK" },
+    { "id": 13, "name": "Read cutover separate from write cutover", "expected": "APPROVE_READ_ONLY" },
+    { "id": 14, "name": "Rollback after incompatible new writes", "expected": "FORWARD_FIX_ONLY" },
+    { "id": 15, "name": "Cross-language business journey", "expected": "BUSINESS_INVARIANT_FAILED" },
+    { "id": 16, "name": "Duplicate message delivery", "expected": "DUPLICATE_SUPPRESSED" },
+    { "id": 17, "name": "Expired compatibility window with usage", "expected": "EXPIRED_WITH_USAGE" },
+    { "id": 18, "name": "Legacy batch access before decommission", "expected": "LEGACY_DECOMMISSION_BLOCKED" }
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/archive-contract-inspection/1.0",
+  "title": "Repository-owned safe archive-script reimplementation receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "inspection_status",
+    "repository_reimplementation_state",
+    "source_validator_parity_state",
+    "source_layout_incompatibilities",
+    "source_blueprint_presence_score",
+    "source_blueprint_presence_score_maximum",
+    "source_blueprint_presence_score_authority",
+    "readiness_checks",
+    "safe_validation",
+    "source_tree_digest",
+    "source_file_count",
+    "neutralized_path_mapping_count",
+    "archive_scripts",
+    "archive_scripts_executed",
+    "active_archive_executables",
+    "external_states",
+    "inspection_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "inspection_status": {"const": "PASSED"},
+    "repository_reimplementation_state": {
+      "const": "LOCAL_REIMPLEMENTED_AND_EXECUTED_SELF_ATTESTED"
+    },
+    "source_validator_parity_state": {"const": "SOURCE_LAYOUT_INCOMPATIBLE"},
+    "source_layout_incompatibilities": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "ELMOS_WORKFLOW.md"},
+        {"const": "README.md"},
+        {"const": "SKILL.md"},
+        {"const": "manifest.json"}
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "source_blueprint_presence_score": {"const": 95},
+    "source_blueprint_presence_score_maximum": {"const": 100},
+    "source_blueprint_presence_score_authority": {
+      "const": "NON_AUTHORITATIVE_BLUEPRINT_PRESENCE_ONLY"
+    },
+    "readiness_checks": {
+      "type": "array",
+      "prefixItems": [
+        {"$ref": "#/$defs/readiness_top_level_packages"},
+        {"$ref": "#/$defs/readiness_shared_schemas"},
+        {"$ref": "#/$defs/readiness_source_pins"},
+        {"$ref": "#/$defs/readiness_phase_plan"},
+        {"$ref": "#/$defs/readiness_benchmark_framework"},
+        {"$ref": "#/$defs/readiness_commercial_ga"},
+        {"$ref": "#/$defs/readiness_subskills"},
+        {"$ref": "#/$defs/readiness_package_manifests"},
+        {"$ref": "#/$defs/readiness_integrity_manifest"}
+      ],
+      "items": false,
+      "minItems": 9,
+      "maxItems": 9
+    },
+    "safe_validation": {
+      "type": "object",
+      "required": [
+        "package_count",
+        "package_validation_count",
+        "subskill_count",
+        "schema_meta_validation_count",
+        "package_config_validation_count",
+        "example_validation_count",
+        "markdown_file_count",
+        "errors"
+      ],
+      "properties": {
+        "package_count": {"const": 8},
+        "package_validation_count": {"const": 8},
+        "subskill_count": {"const": 93},
+        "schema_meta_validation_count": {"const": 19},
+        "package_config_validation_count": {"const": 8},
+        "example_validation_count": {"const": 2},
+        "markdown_file_count": {"const": 207},
+        "errors": {"const": []}
+      },
+      "additionalProperties": false
+    },
+    "source_tree_digest": {
+      "const": "sha256:52ee0be0930430cf3e2177559265f50c16ec9ce2b6b0976a08e70aa21da559cb"
+    },
+    "source_file_count": {"const": 252},
+    "neutralized_path_mapping_count": {"const": 104},
+    "archive_scripts": {
+      "type": "array",
+      "prefixItems": [
+        {"$ref": "#/$defs/score_readiness_script"},
+        {"$ref": "#/$defs/validate_packages_script"}
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "archive_scripts_executed": {"const": false},
+    "active_archive_executables": {"const": []},
+    "external_states": {
+      "const": {
+        "independent_holdout": "NOT_RUN",
+        "provider_execution": "NOT_RUN",
+        "production_execution": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "certification": "NOT_CERTIFIED"
+      }
+    },
+    "inspection_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "readiness_top_level_packages": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "8 top-level packages"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 15},
+        "detail": {"const": "8 found"}
+      }
+    },
+    "readiness_shared_schemas": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "shared schemas"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 15},
+        "detail": {"const": "11 found"}
+      }
+    },
+    "readiness_source_pins": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "source pins"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 10},
+        "detail": {"const": "upstream isolation"}
+      }
+    },
+    "readiness_phase_plan": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "phase plan"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 10},
+        "detail": {"const": "implementation sequence"}
+      }
+    },
+    "readiness_benchmark_framework": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "benchmark framework"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 10},
+        "detail": {"const": "quality measurement"}
+      }
+    },
+    "readiness_commercial_ga": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "commercial GA checklist"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 10},
+        "detail": {"const": "commercial operations"}
+      }
+    },
+    "readiness_subskills": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "on-demand subskills"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 15},
+        "detail": {"const": "93 found"}
+      }
+    },
+    "readiness_package_manifests": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "package manifests"},
+        "status": {"const": "PASSED"},
+        "weight": {"const": 10},
+        "detail": {"const": "8 found"}
+      }
+    },
+    "readiness_integrity_manifest": {
+      "$ref": "#/$defs/readiness_check",
+      "properties": {
+        "name": {"const": "integrity manifest"},
+        "status": {"const": "FAILED"},
+        "weight": {"const": 5},
+        "detail": {"const": "root manifest presence"}
+      }
+    },
+    "readiness_check": {
+      "type": "object",
+      "required": ["name", "status", "weight", "detail"],
+      "properties": {
+        "name": {"type": "string"},
+        "status": {"enum": ["PASSED", "FAILED"]},
+        "weight": {"type": "integer", "minimum": 1, "maximum": 100},
+        "detail": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "score_readiness_script": {
+      "type": "object",
+      "required": [
+        "logical_path",
+        "materialized_path",
+        "sha256",
+        "size_bytes",
+        "source_mode",
+        "materialized_mode",
+        "execution_state",
+        "implementation_state"
+      ],
+      "properties": {
+        "logical_path": {"const": "scripts/score_readiness.py"},
+        "materialized_path": {
+          "const": "_neutralized-executable-data/scripts/score_readiness.py.source-data"
+        },
+        "sha256": {
+          "const": "sha256:a17057412f9b574b5e1445cb6191ed4a4b0a8e1f09bcf59fb12cbbabb53c3dc7"
+        },
+        "size_bytes": {"const": 1507},
+        "source_mode": {"const": "0755"},
+        "materialized_mode": {"const": "0644"},
+        "execution_state": {"const": "NOT_EXECUTED"},
+        "implementation_state": {"const": "REPOSITORY_OWNED_SAFE_REIMPLEMENTATION"}
+      },
+      "additionalProperties": false
+    },
+    "validate_packages_script": {
+      "type": "object",
+      "required": [
+        "logical_path",
+        "materialized_path",
+        "sha256",
+        "size_bytes",
+        "source_mode",
+        "materialized_mode",
+        "execution_state",
+        "implementation_state"
+      ],
+      "properties": {
+        "logical_path": {"const": "scripts/validate_packages.py"},
+        "materialized_path": {
+          "const": "_neutralized-executable-data/scripts/validate_packages.py.source-data"
+        },
+        "sha256": {
+          "const": "sha256:834aae29a1ba1ffc48d9ecf621b9e72e7a0e96e9cf74e255abf30f077921ad90"
+        },
+        "size_bytes": {"const": 4743},
+        "source_mode": {"const": "0755"},
+        "materialized_mode": {"const": "0644"},
+        "execution_state": {"const": "NOT_EXECUTED"},
+        "implementation_state": {"const": "REPOSITORY_OWNED_SAFE_REIMPLEMENTATION"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

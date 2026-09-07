@@ -1,0 +1,19 @@
+apiVersion: elmos.ai/v3delta1
+kind: VerificationMatrix
+metadata:
+  name: ownership-fencing
+  version: 3.1.0
+spec:
+  cases:
+  - case: same executor reconnect
+    expected: generation stable; epoch changes as contracted
+  - case: executor replacement
+    expected: generation increments; old retired
+  - case: late RPC
+    expected: discarded
+  - case: same workspace owner rebinding
+    expected: idempotent
+  - case: different owner
+    expected: no-clobber reject
+  - case: crash takeover
+    expected: explicit generation bump

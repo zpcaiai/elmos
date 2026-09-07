@@ -1,0 +1,65 @@
+{
+  "id": "B106-S07",
+  "batch": 106,
+  "name": "go-preview-runtime-adapter",
+  "dependencies": [
+    "B106-S03"
+  ],
+  "inputs": [
+    "validated RuntimeManifest",
+    "Go repository snapshot"
+  ],
+  "outputs": [
+    "GoBuildSpec",
+    "GoRunSpec",
+    "module cache key"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/adapters/go/GoPreviewAdapter.java",
+      "private-runner/internal/runtime/go.go",
+      "images/go/"
+    ],
+    "interfaces": [
+      "adapter runtime.go.compile",
+      "event runtime.adapter.go.ready"
+    ],
+    "data": [
+      "go_runtime_spec",
+      "go_build_artifact"
+    ]
+  },
+  "workflow": [
+    "解析go.mod/toolchain/workspace",
+    "发现cmd目录和main package",
+    "固定GOTOOLCHAIN与module proxy策略",
+    "执行CGO策略明确的构建",
+    "注入PORT并检查监听地址",
+    "识别HTTP、gRPC Gateway和静态文件"
+  ],
+  "tests": [
+    "多个main package要求选择",
+    "私有module缺凭证明确阻断",
+    "CGO依赖与runtime镜像匹配",
+    "只监听127.0.0.1被发现",
+    "静态二进制fixture运行"
+  ],
+  "evidence": [
+    "go-build-spec.json",
+    "go-run-spec.json",
+    "module-graph.txt",
+    "adapter-test-results.json"
+  ],
+  "definition_of_done": [
+    "main入口唯一",
+    "工具链固定",
+    "CGO策略明确",
+    "端口可暴露",
+    "Go fixture通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

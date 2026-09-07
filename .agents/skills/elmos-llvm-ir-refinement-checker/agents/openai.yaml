@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-llvm-ir-refinement-checker"
+  short_description: "Lower suitable native-language fragments to LLVM IR and use refinement-style translation validati..."
+  default_prompt: "Use $elmos-llvm-ir-refinement-checker through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-llvm-ir-refinement-checker"
+  handler_id: "execute_elmos_llvm_ir_refinement_checker"
+  operation: "FORMAL_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

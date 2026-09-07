@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lossless Syntax and Token Layer"
+  short_description: "Preserve tokens trivia comments and exact ranges"
+  default_prompt: "Use $lossless-syntax-and-token-layer to produce lossless source evidence and explicit parser recovery."

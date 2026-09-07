@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "example-knowledge-flywheel",
+  "status": "experimental",
+  "metrics": {
+    "ontology_coverage": 0,
+    "knowledge_lineage_coverage": 0,
+    "private_knowledge_isolation_pass_rate": 0,
+    "recommendation_precision_at_k": 0,
+    "risk_calibration_score": 0,
+    "forecast_interval_coverage": 0,
+    "holdout_pass_rate": 0,
+    "human_review_closure_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "private_knowledge_leaks": 1,
+    "target_leakage_findings": 1,
+    "unattributed_knowledge_items": 1,
+    "uncalibrated_p0_predictions": 1,
+    "unsafe_recommendations": 1,
+    "expired_certified_assets_used": 1,
+    "cross_tenant_reconstruction_findings": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": [],
+  "approved_by": []
+}

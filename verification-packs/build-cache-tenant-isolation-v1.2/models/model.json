@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "model_key": "model.build-cache-authorized-operation.v1",
+  "owner": "ELMOS cache security maintainers",
+  "states": [
+    "received",
+    "authenticated",
+    "scope-authorized",
+    "committed",
+    "denied"
+  ],
+  "initial_state": "received",
+  "commands": [
+    {
+      "command": "authenticate",
+      "from": [
+        "received"
+      ],
+      "to": "authenticated",
+      "guard": "trusted context binds principal and tenant",
+      "effects": []
+    },
+    {
+      "command": "reject-unauthenticated",
+      "from": [
+        "received"
+      ],
+      "to": "denied",
+      "guard": "trusted context missing or malformed",
+      "effects": [
+        "emit-denial-only"
+      ]
+    },
+    {
+      "command": "authorize-scope",
+      "from": [
+        "authenticated"
+      ],
+      "to": "scope-authorized",
+      "guard": "tenant, project, resource, action, and evidence scope all match",
+      "effects": []
+    },
+    {
+      "command": "reject-scope",
+      "from": [
+        "authenticated"
+      ],
+      "to": "denied",
+      "guard": "any mandatory scope or trust check fails",
+      "effects": [
+        "emit-denial-only"
+      ]
+    },
+    {
+      "command": "commit",
+      "from": [
+        "scope-authorized"
+      ],
+      "to": "committed",
+      "guard": "operation contract and idempotency claim pass",
+      "effects": [
+        "tenant-project-scoped-write"
+      ]
+    }
+  ],
+  "invariants": [
+    "denied-has-no-storage-cache-quarantine-process-or-external-call-side-effect",
+    "committed-write-matches-authenticated-tenant-and-owned-project",
+    "caller-claimed-identity-never-replaces-trusted-context",
+    "unknown-or-inconclusive-never-authorizes"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "received",
+      "event": "commit"
+    },
+    {
+      "from": "authenticated",
+      "event": "commit"
+    },
+    {
+      "from": "denied",
+      "event": "commit"
+    }
+  ],
+  "timeouts": [],
+  "execution_status": "NOT_RUN"
+}

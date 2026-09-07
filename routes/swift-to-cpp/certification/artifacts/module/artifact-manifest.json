@@ -1,0 +1,315 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/swift-to-cpp/certification/artifacts/module",
+  "corpus": "module",
+  "excluded_files": [
+    "source-runtime/000/source_harness",
+    "source-runtime/001/source_harness",
+    "source-runtime/002/source_harness",
+    "source-runtime/003/source_harness",
+    "source-runtime/004/source_harness",
+    "target-runtime/000/route_harness",
+    "target-runtime/001/route_harness",
+    "target-runtime/002/route_harness",
+    "target-runtime/003/route_harness",
+    "target-runtime/004/route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 49,
+  "files": [
+    {
+      "bytes": 1363,
+      "path": "formal-function-000-input.json",
+      "sha256": "sha256:1e2a4c769b94dab4b6cb17368d61f3e02990d5ee965b8f4410e250b7d3360c51"
+    },
+    {
+      "bytes": 2414,
+      "path": "formal-function-000-result.json",
+      "sha256": "sha256:a82f565536469c12a89d1d31392901cbf00580e820a4bf93988abda2ceef8a9b"
+    },
+    {
+      "bytes": 1279,
+      "path": "formal-function-000.smt2",
+      "sha256": "sha256:74acdfcc47dbbc2c39d3170d5f1f449831ad4ba6632bc8154c027a77d6777817"
+    },
+    {
+      "bytes": 1820,
+      "path": "formal-function-001-input.json",
+      "sha256": "sha256:4ca79cbcbf52514184a0e2a784de676c7341da818bbe45efb5b08525f77a83dd"
+    },
+    {
+      "bytes": 2423,
+      "path": "formal-function-001-result.json",
+      "sha256": "sha256:b01345998f6ca70b0564351f460b57b0f401fe1f7791c7a8e283dd446476fc54"
+    },
+    {
+      "bytes": 2023,
+      "path": "formal-function-001.smt2",
+      "sha256": "sha256:f4b48c844c1962aff1e57c8129c43ebaf929d215f8c3e6eb0bb0110dee276458"
+    },
+    {
+      "bytes": 2219,
+      "path": "formal-function-002-input.json",
+      "sha256": "sha256:aa95f2c26a41ad732fde36acb475a7a19901b3c1aee14e670b0f0e0d133e6675"
+    },
+    {
+      "bytes": 2450,
+      "path": "formal-function-002-result.json",
+      "sha256": "sha256:c31c1e23fde8f689148dc358c768d3499d4117998f38061b4b52e9e0312bdcf9"
+    },
+    {
+      "bytes": 1903,
+      "path": "formal-function-002.smt2",
+      "sha256": "sha256:4e7f01d4ff69c6aaa0e50632a7f7aa0765926b384254c55adb1ca85569c8ed68"
+    },
+    {
+      "bytes": 2225,
+      "path": "formal-function-003-input.json",
+      "sha256": "sha256:4551af5100ea4261eac09a2a0afbc334eedacff328233ba5112433416c38d502"
+    },
+    {
+      "bytes": 2734,
+      "path": "formal-function-003-result.json",
+      "sha256": "sha256:6314f4cde2253275439b6ddda8170d7ab1d3533fd23939ca0e68fb4fdc85623c"
+    },
+    {
+      "bytes": 2593,
+      "path": "formal-function-003.smt2",
+      "sha256": "sha256:c8b6f5664246eca31f60690f816b0837fddd43222a5cad64f2260d6bc5f7afbc"
+    },
+    {
+      "bytes": 1379,
+      "path": "formal-function-004-input.json",
+      "sha256": "sha256:9c66788c5135af5209fedaf83e8fbd447f46493c7591eaaf5958d7ff6e3f5752"
+    },
+    {
+      "bytes": 2420,
+      "path": "formal-function-004-result.json",
+      "sha256": "sha256:ce3a074cfda89245b5481918ab58b135111fe78c6ed7c4af673719bb7af53bf3"
+    },
+    {
+      "bytes": 1799,
+      "path": "formal-function-004.smt2",
+      "sha256": "sha256:a8e19b2bf5b3026788e8a41b5ede5bb3bfd5ff8e5228a11b6bf8f92617749376"
+    },
+    {
+      "bytes": 1335,
+      "path": "migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2794,
+      "path": "module-case-manifest.json",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 1266,
+      "path": "module-formal-input.json",
+      "sha256": "sha256:f681646d899af12438c9b0478409d99cbd0def0187a057efbb59f93a2095d0ae"
+    },
+    {
+      "bytes": 708,
+      "path": "source-module-artifact/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 42830,
+      "path": "source-module-inventory.json",
+      "sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9"
+    },
+    {
+      "bytes": 1881,
+      "path": "source-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 8431,
+      "path": "source-module-semantic-ir.json",
+      "sha256": "sha256:fd4ddddbb720b2740d03d5e9d3efef26a8db654391525a9c0f167e0c59a04533"
+    },
+    {
+      "bytes": 9548,
+      "path": "source-module-validation.json",
+      "sha256": "sha256:c3f24aca8ca8739d95e7f01e1afa306f8bfea536de29d8069f414769494a1140"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/000/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1088,
+      "path": "source-runtime/000/main.swift",
+      "sha256": "sha256:6dd7ff9c30fdc6100d53679e539f0a50090bd09f33f63d03639bbdae4877b100"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/001/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1152,
+      "path": "source-runtime/001/main.swift",
+      "sha256": "sha256:d617856da7a9c95d8393693b600b65376d3f0923c2fe85e12fa8b478d722010f"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/002/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1338,
+      "path": "source-runtime/002/main.swift",
+      "sha256": "sha256:60d99f1d28eefc5e1fbf61742f482a1a114b51403363abf738216be44e0e4ebc"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/003/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1426,
+      "path": "source-runtime/003/main.swift",
+      "sha256": "sha256:cc8a290a6753b3764cd83b6db419fabfdeacbd3f83c9a146a0ce2b17fd3748c8"
+    },
+    {
+      "bytes": 708,
+      "path": "source-runtime/004/equivalence_module.swift",
+      "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
+    },
+    {
+      "bytes": 1117,
+      "path": "source-runtime/004/main.swift",
+      "sha256": "sha256:2b54144f6cfefea02d898e66926dd9b1b0814b0be89fe2ce2a5271eacadd2f8d"
+    },
+    {
+      "bytes": 4176,
+      "path": "target-module-inventory.json",
+      "sha256": "sha256:1997e249c312069f29da76db4ab2c40c7b3916c542695615f3c3ab45fded9c2a"
+    },
+    {
+      "bytes": 1881,
+      "path": "target-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7093,
+      "path": "target-module-semantic-ir.json",
+      "sha256": "sha256:a28e0a0ca4499a44439831b120a7eda08c54d4df7f585c6e2aadcd92191a03f3"
+    },
+    {
+      "bytes": 7673,
+      "path": "target-module-validation.json",
+      "sha256": "sha256:f7b2e846e86f14f3259546ffad79eb9165a4e9e3314d7417cb8cd7cd1c12888c"
+    },
+    {
+      "bytes": 1335,
+      "path": "target-runtime/000/migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2204,
+      "path": "target-runtime/000/route_harness.cpp",
+      "sha256": "sha256:8b453835803b001dd8951fd8cde961b889353f151e5174577a901f69ea9e29d1"
+    },
+    {
+      "bytes": 1335,
+      "path": "target-runtime/001/migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2116,
+      "path": "target-runtime/001/route_harness.cpp",
+      "sha256": "sha256:9ee66d50b93acbb3c05f01838081009bbbc57d292c08df137bcdb53cd7585c64"
+    },
+    {
+      "bytes": 1335,
+      "path": "target-runtime/002/migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2290,
+      "path": "target-runtime/002/route_harness.cpp",
+      "sha256": "sha256:a7c1d29f2ec1d3ea231e6264f8185177623582b0fa0fca82d8f063811d2c96bf"
+    },
+    {
+      "bytes": 1335,
+      "path": "target-runtime/003/migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2503,
+      "path": "target-runtime/003/route_harness.cpp",
+      "sha256": "sha256:248f94f440a5cd417b1cd5ac03ad7e9f6a377892e217431cbbd56e6b8bdb95e5"
+    },
+    {
+      "bytes": 1335,
+      "path": "target-runtime/004/migrated.cpp",
+      "sha256": "sha256:ef1c12964361a5ec75e45df1ab9c015fc50fb3ccb7beb6a8d718101bc3fce63e"
+    },
+    {
+      "bytes": 2077,
+      "path": "target-runtime/004/route_harness.cpp",
+      "sha256": "sha256:8795302e0faded5a63fbb6063b4100cdef88c537da3a4456f440270ba65aaea9"
+    },
+    {
+      "bytes": 196435,
+      "path": "typed-pure-module-equivalence.json",
+      "sha256": "sha256:487065f78dd3ad315982d5bb094eeaeb3e71699bc9ab309a8585fbe2c55da04c"
+    },
+    {
+      "bytes": 11293,
+      "path": "whole-file-module-closure.json",
+      "sha256": "sha256:1bbe080e7252613890dd6048dad8bb8c2a9c66f66e6b7d4a12c865c79d21cd88"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "swift-to-cpp",
+  "schema_version": 1,
+  "total_bytes": 355914
+}

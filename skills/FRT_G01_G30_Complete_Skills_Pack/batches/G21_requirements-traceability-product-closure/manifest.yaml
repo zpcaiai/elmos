@@ -1,0 +1,86 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G21",
+    "slug": "requirements-traceability-product-closure",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "Requirements Traceability 与全系统功能闭环",
+    "transitionFrom": "每项功能、代码、测试和管理页面分别存在",
+    "transitionTo": "每项需求都可追踪到能力、旅程、实现、数据、权限、测试、监控、Runbook、Evidence 与 Release",
+    "certificateFamily": "FC",
+    "skills": [
+      {
+        "id": "FRT-2100",
+        "name": "Product Closure Orchestrator",
+        "path": "skills/frt-2100-product-closure-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2101",
+        "name": "Requirement Registry",
+        "path": "skills/frt-2101-requirement-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2102",
+        "name": "Business Capability Map Generator",
+        "path": "skills/frt-2102-business-capability-map-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2103",
+        "name": "Requirement-to-Artifact Traceability",
+        "path": "skills/frt-2103-requirement-to-artifact-traceability/SKILL.md"
+      },
+      {
+        "id": "FRT-2104",
+        "name": "Acceptance Criteria Compiler",
+        "path": "skills/frt-2104-acceptance-criteria-compiler/SKILL.md"
+      },
+      {
+        "id": "FRT-2105",
+        "name": "Feature Completeness Matrix",
+        "path": "skills/frt-2105-feature-completeness-matrix/SKILL.md"
+      },
+      {
+        "id": "FRT-2106",
+        "name": "Critical User Journey Registry",
+        "path": "skills/frt-2106-critical-user-journey-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2107",
+        "name": "Critical Admin Journey Registry",
+        "path": "skills/frt-2107-critical-admin-journey-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-2108",
+        "name": "Orphan Feature and Dead Flow Detector",
+        "path": "skills/frt-2108-orphan-feature-and-dead-flow-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-2109",
+        "name": "Missing Implementation Link Detector",
+        "path": "skills/frt-2109-missing-implementation-link-detector/SKILL.md"
+      },
+      {
+        "id": "FRT-2110",
+        "name": "Release Scope Closure Manager",
+        "path": "skills/frt-2110-release-scope-closure-manager/SKILL.md"
+      },
+      {
+        "id": "FRT-2111",
+        "name": "Functional Coverage Certification",
+        "path": "skills/frt-2111-functional-coverage-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键需求登记率与Owner覆盖率=100%",
+      "关键需求到实现、数据、权限、测试、监控、Runbook和Release的追踪率=100%",
+      "关键User/Admin Journey无死路",
+      "无隐藏Production副作用入口",
+      "无Critical orphan API、UI action、data write",
+      "所有Critical Feature达到声明FC等级"
+    ]
+  }
+}

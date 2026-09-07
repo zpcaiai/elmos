@@ -1,0 +1,69 @@
+batch: 18
+slug: frontend-direction-packs
+title: "前端方向转换包"
+phase: "F 前端与多端互转"
+skills:
+  - name: vue2-to-vue3-direction-pack
+    description: "提供从 Vue 2 到 Vue 3 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue2-to-react-direction-pack
+    description: "提供从 Vue 2 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue2-to-wechat-miniprogram-direction-pack
+    description: "提供从 Vue 2 到 微信小程序 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue2-to-arkui-direction-pack
+    description: "提供从 Vue 2 到 ArkTS/ArkUI 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue2-to-flutter-direction-pack
+    description: "提供从 Vue 2 到 Flutter 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue3-to-vue2-direction-pack
+    description: "提供从 Vue 3 到 Vue 2 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue3-to-react-direction-pack
+    description: "提供从 Vue 3 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue3-to-wechat-miniprogram-direction-pack
+    description: "提供从 Vue 3 到 微信小程序 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue3-to-arkui-direction-pack
+    description: "提供从 Vue 3 到 ArkTS/ArkUI 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: vue3-to-flutter-direction-pack
+    description: "提供从 Vue 3 到 Flutter 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: react-to-vue2-direction-pack
+    description: "提供从 React 到 Vue 2 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: react-to-vue3-direction-pack
+    description: "提供从 React 到 Vue 3 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: react-to-wechat-miniprogram-direction-pack
+    description: "提供从 React 到 微信小程序 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: react-to-arkui-direction-pack
+    description: "提供从 React 到 ArkTS/ArkUI 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: react-to-flutter-direction-pack
+    description: "提供从 React 到 Flutter 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: wechat-miniprogram-to-vue2-direction-pack
+    description: "提供从 微信小程序 到 Vue 2 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: wechat-miniprogram-to-vue3-direction-pack
+    description: "提供从 微信小程序 到 Vue 3 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: wechat-miniprogram-to-react-direction-pack
+    description: "提供从 微信小程序 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: wechat-miniprogram-to-arkui-direction-pack
+    description: "提供从 微信小程序 到 ArkTS/ArkUI 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: wechat-miniprogram-to-flutter-direction-pack
+    description: "提供从 微信小程序 到 Flutter 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: arkui-to-vue2-direction-pack
+    description: "提供从 ArkTS/ArkUI 到 Vue 2 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: arkui-to-vue3-direction-pack
+    description: "提供从 ArkTS/ArkUI 到 Vue 3 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: arkui-to-react-direction-pack
+    description: "提供从 ArkTS/ArkUI 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: arkui-to-wechat-miniprogram-direction-pack
+    description: "提供从 ArkTS/ArkUI 到 微信小程序 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: arkui-to-flutter-direction-pack
+    description: "提供从 ArkTS/ArkUI 到 Flutter 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: flutter-to-vue2-direction-pack
+    description: "提供从 Flutter 到 Vue 2 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: flutter-to-vue3-direction-pack
+    description: "提供从 Flutter 到 Vue 3 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: flutter-to-react-direction-pack
+    description: "提供从 Flutter 到 React 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: flutter-to-wechat-miniprogram-direction-pack
+    description: "提供从 Flutter 到 微信小程序 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: flutter-to-arkui-direction-pack
+    description: "提供从 Flutter 到 ArkTS/ArkUI 的前端整库专用转换与验证包，覆盖组件、状态、生命周期、路由、布局、平台能力和真机行为。"
+  - name: javascript-to-typescript-modernization-pack
+    description: "将 JavaScript 仓库迁移为严格 TypeScript，恢复类型、对象 Shape、Nullability 和运行时校验。"
+  - name: react-class-to-hooks-modernization-pack
+    description: "将 React Class 组件迁移为函数组件与 Hooks，并验证生命周期、闭包、Effect 和取消语义。"

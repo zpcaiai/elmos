@@ -1,0 +1,1856 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterRegistry
+metadata:
+  name: elmos-ai-capability-enhancement-skills-adapters
+  version: 4.1.0
+spec:
+  packageRole: capability
+  adapters:
+  - name: a2a
+    ecosystem: Agent2Agent Protocol
+    kind: protocol
+    path: target-adapters/a2a/adapter.yaml
+    versionSupport: target-adapters/a2a/version-support.yaml
+    conformance: target-adapters/a2a/conformance.yaml
+    package_role: capability
+  - name: a2a-v1
+    ecosystem: A2A v1
+    kind: protocol
+    path: target-adapters/a2a-v1/adapter.yaml
+    versionSupport: target-adapters/a2a-v1/version-support.yaml
+    conformance: target-adapters/a2a-v1/conformance.yaml
+    package_role: capability
+  - name: a2ui-v1
+    ecosystem: A2UI v1
+    kind: interactive-ui
+    path: target-adapters/a2ui-v1/adapter.yaml
+    versionSupport: target-adapters/a2ui-v1/version-support.yaml
+    conformance: target-adapters/a2ui-v1/conformance.yaml
+    package_role: capability
+  - name: acp-v1
+    ecosystem: Agent Client Protocol v1
+    kind: protocol
+    path: target-adapters/acp-v1/adapter.yaml
+    versionSupport: target-adapters/acp-v1/version-support.yaml
+    conformance: target-adapters/acp-v1/conformance.yaml
+    package_role: capability
+  - name: ag-ui
+    ecosystem: AG-UI
+    kind: interaction-protocol
+    path: target-adapters/ag-ui/adapter.yaml
+    versionSupport: target-adapters/ag-ui/version-support.yaml
+    conformance: target-adapters/ag-ui/conformance.yaml
+    package_role: capability
+  - name: agent-skills-standard
+    ecosystem: Agent Skills Standard
+    kind: skill-format
+    path: target-adapters/agent-skills-standard/adapter.yaml
+    versionSupport: target-adapters/agent-skills-standard/version-support.yaml
+    conformance: target-adapters/agent-skills-standard/conformance.yaml
+    package_role: capability
+  - name: agentic-resource-discovery
+    ecosystem: Agentic Resource Discovery
+    kind: registry
+    path: target-adapters/agentic-resource-discovery/adapter.yaml
+    versionSupport: target-adapters/agentic-resource-discovery/version-support.yaml
+    conformance: target-adapters/agentic-resource-discovery/conformance.yaml
+    package_role: capability
+  - name: agno
+    ecosystem: Agno
+    kind: agent-platform
+    path: target-adapters/agno/adapter.yaml
+    versionSupport: target-adapters/agno/version-support.yaml
+    conformance: target-adapters/agno/conformance.yaml
+    package_role: capability
+  - name: aider
+    ecosystem: Aider
+    kind: coding-agent
+    path: target-adapters/aider/adapter.yaml
+    versionSupport: target-adapters/aider/version-support.yaml
+    conformance: target-adapters/aider/conformance.yaml
+    package_role: capability
+  - name: airflow
+    ecosystem: Apache Airflow
+    kind: data-orchestration
+    path: target-adapters/airflow/adapter.yaml
+    versionSupport: target-adapters/airflow/version-support.yaml
+    conformance: target-adapters/airflow/conformance.yaml
+    package_role: capability
+  - name: alloy
+    ecosystem: Alloy
+    kind: formal-verifier
+    path: target-adapters/alloy/adapter.yaml
+    versionSupport: target-adapters/alloy/version-support.yaml
+    conformance: target-adapters/alloy/conformance.yaml
+    package_role: capability
+  - name: apache-avro
+    ecosystem: Apache Avro
+    kind: wire-schema
+    path: target-adapters/apache-avro/adapter.yaml
+    versionSupport: target-adapters/apache-avro/version-support.yaml
+    conformance: target-adapters/apache-avro/conformance.yaml
+    package_role: capability
+  - name: apache-calcite
+    ecosystem: Apache Calcite
+    kind: sql-tool
+    path: target-adapters/apache-calcite/adapter.yaml
+    versionSupport: target-adapters/apache-calcite/version-support.yaml
+    conformance: target-adapters/apache-calcite/conformance.yaml
+    package_role: capability
+  - name: apache-druid
+    ecosystem: Apache Druid
+    kind: realtime-analytics
+    path: target-adapters/apache-druid/adapter.yaml
+    versionSupport: target-adapters/apache-druid/version-support.yaml
+    conformance: target-adapters/apache-druid/conformance.yaml
+    package_role: capability
+  - name: apache-flink
+    ecosystem: Apache Flink
+    kind: stream-processing
+    path: target-adapters/apache-flink/adapter.yaml
+    versionSupport: target-adapters/apache-flink/version-support.yaml
+    conformance: target-adapters/apache-flink/conformance.yaml
+    package_role: capability
+  - name: apache-hudi
+    ecosystem: Apache Hudi
+    kind: table-format
+    path: target-adapters/apache-hudi/adapter.yaml
+    versionSupport: target-adapters/apache-hudi/version-support.yaml
+    conformance: target-adapters/apache-hudi/conformance.yaml
+    package_role: capability
+  - name: apache-iceberg
+    ecosystem: Apache Iceberg
+    kind: table-format
+    path: target-adapters/apache-iceberg/adapter.yaml
+    versionSupport: target-adapters/apache-iceberg/version-support.yaml
+    conformance: target-adapters/apache-iceberg/conformance.yaml
+    package_role: capability
+  - name: apache-pinot
+    ecosystem: Apache Pinot
+    kind: realtime-analytics
+    path: target-adapters/apache-pinot/adapter.yaml
+    versionSupport: target-adapters/apache-pinot/version-support.yaml
+    conformance: target-adapters/apache-pinot/conformance.yaml
+    package_role: capability
+  - name: apache-pulsar
+    ecosystem: Apache Pulsar
+    kind: messaging
+    path: target-adapters/apache-pulsar/adapter.yaml
+    versionSupport: target-adapters/apache-pulsar/version-support.yaml
+    conformance: target-adapters/apache-pulsar/conformance.yaml
+    package_role: capability
+  - name: apache-thrift
+    ecosystem: Apache Thrift
+    kind: rpc-schema
+    path: target-adapters/apache-thrift/adapter.yaml
+    versionSupport: target-adapters/apache-thrift/version-support.yaml
+    conformance: target-adapters/apache-thrift/conformance.yaml
+    package_role: capability
+  - name: apicurio-registry
+    ecosystem: Apicurio Registry
+    kind: schema-registry
+    path: target-adapters/apicurio-registry/adapter.yaml
+    versionSupport: target-adapters/apicurio-registry/version-support.yaml
+    conformance: target-adapters/apicurio-registry/conformance.yaml
+    package_role: capability
+  - name: arazzo-1.1
+    ecosystem: Arazzo 1.1
+    kind: api-workflow
+    path: target-adapters/arazzo-1.1/adapter.yaml
+    versionSupport: target-adapters/arazzo-1.1/version-support.yaml
+    conformance: target-adapters/arazzo-1.1/conformance.yaml
+    package_role: capability
+  - name: argocd
+    ecosystem: Argo CD
+    kind: gitops
+    path: target-adapters/argocd/adapter.yaml
+    versionSupport: target-adapters/argocd/version-support.yaml
+    conformance: target-adapters/argocd/conformance.yaml
+    package_role: capability
+  - name: arize-phoenix
+    ecosystem: Arize Phoenix
+    kind: eval-observability
+    path: target-adapters/arize-phoenix/adapter.yaml
+    versionSupport: target-adapters/arize-phoenix/version-support.yaml
+    conformance: target-adapters/arize-phoenix/conformance.yaml
+    package_role: capability
+  - name: asyncapi-3.1
+    ecosystem: AsyncAPI 3.1
+    kind: event-contract
+    path: target-adapters/asyncapi-3.1/adapter.yaml
+    versionSupport: target-adapters/asyncapi-3.1/version-support.yaml
+    conformance: target-adapters/asyncapi-3.1/conformance.yaml
+    package_role: capability
+  - name: atlas-schema
+    ecosystem: Atlas Database Schema-as-Code
+    kind: schema-migration
+    path: target-adapters/atlas-schema/adapter.yaml
+    versionSupport: target-adapters/atlas-schema/version-support.yaml
+    conformance: target-adapters/atlas-schema/conformance.yaml
+    package_role: capability
+  - name: autogen-compat
+    ecosystem: Microsoft AutoGen
+    kind: migration-source
+    path: target-adapters/autogen-compat/adapter.yaml
+    versionSupport: target-adapters/autogen-compat/version-support.yaml
+    conformance: target-adapters/autogen-compat/conformance.yaml
+    package_role: capability
+  - name: aws-bedrock-agentcore
+    ecosystem: AWS Bedrock AgentCore
+    kind: managed-runtime
+    path: target-adapters/aws-bedrock-agentcore/adapter.yaml
+    versionSupport: target-adapters/aws-bedrock-agentcore/version-support.yaml
+    conformance: target-adapters/aws-bedrock-agentcore/conformance.yaml
+    package_role: capability
+  - name: aws-msk
+    ecosystem: Amazon MSK
+    kind: managed-messaging
+    path: target-adapters/aws-msk/adapter.yaml
+    versionSupport: target-adapters/aws-msk/version-support.yaml
+    conformance: target-adapters/aws-msk/conformance.yaml
+    package_role: capability
+  - name: azure-event-hubs
+    ecosystem: Azure Event Hubs
+    kind: managed-messaging
+    path: target-adapters/azure-event-hubs/adapter.yaml
+    versionSupport: target-adapters/azure-event-hubs/version-support.yaml
+    conformance: target-adapters/azure-event-hubs/conformance.yaml
+    package_role: capability
+  - name: bazel
+    ecosystem: Bazel
+    kind: build-system
+    path: target-adapters/bazel/adapter.yaml
+    versionSupport: target-adapters/bazel/version-support.yaml
+    conformance: target-adapters/bazel/conformance.yaml
+    package_role: capability
+  - name: bentoml
+    ecosystem: BentoML
+    kind: model-serving
+    path: target-adapters/bentoml/adapter.yaml
+    versionSupport: target-adapters/bentoml/version-support.yaml
+    conformance: target-adapters/bentoml/conformance.yaml
+    package_role: capability
+  - name: bigquery-dialect
+    ecosystem: Google BigQuery
+    kind: database-dialect
+    path: target-adapters/bigquery-dialect/adapter.yaml
+    versionSupport: target-adapters/bigquery-dialect/version-support.yaml
+    conformance: target-adapters/bigquery-dialect/conformance.yaml
+    package_role: capability
+  - name: browser-computer-use
+    ecosystem: Browser / computer-use adapters
+    kind: tool-runtime
+    path: target-adapters/browser-computer-use/adapter.yaml
+    versionSupport: target-adapters/browser-computer-use/version-support.yaml
+    conformance: target-adapters/browser-computer-use/conformance.yaml
+    package_role: capability
+  - name: buf-schema-registry
+    ecosystem: Buf Schema Registry and Breaking Change
+    kind: schema-registry
+    path: target-adapters/buf-schema-registry/adapter.yaml
+    versionSupport: target-adapters/buf-schema-registry/version-support.yaml
+    conformance: target-adapters/buf-schema-registry/conformance.yaml
+    package_role: capability
+  - name: camel-ai
+    ecosystem: CAMEL-AI
+    kind: multi-agent-framework
+    path: target-adapters/camel-ai/adapter.yaml
+    versionSupport: target-adapters/camel-ai/version-support.yaml
+    conformance: target-adapters/camel-ai/conformance.yaml
+    package_role: capability
+  - name: cassandra-scylla
+    ecosystem: Cassandra/ScyllaDB
+    kind: wide-column
+    path: target-adapters/cassandra-scylla/adapter.yaml
+    versionSupport: target-adapters/cassandra-scylla/version-support.yaml
+    conformance: target-adapters/cassandra-scylla/conformance.yaml
+    package_role: capability
+  - name: cbmc-klee
+    ecosystem: CBMC/KLEE
+    kind: symbolic-execution
+    path: target-adapters/cbmc-klee/adapter.yaml
+    versionSupport: target-adapters/cbmc-klee/version-support.yaml
+    conformance: target-adapters/cbmc-klee/conformance.yaml
+    package_role: capability
+  - name: cedar-policy
+    ecosystem: Cedar Policy
+    kind: authorization
+    path: target-adapters/cedar-policy/adapter.yaml
+    versionSupport: target-adapters/cedar-policy/version-support.yaml
+    conformance: target-adapters/cedar-policy/conformance.yaml
+    package_role: capability
+  - name: ceph
+    ecosystem: Ceph
+    kind: distributed-storage
+    path: target-adapters/ceph/adapter.yaml
+    versionSupport: target-adapters/ceph/version-support.yaml
+    conformance: target-adapters/ceph/conformance.yaml
+    package_role: capability
+  - name: cert-manager
+    ecosystem: cert-manager
+    kind: certificate-runtime
+    path: target-adapters/cert-manager/adapter.yaml
+    versionSupport: target-adapters/cert-manager/version-support.yaml
+    conformance: target-adapters/cert-manager/conformance.yaml
+    package_role: capability
+  - name: chaos-mesh
+    ecosystem: Chaos Mesh
+    kind: chaos
+    path: target-adapters/chaos-mesh/adapter.yaml
+    versionSupport: target-adapters/chaos-mesh/version-support.yaml
+    conformance: target-adapters/chaos-mesh/conformance.yaml
+    package_role: capability
+  - name: chatgpt-apps-sdk
+    ecosystem: OpenAI ChatGPT Apps/Plugins SDK
+    kind: plugin-ui
+    path: target-adapters/chatgpt-apps-sdk/adapter.yaml
+    versionSupport: target-adapters/chatgpt-apps-sdk/version-support.yaml
+    conformance: target-adapters/chatgpt-apps-sdk/conformance.yaml
+    package_role: capability
+  - name: chroma
+    ecosystem: Chroma
+    kind: vector-database
+    path: target-adapters/chroma/adapter.yaml
+    versionSupport: target-adapters/chroma/version-support.yaml
+    conformance: target-adapters/chroma/conformance.yaml
+    package_role: capability
+  - name: cilium
+    ecosystem: Cilium
+    kind: network-security
+    path: target-adapters/cilium/adapter.yaml
+    versionSupport: target-adapters/cilium/version-support.yaml
+    conformance: target-adapters/cilium/conformance.yaml
+    package_role: capability
+  - name: claude-code
+    ecosystem: Claude Code
+    kind: coding-agent
+    path: target-adapters/claude-code/adapter.yaml
+    versionSupport: target-adapters/claude-code/version-support.yaml
+    conformance: target-adapters/claude-code/conformance.yaml
+    package_role: capability
+  - name: clickhouse-dialect
+    ecosystem: ClickHouse
+    kind: database-dialect
+    path: target-adapters/clickhouse-dialect/adapter.yaml
+    versionSupport: target-adapters/clickhouse-dialect/version-support.yaml
+    conformance: target-adapters/clickhouse-dialect/conformance.yaml
+    package_role: capability
+  - name: clickhouse-server
+    ecosystem: ClickHouse Server
+    kind: analytics-database
+    path: target-adapters/clickhouse-server/adapter.yaml
+    versionSupport: target-adapters/clickhouse-server/version-support.yaml
+    conformance: target-adapters/clickhouse-server/conformance.yaml
+    package_role: capability
+  - name: cline-roo
+    ecosystem: Cline / Roo Code
+    kind: coding-agent
+    path: target-adapters/cline-roo/adapter.yaml
+    versionSupport: target-adapters/cline-roo/version-support.yaml
+    conformance: target-adapters/cline-roo/conformance.yaml
+    package_role: capability
+  - name: cloudevents-1.0
+    ecosystem: CloudEvents 1.0
+    kind: event-contract
+    path: target-adapters/cloudevents-1.0/adapter.yaml
+    versionSupport: target-adapters/cloudevents-1.0/version-support.yaml
+    conformance: target-adapters/cloudevents-1.0/conformance.yaml
+    package_role: capability
+  - name: cockroachdb
+    ecosystem: CockroachDB
+    kind: distributed-sql
+    path: target-adapters/cockroachdb/adapter.yaml
+    versionSupport: target-adapters/cockroachdb/version-support.yaml
+    conformance: target-adapters/cockroachdb/conformance.yaml
+    package_role: capability
+  - name: codeql
+    ecosystem: CodeQL
+    kind: static-analysis
+    path: target-adapters/codeql/adapter.yaml
+    versionSupport: target-adapters/codeql/version-support.yaml
+    conformance: target-adapters/codeql/conformance.yaml
+    package_role: capability
+  - name: codex
+    ecosystem: OpenAI Codex
+    kind: coding-agent
+    path: target-adapters/codex/adapter.yaml
+    versionSupport: target-adapters/codex/version-support.yaml
+    conformance: target-adapters/codex/conformance.yaml
+    package_role: capability
+  - name: confidential-computing-arm-cca
+    ecosystem: Arm Confidential Compute Architecture
+    kind: confidential-computing
+    path: target-adapters/confidential-computing-arm-cca/adapter.yaml
+    versionSupport: target-adapters/confidential-computing-arm-cca/version-support.yaml
+    conformance: target-adapters/confidential-computing-arm-cca/conformance.yaml
+    package_role: capability
+  - name: confidential-computing-sev-snp
+    ecosystem: AMD SEV-SNP
+    kind: confidential-computing
+    path: target-adapters/confidential-computing-sev-snp/adapter.yaml
+    versionSupport: target-adapters/confidential-computing-sev-snp/version-support.yaml
+    conformance: target-adapters/confidential-computing-sev-snp/conformance.yaml
+    package_role: capability
+  - name: confidential-computing-tdx
+    ecosystem: Intel Trust Domain Extensions
+    kind: confidential-computing
+    path: target-adapters/confidential-computing-tdx/adapter.yaml
+    versionSupport: target-adapters/confidential-computing-tdx/version-support.yaml
+    conformance: target-adapters/confidential-computing-tdx/conformance.yaml
+    package_role: capability
+  - name: confluent-schema-registry
+    ecosystem: Schema Registry
+    kind: schema-registry
+    path: target-adapters/confluent-schema-registry/adapter.yaml
+    versionSupport: target-adapters/confluent-schema-registry/version-support.yaml
+    conformance: target-adapters/confluent-schema-registry/conformance.yaml
+    package_role: capability
+  - name: continue
+    ecosystem: Continue
+    kind: coding-agent
+    path: target-adapters/continue/adapter.yaml
+    versionSupport: target-adapters/continue/version-support.yaml
+    conformance: target-adapters/continue/conformance.yaml
+    package_role: capability
+  - name: coreml
+    ecosystem: Apple Core ML
+    kind: edge-inference
+    path: target-adapters/coreml/adapter.yaml
+    versionSupport: target-adapters/coreml/version-support.yaml
+    conformance: target-adapters/coreml/conformance.yaml
+    package_role: capability
+  - name: coze-studio
+    ecosystem: Coze Studio
+    kind: visual-agent-platform
+    path: target-adapters/coze-studio/adapter.yaml
+    versionSupport: target-adapters/coze-studio/version-support.yaml
+    conformance: target-adapters/coze-studio/conformance.yaml
+    package_role: capability
+  - name: crewai
+    ecosystem: CrewAI
+    kind: multi-agent-framework
+    path: target-adapters/crewai/adapter.yaml
+    versionSupport: target-adapters/crewai/version-support.yaml
+    conformance: target-adapters/crewai/conformance.yaml
+    package_role: capability
+  - name: crossplane
+    ecosystem: Crossplane
+    kind: infrastructure-control-plane
+    path: target-adapters/crossplane/adapter.yaml
+    versionSupport: target-adapters/crossplane/version-support.yaml
+    conformance: target-adapters/crossplane/conformance.yaml
+    package_role: capability
+  - name: dafny
+    ecosystem: Dafny
+    kind: formal-verifier
+    path: target-adapters/dafny/adapter.yaml
+    versionSupport: target-adapters/dafny/version-support.yaml
+    conformance: target-adapters/dafny/conformance.yaml
+    package_role: capability
+  - name: dagster
+    ecosystem: Dagster
+    kind: data-orchestration
+    path: target-adapters/dagster/adapter.yaml
+    versionSupport: target-adapters/dagster/version-support.yaml
+    conformance: target-adapters/dagster/conformance.yaml
+    package_role: capability
+  - name: dameng
+    ecosystem: Dameng Database
+    kind: sql-dialect
+    path: target-adapters/dameng/adapter.yaml
+    versionSupport: target-adapters/dameng/version-support.yaml
+    conformance: target-adapters/dameng/conformance.yaml
+    package_role: capability
+  - name: databricks-agents
+    ecosystem: Databricks Agents
+    kind: managed-runtime
+    path: target-adapters/databricks-agents/adapter.yaml
+    versionSupport: target-adapters/databricks-agents/version-support.yaml
+    conformance: target-adapters/databricks-agents/conformance.yaml
+    package_role: capability
+  - name: databricks-sql
+    ecosystem: Databricks SQL
+    kind: warehouse
+    path: target-adapters/databricks-sql/adapter.yaml
+    versionSupport: target-adapters/databricks-sql/version-support.yaml
+    conformance: target-adapters/databricks-sql/conformance.yaml
+    package_role: capability
+  - name: datahub
+    ecosystem: DataHub
+    kind: data-catalog
+    path: target-adapters/datahub/adapter.yaml
+    versionSupport: target-adapters/datahub/version-support.yaml
+    conformance: target-adapters/datahub/conformance.yaml
+    package_role: capability
+  - name: db2-dialect
+    ecosystem: IBM Db2
+    kind: database-dialect
+    path: target-adapters/db2-dialect/adapter.yaml
+    versionSupport: target-adapters/db2-dialect/version-support.yaml
+    conformance: target-adapters/db2-dialect/conformance.yaml
+    package_role: capability
+  - name: dbt
+    ecosystem: dbt
+    kind: analytics-tool
+    path: target-adapters/dbt/adapter.yaml
+    versionSupport: target-adapters/dbt/version-support.yaml
+    conformance: target-adapters/dbt/conformance.yaml
+    package_role: capability
+  - name: debezium
+    ecosystem: Debezium
+    kind: cdc-tool
+    path: target-adapters/debezium/adapter.yaml
+    versionSupport: target-adapters/debezium/version-support.yaml
+    conformance: target-adapters/debezium/conformance.yaml
+    package_role: capability
+  - name: deepseek-harness
+    ecosystem: DeepSeek Harness
+    kind: coding-harness
+    path: target-adapters/deepseek-harness/adapter.yaml
+    versionSupport: target-adapters/deepseek-harness/version-support.yaml
+    conformance: target-adapters/deepseek-harness/conformance.yaml
+    package_role: capability
+  - name: delta-lake
+    ecosystem: Delta Lake
+    kind: table-format
+    path: target-adapters/delta-lake/adapter.yaml
+    versionSupport: target-adapters/delta-lake/version-support.yaml
+    conformance: target-adapters/delta-lake/conformance.yaml
+    package_role: capability
+  - name: devcontainer
+    ecosystem: Development Containers
+    kind: dev-environment
+    path: target-adapters/devcontainer/adapter.yaml
+    versionSupport: target-adapters/devcontainer/version-support.yaml
+    conformance: target-adapters/devcontainer/conformance.yaml
+    package_role: capability
+  - name: dify
+    ecosystem: Dify
+    kind: visual-platform
+    path: target-adapters/dify/adapter.yaml
+    versionSupport: target-adapters/dify/version-support.yaml
+    conformance: target-adapters/dify/conformance.yaml
+    package_role: capability
+  - name: dotnet-roslyn
+    ecosystem: Roslyn / .NET
+    kind: language-compiler
+    path: target-adapters/dotnet-roslyn/adapter.yaml
+    versionSupport: target-adapters/dotnet-roslyn/version-support.yaml
+    conformance: target-adapters/dotnet-roslyn/conformance.yaml
+    package_role: capability
+  - name: dspy
+    ecosystem: DSPy
+    kind: programming-optimization-framework
+    path: target-adapters/dspy/adapter.yaml
+    versionSupport: target-adapters/dspy/version-support.yaml
+    conformance: target-adapters/dspy/conformance.yaml
+    package_role: capability
+  - name: duckdb
+    ecosystem: DuckDB
+    kind: analytics-dialect
+    path: target-adapters/duckdb/adapter.yaml
+    versionSupport: target-adapters/duckdb/version-support.yaml
+    conformance: target-adapters/duckdb/conformance.yaml
+    package_role: capability
+  - name: dynamodb
+    ecosystem: Amazon DynamoDB
+    kind: key-value
+    path: target-adapters/dynamodb/adapter.yaml
+    versionSupport: target-adapters/dynamodb/version-support.yaml
+    conformance: target-adapters/dynamodb/conformance.yaml
+    package_role: capability
+  - name: elasticsearch
+    ecosystem: Elasticsearch
+    kind: search
+    path: target-adapters/elasticsearch/adapter.yaml
+    versionSupport: target-adapters/elasticsearch/version-support.yaml
+    conformance: target-adapters/elasticsearch/conformance.yaml
+    package_role: capability
+  - name: envoy-gateway
+    ecosystem: Envoy Gateway
+    kind: api-gateway
+    path: target-adapters/envoy-gateway/adapter.yaml
+    versionSupport: target-adapters/envoy-gateway/version-support.yaml
+    conformance: target-adapters/envoy-gateway/conformance.yaml
+    package_role: capability
+  - name: falco
+    ecosystem: Falco
+    kind: runtime-security
+    path: target-adapters/falco/adapter.yaml
+    versionSupport: target-adapters/falco/version-support.yaml
+    conformance: target-adapters/falco/conformance.yaml
+    package_role: capability
+  - name: fastgpt
+    ecosystem: FastGPT
+    kind: visual-rag-platform
+    path: target-adapters/fastgpt/adapter.yaml
+    versionSupport: target-adapters/fastgpt/version-support.yaml
+    conformance: target-adapters/fastgpt/conformance.yaml
+    package_role: capability
+  - name: firecracker
+    ecosystem: Firecracker
+    kind: microvm
+    path: target-adapters/firecracker/adapter.yaml
+    versionSupport: target-adapters/firecracker/version-support.yaml
+    conformance: target-adapters/firecracker/conformance.yaml
+    package_role: capability
+  - name: flowise-compat
+    ecosystem: Flowise
+    kind: migration-source
+    path: target-adapters/flowise-compat/adapter.yaml
+    versionSupport: target-adapters/flowise-compat/version-support.yaml
+    conformance: target-adapters/flowise-compat/conformance.yaml
+    package_role: capability
+  - name: flux
+    ecosystem: Flux CD
+    kind: gitops
+    path: target-adapters/flux/adapter.yaml
+    versionSupport: target-adapters/flux/version-support.yaml
+    conformance: target-adapters/flux/conformance.yaml
+    package_role: capability
+  - name: flyway
+    ecosystem: Flyway
+    kind: migration-tool
+    path: target-adapters/flyway/adapter.yaml
+    versionSupport: target-adapters/flyway/version-support.yaml
+    conformance: target-adapters/flyway/conformance.yaml
+    package_role: capability
+  - name: gatekeeper
+    ecosystem: OPA Gatekeeper
+    kind: policy-engine
+    path: target-adapters/gatekeeper/adapter.yaml
+    versionSupport: target-adapters/gatekeeper/version-support.yaml
+    conformance: target-adapters/gatekeeper/conformance.yaml
+    package_role: capability
+  - name: gaussdb
+    ecosystem: GaussDB/openGauss
+    kind: sql-dialect
+    path: target-adapters/gaussdb/adapter.yaml
+    versionSupport: target-adapters/gaussdb/version-support.yaml
+    conformance: target-adapters/gaussdb/conformance.yaml
+    package_role: capability
+  - name: gemini-cli
+    ecosystem: Gemini CLI
+    kind: coding-agent
+    path: target-adapters/gemini-cli/adapter.yaml
+    versionSupport: target-adapters/gemini-cli/version-support.yaml
+    conformance: target-adapters/gemini-cli/conformance.yaml
+    package_role: capability
+  - name: gh-ost
+    ecosystem: gh-ost
+    kind: online-schema-change
+    path: target-adapters/gh-ost/adapter.yaml
+    versionSupport: target-adapters/gh-ost/version-support.yaml
+    conformance: target-adapters/gh-ost/conformance.yaml
+    package_role: capability
+  - name: go-compiler
+    ecosystem: Go toolchain
+    kind: language-compiler
+    path: target-adapters/go-compiler/adapter.yaml
+    versionSupport: target-adapters/go-compiler/version-support.yaml
+    conformance: target-adapters/go-compiler/conformance.yaml
+    package_role: capability
+  - name: google-adk-go
+    ecosystem: Google ADK
+    kind: agent-sdk
+    path: target-adapters/google-adk-go/adapter.yaml
+    versionSupport: target-adapters/google-adk-go/version-support.yaml
+    conformance: target-adapters/google-adk-go/conformance.yaml
+    package_role: capability
+  - name: google-adk-java
+    ecosystem: Google ADK
+    kind: agent-sdk
+    path: target-adapters/google-adk-java/adapter.yaml
+    versionSupport: target-adapters/google-adk-java/version-support.yaml
+    conformance: target-adapters/google-adk-java/conformance.yaml
+    package_role: capability
+  - name: google-adk-python
+    ecosystem: Google ADK
+    kind: agent-sdk
+    path: target-adapters/google-adk-python/adapter.yaml
+    versionSupport: target-adapters/google-adk-python/version-support.yaml
+    conformance: target-adapters/google-adk-python/conformance.yaml
+    package_role: capability
+  - name: google-adk-typescript
+    ecosystem: Google ADK
+    kind: agent-sdk
+    path: target-adapters/google-adk-typescript/adapter.yaml
+    versionSupport: target-adapters/google-adk-typescript/version-support.yaml
+    conformance: target-adapters/google-adk-typescript/conformance.yaml
+    package_role: capability
+  - name: google-gemini-enterprise-agent-platform
+    ecosystem: Google Enterprise Agent Platform
+    kind: managed-runtime
+    path: target-adapters/google-gemini-enterprise-agent-platform/adapter.yaml
+    versionSupport: target-adapters/google-gemini-enterprise-agent-platform/version-support.yaml
+    conformance: target-adapters/google-gemini-enterprise-agent-platform/conformance.yaml
+    package_role: capability
+  - name: google-pubsub
+    ecosystem: Google Cloud Pub/Sub
+    kind: managed-messaging
+    path: target-adapters/google-pubsub/adapter.yaml
+    versionSupport: target-adapters/google-pubsub/version-support.yaml
+    conformance: target-adapters/google-pubsub/conformance.yaml
+    package_role: capability
+  - name: grafana
+    ecosystem: Grafana
+    kind: observability-ui
+    path: target-adapters/grafana/adapter.yaml
+    versionSupport: target-adapters/grafana/version-support.yaml
+    conformance: target-adapters/grafana/conformance.yaml
+    package_role: capability
+  - name: grafeas
+    ecosystem: Grafeas Metadata API
+    kind: artifact-metadata
+    path: target-adapters/grafeas/adapter.yaml
+    versionSupport: target-adapters/grafeas/version-support.yaml
+    conformance: target-adapters/grafeas/conformance.yaml
+    package_role: capability
+  - name: graphql
+    ecosystem: GraphQL
+    kind: api-runtime
+    path: target-adapters/graphql/adapter.yaml
+    versionSupport: target-adapters/graphql/version-support.yaml
+    conformance: target-adapters/graphql/conformance.yaml
+    package_role: capability
+  - name: great-expectations
+    ecosystem: Great Expectations
+    kind: data-quality
+    path: target-adapters/great-expectations/adapter.yaml
+    versionSupport: target-adapters/great-expectations/version-support.yaml
+    conformance: target-adapters/great-expectations/conformance.yaml
+    package_role: capability
+  - name: grpc
+    ecosystem: gRPC/Protobuf
+    kind: rpc-runtime
+    path: target-adapters/grpc/adapter.yaml
+    versionSupport: target-adapters/grpc/version-support.yaml
+    conformance: target-adapters/grpc/conformance.yaml
+    package_role: capability
+  - name: guac-supply-chain
+    ecosystem: GUAC Supply-chain Graph
+    kind: supply-chain-intelligence
+    path: target-adapters/guac-supply-chain/adapter.yaml
+    versionSupport: target-adapters/guac-supply-chain/version-support.yaml
+    conformance: target-adapters/guac-supply-chain/conformance.yaml
+    package_role: capability
+  - name: gvisor
+    ecosystem: gVisor
+    kind: sandbox
+    path: target-adapters/gvisor/adapter.yaml
+    versionSupport: target-adapters/gvisor/version-support.yaml
+    conformance: target-adapters/gvisor/conformance.yaml
+    package_role: capability
+  - name: hashicorp-vault
+    ecosystem: HashiCorp Vault
+    kind: secret-key-runtime
+    path: target-adapters/hashicorp-vault/adapter.yaml
+    versionSupport: target-adapters/hashicorp-vault/version-support.yaml
+    conformance: target-adapters/hashicorp-vault/conformance.yaml
+    package_role: capability
+  - name: haystack-python
+    ecosystem: Haystack
+    kind: pipeline-framework
+    path: target-adapters/haystack-python/adapter.yaml
+    versionSupport: target-adapters/haystack-python/version-support.yaml
+    conformance: target-adapters/haystack-python/conformance.yaml
+    package_role: capability
+  - name: huggingface-tgi
+    ecosystem: Hugging Face TGI
+    kind: model-serving
+    path: target-adapters/huggingface-tgi/adapter.yaml
+    versionSupport: target-adapters/huggingface-tgi/version-support.yaml
+    conformance: target-adapters/huggingface-tgi/conformance.yaml
+    package_role: capability
+  - name: ietf-corim
+    ecosystem: IETF CoRIM Reference Integrity Manifests
+    kind: attestation-protocol
+    path: target-adapters/ietf-corim/adapter.yaml
+    versionSupport: target-adapters/ietf-corim/version-support.yaml
+    conformance: target-adapters/ietf-corim/conformance.yaml
+    package_role: capability
+  - name: ietf-eat
+    ecosystem: IETF Entity Attestation Token
+    kind: attestation-protocol
+    path: target-adapters/ietf-eat/adapter.yaml
+    versionSupport: target-adapters/ietf-eat/version-support.yaml
+    conformance: target-adapters/ietf-eat/conformance.yaml
+    package_role: capability
+  - name: influxdb
+    ecosystem: InfluxDB
+    kind: time-series
+    path: target-adapters/influxdb/adapter.yaml
+    versionSupport: target-adapters/influxdb/version-support.yaml
+    conformance: target-adapters/influxdb/conformance.yaml
+    package_role: capability
+  - name: istio
+    ecosystem: Istio
+    kind: service-mesh
+    path: target-adapters/istio/adapter.yaml
+    versionSupport: target-adapters/istio/version-support.yaml
+    conformance: target-adapters/istio/conformance.yaml
+    package_role: capability
+  - name: java-21-compiler
+    ecosystem: OpenJDK javac / Java 21
+    kind: language-compiler
+    path: target-adapters/java-21-compiler/adapter.yaml
+    versionSupport: target-adapters/java-21-compiler/version-support.yaml
+    conformance: target-adapters/java-21-compiler/conformance.yaml
+    package_role: capability
+  - name: jooq-parser
+    ecosystem: jOOQ Parser/Interpreter
+    kind: sql-tool
+    path: target-adapters/jooq-parser/adapter.yaml
+    versionSupport: target-adapters/jooq-parser/version-support.yaml
+    conformance: target-adapters/jooq-parser/conformance.yaml
+    package_role: capability
+  - name: json-schema-2020-12
+    ecosystem: JSON Schema Draft 2020-12
+    kind: schema-contract
+    path: target-adapters/json-schema-2020-12/adapter.yaml
+    versionSupport: target-adapters/json-schema-2020-12/version-support.yaml
+    conformance: target-adapters/json-schema-2020-12/conformance.yaml
+    package_role: capability
+  - name: k6
+    ecosystem: Grafana k6
+    kind: load-testing
+    path: target-adapters/k6/adapter.yaml
+    versionSupport: target-adapters/k6/version-support.yaml
+    conformance: target-adapters/k6/conformance.yaml
+    package_role: capability
+  - name: kafka
+    ecosystem: Apache Kafka
+    kind: messaging
+    path: target-adapters/kafka/adapter.yaml
+    versionSupport: target-adapters/kafka/version-support.yaml
+    conformance: target-adapters/kafka/conformance.yaml
+    package_role: capability
+  - name: kata-containers
+    ecosystem: Kata Containers
+    kind: sandbox
+    path: target-adapters/kata-containers/adapter.yaml
+    versionSupport: target-adapters/kata-containers/version-support.yaml
+    conformance: target-adapters/kata-containers/conformance.yaml
+    package_role: capability
+  - name: keycloak
+    ecosystem: Keycloak
+    kind: identity
+    path: target-adapters/keycloak/adapter.yaml
+    versionSupport: target-adapters/keycloak/version-support.yaml
+    conformance: target-adapters/keycloak/conformance.yaml
+    package_role: capability
+  - name: kingbase
+    ecosystem: KingbaseES
+    kind: sql-dialect
+    path: target-adapters/kingbase/adapter.yaml
+    versionSupport: target-adapters/kingbase/version-support.yaml
+    conformance: target-adapters/kingbase/conformance.yaml
+    package_role: capability
+  - name: kotlin-analysis
+    ecosystem: Kotlin Analysis API
+    kind: language-compiler
+    path: target-adapters/kotlin-analysis/adapter.yaml
+    versionSupport: target-adapters/kotlin-analysis/version-support.yaml
+    conformance: target-adapters/kotlin-analysis/conformance.yaml
+    package_role: capability
+  - name: kserve
+    ecosystem: KServe
+    kind: model-serving
+    path: target-adapters/kserve/adapter.yaml
+    versionSupport: target-adapters/kserve/version-support.yaml
+    conformance: target-adapters/kserve/conformance.yaml
+    package_role: capability
+  - name: kyverno
+    ecosystem: Kyverno
+    kind: policy-engine
+    path: target-adapters/kyverno/adapter.yaml
+    versionSupport: target-adapters/kyverno/version-support.yaml
+    conformance: target-adapters/kyverno/conformance.yaml
+    package_role: capability
+  - name: langchain-python
+    ecosystem: LangChain
+    kind: agent-sdk
+    path: target-adapters/langchain-python/adapter.yaml
+    versionSupport: target-adapters/langchain-python/version-support.yaml
+    conformance: target-adapters/langchain-python/conformance.yaml
+    package_role: capability
+  - name: langchain-typescript
+    ecosystem: LangChain
+    kind: agent-sdk
+    path: target-adapters/langchain-typescript/adapter.yaml
+    versionSupport: target-adapters/langchain-typescript/version-support.yaml
+    conformance: target-adapters/langchain-typescript/conformance.yaml
+    package_role: capability
+  - name: langchain4j
+    ecosystem: LangChain4j
+    kind: enterprise-ai-framework
+    path: target-adapters/langchain4j/adapter.yaml
+    versionSupport: target-adapters/langchain4j/version-support.yaml
+    conformance: target-adapters/langchain4j/conformance.yaml
+    package_role: capability
+  - name: langflow
+    ecosystem: Langflow
+    kind: visual-agent-platform
+    path: target-adapters/langflow/adapter.yaml
+    versionSupport: target-adapters/langflow/version-support.yaml
+    conformance: target-adapters/langflow/conformance.yaml
+    package_role: capability
+  - name: langgraph-python
+    ecosystem: LangGraph
+    kind: graph-runtime
+    path: target-adapters/langgraph-python/adapter.yaml
+    versionSupport: target-adapters/langgraph-python/version-support.yaml
+    conformance: target-adapters/langgraph-python/conformance.yaml
+    package_role: capability
+  - name: langgraph-typescript
+    ecosystem: LangGraph
+    kind: graph-runtime
+    path: target-adapters/langgraph-typescript/adapter.yaml
+    versionSupport: target-adapters/langgraph-typescript/version-support.yaml
+    conformance: target-adapters/langgraph-typescript/conformance.yaml
+    package_role: capability
+  - name: langsmith
+    ecosystem: LangSmith
+    kind: eval-observability
+    path: target-adapters/langsmith/adapter.yaml
+    versionSupport: target-adapters/langsmith/version-support.yaml
+    conformance: target-adapters/langsmith/conformance.yaml
+    package_role: capability
+  - name: lean4
+    ecosystem: Lean 4
+    kind: proof-assistant
+    path: target-adapters/lean4/adapter.yaml
+    versionSupport: target-adapters/lean4/version-support.yaml
+    conformance: target-adapters/lean4/conformance.yaml
+    package_role: capability
+  - name: liquibase
+    ecosystem: Liquibase
+    kind: migration-tool
+    path: target-adapters/liquibase/adapter.yaml
+    versionSupport: target-adapters/liquibase/version-support.yaml
+    conformance: target-adapters/liquibase/conformance.yaml
+    package_role: capability
+  - name: litellm
+    ecosystem: LiteLLM
+    kind: model-gateway
+    path: target-adapters/litellm/adapter.yaml
+    versionSupport: target-adapters/litellm/version-support.yaml
+    conformance: target-adapters/litellm/conformance.yaml
+    package_role: capability
+  - name: litmuschaos
+    ecosystem: LitmusChaos
+    kind: chaos
+    path: target-adapters/litmuschaos/adapter.yaml
+    versionSupport: target-adapters/litmuschaos/version-support.yaml
+    conformance: target-adapters/litmuschaos/conformance.yaml
+    package_role: capability
+  - name: llama-cpp
+    ecosystem: llama.cpp
+    kind: edge-inference
+    path: target-adapters/llama-cpp/adapter.yaml
+    versionSupport: target-adapters/llama-cpp/version-support.yaml
+    conformance: target-adapters/llama-cpp/conformance.yaml
+    package_role: capability
+  - name: llama-stack
+    ecosystem: Llama Stack
+    kind: ai-platform
+    path: target-adapters/llama-stack/adapter.yaml
+    versionSupport: target-adapters/llama-stack/version-support.yaml
+    conformance: target-adapters/llama-stack/conformance.yaml
+    package_role: capability
+  - name: llamaindex-python
+    ecosystem: LlamaIndex
+    kind: data-agent-framework
+    path: target-adapters/llamaindex-python/adapter.yaml
+    versionSupport: target-adapters/llamaindex-python/version-support.yaml
+    conformance: target-adapters/llamaindex-python/conformance.yaml
+    package_role: capability
+  - name: llamaindex-typescript
+    ecosystem: LlamaIndex
+    kind: data-agent-framework
+    path: target-adapters/llamaindex-typescript/adapter.yaml
+    versionSupport: target-adapters/llamaindex-typescript/version-support.yaml
+    conformance: target-adapters/llamaindex-typescript/conformance.yaml
+    package_role: capability
+  - name: loki
+    ecosystem: Grafana Loki
+    kind: log-store
+    path: target-adapters/loki/adapter.yaml
+    versionSupport: target-adapters/loki/version-support.yaml
+    conformance: target-adapters/loki/conformance.yaml
+    package_role: capability
+  - name: mastra
+    ecosystem: Mastra
+    kind: agent-workflow-framework
+    path: target-adapters/mastra/adapter.yaml
+    versionSupport: target-adapters/mastra/version-support.yaml
+    conformance: target-adapters/mastra/conformance.yaml
+    package_role: capability
+  - name: mcp
+    ecosystem: Model Context Protocol
+    kind: protocol
+    path: target-adapters/mcp/adapter.yaml
+    versionSupport: target-adapters/mcp/version-support.yaml
+    conformance: target-adapters/mcp/conformance.yaml
+    package_role: capability
+  - name: mcp-2026-07-28
+    ecosystem: MCP 2026-07-28
+    kind: protocol
+    path: target-adapters/mcp-2026-07-28/adapter.yaml
+    versionSupport: target-adapters/mcp-2026-07-28/version-support.yaml
+    conformance: target-adapters/mcp-2026-07-28/conformance.yaml
+    package_role: capability
+  - name: mcp-apps
+    ecosystem: MCP Apps
+    kind: interactive-ui
+    path: target-adapters/mcp-apps/adapter.yaml
+    versionSupport: target-adapters/mcp-apps/version-support.yaml
+    conformance: target-adapters/mcp-apps/conformance.yaml
+    package_role: capability
+  - name: microsoft-agent-framework-dotnet
+    ecosystem: Microsoft Agent Framework
+    kind: agent-framework
+    path: target-adapters/microsoft-agent-framework-dotnet/adapter.yaml
+    versionSupport: target-adapters/microsoft-agent-framework-dotnet/version-support.yaml
+    conformance: target-adapters/microsoft-agent-framework-dotnet/conformance.yaml
+    package_role: capability
+  - name: microsoft-agent-framework-python
+    ecosystem: Microsoft Agent Framework
+    kind: agent-framework
+    path: target-adapters/microsoft-agent-framework-python/adapter.yaml
+    versionSupport: target-adapters/microsoft-agent-framework-python/version-support.yaml
+    conformance: target-adapters/microsoft-agent-framework-python/conformance.yaml
+    package_role: capability
+  - name: microsoft-foundry-agent-service
+    ecosystem: Microsoft Foundry Agent Service
+    kind: managed-runtime
+    path: target-adapters/microsoft-foundry-agent-service/adapter.yaml
+    versionSupport: target-adapters/microsoft-foundry-agent-service/version-support.yaml
+    conformance: target-adapters/microsoft-foundry-agent-service/conformance.yaml
+    package_role: capability
+  - name: microsoft-graphrag
+    ecosystem: Microsoft GraphRAG
+    kind: graph-rag
+    path: target-adapters/microsoft-graphrag/adapter.yaml
+    versionSupport: target-adapters/microsoft-graphrag/version-support.yaml
+    conformance: target-adapters/microsoft-graphrag/conformance.yaml
+    package_role: capability
+  - name: milvus
+    ecosystem: Milvus
+    kind: vector-store
+    path: target-adapters/milvus/adapter.yaml
+    versionSupport: target-adapters/milvus/version-support.yaml
+    conformance: target-adapters/milvus/conformance.yaml
+    package_role: capability
+  - name: mimir
+    ecosystem: Grafana Mimir
+    kind: metrics-store
+    path: target-adapters/mimir/adapter.yaml
+    versionSupport: target-adapters/mimir/version-support.yaml
+    conformance: target-adapters/mimir/conformance.yaml
+    package_role: capability
+  - name: minio
+    ecosystem: MinIO
+    kind: object-storage
+    path: target-adapters/minio/adapter.yaml
+    versionSupport: target-adapters/minio/version-support.yaml
+    conformance: target-adapters/minio/conformance.yaml
+    package_role: capability
+  - name: mlflow-genai
+    ecosystem: MLflow GenAI
+    kind: eval-observability
+    path: target-adapters/mlflow-genai/adapter.yaml
+    versionSupport: target-adapters/mlflow-genai/version-support.yaml
+    conformance: target-adapters/mlflow-genai/conformance.yaml
+    package_role: capability
+  - name: mongodb
+    ecosystem: MongoDB
+    kind: document-database
+    path: target-adapters/mongodb/adapter.yaml
+    versionSupport: target-adapters/mongodb/version-support.yaml
+    conformance: target-adapters/mongodb/conformance.yaml
+    package_role: capability
+  - name: mutmut
+    ecosystem: mutmut Python Mutation Testing
+    kind: mutation-testing
+    path: target-adapters/mutmut/adapter.yaml
+    versionSupport: target-adapters/mutmut/version-support.yaml
+    conformance: target-adapters/mutmut/conformance.yaml
+    package_role: capability
+  - name: mysql-mariadb-dialect
+    ecosystem: MySQL / MariaDB
+    kind: database-dialect
+    path: target-adapters/mysql-mariadb-dialect/adapter.yaml
+    versionSupport: target-adapters/mysql-mariadb-dialect/version-support.yaml
+    conformance: target-adapters/mysql-mariadb-dialect/conformance.yaml
+    package_role: capability
+  - name: n8n-ai
+    ecosystem: n8n AI
+    kind: automation-platform
+    path: target-adapters/n8n-ai/adapter.yaml
+    versionSupport: target-adapters/n8n-ai/version-support.yaml
+    conformance: target-adapters/n8n-ai/conformance.yaml
+    package_role: capability
+  - name: nats-jetstream
+    ecosystem: NATS JetStream
+    kind: messaging
+    path: target-adapters/nats-jetstream/adapter.yaml
+    versionSupport: target-adapters/nats-jetstream/version-support.yaml
+    conformance: target-adapters/nats-jetstream/conformance.yaml
+    package_role: capability
+  - name: neo4j-database
+    ecosystem: Neo4j Database
+    kind: graph-database
+    path: target-adapters/neo4j-database/adapter.yaml
+    versionSupport: target-adapters/neo4j-database/version-support.yaml
+    conformance: target-adapters/neo4j-database/conformance.yaml
+    package_role: capability
+  - name: neo4j-graphrag
+    ecosystem: Neo4j GraphRAG
+    kind: graph-rag
+    path: target-adapters/neo4j-graphrag/adapter.yaml
+    versionSupport: target-adapters/neo4j-graphrag/version-support.yaml
+    conformance: target-adapters/neo4j-graphrag/conformance.yaml
+    package_role: capability
+  - name: nistir-8596-ai-csf-profile
+    ecosystem: NISTIR 8596 Cybersecurity Framework Profile for AI
+    kind: ai-cybersecurity-profile
+    path: target-adapters/nistir-8596-ai-csf-profile/adapter.yaml
+    versionSupport: target-adapters/nistir-8596-ai-csf-profile/version-support.yaml
+    conformance: target-adapters/nistir-8596-ai-csf-profile/conformance.yaml
+    package_role: capability
+  - name: nix
+    ecosystem: Nix
+    kind: hermetic-environment
+    path: target-adapters/nix/adapter.yaml
+    versionSupport: target-adapters/nix/version-support.yaml
+    conformance: target-adapters/nix/conformance.yaml
+    package_role: capability
+  - name: nvidia-triton
+    ecosystem: NVIDIA Triton Inference Server
+    kind: model-serving
+    path: target-adapters/nvidia-triton/adapter.yaml
+    versionSupport: target-adapters/nvidia-triton/version-support.yaml
+    conformance: target-adapters/nvidia-triton/conformance.yaml
+    package_role: capability
+  - name: oceanbase-mysql
+    ecosystem: OceanBase MySQL mode
+    kind: distributed-sql
+    path: target-adapters/oceanbase-mysql/adapter.yaml
+    versionSupport: target-adapters/oceanbase-mysql/version-support.yaml
+    conformance: target-adapters/oceanbase-mysql/conformance.yaml
+    package_role: capability
+  - name: oceanbase-oracle
+    ecosystem: OceanBase Oracle mode
+    kind: distributed-sql
+    path: target-adapters/oceanbase-oracle/adapter.yaml
+    versionSupport: target-adapters/oceanbase-oracle/version-support.yaml
+    conformance: target-adapters/oceanbase-oracle/conformance.yaml
+    package_role: capability
+  - name: ollama
+    ecosystem: Ollama
+    kind: local-model-serving
+    path: target-adapters/ollama/adapter.yaml
+    versionSupport: target-adapters/ollama/version-support.yaml
+    conformance: target-adapters/ollama/conformance.yaml
+    package_role: capability
+  - name: onnx-runtime
+    ecosystem: ONNX Runtime
+    kind: edge-inference
+    path: target-adapters/onnx-runtime/adapter.yaml
+    versionSupport: target-adapters/onnx-runtime/version-support.yaml
+    conformance: target-adapters/onnx-runtime/conformance.yaml
+    package_role: capability
+  - name: opa
+    ecosystem: Open Policy Agent
+    kind: policy-engine
+    path: target-adapters/opa/adapter.yaml
+    versionSupport: target-adapters/opa/version-support.yaml
+    conformance: target-adapters/opa/conformance.yaml
+    package_role: capability
+  - name: openai-agents-python
+    ecosystem: OpenAI Agents SDK
+    kind: agent-sdk
+    path: target-adapters/openai-agents-python/adapter.yaml
+    versionSupport: target-adapters/openai-agents-python/version-support.yaml
+    conformance: target-adapters/openai-agents-python/conformance.yaml
+    package_role: capability
+  - name: openai-agents-typescript
+    ecosystem: OpenAI Agents SDK
+    kind: agent-sdk
+    path: target-adapters/openai-agents-typescript/adapter.yaml
+    versionSupport: target-adapters/openai-agents-typescript/version-support.yaml
+    conformance: target-adapters/openai-agents-typescript/conformance.yaml
+    package_role: capability
+  - name: openai-plugins
+    ecosystem: OpenAI Plugins
+    kind: plugin-platform
+    path: target-adapters/openai-plugins/adapter.yaml
+    versionSupport: target-adapters/openai-plugins/version-support.yaml
+    conformance: target-adapters/openai-plugins/conformance.yaml
+    package_role: capability
+  - name: openai-realtime
+    ecosystem: OpenAI Realtime API
+    kind: realtime-ai
+    path: target-adapters/openai-realtime/adapter.yaml
+    versionSupport: target-adapters/openai-realtime/version-support.yaml
+    conformance: target-adapters/openai-realtime/conformance.yaml
+    package_role: capability
+  - name: openapi-3.1
+    ecosystem: OpenAPI 3.1
+    kind: api-contract
+    path: target-adapters/openapi-3.1/adapter.yaml
+    versionSupport: target-adapters/openapi-3.1/version-support.yaml
+    conformance: target-adapters/openapi-3.1/conformance.yaml
+    package_role: capability
+  - name: openapi-3.2
+    ecosystem: OpenAPI 3.2
+    kind: api-contract
+    path: target-adapters/openapi-3.2/adapter.yaml
+    versionSupport: target-adapters/openapi-3.2/version-support.yaml
+    conformance: target-adapters/openapi-3.2/conformance.yaml
+    package_role: capability
+  - name: openapi-tools
+    ecosystem: OpenAPI tool adapters
+    kind: tool-protocol
+    path: target-adapters/openapi-tools/adapter.yaml
+    versionSupport: target-adapters/openapi-tools/version-support.yaml
+    conformance: target-adapters/openapi-tools/conformance.yaml
+    package_role: capability
+  - name: openclaw
+    ecosystem: OpenClaw
+    kind: assistant-gateway
+    path: target-adapters/openclaw/adapter.yaml
+    versionSupport: target-adapters/openclaw/version-support.yaml
+    conformance: target-adapters/openclaw/conformance.yaml
+    package_role: capability
+  - name: opencode
+    ecosystem: OpenCode
+    kind: coding-agent
+    path: target-adapters/opencode/adapter.yaml
+    versionSupport: target-adapters/opencode/version-support.yaml
+    conformance: target-adapters/opencode/conformance.yaml
+    package_role: capability
+  - name: openfeature
+    ecosystem: OpenFeature
+    kind: feature-management
+    path: target-adapters/openfeature/adapter.yaml
+    versionSupport: target-adapters/openfeature/version-support.yaml
+    conformance: target-adapters/openfeature/conformance.yaml
+    package_role: capability
+  - name: openfga
+    ecosystem: OpenFGA
+    kind: authorization
+    path: target-adapters/openfga/adapter.yaml
+    versionSupport: target-adapters/openfga/version-support.yaml
+    conformance: target-adapters/openfga/conformance.yaml
+    package_role: capability
+  - name: openhands
+    ecosystem: OpenHands
+    kind: coding-agent-platform
+    path: target-adapters/openhands/adapter.yaml
+    versionSupport: target-adapters/openhands/version-support.yaml
+    conformance: target-adapters/openhands/conformance.yaml
+    package_role: capability
+  - name: openharness
+    ecosystem: OpenHarness
+    kind: coding-harness
+    path: target-adapters/openharness/adapter.yaml
+    versionSupport: target-adapters/openharness/version-support.yaml
+    conformance: target-adapters/openharness/conformance.yaml
+    package_role: capability
+  - name: openinference-compatible
+    ecosystem: OpenInference Compatible
+    kind: telemetry
+    path: target-adapters/openinference-compatible/adapter.yaml
+    versionSupport: target-adapters/openinference-compatible/version-support.yaml
+    conformance: target-adapters/openinference-compatible/conformance.yaml
+    package_role: capability
+  - name: openlineage
+    ecosystem: OpenLineage
+    kind: data-lineage
+    path: target-adapters/openlineage/adapter.yaml
+    versionSupport: target-adapters/openlineage/version-support.yaml
+    conformance: target-adapters/openlineage/conformance.yaml
+    package_role: capability
+  - name: openmetadata
+    ecosystem: OpenMetadata
+    kind: data-catalog
+    path: target-adapters/openmetadata/adapter.yaml
+    versionSupport: target-adapters/openmetadata/version-support.yaml
+    conformance: target-adapters/openmetadata/conformance.yaml
+    package_role: capability
+  - name: openrouter
+    ecosystem: OpenRouter
+    kind: model-gateway
+    path: target-adapters/openrouter/adapter.yaml
+    versionSupport: target-adapters/openrouter/version-support.yaml
+    conformance: target-adapters/openrouter/conformance.yaml
+    package_role: capability
+  - name: opensearch
+    ecosystem: OpenSearch
+    kind: search
+    path: target-adapters/opensearch/adapter.yaml
+    versionSupport: target-adapters/opensearch/version-support.yaml
+    conformance: target-adapters/opensearch/conformance.yaml
+    package_role: capability
+  - name: openssf-scorecard
+    ecosystem: OpenSSF Scorecard
+    kind: supply-chain-assessment
+    path: target-adapters/openssf-scorecard/adapter.yaml
+    versionSupport: target-adapters/openssf-scorecard/version-support.yaml
+    conformance: target-adapters/openssf-scorecard/conformance.yaml
+    package_role: capability
+  - name: opentelemetry
+    ecosystem: OpenTelemetry
+    kind: observability
+    path: target-adapters/opentelemetry/adapter.yaml
+    versionSupport: target-adapters/opentelemetry/version-support.yaml
+    conformance: target-adapters/opentelemetry/conformance.yaml
+    package_role: capability
+  - name: oracle-dialect
+    ecosystem: Oracle Database
+    kind: database-dialect
+    path: target-adapters/oracle-dialect/adapter.yaml
+    versionSupport: target-adapters/oracle-dialect/version-support.yaml
+    conformance: target-adapters/oracle-dialect/conformance.yaml
+    package_role: capability
+  - name: otel-collector
+    ecosystem: OpenTelemetry Collector
+    kind: telemetry-pipeline
+    path: target-adapters/otel-collector/adapter.yaml
+    versionSupport: target-adapters/otel-collector/version-support.yaml
+    conformance: target-adapters/otel-collector/conformance.yaml
+    package_role: capability
+  - name: pact
+    ecosystem: Pact
+    kind: contract-testing
+    path: target-adapters/pact/adapter.yaml
+    versionSupport: target-adapters/pact/version-support.yaml
+    conformance: target-adapters/pact/conformance.yaml
+    package_role: capability
+  - name: pgbackrest
+    ecosystem: pgBackRest
+    kind: database-backup
+    path: target-adapters/pgbackrest/adapter.yaml
+    versionSupport: target-adapters/pgbackrest/version-support.yaml
+    conformance: target-adapters/pgbackrest/conformance.yaml
+    package_role: capability
+  - name: pgbouncer
+    ecosystem: PgBouncer
+    kind: database-proxy
+    path: target-adapters/pgbouncer/adapter.yaml
+    versionSupport: target-adapters/pgbouncer/version-support.yaml
+    conformance: target-adapters/pgbouncer/conformance.yaml
+    package_role: capability
+  - name: pgvector
+    ecosystem: pgvector
+    kind: vector-store
+    path: target-adapters/pgvector/adapter.yaml
+    versionSupport: target-adapters/pgvector/version-support.yaml
+    conformance: target-adapters/pgvector/conformance.yaml
+    package_role: capability
+  - name: pi
+    ecosystem: Pi coding agent
+    kind: coding-harness
+    path: target-adapters/pi/adapter.yaml
+    versionSupport: target-adapters/pi/version-support.yaml
+    conformance: target-adapters/pi/conformance.yaml
+    package_role: capability
+  - name: pinecone
+    ecosystem: Pinecone
+    kind: vector-database
+    path: target-adapters/pinecone/adapter.yaml
+    versionSupport: target-adapters/pinecone/version-support.yaml
+    conformance: target-adapters/pinecone/conformance.yaml
+    package_role: capability
+  - name: pitest
+    ecosystem: PIT Mutation Testing
+    kind: mutation-testing
+    path: target-adapters/pitest/adapter.yaml
+    versionSupport: target-adapters/pitest/version-support.yaml
+    conformance: target-adapters/pitest/conformance.yaml
+    package_role: capability
+  - name: pkcs11-hsm
+    ecosystem: PKCS#11 HSM
+    kind: hardware-key
+    path: target-adapters/pkcs11-hsm/adapter.yaml
+    versionSupport: target-adapters/pkcs11-hsm/version-support.yaml
+    conformance: target-adapters/pkcs11-hsm/conformance.yaml
+    package_role: capability
+  - name: playwright
+    ecosystem: Playwright
+    kind: ui-testing
+    path: target-adapters/playwright/adapter.yaml
+    versionSupport: target-adapters/playwright/version-support.yaml
+    conformance: target-adapters/playwright/conformance.yaml
+    package_role: capability
+  - name: postgresql-dialect
+    ecosystem: PostgreSQL
+    kind: database-dialect
+    path: target-adapters/postgresql-dialect/adapter.yaml
+    versionSupport: target-adapters/postgresql-dialect/version-support.yaml
+    conformance: target-adapters/postgresql-dialect/conformance.yaml
+    package_role: capability
+  - name: prefect
+    ecosystem: Prefect
+    kind: data-orchestration
+    path: target-adapters/prefect/adapter.yaml
+    versionSupport: target-adapters/prefect/version-support.yaml
+    conformance: target-adapters/prefect/conformance.yaml
+    package_role: capability
+  - name: prometheus
+    ecosystem: Prometheus
+    kind: metrics
+    path: target-adapters/prometheus/adapter.yaml
+    versionSupport: target-adapters/prometheus/version-support.yaml
+    conformance: target-adapters/prometheus/conformance.yaml
+    package_role: capability
+  - name: protobuf-editions
+    ecosystem: Protocol Buffers Editions
+    kind: wire-schema
+    path: target-adapters/protobuf-editions/adapter.yaml
+    versionSupport: target-adapters/protobuf-editions/version-support.yaml
+    conformance: target-adapters/protobuf-editions/conformance.yaml
+    package_role: capability
+  - name: pt-online-schema-change
+    ecosystem: Percona pt-online-schema-change
+    kind: online-schema-change
+    path: target-adapters/pt-online-schema-change/adapter.yaml
+    versionSupport: target-adapters/pt-online-schema-change/version-support.yaml
+    conformance: target-adapters/pt-online-schema-change/conformance.yaml
+    package_role: capability
+  - name: pulumi
+    ecosystem: Pulumi
+    kind: infrastructure-as-code
+    path: target-adapters/pulumi/adapter.yaml
+    versionSupport: target-adapters/pulumi/version-support.yaml
+    conformance: target-adapters/pulumi/conformance.yaml
+    package_role: capability
+  - name: pydanticai-python
+    ecosystem: PydanticAI
+    kind: typed-agent-sdk
+    path: target-adapters/pydanticai-python/adapter.yaml
+    versionSupport: target-adapters/pydanticai-python/version-support.yaml
+    conformance: target-adapters/pydanticai-python/conformance.yaml
+    package_role: capability
+  - name: python-3-semantic
+    ecosystem: CPython / Python 3
+    kind: language-runtime
+    path: target-adapters/python-3-semantic/adapter.yaml
+    versionSupport: target-adapters/python-3-semantic/version-support.yaml
+    conformance: target-adapters/python-3-semantic/conformance.yaml
+    package_role: capability
+  - name: qdrant
+    ecosystem: Qdrant
+    kind: vector-store
+    path: target-adapters/qdrant/adapter.yaml
+    versionSupport: target-adapters/qdrant/version-support.yaml
+    conformance: target-adapters/qdrant/conformance.yaml
+    package_role: capability
+  - name: questdb
+    ecosystem: QuestDB
+    kind: time-series
+    path: target-adapters/questdb/adapter.yaml
+    versionSupport: target-adapters/questdb/version-support.yaml
+    conformance: target-adapters/questdb/conformance.yaml
+    package_role: capability
+  - name: qwen-agent
+    ecosystem: Qwen-Agent
+    kind: agent-sdk
+    path: target-adapters/qwen-agent/adapter.yaml
+    versionSupport: target-adapters/qwen-agent/version-support.yaml
+    conformance: target-adapters/qwen-agent/conformance.yaml
+    package_role: capability
+  - name: rabbitmq
+    ecosystem: RabbitMQ
+    kind: messaging
+    path: target-adapters/rabbitmq/adapter.yaml
+    versionSupport: target-adapters/rabbitmq/version-support.yaml
+    conformance: target-adapters/rabbitmq/conformance.yaml
+    package_role: capability
+  - name: ragflow
+    ecosystem: RAGFlow
+    kind: visual-rag-platform
+    path: target-adapters/ragflow/adapter.yaml
+    versionSupport: target-adapters/ragflow/version-support.yaml
+    conformance: target-adapters/ragflow/conformance.yaml
+    package_role: capability
+  - name: ray-serve
+    ecosystem: Ray Serve
+    kind: model-serving
+    path: target-adapters/ray-serve/adapter.yaml
+    versionSupport: target-adapters/ray-serve/version-support.yaml
+    conformance: target-adapters/ray-serve/conformance.yaml
+    package_role: capability
+  - name: redis
+    ecosystem: Redis
+    kind: key-value
+    path: target-adapters/redis/adapter.yaml
+    versionSupport: target-adapters/redis/version-support.yaml
+    conformance: target-adapters/redis/conformance.yaml
+    package_role: capability
+  - name: redpanda
+    ecosystem: Redpanda
+    kind: messaging
+    path: target-adapters/redpanda/adapter.yaml
+    versionSupport: target-adapters/redpanda/version-support.yaml
+    conformance: target-adapters/redpanda/conformance.yaml
+    package_role: capability
+  - name: redshift
+    ecosystem: Amazon Redshift
+    kind: warehouse
+    path: target-adapters/redshift/adapter.yaml
+    versionSupport: target-adapters/redshift/version-support.yaml
+    conformance: target-adapters/redshift/conformance.yaml
+    package_role: capability
+  - name: rest-assured
+    ecosystem: REST Assured
+    kind: api-testing
+    path: target-adapters/rest-assured/adapter.yaml
+    versionSupport: target-adapters/rest-assured/version-support.yaml
+    conformance: target-adapters/rest-assured/conformance.yaml
+    package_role: capability
+  - name: rustc-mir
+    ecosystem: rustc / MIR
+    kind: language-compiler
+    path: target-adapters/rustc-mir/adapter.yaml
+    versionSupport: target-adapters/rustc-mir/version-support.yaml
+    conformance: target-adapters/rustc-mir/conformance.yaml
+    package_role: capability
+  - name: schemathesis
+    ecosystem: Schemathesis
+    kind: api-fuzzing
+    path: target-adapters/schemathesis/adapter.yaml
+    versionSupport: target-adapters/schemathesis/version-support.yaml
+    conformance: target-adapters/schemathesis/conformance.yaml
+    package_role: capability
+  - name: semantic-kernel-compat
+    ecosystem: Microsoft Semantic Kernel
+    kind: migration-source
+    path: target-adapters/semantic-kernel-compat/adapter.yaml
+    versionSupport: target-adapters/semantic-kernel-compat/version-support.yaml
+    conformance: target-adapters/semantic-kernel-compat/conformance.yaml
+    package_role: capability
+  - name: semgrep
+    ecosystem: Semgrep
+    kind: static-analysis
+    path: target-adapters/semgrep/adapter.yaml
+    versionSupport: target-adapters/semgrep/version-support.yaml
+    conformance: target-adapters/semgrep/conformance.yaml
+    package_role: capability
+  - name: sglang
+    ecosystem: SGLang
+    kind: model-serving
+    path: target-adapters/sglang/adapter.yaml
+    versionSupport: target-adapters/sglang/version-support.yaml
+    conformance: target-adapters/sglang/conformance.yaml
+    package_role: capability
+  - name: singlestore
+    ecosystem: SingleStore
+    kind: distributed-sql
+    path: target-adapters/singlestore/adapter.yaml
+    versionSupport: target-adapters/singlestore/version-support.yaml
+    conformance: target-adapters/singlestore/conformance.yaml
+    package_role: capability
+  - name: smolagents
+    ecosystem: smolagents
+    kind: lightweight-agent-sdk
+    path: target-adapters/smolagents/adapter.yaml
+    versionSupport: target-adapters/smolagents/version-support.yaml
+    conformance: target-adapters/smolagents/conformance.yaml
+    package_role: capability
+  - name: snowflake-dialect
+    ecosystem: Snowflake
+    kind: database-dialect
+    path: target-adapters/snowflake-dialect/adapter.yaml
+    versionSupport: target-adapters/snowflake-dialect/version-support.yaml
+    conformance: target-adapters/snowflake-dialect/conformance.yaml
+    package_role: capability
+  - name: soda-core
+    ecosystem: Soda Core
+    kind: data-quality
+    path: target-adapters/soda-core/adapter.yaml
+    versionSupport: target-adapters/soda-core/version-support.yaml
+    conformance: target-adapters/soda-core/conformance.yaml
+    package_role: capability
+  - name: sonarqube
+    ecosystem: SonarQube
+    kind: code-quality
+    path: target-adapters/sonarqube/adapter.yaml
+    versionSupport: target-adapters/sonarqube/version-support.yaml
+    conformance: target-adapters/sonarqube/conformance.yaml
+    package_role: capability
+  - name: spark-sql
+    ecosystem: Apache Spark SQL
+    kind: analytics-engine
+    path: target-adapters/spark-sql/adapter.yaml
+    versionSupport: target-adapters/spark-sql/version-support.yaml
+    conformance: target-adapters/spark-sql/conformance.yaml
+    package_role: capability
+  - name: spicedb
+    ecosystem: SpiceDB
+    kind: authorization
+    path: target-adapters/spicedb/adapter.yaml
+    versionSupport: target-adapters/spicedb/version-support.yaml
+    conformance: target-adapters/spicedb/conformance.yaml
+    package_role: capability
+  - name: spiffe-spire
+    ecosystem: SPIFFE/SPIRE
+    kind: workload-identity
+    path: target-adapters/spiffe-spire/adapter.yaml
+    versionSupport: target-adapters/spiffe-spire/version-support.yaml
+    conformance: target-adapters/spiffe-spire/conformance.yaml
+    package_role: capability
+  - name: spring-ai-java
+    ecosystem: Spring AI
+    kind: enterprise-ai-framework
+    path: target-adapters/spring-ai-java/adapter.yaml
+    versionSupport: target-adapters/spring-ai-java/version-support.yaml
+    conformance: target-adapters/spring-ai-java/conformance.yaml
+    package_role: capability
+  - name: sqlglot
+    ecosystem: SQLGlot
+    kind: sql-tool
+    path: target-adapters/sqlglot/adapter.yaml
+    versionSupport: target-adapters/sqlglot/version-support.yaml
+    conformance: target-adapters/sqlglot/conformance.yaml
+    package_role: capability
+  - name: sqlite
+    ecosystem: SQLite
+    kind: sql-dialect
+    path: target-adapters/sqlite/adapter.yaml
+    versionSupport: target-adapters/sqlite/version-support.yaml
+    conformance: target-adapters/sqlite/conformance.yaml
+    package_role: capability
+  - name: sqlserver-dialect
+    ecosystem: Microsoft SQL Server
+    kind: database-dialect
+    path: target-adapters/sqlserver-dialect/adapter.yaml
+    versionSupport: target-adapters/sqlserver-dialect/version-support.yaml
+    conformance: target-adapters/sqlserver-dialect/conformance.yaml
+    package_role: capability
+  - name: strands-agents
+    ecosystem: Strands Agents
+    kind: lightweight-agent-sdk
+    path: target-adapters/strands-agents/adapter.yaml
+    versionSupport: target-adapters/strands-agents/version-support.yaml
+    conformance: target-adapters/strands-agents/conformance.yaml
+    package_role: capability
+  - name: swarm-compat
+    ecosystem: OpenAI Swarm
+    kind: migration-source
+    path: target-adapters/swarm-compat/adapter.yaml
+    versionSupport: target-adapters/swarm-compat/version-support.yaml
+    conformance: target-adapters/swarm-compat/conformance.yaml
+    package_role: capability
+  - name: syft-grype
+    ecosystem: Syft and Grype
+    kind: supply-chain-scanner
+    path: target-adapters/syft-grype/adapter.yaml
+    versionSupport: target-adapters/syft-grype/version-support.yaml
+    conformance: target-adapters/syft-grype/conformance.yaml
+    package_role: capability
+  - name: symphony
+    ecosystem: OpenAI Symphony
+    kind: coding-orchestrator
+    path: target-adapters/symphony/adapter.yaml
+    versionSupport: target-adapters/symphony/version-support.yaml
+    conformance: target-adapters/symphony/conformance.yaml
+    package_role: capability
+  - name: tempo
+    ecosystem: Grafana Tempo
+    kind: trace-store
+    path: target-adapters/tempo/adapter.yaml
+    versionSupport: target-adapters/tempo/version-support.yaml
+    conformance: target-adapters/tempo/conformance.yaml
+    package_role: capability
+  - name: temporal-durable-execution
+    ecosystem: Temporal Durable Execution
+    kind: durable-runtime
+    path: target-adapters/temporal-durable-execution/adapter.yaml
+    versionSupport: target-adapters/temporal-durable-execution/version-support.yaml
+    conformance: target-adapters/temporal-durable-execution/conformance.yaml
+    package_role: capability
+  - name: tensorflow-lite
+    ecosystem: TensorFlow Lite
+    kind: edge-inference
+    path: target-adapters/tensorflow-lite/adapter.yaml
+    versionSupport: target-adapters/tensorflow-lite/version-support.yaml
+    conformance: target-adapters/tensorflow-lite/conformance.yaml
+    package_role: capability
+  - name: terraform
+    ecosystem: Terraform
+    kind: infrastructure-as-code
+    path: target-adapters/terraform/adapter.yaml
+    versionSupport: target-adapters/terraform/version-support.yaml
+    conformance: target-adapters/terraform/conformance.yaml
+    package_role: capability
+  - name: testcontainers
+    ecosystem: Testcontainers
+    kind: test-runtime
+    path: target-adapters/testcontainers/adapter.yaml
+    versionSupport: target-adapters/testcontainers/version-support.yaml
+    conformance: target-adapters/testcontainers/conformance.yaml
+    package_role: capability
+  - name: tidb
+    ecosystem: TiDB
+    kind: distributed-sql
+    path: target-adapters/tidb/adapter.yaml
+    versionSupport: target-adapters/tidb/version-support.yaml
+    conformance: target-adapters/tidb/conformance.yaml
+    package_role: capability
+  - name: timescaledb
+    ecosystem: TimescaleDB
+    kind: time-series
+    path: target-adapters/timescaledb/adapter.yaml
+    versionSupport: target-adapters/timescaledb/version-support.yaml
+    conformance: target-adapters/timescaledb/conformance.yaml
+    package_role: capability
+  - name: tla-plus
+    ecosystem: TLA+
+    kind: formal-verifier
+    path: target-adapters/tla-plus/adapter.yaml
+    versionSupport: target-adapters/tla-plus/version-support.yaml
+    conformance: target-adapters/tla-plus/conformance.yaml
+    package_role: capability
+  - name: toxiproxy
+    ecosystem: Toxiproxy
+    kind: fault-injection
+    path: target-adapters/toxiproxy/adapter.yaml
+    versionSupport: target-adapters/toxiproxy/version-support.yaml
+    conformance: target-adapters/toxiproxy/conformance.yaml
+    package_role: capability
+  - name: trino-presto
+    ecosystem: Trino/Presto
+    kind: federated-sql
+    path: target-adapters/trino-presto/adapter.yaml
+    versionSupport: target-adapters/trino-presto/version-support.yaml
+    conformance: target-adapters/trino-presto/conformance.yaml
+    package_role: capability
+  - name: trivy
+    ecosystem: Trivy
+    kind: security-scanner
+    path: target-adapters/trivy/adapter.yaml
+    versionSupport: target-adapters/trivy/version-support.yaml
+    conformance: target-adapters/trivy/conformance.yaml
+    package_role: capability
+  - name: trusted-computing-group-tpm-2
+    ecosystem: Trusted Computing Group TPM 2.0
+    kind: hardware-root-of-trust
+    path: target-adapters/trusted-computing-group-tpm-2/adapter.yaml
+    versionSupport: target-adapters/trusted-computing-group-tpm-2/version-support.yaml
+    conformance: target-adapters/trusted-computing-group-tpm-2/conformance.yaml
+    package_role: capability
+  - name: typescript-compiler
+    ecosystem: TypeScript Compiler API
+    kind: language-compiler
+    path: target-adapters/typescript-compiler/adapter.yaml
+    versionSupport: target-adapters/typescript-compiler/version-support.yaml
+    conformance: target-adapters/typescript-compiler/conformance.yaml
+    package_role: capability
+  - name: universal-rag
+    ecosystem: Elmos Universal RAG
+    kind: solution-architecture
+    path: target-adapters/universal-rag/adapter.yaml
+    versionSupport: target-adapters/universal-rag/version-support.yaml
+    conformance: target-adapters/universal-rag/conformance.yaml
+    package_role: capability
+  - name: vercel-ai-sdk
+    ecosystem: Vercel AI SDK
+    kind: ai-ui-sdk
+    path: target-adapters/vercel-ai-sdk/adapter.yaml
+    versionSupport: target-adapters/vercel-ai-sdk/version-support.yaml
+    conformance: target-adapters/vercel-ai-sdk/conformance.yaml
+    package_role: capability
+  - name: vespa
+    ecosystem: Vespa
+    kind: search-vector
+    path: target-adapters/vespa/adapter.yaml
+    versionSupport: target-adapters/vespa/version-support.yaml
+    conformance: target-adapters/vespa/conformance.yaml
+    package_role: capability
+  - name: vitess
+    ecosystem: Vitess
+    kind: distributed-sql
+    path: target-adapters/vitess/adapter.yaml
+    versionSupport: target-adapters/vitess/version-support.yaml
+    conformance: target-adapters/vitess/conformance.yaml
+    package_role: capability
+  - name: vllm
+    ecosystem: vLLM
+    kind: model-serving
+    path: target-adapters/vllm/adapter.yaml
+    versionSupport: target-adapters/vllm/version-support.yaml
+    conformance: target-adapters/vllm/conformance.yaml
+    package_role: capability
+  - name: wasi-preview2
+    ecosystem: WASI Preview 2
+    kind: sandbox-runtime
+    path: target-adapters/wasi-preview2/adapter.yaml
+    versionSupport: target-adapters/wasi-preview2/version-support.yaml
+    conformance: target-adapters/wasi-preview2/conformance.yaml
+    package_role: capability
+  - name: wasm-component-model
+    ecosystem: WebAssembly Component Model and WIT
+    kind: component-runtime
+    path: target-adapters/wasm-component-model/adapter.yaml
+    versionSupport: target-adapters/wasm-component-model/version-support.yaml
+    conformance: target-adapters/wasm-component-model/conformance.yaml
+    package_role: capability
+  - name: wasmedge
+    ecosystem: WasmEdge
+    kind: wasm-runtime
+    path: target-adapters/wasmedge/adapter.yaml
+    versionSupport: target-adapters/wasmedge/version-support.yaml
+    conformance: target-adapters/wasmedge/conformance.yaml
+    package_role: capability
+  - name: wasmtime
+    ecosystem: Wasmtime
+    kind: wasm-runtime
+    path: target-adapters/wasmtime/adapter.yaml
+    versionSupport: target-adapters/wasmtime/version-support.yaml
+    conformance: target-adapters/wasmtime/conformance.yaml
+    package_role: capability
+  - name: weaviate
+    ecosystem: Weaviate
+    kind: vector-store
+    path: target-adapters/weaviate/adapter.yaml
+    versionSupport: target-adapters/weaviate/version-support.yaml
+    conformance: target-adapters/weaviate/conformance.yaml
+    package_role: capability
+  - name: webhook
+    ecosystem: Webhook delivery
+    kind: event-runtime
+    path: target-adapters/webhook/adapter.yaml
+    versionSupport: target-adapters/webhook/version-support.yaml
+    conformance: target-adapters/webhook/conformance.yaml
+    package_role: capability
+  - name: webrtc-sip
+    ecosystem: WebRTC/SIP
+    kind: realtime-transport
+    path: target-adapters/webrtc-sip/adapter.yaml
+    versionSupport: target-adapters/webrtc-sip/version-support.yaml
+    conformance: target-adapters/webrtc-sip/conformance.yaml
+    package_role: capability
+  - name: wiremock
+    ecosystem: WireMock
+    kind: service-virtualization
+    path: target-adapters/wiremock/adapter.yaml
+    versionSupport: target-adapters/wiremock/version-support.yaml
+    conformance: target-adapters/wiremock/conformance.yaml
+    package_role: capability
+  - name: yugabytedb
+    ecosystem: YugabyteDB
+    kind: distributed-sql
+    path: target-adapters/yugabytedb/adapter.yaml
+    versionSupport: target-adapters/yugabytedb/version-support.yaml
+    conformance: target-adapters/yugabytedb/conformance.yaml
+    package_role: capability
+  - name: z3
+    ecosystem: Z3 SMT Solver
+    kind: formal-verifier
+    path: target-adapters/z3/adapter.yaml
+    versionSupport: target-adapters/z3/version-support.yaml
+    conformance: target-adapters/z3/conformance.yaml
+    package_role: capability

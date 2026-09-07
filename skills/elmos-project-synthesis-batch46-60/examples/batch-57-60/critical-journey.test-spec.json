@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "E2E-ALERT-LIFECYCLE",
+  "test_level": "e2e",
+  "obligations": [
+    {
+      "requirement_id": "REQ-ALERT-002",
+      "acceptance_id": "AC-ALERT-002",
+      "journey": "engineer confirms, assigns, and closes alert"
+    }
+  ],
+  "environment": {
+    "frontend": true,
+    "identity": "oidc-test",
+    "database": "postgresql",
+    "broker": "kafka"
+  },
+  "fixtures": [
+    {
+      "factory": "tenant-with-engineer-and-open-alert"
+    }
+  ],
+  "pass_policy": {
+    "all_required": true,
+    "fixed_sleep_forbidden": true,
+    "trace_id_required": true
+  }
+}

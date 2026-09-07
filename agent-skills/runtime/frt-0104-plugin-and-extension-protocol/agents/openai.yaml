@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plugin and Extension Protocol"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0104-plugin-and-extension-protocol to run FRT-0104 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Execution Manifest Builder"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $recipe-execution-manifest-builder to execute this ELMOS Runtime Skill with fail-closed evidence."

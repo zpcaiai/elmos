@@ -1,0 +1,16 @@
+{
+  "id": "OBL-ID",
+  "category": "type.nullability",
+  "status": "not-run",
+  "criticality": "critical",
+  "sourceScope": [
+    "module:symbol"
+  ],
+  "verificationStrategy": [
+    "differential",
+    "property"
+  ],
+  "evidenceRefs": [],
+  "assumptions": [],
+  "waiver": null
+}

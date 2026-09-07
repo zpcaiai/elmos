@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "enabled": false,
+  "components": [],
+  "exit_criteria": [
+    "Retire the source runtime only after an exact Boot 4.1.1 route passes native startup, parity, rollback, holdout, and customer acceptance."
+  ],
+  "reason": "Boot 4.1.1 routes remain experimental and require an application-specific coexistence and rollback contract.",
+  "status": "NOT_RUN"
+}

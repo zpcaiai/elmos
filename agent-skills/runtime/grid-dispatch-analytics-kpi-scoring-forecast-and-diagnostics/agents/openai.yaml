@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Grid Dispatch Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $grid-dispatch-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B53 contract."

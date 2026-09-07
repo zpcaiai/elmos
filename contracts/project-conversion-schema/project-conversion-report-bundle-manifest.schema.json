@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/project-conversion-report-bundle-manifest.schema.json",
+  "title": "ELMOS functional conversion report bundle manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "report_id", "file_count", "total_uncompressed_bytes", "files"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "kind": { "const": "elmos.project-language-conversion-report-bundle-manifest" },
+    "report_id": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "file_count": { "type": "integer", "minimum": 6, "maximum": 12 },
+    "total_uncompressed_bytes": { "type": "integer", "minimum": 1, "maximum": 268435456 },
+    "files": {
+      "type": "array", "minItems": 6, "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[\\u0000-\\u001F\\u007F]).+$" },
+          "bytes": { "type": "integer", "minimum": 1, "maximum": 67108864 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Rule Report Analytics And Process Modernizer"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $workflow-rule-report-analytics-and-process-modernizer to govern this enterprise suite modernization task with fail-closed evidence."

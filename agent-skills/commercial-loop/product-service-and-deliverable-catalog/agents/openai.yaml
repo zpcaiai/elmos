@@ -1,0 +1,4 @@
+interface:
+  display_name: "product-service-and-deliverable-catalog"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $product-service-and-deliverable-catalog to evaluate this Batch 13 commercial capability with evidence."

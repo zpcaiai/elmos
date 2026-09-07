@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-08-06T10:27:27.372080Z",
+  "os": "Linux 6.8.0-124-generic",
+  "machine": "aarch64",
+  "pythonVersion": "3.10.12",
+  "pythonImplementation": "CPython",
+  "gitVersion": "git version 2.34.1",
+  "opensslVersion": "OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)",
+  "repositoryRevision": "c99a76bedb378af8aa869c4e75b595830209f609",
+  "artifactRootsClean": true,
+  "uncommittedTrackedPathCount": 0,
+  "cleanlinessNote": "no tracked file under ['schemas', 'contracts', 'telemetry'] differs from HEAD (untracked files were not enumerated)"
+}

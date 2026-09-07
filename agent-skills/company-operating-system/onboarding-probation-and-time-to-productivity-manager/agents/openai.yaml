@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 485: onboarding probation and time to productivity manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $onboarding-probation-and-time-to-productivity-manager to evaluate this capability with evidence."

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-1",
+  "target": {"spring_boot": "4.1.1", "java": "21"},
+  "source_resolution": "exact-version-from-fingerprint",
+  "tuples": [
+    {"id": "boot-1.5-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[1.5.0,2.0.0)", "source_java": ["8"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-2.0-2.6-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[2.0.0,2.7.0)", "source_java": ["8", "11", "17"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-2.7-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[2.7.0,3.0.0)", "source_java": ["8", "11", "17"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-3.0-3.4-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[3.0.0,3.5.0)", "source_java": ["17", "21"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-3.5-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[3.5.0,4.0.0)", "source_java": ["17", "21"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-4.0-maven-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[4.0.0,4.1.1)", "source_java": ["17", "21"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-1.5-gradle-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[1.5.0,2.0.0)", "source_java": ["8"], "build": "gradle-8.14.3", "recipe": "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-2.x-gradle-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[2.0.0,3.0.0)", "source_java": ["8", "11", "17"], "build": "gradle-8.14.3", "recipe": "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-3.x-gradle-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[3.0.0,4.0.0)", "source_java": ["17", "21"], "build": "gradle-8.14.3", "recipe": "io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "boot-4.0-gradle-to-boot-4.1.1-java-21", "source_family": "spring-boot", "source_range": "[4.0.0,4.1.1)", "source_java": ["17", "21"], "build": "gradle-8.14.3", "recipe": "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "spring-mvc-3.2-7.0-maven-to-boot-4.1.1-java-21", "source_family": "spring-mvc", "source_range": "[3.2.0,7.0.9)", "source_java": ["8", "11", "17", "21"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_1Java21", "execution_status": "NOT_RUN"},
+    {"id": "spring-framework-3.2-7.0-maven-to-boot-4.1.1-java-21", "source_family": "spring-framework", "source_range": "[3.2.0,7.0.9)", "source_java": ["8", "11", "17", "21"], "build": "maven-3.9.11", "recipe": "io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_1Java21", "execution_status": "NOT_RUN"}
+  ]
+}

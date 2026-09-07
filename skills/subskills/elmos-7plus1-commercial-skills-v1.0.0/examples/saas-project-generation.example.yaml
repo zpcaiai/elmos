@@ -1,0 +1,20 @@
+project_request:
+  archetype: multi-tenant-saas
+  target_stack:
+    backend: java-spring
+    frontend: react
+    database: postgres
+  explicit_features: [organization, user, subscription, audit]
+  constraints:
+    deployment: kubernetes
+    data_classification: confidential
+expanded_baseline:
+  identity: [oidc, mfa, session_management]
+  authorization: [rbac, tenant_isolation]
+  commercial: [plans, metering, billing, invoices]
+  operations: [logs, metrics, traces, alerts, backup, disaster_recovery]
+  security: [rate_limit, secret_rotation, audit, sbom, vulnerability_scan]
+  delivery: [ci, cd, migrations, rollback, runbooks]
+completion:
+  gate_policy: commercial-ga
+  unknown_critical_gaps: 0

@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-smt-equivalence-prover"
+  short_description: "Encode bounded pure/finite semantic obligations into SMT and prove equivalence/refinement or retu..."
+  default_prompt: "Use $elmos-smt-equivalence-prover through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-smt-equivalence-prover"
+  handler_id: "execute_elmos_smt_equivalence_prover"
+  operation: "FORMAL_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

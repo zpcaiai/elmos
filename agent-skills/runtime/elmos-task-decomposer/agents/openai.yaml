@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Task Decomposer"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-task-decomposer to perform its bounded repository workflow with provenance and fail-closed evidence."

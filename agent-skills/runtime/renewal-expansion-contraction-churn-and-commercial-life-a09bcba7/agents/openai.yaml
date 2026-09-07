@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B40: Renewal Expansion Contraction Churn And Commercial Lifecycle Orchestration"
+  short_description: "Run ELMOS Product B40 contract with fail-closed evidence"
+  default_prompt: "Use $renewal-expansion-contraction-churn-and-commercial-life-a09bcba7 to implement its fail-closed ELMOS Product B40 contract."

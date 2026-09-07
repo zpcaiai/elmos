@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/database-object.v1",
+  "title": "ELMOS Database Object",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "organizationId", "objectId", "instanceId", "databaseName", "schemaName", "objectType", "objectName", "evidenceRefs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "organizationId": { "type": "string", "minLength": 1 },
+    "objectId": { "type": "string", "minLength": 1 },
+    "instanceId": { "type": "string", "minLength": 1 },
+    "databaseName": { "type": "string", "minLength": 1 },
+    "schemaName": { "type": "string", "minLength": 1 },
+    "objectType": { "type": "string", "minLength": 1 },
+    "objectName": { "type": "string", "minLength": 1 },
+    "captureWindow": { "type": "string" },
+    "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  }
+}

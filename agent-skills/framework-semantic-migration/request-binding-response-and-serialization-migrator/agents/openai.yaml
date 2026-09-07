@@ -1,0 +1,4 @@
+interface:
+  display_name: "request-binding-response-and-serialization-migrator"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $request-binding-response-and-serialization-migrator to perform this Batch 7 framework migration step."

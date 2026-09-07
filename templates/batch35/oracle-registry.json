@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-verification-pack",
+  "oracles": [
+    {
+      "oracle_id": "oracle.business",
+      "type": "business-rule",
+      "owner": "TODO",
+      "scope": [
+        "claim.behavior"
+      ],
+      "independence": "independent",
+      "trust_level": "authoritative",
+      "version": "1",
+      "evidence_refs": []
+    },
+    {
+      "oracle_id": "oracle.contract",
+      "type": "contract",
+      "owner": "TODO",
+      "scope": [
+        "claim.behavior"
+      ],
+      "independence": "independent",
+      "trust_level": "strong",
+      "version": "1",
+      "evidence_refs": []
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "business",
+      "ordered_oracles": [
+        "oracle.business",
+        "oracle.contract"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

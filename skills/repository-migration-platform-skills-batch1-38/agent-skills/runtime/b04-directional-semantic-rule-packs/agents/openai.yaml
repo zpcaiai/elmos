@@ -1,0 +1,4 @@
+interface:
+  display_name: "B04 Directional Semantic Rule Packs"
+  short_description: "Help with B04 Directional Semantic Rule Packs tasks"
+  default_prompt: "Use $b04-directional-semantic-rule-packs to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

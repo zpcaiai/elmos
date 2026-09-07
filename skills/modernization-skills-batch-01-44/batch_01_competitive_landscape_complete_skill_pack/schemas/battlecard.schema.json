@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-01:battlecard",
+  "title": "Battlecard",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "competitor_id",
+    "legal_review",
+    "our_strengths",
+    "record_id",
+    "schema_version",
+    "scope",
+    "their_strengths",
+    "verified_claims_only"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "competitor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "our_strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "their_strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verified_claims_only": {
+      "type": "boolean"
+    },
+    "legal_review": {
+      "enum": [
+        "required",
+        "completed",
+        "not-applicable"
+      ]
+    },
+    "fact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

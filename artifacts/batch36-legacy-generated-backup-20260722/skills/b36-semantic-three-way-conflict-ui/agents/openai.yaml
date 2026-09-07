@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Semantic Three Way Conflict Ui"
+  short_description: "Run evidence-bound Batch 36 semantic three way conflict ui work"
+  default_prompt: "Use $b36-semantic-three-way-conflict-ui to implement and verify this capability with fail-closed evidence."

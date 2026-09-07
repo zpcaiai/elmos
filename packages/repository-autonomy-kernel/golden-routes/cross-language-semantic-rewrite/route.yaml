@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v2alpha1
+kind: GoldenRoute
+metadata:
+  name: cross-language-semantic-rewrite
+  version: 2.0.0
+spec:
+  title: "Cross-Language Semantic Rewrite Golden Route"
+  description: "Source language/framework to target language/framework through Semantic IR and differential runtime"
+  workflow: repository-autonomy-master@2.0.0
+  releaseGate: P05_DEPLOYMENT_COMPLETE
+  mandatoryGates:
+    - source-baseline
+    - ir-validation
+    - target-build
+    - contract-equivalence
+    - differential-runtime
+    - performance-envelope
+    - rollback
+  failureInjection:
+    - executor-crash
+    - network-interruption
+    - duplicate-delivery
+    - stale-worker-return
+    - user-pause-resume
+    - prompt-injection-in-repository

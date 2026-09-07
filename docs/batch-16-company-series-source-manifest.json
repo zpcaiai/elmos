@@ -1,0 +1,17 @@
+{
+  "batch": 16,
+  "skill_range": [
+    526,
+    592
+  ],
+  "skill_count": 67,
+  "source_file": "pasted-text.txt",
+  "source_sha256": "ba0eeafe289b8ae73e0f0198c64f4d8d8163e190e5c8c482dc33e63cfd06a999",
+  "generated_groups": [
+    "agent-skills/agent-workforce",
+    "docs/batch-16-agent-workforce-acceptance-checklist.md",
+    "contracts/agent-workforce-schema",
+    "modules/persistence/src/main/resources/db/migration/V25__ai_native_company_and_agent_workforce.sql"
+  ],
+  "external_operation_executed": false
+}

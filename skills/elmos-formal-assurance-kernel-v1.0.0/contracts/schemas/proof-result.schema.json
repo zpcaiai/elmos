@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-result.schema.json",
+  "title": "Proof Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId",
+    "obligationId",
+    "status",
+    "assuranceLevel",
+    "engine",
+    "mode",
+    "assumptionHash",
+    "tcbHash",
+    "createdAt"
+  ],
+  "properties": {
+    "runId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "obligationId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "status": {
+      "$ref": "common.schema.json#/$defs/proofStatus"
+    },
+    "assuranceLevel": {
+      "$ref": "common.schema.json#/$defs/assuranceLevel"
+    },
+    "engine": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "CERTIFIED",
+        "INDUCTIVE",
+        "SMT",
+        "BOUNDED",
+        "RUNTIME"
+      ]
+    },
+    "bound": {
+      "$ref": "common.schema.json#/$defs/bound"
+    },
+    "assumptionHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "tcbHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "formulaHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/artifactRef"
+      }
+    },
+    "counterexampleId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "stale": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "BOUNDED_NO_COUNTEREXAMPLE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "bound"
+        ],
+        "properties": {
+          "mode": {
+            "const": "BOUNDED"
+          },
+          "assuranceLevel": {
+            "const": "A1_BOUNDED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "REFUTED_WITH_COUNTEREXAMPLE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "counterexampleId"
+        ]
+      }
+    }
+  ]
+}

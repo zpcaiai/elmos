@@ -1,0 +1,2412 @@
+{
+  "suite_id": "batch66-80-slightly-strict",
+  "source_package": {
+    "name": "elmos-codex-skills-batch66-80-complete",
+    "sha256": "f8255be826d3de2e733089c54b5c308cc8a69e01a4a66f8d4c48f4ef10865191"
+  },
+  "source_skill_count": 195,
+  "source_skills": [
+    {
+      "source_skill_id": "PG223",
+      "source_skill_name": "b66-typescript-project-profile-detector",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-typescript-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "8c598b29eea619ae41dce1379bea21265c28cc026c01c416eda8c074adbb3177",
+      "case_ids": [
+        "B66-PG223-RUN",
+        "B66-PG223-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG224",
+      "source_skill_name": "b66-node-runtime-lockfile-reproducer",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-node-runtime-lockfile-reproducer/SKILL.md",
+      "source_skill_sha256": "9da82d7180936fd304bf2d8d967402508782e3e50f2f732fbf103e2031969a3f",
+      "case_ids": [
+        "B66-PG224-RUN",
+        "B66-PG224-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG225",
+      "source_skill_name": "b66-typescript-monorepo-scaffolder",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-typescript-monorepo-scaffolder/SKILL.md",
+      "source_skill_sha256": "31244a74e884c6f2e6ee53b3ded57fc5a9517337ee42d601d699a5f1193b8412",
+      "case_ids": [
+        "B66-PG225-RUN",
+        "B66-PG225-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG226",
+      "source_skill_name": "b66-nestjs-fastify-api-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-nestjs-fastify-api-generator/SKILL.md",
+      "source_skill_sha256": "490c94e60e55fcb8d46f23469c93850547e230694b07f30defb8ee436405cd72",
+      "case_ids": [
+        "B66-PG226-RUN",
+        "B66-PG226-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG227",
+      "source_skill_name": "b66-nextjs-fullstack-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-nextjs-fullstack-generator/SKILL.md",
+      "source_skill_sha256": "b16c06ad6f9bb07a98ff090bea7fe6aec18460fd285792fb4bf1a7902268a777",
+      "case_ids": [
+        "B66-PG227-RUN",
+        "B66-PG227-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG228",
+      "source_skill_name": "b66-react-vite-spa-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-react-vite-spa-generator/SKILL.md",
+      "source_skill_sha256": "f1865d082bfcc1c896b55dc7dbf796b57e60e153f04b349ad2566a6af59ff0b2",
+      "case_ids": [
+        "B66-PG228-RUN",
+        "B66-PG228-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG229",
+      "source_skill_name": "b66-vue-nuxt-app-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-vue-nuxt-app-generator/SKILL.md",
+      "source_skill_sha256": "0e37be656d16ede51cd2c25ffe35d12a0c1ca498027dd6d70dffbd3924041752",
+      "case_ids": [
+        "B66-PG229-RUN",
+        "B66-PG229-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG230",
+      "source_skill_name": "b66-node-worker-cli-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-node-worker-cli-generator/SKILL.md",
+      "source_skill_sha256": "9e0907cb197e72bb5d7c519c7c449f4e632749fe268e93da1e5bc818a1bda0be",
+      "case_ids": [
+        "B66-PG230-RUN",
+        "B66-PG230-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG231",
+      "source_skill_name": "b66-typescript-data-access-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-typescript-data-access-generator/SKILL.md",
+      "source_skill_sha256": "7a1cc34bea7dcb024f3db4f4682d42c80c2a47b6f22c5d1d2f73f0afa730ed3c",
+      "case_ids": [
+        "B66-PG231-RUN",
+        "B66-PG231-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG232",
+      "source_skill_name": "b66-typescript-contract-client-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-typescript-contract-client-generator/SKILL.md",
+      "source_skill_sha256": "1f77f423ede19daf566ddbffd41ef434876fdfbfd2cc5ad2aa3bcefd9c762efb",
+      "case_ids": [
+        "B66-PG232-RUN",
+        "B66-PG232-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG233",
+      "source_skill_name": "b66-typescript-test-harness-generator",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-typescript-test-harness-generator/SKILL.md",
+      "source_skill_sha256": "cba4edb29abd0faf0793a8f8337c2eed7e88cc35a4420d20eac6c30ac383f48e",
+      "case_ids": [
+        "B66-PG233-RUN",
+        "B66-PG233-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG234",
+      "source_skill_name": "b66-node-build-run-repair-certifier",
+      "batch": 66,
+      "source_skill_path": "agent-skills/runtime/b66-node-build-run-repair-certifier/SKILL.md",
+      "source_skill_sha256": "3db0d860a2fc4b9c9f65751a09ad8169a5aa16c13fcd8ce29c1e053d541a9866",
+      "case_ids": [
+        "B66-PG234-RUN",
+        "B66-PG234-NEG"
+      ],
+      "batch_test_skill": "tst-b66-typescript-javascript-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG235",
+      "source_skill_name": "b67-go-repository-profile-detector",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-repository-profile-detector/SKILL.md",
+      "source_skill_sha256": "356f8ae16c77d77ca7217665a0d7de354267b8625bfed85073c537f505b2d97b",
+      "case_ids": [
+        "B67-PG235-RUN",
+        "B67-PG235-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG236",
+      "source_skill_name": "b67-go-module-workspace-reproducer",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-module-workspace-reproducer/SKILL.md",
+      "source_skill_sha256": "17de0b60da1a024ffdab280e394942e2dfd99989cf8f2c0241563f53f489e3f8",
+      "case_ids": [
+        "B67-PG236-RUN",
+        "B67-PG236-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG237",
+      "source_skill_name": "b67-go-http-grpc-service-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-http-grpc-service-generator/SKILL.md",
+      "source_skill_sha256": "911b8b5be34b00e45d835b4f7113f495bda7bfddb2ee57aa32677cfdac0ee183",
+      "case_ids": [
+        "B67-PG237-RUN",
+        "B67-PG237-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG238",
+      "source_skill_name": "b67-go-cli-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-cli-generator/SKILL.md",
+      "source_skill_sha256": "39d5783cf4a8b29a18eb277eeace35cb8de622b499fd14a1c98821a2feb1b15c",
+      "case_ids": [
+        "B67-PG238-RUN",
+        "B67-PG238-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG239",
+      "source_skill_name": "b67-go-worker-event-consumer-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-worker-event-consumer-generator/SKILL.md",
+      "source_skill_sha256": "a5f431ef350498131aea929c26c3cdc576faf86dae4cd31175b1f6bb7372e875",
+      "case_ids": [
+        "B67-PG239-RUN",
+        "B67-PG239-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG240",
+      "source_skill_name": "b67-go-data-access-transaction-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-data-access-transaction-generator/SKILL.md",
+      "source_skill_sha256": "7d40650c4d311065941f166e13dec38f2e02f7296df7f5f81c373b0bbf0865a9",
+      "case_ids": [
+        "B67-PG240-RUN",
+        "B67-PG240-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG241",
+      "source_skill_name": "b67-go-concurrency-context-safety",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-concurrency-context-safety/SKILL.md",
+      "source_skill_sha256": "a5962691e3317c7f385052ee6d35221846d3f37f1d9f9793097e22247f7bdc2d",
+      "case_ids": [
+        "B67-PG241-RUN",
+        "B67-PG241-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG242",
+      "source_skill_name": "b67-go-observability-middleware-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-observability-middleware-generator/SKILL.md",
+      "source_skill_sha256": "14f797ce4fda2943619ef6917871b01af57c208dd9dc77b85c2c49e1ebe2b85c",
+      "case_ids": [
+        "B67-PG242-RUN",
+        "B67-PG242-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG243",
+      "source_skill_name": "b67-go-kubernetes-operator-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-kubernetes-operator-generator/SKILL.md",
+      "source_skill_sha256": "af36bf58675a2bf84708d77166d6f35e5ace15f8a8dabe5d2a8fa3f2cfbedf60",
+      "case_ids": [
+        "B67-PG243-RUN",
+        "B67-PG243-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG244",
+      "source_skill_name": "b67-go-mcp-tool-server-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-mcp-tool-server-generator/SKILL.md",
+      "source_skill_sha256": "87359761381755689911bc1f088b29f5a1c4c39ff9f711b762d966f90b1c6ed9",
+      "case_ids": [
+        "B67-PG244-RUN",
+        "B67-PG244-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG245",
+      "source_skill_name": "b67-go-test-fuzz-race-generator",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-test-fuzz-race-generator/SKILL.md",
+      "source_skill_sha256": "88607671996e62495e263e8bc89f306925b627704629a11a841438a19d9f82b4",
+      "case_ids": [
+        "B67-PG245-RUN",
+        "B67-PG245-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG246",
+      "source_skill_name": "b67-go-build-crosscompile-certifier",
+      "batch": 67,
+      "source_skill_path": "agent-skills/runtime/b67-go-build-crosscompile-certifier/SKILL.md",
+      "source_skill_sha256": "7306d489babb00fc01b9566ccb23f9a063f1d80b317d7e11aad0a2c2d082645b",
+      "case_ids": [
+        "B67-PG246-RUN",
+        "B67-PG246-NEG"
+      ],
+      "batch_test_skill": "tst-b67-go-cloud-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG247",
+      "source_skill_name": "b68-kotlin-project-profile-detector",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "e2fef81bb777538d7bdfa980629332cf58c3acb391d971b99605832723653c79",
+      "case_ids": [
+        "B68-PG247-RUN",
+        "B68-PG247-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG248",
+      "source_skill_name": "b68-gradle-kotlin-build-reproducer",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-gradle-kotlin-build-reproducer/SKILL.md",
+      "source_skill_sha256": "52bc682750384fe61624b691fa06db831e867891058007fbf1397fbbacdc2963",
+      "case_ids": [
+        "B68-PG248-RUN",
+        "B68-PG248-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG249",
+      "source_skill_name": "b68-spring-kotlin-service-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-spring-kotlin-service-generator/SKILL.md",
+      "source_skill_sha256": "9150b3ce86255e77dc3a5405f435cd6fc5bb9c9bedcb19013b324c8ba135f59c",
+      "case_ids": [
+        "B68-PG249-RUN",
+        "B68-PG249-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG250",
+      "source_skill_name": "b68-ktor-service-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-ktor-service-generator/SKILL.md",
+      "source_skill_sha256": "3536c19797e8ae68cf6b9070f311052dab7dd8e05236ab4f9c1bc24badb78965",
+      "case_ids": [
+        "B68-PG250-RUN",
+        "B68-PG250-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG251",
+      "source_skill_name": "b68-kotlin-coroutine-structured-concurrency",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-coroutine-structured-concurrency/SKILL.md",
+      "source_skill_sha256": "030708d9b3b95e2d1adcedf3b5182297a08e20cd38a8206c18830c1f03e4ef7c",
+      "case_ids": [
+        "B68-PG251-RUN",
+        "B68-PG251-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG252",
+      "source_skill_name": "b68-kotlin-data-access-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-data-access-generator/SKILL.md",
+      "source_skill_sha256": "0e417ec0fa8e6cc37115abfcf88fa7477a1191bf1612b989aece425833150127",
+      "case_ids": [
+        "B68-PG252-RUN",
+        "B68-PG252-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG253",
+      "source_skill_name": "b68-java-kotlin-interop-manager",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-java-kotlin-interop-manager/SKILL.md",
+      "source_skill_sha256": "e1d6b891ad94b443670c5b5697caee00cf016f45974c4cd7a925e78930d9b3de",
+      "case_ids": [
+        "B68-PG253-RUN",
+        "B68-PG253-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG254",
+      "source_skill_name": "b68-kotlin-contract-client-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-contract-client-generator/SKILL.md",
+      "source_skill_sha256": "ed4feb3d1d21b2bb3c2d68dc808dc200cd46deac08b2c196b991e6fba8a917b6",
+      "case_ids": [
+        "B68-PG254-RUN",
+        "B68-PG254-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG255",
+      "source_skill_name": "b68-android-compose-application-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-android-compose-application-generator/SKILL.md",
+      "source_skill_sha256": "2c0326e9e64f5fcc8f0efbf4b308ef17f5e394fe1d8dacbafffb9f6a74b51050",
+      "case_ids": [
+        "B68-PG255-RUN",
+        "B68-PG255-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG256",
+      "source_skill_name": "b68-kotlin-multiplatform-library-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-multiplatform-library-generator/SKILL.md",
+      "source_skill_sha256": "2d94d5b7a7577cd31fa323af2d81ea0aea05ebb26f3c56e0a396ca94f50a563b",
+      "case_ids": [
+        "B68-PG256-RUN",
+        "B68-PG256-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG257",
+      "source_skill_name": "b68-kotlin-test-harness-generator",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-test-harness-generator/SKILL.md",
+      "source_skill_sha256": "a47d73e555f9845327e8bd189458c448f0728daf3f3c31a8751c71ba4bff4a6b",
+      "case_ids": [
+        "B68-PG257-RUN",
+        "B68-PG257-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG258",
+      "source_skill_name": "b68-kotlin-build-run-repair-certifier",
+      "batch": 68,
+      "source_skill_path": "agent-skills/runtime/b68-kotlin-build-run-repair-certifier/SKILL.md",
+      "source_skill_sha256": "492146aa42e487e0e3e69bbc4c973898dcd2d272fa868fe5a7c854194da6c026",
+      "case_ids": [
+        "B68-PG258-RUN",
+        "B68-PG258-NEG"
+      ],
+      "batch_test_skill": "tst-b68-kotlin-jvm-android-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG259",
+      "source_skill_name": "b69-php-project-profile-detector",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "448e9ac399473929c5e9dd78534106f76296b3e7e45d3ffb4214c9dc4fa83ff0",
+      "case_ids": [
+        "B69-PG259-RUN",
+        "B69-PG259-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG260",
+      "source_skill_name": "b69-composer-dependency-reproducer",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-composer-dependency-reproducer/SKILL.md",
+      "source_skill_sha256": "b2553a762601342cfc9b792b244c5de8a9eab5afcd67be45df80b142f5573f5a",
+      "case_ids": [
+        "B69-PG260-RUN",
+        "B69-PG260-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG261",
+      "source_skill_name": "b69-laravel-application-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-laravel-application-generator/SKILL.md",
+      "source_skill_sha256": "493c43f8efe3a5eae35fe3dc97c6f62c664b950961bef127328b090ec90c40ee",
+      "case_ids": [
+        "B69-PG261-RUN",
+        "B69-PG261-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG262",
+      "source_skill_name": "b69-symfony-api-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-symfony-api-generator/SKILL.md",
+      "source_skill_sha256": "12aaa47dbb2c6c9e05ac34c0250688db183c53df8b97472c5aa3cf14397dd97d",
+      "case_ids": [
+        "B69-PG262-RUN",
+        "B69-PG262-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG263",
+      "source_skill_name": "b69-php-modular-monolith-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-modular-monolith-generator/SKILL.md",
+      "source_skill_sha256": "feef8ad96cd71d7512445ed87d53f129703554f91310c245f8c0e052ebf64641",
+      "case_ids": [
+        "B69-PG263-RUN",
+        "B69-PG263-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG264",
+      "source_skill_name": "b69-php-persistence-migration-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-persistence-migration-generator/SKILL.md",
+      "source_skill_sha256": "d54d54821f0505bc8a0f08a53900bf87f51f5b23c7e4076b5952a0d35aa252e2",
+      "case_ids": [
+        "B69-PG264-RUN",
+        "B69-PG264-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG265",
+      "source_skill_name": "b69-php-queue-scheduler-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-queue-scheduler-generator/SKILL.md",
+      "source_skill_sha256": "179fe94fab58b9493b07811bf3b39092a94b8df0dd12636edd1bcaebe3d36b37",
+      "case_ids": [
+        "B69-PG265-RUN",
+        "B69-PG265-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG266",
+      "source_skill_name": "b69-wordpress-woocommerce-extension-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-wordpress-woocommerce-extension-generator/SKILL.md",
+      "source_skill_sha256": "e353e643a9eb9fd1b93c1de000b1bef11c3ac1889be2dbb0f74157b973cc14eb",
+      "case_ids": [
+        "B69-PG266-RUN",
+        "B69-PG266-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG267",
+      "source_skill_name": "b69-php-contract-client-generator",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-contract-client-generator/SKILL.md",
+      "source_skill_sha256": "4d304fa715ba09343899ba8b9ff14e3a63361042876a7227786bc36650ef1415",
+      "case_ids": [
+        "B69-PG267-RUN",
+        "B69-PG267-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG268",
+      "source_skill_name": "b69-php-test-quality-harness",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-test-quality-harness/SKILL.md",
+      "source_skill_sha256": "f188a0dc742dcd78d702ec4db0d9a4a68db936972d2434332c7457abe256e650",
+      "case_ids": [
+        "B69-PG268-RUN",
+        "B69-PG268-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG269",
+      "source_skill_name": "b69-php-modernization-repair",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-modernization-repair/SKILL.md",
+      "source_skill_sha256": "d49c68a8f0a4b7f6b318cfe35c1091dfb59eae68fd489be7d90b2d47c68aec60",
+      "case_ids": [
+        "B69-PG269-RUN",
+        "B69-PG269-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG270",
+      "source_skill_name": "b69-php-build-run-deploy-certifier",
+      "batch": 69,
+      "source_skill_path": "agent-skills/runtime/b69-php-build-run-deploy-certifier/SKILL.md",
+      "source_skill_sha256": "65e8d6f983bd420274c7c2d8889129478284a08c27d38060e1f56436355d32dc",
+      "case_ids": [
+        "B69-PG270-RUN",
+        "B69-PG270-NEG"
+      ],
+      "batch_test_skill": "tst-b69-php-web-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG271",
+      "source_skill_name": "b70-native-project-profile-detector",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "1306c6f8d39aae52856b1e14e0a8b436d74eda63b9ceee32f498b65c686a2c97",
+      "case_ids": [
+        "B70-PG271-RUN",
+        "B70-PG271-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG272",
+      "source_skill_name": "b70-native-toolchain-compiler-matrix",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-toolchain-compiler-matrix/SKILL.md",
+      "source_skill_sha256": "4f8b2ea6e32cb2cbb09d4a85ebfa44de7da1f31301e260b0c8b8ea476093cbc1",
+      "case_ids": [
+        "B70-PG272-RUN",
+        "B70-PG272-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG273",
+      "source_skill_name": "b70-cmake-native-project-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-cmake-native-project-generator/SKILL.md",
+      "source_skill_sha256": "3533614a11408f748c2f34cc6f53aa59ae33eb21eeb8df597df5b8015316bada",
+      "case_ids": [
+        "B70-PG273-RUN",
+        "B70-PG273-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG274",
+      "source_skill_name": "b70-modern-cpp-library-service-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-modern-cpp-library-service-generator/SKILL.md",
+      "source_skill_sha256": "e0900577144ce9c6b1dd4accc80571072087624615611079dd4a9908caa038d6",
+      "case_ids": [
+        "B70-PG274-RUN",
+        "B70-PG274-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG275",
+      "source_skill_name": "b70-c-api-abi-contract-manager",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-c-api-abi-contract-manager/SKILL.md",
+      "source_skill_sha256": "6c499aae116749bbce14f9d2eccd1efd6439890108b97a1b4d20ae737e0f424d",
+      "case_ids": [
+        "B70-PG275-RUN",
+        "B70-PG275-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG276",
+      "source_skill_name": "b70-native-ffi-binding-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-ffi-binding-generator/SKILL.md",
+      "source_skill_sha256": "f7dae5f7a7e76ce81cbeef8c5d510c67d96ff68d3e0fc3e844730cd13f808003",
+      "case_ids": [
+        "B70-PG276-RUN",
+        "B70-PG276-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG277",
+      "source_skill_name": "b70-native-memory-lifetime-safety",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-memory-lifetime-safety/SKILL.md",
+      "source_skill_sha256": "3a340a17ccabfb2ecb30773e58905fb17c71dd17cd37a7de45ff4b3adebc9a96",
+      "case_ids": [
+        "B70-PG277-RUN",
+        "B70-PG277-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG278",
+      "source_skill_name": "b70-native-concurrency-realtime-safety",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-concurrency-realtime-safety/SKILL.md",
+      "source_skill_sha256": "23c837f4ae191913a6b83c4a1c89d409c285b85e0a5e45c3e01eefdf501ae5ab",
+      "case_ids": [
+        "B70-PG278-RUN",
+        "B70-PG278-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG279",
+      "source_skill_name": "b70-ros2-node-project-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-ros2-node-project-generator/SKILL.md",
+      "source_skill_sha256": "2ecc7c9fa7bdc86a7fe7f5debae328d10ae596e6274a545f2a0bf18610d24cf6",
+      "case_ids": [
+        "B70-PG279-RUN",
+        "B70-PG279-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG280",
+      "source_skill_name": "b70-opcua-industrial-adapter-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-opcua-industrial-adapter-generator/SKILL.md",
+      "source_skill_sha256": "3d68530f8fc3c4e17ba28dd5ce481b6923fcfa77c7783eac10bb69ea826061bf",
+      "case_ids": [
+        "B70-PG280-RUN",
+        "B70-PG280-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG281",
+      "source_skill_name": "b70-embedded-crosscompile-project-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-embedded-crosscompile-project-generator/SKILL.md",
+      "source_skill_sha256": "c37d43a4aad950ea59df76babe576043f7eeb60708bc6757b4cf32484f6d4724",
+      "case_ids": [
+        "B70-PG281-RUN",
+        "B70-PG281-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG282",
+      "source_skill_name": "b70-qt-industrial-hmi-generator",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-qt-industrial-hmi-generator/SKILL.md",
+      "source_skill_sha256": "8b88a7b8d89eb1226807a20ff53a0e3e48ae69cd790542f74313bc8d671c9b04",
+      "case_ids": [
+        "B70-PG282-RUN",
+        "B70-PG282-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG283",
+      "source_skill_name": "b70-native-sanitizer-fuzz-static-analysis",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-sanitizer-fuzz-static-analysis/SKILL.md",
+      "source_skill_sha256": "ebe34d045381682ddcd601e079382f7f7c5462bd770e799fd2576a2ff09ef3ea",
+      "case_ids": [
+        "B70-PG283-RUN",
+        "B70-PG283-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG284",
+      "source_skill_name": "b70-native-build-run-certifier",
+      "batch": 70,
+      "source_skill_path": "agent-skills/runtime/b70-native-build-run-certifier/SKILL.md",
+      "source_skill_sha256": "37c4f89aa419222c7c24b449235c35043f61f7499e9c54dd8f4f96a122654f8b",
+      "case_ids": [
+        "B70-PG284-RUN",
+        "B70-PG284-NEG"
+      ],
+      "batch_test_skill": "tst-b70-native-industrial-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG285",
+      "source_skill_name": "b71-rust-project-profile-detector",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "d3bf47ae685dea2faf185941024ac71cddd19e6d4fd3f3504f9212c701568f46",
+      "case_ids": [
+        "B71-PG285-RUN",
+        "B71-PG285-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG286",
+      "source_skill_name": "b71-cargo-workspace-dependency-reproducer",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-cargo-workspace-dependency-reproducer/SKILL.md",
+      "source_skill_sha256": "7d5bb83df62e9835ca9b1cdc699e89448b376e39fd85c8b7d445cbf62f2c9a01",
+      "case_ids": [
+        "B71-PG286-RUN",
+        "B71-PG286-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG287",
+      "source_skill_name": "b71-rust-axum-service-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-axum-service-generator/SKILL.md",
+      "source_skill_sha256": "9faaf44e5e603b78a9c48b4040c25712545fa16accd141037314aea626f6d2f8",
+      "case_ids": [
+        "B71-PG287-RUN",
+        "B71-PG287-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG288",
+      "source_skill_name": "b71-rust-cli-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-cli-generator/SKILL.md",
+      "source_skill_sha256": "e6e568017308390c4a16defc559442546e70de8bee634800003fa95c05a34a4e",
+      "case_ids": [
+        "B71-PG288-RUN",
+        "B71-PG288-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG289",
+      "source_skill_name": "b71-rust-async-worker-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-async-worker-generator/SKILL.md",
+      "source_skill_sha256": "1d90f0d7ab0cf83f445862f074e1acfbe4fde437b45dffdad8af39854d541649",
+      "case_ids": [
+        "B71-PG289-RUN",
+        "B71-PG289-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG290",
+      "source_skill_name": "b71-rust-serde-contract-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-serde-contract-generator/SKILL.md",
+      "source_skill_sha256": "7a8b1154edd3ef770041513968a80b101540614cf91371a6c24501ebfe798e1f",
+      "case_ids": [
+        "B71-PG290-RUN",
+        "B71-PG290-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG291",
+      "source_skill_name": "b71-rust-ffi-wasm-extension-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-ffi-wasm-extension-generator/SKILL.md",
+      "source_skill_sha256": "0f3db4e0c14b9962550ec6d6b997a00dc8657846c22eec87044b0cc50551cf21",
+      "case_ids": [
+        "B71-PG291-RUN",
+        "B71-PG291-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG292",
+      "source_skill_name": "b71-rust-unsafe-boundary-review",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-unsafe-boundary-review/SKILL.md",
+      "source_skill_sha256": "ace61a026da2e676b4d55cfb83234a49c6a4f31a8cbfc9e7d2d15b2f30e8796a",
+      "case_ids": [
+        "B71-PG292-RUN",
+        "B71-PG292-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG293",
+      "source_skill_name": "b71-rust-supply-chain-policy",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-supply-chain-policy/SKILL.md",
+      "source_skill_sha256": "cc2525fa3a021b26d2b870e4b1c688ac7c82a5ef77f7f5c6bfe0de9f258685b4",
+      "case_ids": [
+        "B71-PG293-RUN",
+        "B71-PG293-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG294",
+      "source_skill_name": "b71-rust-test-property-fuzz-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-test-property-fuzz-generator/SKILL.md",
+      "source_skill_sha256": "a27d727b1f652ab5618a4c012fb4fbaadfd4a92cec91dea526ee2d3aaa72f085",
+      "case_ids": [
+        "B71-PG294-RUN",
+        "B71-PG294-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG295",
+      "source_skill_name": "b71-rust-crosscompile-release-generator",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-crosscompile-release-generator/SKILL.md",
+      "source_skill_sha256": "692a36de0478a4e937b4782efc4af9e95a2f5fafc13db23a9f375e0a46b5e04a",
+      "case_ids": [
+        "B71-PG295-RUN",
+        "B71-PG295-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG296",
+      "source_skill_name": "b71-rust-build-run-certifier",
+      "batch": 71,
+      "source_skill_path": "agent-skills/runtime/b71-rust-build-run-certifier/SKILL.md",
+      "source_skill_sha256": "b182d069dc0bf5867aa7760b354dc67180e7fe596c1681de6a20706a9eb64844",
+      "case_ids": [
+        "B71-PG296-RUN",
+        "B71-PG296-NEG"
+      ],
+      "batch_test_skill": "tst-b71-rust-secure-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG297",
+      "source_skill_name": "b72-flutter-project-profile-detector",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "0958e0c77d90ab3e97fcb72aa8d84d8ba083f3fdb1bba702b00676b5939690d0",
+      "case_ids": [
+        "B72-PG297-RUN",
+        "B72-PG297-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG298",
+      "source_skill_name": "b72-flutter-dependency-workspace-reproducer",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-dependency-workspace-reproducer/SKILL.md",
+      "source_skill_sha256": "86ee6a24e3f6834ee6fd875d81488602c9c8e29ac5eca7a2df7d550004f54631",
+      "case_ids": [
+        "B72-PG298-RUN",
+        "B72-PG298-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG299",
+      "source_skill_name": "b72-flutter-clean-architecture-generator",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-clean-architecture-generator/SKILL.md",
+      "source_skill_sha256": "e3e1de56530e44782314b0c43a5d40f8a05286b09afb7aa60fe2da42113ed225",
+      "case_ids": [
+        "B72-PG299-RUN",
+        "B72-PG299-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG300",
+      "source_skill_name": "b72-flutter-state-routing-generator",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-state-routing-generator/SKILL.md",
+      "source_skill_sha256": "d344cffe0662fb80e3c1c9e8e63df37e0d9b7c7ce6ec87b1a2067dce74e1a537",
+      "case_ids": [
+        "B72-PG300-RUN",
+        "B72-PG300-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG301",
+      "source_skill_name": "b72-flutter-api-data-layer-generator",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-api-data-layer-generator/SKILL.md",
+      "source_skill_sha256": "08bed281f8c1ba2f3d1333a92d50ecf0074b3f7f29df60db29cbce306ff037c4",
+      "case_ids": [
+        "B72-PG301-RUN",
+        "B72-PG301-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG302",
+      "source_skill_name": "b72-flutter-offline-sync-generator",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-offline-sync-generator/SKILL.md",
+      "source_skill_sha256": "64714ffdda78bb08fa581a3143194ea9d35b22935f352af3c0db8fa71044a99b",
+      "case_ids": [
+        "B72-PG302-RUN",
+        "B72-PG302-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG303",
+      "source_skill_name": "b72-flutter-platform-channel-generator",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-platform-channel-generator/SKILL.md",
+      "source_skill_sha256": "d836f40dc2ab7a94a809e7dc4923978f104882221e7f191074c4204d58839e0e",
+      "case_ids": [
+        "B72-PG303-RUN",
+        "B72-PG303-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG304",
+      "source_skill_name": "b72-flutter-responsive-multiplatform-ui",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-responsive-multiplatform-ui/SKILL.md",
+      "source_skill_sha256": "abbe046a7cb76d14083f16733430274aa1fd98d2ba7f37a30021318cca009674",
+      "case_ids": [
+        "B72-PG304-RUN",
+        "B72-PG304-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG305",
+      "source_skill_name": "b72-flutter-accessibility-localization",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-accessibility-localization/SKILL.md",
+      "source_skill_sha256": "46a76eb14a93d0d501f38d53bde3f83b14e16d45c6c97854ad32a9fae467e4e9",
+      "case_ids": [
+        "B72-PG305-RUN",
+        "B72-PG305-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG306",
+      "source_skill_name": "b72-flutter-test-golden-integration-harness",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-test-golden-integration-harness/SKILL.md",
+      "source_skill_sha256": "6b22b662d8f8f31b12d357208fdb9588b2bbbbd5164774c7d69419d9597a3d2c",
+      "case_ids": [
+        "B72-PG306-RUN",
+        "B72-PG306-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG307",
+      "source_skill_name": "b72-flutter-release-signing-packager",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-release-signing-packager/SKILL.md",
+      "source_skill_sha256": "396142e681fae80b75fa8bd434d881a4dc34f05ada80998767a05b2dd1697b13",
+      "case_ids": [
+        "B72-PG307-RUN",
+        "B72-PG307-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG308",
+      "source_skill_name": "b72-flutter-build-run-certifier",
+      "batch": 72,
+      "source_skill_path": "agent-skills/runtime/b72-flutter-build-run-certifier/SKILL.md",
+      "source_skill_sha256": "bdea70c82f623fd968f461ed4ecd9a35b0baa354db29448de2fd8015f59a08ca",
+      "case_ids": [
+        "B72-PG308-RUN",
+        "B72-PG308-NEG"
+      ],
+      "batch_test_skill": "tst-b72-flutter-multiplatform-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG309",
+      "source_skill_name": "b73-swift-project-profile-detector",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "4e758b54c9265a4cd1d3bf343e12d531d9ee8252f2c4f1a47bbe03517d8b63d5",
+      "case_ids": [
+        "B73-PG309-RUN",
+        "B73-PG309-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG310",
+      "source_skill_name": "b73-swift-package-dependency-reproducer",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-package-dependency-reproducer/SKILL.md",
+      "source_skill_sha256": "1a21e4815097e3b7c81f9f103071c55122003b01a62561a49f8f30de9be32aa0",
+      "case_ids": [
+        "B73-PG310-RUN",
+        "B73-PG310-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG311",
+      "source_skill_name": "b73-swiftui-application-generator",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swiftui-application-generator/SKILL.md",
+      "source_skill_sha256": "f3944dbc0c5b64438fb4b04f0436d03658d3946b2500f8e6c5ddb388c5e713f4",
+      "case_ids": [
+        "B73-PG311-RUN",
+        "B73-PG311-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG312",
+      "source_skill_name": "b73-swift-state-architecture-generator",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-state-architecture-generator/SKILL.md",
+      "source_skill_sha256": "9ce32353afdc48c81a5a7afd8bfca7dc72317188fa90821086355de308eeb033",
+      "case_ids": [
+        "B73-PG312-RUN",
+        "B73-PG312-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG313",
+      "source_skill_name": "b73-swift-networking-contract-generator",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-networking-contract-generator/SKILL.md",
+      "source_skill_sha256": "c958c9073c9f58dc9e5ee8db41418f0047384b6257b3cd33433258d67c0d95de",
+      "case_ids": [
+        "B73-PG313-RUN",
+        "B73-PG313-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG314",
+      "source_skill_name": "b73-swift-persistence-generator",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-persistence-generator/SKILL.md",
+      "source_skill_sha256": "b9457645b2bf18a348c632fd48840cdbfea9080508aa01e7fd6eab29a6409d23",
+      "case_ids": [
+        "B73-PG314-RUN",
+        "B73-PG314-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG315",
+      "source_skill_name": "b73-swift-concurrency-safety",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-swift-concurrency-safety/SKILL.md",
+      "source_skill_sha256": "84d2178f9362d6839ea2390baa4e1f826075cb6a162d4613d81c33250c565cc8",
+      "case_ids": [
+        "B73-PG315-RUN",
+        "B73-PG315-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG316",
+      "source_skill_name": "b73-objectivec-swift-interop-manager",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-objectivec-swift-interop-manager/SKILL.md",
+      "source_skill_sha256": "52ca776e8470346796cbc4042fa26c12763473c4c2d30fcf6215315b061c0e04",
+      "case_ids": [
+        "B73-PG316-RUN",
+        "B73-PG316-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG317",
+      "source_skill_name": "b73-apple-widget-extension-generator",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-apple-widget-extension-generator/SKILL.md",
+      "source_skill_sha256": "3b58cd0db9ba425cffb190dc7148cf9d3d2bfd4efd5636cef50cb3041b4c451d",
+      "case_ids": [
+        "B73-PG317-RUN",
+        "B73-PG317-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG318",
+      "source_skill_name": "b73-apple-accessibility-localization",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-apple-accessibility-localization/SKILL.md",
+      "source_skill_sha256": "3fb5a9c4c25785d31ebc959d8c668a127193714a1a83a0c3e5e1be359829532f",
+      "case_ids": [
+        "B73-PG318-RUN",
+        "B73-PG318-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG319",
+      "source_skill_name": "b73-xctest-ui-test-harness",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-xctest-ui-test-harness/SKILL.md",
+      "source_skill_sha256": "933427f94736cece210f9ca3f6535cec34a53c197da5e95fc07d5c95d2721bd6",
+      "case_ids": [
+        "B73-PG319-RUN",
+        "B73-PG319-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG320",
+      "source_skill_name": "b73-xcode-build-signing-certifier",
+      "batch": 73,
+      "source_skill_path": "agent-skills/runtime/b73-xcode-build-signing-certifier/SKILL.md",
+      "source_skill_sha256": "52bf18814dc8496780ac2a55ccf3b9ed337b0e6043e6b13c46e07803f0cf4378",
+      "case_ids": [
+        "B73-PG320-RUN",
+        "B73-PG320-NEG"
+      ],
+      "batch_test_skill": "tst-b73-swift-apple-native-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG321",
+      "source_skill_name": "b74-shell-script-profile-detector",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shell-script-profile-detector/SKILL.md",
+      "source_skill_sha256": "3487b9ab56670f55596e8754ffbfcc7f5f3cae5e91ed9d33814802ac203b6340",
+      "case_ids": [
+        "B74-PG321-RUN",
+        "B74-PG321-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG322",
+      "source_skill_name": "b74-portable-bash-script-generator",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-portable-bash-script-generator/SKILL.md",
+      "source_skill_sha256": "414d9b795403340d027745f454edd8372496e4791a7a82a509cc41105bef8989",
+      "case_ids": [
+        "B74-PG322-RUN",
+        "B74-PG322-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG323",
+      "source_skill_name": "b74-shell-strict-mode-error-handling",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shell-strict-mode-error-handling/SKILL.md",
+      "source_skill_sha256": "d3f0f4070e3d5951bda25bb4efdb6639ea0c6b53e5fc1d16e7fafd418742cf04",
+      "case_ids": [
+        "B74-PG323-RUN",
+        "B74-PG323-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG324",
+      "source_skill_name": "b74-shell-argument-env-config-parser",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shell-argument-env-config-parser/SKILL.md",
+      "source_skill_sha256": "fa5a6b7e59cca04222d804bd659c529c926fa26a429a6b8e434c78c463af7228",
+      "case_ids": [
+        "B74-PG324-RUN",
+        "B74-PG324-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG325",
+      "source_skill_name": "b74-shell-process-pipeline-orchestrator",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shell-process-pipeline-orchestrator/SKILL.md",
+      "source_skill_sha256": "530e35e86936d3af329855948404a476fa300cb092bbdfb04d71f4311f164e01",
+      "case_ids": [
+        "B74-PG325-RUN",
+        "B74-PG325-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG326",
+      "source_skill_name": "b74-shell-security-secret-hardening",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shell-security-secret-hardening/SKILL.md",
+      "source_skill_sha256": "5f12d99d5028e7b54b81558c901ae4010f37e2e7bf7edb2d78f668ac9950a8c0",
+      "case_ids": [
+        "B74-PG326-RUN",
+        "B74-PG326-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG327",
+      "source_skill_name": "b74-shellcheck-bats-quality-gate",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-shellcheck-bats-quality-gate/SKILL.md",
+      "source_skill_sha256": "61ef6af4a8507b59d790912f758ed6fc7ce84df8f58467feb343f3b0b7838232",
+      "case_ids": [
+        "B74-PG327-RUN",
+        "B74-PG327-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG328",
+      "source_skill_name": "b74-powershell-project-profile-detector",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-powershell-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "33edc239f74faa4988394f2c0507be71a4cbda5bcf974a4616f9706c6615aa5c",
+      "case_ids": [
+        "B74-PG328-RUN",
+        "B74-PG328-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG329",
+      "source_skill_name": "b74-powershell-module-command-generator",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-powershell-module-command-generator/SKILL.md",
+      "source_skill_sha256": "d1e9a0d245490d950ea8e8d9cee17b41753774849bc27e030b40f14c0d5c4bfe",
+      "case_ids": [
+        "B74-PG329-RUN",
+        "B74-PG329-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG330",
+      "source_skill_name": "b74-powershell-error-pipeline-contract",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-powershell-error-pipeline-contract/SKILL.md",
+      "source_skill_sha256": "4dbbcbb88907bc44256576e171b96673308344520dbbdcef6cf2c9e86dc22fdd",
+      "case_ids": [
+        "B74-PG330-RUN",
+        "B74-PG330-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG331",
+      "source_skill_name": "b74-powershell-remoting-crossplatform",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-powershell-remoting-crossplatform/SKILL.md",
+      "source_skill_sha256": "5734bcee24a9a7e295f68546c66858e8fe2481117bf841da8d1be45f0b352c35",
+      "case_ids": [
+        "B74-PG331-RUN",
+        "B74-PG331-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG332",
+      "source_skill_name": "b74-powershell-secret-signing-policy",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-powershell-secret-signing-policy/SKILL.md",
+      "source_skill_sha256": "d43e09e714cbc7bd671deb0e65470b5cda3b6f44a60237157394ca6f45e1a634",
+      "case_ids": [
+        "B74-PG332-RUN",
+        "B74-PG332-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG333",
+      "source_skill_name": "b74-pester-psscriptanalyzer-quality-gate",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-pester-psscriptanalyzer-quality-gate/SKILL.md",
+      "source_skill_sha256": "3c2f822df140abaf9b506400d6fd2f72f0bd0170ca4b6408729b6f454308f9e1",
+      "case_ids": [
+        "B74-PG333-RUN",
+        "B74-PG333-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG334",
+      "source_skill_name": "b74-cross-shell-automation-certifier",
+      "batch": 74,
+      "source_skill_path": "agent-skills/runtime/b74-cross-shell-automation-certifier/SKILL.md",
+      "source_skill_sha256": "bbea472ed6a5754a921084f100a9963ba0e1f09f284dc2e9e0847cea154e0ea0",
+      "case_ids": [
+        "B74-PG334-RUN",
+        "B74-PG334-NEG"
+      ],
+      "batch_test_skill": "tst-b74-shell-powershell-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG335",
+      "source_skill_name": "b75-sql-schema-dialect-detector",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-schema-dialect-detector/SKILL.md",
+      "source_skill_sha256": "0c77d5e7089acfe1cff8f0a26426d9558a6a95e8fbe72020bf71c57f9c7c30e8",
+      "case_ids": [
+        "B75-PG335-RUN",
+        "B75-PG335-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG336",
+      "source_skill_name": "b75-sql-migration-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-migration-generator/SKILL.md",
+      "source_skill_sha256": "3850020b2528952ef291405d3fd78ce78d4b32ec543c1a8b834e5baea6adc1c1",
+      "case_ids": [
+        "B75-PG336-RUN",
+        "B75-PG336-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG337",
+      "source_skill_name": "b75-sql-query-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-query-generator/SKILL.md",
+      "source_skill_sha256": "4a5e0557228db25158c7f91b8c9a2463fbe6865cc8017b14e8f28cd4ee6539b3",
+      "case_ids": [
+        "B75-PG337-RUN",
+        "B75-PG337-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG338",
+      "source_skill_name": "b75-sql-transaction-isolation-designer",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-transaction-isolation-designer/SKILL.md",
+      "source_skill_sha256": "3725e047ada123c16b67182a6a2e4c55fa8dc4b652bbab6ec184b6d66beeb460",
+      "case_ids": [
+        "B75-PG338-RUN",
+        "B75-PG338-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG339",
+      "source_skill_name": "b75-sql-seed-fixture-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-seed-fixture-generator/SKILL.md",
+      "source_skill_sha256": "7e27d194b2a33d183665951bf81992083db009f6f6ba72dbf874109701ffd952",
+      "case_ids": [
+        "B75-PG339-RUN",
+        "B75-PG339-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG340",
+      "source_skill_name": "b75-sql-query-plan-performance-gate",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-query-plan-performance-gate/SKILL.md",
+      "source_skill_sha256": "5aab1d422d7d64893083a7b7c82e30e1bc042cd4b42d08211d632bbcb6ab6404",
+      "case_ids": [
+        "B75-PG340-RUN",
+        "B75-PG340-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG341",
+      "source_skill_name": "b75-sql-security-rls-policy-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-security-rls-policy-generator/SKILL.md",
+      "source_skill_sha256": "bddeb3b0d715fb3372eeb36a8e75f7952d430ce367b47bd6bee6198ca378a13a",
+      "case_ids": [
+        "B75-PG341-RUN",
+        "B75-PG341-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG342",
+      "source_skill_name": "b75-sql-compatibility-certifier",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-sql-compatibility-certifier/SKILL.md",
+      "source_skill_sha256": "a8a63ab895ca451deb9b994c41f1e71e22a82dcc29618c554775934773ee57e5",
+      "case_ids": [
+        "B75-PG342-RUN",
+        "B75-PG342-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG343",
+      "source_skill_name": "b75-openapi-spec-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-openapi-spec-generator/SKILL.md",
+      "source_skill_sha256": "3f9f0ef3dc7cb01b5394e141d961cc524692d85061b9095dbb2da182e5286b00",
+      "case_ids": [
+        "B75-PG343-RUN",
+        "B75-PG343-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG344",
+      "source_skill_name": "b75-openapi-lint-breaking-change-gate",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-openapi-lint-breaking-change-gate/SKILL.md",
+      "source_skill_sha256": "3a89c599238e86cc51df4941bf9a8d1a1e32c563a2a62d34420a58f65c824128",
+      "case_ids": [
+        "B75-PG344-RUN",
+        "B75-PG344-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG345",
+      "source_skill_name": "b75-openapi-codegen-contract-test",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-openapi-codegen-contract-test/SKILL.md",
+      "source_skill_sha256": "d74b48b950f21bb9580550ebbc15e8280066e9a2784a2223ba01cd5fc7791dff",
+      "case_ids": [
+        "B75-PG345-RUN",
+        "B75-PG345-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG346",
+      "source_skill_name": "b75-protobuf-schema-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-protobuf-schema-generator/SKILL.md",
+      "source_skill_sha256": "6e035fa945f2571d43283c7a457f65e225cb4c5191b3f7227dd1efa01da7de7f",
+      "case_ids": [
+        "B75-PG346-RUN",
+        "B75-PG346-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG347",
+      "source_skill_name": "b75-protobuf-buf-compatibility-gate",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-protobuf-buf-compatibility-gate/SKILL.md",
+      "source_skill_sha256": "1b88ffa6496308c4409f429a46d38b56df44f4981a8b5b02f0d60d6717dcf052",
+      "case_ids": [
+        "B75-PG347-RUN",
+        "B75-PG347-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG348",
+      "source_skill_name": "b75-graphql-schema-resolver-generator",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-graphql-schema-resolver-generator/SKILL.md",
+      "source_skill_sha256": "a0bb8e652e96e06b1f76c5f5830bf9ef1c41a1afa1eb65f14777378325b34027",
+      "case_ids": [
+        "B75-PG348-RUN",
+        "B75-PG348-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG349",
+      "source_skill_name": "b75-graphql-security-cost-gate",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-graphql-security-cost-gate/SKILL.md",
+      "source_skill_sha256": "9ae77dcdc21e4e6e3dbd612c63765918145982278809e21fbfe2c7d4142cb732",
+      "case_ids": [
+        "B75-PG349-RUN",
+        "B75-PG349-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG350",
+      "source_skill_name": "b75-multi-contract-language-certifier",
+      "batch": 75,
+      "source_skill_path": "agent-skills/runtime/b75-multi-contract-language-certifier/SKILL.md",
+      "source_skill_sha256": "b783b925f68780844763b75518c3076c79fdea53a3a404932df93da66929993a",
+      "case_ids": [
+        "B75-PG350-RUN",
+        "B75-PG350-NEG"
+      ],
+      "batch_test_skill": "tst-b75-sql-api-contracts-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG351",
+      "source_skill_name": "b76-makefile-profile-detector",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-makefile-profile-detector/SKILL.md",
+      "source_skill_sha256": "a4c04c7be6bbf20fe1f5898e19d27d55ce230685b7b401ad78b66c2b18d989d8",
+      "case_ids": [
+        "B76-PG351-RUN",
+        "B76-PG351-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG352",
+      "source_skill_name": "b76-portable-makefile-generator",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-portable-makefile-generator/SKILL.md",
+      "source_skill_sha256": "3f5e0abb97a8c4834e10fdf96dd4b6a609fa529fea35bad7c544a24aec2593e2",
+      "case_ids": [
+        "B76-PG352-RUN",
+        "B76-PG352-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG353",
+      "source_skill_name": "b76-make-incremental-dependency-manager",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-make-incremental-dependency-manager/SKILL.md",
+      "source_skill_sha256": "6d77c6626868e63b9b7ecf45eb7c226e180f520eb036c22f4285b2846b2b6c3f",
+      "case_ids": [
+        "B76-PG353-RUN",
+        "B76-PG353-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG354",
+      "source_skill_name": "b76-make-test-release-orchestrator",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-make-test-release-orchestrator/SKILL.md",
+      "source_skill_sha256": "f4745f7c397b7c6ba1bbc7b9947824d46067ae7ef2e53810ddc8644231207943",
+      "case_ids": [
+        "B76-PG354-RUN",
+        "B76-PG354-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG355",
+      "source_skill_name": "b76-cmake-profile-detector",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-cmake-profile-detector/SKILL.md",
+      "source_skill_sha256": "6d74d19fb8521585e02132e0be4e7677690b8a626b181517d92985c85be384e2",
+      "case_ids": [
+        "B76-PG355-RUN",
+        "B76-PG355-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG356",
+      "source_skill_name": "b76-cmake-target-graph-generator",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-cmake-target-graph-generator/SKILL.md",
+      "source_skill_sha256": "962f0a7439dd482ce245b92551af511369e921851c82d83d54e95d0130b620ae",
+      "case_ids": [
+        "B76-PG356-RUN",
+        "B76-PG356-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG357",
+      "source_skill_name": "b76-cmake-dependency-package-manager",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-cmake-dependency-package-manager/SKILL.md",
+      "source_skill_sha256": "e78f99e07483ac58a08b5919f21a5b1d180380ab212d85f2c065704967f6bcfd",
+      "case_ids": [
+        "B76-PG357-RUN",
+        "B76-PG357-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG358",
+      "source_skill_name": "b76-cmake-presets-crossbuild-manager",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-cmake-presets-crossbuild-manager/SKILL.md",
+      "source_skill_sha256": "0baa5c0eeb30ffc9df20aaac5ec6461756b2bd5e03b0699d60b14d3f578e5407",
+      "case_ids": [
+        "B76-PG358-RUN",
+        "B76-PG358-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG359",
+      "source_skill_name": "b76-nginx-topology-profile-detector",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-nginx-topology-profile-detector/SKILL.md",
+      "source_skill_sha256": "2d97464535901767a519d094050c9462807b0baaa179afbcc995d6b4efe11a2c",
+      "case_ids": [
+        "B76-PG359-RUN",
+        "B76-PG359-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG360",
+      "source_skill_name": "b76-nginx-reverse-proxy-generator",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-nginx-reverse-proxy-generator/SKILL.md",
+      "source_skill_sha256": "f81b3ffa6fbc2a1f8e026e6a2021535c4ba53e5d0b747b333ec8051f50ccf7f4",
+      "case_ids": [
+        "B76-PG360-RUN",
+        "B76-PG360-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG361",
+      "source_skill_name": "b76-nginx-tls-security-rate-limit",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-nginx-tls-security-rate-limit/SKILL.md",
+      "source_skill_sha256": "21e6dd1847fa2fb678c8b5e056cf9aa6e371f0b5cdbf316ef353c87352b6e28c",
+      "case_ids": [
+        "B76-PG361-RUN",
+        "B76-PG361-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG362",
+      "source_skill_name": "b76-build-proxy-configuration-certifier",
+      "batch": 76,
+      "source_skill_path": "agent-skills/runtime/b76-build-proxy-configuration-certifier/SKILL.md",
+      "source_skill_sha256": "87afa1226067fcc38a03d80c60002d3c58c9d15d69300f5179bab27b6ad23655",
+      "case_ids": [
+        "B76-PG362-RUN",
+        "B76-PG362-NEG"
+      ],
+      "batch_test_skill": "tst-b76-make-cmake-nginx-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG363",
+      "source_skill_name": "b77-container-project-profile-detector",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-container-project-profile-detector/SKILL.md",
+      "source_skill_sha256": "12cd1a71da655ce22c57c3dd9c8ec487de6705ee38832779d05c7fe17b6f4547",
+      "case_ids": [
+        "B77-PG363-RUN",
+        "B77-PG363-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG364",
+      "source_skill_name": "b77-dockerfile-multistage-generator",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-dockerfile-multistage-generator/SKILL.md",
+      "source_skill_sha256": "419eca409a489ddb674ef9acf1d84b87f3058eda57a77c0a0f261b178eebbdd0",
+      "case_ids": [
+        "B77-PG364-RUN",
+        "B77-PG364-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG365",
+      "source_skill_name": "b77-container-base-image-sbom-policy",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-container-base-image-sbom-policy/SKILL.md",
+      "source_skill_sha256": "34eba0dc220dc0472cd5061388af32fbb4e52092533880fecc447b8068dc39f7",
+      "case_ids": [
+        "B77-PG365-RUN",
+        "B77-PG365-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG366",
+      "source_skill_name": "b77-rootless-container-hardening",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-rootless-container-hardening/SKILL.md",
+      "source_skill_sha256": "6bb47777aaefb613202cb35ee89934224972bf76f839769a15911806f9664913",
+      "case_ids": [
+        "B77-PG366-RUN",
+        "B77-PG366-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG367",
+      "source_skill_name": "b77-docker-buildx-multiarch-generator",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-docker-buildx-multiarch-generator/SKILL.md",
+      "source_skill_sha256": "0dc9b13717e79eaf91dc38f15f11d2517c373a36404d024d5f209c3aed06daac",
+      "case_ids": [
+        "B77-PG367-RUN",
+        "B77-PG367-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG368",
+      "source_skill_name": "b77-container-health-runtime-contract",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-container-health-runtime-contract/SKILL.md",
+      "source_skill_sha256": "40c693bc7939cc0589312fd47481a201790172d8dd814df224548e918e165c11",
+      "case_ids": [
+        "B77-PG368-RUN",
+        "B77-PG368-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG369",
+      "source_skill_name": "b77-compose-service-topology-generator",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-compose-service-topology-generator/SKILL.md",
+      "source_skill_sha256": "50cde7608370369f43cac41b10d1c69b8d228c49b517c2f85bae25285d829a51",
+      "case_ids": [
+        "B77-PG369-RUN",
+        "B77-PG369-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG370",
+      "source_skill_name": "b77-compose-readiness-dependency-manager",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-compose-readiness-dependency-manager/SKILL.md",
+      "source_skill_sha256": "d78647ce1f1ccfde05d489192244d43a60eaeabcf7e4f4caa667d4028abd36a2",
+      "case_ids": [
+        "B77-PG370-RUN",
+        "B77-PG370-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG371",
+      "source_skill_name": "b77-compose-development-environment",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-compose-development-environment/SKILL.md",
+      "source_skill_sha256": "dd1e7ed8b8dc1ef2dc7d448f779c36ebef0e0d887785bd607cb5e7d81d5c5cba",
+      "case_ids": [
+        "B77-PG371-RUN",
+        "B77-PG371-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG372",
+      "source_skill_name": "b77-compose-production-parity-gate",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-compose-production-parity-gate/SKILL.md",
+      "source_skill_sha256": "435e476410e4e35acc5819111888f432bea1d4977f8d2d45d6b7248b0756cc92",
+      "case_ids": [
+        "B77-PG372-RUN",
+        "B77-PG372-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG373",
+      "source_skill_name": "b77-container-image-test-scan-gate",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-container-image-test-scan-gate/SKILL.md",
+      "source_skill_sha256": "98cb831087be0a0240303d59bca1ac712c6c44d63177b7a3cd9a3a8b551062de",
+      "case_ids": [
+        "B77-PG373-RUN",
+        "B77-PG373-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG374",
+      "source_skill_name": "b77-container-build-run-certifier",
+      "batch": 77,
+      "source_skill_path": "agent-skills/runtime/b77-container-build-run-certifier/SKILL.md",
+      "source_skill_sha256": "1f3bbcbac7c67be689cd7157a18676de65387d4d470a8bad46fb7d2f0cbbb379",
+      "case_ids": [
+        "B77-PG374-RUN",
+        "B77-PG374-NEG"
+      ],
+      "batch_test_skill": "tst-b77-docker-compose-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG375",
+      "source_skill_name": "b78-iac-kubernetes-profile-detector",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-iac-kubernetes-profile-detector/SKILL.md",
+      "source_skill_sha256": "55a35d12aa01b044390f3a366422d0b900bc1bf0bf71c6eed08e9052835e8612",
+      "case_ids": [
+        "B78-PG375-RUN",
+        "B78-PG375-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG376",
+      "source_skill_name": "b78-terraform-module-scaffolder",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-terraform-module-scaffolder/SKILL.md",
+      "source_skill_sha256": "6be24f67b9ab6e947d0c98f484d562ddbad7bcbbdf056b6ff308014d8520117e",
+      "case_ids": [
+        "B78-PG376-RUN",
+        "B78-PG376-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG377",
+      "source_skill_name": "b78-terraform-provider-state-manager",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-terraform-provider-state-manager/SKILL.md",
+      "source_skill_sha256": "d1b9e4dee74b6ffd26f78c27bb5740ecfbbd09c85e2cc0ccd59a19fbd5481bab",
+      "case_ids": [
+        "B78-PG377-RUN",
+        "B78-PG377-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG378",
+      "source_skill_name": "b78-terraform-plan-policy-cost-gate",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-terraform-plan-policy-cost-gate/SKILL.md",
+      "source_skill_sha256": "e11e0dc92873018d8e100ea8578e81bb5b276920aec000341a67ff761d9f41b1",
+      "case_ids": [
+        "B78-PG378-RUN",
+        "B78-PG378-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG379",
+      "source_skill_name": "b78-terraform-import-drift-reconciler",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-terraform-import-drift-reconciler/SKILL.md",
+      "source_skill_sha256": "61fa6f450dfac29ad228f8ffe425a14e8ecadc257d340df7693f0daafc1f825d",
+      "case_ids": [
+        "B78-PG379-RUN",
+        "B78-PG379-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG380",
+      "source_skill_name": "b78-terraform-test-validation-harness",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-terraform-test-validation-harness/SKILL.md",
+      "source_skill_sha256": "19bb27dc82fdcb28d7f155ff47e29604c3f6d37789387bacec8cc90b10572cbe",
+      "case_ids": [
+        "B78-PG380-RUN",
+        "B78-PG380-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG381",
+      "source_skill_name": "b78-kubernetes-workload-manifest-generator",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-kubernetes-workload-manifest-generator/SKILL.md",
+      "source_skill_sha256": "07b617ce6dc69e59882ecf408ace7226e1c512351a59fc97a67bbae928260258",
+      "case_ids": [
+        "B78-PG381-RUN",
+        "B78-PG381-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG382",
+      "source_skill_name": "b78-kubernetes-config-secret-policy",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-kubernetes-config-secret-policy/SKILL.md",
+      "source_skill_sha256": "470ed24d980f54c526afd2619a50156737530b2ea4df34ee156a3e766df31a9a",
+      "case_ids": [
+        "B78-PG382-RUN",
+        "B78-PG382-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG383",
+      "source_skill_name": "b78-kubernetes-network-security-generator",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-kubernetes-network-security-generator/SKILL.md",
+      "source_skill_sha256": "7a926e1f854023884fea1374fe4f93c21f507dfd7f8e56180f3ae7cde6d2de35",
+      "case_ids": [
+        "B78-PG383-RUN",
+        "B78-PG383-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG384",
+      "source_skill_name": "b78-kubernetes-autoscaling-reliability",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-kubernetes-autoscaling-reliability/SKILL.md",
+      "source_skill_sha256": "cc0f02dee1bca25c23b571b17503fd919d01e4b3341dcbb0f372821870869fc9",
+      "case_ids": [
+        "B78-PG384-RUN",
+        "B78-PG384-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG385",
+      "source_skill_name": "b78-helm-chart-generator",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-helm-chart-generator/SKILL.md",
+      "source_skill_sha256": "caa66e628055316ab4561e864529a1e9f5db6ed6250a4d0d32c049336a905088",
+      "case_ids": [
+        "B78-PG385-RUN",
+        "B78-PG385-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG386",
+      "source_skill_name": "b78-helm-values-schema-manager",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-helm-values-schema-manager/SKILL.md",
+      "source_skill_sha256": "3d258c9e1d4f9dc2698edc2ce4107a23f12258a9a870e0e2a5e6d011a1dfd194",
+      "case_ids": [
+        "B78-PG386-RUN",
+        "B78-PG386-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG387",
+      "source_skill_name": "b78-helm-upgrade-rollback-gate",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-helm-upgrade-rollback-gate/SKILL.md",
+      "source_skill_sha256": "45fbd8203eeb935c14514b7ab842ae766d8f083642a974660997aa6ce594202e",
+      "case_ids": [
+        "B78-PG387-RUN",
+        "B78-PG387-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG388",
+      "source_skill_name": "b78-kubernetes-policy-admission-gate",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-kubernetes-policy-admission-gate/SKILL.md",
+      "source_skill_sha256": "911601ca13827a748113ecba6a6312fbc37ad109cbdfe4360ae59b60bbba6abe",
+      "case_ids": [
+        "B78-PG388-RUN",
+        "B78-PG388-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG389",
+      "source_skill_name": "b78-gitops-release-bundle-generator",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-gitops-release-bundle-generator/SKILL.md",
+      "source_skill_sha256": "07609a6dd40fd072e142c03dabb16219e8211e8fccf0f72648eebfadc4cdd6c8",
+      "case_ids": [
+        "B78-PG389-RUN",
+        "B78-PG389-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG390",
+      "source_skill_name": "b78-iac-kubernetes-helm-certifier",
+      "batch": 78,
+      "source_skill_path": "agent-skills/runtime/b78-iac-kubernetes-helm-certifier/SKILL.md",
+      "source_skill_sha256": "1df6038b56458e75ac473174087e152906956ab79a85ddd90217ef42e23d08d7",
+      "case_ids": [
+        "B78-PG390-RUN",
+        "B78-PG390-NEG"
+      ],
+      "batch_test_skill": "tst-b78-iac-kubernetes-helm-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG391",
+      "source_skill_name": "b79-cicd-pipeline-profile-detector",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-cicd-pipeline-profile-detector/SKILL.md",
+      "source_skill_sha256": "d427f8ed8912cd1118f4cbb415db6d816980b00dae524e9005a09c2508430ffc",
+      "case_ids": [
+        "B79-PG391-RUN",
+        "B79-PG391-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG392",
+      "source_skill_name": "b79-github-actions-workflow-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-github-actions-workflow-generator/SKILL.md",
+      "source_skill_sha256": "1635e40160fcfbe23b1177c53afd0e2d2c3f24f7f20bc8191d9e18f4d95aa1be",
+      "case_ids": [
+        "B79-PG392-RUN",
+        "B79-PG392-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG393",
+      "source_skill_name": "b79-github-reusable-workflow-action-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-github-reusable-workflow-action-generator/SKILL.md",
+      "source_skill_sha256": "1d65d0cef237c0f5ce3e2dbc008b7e1111c733ec88c0a5be02365ba9c9fe5fdf",
+      "case_ids": [
+        "B79-PG393-RUN",
+        "B79-PG393-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG394",
+      "source_skill_name": "b79-github-oidc-permission-hardening",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-github-oidc-permission-hardening/SKILL.md",
+      "source_skill_sha256": "cf02c72ceaa929163d26e4c1663cc0763c30616bb56ab4d03c7e9bba926367ed",
+      "case_ids": [
+        "B79-PG394-RUN",
+        "B79-PG394-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG395",
+      "source_skill_name": "b79-github-matrix-cache-artifact-manager",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-github-matrix-cache-artifact-manager/SKILL.md",
+      "source_skill_sha256": "3f8a1166a81c87dd36fc9f33c036a61b88d1f1bf14bddc171c6b2e67c9c0b660",
+      "case_ids": [
+        "B79-PG395-RUN",
+        "B79-PG395-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG396",
+      "source_skill_name": "b79-gitlab-ci-pipeline-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-gitlab-ci-pipeline-generator/SKILL.md",
+      "source_skill_sha256": "10d0192e1d4d5ae743c43dff55741a11088b6d87be35a69996ce54f0355d2ed4",
+      "case_ids": [
+        "B79-PG396-RUN",
+        "B79-PG396-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG397",
+      "source_skill_name": "b79-gitlab-child-pipeline-component-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-gitlab-child-pipeline-component-generator/SKILL.md",
+      "source_skill_sha256": "c268384d662ac5f0753e13aa2c7a5af86825e7e05612395b87bafbb138034877",
+      "case_ids": [
+        "B79-PG397-RUN",
+        "B79-PG397-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG398",
+      "source_skill_name": "b79-gitlab-runner-secret-hardening",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-gitlab-runner-secret-hardening/SKILL.md",
+      "source_skill_sha256": "491c911c1fa68ded526da064c944a7724801427cf24166aaef40f246fdbf95e2",
+      "case_ids": [
+        "B79-PG398-RUN",
+        "B79-PG398-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG399",
+      "source_skill_name": "b79-gitlab-environment-release-manager",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-gitlab-environment-release-manager/SKILL.md",
+      "source_skill_sha256": "7672f36862ef1439a48fedda61bd9abffc1acd8682e67e6e5762765a9cb213dc",
+      "case_ids": [
+        "B79-PG399-RUN",
+        "B79-PG399-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG400",
+      "source_skill_name": "b79-jenkins-declarative-pipeline-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-jenkins-declarative-pipeline-generator/SKILL.md",
+      "source_skill_sha256": "96e77fc324d20b1dca52875d9c5e028827cc4e8867dbf6e4e331616a07b3e7b1",
+      "case_ids": [
+        "B79-PG400-RUN",
+        "B79-PG400-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG401",
+      "source_skill_name": "b79-jenkins-shared-library-generator",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-jenkins-shared-library-generator/SKILL.md",
+      "source_skill_sha256": "ed2f319decd147ba98fc767f53219471f894f107e15ecde7de324ff810dabed1",
+      "case_ids": [
+        "B79-PG401-RUN",
+        "B79-PG401-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG402",
+      "source_skill_name": "b79-jenkins-agent-credential-hardening",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-jenkins-agent-credential-hardening/SKILL.md",
+      "source_skill_sha256": "ab454513ca343e139086f3c5a99f625d7210f4fae84d641db7e622e12a67624e",
+      "case_ids": [
+        "B79-PG402-RUN",
+        "B79-PG402-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG403",
+      "source_skill_name": "b79-cross-ci-release-promotion",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-cross-ci-release-promotion/SKILL.md",
+      "source_skill_sha256": "266edfadc7b879321bd91b7728446c809f49a81f01588b9fa66d352e984be7be",
+      "case_ids": [
+        "B79-PG403-RUN",
+        "B79-PG403-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG404",
+      "source_skill_name": "b79-pipeline-security-provenance-gate",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-pipeline-security-provenance-gate/SKILL.md",
+      "source_skill_sha256": "c994677e5c6569bab2b2c609d487e53f00c8d0bce7b20f5a05702669c37d2ad9",
+      "case_ids": [
+        "B79-PG404-RUN",
+        "B79-PG404-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG405",
+      "source_skill_name": "b79-cicd-cross-system-certifier",
+      "batch": 79,
+      "source_skill_path": "agent-skills/runtime/b79-cicd-cross-system-certifier/SKILL.md",
+      "source_skill_sha256": "39548ea8580adc59358c5c0442ef9d428c08a99e4260e08a0625e6e71d8061ca",
+      "case_ids": [
+        "B79-PG405-RUN",
+        "B79-PG405-NEG"
+      ],
+      "batch_test_skill": "tst-b79-cicd-systems-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG406",
+      "source_skill_name": "b80-polyglot-engineering-asset-graph",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-polyglot-engineering-asset-graph/SKILL.md",
+      "source_skill_sha256": "95a997a148b0dfafb986a3a7188d6e136d7a5b0fc1ec4bd846489e06e66fb7be",
+      "case_ids": [
+        "B80-PG406-RUN",
+        "B80-PG406-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG407",
+      "source_skill_name": "b80-cross-language-build-orchestrator",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-cross-language-build-orchestrator/SKILL.md",
+      "source_skill_sha256": "04b9e6113212f42b132d4308e7ccfaf099917c2c842de85a567264f50ef6a7f1",
+      "case_ids": [
+        "B80-PG407-RUN",
+        "B80-PG407-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG408",
+      "source_skill_name": "b80-cross-contract-schema-synchronizer",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-cross-contract-schema-synchronizer/SKILL.md",
+      "source_skill_sha256": "812bd421ba92185c06941dc5e73fb4020635e842e2d739c70068f0b5537782e6",
+      "case_ids": [
+        "B80-PG408-RUN",
+        "B80-PG408-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG409",
+      "source_skill_name": "b80-environment-parity-drift-detector",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-environment-parity-drift-detector/SKILL.md",
+      "source_skill_sha256": "f792b0eda36f43a810b1f68f3707bf9efb926328c91ca669bacfb5c88e5d0c8a",
+      "case_ids": [
+        "B80-PG409-RUN",
+        "B80-PG409-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG410",
+      "source_skill_name": "b80-polyglot-secret-identity-policy",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-polyglot-secret-identity-policy/SKILL.md",
+      "source_skill_sha256": "b5cb25ea64c068ad904e69b403f6a5884a0790a47a540cf14ca94c0b80d77fbd",
+      "case_ids": [
+        "B80-PG410-RUN",
+        "B80-PG410-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG411",
+      "source_skill_name": "b80-software-supply-chain-provenance-orchestrator",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-software-supply-chain-provenance-orchestrator/SKILL.md",
+      "source_skill_sha256": "0193603115aab22ce2180bbfa27fc51a05e5cee5da22181a4e9ecda9488169be",
+      "case_ids": [
+        "B80-PG411-RUN",
+        "B80-PG411-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG412",
+      "source_skill_name": "b80-local-ci-runtime-reproducer",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-local-ci-runtime-reproducer/SKILL.md",
+      "source_skill_sha256": "e7fbfd4f7ae63922e13a6f5d900df8b877d85f70562c99a725a7279426f38c0f",
+      "case_ids": [
+        "B80-PG412-RUN",
+        "B80-PG412-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG413",
+      "source_skill_name": "b80-runtime-smoke-journey-orchestrator",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-runtime-smoke-journey-orchestrator/SKILL.md",
+      "source_skill_sha256": "2524fd05f2a65eecf8ced73e2ea723c4ebeb73213c1a998828c527b726ebd734",
+      "case_ids": [
+        "B80-PG413-RUN",
+        "B80-PG413-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG414",
+      "source_skill_name": "b80-cross-layer-failure-diagnosis-repair",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-cross-layer-failure-diagnosis-repair/SKILL.md",
+      "source_skill_sha256": "c65328c141029e092bc6b4bf5615b26fc1c320fc33503a932f4dc7b829c04a00",
+      "case_ids": [
+        "B80-PG414-RUN",
+        "B80-PG414-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG415",
+      "source_skill_name": "b80-project-performance-cost-budget-gate",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-project-performance-cost-budget-gate/SKILL.md",
+      "source_skill_sha256": "2bfa5923db412ddfc4d16409961f60e343614a983c369bd4966b21015f0bd8d2",
+      "case_ids": [
+        "B80-PG415-RUN",
+        "B80-PG415-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG416",
+      "source_skill_name": "b80-project-migration-compatibility-gate",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-project-migration-compatibility-gate/SKILL.md",
+      "source_skill_sha256": "ea8af1b96b2742e48cd8c762a3f47650037ace07a41692bd0d2a51de88baf27a",
+      "case_ids": [
+        "B80-PG416-RUN",
+        "B80-PG416-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    },
+    {
+      "source_skill_id": "PG417",
+      "source_skill_name": "b80-project-operations-certification",
+      "batch": 80,
+      "source_skill_path": "agent-skills/runtime/b80-project-operations-certification/SKILL.md",
+      "source_skill_sha256": "eed3e44855bfad86513eb791a33915b6623222d769f61292179d7fd53bf153b5",
+      "case_ids": [
+        "B80-PG417-RUN",
+        "B80-PG417-NEG"
+      ],
+      "batch_test_skill": "tst-b80-polyglot-operations-slightly-strict-suite"
+    }
+  ],
+  "cross_cutting_case_ids": [
+    "X001-01",
+    "X001-02",
+    "X001-03",
+    "X002-01",
+    "X002-02",
+    "X002-03",
+    "X003-01",
+    "X003-02",
+    "X003-03",
+    "X004-01",
+    "X004-02",
+    "X004-03",
+    "X005-01",
+    "X005-02",
+    "X005-03",
+    "X006-01",
+    "X006-02",
+    "X006-03",
+    "X007-01",
+    "X007-02",
+    "X007-03",
+    "X008-01",
+    "X008-02",
+    "X008-03",
+    "X009-01",
+    "X009-02",
+    "X009-03",
+    "X010-01",
+    "X010-02",
+    "X010-03",
+    "X011-01",
+    "X011-02",
+    "X011-03",
+    "X012-01",
+    "X012-02",
+    "X012-03",
+    "X013-01",
+    "X013-02",
+    "X013-03",
+    "X014-01",
+    "X014-02",
+    "X014-03",
+    "X015-01",
+    "X015-02",
+    "X015-03",
+    "X016-01",
+    "X016-02",
+    "X016-03",
+    "X017-01",
+    "X017-02",
+    "X017-03",
+    "X018-01",
+    "X018-02",
+    "X018-03",
+    "X019-01",
+    "X019-02",
+    "X019-03",
+    "X020-01",
+    "X020-02",
+    "X020-03"
+  ]
+}

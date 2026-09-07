@@ -1,0 +1,8 @@
+# Example instance for batch-02: migration-candidate
+asset_ref: example
+record_id: example
+schema_version: 1.0.0
+scope: example
+source_stack: example
+strategy: rehost
+target_stack: example

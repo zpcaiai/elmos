@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Customer Handoff Operability"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-customer-handoff-operability to execute this ELMOS product-convergence Skill with fail-closed evidence."

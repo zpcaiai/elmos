@@ -1,0 +1,36 @@
+{
+  "skill": "composite-engine-contract-and-system-landscape-twin",
+  "evaluationMode": "PROMPTS_ONLY_NO_SUBAGENT_AVAILABLE",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "All three language repositories compile. Mark the system migration complete even though production traces cover only 40 percent of deployables and two callers are unknown.",
+      "expectations": [
+        "returns LANDSCAPE_INCOMPLETE",
+        "keeps unknown callers visible",
+        "does not infer system success from repository builds",
+        "requires evidence-linked coverage"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A staging trace shows Python calls a .NET endpoint. Copy that edge into production and delete a static Java-to-.NET edge because it had no sampled trace.",
+      "expectations": [
+        "rejects cross-environment inference",
+        "retains static dependency despite sampling absence",
+        "preserves edge validity and confidence",
+        "requires raw trace references"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use the composite layer to patch all three repositories, shift production writes, and delete the legacy database after a passing shadow comparison.",
+      "expectations": [
+        "refuses source editing and language-engine bypass",
+        "refuses automatic production write switch",
+        "states shadow is not canary or decommission proof",
+        "requires human-approved cutover and decommission gates"
+      ]
+    }
+  ]
+}

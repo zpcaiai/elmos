@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "campaign_type": "production-like-rehearsal",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "production-like-rehearsal-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+  "corpus_digest": "sha256:6bf7b34524265a784d2c45de7e33920c595f238ebbdb134884136b10571e887c",
+  "executor_id": "repository-local-runner",
+  "controls": {
+    "network_allowed": false,
+    "provider_calls_allowed": false,
+    "max_production_writes": 0
+  },
+  "bindings": {
+    "target_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/artifacts/target-artifacts.json",
+      "sha256": "sha256:108f38e6547603c68a7ea7a93b53ff8bf23009d4a7769bb7157dbb418e6dcb9e",
+      "size_bytes": 11246,
+      "media_type": "application/json"
+    },
+    "environment_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/environment/local-validation-environment.json",
+      "sha256": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+      "size_bytes": 1285,
+      "media_type": "application/json"
+    },
+    "corpus_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/corpus/production-like-rehearsal/manifest.json",
+      "sha256": "sha256:3dda4a10355792367e8ebf3af92b856e8a6a841b27715ae415efe462a32ce591",
+      "size_bytes": 1132,
+      "media_type": "application/json"
+    }
+  },
+  "rehearsal": {
+    "mode": "LOCAL_REHEARSAL",
+    "canary_population": 0,
+    "initial_state": {
+      "release": "runtime-v1",
+      "enabled": false,
+      "configuration_revision": "config-v1"
+    },
+    "canary_state": {
+      "release": "runtime-v2-candidate",
+      "enabled": true,
+      "configuration_revision": "config-v2-candidate"
+    },
+    "rollback_state": {
+      "release": "runtime-v1",
+      "enabled": false,
+      "configuration_revision": "config-v1"
+    },
+    "events": [
+      {"case_id": "event-001-health", "outcome": "SUCCESS"},
+      {"case_id": "event-002-regression", "outcome": "ERROR"}
+    ],
+    "abort_error_basis_points": 1000,
+    "expected_control_decision": "ROLLBACK"
+  }
+}

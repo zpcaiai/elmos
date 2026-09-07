@@ -1,0 +1,12 @@
+{
+  "policy": "clean_room_independence",
+  "positive": {
+    "clean_environment": true,
+    "certifier_separate_identity": true,
+    "generator_cannot_write_result": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

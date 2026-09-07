@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Git Object Proxy Mirror Cache Pack And Bandwidth Governance"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $git-object-proxy-mirror-cache-pack-and-bandwidth-governance to implement its fail-closed ELMOS Product B35 contract."

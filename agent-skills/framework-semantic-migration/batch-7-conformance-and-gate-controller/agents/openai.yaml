@@ -1,0 +1,4 @@
+interface:
+  display_name: "batch-7-conformance-and-gate-controller"
+  short_description: "Plan and verify AFSM framework migration"
+  default_prompt: "Use $batch-7-conformance-and-gate-controller to perform this Batch 7 framework migration step."

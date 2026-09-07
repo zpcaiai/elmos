@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B31: Behavior Mismatch Classifier"
+  short_description: "Run Precision Migration B31 with evidence controls"
+  default_prompt: "Use $pm-b31-behavior-mismatch-classifier to execute this Precision Migration contract with fail-closed evidence."

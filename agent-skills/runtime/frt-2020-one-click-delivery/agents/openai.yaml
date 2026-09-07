@@ -1,0 +1,4 @@
+interface:
+  display_name: "One-Click Delivery"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2020-one-click-delivery to run FRT-2020 through the governed FRT runtime with exact scope and fail-closed evidence."

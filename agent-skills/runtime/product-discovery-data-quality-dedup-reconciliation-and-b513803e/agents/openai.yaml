@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B41: Product Discovery Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B41 contract with fail-closed evidence"
+  default_prompt: "Use $product-discovery-data-quality-dedup-reconciliation-and-b513803e to implement its fail-closed ELMOS Product B41 contract."

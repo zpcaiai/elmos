@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/production-cutover/retirement-asset.schema.json",
+  "title": "Legacy Retirement Asset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["retirement_asset_id", "asset_type", "owner", "traffic_zero", "writes_zero", "dependencies_closed", "archive_required", "legal_hold_preserved", "dual_approval", "execution_authority", "decommission_executed_by_authority", "status", "evidence_refs"],
+  "properties": {
+    "retirement_asset_id": {"type": "string", "minLength": 1},
+    "asset_type": {"enum": ["application", "database", "broker", "consumer", "scheduler", "job", "storage", "dns", "route", "credential", "infrastructure", "license"]},
+    "owner": {"type": "string", "minLength": 1},
+    "traffic_zero": {"type": "boolean"},
+    "writes_zero": {"type": "boolean"},
+    "dependencies_closed": {"type": "boolean"},
+    "archive_required": {"type": "boolean"},
+    "archive_integrity_verified": {"type": "boolean"},
+    "archive_restore_passed": {"type": "boolean"},
+    "legal_hold_preserved": {"type": "boolean"},
+    "dual_approval": {"type": "boolean"},
+    "execution_authority": {"type": "string", "minLength": 1},
+    "decommission_executed_by_authority": {"type": "boolean"},
+    "status": {"enum": ["planned", "draining", "retirement_candidate", "decommissioned", "blocked"]},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "decommissioned"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "traffic_zero": {"const": true},
+          "writes_zero": {"const": true},
+          "dependencies_closed": {"const": true},
+          "dual_approval": {"const": true},
+          "decommission_executed_by_authority": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"archive_required": {"const": true}}, "required": ["archive_required"]},
+      "then": {"required": ["archive_integrity_verified", "archive_restore_passed"], "properties": {"archive_integrity_verified": {"const": true}, "archive_restore_passed": {"const": true}}}
+    }
+  ]
+}

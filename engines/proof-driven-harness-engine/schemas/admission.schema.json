@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/admission.schema.json",
+  "title": "Durable invocation admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "requestId", "skill", "runId", "status", "resultAvailable", "requestDigest", "acceptedAt"],
+  "properties": {
+    "apiVersion": {"const": "elmos.ai/proof-harness/v3"},
+    "requestId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "skill": {"type": "string", "minLength": 1, "maxLength": 160},
+    "runId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "status": {"const": "ADMITTED"},
+    "resultAvailable": {"const": false},
+    "requestDigest": {"$ref": "#/$defs/digest"},
+    "acceptedAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

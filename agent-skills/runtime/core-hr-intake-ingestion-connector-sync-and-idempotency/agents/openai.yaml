@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Core Hr Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $core-hr-intake-ingestion-connector-sync-and-idempotency to implement its fail-closed ELMOS Product B43 contract."

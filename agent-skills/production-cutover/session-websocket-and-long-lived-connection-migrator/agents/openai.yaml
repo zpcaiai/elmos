@@ -1,0 +1,4 @@
+interface:
+  display_name: "Session Websocket and Long Lived Connection Migrator"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $session-websocket-and-long-lived-connection-migrator to perform this Batch 11 production-cutover task."

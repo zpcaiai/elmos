@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 715: infrastructure cloud and data center integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $infrastructure-cloud-and-data-center-integration to evaluate this capability with evidence."

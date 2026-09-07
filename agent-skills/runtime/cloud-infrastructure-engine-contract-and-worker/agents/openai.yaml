@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloud Infrastructure Engine Contract And Worker"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $cloud-infrastructure-engine-contract-and-worker to produce a governed infrastructure modernization artifact."

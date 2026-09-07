@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "cases": [
+    { "case_id": "NEG-001", "mutation": "missing-artifact", "expected_code": "EVIDENCE_CONTENT_UNVERIFIED" },
+    { "case_id": "NEG-002", "mutation": "digest-mismatch", "expected_code": "EVIDENCE_CONTENT_UNVERIFIED" },
+    { "case_id": "NEG-003", "mutation": "path-escape", "expected_code": "EVIDENCE_CONTENT_UNVERIFIED" },
+    { "case_id": "NEG-004", "mutation": "unsupported-uri-scheme", "expected_code": "EVIDENCE_CONTENT_UNVERIFIED" },
+    { "case_id": "NEG-005", "mutation": "invalid-signature", "expected_code": "EVIDENCE_AUTHORIZATION_INVALID" },
+    { "case_id": "NEG-006", "mutation": "expired-authorization", "expected_code": "EVIDENCE_AUTHORIZATION_INVALID" },
+    { "case_id": "NEG-007", "mutation": "revoked-authorization", "expected_code": "EVIDENCE_AUTHORIZATION_INVALID" },
+    { "case_id": "NEG-008", "mutation": "self-verification", "expected_code": "SELF_VERIFICATION" },
+    { "case_id": "NEG-009", "mutation": "caller-trusted-kernel-boolean", "expected_code": "INVALID_PROOF_RECORD" },
+    { "case_id": "NEG-010", "mutation": "approval-sod-collision", "expected_code": "APPROVAL_SOD_VIOLATION" },
+    { "case_id": "NEG-011", "mutation": "nonexistent-gate-ref", "expected_decision": "REJECTED" },
+    { "case_id": "NEG-012", "mutation": "repository-command-injection", "expected_state": "REQUIRES_ADAPTER" }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:architecture-graph",
+  "title": "ArchitectureGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "edges",
+    "nodes",
+    "record_id",
+    "recovered_by",
+    "schema_version",
+    "scope"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node_id",
+          "kind"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "asset_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from_node",
+          "to_node",
+          "relation"
+        ],
+        "properties": {
+          "from_node": {
+            "type": "string",
+            "minLength": 1
+          },
+          "to_node": {
+            "type": "string",
+            "minLength": 1
+          },
+          "relation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "enum": [
+              "verified",
+              "corroborated",
+              "single-source",
+              "asserted",
+              "unknown"
+            ]
+          }
+        }
+      }
+    },
+    "recovered_by": {
+      "enum": [
+        "static",
+        "runtime",
+        "document",
+        "mixed"
+      ]
+    }
+  }
+}

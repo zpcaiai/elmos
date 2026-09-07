@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 006"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $technology-portfolio-radar-standard-and-lifecycle-governor to apply its fail-closed ELMOS runtime contract."

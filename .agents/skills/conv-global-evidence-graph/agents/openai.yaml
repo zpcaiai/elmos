@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Global Evidence Graph"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-global-evidence-graph to execute this ELMOS product-convergence Skill with fail-closed evidence."

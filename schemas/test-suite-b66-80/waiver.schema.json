@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "waiver.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "waiver_id",
+    "case_ids",
+    "owner",
+    "reason",
+    "approved_by",
+    "approved_at",
+    "expires_at",
+    "scope"
+  ],
+  "properties": {
+    "waiver_id": {
+      "type": "string"
+    },
+    "case_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    }
+  }
+}

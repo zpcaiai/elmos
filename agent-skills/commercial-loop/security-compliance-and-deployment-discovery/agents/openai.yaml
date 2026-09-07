@@ -1,0 +1,4 @@
+interface:
+  display_name: "security-compliance-and-deployment-discovery"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $security-compliance-and-deployment-discovery to evaluate this Batch 13 commercial capability with evidence."

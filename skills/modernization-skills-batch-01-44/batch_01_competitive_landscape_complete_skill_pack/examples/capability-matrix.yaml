@@ -1,0 +1,13 @@
+# Example instance for batch-01: capability-matrix
+capability_ids:
+  - example
+cells:
+  -
+    competitor_id: example
+    capability_id: example
+    level: none
+competitor_ids:
+  - example
+record_id: example
+schema_version: 1.0.0
+scope: example

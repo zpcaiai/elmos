@@ -1,0 +1,308 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "entry_skill": "elmos-codex-claude-cache-parity-rollout",
+  "external_evidence_status": "NOT_RUN",
+  "four_root_byte_identical": true,
+  "install_roots": [
+    "agent-skills/runtime",
+    ".agents/skills",
+    ".codex/skills",
+    ".claude/skills"
+  ],
+  "new_v1_2_skill_count": 11,
+  "package_id": "elmos-build-cache-staging-codex-claude-parity",
+  "package_scripts_executed": false,
+  "package_version": "1.2.0",
+  "retained_v1_1_skill_count": 31,
+  "schema_version": "elmos.build-cache-staging-parity.install.v1",
+  "skill_count": 42,
+  "skills": [
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-system-architecture",
+      "prior_v1_1_sha256": "sha256:0a96ac04ea4aaa0e89d63303a15c79781fcc64eb52e021a29b1a9491c105398f",
+      "source_sha256": "sha256:71bdbf1e81d23c032e8372e9000025f259847dc27a344af97e2519336b153c90"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-metadata-database",
+      "prior_v1_1_sha256": "sha256:f650c1a60e7a4242061177b4c8903fadea2c4ef20b1b1166b3280f5c3c6301d9",
+      "source_sha256": "sha256:2836784508b74766315de3408f5fced115cb76e0dc6dc1ac2de1f1e27c3a7d40"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-api-cli-contracts",
+      "prior_v1_1_sha256": "sha256:e15b6c55f2dca52b7f4b965361f55db02367cc49844ad3bbc4430f4bc5ed6f78",
+      "source_sha256": "sha256:dcda9e3d5ae5dfca6510c06bfef7a79710001c8d9d6ca84dc4b4fc0f48a670e6"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-project-snapshot-merkle",
+      "prior_v1_1_sha256": "sha256:e1546f11272e99ea9c18435d81e5ea278be4fb2836d27ebb38af4632a14d889d",
+      "source_sha256": "sha256:2c7f0fc8de6df80ad9e670eb320c62e91e12b20d59f29a7700a2472f8c0df5bb"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-content-addressable-storage",
+      "prior_v1_1_sha256": "sha256:4b9ba8430c83ce4ba9e51c52f2a08ef6c4ec603f6b0e4da66c0d14df452ccf26",
+      "source_sha256": "sha256:ea438fe15582351509e6f23dfd0c7ead412b348cc0a9fc06c3841627b31d4acd"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-key-fingerprinting",
+      "prior_v1_1_sha256": "sha256:23be7dfbbf6d47aa467a5c3db3afc7cc7a8540f26f674b175ae08931088d65db",
+      "source_sha256": "sha256:003963e4065ea1df4ce668376ad403518a22f424763c59e57504a3a481f30b72"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-action-cache",
+      "prior_v1_1_sha256": "sha256:2867a40854ef39f2f3a6495be3fbe31ec53de1af9736d5ba1448799aa4de7c73",
+      "source_sha256": "sha256:8f1c7a9f693ff55c96670f3fac6000dc39285644ccd9d78792af00e9032ba388"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-project-generation-file-staging",
+      "prior_v1_1_sha256": "sha256:d4cc23e7008c7061568fbff887341fa0c50b8939320a11c0812febb8a2abc4ce",
+      "source_sha256": "sha256:ce25465458d3329fbb6147ed7371630e28630d18b77e0ed7435f89c702ebe0d2"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-atomic-file-write-promotion",
+      "prior_v1_1_sha256": "sha256:9f347ea197a8417e1b3c522903d4805f97e55b634c779efa819d0176de0df889",
+      "source_sha256": "sha256:7b597b2846c4c177c06589f9f1ea619463fe0c247814e80cafc6783c5304e553"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-sandbox-overlay-workspaces",
+      "prior_v1_1_sha256": "sha256:28882628f739c0797a5a2377950d12b0fad818a6b4d21a81016e56cc2c109075",
+      "source_sha256": "sha256:3dc2984300a7c9bf0bf0e50c4a7605135251854f0a4fffb544dedd2f779fbfef"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-intermediate-artifact-manifest",
+      "prior_v1_1_sha256": "sha256:75b0c58d3bbc47e11f6bc54d15e0f5a5c1aab321a39f150d9330c0a219afe8fa",
+      "source_sha256": "sha256:bb88f50aad4b4a935ece7046725a516e884c6eeffd5cb2aaa1f928fcb3e09d93"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-stage-contract-registry",
+      "prior_v1_1_sha256": "sha256:5214f91d25cb08f8ce04bf0998b34f52e7a59871e5a689a421da5ac100522e88",
+      "source_sha256": "sha256:96aeaf2be6a2774edbffe25725d57e3d9a2699965cb1223ffd22506b686f49cf"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-semantic-interface-hashing",
+      "prior_v1_1_sha256": "sha256:54c6de363953ede8bac1f87782b90dbadc435830cb246028476fae65ca3b4c8e",
+      "source_sha256": "sha256:c1e91edbcbfab1bf2bfa2d33e7d2cb17261f78d27f249a13a7371d786e77ecb5"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-incremental-conversion-dag",
+      "prior_v1_1_sha256": "sha256:88f8f5365a01059f2b2b85ad2c8602b9a217629c971461371b6ca34b5ccf6f28",
+      "source_sha256": "sha256:915314c6eec0141e44c6410aa80ee4dd5814e24eef5ebe863f85271255858d80"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-run-journal-state-machine",
+      "prior_v1_1_sha256": "sha256:ce09bb6d33a51ddf2f54f9aa9c089e924bcd8127c92ae1f0c123c97f3f2ea914",
+      "source_sha256": "sha256:f3413d6703328455e07a003591287e932be7c3f404074e9794a6fd6c88d0b888"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-checkpoint-resume",
+      "prior_v1_1_sha256": "sha256:22a5f0aaa7f7e090f97c2126b8e8b998ecae7e9e0ba2bec287ded409d0c64316",
+      "source_sha256": "sha256:121a4e3d4ca24b9a26a1a7371bfa6491ac8dcab5a81fcf1ea40a30ae82d0ae74"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-generation-conflict-merge",
+      "prior_v1_1_sha256": "sha256:3715a7a7e8b48771eeba04d28081ecff9ae9e01bf8f83ef24a0196cbfb5ed6ee",
+      "source_sha256": "sha256:d5e6d91b0bb43b917d89de50231f492dd4cfe3ed056e094a3f81e5d52e456e8b"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-remote-shared-cache",
+      "prior_v1_1_sha256": "sha256:5167318797cb51b2371a21f230f1988848b7b51450a805a28c0db9889fe62aed",
+      "source_sha256": "sha256:018e5c68374859289f8ea3b1a0b4fdc65f9d9be9de061c99b71317bb9ad31aa8"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-native-build-cache-adapters",
+      "prior_v1_1_sha256": "sha256:a2e6df229c1151092c1c5060b9f9103d4bc6a7ff02fda784316ee806d17afb92",
+      "source_sha256": "sha256:698ce5141545b1cd0c3c4fe72b1168453acb783bb1fdb5985d436fed4705c4c6"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-security-provenance",
+      "prior_v1_1_sha256": "sha256:45ea413bb5b37e499417c1937563866d85450d330951c1c387a164942e52d29d",
+      "source_sha256": "sha256:a86e82d6e70c9fb7704d80909069aa007f86a56f7f94b41096e4793c36846265"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-retention-gc",
+      "prior_v1_1_sha256": "sha256:dfa913a88db0ae47b2d3241a2a8eabc80e720859e1f5b073cb6f0ed1efd845b4",
+      "source_sha256": "sha256:9436a2460bedb5f04efdb3f19333878b0546d0976255cf287b801cadab69f366"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-observability-performance",
+      "prior_v1_1_sha256": "sha256:699f220587248ff48b2d9cc5efa0b3b9b0abc377c82e422b59c5f28843fae25a",
+      "source_sha256": "sha256:58599ae3466019102403db43abf4fc55d841af8283f4c37dcd12495281fe72f7"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-chaos-certification",
+      "prior_v1_1_sha256": "sha256:b6acc2658e4961868a183e3009377b7a63ca277a27f10cb547610d528c16f5b9",
+      "source_sha256": "sha256:6d5c1499f4b9a3366c599829d1071b6c7c0e35552a5d3bca6e61393208d2421a"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-trace-replay-simulator",
+      "prior_v1_1_sha256": "sha256:983fa89ad877a21815af520ffba668610a03f6f8b8f31389af393aa932c03e18",
+      "source_sha256": "sha256:923f8242061b857654a330797b154a1b49ead6e25c61e6adcb798b9ceb63f757"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-sota-cache-policy-portfolio",
+      "prior_v1_1_sha256": "sha256:694c292867c7275acb64962d45ba93d27515ca3f26c6f01ce0a295287089af17",
+      "source_sha256": "sha256:502c81bebee8815df4046a9139d8f9b6242d4435906773c4f2b0ec8377db82b6"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-dag-aware-cache-prefetch",
+      "prior_v1_1_sha256": "sha256:534205db5cd47205cf93fae01038890ce9e94efb271a9bbbde0f9aac5a77d05e",
+      "source_sha256": "sha256:8e217111c2022e59abf184d716a940e2ee6d3488457a9d284f91542aa0c2f54c"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cost-aware-cache-admission",
+      "prior_v1_1_sha256": "sha256:f43012f562befeebd1be7a76a6d808efaa61ca1556587b85f124e2bb5ad6cf67",
+      "source_sha256": "sha256:27951155e4efcf7d1c64ccadb5a9366ebf037ffbf237c837c454d599b6e9924a"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-adaptive-cache-policy-orchestrator",
+      "prior_v1_1_sha256": "sha256:d6047ce8cf455c0667fdaadec166b3ea5c3adf7eb0b5fae9401b70ae89aededa",
+      "source_sha256": "sha256:cb5c5cb9f13073ed7b318c0f68994dcb71054bb7d76234095b1f7338273c006d"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-learning-augmented-cache-control",
+      "prior_v1_1_sha256": "sha256:bab708f3fd52fecb61fb7af676c9babc4d2bf8f5516371f413c7b522f26448e5",
+      "source_sha256": "sha256:44a5d0f9dbabe9e0e0c04ac298145c7fc751fb37fbead7de3dc104ae26183baa"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-autotuning-certification",
+      "prior_v1_1_sha256": "sha256:17e8489c8d417375787cd87f864db5e7da8c5c857d6d8667420f589b3d47ce51",
+      "source_sha256": "sha256:ca73bf120fb513c918c0ec7c4addad67db76128ac598712a2a5b3ffeea1651de"
+    },
+    {
+      "implementation_claim": "UNCHANGED",
+      "migration": "v1.1-frontmatter-only",
+      "name": "elmos-cache-rollout-end-to-end",
+      "prior_v1_1_sha256": "sha256:c1093b72467841deeeec1afe78407fa3da73dd49fe843d6ab2ff4b0734fa5d80",
+      "source_sha256": "sha256:932f53e0aaaf4bb55bd70c8fd93239f826a00167fa59d5a06f20d7961e09dabe"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-provider-prompt-cache-adapters",
+      "source_sha256": "sha256:41c736beb996ab79944772eac6cc0d2a6084c022a1cffc654f335c5a86db593e"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-canonical-prompt-prefix-layout",
+      "source_sha256": "sha256:2dd4135adf00ba0acb39759f3a8f118e3649daa4cc5a87a4b1e6fa12bd53899e"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-append-only-repository-context-ledger",
+      "source_sha256": "sha256:166dd2bea30c4b1cd87bf42d62626dd2c1999e533db7bd3e7f6019df7518628a"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-cache-preserving-context-compaction",
+      "source_sha256": "sha256:083b2fe0f6e73f209fd10745979e7b5199f09d2d8de01be10e33d7ab32e453aa"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-environment-snapshot-cache",
+      "source_sha256": "sha256:8b0cae15e514c9fe979225bcab69c25ad745f2f47ce54fd800cdd22e3c2ecd87"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-cache-affinity-routing",
+      "source_sha256": "sha256:5644e77c4c7476928712169618c119e5fc24c4ade7862c5a108db770f90bfe62"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-multi-layer-cache-coordinator",
+      "source_sha256": "sha256:66817b0b34d3c15b1f978c3c691e48ac47f0033bf13828c215c57ccc3411a6c7"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-cache-miss-diagnostics",
+      "source_sha256": "sha256:56bb60297e850b3810f66006f94ad42d14723841620b5dcc8f8a875b00603fc8"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-codex-claude-parity-benchmark",
+      "source_sha256": "sha256:e1cb49c912eb2358207a59e66e7f1e5308ef94eb7fa5a4de26bac25e9935edae"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-cache-hit-slo-autotuning",
+      "source_sha256": "sha256:54ced99780ec63571ae1a0fda4ee5ae0569777162f41eff17fd6194483577c5f"
+    },
+    {
+      "implementation_claim": "NOT_RUN",
+      "migration": "new-v1.2",
+      "name": "elmos-codex-claude-cache-parity-rollout",
+      "source_sha256": "sha256:c0cd904ef1aefaedee36f3a2a873c1b87f74f39223e5230b6520906291f66ec2"
+    }
+  ],
+  "source_archive": "skills/subskills/elmos-build-cache-staging-codex-claude-parity-skills-v1.2.0.zip",
+  "source_archive_sha256": "sha256:dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7",
+  "source_root": "agent-skills/packages/elmos-build-cache-staging-codex-claude-parity",
+  "source_tree_sha256": "sha256:e092d85a19ef2bc2ca855b0e230d4565966c262f9494bfda73e73e0377571e78"
+}

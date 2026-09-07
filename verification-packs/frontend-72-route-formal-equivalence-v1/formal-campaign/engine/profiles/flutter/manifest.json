@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "flutter",
+  "framework_version": "3.44.1",
+  "platforms": [
+    "ANDROID",
+    "IOS",
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:2b82798ddb70ad5dce815065c40df41a36a054a19c8213f0c4f68e6f8582d050",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 18,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".fvmrc",
+      "sha256": "sha256:6748d55c6cc27876867415cd3ec374460c11bdefc03cc6e53bebeaa9b9a44147",
+      "byte_count": 26
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:424d1a0e3aebfe00f008010f6edbd0e33c8af47b07db8646bf5ff1672196e94d",
+      "byte_count": 390
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:480ad9c5a25012ad27d5f560039744ba16af7bb2101995c1a4ee9c216d196a66",
+      "byte_count": 2022
+    },
+    {
+      "path": "analysis_options.yaml",
+      "sha256": "sha256:dd70dabb47f0704c34dab39ae54f106834ad64c1137b77762926513d22e9d8fd",
+      "byte_count": 232
+    },
+    {
+      "path": "assets/ui_ir.json",
+      "sha256": "sha256:dbcd2f394aacc332090eee603af2c6916260e5f1972ccae03a9dbd898b0c24f9",
+      "byte_count": 4626
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:9cc262eb1a1fa0913cd3d0178b0a1c6fbb473da8821cf8d00a621f276436d15b",
+      "byte_count": 1225
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:e906733fef4edc29e4b0fda5882f37d73b7801606cf297f4fc82fac5ce44c388",
+      "byte_count": 307
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:ee853bf2d45f0c835a9356d71411f7608e0493f566607f64f35674fddd119746",
+      "byte_count": 2336
+    },
+    {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "sha256": "sha256:ff491e55d434c814c0b0e14508dcc9cff42c634b340232dd6ff1f58f798d0f0e",
+      "byte_count": 2739
+    },
+    {
+      "path": "lib/main.dart",
+      "sha256": "sha256:6326c45947cb47cc3345f7bb26cc3bd18f85f76a7b9cf14598e17f5301a6da8a",
+      "byte_count": 2152
+    },
+    {
+      "path": "pubspec.yaml",
+      "sha256": "sha256:3c4a6239bec5d3aedc5770c678bb233df884661dd8de94ffb0507a5ab3ec4412",
+      "byte_count": 328
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:21be28f31edd3b8aedf30991e90e1af6687e7909dc0340a810baacaf697311d5",
+      "byte_count": 128
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:fad31d5e00e078afbd200db283f555381dda7e29c690c31d268816da7aba8136",
+      "byte_count": 766
+    },
+    {
+      "path": "test/widget_test.dart",
+      "sha256": "sha256:8c9f2aba4892ea40174cb99ffe65afd024e7e758042b5afcaa8386bd01f9740c",
+      "byte_count": 321
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:e9a2bbe314e9693eaef78577388c838e7c12134872dd2e628532c05b9bf836aa",
+      "byte_count": 7150
+    }
+  ],
+  "manifest_digest": "sha256:381a7703aa816f64f75c2bf287a809aa91979ed34d5f0e7995b634aabec6359f"
+}

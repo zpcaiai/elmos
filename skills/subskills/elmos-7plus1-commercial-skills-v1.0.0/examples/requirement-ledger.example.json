@@ -1,0 +1,27 @@
+{
+  "snapshot_id": "req-snap-001",
+  "source_revision": "request:001",
+  "requirements": [
+    {
+      "id": "REQ-00001",
+      "title": "Create payment with idempotency",
+      "source": {
+        "kind": "user"
+      },
+      "risk": "critical",
+      "state": "verified",
+      "design_refs": [
+        "adr:payment-001"
+      ],
+      "implementation_refs": [
+        "code:payments/create"
+      ],
+      "test_refs": [
+        "test:idempotency"
+      ],
+      "evidence_refs": [
+        "evidence://payment/idempotency"
+      ]
+    }
+  ]
+}

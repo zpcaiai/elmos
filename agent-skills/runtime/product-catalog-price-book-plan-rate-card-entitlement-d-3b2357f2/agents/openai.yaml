@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Product Catalog Price Book Plan Rate Card Entitlement Discount And Promotion"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $product-catalog-price-book-plan-rate-card-entitlement-d-3b2357f2 to implement its fail-closed ELMOS Product B39 contract."

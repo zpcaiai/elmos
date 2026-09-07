@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "capabilities": [
+    "web",
+    "security",
+    "persistence",
+    "transactions",
+    "validation",
+    "actuator",
+    "messaging",
+    "scheduler"
+  ],
+  "profiles": [
+    "pom.xml parent/BOM",
+    "java.version or compiler release",
+    "Maven modules",
+    "Java annotations and framework types",
+    "application.yml/yaml/properties"
+  ],
+  "generated_assets": [
+    "source-snapshot-manifest.json",
+    "framework-contract-model.json"
+  ],
+  "unknowns": [
+    "submodules",
+    "unhydrated Git LFS",
+    "legacy WebSecurityConfigurerAdapter",
+    "provider-specific behavior without profile"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-01:competitor-record",
+  "title": "CompetitorRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "category",
+    "product_name",
+    "record_id",
+    "schema_version",
+    "scope",
+    "vendor_name"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "vendor_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "product_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "enum": [
+        "platform",
+        "codegen",
+        "cloud-migration",
+        "consulting",
+        "point-tool"
+      ]
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "relationship": {
+      "enum": [
+        "independent",
+        "acquired-by",
+        "renamed-from",
+        "oem-of",
+        "fork-of"
+      ]
+    },
+    "related_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entity_resolution_reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

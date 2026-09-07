@@ -1,0 +1,41 @@
+{
+  "kind": "elmos.sql-transpiler-defect",
+  "schema_version": "1.0.0",
+  "severity": "ENGINE_ERROR (not a subset boundary)",
+  "summary": "An aggregate FILTER combined with an explicit window frame crashes target emission with an uncaught AttributeError on every route whose target is MySQL or SQL Server (8 of 42).",
+  "minimal_repro_sql": "SELECT SUM(a) FILTER (WHERE b) OVER (ORDER BY d ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t",
+  "contract_violated": "Batch 31 requires target emission to raise on unsupported semantics and fail closed. An AttributeError escapes the diagnostic path entirely, so the caller gets a crash rather than a BLOCKED result with a diagnostic code.",
+  "affected_routes": [
+    "postgresql-17.5--to--mysql-8.4.10-lts",
+    "postgresql-17.5--to--sqlserver-2022-cu26",
+    "postgresql-18.4--to--mysql-8.4.10-lts",
+    "postgresql-18.4--to--sqlserver-2022-cu26",
+    "oracle-26ai-ee--to--mysql-8.4.10-lts",
+    "oracle-26ai-ee--to--sqlserver-2022-cu26",
+    "duckdb-1.5.4--to--mysql-8.4.10-lts",
+    "duckdb-1.5.4--to--sqlserver-2022-cu26"
+  ],
+  "unaffected_routes_count": 34,
+  "narrowing": {
+    "SELECT SUM(a) FILTER (WHERE b) FROM t": "SYNTAX_READY",
+    "SELECT SUM(a) OVER (PARTITION BY c ORDER BY d ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t": "BLOCKED (correct fail-closed)",
+    "SELECT SUM(a) FILTER (WHERE b) OVER (PARTITION BY c ORDER BY d) FROM t": "SYNTAX_READY",
+    "SELECT SUM(a) FILTER (WHERE b) OVER (ORDER BY d ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t": "AttributeError"
+  },
+  "traceback_tail": [
+    "    sql = handler(self, expression)",
+    "          ^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/root/eval/.venv-tr/lib/python3.12/site-packages/sqlglot/generator.py\", line 3163, in ordered_sql",
+    "    f\"'{nulls_sort_change.strip()}' translation not supported in window function {window_this.sql_name()}\"",
+    "                                                                                  ^^^^^^^^^^^^^^^^^^^^",
+    "AttributeError: 'Filter' object has no attribute 'sql_name'"
+  ],
+  "why_the_synthetic_corpus_missed_it": "corpus/development/queries.json contains COUNT(*) FILTER (WHERE status='OPEN') but never combines FILTER with OVER plus an explicit frame.",
+  "toolchain": {
+    "sql_transpiler_pin": "sqlglot==30.13.0",
+    "sql_dialect_engine_pin": "sqlglot==30.14.0",
+    "note": "two different pins of the same library in one repository"
+  },
+  "root_cause": "Upstream sqlglot defect, reproduced in bare sqlglot at BOTH pins in this repository (30.13.0 used by sql-transpiler and 30.14.0 used by sql-dialect-engine): sqlglot/generator.py ordered_sql calls window_this.sql_name() on a Filter node while emitting a NULLS-ordering translation. Not an ELMOS logic error.",
+  "why_it_still_matters": "Batch 31 requires target emission to raise on unsupported semantics and fail closed. This upstream crash is unguarded, so the caller gets an AttributeError instead of a BLOCKED TranspileResult with a diagnostic code. Bumping the pin does not fix it; the emission path needs to catch non-Unsupported exceptions and convert them into a fail-closed diagnostic."
+}

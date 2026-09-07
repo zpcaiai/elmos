@@ -1,0 +1,4 @@
+interface:
+  display_name: "B88 Cl Job Workflow Modeler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b88-cl-job-workflow-modeler to execute this ELMOS Language Pack Skill with fail-closed evidence."

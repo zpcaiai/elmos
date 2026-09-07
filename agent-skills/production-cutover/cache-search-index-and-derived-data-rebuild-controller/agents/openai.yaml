@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cache Search Index and Derived Data Rebuild Controller"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $cache-search-index-and-derived-data-rebuild-controller to perform this Batch 11 production-cutover task."

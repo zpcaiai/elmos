@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: cost-capacity-and-margin-forecast
+  version: 2.0.0
+  pack: 12-observability-lineage-finops
+  priority: P1
+  owner: TBD
+spec:
+  description: 预测成本、容量、队列、收入、毛利和扩容需求。
+  kernel: Cross-Cutting Observability and Economics Plane
+  riskClass: medium
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: runtime events
+    required: true
+  - name: training events
+    required: true
+  - name: usage ledger
+    required: true
+  - name: quality scores
+    required: true
+  outputs:
+  - name: traces
+    contentAddressed: true
+  - name: metrics
+    contentAddressed: true
+  - name: lineage
+    contentAddressed: true
+  - name: dashboards
+    contentAddressed: true
+  - name: cost attribution
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - otel.emit
+    - lineage.emit
+    - metric.record
+    - cost.allocate
+    - trace.replay
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - correlation-id-complete
+    - content-capture-policy
+    - cost-reconciled
+    - slo-observable
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

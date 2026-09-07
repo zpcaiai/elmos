@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Business Line",
+  "type": "object",
+  "required": [
+    "id",
+    "pack",
+    "owner",
+    "lifecycleCoverage",
+    "requiredGates",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "pack": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "lifecycleCoverage": {
+      "type": "array",
+      "minItems": 5
+    },
+    "requiredGates": {
+      "type": "array",
+      "minItems": 1
+    },
+    "status": {
+      "enum": [
+        "specification-ready",
+        "implementation-in-progress",
+        "certified"
+      ]
+    }
+  }
+}

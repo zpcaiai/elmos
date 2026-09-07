@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 28 Skill 003"
+  short_description: "Run ELMOS Product Batch 28 governance safely"
+  default_prompt: "Use $product-operating-model-value-stream-and-team-designer to implement its evidence-bound ELMOS Product Batch 28 contract."

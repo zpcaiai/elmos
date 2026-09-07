@@ -1,0 +1,4 @@
+interface:
+  display_name: "Business Deadline and Timeout Generator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2207-business-deadline-and-timeout-generator to run FRT-2207 through the governed FRT runtime with exact scope and fail-closed evidence."

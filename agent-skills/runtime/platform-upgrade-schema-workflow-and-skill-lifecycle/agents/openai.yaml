@@ -1,0 +1,4 @@
+interface:
+  display_name: "Platform Upgrade Schema Workflow and Skill Lifecycle"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $platform-upgrade-schema-workflow-and-skill-lifecycle to execute this ELMOS product-closure Skill with fail-closed evidence."

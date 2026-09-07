@@ -1,0 +1,19 @@
+// Target platform port template. Business code must depend on this contract, not globals.
+export interface MiniAppPlatform {
+  readonly id: "wechat" | "alipay" | "douyin" | "xiaohongshu";
+  identity: IdentityPort;
+  navigation: NavigationPort;
+  network: NetworkPort;
+  storage: StoragePort;
+  share: SharePort;
+  commerce?: CommercePort;
+}
+
+export interface IdentityPort {
+  login(input: { correlationId: string }): Promise<{ sessionRef: string }>;
+}
+
+export interface CommercePort {
+  createOrder(input: { idempotencyKey: string; cartRef: string }): Promise<{ orderRef: string }>;
+  requestPayment(input: { idempotencyKey: string; orderRef: string }): Promise<{ status: "pending" | "succeeded" | "failed" }>;
+}

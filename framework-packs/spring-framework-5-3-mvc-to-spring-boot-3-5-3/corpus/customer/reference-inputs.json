@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "corpus": "authorized-customer",
+  "selection_status": "NOT_RUN",
+  "execution_status": "NOT_RUN",
+  "inputs": [],
+  "recipe_tuning_access": false,
+  "customer_repository": true,
+  "authorization_status": "NOT_RUN",
+  "external_execution": "NOT_RUN"
+}

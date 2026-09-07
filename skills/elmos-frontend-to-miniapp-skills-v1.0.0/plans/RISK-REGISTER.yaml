@@ -1,0 +1,72 @@
+version: '1.0'
+risks:
+- id: R-001
+  risk: 平台 API、审核或工具链漂移
+  likelihood: high
+  impact: high
+  owner: platform-profile-owner
+  mitigation: 版本化 profile、官方资料检查、fixture 回归、旧 evidence 不改写
+  trigger: profile-stale
+- id: R-002
+  risk: Flutter 原生插件无等价能力
+  likelihood: high
+  impact: high
+  owner: flutter-adapter-owner
+  mitigation: Platform Channel inventory、C/D/E、服务端或局部重构
+  trigger: unknown-plugin
+- id: R-003
+  risk: 静默丢失源功能
+  likelihood: medium
+  impact: critical
+  owner: orchestrator-owner
+  mitigation: 100% trace、C/D/E 报告、mutation tests
+  trigger: untraced-source-node
+- id: R-004
+  risk: AppSecret 或私钥泄露到客户端
+  likelihood: medium
+  impact: critical
+  owner: security-owner
+  mitigation: secret reference、三阶段扫描、短期凭证
+  trigger: secret-finding
+- id: R-005
+  risk: 自动修复无限循环或降低门禁
+  likelihood: medium
+  impact: high
+  owner: repair-owner
+  mitigation: 最大三次、补丁指纹、策略目录只读
+  trigger: equivalent-patch
+- id: R-006
+  risk: 多租户缓存/凭证串用
+  likelihood: low
+  impact: critical
+  owner: control-plane-owner
+  mitigation: tenant scope、ACL、credential binding、隔离 worker
+  trigger: tenant-mismatch
+- id: R-007
+  risk: 官方工具无法无头自动化
+  likelihood: medium
+  impact: medium
+  owner: ci-owner
+  mitigation: profile 能力标记、人工验证清单、blocked 证据
+  trigger: headless-unsupported
+- id: R-008
+  risk: 视觉分数掩盖关键交互错误
+  likelihood: medium
+  impact: high
+  owner: validation-owner
+  mitigation: 语义门禁优先、关键区域加权、文本/溢出检查
+  trigger: critical-region-diff
+- id: R-009
+  risk: 源项目无法运行或依赖停服
+  likelihood: medium
+  impact: medium
+  owner: source-analysis-owner
+  mitigation: 静态转换、recorded trace、状态 unknown/blocked
+  trigger: source-baseline-unavailable
+- id: R-010
+  risk: 真实支付/发布未经授权
+  likelihood: low
+  impact: critical
+  owner: release-owner
+  mitigation: 动作分级、独立审批、短期 credential
+  trigger: approval-missing

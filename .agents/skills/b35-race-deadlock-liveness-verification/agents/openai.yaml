@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Race and Liveness"
+  short_description: "Verify races deadlocks starvation and liveness"
+  default_prompt: "Use $b35-race-deadlock-liveness-verification to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "route_id",
+    "source",
+    "target",
+    "repository_profile",
+    "required_capabilities",
+    "acceptance"
+  ],
+  "properties": {
+    "route_id": {
+      "const": "java-spring-to-csharp-aspnet-reference"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "language_versions",
+        "framework_versions"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "language_versions",
+        "framework_versions"
+      ]
+    },
+    "repository_profile": {
+      "type": "object",
+      "required": [
+        "loc_min",
+        "loc_max",
+        "module_min",
+        "module_max"
+      ],
+      "properties": {
+        "loc_min": {
+          "type": "integer",
+          "minimum": 100000
+        },
+        "loc_max": {
+          "type": "integer",
+          "maximum": 500000
+        },
+        "module_min": {
+          "type": "integer",
+          "minimum": 5
+        },
+        "module_max": {
+          "type": "integer",
+          "maximum": 20
+        }
+      }
+    },
+    "required_capabilities": {
+      "type": "array",
+      "minItems": 8
+    },
+    "acceptance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

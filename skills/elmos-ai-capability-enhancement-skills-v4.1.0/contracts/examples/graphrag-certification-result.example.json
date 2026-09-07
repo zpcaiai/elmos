@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "graphrag-certification-result-example",
+  "status": "READY",
+  "content_hash": "52b6a4acdee9fbef3f98511febf2ab36a335678afb9e6f73989e19046db6bb1a",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

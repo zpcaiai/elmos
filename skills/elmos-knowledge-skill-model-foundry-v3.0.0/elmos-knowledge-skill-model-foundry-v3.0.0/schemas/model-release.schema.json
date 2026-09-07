@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Model Release Bundle",
+  "type": "object",
+  "required": [
+    "releaseId",
+    "baseModel",
+    "adapters",
+    "skillSet",
+    "knowledgeSnapshot",
+    "toolchainImage",
+    "policyBundle",
+    "evalBaseline",
+    "signatures"
+  ],
+  "properties": {
+    "releaseId": {
+      "type": "string"
+    },
+    "baseModel": {
+      "type": "object"
+    },
+    "adapters": {
+      "type": "array"
+    },
+    "skillSet": {
+      "type": "object"
+    },
+    "knowledgeSnapshot": {
+      "type": "object"
+    },
+    "toolchainImage": {
+      "type": "object"
+    },
+    "policyBundle": {
+      "type": "object"
+    },
+    "evalBaseline": {
+      "type": "object"
+    },
+    "certifications": {
+      "type": "array"
+    },
+    "rollbackTarget": {
+      "type": "string"
+    },
+    "signatures": {
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B31 Data Contract Catalog Lineage"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b31-data-contract-catalog-lineage to execute this ELMOS Runtime Skill with fail-closed evidence."

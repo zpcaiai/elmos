@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 015"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $industrial-safety-cybersecurity-zone-and-conduit-validator to apply its fail-closed ELMOS runtime contract."

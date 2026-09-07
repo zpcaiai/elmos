@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/scale-acceptance-evidence.schema.json",
+  "title": "B13-G Commercial Scale Acceptance Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "validated_motions",
+    "sales_accepted",
+    "solution_engineering_accepted",
+    "commercial_accepted",
+    "onboarding_delivery_accepted",
+    "support_success_accepted",
+    "partner_accepted",
+    "finance_operations_accepted",
+    "contractual_capabilities_aligned",
+    "critical_open_commercial_risks",
+    "commercial_evidence_pack_complete",
+    "evidence_traceability",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "validated_motions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "DIRECT_SALES",
+          "POC_LED_SALES",
+          "ENTERPRISE_SUBSCRIPTION",
+          "PROFESSIONAL_SERVICES",
+          "PARTNER_LED_DELIVERY",
+          "MANAGED_MIGRATION_SERVICE"
+        ]
+      }
+    },
+    "sales_accepted": {
+      "const": true
+    },
+    "solution_engineering_accepted": {
+      "const": true
+    },
+    "commercial_accepted": {
+      "const": true
+    },
+    "onboarding_delivery_accepted": {
+      "const": true
+    },
+    "support_success_accepted": {
+      "const": true
+    },
+    "partner_accepted": {
+      "const": true
+    },
+    "finance_operations_accepted": {
+      "const": true
+    },
+    "contractual_capabilities_aligned": {
+      "const": true
+    },
+    "critical_open_commercial_risks": {
+      "const": 0
+    },
+    "commercial_evidence_pack_complete": {
+      "const": true
+    },
+    "evidence_traceability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

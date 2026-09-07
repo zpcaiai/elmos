@@ -1,0 +1,19 @@
+python3 scripts/test-suite/validate_skill_bundle.py .
+PASS: 52 standard Codex Skills with valid UI metadata
+python3 scripts/test-suite/validate_test_catalog.py test-suites/batch1-37-strict/cases/catalog.json
+PASS: 408 cases, exact ownership, unique ids, and strict fields
+python3 scripts/test-suite/validate_coverage_matrix.py test-suites/batch1-37-strict/coverage-matrix.json
+PASS: exact Batch 1-37 coverage and all eight required variants
+/opt/homebrew/bin/uv run --quiet --with 'jsonschema>=4.23' python scripts/test-suite/validate_schema_bundle.py
+PASS: 9 Draft 2020-12 schemas, 408 cases, 408 results, and templates
+python3 scripts/test-suite/generate_integration_manifest.py --check
+PASS: integration manifest files=569 digest=sha256:6da9b5d1e32128874a916b84ea046399be4884fbb8e1d8313ad07e4aa4aab5b6
+python3 scripts/test-suite/validate_batch1_55_slightly_strict.py
+PASS: 55 batches, 660 cases, 660 fail-closed results, 42 repaired source ids
+PASS: supplemental authority preserved; Batch 1-37 strict suite not replaced
+python3 -m unittest discover -s tests/test-suite -p 'test_*.py'
+.....................
+----------------------------------------------------------------------
+Ran 21 tests in 100.315s
+
+OK

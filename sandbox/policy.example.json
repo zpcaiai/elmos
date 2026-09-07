@@ -1,0 +1,14 @@
+{
+  "imageDigest": "registry.example/elmos/java21@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "runAsNonRoot": true,
+  "privileged": false,
+  "hostDockerSocketMounted": false,
+  "cpuLimit": 2,
+  "memoryBytes": 2147483648,
+  "pidLimit": 256,
+  "diskBytes": 10737418240,
+  "timeoutSeconds": 1200,
+  "networkDefault": "DENY_ALL",
+  "allowedHosts": ["repo.maven.apache.org"],
+  "allowedCommands": ["git", "mvn"]
+}

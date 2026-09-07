@@ -1,0 +1,4 @@
+interface:
+  display_name: "Accessibility Validator"
+  short_description: "Judge automated and manual accessibility evidence"
+  default_prompt: "Use $accessibility-and-inclusive-interaction-validator to evaluate WCAG, keyboard, focus, screen-reader, touch, and exception evidence."

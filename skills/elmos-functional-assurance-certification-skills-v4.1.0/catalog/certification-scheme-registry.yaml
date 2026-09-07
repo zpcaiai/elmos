@@ -1,0 +1,46 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CertificationSchemeRegistry
+metadata:
+  version: 4.0.0
+spec:
+  schemes:
+  - id: AI-PRODUCT-CERT
+    object: AI system/product/service
+    functions:
+    - selection
+    - determination
+    - review
+    - decision
+    - attestation
+    - surveillance
+    decisionAuthority: K8-independent
+    status: contract-only
+  - id: AI-LAB-COMPETENCE
+    object: AI evaluation laboratory/method
+    functions:
+    - method-validation
+    - uncertainty
+    - proficiency
+    - witness
+    - monitoring
+    decisionAuthority: external/independent
+    status: readiness-contract
+  - id: AI-SEC-EVAL
+    object: agent platform/security target
+    functions:
+    - security-target
+    - work-units
+    - vulnerability-analysis
+    - attestation
+    decisionAuthority: K8/external according to claim
+    status: contract-only
+  - id: AI-SECTOR-SAFETY
+    object: safety-critical AI-enabled system
+    functions:
+    - hazard-analysis
+    - TEVV
+    - independent-assessment
+    - safety-case
+    - surveillance
+    decisionAuthority: authorized independent assessor/regulator
+    status: contract-only

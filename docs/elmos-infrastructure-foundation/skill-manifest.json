@@ -1,0 +1,367 @@
+{
+  "schema_version": "1.0",
+  "package": "elmos-infrastructure-foundation-skills",
+  "version": "1.0.0",
+  "generated_on": "2026-08-19",
+  "description": "Production-shaped eLMOS infrastructure implementation Skills covering security, durable execution, snapshots, CAS, staging, toolchains, incremental semantics, runners, sandboxing, IR, model governance, verification, evidence, supply chain, observability, progressive delivery, DR, scale certification, Java production loop, and readiness gates.",
+  "production_claim": "This bundle defines implementation work and validates package structure. It does not prove that integrations, migrations, sandboxes, workflows, backups, benchmarks, or pilots have executed in a target repository.",
+  "skill_count": 22,
+  "task_count": 719,
+  "topological_order": [
+    "elmos-infrastructure-program-orchestrator",
+    "elmos-architecture-contract-governance",
+    "elmos-identity-tenant-security",
+    "elmos-temporal-task-reliability",
+    "elmos-repository-snapshot-workspace",
+    "elmos-content-addressed-cache",
+    "elmos-reproducible-toolchain",
+    "elmos-staging-snapshot-promotion",
+    "elmos-incremental-semantic-index",
+    "elmos-runner-scheduler-execution",
+    "elmos-semantic-ir-compiler-platform",
+    "elmos-secure-sandbox-runtime",
+    "elmos-model-gateway-agent-runtime",
+    "elmos-policy-supply-chain-signing",
+    "elmos-verification-fabric",
+    "elmos-evidence-pack-offline-verification",
+    "elmos-java-migration-production-loop",
+    "elmos-observability-finops",
+    "elmos-backup-recovery-replay",
+    "elmos-progressive-delivery",
+    "elmos-scale-benchmark-certification",
+    "elmos-production-readiness-gate"
+  ],
+  "skills": [
+    {
+      "name": "elmos-infrastructure-program-orchestrator",
+      "code": "ORCH",
+      "title": "eLMOS Infrastructure Program Orchestrator",
+      "description": "Orchestrate the complete eLMOS infrastructure hardening program, resolve dependencies, select the next executable slice, and emit evidence-backed progress.",
+      "priority": "P0",
+      "phase": "G0-G9",
+      "dependencies": [],
+      "path": ".agents/skills/elmos-infrastructure-program-orchestrator/SKILL.md",
+      "task_count": 21
+    },
+    {
+      "name": "elmos-architecture-contract-governance",
+      "code": "ARCH",
+      "title": "Architecture and Contract Governance",
+      "description": "Freeze service boundaries, authoritative state ownership, identifiers, lifecycle enums, APIs, schemas, and architecture decisions.",
+      "priority": "P0",
+      "phase": "G0",
+      "dependencies": [
+        "elmos-infrastructure-program-orchestrator"
+      ],
+      "path": ".agents/skills/elmos-architecture-contract-governance/SKILL.md",
+      "task_count": 23
+    },
+    {
+      "name": "elmos-identity-tenant-security",
+      "code": "SEC",
+      "title": "Identity, Tenant Isolation, Authorization, and Secrets",
+      "description": "Implement OIDC identity, membership-derived tenancy, RBAC/resource authorization, PostgreSQL RLS, mTLS identities, secret brokering, and API hardening.",
+      "priority": "P0",
+      "phase": "G1",
+      "dependencies": [
+        "elmos-architecture-contract-governance"
+      ],
+      "path": ".agents/skills/elmos-identity-tenant-security/SKILL.md",
+      "task_count": 48
+    },
+    {
+      "name": "elmos-temporal-task-reliability",
+      "code": "WF",
+      "title": "Temporal Workflow, Task Lease, Cancellation, and Recovery",
+      "description": "Make long-running generation and migration workflows idempotent, cancellable, checkpointed, reconcilable, replay-safe, and recoverable.",
+      "priority": "P0",
+      "phase": "G2",
+      "dependencies": [
+        "elmos-architecture-contract-governance",
+        "elmos-identity-tenant-security"
+      ],
+      "path": ".agents/skills/elmos-temporal-task-reliability/SKILL.md",
+      "task_count": 44
+    },
+    {
+      "name": "elmos-repository-snapshot-workspace",
+      "code": "SNAP",
+      "title": "Immutable Repository Snapshot and Workspace Lease",
+      "description": "Pin inputs to immutable commits, create canonical snapshots, enforce source residency, and manage isolated leased workspaces.",
+      "priority": "P0",
+      "phase": "G3",
+      "dependencies": [
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability"
+      ],
+      "path": ".agents/skills/elmos-repository-snapshot-workspace/SKILL.md",
+      "task_count": 29
+    },
+    {
+      "name": "elmos-content-addressed-cache",
+      "code": "CAS",
+      "title": "Content-Addressed Storage and Action Cache",
+      "description": "Implement tenant-aware CAS, Merkle trees, immutable manifests, exact action caching, resumable transfer, poisoning defense, and reference-safe garbage collection.",
+      "priority": "P0",
+      "phase": "G3",
+      "dependencies": [
+        "elmos-architecture-contract-governance",
+        "elmos-repository-snapshot-workspace"
+      ],
+      "path": ".agents/skills/elmos-content-addressed-cache/SKILL.md",
+      "task_count": 42
+    },
+    {
+      "name": "elmos-staging-snapshot-promotion",
+      "code": "STAGE",
+      "title": "Project Generation Staging, Sealing, Validation, and Promotion",
+      "description": "Implement copy-on-write staging, immutable sealed snapshots, validation boundaries, conflict-safe overlays, and idempotent promotion to artifacts, Git, and pull requests.",
+      "priority": "P0",
+      "phase": "G3",
+      "dependencies": [
+        "elmos-content-addressed-cache",
+        "elmos-temporal-task-reliability"
+      ],
+      "path": ".agents/skills/elmos-staging-snapshot-promotion/SKILL.md",
+      "task_count": 31
+    },
+    {
+      "name": "elmos-reproducible-toolchain",
+      "code": "TOOL",
+      "title": "Reproducible Toolchains, Dependency Environments, and Warm Pools",
+      "description": "Build immutable multi-language toolchain manifests/images, reproducible dependencies, signed provenance, caches, and warm runner pools.",
+      "priority": "P0",
+      "phase": "G3",
+      "dependencies": [
+        "elmos-content-addressed-cache",
+        "elmos-identity-tenant-security"
+      ],
+      "path": ".agents/skills/elmos-reproducible-toolchain/SKILL.md",
+      "task_count": 32
+    },
+    {
+      "name": "elmos-incremental-semantic-index",
+      "code": "INC",
+      "title": "Incremental Parsing, Semantic Index, Impact Analysis, and Test Selection",
+      "description": "Implement Merkle change detection, incremental CST/AST, dependency-tracked semantic queries, symbol graphs, precise invalidation, and conservative test selection.",
+      "priority": "P1",
+      "phase": "G4",
+      "dependencies": [
+        "elmos-repository-snapshot-workspace",
+        "elmos-content-addressed-cache",
+        "elmos-reproducible-toolchain"
+      ],
+      "path": ".agents/skills/elmos-incremental-semantic-index/SKILL.md",
+      "task_count": 33
+    },
+    {
+      "name": "elmos-runner-scheduler-execution",
+      "code": "RUN",
+      "title": "Remote Execution, Runner Fleet, Scheduling, and Artifact Transfer",
+      "description": "Define a portable action protocol, capability-aware runners, fair scheduling, data-local execution, sharding, warm pools, and resumable transfer.",
+      "priority": "P1",
+      "phase": "G4",
+      "dependencies": [
+        "elmos-temporal-task-reliability",
+        "elmos-content-addressed-cache",
+        "elmos-reproducible-toolchain",
+        "elmos-identity-tenant-security"
+      ],
+      "path": ".agents/skills/elmos-runner-scheduler-execution/SKILL.md",
+      "task_count": 33
+    },
+    {
+      "name": "elmos-secure-sandbox-runtime",
+      "code": "SBX",
+      "title": "Secure Sandbox Runtime and Capability Isolation",
+      "description": "Execute untrusted repositories, build scripts, generated code, and plugins in tiered, policy-driven isolation with network and secret controls.",
+      "priority": "P0",
+      "phase": "G4",
+      "dependencies": [
+        "elmos-identity-tenant-security",
+        "elmos-runner-scheduler-execution",
+        "elmos-reproducible-toolchain"
+      ],
+      "path": ".agents/skills/elmos-secure-sandbox-runtime/SKILL.md",
+      "task_count": 37
+    },
+    {
+      "name": "elmos-semantic-ir-compiler-platform",
+      "code": "IR",
+      "title": "Canonical Semantic IR, Compiler Frontends, and Transformation Platform",
+      "description": "Build a layered compiler-grade semantic platform with native language frontends, stable IR, domain models, deterministic rules, source maps, and explicit semantic gaps.",
+      "priority": "P1",
+      "phase": "G5",
+      "dependencies": [
+        "elmos-incremental-semantic-index",
+        "elmos-reproducible-toolchain",
+        "elmos-content-addressed-cache"
+      ],
+      "path": ".agents/skills/elmos-semantic-ir-compiler-platform/SKILL.md",
+      "task_count": 37
+    },
+    {
+      "name": "elmos-model-gateway-agent-runtime",
+      "code": "LLM",
+      "title": "Model Gateway, Context Builder, Budgeted Agent Runtime, and Inference Cache",
+      "description": "Provide governed multi-provider model access, semantic context assembly, hard budgets, tool controls, local inference, prefix caching, and auditable repair loops.",
+      "priority": "P1",
+      "phase": "G6",
+      "dependencies": [
+        "elmos-identity-tenant-security",
+        "elmos-content-addressed-cache",
+        "elmos-incremental-semantic-index",
+        "elmos-semantic-ir-compiler-platform",
+        "elmos-secure-sandbox-runtime"
+      ],
+      "path": ".agents/skills/elmos-model-gateway-agent-runtime/SKILL.md",
+      "task_count": 45
+    },
+    {
+      "name": "elmos-verification-fabric",
+      "code": "VER",
+      "title": "Verification Fabric: Build, Test, Differential Behavior, Performance, and E1-E5 Certification",
+      "description": "Build a unified verification plane that distinguishes baseline defects from migration regressions and proves target behavior, contracts, performance, security, and resilience.",
+      "priority": "P0",
+      "phase": "G7",
+      "dependencies": [
+        "elmos-reproducible-toolchain",
+        "elmos-semantic-ir-compiler-platform",
+        "elmos-secure-sandbox-runtime",
+        "elmos-model-gateway-agent-runtime"
+      ],
+      "path": ".agents/skills/elmos-verification-fabric/SKILL.md",
+      "task_count": 38
+    },
+    {
+      "name": "elmos-evidence-pack-offline-verification",
+      "code": "EVD",
+      "title": "Immutable Evidence Pack, Offline Verification, and Delivery Provenance",
+      "description": "Assemble signed, immutable, portable evidence that traces source, transformation, validation, risk, approval, cost, and delivery and can be verified without the control plane.",
+      "priority": "P0",
+      "phase": "G7",
+      "dependencies": [
+        "elmos-content-addressed-cache",
+        "elmos-verification-fabric",
+        "elmos-staging-snapshot-promotion",
+        "elmos-policy-supply-chain-signing"
+      ],
+      "path": ".agents/skills/elmos-evidence-pack-offline-verification/SKILL.md",
+      "task_count": 25
+    },
+    {
+      "name": "elmos-policy-supply-chain-signing",
+      "code": "POL",
+      "title": "Policy as Code, SBOM, SLSA Provenance, and Artifact Signing",
+      "description": "Centralize authorization and release policy, generate supply-chain evidence, scan dependencies and outputs, and verify signatures before execution or promotion.",
+      "priority": "P1",
+      "phase": "G7",
+      "dependencies": [
+        "elmos-identity-tenant-security",
+        "elmos-reproducible-toolchain",
+        "elmos-secure-sandbox-runtime"
+      ],
+      "path": ".agents/skills/elmos-policy-supply-chain-signing/SKILL.md",
+      "task_count": 28
+    },
+    {
+      "name": "elmos-observability-finops",
+      "code": "OBS",
+      "title": "Unified Observability, Profiling, Runtime ETA, and FinOps",
+      "description": "Correlate traces, metrics, logs, profiles, quality, cache, capacity, wall-clock estimates, and cost across control plane, workflows, runners, models, verification, and delivery.",
+      "priority": "P1",
+      "phase": "G8",
+      "dependencies": [
+        "elmos-temporal-task-reliability",
+        "elmos-runner-scheduler-execution",
+        "elmos-model-gateway-agent-runtime",
+        "elmos-evidence-pack-offline-verification"
+      ],
+      "path": ".agents/skills/elmos-observability-finops/SKILL.md",
+      "task_count": 34
+    },
+    {
+      "name": "elmos-progressive-delivery",
+      "code": "REL",
+      "title": "Feature Flags, Shadow Validation, Canary Rollout, and Safe Compatibility",
+      "description": "Release new adapters, rules, prompts, models, toolchains, schemas, and platform components through governed flags, shadow comparison, canary gates, and rollback.",
+      "priority": "P2",
+      "phase": "G8",
+      "dependencies": [
+        "elmos-verification-fabric",
+        "elmos-observability-finops",
+        "elmos-policy-supply-chain-signing"
+      ],
+      "path": ".agents/skills/elmos-progressive-delivery/SKILL.md",
+      "task_count": 24
+    },
+    {
+      "name": "elmos-backup-recovery-replay",
+      "code": "DR",
+      "title": "Backup, Restore, Disaster Recovery, Reconciliation, and Deterministic Replay",
+      "description": "Protect PostgreSQL, Temporal, CAS, policies, keys, configurations, and portfolio state and recover without duplicate external effects.",
+      "priority": "P1",
+      "phase": "G8",
+      "dependencies": [
+        "elmos-temporal-task-reliability",
+        "elmos-content-addressed-cache",
+        "elmos-evidence-pack-offline-verification",
+        "elmos-observability-finops"
+      ],
+      "path": ".agents/skills/elmos-backup-recovery-replay/SKILL.md",
+      "task_count": 31
+    },
+    {
+      "name": "elmos-scale-benchmark-certification",
+      "code": "BENCH",
+      "title": "Scale Benchmarks, Fault Injection, Security Tests, and Pilot Certification",
+      "description": "Benchmark cold/warm/incremental execution across repository and portfolio sizes, inject failures and attacks, calibrate forecasts, and certify real pilot readiness.",
+      "priority": "P1",
+      "phase": "G9",
+      "dependencies": [
+        "elmos-observability-finops",
+        "elmos-progressive-delivery",
+        "elmos-backup-recovery-replay",
+        "elmos-policy-supply-chain-signing"
+      ],
+      "path": ".agents/skills/elmos-scale-benchmark-certification/SKILL.md",
+      "task_count": 27
+    },
+    {
+      "name": "elmos-java-migration-production-loop",
+      "code": "JAVA",
+      "title": "Production Java Modernization Closed Loop",
+      "description": "Implement the first billable end-to-end path from GitHub installation and immutable snapshot through baseline, health analysis, OpenRewrite, verification, bounded agent repair, PR/checks, and evidence.",
+      "priority": "P0",
+      "phase": "G6",
+      "dependencies": [
+        "elmos-identity-tenant-security",
+        "elmos-temporal-task-reliability",
+        "elmos-repository-snapshot-workspace",
+        "elmos-content-addressed-cache",
+        "elmos-staging-snapshot-promotion",
+        "elmos-reproducible-toolchain",
+        "elmos-secure-sandbox-runtime",
+        "elmos-verification-fabric",
+        "elmos-evidence-pack-offline-verification"
+      ],
+      "path": ".agents/skills/elmos-java-migration-production-loop/SKILL.md",
+      "task_count": 33
+    },
+    {
+      "name": "elmos-production-readiness-gate",
+      "code": "READY",
+      "title": "Production Readiness and Commercial Release Gate",
+      "description": "Evaluate the complete eLMOS platform against security, reliability, reproducibility, quality, evidence, observability, cost, recovery, scale, and pilot criteria and emit a conservative release status.",
+      "priority": "P0",
+      "phase": "G9",
+      "dependencies": [
+        "elmos-infrastructure-program-orchestrator",
+        "elmos-java-migration-production-loop",
+        "elmos-scale-benchmark-certification"
+      ],
+      "path": ".agents/skills/elmos-production-readiness-gate/SKILL.md",
+      "task_count": 24
+    }
+  ]
+}

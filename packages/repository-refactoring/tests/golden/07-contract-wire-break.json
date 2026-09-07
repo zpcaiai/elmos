@@ -1,0 +1,29 @@
+{
+  "caseId": "07-contract-wire-break",
+  "description": "A renumbered proto field is a wire break: consumers first, and blocked under a backward-compatible policy.",
+  "evidence": {
+    "contractPlanDigest": "sha256:96daaff54cf45763e5b1dbe6e5d611dc376cd99a8db585cb852a852758969f84",
+    "wireDiffDigest": "sha256:72cbf752a52b5cdd136596461d0b302a4739717a1202a6be6a00decd50189a24"
+  },
+  "failureClass": "approval-required",
+  "inputDigest": "sha256:8e8b4999fd0c2f61513dd02b517632b8a0bae9f7bc8308cd527a1896817432a6",
+  "outputDigest": "sha256:0da7e7e108daa4f7d8589f0a2569297a3e95ae051be3ca4279369c8bd108a37c",
+  "projections": {
+    "output.contractDiff.counts": {
+      "additive": 0,
+      "behaviorRisk": 0,
+      "binaryBreak": 0,
+      "sourceBreak": 0,
+      "wireBreak": 1
+    },
+    "output.contractMigrationPlan.blockedReason": "1 wire break(s) under policy 'backward-compatible'; publish a new version instead of changing the existing wire shape",
+    "output.contractMigrationPlan.order": "consumer-before-provider",
+    "output.contractMigrationPlan.riskClass": "R4",
+    "status": "blocked"
+  },
+  "reasonCount": 3,
+  "riskClass": "R4",
+  "sideEffectsPerformed": false,
+  "skill": "cross-language-contract-refactor",
+  "status": "blocked"
+}

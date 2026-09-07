@@ -1,0 +1,4 @@
+interface:
+  display_name: "subscription-and-platform-pricing-engine"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $subscription-and-platform-pricing-engine to evaluate this Batch 13 commercial capability with evidence."

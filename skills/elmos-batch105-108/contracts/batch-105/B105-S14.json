@@ -1,0 +1,68 @@
+{
+  "id": "B105-S14",
+  "batch": 105,
+  "name": "modernization-demo-success-gate",
+  "dependencies": [
+    "B105-S07",
+    "B105-S12",
+    "B105-S13"
+  ],
+  "inputs": [
+    "all Batch105 evidence",
+    "policy version"
+  ],
+  "outputs": [
+    "ModernizationDemoDecision",
+    "blocking findings",
+    "next actions"
+  ],
+  "implementation": {
+    "modules": [
+      "certification/demo/ModernizationDemoGate.java",
+      "policies/demo-readiness.yaml",
+      "apps/web/src/features/release-gate/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/gates/demo-readiness",
+      "event gate.demo-readiness.decided"
+    ],
+    "data": [
+      "demo_gate_input",
+      "demo_gate_decision",
+      "blocking_finding"
+    ]
+  },
+  "workflow": [
+    "验证证据血缘和新鲜度",
+    "检查Baseline可复现",
+    "检查所有迁移阶段和修复Commit",
+    "检查测试保护和矩阵范围",
+    "应用阻断/警告政策并拒绝伪造成功",
+    "签发REJECTED/PARTIAL/ENGINEERING_READY/DEMO_READY"
+  ],
+  "tests": [
+    "缺Baseline证据拒绝",
+    "测试保护FAIL不能被报告覆盖",
+    "过期证据拒绝",
+    "伪造certified字段不生效",
+    "全部必需证据通过签发DEMO_READY"
+  ],
+  "evidence": [
+    "demo-gate-input.json",
+    "demo-gate-decision.json",
+    "blocking-findings.json",
+    "policy-evaluation.log"
+  ],
+  "definition_of_done": [
+    "决定可重复",
+    "默认保守",
+    "所有阻断项可追溯",
+    "签名包含Policy摘要",
+    "无运行验证时最高只到ENGINEERING_READY"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

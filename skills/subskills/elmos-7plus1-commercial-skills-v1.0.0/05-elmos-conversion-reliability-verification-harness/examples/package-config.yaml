@@ -1,0 +1,29 @@
+package_id: P05
+version: "1.0.0"
+enabled: true
+components:
+  - P05-C01
+  - P05-C02
+  - P05-C03
+  - P05-C04
+  - P05-C05
+  - P05-C06
+  - P05-C07
+  - P05-C08
+  - P05-C09
+  - P05-C10
+  - P05-C11
+  - P05-C12
+policy:
+  tenant_isolation: strict
+  evidence_gate_required: true
+  fail_closed: true
+  adapter_pin_required: true
+  default_data_scope: tenant-private
+limits:
+  max_parallel_tasks: 4
+  max_attempts: 3
+  max_wall_clock_seconds: 21600
+feature_flags:
+  experimental_upstream_adapters: false
+  shadow_mode: true

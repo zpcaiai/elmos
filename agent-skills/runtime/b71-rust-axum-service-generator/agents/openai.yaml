@@ -1,0 +1,4 @@
+interface:
+  display_name: "B71 Rust Axum Service Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b71-rust-axum-service-generator to execute this ELMOS project Skill with fail-closed evidence."

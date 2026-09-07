@@ -1,0 +1,14 @@
+{
+  "batch": 35,
+  "packKey": "template-pack",
+  "status": "NOT_RUN",
+  "evidenceRefs": [],
+  "holdoutPassRate": 0,
+  "representativePassRate": 0,
+  "criticalFindings": 0,
+  "metrics": {
+    "oracleCoverageRate": 0,
+    "counterexampleReplayRate": 0,
+    "criticalInvariantPassRate": 0
+  }
+}

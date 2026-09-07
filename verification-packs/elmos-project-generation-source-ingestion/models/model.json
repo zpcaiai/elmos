@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "model_key": "source-ingestion-review-lifecycle",
+  "owner": "elmos-project-synthesis-engineering",
+  "states": [
+    "received",
+    "ready-for-review",
+    "rejected"
+  ],
+  "initial_state": "received",
+  "commands": [
+    {
+      "command": "extract-and-bind",
+      "from": [
+        "received"
+      ],
+      "to": "ready-for-review",
+      "guard": "source-valid-and-within-limits",
+      "effects": [
+        "emit-provenance-reference",
+        "emit-canonical-bundle-digest"
+      ]
+    },
+    {
+      "command": "reject",
+      "from": [
+        "received"
+      ],
+      "to": "rejected",
+      "guard": "unsafe-unsupported-or-over-limit",
+      "effects": [
+        "emit-explicit-source-error",
+        "emit-no-reviewable-bundle"
+      ]
+    }
+  ],
+  "invariants": [
+    "ready-for-review-has-digest-and-references",
+    "rejected-has-no-reviewable-bundle",
+    "skill-content-is-never-executed"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "rejected",
+      "event": "approve"
+    }
+  ],
+  "timeouts": []
+}

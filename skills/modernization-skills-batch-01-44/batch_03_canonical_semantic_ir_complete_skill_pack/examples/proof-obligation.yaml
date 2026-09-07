@@ -1,0 +1,8 @@
+# Example instance for batch-03: proof-obligation
+discharged_by: proof
+kind: "type-preservation"
+obligation_id: example
+record_id: example
+schema_version: 1.0.0
+scope: example
+statement: example

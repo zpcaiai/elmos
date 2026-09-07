@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency Failure Injection Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $dependency-failure-injection-validator to perform this Batch 10 production-hardening task."

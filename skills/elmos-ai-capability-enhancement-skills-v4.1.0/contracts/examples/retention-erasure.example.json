@@ -1,0 +1,14 @@
+{
+  "requestId": "erase-1",
+  "subjectId": "user-1",
+  "dataClasses": [
+    "trace",
+    "memory",
+    "embedding"
+  ],
+  "lineageNodes": 30,
+  "deletedNodes": 29,
+  "heldNodes": 1,
+  "backupExpiry": "2026-09-30",
+  "status": "bounded"
+}

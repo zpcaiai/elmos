@@ -1,0 +1,31 @@
+schema_version: '1.0'
+plan_id: elmos-phase-0-foundation
+title: G0-G3 secure durable foundation
+status: DRAFT
+selected_skills:
+- elmos-infrastructure-program-orchestrator
+- elmos-architecture-contract-governance
+- elmos-identity-tenant-security
+- elmos-temporal-task-reliability
+- elmos-repository-snapshot-workspace
+- elmos-content-addressed-cache
+- elmos-staging-snapshot-promotion
+- elmos-reproducible-toolchain
+milestones:
+- id: M0
+  name: Repository discovery and contract freeze
+  exit_gate: Versioned authority/state/API contracts and executable plan.
+- id: M1
+  name: Security boundary
+  exit_gate: OIDC/RBAC/RLS/runner identity/secret attack tests pass.
+- id: M2
+  name: Durable execution
+  exit_gate: Lease/fencing/cancel/checkpoint/reconciliation/replay tests pass.
+- id: M3
+  name: Immutable inputs and reuse
+  exit_gate: Snapshot/CAS/staging/toolchain reproducibility and integrity tests pass.
+runtime_reporting:
+  system_wall_clock_separate: true
+  human_equivalent_separate: true
+production_claim: This plan becomes production evidence only after execution in the
+  target repository.

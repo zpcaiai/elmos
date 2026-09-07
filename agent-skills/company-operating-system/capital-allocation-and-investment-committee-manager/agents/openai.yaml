@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 503: capital allocation and investment committee manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $capital-allocation-and-investment-committee-manager to evaluate this capability with evidence."

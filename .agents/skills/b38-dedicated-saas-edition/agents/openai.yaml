@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Dedicated Saas Edition"
+  short_description: "Run evidence-bound Batch 38 dedicated saas edition work"
+  default_prompt: "Use $b38-dedicated-saas-edition to implement and verify this capability with fail-closed evidence."

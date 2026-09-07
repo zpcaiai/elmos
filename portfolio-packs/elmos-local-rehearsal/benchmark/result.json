@@ -1,0 +1,14 @@
+{
+  "dataset_digest": "NOT_RUN",
+  "environment_digest": "NOT_RUN",
+  "evidence_refs": [],
+  "failures": [
+    "REAL_SCALE_ENVIRONMENT_NOT_AUTHORIZED"
+  ],
+  "metrics": {},
+  "pack_key": "elmos-local-rehearsal",
+  "profile_key": "elmos-local-rehearsal-scale-v1",
+  "run_id": "NOT_RUN",
+  "schema_version": 1,
+  "status": "not-run"
+}

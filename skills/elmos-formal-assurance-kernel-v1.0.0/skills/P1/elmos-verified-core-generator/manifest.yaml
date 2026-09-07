@@ -1,0 +1,78 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-verified-core-generator
+  title: Verified Core Generator
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P1
+  domain: project-generation
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 为金额、额度、权限、状态机、调度和转换算法生成 Dafny/JML/Lean 可验证核心及语言适配层。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-verifier-portfolio-router
+  - elmos-requirement-to-formal-spec
+  capabilities:
+  - correct-by-construction code
+  - contract extraction
+  - refinement wrappers
+  - proof-aware code generation
+  inputs:
+  - name: formal specs
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: target languages
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: codegen profile
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: verified model
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: generated core
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: proof log
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: adapter obligations
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

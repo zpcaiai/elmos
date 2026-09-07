@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: agent-skills-standard
+  ecosystem: Agent Skills Standard
+  version: 4.0.0
+spec:
+  adapterKind: skill-format
+  maturity: P0
+  modes:
+  - parse
+  - emit
+  - evaluate
+  - package
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - SKILL.md
+  - scripts
+  - references
+  - assets
+  releaseBoundary: adapter package presence is not native conformance

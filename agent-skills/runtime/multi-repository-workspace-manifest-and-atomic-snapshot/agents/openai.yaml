@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B35: Multi Repository Workspace Manifest And Atomic Snapshot"
+  short_description: "Run ELMOS Product B35 contract with fail-closed evidence"
+  default_prompt: "Use $multi-repository-workspace-manifest-and-atomic-snapshot to implement its fail-closed ELMOS Product B35 contract."

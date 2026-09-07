@@ -1,0 +1,156 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-typescript/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "dist/migrated.js",
+    "dist/route_harness.js",
+    "source-runtime/Difference.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 1551,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:91b3bb5ccdaf0dc61504184a16b139c12f4072976709ae43b64d9fab6b26880d"
+    },
+    {
+      "bytes": 8389,
+      "path": "chunk-map.json",
+      "sha256": "sha256:be6d791fa581a873b9bc325ec259ce6ccf3d9e2290c3d565d3cc57122463b3e7"
+    },
+    {
+      "bytes": 3096,
+      "path": "formal-composition.json",
+      "sha256": "sha256:8f84686a9f7bc7e1dfb40370ceeea54717b42bce50a436345414286768d93597"
+    },
+    {
+      "bytes": 1713,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:84069ca6ce389bf93c229289d465518be3ece72afb93957436ab6b5fccca2515"
+    },
+    {
+      "bytes": 7265,
+      "path": "formal-input.json",
+      "sha256": "sha256:86ca3acb21ab14c86275fdd6e47f03b5b724d7f51de05f1856a5a267518dc7bd"
+    },
+    {
+      "bytes": 2474,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:849bc8f6a0044801002c66c3353beb5c0347ce7907eed5e5626690a4d0fce9ea"
+    },
+    {
+      "bytes": 217,
+      "path": "inputs/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 3617,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:9e77758504122342c5188258d638d1ee17d244cfa85a18db04627ea5703873f9"
+    },
+    {
+      "bytes": 475,
+      "path": "migrated.ts",
+      "sha256": "sha256:297c84d710be4d04999a76e33b736bc9c72b76f5849a1dff6842fdeaefda8d81"
+    },
+    {
+      "bytes": 6987,
+      "path": "route-evidence.json",
+      "sha256": "sha256:3184f00991c94256aa5b1e9f976952e2a7b9a9fe7d805ecd4675312eaa0a4784"
+    },
+    {
+      "bytes": 553,
+      "path": "route_harness.ts",
+      "sha256": "sha256:f720cb7d2087bc088e3f1eedc3ddd41bafe0d7dca5f2fe4c969a356d1fdb118b"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 675,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 217,
+      "path": "source-runtime/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 971,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:df829a3b595a6fca3e1802a1b0fec335282a2fc0951a9a5a3eb9204fce1ef419"
+    },
+    {
+      "bytes": 675,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 691,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:5f763b308b0463e967de51e0a6f705b76e4966926c6cc7262b25a05bac2e72a7"
+    },
+    {
+      "bytes": 189,
+      "path": "tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-typescript",
+  "schema_version": 1,
+  "total_bytes": 40210
+}

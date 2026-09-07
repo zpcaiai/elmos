@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/evidence/1.0",
+  "type": "object",
+  "required": ["evidenceId", "organizationId", "migrationRunId", "evidenceType", "producerName", "producerVersion", "createdAt", "status", "artifactRef", "contentHash", "schemaVersion", "correlationId"],
+  "properties": {
+    "status": { "enum": ["PASS", "WARN", "FAIL", "NOT_RUN", "INCONCLUSIVE"] },
+    "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "schemaVersion": { "const": "1.0" }
+  },
+  "additionalProperties": true
+}
+

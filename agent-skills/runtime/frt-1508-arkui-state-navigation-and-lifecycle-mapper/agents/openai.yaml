@@ -1,0 +1,4 @@
+interface:
+  display_name: "ArkUI State Navigation and Lifecycle Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1508-arkui-state-navigation-and-lifecycle-mapper to run FRT-1508 through the governed FRT runtime with exact scope and fail-closed evidence."

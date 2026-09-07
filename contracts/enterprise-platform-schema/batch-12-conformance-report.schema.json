@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/enterprise-platform/batch-12-conformance-report.schema.json",
+  "title": "Batch 12 Enterprise Platform Conformance Report Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report", "platform_version", "assessment_run_id", "conformance", "domain_evidence"],
+  "properties": {
+    "report": {"const": "batch-12-conformance-report.json"}, "platform_version": {"type": "string", "minLength": 1},
+    "assessment_run_id": {"type": "string", "minLength": 1}, "conformance": {"$ref": "#/$defs/conformance"}, "domain_evidence": {"$ref": "#/$defs/conformance"}
+  },
+  "$defs": {
+    "conformance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["batch", "assessment_run_id", "platform_version", "gate", "status", "modes", "blockers", "restrictions", "metrics", "external_evidence_complete", "enterprise_delivery_ready", "production_operation_executed", "evaluated_at", "evidence_refs"],
+      "properties": {
+        "batch": {"const": 12}, "assessment_run_id": {"type": "string", "minLength": 1}, "platform_version": {"type": "string", "minLength": 1},
+        "gate": {"enum": ["BLOCKED", "T_A", "T_B", "T_C", "T_D", "T_E", "T_F", "T_G"]},
+        "status": {"enum": ["INITIALIZED", "TENANCY_IDENTITY_VALIDATED", "AUTHORIZATION_AUDIT_VALIDATED", "RUNNER_SECURITY_VALIDATED", "MODEL_COST_GOVERNED", "DATA_GOVERNED", "DEPLOYMENT_MODES_VALIDATED", "ENTERPRISE_DELIVERY_READY", "BLOCKED", "FAILED_SAFELY"]},
+        "modes": {
+          "type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/mode_conformance"},
+          "allOf": [
+            {"contains": {"properties": {"mode": {"const": "SAAS_SHARED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"mode": {"const": "SAAS_DEDICATED_RUNNER"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"mode": {"const": "HYBRID_PRIVATE_RUNNER"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"mode": {"const": "SELF_HOSTED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"mode": {"const": "AIR_GAPPED"}}, "required": ["mode"]}, "minContains": 1, "maxContains": 1}
+          ]
+        },
+        "blockers": {"type": "array", "items": {"type": "string"}}, "restrictions": {"type": "array", "items": {"type": "string"}},
+        "metrics": {"$ref": "#/$defs/metrics"}, "external_evidence_complete": {"type": "boolean"}, "enterprise_delivery_ready": {"type": "boolean"},
+        "production_operation_executed": {"const": false}, "evaluated_at": {"type": "string", "format": "date-time"},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}}
+      },
+      "allOf": [{"if": {"properties": {"enterprise_delivery_ready": {"const": true}}, "required": ["enterprise_delivery_ready"]}, "then": {"properties": {"gate": {"const": "T_G"}, "status": {"const": "ENTERPRISE_DELIVERY_READY"}, "blockers": {"maxItems": 0}, "external_evidence_complete": {"const": true}, "modes": {"items": {"allOf": [{"$ref": "#/$defs/mode_conformance"}, {"properties": {"gate": {"const": "T_G"}, "delivery_ready": {"const": true}, "blockers": {"maxItems": 0}}}]}}}}}]
+    },
+    "mode_conformance": {
+      "type": "object", "additionalProperties": false, "required": ["mode", "gate", "delivery_ready", "blockers", "evidence_refs"],
+      "properties": {
+        "mode": {"enum": ["SAAS_SHARED", "SAAS_DEDICATED_RUNNER", "HYBRID_PRIVATE_RUNNER", "SELF_HOSTED", "AIR_GAPPED"]},
+        "gate": {"enum": ["BLOCKED", "T_A", "T_B", "T_C", "T_D", "T_E", "T_F", "T_G"]}, "delivery_ready": {"type": "boolean"},
+        "blockers": {"type": "array", "items": {"type": "string"}}, "evidence_refs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tenant_ownership_coverage", "cross_tenant_leaks", "permission_coverage", "policy_coverage", "runner_attestation_coverage", "runner_isolation_failures", "model_gateway_bypasses", "quota_bypasses", "duplicate_meter_events", "billing_difference", "audit_coverage", "classification_coverage", "retention_coverage", "legal_hold_deletion_events", "offline_network_requests", "critical_open_risks", "evidence_traceability"],
+      "properties": {
+        "tenant_ownership_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "cross_tenant_leaks": {"type": "integer", "minimum": 0},
+        "permission_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "policy_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "runner_attestation_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "runner_isolation_failures": {"type": "integer", "minimum": 0},
+        "model_gateway_bypasses": {"type": "integer", "minimum": 0}, "quota_bypasses": {"type": "integer", "minimum": 0}, "duplicate_meter_events": {"type": "integer", "minimum": 0},
+        "billing_difference": {"type": "number", "minimum": 0}, "audit_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "classification_coverage": {"type": "number", "minimum": 0, "maximum": 1}, "retention_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "legal_hold_deletion_events": {"type": "integer", "minimum": 0}, "offline_network_requests": {"type": "integer", "minimum": 0},
+        "critical_open_risks": {"type": "integer", "minimum": 0}, "evidence_traceability": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

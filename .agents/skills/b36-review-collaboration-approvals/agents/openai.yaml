@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Review Approvals"
+  short_description: "Bind reviews to exact commits and evidence"
+  default_prompt: "Use $b36-review-collaboration-approvals to enforce separation of duties and evidence-bound approvals."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B02: Technical Debt Inventory"
+  short_description: "Run Precision Migration B02 with evidence controls"
+  default_prompt: "Use $pm-b02-technical-debt-inventory to execute this Precision Migration contract with fail-closed evidence."

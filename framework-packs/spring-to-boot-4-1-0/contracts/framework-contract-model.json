@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "pack_key": "spring-to-boot-4-1-0",
+  "model_status": "DECLARED_NOT_RUN",
+  "source_resolution": {
+    "source_family": "required-exact",
+    "source_framework_version": "required-exact",
+    "source_java_version": "required-exact",
+    "build_tool": "required-exact"
+  },
+  "target_tuple": {
+    "framework": "spring-boot",
+    "version": "4.1.0",
+    "spring_framework": "7.0.8",
+    "java": "21",
+    "servlet_namespace": "jakarta.servlet",
+    "container": "tomcat-11.0.22"
+  },
+  "capabilities": [
+    {
+      "id": "boot-version-chain",
+      "domain": "build",
+      "status": "declared",
+      "source_traces": ["spring-boot-parent", "spring-boot-plugin", "dependency-management"],
+      "obligations": ["apply only the chain valid for the exact source version band", "pin every Boot coordinate to 4.1.0", "build and test the target with Java 21"]
+    },
+    {
+      "id": "jakarta-and-spring-7",
+      "domain": "framework",
+      "status": "declared",
+      "source_traces": ["spring-framework-dependencies", "javax-imports", "servlet-api"],
+      "obligations": ["migrate javax APIs where the recipe supports them", "preserve unsupported APIs as explicit review findings", "verify Spring Framework 7.0.8 linkage"]
+    },
+    {
+      "id": "mvc-bootstrap",
+      "domain": "web",
+      "status": "conditional",
+      "source_traces": ["web.xml", "DispatcherServlet", "Spring MVC XML or Java configuration"],
+      "obligations": ["preserve servlet mappings and context ownership", "preserve filters, interceptors, views and error contracts", "require an exact emitter when source bootstrap is not inferable"]
+    },
+    {
+      "id": "security-data-and-side-effects",
+      "domain": "security-data-runtime",
+      "status": "blocked",
+      "source_traces": ["security configuration", "repositories", "transaction annotations", "messaging/cache/scheduler providers"],
+      "obligations": ["fail closed without exact provider profiles", "preserve authorization and transaction boundaries", "never invent production or external provider evidence"]
+    }
+  ],
+  "execution_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN"
+}

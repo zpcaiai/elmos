@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.flaky-test-profile.v1",
+  "type": "object",
+  "required": ["testCaseId", "status", "observationCount", "failureRate", "attemptEvidenceRefs"],
+  "properties": {
+    "testCaseId": {"type": "string"},
+    "status": {"enum": ["SUSPECTED", "REPRODUCED", "CONFIRMED", "ROOT_CAUSE_IDENTIFIED", "FIXED_PENDING_VALIDATION", "FIXED"]},
+    "observationCount": {"type": "integer", "minimum": 1},
+    "failureRate": {"type": "number", "minimum": 0, "maximum": 1},
+    "cause": {"type": "string"},
+    "attemptEvidenceRefs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

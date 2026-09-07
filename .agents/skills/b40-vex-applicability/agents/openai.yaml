@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Vex Applicability"
+  short_description: "Run evidence-bound Batch 40 vex applicability work"
+  default_prompt: "Use $b40-vex-applicability to implement and verify this capability with fail-closed evidence."

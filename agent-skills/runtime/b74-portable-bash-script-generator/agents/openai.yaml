@@ -1,0 +1,4 @@
+interface:
+  display_name: "B74 Portable Bash Script Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b74-portable-bash-script-generator to execute this ELMOS project Skill with fail-closed evidence."

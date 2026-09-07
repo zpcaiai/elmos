@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "rendering-hydration",
+  "obligation_symbol": "diff_rendering_hydration",
+  "variant": "TARGET_ONLY",
+  "pointer": "/renderingHydration/duplicateEffectsAllowed",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:39068082c1a6364706426580de10310c57ffd50f1cc9e5ee2417fde11cd19577",
+  "canonical_block_digest": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+  "mutant_block_digest": "sha256:e8d8744cbb9c6b52ef3c80383ea41ec954a04af1f14a88ceefe3fbf55533c9ed",
+  "counterexample_replay": {
+    "block_id": "rendering-hydration",
+    "pointer": "/renderingHydration/duplicateEffectsAllowed",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "mode": "HYDRATABLE_CSR",
+      "hydrationPolicy": "REQUIRE_MATCH",
+      "requested": "MATCH",
+      "status": "MATCHED",
+      "duplicateEffectsAllowed": false,
+      "duplicateEffects": false,
+      "mismatchVisible": false
+    },
+    "mutant_observation": {
+      "mode": "HYDRATABLE_CSR",
+      "hydrationPolicy": "REQUIRE_MATCH",
+      "requested": "MATCH",
+      "status": "MATCHED",
+      "duplicateEffectsAllowed": true,
+      "duplicateEffects": false,
+      "mismatchVisible": false
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

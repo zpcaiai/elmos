@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "status": "NOT_RUN",
+  "claim_ceiling": "experimental",
+  "executor_must_differ_from_implementer": true,
+  "evidence_must_be_content_addressed": true,
+  "tracks": [
+    {
+      "id": "assistive-technology",
+      "status": "NOT_RUN",
+      "owner": "independent-accessibility-reviewer",
+      "environments": [
+        "macOS-VoiceOver-Safari-exact-version",
+        "Windows-NVDA-Firefox-exact-version",
+        "Windows-JAWS-Chrome-exact-version"
+      ],
+      "journeys": [
+        "configure-eight-language-starter",
+        "configure-python-postgresql-jwt",
+        "review-entities-relations-rules-permissions",
+        "recover-durable-job",
+        "start-and-stop-rootless-runtime",
+        "download-content-addressed-archive"
+      ],
+      "required_evidence": [
+        "environment-inventory",
+        "screen-reader-transcript",
+        "keyboard-and-focus-transcript",
+        "issue-log",
+        "independent-signoff"
+      ]
+    },
+    {
+      "id": "independent-user-acceptance",
+      "status": "NOT_RUN",
+      "owner": "independent-ux-research",
+      "minimum_organizations": 2,
+      "minimum_participants": 6,
+      "roles": [
+        "application-developer",
+        "platform-engineer",
+        "security-reviewer"
+      ],
+      "success_criteria": [
+        "all P0 journeys complete without facilitator intervention",
+        "unsupported profile is understood before execution",
+        "NOT_RUN and NOT_CERTIFIED boundaries are correctly interpreted",
+        "no credential is entered into project description or persisted draft"
+      ],
+      "required_evidence": [
+        "consent-and-purpose-record",
+        "participant-role-matrix",
+        "task-observation-log",
+        "severity-ranked-findings",
+        "independent-acceptance-decision"
+      ]
+    },
+    {
+      "id": "external-conformance",
+      "status": "NOT_RUN",
+      "owner": "qualified-external-assessor",
+      "target": "WCAG-2.2-AA-and-declared-client-contracts",
+      "required_evidence": [
+        "assessment-scope",
+        "exact-build-digest",
+        "assessment-report",
+        "open-finding-register",
+        "signed-decision"
+      ]
+    }
+  ],
+  "promotion_rule": "Only scripts/batch32/run_client_gate.py may consume completed independent evidence; this plan cannot promote support status."
+}

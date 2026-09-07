@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/company-series/batch-17/evidence-pack.schema.json",
+  "title": "Batch 17 Evidence Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "program_id",
+    "source_version",
+    "organization_id",
+    "gate_evidence",
+    "complete",
+    "external_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 17
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate_evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "gate-evidence.schema.json"
+      },
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "external_operation_executed": {
+      "const": false
+    }
+  }
+}

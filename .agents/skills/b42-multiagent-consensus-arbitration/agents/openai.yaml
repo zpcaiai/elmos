@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Multiagent Consensus Arbitration"
+  short_description: "Run evidence-bound Batch 42 multiagent consensus arbitration wor"
+  default_prompt: "Use $b42-multiagent-consensus-arbitration to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Manufacturing Mes Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $manufacturing-mes-master-data-identity-hierarchy-and-ef-2b0d41c6 to implement its fail-closed ELMOS Product B50 contract."

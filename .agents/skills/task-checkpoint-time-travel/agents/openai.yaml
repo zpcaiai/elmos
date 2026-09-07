@@ -1,0 +1,6 @@
+interface:
+  display_name: "Task Checkpoint Time Travel"
+  short_description: "Run task-checkpoint-time-travel with bounded commercial controls"
+  default_prompt: "Use $task-checkpoint-time-travel through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,645 @@
+{
+  "caseId": "11-orchestrator-plan",
+  "description": "Phase DAG synthesis, approval gates derived from policy, and an ETA distribution.",
+  "evidence": {
+    "journalHead": "sha256:89de91507efb28741c9f9e8cd8abbf622ff1b3cf055427fd52833e040568266e",
+    "policyDigest": "sha256:cecb323f2ce1466ea1b4f93800035bb26baf9eae26599f83131f41430e0b5447"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:61be42d3b5537b76a398fccc93fefb248e93efb03e26bf04ee3158b37214a524",
+  "outputDigest": "sha256:03378eb2553402df4c978cc41afea9f0560c11c892277a350ff30bf4a5942785",
+  "projections": {
+    "output.criticalPath": [
+      "discover",
+      "buildgraph",
+      "index",
+      "intent",
+      "impact",
+      "recipes",
+      "transform",
+      "verify",
+      "rollout"
+    ],
+    "output.plan.approvalGates": [
+      {
+        "beforeStepId": "rollout",
+        "gateId": "gate-rollout",
+        "reason": "policy 'enterprise-default' requires approval for a R4 step",
+        "roles": [
+          "tech-lead"
+        ]
+      }
+    ],
+    "output.plan.estimated": {
+      "changedFiles": 0,
+      "costUsd": {
+        "p50": "0",
+        "p95": "0"
+      },
+      "wallClockSeconds": {
+        "p50": 5880,
+        "p80": 8114,
+        "p95": 11704
+      }
+    },
+    "output.plan.riskSummary": {
+      "overallClass": "R4",
+      "reasons": [
+        "intent 'structural-refactor' has risk floor R2",
+        "public API compatibility is 'backward-compatible'",
+        "mutating steps: transform, repair, rollout"
+      ],
+      "unknownRiskWeight": "0"
+    },
+    "output.plan.steps": [
+      {
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 240
+        },
+        "dependsOn": [],
+        "inputs": [
+          "repository_snapshot"
+        ],
+        "name": "Repository discovery",
+        "outputs": [
+          "repository_inventory",
+          "sensitive_area_map"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R0",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "repository-discovery",
+        "stepId": "discover",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "scope-containment"
+          }
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L1"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 1200
+        },
+        "dependsOn": [
+          "discover"
+        ],
+        "inputs": [
+          "repository_inventory"
+        ],
+        "name": "Build graph and environment",
+        "outputs": [
+          "build_graph",
+          "toolchain_lock",
+          "baseline_report"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "build-graph-and-environment",
+        "stepId": "buildgraph",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "build"
+          }
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L1"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 1800
+        },
+        "dependsOn": [
+          "discover",
+          "buildgraph"
+        ],
+        "inputs": [
+          "repository_inventory",
+          "build_graph"
+        ],
+        "name": "Semantic index",
+        "outputs": [
+          "semantic_index_snapshot",
+          "coverage_metrics"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R0",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "semantic-index",
+        "stepId": "index",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "parse"
+          }
+        ]
+      },
+      {
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 120
+        },
+        "dependsOn": [
+          "index"
+        ],
+        "inputs": [
+          "refactor_request",
+          "semantic_index_snapshot"
+        ],
+        "name": "Compile refactor intent",
+        "outputs": [
+          "compiled_intent",
+          "acceptance_predicates"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R0",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "refactor-intent-compiler",
+        "stepId": "intent",
+        "validation": []
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 600
+        },
+        "dependsOn": [
+          "intent"
+        ],
+        "inputs": [
+          "compiled_intent",
+          "semantic_index_snapshot"
+        ],
+        "name": "Change impact analysis",
+        "outputs": [
+          "impact_report",
+          "change_closure",
+          "wave_plan"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R0",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "change-impact-analysis",
+        "stepId": "impact",
+        "validation": []
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 360
+        },
+        "dependsOn": [
+          "index"
+        ],
+        "inputs": [
+          "semantic_index_snapshot"
+        ],
+        "name": "API compatibility baseline",
+        "outputs": [
+          "api_diff"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "api-compatibility",
+        "stepId": "api-baseline",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "api-compatibility"
+          }
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 600
+        },
+        "dependsOn": [
+          "impact"
+        ],
+        "inputs": [
+          "compiled_intent",
+          "change_closure"
+        ],
+        "name": "Recipe synthesis and lock",
+        "outputs": [
+          "recipe_set",
+          "recipe_lock",
+          "dry_run_patch"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "recipe-synthesis",
+        "stepId": "recipes",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "idempotence"
+          }
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 1800
+        },
+        "dependsOn": [
+          "recipes"
+        ],
+        "inputs": [
+          "recipe_lock",
+          "repository_snapshot"
+        ],
+        "name": "Deterministic transform",
+        "outputs": [
+          "patch_set",
+          "source_map"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R2",
+        "rollback": {
+          "strategy": "reverse-patch"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "deterministic-transform-executor",
+        "stepId": "transform",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "scope-containment"
+          },
+          {
+            "blocking": true,
+            "gate": "round-trip"
+          }
+        ],
+        "writeSet": [
+          "**"
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 3600
+        },
+        "dependsOn": [
+          "transform"
+        ],
+        "inputs": [
+          "patch_set",
+          "baseline_report"
+        ],
+        "name": "Layered verification",
+        "outputs": [
+          "validation_report",
+          "gate_decisions",
+          "sarif"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "test-and-verification",
+        "stepId": "verify",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "typecheck"
+          },
+          {
+            "blocking": true,
+            "gate": "build"
+          },
+          {
+            "blocking": true,
+            "gate": "changed-target-tests"
+          },
+          {
+            "blocking": true,
+            "gate": "anti-cheat"
+          }
+        ]
+      },
+      {
+        "adapterRequirements": {
+          "*": "L2"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 1200
+        },
+        "dependsOn": [
+          "verify"
+        ],
+        "inputs": [
+          "validation_report",
+          "patch_set"
+        ],
+        "name": "Bounded auto-repair",
+        "outputs": [
+          "updated_patch_set",
+          "repair_attempt_records"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R2",
+        "rollback": {
+          "strategy": "reverse-patch"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "bounded-auto-repair",
+        "stepId": "repair",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "anti-cheat"
+          }
+        ],
+        "writeSet": [
+          "**"
+        ]
+      },
+      {
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 60
+        },
+        "dependsOn": [
+          "verify"
+        ],
+        "inputs": [
+          "validation_report",
+          "patch_set"
+        ],
+        "name": "Human approval gate",
+        "outputs": [
+          "approval_decision"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "human-approval-gate",
+        "stepId": "approval",
+        "validation": []
+      },
+      {
+        "adapterRequirements": {
+          "*": "L3"
+        },
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 1800
+        },
+        "dependsOn": [
+          "verify"
+        ],
+        "inputs": [
+          "patch_set",
+          "validation_report"
+        ],
+        "name": "Canary rollout / changeset",
+        "outputs": [
+          "changesets",
+          "rollout_plan",
+          "canary_report"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R4",
+        "rollback": {
+          "strategy": "compensation"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "canary-rollout",
+        "stepId": "rollout",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "rollback-proof"
+          }
+        ],
+        "writeSet": [
+          "**"
+        ]
+      },
+      {
+        "budgets": {
+          "maxAttempts": 3,
+          "maxCostUsd": "0",
+          "timeoutSeconds": 240
+        },
+        "dependsOn": [
+          "verify"
+        ],
+        "inputs": [
+          "validation_report"
+        ],
+        "name": "Evidence and audit",
+        "outputs": [
+          "evidence_bundle",
+          "signed_manifest",
+          "billing_breakdown"
+        ],
+        "readSet": [
+          "**"
+        ],
+        "riskClass": "R1",
+        "rollback": {
+          "strategy": "forward-only"
+        },
+        "scope": {
+          "paths": [
+            "**"
+          ],
+          "repositories": [
+            "billing"
+          ]
+        },
+        "skill": "evidence-and-audit",
+        "stepId": "evidence",
+        "validation": [
+          {
+            "blocking": true,
+            "gate": "evidence-completeness"
+          }
+        ]
+      }
+    ],
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R4",
+  "sideEffectsPerformed": false,
+  "skill": "repository-refactor-orchestrator",
+  "status": "succeeded"
+}

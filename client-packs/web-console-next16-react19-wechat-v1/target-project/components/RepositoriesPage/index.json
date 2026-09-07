@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "repository-workspace-studio": "/components/RepositoryWorkspaceStudio/index"
+  }
+}

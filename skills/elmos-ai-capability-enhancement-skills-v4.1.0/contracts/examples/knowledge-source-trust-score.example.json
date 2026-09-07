@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "knowledge-source-trust-score-example",
+  "status": "READY",
+  "content_hash": "c7d1cb02924d71ff1cdea74d7a41486b57f267e91541e067cc009480b3735ad5",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

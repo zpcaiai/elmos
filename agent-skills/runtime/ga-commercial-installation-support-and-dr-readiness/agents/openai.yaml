@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ga Commercial Installation Support and Dr Readiness"
+  short_description: "Run this ELMOS product-closure Skill with evidence"
+  default_prompt: "Use $ga-commercial-installation-support-and-dr-readiness to execute this ELMOS product-closure Skill with fail-closed evidence."

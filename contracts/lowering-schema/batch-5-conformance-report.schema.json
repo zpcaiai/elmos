@@ -1,0 +1,5 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/lowering/v1/conformance.schema.json","title":"Batch 5 Conformance Report","type":"object","additionalProperties":false,
+  "required":["batch","status","loweringRunId","modules","coverage","fidelity","blockingErrors","openObligations","eligibleForBatch6"],
+  "properties":{"batch":{"const":5},"status":{"enum":["passed","blocked"]},"loweringRunId":{"type":"string"},"modules":{"type":"array","items":{"type":"object","required":["targetModuleId","gate","eligibleForDependencyMapping","eligibleForFrameworkLowering","eligibleForBehavioralTesting","restrictions"]}},"coverage":{"type":"object"},"fidelity":{"type":"object"},"blockingErrors":{"type":"array","items":{"type":"string"}},"openObligations":{"type":"array","items":{"type":"string"}},"eligibleForBatch6":{"type":"boolean"}}
+}

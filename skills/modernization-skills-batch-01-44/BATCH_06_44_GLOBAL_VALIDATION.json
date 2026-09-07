@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "batches": 39,
+  "skills": 624,
+  "unique_skills": 624,
+  "schemas": 234,
+  "package_files": 1677,
+  "errors": []
+}

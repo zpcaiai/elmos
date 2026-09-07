@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2006",
+  "skill_name": "frt-2006-frt-cli",
+  "batch": "G20",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g20/frt-2006-frt-cli/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.frt-cli",
+  "execution_contract_sha256": "sha256:8b6053c9273535d12c8391be932970a16ad07938329e8480e65b0dc1de492f6b",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:804937ac86c7869c977a8013cf36d299e8ea1c91dea839b477610cd3c8cb6c20",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

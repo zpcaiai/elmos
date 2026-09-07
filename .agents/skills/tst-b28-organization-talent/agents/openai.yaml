@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B28 Organization Talent"
+  short_description: "Help with Tst B28 Organization Talent tasks"
+  default_prompt: "Use $tst-b28-organization-talent to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

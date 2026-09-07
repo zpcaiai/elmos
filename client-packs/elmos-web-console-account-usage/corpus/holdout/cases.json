@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "corpus": "holdout",
+  "independent_from_development": true,
+  "may_author_rules": false,
+  "contains_customer_data": false,
+  "execution_status": "PASSED_LOCAL",
+  "cases": [
+    {"id":"HOLDOUT-QUOTA-001","journey":"hard-stop-boundary","fixture":"synthetic-reconciled-consumption-equals-limit","expected":"hard-stop-visible"},
+    {"id":"HOLDOUT-CONTRACT-001","journey":"invalid-ledger","fixture":"synthetic-negative-ledger-quantity","expected":"503-fail-closed"},
+    {"id":"HOLDOUT-TENANT-001","journey":"cross-tenant-denial","fixture":"signed-token-for-different-tenant","expected":"403"}
+  ],
+  "external_verification_status": "NOT_RUN"
+}

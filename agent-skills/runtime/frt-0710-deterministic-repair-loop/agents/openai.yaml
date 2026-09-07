@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deterministic Repair Loop"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0710-deterministic-repair-loop to run FRT-0710 through the governed FRT runtime with exact scope and fail-closed evidence."

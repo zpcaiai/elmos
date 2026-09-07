@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thirty-Path Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1713-thirty-path-certification to run FRT-1713 through the governed FRT runtime with exact scope and fail-closed evidence."

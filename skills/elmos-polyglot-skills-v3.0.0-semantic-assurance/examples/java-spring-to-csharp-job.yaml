@@ -1,0 +1,32 @@
+schemaVersion: elmos.migration-job/v1
+jobId: demo-orders-java-to-csharp
+mode: convert
+source:
+  technology: java
+  location: ./fixtures/java-orders
+  revision: 0123456789abcdef
+  framework: spring-boot
+target:
+  technology: csharp
+  profile: examples/target-profile.yaml
+  framework: aspnet-core
+routeProfile: route-java-spring-to-csharp-aspnet-core
+scope:
+  include: [src/**, pom.xml]
+  exclude: [target/**]
+policy:
+  network:
+    default: deny
+    allow: []
+  secrets:
+    mode: runtime-handles-only
+    allowedNames: []
+  approvals:
+    requiredFor: [irreversible-data-change, production-write]
+  budgets:
+    wallTimeMinutes: 120
+    cpu: "4"
+    memoryMiB: 8192
+    diskMiB: 20480
+    maxPatchLines: 5000
+readiness: not-run

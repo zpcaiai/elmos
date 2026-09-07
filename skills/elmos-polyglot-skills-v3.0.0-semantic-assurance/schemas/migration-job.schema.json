@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/migration-job.schema.json",
+  "title": "ELMOS Migration Job",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "jobId",
+    "mode",
+    "source",
+    "target",
+    "policy",
+    "readiness"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.migration-job/v1"
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "generate-project",
+        "modernize",
+        "convert",
+        "interop"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "technology",
+        "location"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "technology",
+        "profile"
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "network",
+        "secrets",
+        "approvals",
+        "budgets"
+      ]
+    },
+    "readiness": {
+      "const": "not-run"
+    }
+  }
+}

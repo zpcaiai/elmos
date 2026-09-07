@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:dependency-edge",
+  "title": "DependencyEdge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dependency_kind",
+    "from_symbol",
+    "record_id",
+    "resolved",
+    "schema_version",
+    "scope",
+    "to_symbol"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "from_symbol": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to_symbol": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dependency_kind": {
+      "enum": [
+        "call",
+        "import",
+        "inherit",
+        "reflect",
+        "config",
+        "unknown"
+      ]
+    },
+    "resolved": {
+      "type": "boolean"
+    },
+    "confidence": {
+      "enum": [
+        "verified",
+        "corroborated",
+        "single-source",
+        "asserted",
+        "unknown"
+      ]
+    }
+  }
+}

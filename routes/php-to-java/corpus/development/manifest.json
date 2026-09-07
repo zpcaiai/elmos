@@ -1,0 +1,11 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "development",
+  "customer_repository": false,
+  "evidence_class": "development-fixture",
+  "independent": false,
+  "rule_authoring_input": true,
+  "schema_version": 1,
+  "source_file": "pricing.php",
+  "source_language": "php"
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-developer-workflow",
+  "status": "research",
+  "owner": "TODO",
+  "exact_scope": {
+    "migration_route": "java-to-csharp",
+    "source_artifact_digest": "sha256:TODO",
+    "target_artifact_digest": "sha256:TODO",
+    "repository_provider": "github",
+    "repository_id": "org/repo",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:TODO"
+  },
+  "metrics": {
+    "ide_protocol_conformance": 0,
+    "extension_build_pass_rate": 0,
+    "cli_contract_pass_rate": 0,
+    "pr_bot_dry_run_pass_rate": 0,
+    "local_preview_pass_rate": 0,
+    "navigation_accuracy": 0,
+    "explanation_provenance_coverage": 0,
+    "quick_fix_postcondition_pass_rate": 0,
+    "conflict_resolution_pass_rate": 0,
+    "ownership_protection_pass_rate": 0,
+    "affected_test_recall": 0,
+    "recipe_authoring_validation_pass_rate": 0,
+    "review_sync_pass_rate": 0,
+    "offline_workflow_pass_rate": 0,
+    "telemetry_privacy_pass_rate": 0,
+    "representative_workflow_pass_rate": 0,
+    "developer_task_success_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "cross_tenant_access": 1,
+    "unauthorized_repository_writes": 1,
+    "secret_leaks": 1,
+    "critical_source_mapping_errors": 1,
+    "protected_region_overwrites": 1,
+    "test_integrity_violations": 1,
+    "telemetry_policy_violations": 1,
+    "unapproved_dependency_changes": 1,
+    "unreplayed_local_failures": 1,
+    "unknown_p0_workflows": 1,
+    "self_approvals": 1,
+    "comment_spam_incidents": 1,
+    "hidden_network_dependencies": 1,
+    "stale_critical_approvals": 1
+  },
+  "evidence_refs": []
+}

@@ -1,0 +1,29 @@
+batch: 20
+slug: database-schema-data-migration
+title: "数据库Schema与数据迁移基础"
+phase: "G 数据库精密互转"
+skills:
+  - name: schema-inventory
+    description: "盘点数据库对象、依赖、大小、变更频率、权限、过程代码和专有能力。"
+  - name: data-type-mapping
+    description: "映射数据类型、精度、Scale、编码、时区、NULL、默认值和边界行为。"
+  - name: table-and-constraint-converter
+    description: "转换表、列、主外键、唯一、检查、默认值和依赖顺序。"
+  - name: index-and-partition-converter
+    description: "转换索引、分区、聚簇、表达式、部分索引和存储布局。"
+  - name: view-and-materialized-view-converter
+    description: "转换普通视图、物化视图、刷新策略、权限和依赖。"
+  - name: sequence-and-identity-converter
+    description: "转换 Sequence、Identity、Auto Increment 和应用取号方式。"
+  - name: data-profile-and-quality-analysis
+    description: "分析 NULL、空字符串、越界、重复、孤儿、编码、时区和数据倾斜。"
+  - name: full-load-migration
+    description: "规划和执行可恢复、可分片、可校验的全量数据迁移。"
+  - name: incremental-cdc-migration
+    description: "规划和执行日志/触发器/时间戳增量迁移及位点恢复。"
+  - name: data-checksum-validation
+    description: "执行表级、分区级、列级和业务聚合校验。"
+  - name: row-level-differential-validation
+    description: "对关键表执行行级规范化 Diff，并分类差异。"
+  - name: cutover-and-rollback-plan
+    description: "设计停机、低停机、双写、切流、回滚和数据收敛方案。"

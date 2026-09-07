@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-csharp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 200,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.cs",
+      "sha256": "sha256:7773713088535219c506b373a388e3405413cd87eba2878fccf6bc2269b30381"
+    },
+    {
+      "bytes": 248,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.cs",
+      "sha256": "sha256:57ae987e5e82e25fa6d82a62ef825a143b4cdd47fdbfba407d8f8c55102b1553"
+    },
+    {
+      "bytes": 197,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.cs",
+      "sha256": "sha256:57bc8b72064e7a435ed2810b9f6bc06809010aa61bd21d3af4b7d81f465a9bb0"
+    }
+  ]
+}

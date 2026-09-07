@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Path Planner"
+  short_description: "Build a deterministic migration DAG"
+  default_prompt: "Use $migration-path-planner for ELMOS Batch 4 DAG planning."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workload Target Placement And Modernization Planner"
+  short_description: "Govern Batch 16 infrastructure modernization"
+  default_prompt: "Use $workload-target-placement-and-modernization-planner to produce a governed infrastructure modernization artifact."

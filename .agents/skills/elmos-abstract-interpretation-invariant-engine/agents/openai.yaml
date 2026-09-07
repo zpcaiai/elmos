@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-abstract-interpretation-invariant-engine"
+  short_description: "Infer ranges, nullness, alias/effect facts and invariants that strengthen conversion safety and r..."
+  default_prompt: "Use $elmos-abstract-interpretation-invariant-engine through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-abstract-interpretation-invariant-engine"
+  handler_id: "execute_elmos_abstract_interpretation_invariant_engine"
+  operation: "FORMAL_EXECUTION"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

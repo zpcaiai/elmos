@@ -1,0 +1,5 @@
+interface:
+  display_name: "Technical Content Production Pipeline"
+  short_description: "Authoritative Batch 14 Skill 417 workflow"
+  default_prompt: "Use $technical-content-production-pipeline to execute its evidence-bound Batch 14 workflow."
+

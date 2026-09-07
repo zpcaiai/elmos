@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/3.0.0/data-migration-plan.schema.json",
+  "title": "DataMigrationPlan",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v3alpha1"
+    },
+    "kind": {
+      "const": "DataMigrationPlan"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "revisionSetId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisionSetId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "snapshot",
+        "cdc",
+        "reconciliation",
+        "cutover",
+        "rollback"
+      ],
+      "properties": {
+        "snapshot": {
+          "type": "object"
+        },
+        "cdc": {
+          "type": "object"
+        },
+        "reconciliation": {
+          "type": "object"
+        },
+        "cutover": {
+          "type": "object"
+        },
+        "rollback": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

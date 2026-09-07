@@ -1,0 +1,29 @@
+batch: 30
+slug: dual-run-differential
+title: "源目标双运行与行为差分"
+phase: "H 测试、验证与自动修复"
+skills:
+  - name: source-target-dual-runner
+    description: "编排源目标构建、启动、健康检查、隔离、执行和结果收集。"
+  - name: input-and-environment-synchronizer
+    description: "同步输入、配置、依赖、数据库、外部返回、Locale、时区和平台状态。"
+  - name: clock-random-uuid-controller
+    description: "注入可控时钟、随机种子、UUID、序列和调度点，降低非确定噪声。"
+  - name: http-differential-comparator
+    description: "比较状态码、Header、Body、错误、顺序、流、超时和重试。"
+  - name: database-state-comparator
+    description: "比较相关表、事务、约束、序列、触发器和最终数据库状态。"
+  - name: message-side-effect-comparator
+    description: "比较消息 Topic、Key、Header、Payload、次数、顺序、重试和 DLQ。"
+  - name: external-call-comparator
+    description: "比较外部调用参数、次数、顺序、幂等、超时、错误和不可逆意图。"
+  - name: trace-graph-comparator
+    description: "比较规范化 Trace 图、关键偏序和业务语义 Span。"
+  - name: ui-semantic-tree-comparator
+    description: "比较 Role、Name、State、Value、可见、可用、焦点和组件层级。"
+  - name: visual-differential-comparator
+    description: "比较关键区域、布局、文本、主题、响应式和感知视觉差异。"
+  - name: navigation-and-storage-comparator
+    description: "比较路由栈、返回、深链、本地存储、缓存和恢复状态。"
+  - name: performance-differential-comparator
+    description: "比较延迟、吞吐、CPU、内存、GC、帧率、启动和资源泄漏。"

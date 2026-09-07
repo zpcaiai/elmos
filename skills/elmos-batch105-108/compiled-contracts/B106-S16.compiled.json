@@ -1,0 +1,75 @@
+{
+  "contract": {
+    "id": "B106-S16",
+    "batch": 106,
+    "name": "preview-runtime-provider-abstraction",
+    "dependencies": [
+      "B106-S10",
+      "B106-S11",
+      "B106-S15"
+    ],
+    "inputs": [
+      "provider adapters",
+      "capability declarations",
+      "certification fixtures"
+    ],
+    "outputs": [
+      "SandboxProvider SPI",
+      "provider capability matrix",
+      "certification results"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/providers/SandboxProvider.java",
+        "runtime/providers/vercel/",
+        "runtime/providers/e2b/",
+        "runtime/providers/fly/",
+        "runtime/providers/kata/"
+      ],
+      "interfaces": [
+        "SPI create/exec/exposePort/streamLogs/extend/stop/destroy/snapshot",
+        "event provider.certified"
+      ],
+      "data": [
+        "provider_registration",
+        "provider_capability",
+        "provider_certification"
+      ]
+    },
+    "workflow": [
+      "\u5b9a\u4e49\u7a33\u5b9aProvider\u63a5\u53e3\u548c\u7edf\u4e00\u9519\u8bef\u7801",
+      "\u5b9e\u73b0\u80fd\u529b\u534f\u5546\u4e0e\u6700\u5c0f\u516c\u5171\u8bed\u4e49",
+      "\u9002\u914d\u8eab\u4efd\u3001\u8d85\u65f6\u3001\u7f51\u7edc\u548c\u7aef\u53e3\u5dee\u5f02",
+      "\u8fd0\u884c\u521b\u5efa/\u6267\u884c/\u66b4\u9732/\u5ef6\u671f/\u9500\u6bc1\u5951\u7ea6\u6d4b\u8bd5",
+      "\u8fd0\u884c\u5931\u8d25\u6ce8\u5165\u548c\u5e42\u7b49\u6d4b\u8bd5",
+      "\u53ea\u6709\u8ba4\u8bc1Provider\u8fdb\u5165\u751f\u4ea7\u8def\u7531"
+    ],
+    "tests": [
+      "\u4e0d\u652f\u6301\u80fd\u529b\u8fd4\u56deUNSUPPORTED\u800c\u975e\u9759\u9ed8\u964d\u7ea7",
+      "destroy\u91cd\u590d\u8c03\u7528\u5e42\u7b49",
+      "\u7f51\u7edc\u6545\u969c\u6062\u590d\u6d4b\u8bd5",
+      "Provider\u51ed\u8bc1\u9694\u79bb",
+      "\u5047Provider\u4f2a\u9020\u9500\u6bc1\u56de\u6267\u88ab\u62d2\u7edd"
+    ],
+    "evidence": [
+      "provider-spi.json",
+      "capability-matrix.json",
+      "contract-test-results.json",
+      "provider-certificate.json"
+    ],
+    "definition_of_done": [
+      "\u81f3\u5c11\u4e00\u4e2aProvider\u7aef\u5230\u7aef\u901a\u8fc7",
+      "\u9519\u8bef\u6a21\u578b\u7edf\u4e00",
+      "\u80fd\u529b\u53ef\u67e5\u8be2",
+      "\u751f\u4ea7\u4ec5\u8def\u7531\u8ba4\u8bc1Provider",
+      "\u66ff\u6362Provider\u4e0d\u6539\u53d8\u4e0a\u5c42Workflow"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:41b12e4c5e15636c86120a7948c183132970fb8815473487a8008ac2050855cb",
+  "compiledVersion": 1
+}

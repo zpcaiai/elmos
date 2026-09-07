@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Developer Workflow Factory"
+  short_description: "Build an evidence-backed developer workflow pack"
+  default_prompt: "Use $b36-developer-workflow-factory to build an exact IDE, CLI, and pull-request developer workflow pack."

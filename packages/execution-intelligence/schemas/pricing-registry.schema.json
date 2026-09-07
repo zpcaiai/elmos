@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/pricing-registry.schema.json",
+  "title": "Model pricing registry",
+  "description": "Rates are configuration, never code. Provenance fields are mandatory.",
+  "type": "object",
+  "required": ["registry_version", "models"],
+  "properties": {
+    "registry_version": { "type": "string" },
+    "base_currency": { "type": "string" },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "effective_date", "verified_at", "source_reference", "rates_per_million"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "provider": { "type": "string" },
+          "display_name": { "type": "string" },
+          "currency": { "type": "string" },
+          "effective_date": { "type": "string", "minLength": 1 },
+          "verified_at": { "type": "string", "minLength": 1 },
+          "source_reference": { "type": "string", "minLength": 1 },
+          "billing_mode": { "type": "string" },
+          "not_for_billing": { "type": "boolean" },
+          "rates_per_million": {
+            "type": "object",
+            "required": ["input", "cached_input", "cache_write", "output", "reasoning_output"],
+            "properties": {
+              "input": { "type": "number", "minimum": 0 },
+              "cached_input": { "type": "number", "minimum": 0 },
+              "cache_write": { "type": "number", "minimum": 0 },
+              "output": { "type": "number", "minimum": 0 },
+              "reasoning_output": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

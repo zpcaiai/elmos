@@ -1,0 +1,31 @@
+schemaVersion: elmos.spring-modernization-spec/v1
+jobId: demo-spring-modernization
+source:
+  repository: ./fixtures/legacy-spring
+  revision: 0123456789abcdef
+  expectedJava: "8"
+  expectedSpringBoot: "2.1"
+target:
+  java: "21"
+  springBoot: "approved-current-target"
+  packaging: container
+  architecture: modular-monolith
+strategy:
+  mode: incremental
+  allowStrangler: true
+  allowServiceExtraction: false
+preserve:
+  - public-api
+  - security-policy
+  - transaction-semantics
+  - serialization
+  - data-compatibility
+  - performance-budgets
+requiredBaselines:
+  - clean-build
+  - unit-and-integration-tests
+  - api-contract
+  - data-invariants
+  - performance
+  - security
+readiness: not-run

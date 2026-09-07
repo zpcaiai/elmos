@@ -1,0 +1,50 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: mcp-2026-modernization
+  version: 4.0.0
+  status: not-certified
+spec:
+  routeOwner: domain-pack.project-generation
+  routable: false
+  skill: elmos-mcp-2026-profile-compiler
+  workflow: workflows/mcp-2026-modernization.yaml
+  source: Legacy or pre-2026 MCP server/client/gateway implementation
+  targets:
+  - mcp-2026-07-28
+  - mcp-apps
+  - agent-skills-standard
+  eligibility:
+  - source protocol behavior can be fingerprinted
+  - tool/resource/prompt catalog is recoverable
+  - authorization and side effects are declared
+  requiredEvidence:
+  - protocol negotiation
+  - stateless reconnect
+  - Tasks crash recovery
+  - Skills and Apps extension negotiation
+  - enterprise authorization negative tests
+  - rollback to prior compatible endpoint
+  holdoutScenarios:
+  - unknown extension
+  - stale task worker
+  - wrong-audience token
+  - tampered UI resource
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+    faultInjectionRequired: true
+    upgradeAndRollbackRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route remains a production implementation contract until exact source/target revisions execute with sealed
+    independent evidence.

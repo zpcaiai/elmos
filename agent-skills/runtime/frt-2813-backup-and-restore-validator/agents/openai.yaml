@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backup and Restore Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2813-backup-and-restore-validator to run FRT-2813 through the governed FRT runtime with exact scope and fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 在线调试工作台"
+  short_description: "Guide 在线调试工作台 with evidence controls"
+  default_prompt: "Use $elmos-online-debug-workbench as guidance for 在线调试工作台 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

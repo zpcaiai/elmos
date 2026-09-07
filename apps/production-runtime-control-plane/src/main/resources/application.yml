@@ -1,0 +1,50 @@
+server:
+  port: ${ELMOS_PRODUCTION_RUNTIME_PORT:8080}
+  shutdown: graceful
+spring:
+  application:
+    name: elmos-production-runtime-control-plane
+  flyway:
+    enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+        add-additional-paths: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: elmos-production-runtime-control-plane
+      component: ${component:scheduler}
+elmos:
+  production-runtime:
+    enabled: true
+    workload-token-file: ${ELMOS_PRODUCTION_RUNTIME_WORKLOAD_TOKEN_FILE:}
+    service-mesh-http: ${ELMOS_PRODUCTION_RUNTIME_SERVICE_MESH_HTTP:false}
+    billing:
+      adapter: ${ELMOS_PRODUCTION_RUNTIME_BILLING_ADAPTER:jdbc}
+      endpoint: ${ELMOS_PRODUCTION_RUNTIME_BILLING_ENDPOINT:http://elmos-billing:8080}
+    topup:
+      token-file: ${ELMOS_PRODUCTION_RUNTIME_TOPUP_TOKEN_FILE:}
+    migration:
+      enabled: ${ELMOS_PRODUCTION_RUNTIME_MIGRATION_ENABLED:false}
+      exit-after-run: ${ELMOS_PRODUCTION_RUNTIME_MIGRATION_EXIT_AFTER_RUN:false}
+    gate:
+      enabled: ${ELMOS_PRODUCTION_RUNTIME_GATE_ENABLED:false}
+      token-file: ${ELMOS_PRODUCTION_RUNTIME_GATE_TOKEN_FILE:}
+      fixture-file: ${ELMOS_PRODUCTION_RUNTIME_GATE_FIXTURE_FILE:}
+    provider:
+      enabled: ${ELMOS_PRODUCTION_RUNTIME_PROVIDER_ENABLED:false}
+      profile-file: ${ELMOS_PRODUCTION_RUNTIME_PROVIDER_PROFILE_FILE:}
+      object-uri-prefix: ${ELMOS_PRODUCTION_RUNTIME_OBJECT_URI_PREFIX:}
+    outbox:
+      enabled: ${ELMOS_PRODUCTION_RUNTIME_OUTBOX_ENABLED:false}
+      endpoint: ${ELMOS_PRODUCTION_RUNTIME_OUTBOX_ENDPOINT:}
+      token-file: ${ELMOS_PRODUCTION_RUNTIME_OUTBOX_TOKEN_FILE:}

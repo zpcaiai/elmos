@@ -1,0 +1,18 @@
+interface:
+  display_name: "elmos-cross-runtime-trace-alignment"
+  short_description: "Align semantically corresponding calls/events/transactions across structurally different runtimes..."
+  default_prompt: "Use $elmos-cross-runtime-trace-alignment through its exact repository-owned semantic-assurance runtime binding; preserve NOT_RUN and blockers."
+runtime:
+  module: "elmos_semantic_assurance.registry"
+  registry: "SkillRegistry"
+  registry_key: "elmos-cross-runtime-trace-alignment"
+  handler_id: "execute_elmos_cross_runtime_trace_alignment"
+  operation: "SEMANTIC_COMPARISON"
+  generic_fallback: false
+security:
+  trusted_scope_required: true
+  archive_code_execution: "forbidden"
+  external_effects: "not-authorized-by-skill"
+evidence:
+  external: "NOT_RUN"
+  certification: "NOT_CERTIFIED"

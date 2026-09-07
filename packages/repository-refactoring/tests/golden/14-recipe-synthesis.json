@@ -1,0 +1,61 @@
+{
+  "caseId": "14-recipe-synthesis",
+  "description": "Recipe selection by language and measured adapter level, with a recipes.lock.",
+  "evidence": {
+    "recipeLockDigest": "sha256:398e11ee758ca562bd26ad7728566009ab697a672d6f20302de79820e967f76f",
+    "synthesisDigest": "sha256:234db6a92bf61a4d082ef10cc3c2dbd1fbc133c8806cf0e0980774b8c850a380"
+  },
+  "failureClass": null,
+  "inputDigest": "sha256:afd14fd648d4f44255fd111fce7ec4baf1e174ff38398b299dbc6047250640f7",
+  "outputDigest": "sha256:2da6d11e40a0dda62cad2bfb4ef765ffe94f221aa78064d587bba04d5d58f4a2",
+  "projections": {
+    "output.conflicts": [],
+    "output.recipeLock.recipes": [
+      {
+        "adapter": "python-refactor-adapter",
+        "adapterDigest": "sha256:bdfb291a3a3bccf71d7acac821fe45a93c88588d0e7c6f74bc10d67dcd0b28df",
+        "digest": "sha256:b300b202957df21571353d4b1542db7c8d0d8f794fef17c6ac2d8ad86b8ed400",
+        "parameters": {
+          "from": "post_entry",
+          "module": "acme.ledger",
+          "scope": "module",
+          "to": "record_entry"
+        },
+        "reference": "python-rename-symbol@1.0.0",
+        "status": "verified"
+      }
+    ],
+    "output.recipeSet": [
+      {
+        "available": true,
+        "operation": "rename-symbol",
+        "parameters": {
+          "from": "post_entry",
+          "module": "acme.ledger",
+          "scope": "module",
+          "to": "record_entry"
+        },
+        "reference": "python-rename-symbol@1.0.0",
+        "riskClass": "R2",
+        "status": "verified",
+        "unavailableReason": ""
+      }
+    ],
+    "output.recipeTestReport": {
+      "blockingReasons": [],
+      "changedFiles": 4,
+      "changedLines": 14,
+      "idempotent": true,
+      "ran": true,
+      "roundTripFailures": [],
+      "scopeExpansions": []
+    },
+    "output.unmatchedOperations": [],
+    "status": "succeeded"
+  },
+  "reasonCount": 0,
+  "riskClass": "R2",
+  "sideEffectsPerformed": false,
+  "skill": "recipe-synthesis",
+  "status": "succeeded"
+}

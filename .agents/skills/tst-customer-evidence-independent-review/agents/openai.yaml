@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst Customer Evidence Independent Review"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-customer-evidence-independent-review to run its exact Batch 38-45 cases with fail-closed evidence."

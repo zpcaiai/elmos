@@ -1,0 +1,32 @@
+{
+  "critical_data_regressions": 0,
+  "critical_security_regressions": 0,
+  "critical_transaction_regressions": 0,
+  "critical_unknowns": 0,
+  "customer_and_independent_evidence": "NOT_RUN",
+  "duplicate_message_or_job_effects": 0,
+  "external_execution_status": "NOT_RUN",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "framework_contract_coverage": 1.0,
+    "manual_hours": 0,
+    "p0_contract_pass_rate": 1.0,
+    "source_fingerprint_coverage": 1.0,
+    "source_map_coverage": 1.0,
+    "startup_pass_rate": 1.0
+  },
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "pack_version": "0.3.0",
+  "runs": [
+    "local-reference-evidence.json",
+    "local-product-journey-evidence.json",
+    "public-reference-route-evidence.json",
+    "local-product-surface-qualification-7b385827-20260809.json",
+    "local-product-surface-qualification-fbe840c8-20260809.json"
+  ],
+  "schema_version": 1,
+  "silent_framework_drops": 0,
+  "target_repository_runtime_evidence": "NOT_RUN",
+  "test_integrity_violations": 0
+}

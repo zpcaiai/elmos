@@ -1,0 +1,178 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/python-to-csharp/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "bin/Release/net10.0/RouteHarness",
+    "bin/Release/net10.0/RouteHarness.deps.json",
+    "bin/Release/net10.0/RouteHarness.dll",
+    "bin/Release/net10.0/RouteHarness.pdb",
+    "bin/Release/net10.0/RouteHarness.runtimeconfig.json",
+    "obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "obj/Release/net10.0/RouteHarness.AssemblyInfo.cs",
+    "obj/Release/net10.0/RouteHarness.AssemblyInfoInputs.cache",
+    "obj/Release/net10.0/RouteHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "obj/Release/net10.0/RouteHarness.GlobalUsings.g.cs",
+    "obj/Release/net10.0/RouteHarness.assets.cache",
+    "obj/Release/net10.0/RouteHarness.csproj.CoreCompileInputs.cache",
+    "obj/Release/net10.0/RouteHarness.csproj.FileListAbsolute.txt",
+    "obj/Release/net10.0/RouteHarness.dll",
+    "obj/Release/net10.0/RouteHarness.genruntimeconfig.cache",
+    "obj/Release/net10.0/RouteHarness.pdb",
+    "obj/Release/net10.0/apphost",
+    "obj/Release/net10.0/ref/RouteHarness.dll",
+    "obj/Release/net10.0/refint/RouteHarness.dll",
+    "obj/RouteHarness.csproj.nuget.dgspec.json",
+    "obj/RouteHarness.csproj.nuget.g.props",
+    "obj/RouteHarness.csproj.nuget.g.targets",
+    "obj/project.assets.json",
+    "obj/project.nuget.cache",
+    "source-runtime/__pycache__/pricing.cpython-312.pyc",
+    "source-runtime/__pycache__/source_harness.cpython-312.pyc"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 201,
+      "path": "Migrated.cs",
+      "sha256": "sha256:2896064edaaaffbc1b94d04ef087d84b2ff894bfe32749821476f8d580d0563e"
+    },
+    {
+      "bytes": 889,
+      "path": "Program.cs",
+      "sha256": "sha256:48242b683498c1a6a22dac84f0383da13425f450b329ae20c9e0cd85e413ae0e"
+    },
+    {
+      "bytes": 262,
+      "path": "RouteHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 1556,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:1a95c9e6b289c4da116eb0c7af05079d4ac8cb3896786e130cf932d174a5d3e8"
+    },
+    {
+      "bytes": 8195,
+      "path": "chunk-map.json",
+      "sha256": "sha256:4018c55da480083a4393a4af950fd607842917789bf166911a3bea70c4275589"
+    },
+    {
+      "bytes": 2964,
+      "path": "formal-composition.json",
+      "sha256": "sha256:386bf80ebafc3da6d84d57fc2ffd7ab409421e12b886f61726c9ce9f7bedd7f6"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:be644adb0b744c0a547c4128b24d73b11dbe786a44fdb1facb114e2bee5c09f9"
+    },
+    {
+      "bytes": 6532,
+      "path": "formal-input.json",
+      "sha256": "sha256:5e9d03d28332e9f9a968da07b8dc56a5cd41ef9b73daa49794024689b628c85a"
+    },
+    {
+      "bytes": 2342,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:fd12ddea149f01213b21f0cab9f17a5eb28090a75cd3e3007b8a34c115e77db1"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 111,
+      "path": "inputs/pricing.py",
+      "sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d"
+    },
+    {
+      "bytes": 3478,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:81acab4f618fa040ff3d216b5b73b82fc2e015870a29d32eb1a1d881725dd00e"
+    },
+    {
+      "bytes": 7480,
+      "path": "route-evidence.json",
+      "sha256": "sha256:a32e01cf1819bcf3c09b89fac650a2bb90e3977b816a8282c6ebbb84c3f2e31c"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 665,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a"
+    },
+    {
+      "bytes": 111,
+      "path": "source-runtime/pricing.py",
+      "sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d"
+    },
+    {
+      "bytes": 568,
+      "path": "source-runtime/source_harness.py",
+      "sha256": "sha256:8df4b47890d1a8bba337f94428725f0acf85133ccd5b290dd2ef448c5aed3b10"
+    },
+    {
+      "bytes": 665,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a"
+    },
+    {
+      "bytes": 699,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:91e74de1f8a518ef8ca21e9a0253b689829d3258532ffd1c078097600079ce40"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "python-to-csharp",
+  "schema_version": 1,
+  "total_bytes": 38159
+}

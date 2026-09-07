@@ -1,0 +1,51 @@
+schema_version: 1.0.0
+ordinal: 14
+name: elmos-multimodal-requirement-extraction
+title: 多模态需求提取
+objective: 将非结构化输入转换为可追溯、可审阅、可版本化的需求对象，并严格区分原文事实、模型推断和待确认问题。
+dependencies:
+- elmos-source-anchor-and-provenance
+- elmos-multi-asset-content-fusion
+inputs:
+- Content IR、项目上下文
+outputs:
+- ExtractedRequirement、OpenQuestion、AcceptanceCriterion
+responsibilities:
+- 提取功能、非功能、业务规则、角色、优先级、依赖和验收标准
+- 把模糊词、缺失条件和矛盾信息列为问题而非自行补齐
+- 为每个需求关联来源锚点与置信度
+- 支持用户确认、驳回、合并、拆分和变更版本
+deliverables:
+- Requirement schema 与提取流水线
+- 审阅 API 和需求变更历史
+- 跨模态需求评测集
+acceptance:
+- 所有已接受需求具备来源锚点或用户新决策 ID
+- 推断字段与原文字段可区分
+- 矛盾需求不会被静默覆盖
+- 验收标准可被测试生成器直接消费
+data_entities:
+- extracted_requirements
+- acceptance_criteria
+- open_questions
+events:
+- requirement.extracted
+- requirement.needs_review
+- requirement.accepted
+metrics:
+- requirement_precision
+- requirement_recall
+failure_modes:
+- 过度推断
+- 重复需求
+- 来源不足
+- 术语歧义
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

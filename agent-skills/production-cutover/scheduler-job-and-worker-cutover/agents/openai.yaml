@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scheduler Job and Worker Cutover"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $scheduler-job-and-worker-cutover to perform this Batch 11 production-cutover task."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Elmos Multimodal Input Workbench UI"
+  short_description: "Run this ELMOS Skill with evidence controls"
+  default_prompt: "Use $elmos-multimodal-input-workbench-ui to execute this ELMOS Skill with fail-closed evidence."
+policy:
+  allow_implicit_invocation: true

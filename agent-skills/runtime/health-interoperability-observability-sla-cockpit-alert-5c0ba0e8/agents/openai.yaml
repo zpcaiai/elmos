@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Health Interoperability Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-observability-sla-cockpit-alert-5c0ba0e8 to implement its fail-closed ELMOS Product B52 contract."

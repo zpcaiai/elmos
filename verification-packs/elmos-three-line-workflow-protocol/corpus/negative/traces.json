@@ -1,0 +1,30 @@
+{
+  "corpus": "negative",
+  "immutable": true,
+  "traces": [
+    {
+      "id": "neg-push-dirty",
+      "initial": "workspace_clean",
+      "events": ["edit", "push-exact-head"],
+      "expected_rejection": {"state": "workspace_changed", "event": "push-exact-head"}
+    },
+    {
+      "id": "neg-pr-before-push",
+      "initial": "workspace_clean",
+      "events": ["edit", "commit-approved-paths", "create-idempotent-pr"],
+      "expected_rejection": {"state": "workspace_committed", "event": "create-idempotent-pr"}
+    },
+    {
+      "id": "neg-start-without-lease",
+      "initial": "workspace_clean",
+      "events": ["handoff", "start"],
+      "expected_rejection": {"state": "queued", "event": "start"}
+    },
+    {
+      "id": "neg-complete-after-block",
+      "initial": "workspace_clean",
+      "events": ["handoff", "block", "complete"],
+      "expected_rejection": {"state": "blocked", "event": "complete"}
+    }
+  ]
+}

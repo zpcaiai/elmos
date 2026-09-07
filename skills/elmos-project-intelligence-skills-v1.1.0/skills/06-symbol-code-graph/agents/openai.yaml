@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 符号、引用与调用图
+  short_description: 构建定义、引用、继承、实现、调用、读写和跨语言边。用于语义导航、调用链、影响分析和架构抽取。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-symbol-code-graph 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

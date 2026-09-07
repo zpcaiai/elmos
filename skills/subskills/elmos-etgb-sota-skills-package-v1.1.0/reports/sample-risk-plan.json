@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.1",
+  "selection_policy": "risk-impact-history-uncertainty-control-v1",
+  "seed": 17,
+  "affected_business_lines": [],
+  "case_ids": [
+    "PG-SMOKE-PY-SQLITE-001",
+    "SM-SMOKE-CONTRACT-001",
+    "SQL-SMOKE-SQLITE-001",
+    "XLC-SMOKE-JAVA-PY-001",
+    "XCUT-006CB2F850503F",
+    "XCUT-00BA413DF7BBAD",
+    "XCUT-00CD6C39E13702",
+    "XCUT-012618797092C7",
+    "XCUT-01A0B6D7E56FC0",
+    "XCUT-024A2F867F4EA3",
+    "XCUT-0263EB13480714",
+    "SQL-DDL-D44C3D8BE2AD23"
+  ],
+  "selections": [
+    {
+      "case_id": "PG-SMOKE-PY-SQLITE-001",
+      "business_line": "project-generation",
+      "risk_score": 110.0,
+      "reasons": [
+        "priority:P0",
+        "level:L1",
+        "mandatory-smoke"
+      ]
+    },
+    {
+      "case_id": "SM-SMOKE-CONTRACT-001",
+      "business_line": "spring-modernization",
+      "risk_score": 110.0,
+      "reasons": [
+        "priority:P0",
+        "level:L1",
+        "mandatory-smoke"
+      ]
+    },
+    {
+      "case_id": "SQL-SMOKE-SQLITE-001",
+      "business_line": "sql-conversion",
+      "risk_score": 110.0,
+      "reasons": [
+        "priority:P0",
+        "level:L1",
+        "mandatory-smoke"
+      ]
+    },
+    {
+      "case_id": "XLC-SMOKE-JAVA-PY-001",
+      "business_line": "cross-language",
+      "risk_score": 110.0,
+      "reasons": [
+        "priority:P0",
+        "level:L1",
+        "mandatory-smoke"
+      ]
+    },
+    {
+      "case_id": "XCUT-006CB2F850503F",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-00BA413DF7BBAD",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-00CD6C39E13702",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-012618797092C7",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-01A0B6D7E56FC0",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-024A2F867F4EA3",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "XCUT-0263EB13480714",
+      "business_line": "cross-cutting",
+      "risk_score": 140.0,
+      "reasons": [
+        "priority:P0",
+        "level:L2",
+        "security-sensitive"
+      ]
+    },
+    {
+      "case_id": "SQL-DDL-D44C3D8BE2AD23",
+      "business_line": "sql-conversion",
+      "risk_score": 0.0,
+      "reasons": [
+        "random-unaffected-control"
+      ]
+    }
+  ],
+  "plan_digest": "sha256:603d4b834ca531232d04e703adcbb2b1790c52470110db8be3fcfb4f8bafc71e",
+  "changed_from": null,
+  "changed_paths": [],
+  "diff_fallback_all_lines": false,
+  "candidate_digest": "sha256:e5e32e1b021c0b8f782545d3ec047b96d5dc8feb802f767ab068b9f63ff2c6e9",
+  "shards": [
+    {
+      "shard_id": 0,
+      "case_count": 4,
+      "case_ids": [
+        "SQL-DDL-D44C3D8BE2AD23",
+        "SQL-SMOKE-SQLITE-001",
+        "XCUT-00CD6C39E13702",
+        "XLC-SMOKE-JAVA-PY-001"
+      ],
+      "shard_digest": "sha256:d1a1b89f0692bf5ff0dabf89033d8591513dc13d50f1019fbd6995c714105064"
+    },
+    {
+      "shard_id": 1,
+      "case_count": 5,
+      "case_ids": [
+        "SM-SMOKE-CONTRACT-001",
+        "XCUT-012618797092C7",
+        "XCUT-01A0B6D7E56FC0",
+        "XCUT-024A2F867F4EA3",
+        "XCUT-0263EB13480714"
+      ],
+      "shard_digest": "sha256:ba52f96bbd9aeca132b893de1c97f88c01526f5542a879d6ef06581f26e68056"
+    },
+    {
+      "shard_id": 2,
+      "case_count": 3,
+      "case_ids": [
+        "PG-SMOKE-PY-SQLITE-001",
+        "XCUT-006CB2F850503F",
+        "XCUT-00BA413DF7BBAD"
+      ],
+      "shard_digest": "sha256:f4475a3139503e6785c1f42752cf076107a512fcdf653a50619e46add271c0f6"
+    }
+  ]
+}

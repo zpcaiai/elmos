@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 5
+name: elmos-audio-asr-and-diarization
+title: 音频识别与说话人分离
+objective: 把音频转换为可编辑、可追溯、带时间范围和置信度的结构化转录，而不是无定位的纯文本。
+dependencies:
+- elmos-provider-routing-and-fallback
+- elmos-source-anchor-and-provenance
+inputs:
+- 音频资产、热词表、语言偏好
+outputs:
+- Transcript、AudioSegment、质量报告
+responsibilities:
+- 支持 MP3、WAV、M4A、AAC、FLAC、OGG、OPUS 等适配器
+- 执行 VAD、降噪、分片、语言识别、ASR、标点恢复和说话人分离
+- 通过领域热词和用户修正提高识别质量
+- 保留原音频片段与每句转录的精确时间锚点
+deliverables:
+- AudioPipeline 与 provider 接口
+- audio_segments 数据模型和编辑 API
+- 清晰、噪声、中英混合和多说话人测试集
+acceptance:
+- 每个转录片段包含 start/end、speaker、language、confidence
+- 点击文本可跳转原音频位置
+- 长音频可断点恢复且重试不重复片段
+- 低置信度片段被明确标记
+data_entities:
+- audio_segments
+- transcription_runs
+events:
+- audio.transcription.completed
+- audio.segment.low_confidence
+metrics:
+- cer
+- wer
+- speaker_der
+failure_modes:
+- 无声片段
+- 不支持编码
+- 模型限流
+- 说话人重叠
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

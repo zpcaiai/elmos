@@ -1,0 +1,16 @@
+{
+  "generated_by": "tooling/integrate_batch1_55_complete_skill_pack.py",
+  "source_directory": "/Users/stephen/Downloads/elmos-codex-skills-batch1-55-complete",
+  "source_manifest_sha256": "0c380f50fa91d06e12efc6c424fa37719b1d8889c96e897be00ada09c6609ac3",
+  "source_package_tree_sha256": "ec0c9c6807282799350b699a38d1e3dbc5a24059a74f7f12f30e2d8ada9f6cdf",
+  "normalized_manifest_sha256": "73319755e59d0fd5a1f1e0a852ad61be885feb020f48648cd065687fd163939e",
+  "skill_count": 1824,
+  "namespace_counts": {
+    "migration-pack": 820,
+    "product-commercialization": 1004
+  },
+  "deterministic_aliases": 1015,
+  "structural_status": "PASS",
+  "overall_completion": "NOT_COMPLETE",
+  "external_evidence_status": "NOT_RUN"
+}

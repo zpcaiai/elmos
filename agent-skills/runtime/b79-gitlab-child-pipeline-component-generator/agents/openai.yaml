@@ -1,0 +1,4 @@
+interface:
+  display_name: "B79 Gitlab Child Pipeline Component Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b79-gitlab-child-pipeline-component-generator to execute this ELMOS project Skill with fail-closed evidence."

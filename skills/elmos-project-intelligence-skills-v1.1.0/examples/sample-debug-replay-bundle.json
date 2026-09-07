@@ -1,0 +1,44 @@
+{
+  "replay_bundle_id": "replay-001",
+  "tenant_id": "tenant-demo",
+  "project_id": "project-orders",
+  "revision_id": "rev-abc123",
+  "source_debug_session_id": "dbg-session-001",
+  "replay_level": "R1",
+  "runtime_profile": {
+    "runtime_profile_id": "java-21-maven",
+    "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "reproducibility": {
+    "random_seed": "42",
+    "clock_mode": "fixed",
+    "external_services": "virtualized"
+  },
+  "chunks": [
+    {
+      "chunk_id": "events-0001",
+      "kind": "events",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "size_bytes": 4096
+    },
+    {
+      "chunk_id": "inputs-0001",
+      "kind": "inputs",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "size_bytes": 1024
+    }
+  ],
+  "integrity": {
+    "manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "signature_ref": "sig://tenant-demo/replay-001"
+  },
+  "redaction": {
+    "profile": "debug-default",
+    "scan_status": "passed",
+    "omitted_fields": [
+      "http.authorization",
+      "db.password"
+    ]
+  },
+  "expires_at": "2026-09-20T00:00:00Z"
+}

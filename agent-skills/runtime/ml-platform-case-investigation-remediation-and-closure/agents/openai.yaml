@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Ml Platform Case Investigation Remediation And Closure"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $ml-platform-case-investigation-remediation-and-closure to implement its fail-closed ELMOS Product B45 contract."

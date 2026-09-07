@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Talent Development Planning Capacity Scenario Optimization And Allocation"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $talent-development-planning-capacity-scenario-optimizat-ce7dad7e to implement its fail-closed ELMOS Product B43 contract."

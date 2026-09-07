@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "template_only": true,
+  "environment": {
+    "os": "EXACT_VERSION_REQUIRED",
+    "assistive_technology": "EXACT_NAME_AND_VERSION_REQUIRED",
+    "browser": "EXACT_NAME_AND_VERSION_REQUIRED",
+    "device": "EXACT_MODEL_REQUIRED"
+  },
+  "journeys": [],
+  "observations": {
+    "reading_order": "NOT_RUN",
+    "keyboard_and_focus": "NOT_RUN",
+    "labels_and_descriptions": "NOT_RUN",
+    "errors": "NOT_RUN",
+    "live_announcements": "NOT_RUN",
+    "zoom": "NOT_RUN",
+    "reduced_motion": "NOT_RUN"
+  },
+  "finding_ids": [],
+  "decision": "NOT_RUN",
+  "note": "This template is not evidence and cannot be referenced by a PASSED gate record."
+}

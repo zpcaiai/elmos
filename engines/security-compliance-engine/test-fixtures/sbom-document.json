@@ -1,0 +1,1 @@
+{"sbomId":"sbom-1","format":"CYCLONEDX","stage":"ARTIFACT_SBOM","subjectDigest":"sha256:artifact","completeness":"INCOMPLETE_THIRD_PARTY","componentRefs":["pkg:maven/example/app@1"]}

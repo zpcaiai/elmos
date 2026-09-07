@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.io/migration-plan/v1",
+  "title": "ELMOS Evidence-bound Migration Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "planId", "healthReportId", "snapshotId", "target", "compatibility", "steps", "waves", "approvalGates", "migrationRisk", "automation", "totalEffort", "status", "blockingReasons"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "planId": {"type": "string", "pattern": "^plan-[a-f0-9]{24}$"},
+    "healthReportId": {"type": "string"},
+    "snapshotId": {"type": "string"},
+    "target": {"$ref": "#/$defs/target"},
+    "compatibility": {"type": "array", "items": {"type": "object"}, "minItems": 1},
+    "steps": {"type": "array", "items": {"$ref": "#/$defs/step"}, "minItems": 1},
+    "waves": {"type": "array", "items": {"type": "object"}, "minItems": 1},
+    "approvalGates": {"type": "array", "items": {"type": "object"}},
+    "migrationRisk": {"$ref": "#/$defs/score"},
+    "automation": {"$ref": "#/$defs/score"},
+    "totalEffort": {"$ref": "#/$defs/effort"},
+    "status": {"enum": ["READY", "NEEDS_APPROVAL", "BLOCKED"]},
+    "blockingReasons": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "target": {"type": "object", "required": ["javaVersion", "jakartaNamespace", "buildToolStrategy", "assumptions", "status"], "properties": {"javaVersion": {"enum": [17, 21, 25]}, "springBootLine": {"type": ["string", "null"]}, "jakartaNamespace": {"const": "jakarta"}, "buildToolStrategy": {"type": "string"}, "assumptions": {"type": "array", "items": {"type": "string"}}, "status": {"enum": ["PASS", "FAIL", "INCONCLUSIVE", "NOT_RUN"]}}},
+    "effort": {"type": "object", "required": ["minimumPersonDays", "likelyPersonDays", "maximumPersonDays", "minimumPersonMonths", "likelyPersonMonths", "maximumPersonMonths", "confidence", "assumptions"], "properties": {"minimumPersonDays": {"type": "integer", "minimum": 0}, "likelyPersonDays": {"type": "integer", "minimum": 0}, "maximumPersonDays": {"type": "integer", "minimum": 0}, "minimumPersonMonths": {"type": "number", "minimum": 0}, "likelyPersonMonths": {"type": "number", "minimum": 0}, "maximumPersonMonths": {"type": "number", "minimum": 0}, "confidence": {"enum": ["LOW", "MEDIUM", "HIGH"]}, "assumptions": {"type": "array", "items": {"type": "string"}}}},
+    "step": {"type": "object", "required": ["stepId", "type", "dependsOn", "objective", "risk", "automationScore", "effort", "requiredEvidence", "approvalRequired"], "properties": {"stepId": {"type": "string"}, "type": {"enum": ["BASELINE_RESTORE", "JDK_UPGRADE", "BUILD_PLUGIN_UPGRADE", "SPRING_BOOT_UPGRADE", "JAKARTA_MIGRATION", "SECURITY_MIGRATION", "HIBERNATE_MIGRATION", "TEST_UPGRADE", "API_VALIDATION"]}, "dependsOn": {"type": "array", "items": {"type": "string"}}, "objective": {"type": "string"}, "risk": {"enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]}, "automationScore": {"type": "integer", "minimum": 0, "maximum": 100}, "effort": {"$ref": "#/$defs/effort"}, "requiredEvidence": {"type": "array", "items": {"type": "string"}}, "approvalRequired": {"type": "boolean"}}},
+    "score": {"type": "object", "required": ["score", "factors", "rationale"], "properties": {"score": {"type": "integer", "minimum": 0, "maximum": 100}, "factors": {"type": "object", "additionalProperties": {"type": "integer"}}, "rationale": {"type": "array", "items": {"type": "string"}}}}
+  }
+}

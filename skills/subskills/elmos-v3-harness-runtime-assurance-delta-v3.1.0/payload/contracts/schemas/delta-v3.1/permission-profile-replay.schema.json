@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.ai/schemas/v3.1/permission-profile-replay.schema.json",
+  "title": "Permission Profile Replay Mapping",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileId",
+    "canonicalProfile",
+    "providerProjection"
+  ],
+  "properties": {
+    "profileId": {
+      "type": "string"
+    },
+    "canonicalProfile": {
+      "type": "object"
+    },
+    "providerProjection": {
+      "type": "object",
+      "required": [
+        "provider",
+        "version",
+        "mapping"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "mapping": {
+          "enum": [
+            "EXACT",
+            "LOSSY",
+            "UNSUPPORTED"
+          ]
+        },
+        "value": {}
+      },
+      "additionalProperties": false
+    },
+    "resumeAllowed": {
+      "type": "boolean"
+    },
+    "reason": {
+      "type": "string"
+    }
+  }
+}

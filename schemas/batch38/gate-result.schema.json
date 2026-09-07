@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/mature-product/batch38/gate-result.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "packKey",
+    "eligible",
+    "status",
+    "failures",
+    "evidenceRefs",
+    "externalOperationExecuted"
+  ],
+  "properties": {
+    "batch": {
+      "const": 38
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eligible": {
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "NOT_RUN",
+        "CERTIFIED",
+        "BLOCKED"
+      ]
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "externalOperationExecuted": {
+      "const": false
+    }
+  }
+}

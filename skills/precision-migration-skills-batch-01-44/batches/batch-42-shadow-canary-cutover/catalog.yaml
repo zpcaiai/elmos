@@ -1,0 +1,25 @@
+batch: 42
+slug: shadow-canary-cutover
+title: "Shadow、Canary与渐进切换"
+phase: "L 证据、上线和产品化"
+skills:
+  - name: production-shadow-run
+    description: "复制真实请求到目标系统并隔离副作用，比较响应、意图、Trace 和性能。"
+  - name: live-event-replay
+    description: "重放实时或历史事件流，保持顺序、时间、幂等和外部响应。"
+  - name: side-effect-suppression
+    description: "将支付、消息、邮件、写库和不可逆调用转换为安全意图记录或影子目标。"
+  - name: dual-write-validation
+    description: "验证源目标双写一致性、冲突、顺序、补偿和回收策略。"
+  - name: canary-traffic-planner
+    description: "选择低风险租户、用户、接口和流量比例设计 Canary 阶段。"
+  - name: progressive-cutover
+    description: "按模块、流量、租户或能力逐步切换并验证每级门槛。"
+  - name: automatic-rollback
+    description: "根据错误、差异、延迟、数据和业务 SLI 自动触发安全回滚。"
+  - name: migration-wave-planner
+    description: "按依赖、风险、价值、团队和维护窗口组织迁移波次。"
+  - name: strangler-routing
+    description: "在网关、服务、消息或前端路由层按能力分流旧实现和新实现。"
+  - name: post-cutover-monitoring
+    description: "切换后持续监控差异、异常、性能、数据质量、回滚条件和学习项。"

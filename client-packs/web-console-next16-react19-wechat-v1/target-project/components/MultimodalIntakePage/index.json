@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "multimodal-intake-workbench": "/components/MultimodalIntakeWorkbench/index"
+  }
+}

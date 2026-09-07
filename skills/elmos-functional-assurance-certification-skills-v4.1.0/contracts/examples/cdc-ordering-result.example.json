@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "cdc-ordering-result-example",
+  "status": "READY",
+  "content_hash": "b44d50a859dec2eaa4911d8f46648154c20959ada4530ef1d44785dd507a28c3",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

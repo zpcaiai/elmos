@@ -1,0 +1,4 @@
+interface:
+  display_name: "B56 Commercial Product Edition Metering Billing Support 7d81f20f"
+  short_description: "Run this Product Batch 56 guidance Skill safely"
+  default_prompt: "Use $b56-commercial-product-edition-metering-billing-support-7d81f20f as inactive Product Batch 56 guidance; preserve Product 56A authority and fail closed on missing evidence."

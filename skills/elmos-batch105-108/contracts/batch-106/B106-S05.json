@@ -1,0 +1,65 @@
+{
+  "id": "B106-S05",
+  "batch": 106,
+  "name": "python-preview-runtime-adapter",
+  "dependencies": [
+    "B106-S03"
+  ],
+  "inputs": [
+    "validated RuntimeManifest",
+    "Python environment snapshot"
+  ],
+  "outputs": [
+    "PythonBuildSpec",
+    "PythonRunSpec",
+    "dependency cache key"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/adapters/python/PythonPreviewAdapter.java",
+      "private-runner/internal/runtime/python.go",
+      "images/python/"
+    ],
+    "interfaces": [
+      "adapter runtime.python.compile",
+      "event runtime.adapter.python.ready"
+    ],
+    "data": [
+      "python_runtime_spec",
+      "python_env_lock"
+    ]
+  },
+  "workflow": [
+    "识别pyproject/requirements/lock文件",
+    "保留客户锁文件并固定Python实现/ABI",
+    "选择uv/pip/Poetry适配路径",
+    "检测ASGI/WSGI/Streamlit入口",
+    "注入host 0.0.0.0和PORT",
+    "输出wheel缓存、启动和健康规格"
+  ],
+  "tests": [
+    "无锁文件生成候选但标记风险",
+    "sdist构建默认无Secret且受网络限制",
+    "FastAPI入口正确",
+    "Django settings缺失返回阻断",
+    "ABI不兼容wheel被拒绝"
+  ],
+  "evidence": [
+    "python-build-spec.json",
+    "python-run-spec.json",
+    "environment-lock.json",
+    "wheel-report.json"
+  ],
+  "definition_of_done": [
+    "锁文件策略保留",
+    "ABI明确",
+    "启动入口唯一",
+    "网络构建策略受控",
+    "FastAPI/Django fixture通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

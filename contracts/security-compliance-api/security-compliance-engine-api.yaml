@@ -1,0 +1,35 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Security and Compliance Engine API
+  version: 1.0.0
+paths:
+  /engine/v1/capabilities:
+    get:
+      operationId: securityCapabilities
+      responses:
+        "200": {description: ELMOS_SECURITY_COMPLIANCE capabilities}
+  /engine/v1/scan:
+    post:
+      operationId: securityScan
+      responses:
+        "202": {description: Accepted or explicit fail-closed result}
+  /engine/v1/plan:
+    post:
+      operationId: securityPlan
+      responses:
+        "202": {description: Accepted or explicit fail-closed result}
+  /engine/v1/execute-step:
+    post:
+      operationId: executeSecurityStep
+      responses:
+        "202": {description: Active tests require explicit authorization}
+  /engine/v1/validate:
+    post:
+      operationId: validateSecurityEvidence
+      responses:
+        "202": {description: Independent validation result}
+  /engine/v1/authorize:
+    post:
+      operationId: internalSecurityAuthorization
+      responses:
+        "200": {description: Time-bound internal decision only; never external certification}

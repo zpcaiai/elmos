@@ -1,0 +1,89 @@
+apiVersion: elmos.ai/v2alpha1
+kind: FormalAssuranceGoldenRoute
+metadata:
+  name: sql-dialect-routine-conversion
+  title: SQL Dialect and Routine Conversion Formal Golden Route
+  version: 1.0.0
+  domain: sql-conversion
+spec:
+  inputs:
+  - source DDL/queries/routines/triggers
+  - source/target dialect profiles
+  - constraints
+  - data profile
+  requiredSkills:
+  - elmos-formal-spec-ir
+  - elmos-observable-behavior-contract
+  - elmos-proof-obligation-planner
+  - elmos-assumption-ledger
+  - elmos-proof-status-policy
+  - elmos-trusted-computing-base-registry
+  - elmos-verifier-portfolio-router
+  - elmos-proof-cache-invalidation
+  - elmos-formal-model-versioning
+  - elmos-formal-assurance-orchestrator
+  - elmos-sql-semantic-ir
+  - elmos-sql-query-equivalence
+  - elmos-schema-losslessness-proof
+  - elmos-routine-contract-verifier
+  - elmos-trigger-trace-verifier
+  - elmos-dynamic-sql-proof-boundary
+  - elmos-sql-type-precision-verifier
+  - elmos-ddl-constraint-preservation
+  - elmos-dml-state-equivalence
+  - elmos-sql-transaction-exception-refinement
+  - elmos-tla-task-runtime-model
+  - elmos-credit-billing-invariant-model
+  - elmos-lease-fencing-verifier
+  - elmos-counterexample-to-test
+  - elmos-proof-artifact-store
+  - elmos-formal-release-gate
+  - elmos-formal-assurance-report
+  - elmos-proof-evidence-bundle
+  - elmos-proof-drift-monitor
+  - elmos-waiver-governance
+  - elmos-formal-observability-slo
+  phases:
+  - id: E1_STATIC
+    goal: inventory, parse, source-map and structural constraints
+    blocking: true
+  - id: E2_MODEL
+    goal: formal models, contracts, invariants and proof obligations
+    blocking: true
+  - id: E3_DIFFERENTIAL
+    goal: source-target differential and translation validation
+    blocking: true
+  - id: E4_FAILURE_INJECTION
+    goal: fault, concurrency, recovery and security adversarial validation
+    blocking: true
+  - id: E5_CUSTOMER_GOLDEN_ROUTE
+    goal: repeatable commercial certification on representative repositories
+    blocking: true
+  criticalProperties:
+  - query equivalence mode and bounds are explicit
+  - schema mapping is lossless or approved one-way refinement
+  - type precision, collation, time and NULL semantics are preserved
+  - routine/trigger effects, exceptions and transactions refine source
+  - dynamic SQL unsupported boundaries are monitored
+  certificationRequirements:
+  - five SQL dialect pairs
+  - query corpus with NULL/bag/window cases
+  - routine/trigger corpus
+  - production-size differential replay
+  - E1-E5 complete
+  releasePolicy:
+    requiredGate: P05_DEPLOYMENT_COMPLETE
+    unknown: DENY
+    boundedForP0: DENY_UNLESS_EXPLICIT_A1
+    waiver: four-eyes-time-bound
+  evidence:
+  - source/target manifests
+  - formal specs
+  - proof plans
+  - proof results
+  - counterexamples
+  - tests
+  - coverage
+  - TCB/SBOM
+  - gate decisions
+  - signed bundle

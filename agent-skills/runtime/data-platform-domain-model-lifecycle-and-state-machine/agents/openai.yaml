@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B44: Data Platform Domain Model Lifecycle And State Machine"
+  short_description: "Run ELMOS Product B44 contract with fail-closed evidence"
+  default_prompt: "Use $data-platform-domain-model-lifecycle-and-state-machine to implement its fail-closed ELMOS Product B44 contract."

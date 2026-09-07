@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.recipe-asset.v1",
+  "title": "ELMOS Recipe Asset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assetId",
+    "organizationId",
+    "origin",
+    "visibility",
+    "certification",
+    "version",
+    "artifactHash"
+  ],
+  "properties": {
+    "assetId": {
+      "type": "string"
+    },
+    "organizationId": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    },
+    "visibility": {
+      "enum": [
+        "PRIVATE",
+        "ORGANIZATION",
+        "PARTNER_GROUP",
+        "MARKETPLACE",
+        "PUBLIC"
+      ]
+    },
+    "certification": {
+      "enum": [
+        "UNVERIFIED",
+        "COMMUNITY_TESTED",
+        "ELMOS_VALIDATED",
+        "ELMOS_CERTIFIED",
+        "CUSTOMER_CERTIFIED",
+        "BLOCKED",
+        "REVOKED"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "artifactHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
+

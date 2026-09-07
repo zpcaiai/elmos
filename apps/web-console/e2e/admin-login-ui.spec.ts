@@ -2,15 +2,19 @@ import { expect, test } from "@playwright/test";
 
 const administratorEmail = "zpchoney@gmail.com";
 
-test("anonymous administrator entries are absent from the homepage and require direct navigation", async ({ page }) => {
+test("anonymous administrator entries perform a document navigation", async ({ page }) => {
   await page.goto("/");
 
   const topAdminLogin = page.locator("header").getByRole("link", {
     name: "管理员入口",
     exact: true,
   });
-  await expect(topAdminLogin).toHaveCount(0);
+  await expect(topAdminLogin).toHaveAttribute("href", "/admin/login");
+  await topAdminLogin.click();
+  await expect(page).toHaveURL(/\/admin\/login$/);
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 
+  await page.goto("/");
   if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
     await page.getByRole("button", { name: "打开导航" }).click();
     await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
@@ -18,9 +22,8 @@ test("anonymous administrator entries are absent from the homepage and require d
   const sidebarAdminLogin = page.locator("aside").getByRole("link", {
     name: /管理员登录入口/,
   });
-  await expect(sidebarAdminLogin).toHaveCount(0);
-
-  await page.goto("/admin/login");
+  await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login");
+  await sidebarAdminLogin.click();
   await expect(page).toHaveURL(/\/admin\/login$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
@@ -34,14 +37,10 @@ test("administrator login is visibly separate from user login", async ({ page })
   await expect(page.getByRole("status")).toContainText("管理员身份提供商未配置");
   await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
   await expect(page.getByLabel("密码")).toHaveCount(0);
-  await expect(page.getByText(/管理员登录入口不提供普通用户登录功能/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "返回用户登录" })).toHaveAttribute("href", "/login");
+  await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
+  // 管理员登录卡片不提供任何用户登录入口。
+  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card")).toBeVisible();
-
-  await page.getByRole("link", { name: "返回用户登录" }).click();
-  await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-  await expect(page.locator(".user-auth-card")).toBeVisible();
 });
 
 test("administrator login reports rejected and unavailable security states", async ({ page }) => {

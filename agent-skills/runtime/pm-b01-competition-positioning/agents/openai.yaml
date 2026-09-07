@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B01: Batch 01 Competition Positioning"
+  short_description: "Run Precision Migration B01 with evidence controls"
+  default_prompt: "Use $pm-b01-competition-positioning to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/framework/v1/framework-run-manifest.schema.json",
+  "title": "Framework Migration Run Manifest",
+  "type": "object",
+  "required": ["frameworkRunId", "sourceSnapshotId", "uirRunId", "dependencyRunId", "targetProfileId", "targetFrameworkVersion", "frameworkFingerprintId", "configurationHash", "afsmEntityIds", "recipePlanIds", "emissionIds", "createdAt"],
+  "properties": {
+    "frameworkRunId": {"type": "string", "minLength": 1},
+    "sourceSnapshotId": {"type": "string", "minLength": 1},
+    "uirRunId": {"type": "string", "minLength": 1},
+    "dependencyRunId": {"type": "string", "minLength": 1},
+    "targetProfileId": {"type": "string", "minLength": 1},
+    "targetFrameworkVersion": {"type": "string", "minLength": 1},
+    "frameworkFingerprintId": {"type": "string", "minLength": 1},
+    "configurationHash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "afsmEntityIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "recipePlanIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "emissionIds": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

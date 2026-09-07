@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Runtime Architecture Contract"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-runtime-architecture-contract to execute this ELMOS Runtime Skill with fail-closed evidence."

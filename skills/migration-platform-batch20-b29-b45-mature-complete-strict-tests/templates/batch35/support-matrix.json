@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-verification-pack",
+  "capabilities": [
+    {
+      "key": "property-based-testing",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "limitations": [
+        "Add executable evidence."
+      ]
+    }
+  ]
+}

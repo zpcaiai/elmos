@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 业务与技术流程发现"
+  short_description: "Guide 业务与技术流程发现 with evidence controls"
+  default_prompt: "Use $elmos-flow-discovery as guidance for 业务与技术流程发现 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

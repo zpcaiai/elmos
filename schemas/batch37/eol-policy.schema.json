@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_id",
+    "owner",
+    "deprecation_announced",
+    "eol_date",
+    "replacement_or_exit_available",
+    "config_export_tested",
+    "data_portability_tested",
+    "uninstall_tested",
+    "residual_dependencies",
+    "customers_unresolved"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deprecation_announced": {
+      "type": "boolean"
+    },
+    "eol_date": {
+      "type": "string",
+      "minLength": 1
+    },
+    "replacement_or_exit_available": {
+      "type": "boolean"
+    },
+    "config_export_tested": {
+      "type": "boolean"
+    },
+    "data_portability_tested": {
+      "type": "boolean"
+    },
+    "uninstall_tested": {
+      "type": "boolean"
+    },
+    "residual_dependencies": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "customers_unresolved": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/eol-policy.schema.json"
+}

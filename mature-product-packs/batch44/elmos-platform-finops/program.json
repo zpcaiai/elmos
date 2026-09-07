@@ -1,0 +1,36 @@
+{
+  "batch": 44,
+  "packKey": "elmos-platform-finops",
+  "owner": "elmos-platform-maintainers",
+  "scope": [
+    "apps/commercial-api as the metering, quota and billing surface",
+    ".github/workflows/commercial-billing-neon.yml as the billing reconciliation pipeline",
+    "telemetry/metric-definitions.json as the cost and usage metric contract",
+    "apps/runner-agent and the runner fleet configuration as the compute cost surface"
+  ],
+  "skillIds": [
+    1455,
+    1456,
+    1457,
+    1458,
+    1459,
+    1460,
+    1461,
+    1462,
+    1463,
+    1464,
+    1465,
+    1466,
+    1467,
+    1468,
+    1469,
+    1470,
+    1471,
+    1472,
+    1473,
+    1474
+  ],
+  "status": "IN_PROGRESS",
+  "evidenceRefs": [],
+  "externalOperationExecuted": false
+}

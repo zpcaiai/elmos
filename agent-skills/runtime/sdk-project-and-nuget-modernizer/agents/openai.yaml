@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sdk Project And Nuget Modernizer"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $sdk-project-and-nuget-modernizer to execute this ELMOS Runtime Skill with fail-closed evidence."

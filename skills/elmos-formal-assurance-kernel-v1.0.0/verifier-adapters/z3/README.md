@@ -1,0 +1,14 @@
+# Z3 SMT Solver Adapter
+
+This adapter is an **integration contract**, not a bundled copy of Z3 SMT Solver. Production enablement requires:
+
+1. organization-approved license review;
+2. exact version and signed container digest;
+3. SBOM, vulnerability and provenance checks;
+4. all conformance fixtures passing;
+5. parser/status mapping review;
+6. sandbox and resource-limit verification.
+
+Evidence trust: `SOLVER_TRUSTED`. Declared properties: SMT, BITVECTOR, FLOATING_POINT, ARRAYS, QUANTIFIERS.
+
+The adapter must never translate timeout, unsupported features, crashes, incomplete output, or a bounded search into an unbounded proof.

@@ -1,0 +1,54 @@
+schemaVersion: elmos.route-profile/v1
+kind: RouteProfile
+metadata:
+  id: route-kotlin-to-java
+  version: 1.0.0
+  readiness: not-run
+  priority: reference
+spec:
+  source: kotlin
+  target: java
+  mode: same-runtime-conversion
+  intent: Convert Kotlin/JVM code to Java when platform, team, or toolchain constraints
+    require it.
+  requiredSkills:
+  - elmos-polyglot-modernization-orchestrator
+  - elmos-adapter-kotlin
+  - elmos-adapter-java
+  - elmos-differential-behavior-validator
+  - elmos-unified-evidence-packager
+  - elmos-production-readiness-gate
+  prerequisites:
+  - Kotlin FIR/PSI semantic index
+  - Java target version
+  - coroutine strategy
+  preservationPriorities:
+  - nullability
+  - default arguments
+  - extensions/delegates
+  - coroutines
+  - JVM signatures
+  stages:
+  - Generate Java-compatible model
+  - Replace suspend/Flow with approved async/reactive model
+  - Generate overloads/builders
+  - Preserve annotations and ABI
+  - Verify mixed-module callers
+  requiredValidation:
+  - clean source and target builds
+  - contract tests
+  - differential behavior tests
+  - data equivalence where state exists
+  - performance comparison against declared budgets
+  - security and supply-chain checks
+  - rollback or approved non-reversibility
+  automaticBlockers:
+  - missing immutable source baseline
+  - unresolved critical semantic loss
+  - unavailable required toolchain
+  - unapproved breaking public contract
+  - unverified irreversible data change
+  readinessPolicy:
+    default: not-run
+    staticProfileIsImplementation: false
+    requiresExecutedEvidence: true

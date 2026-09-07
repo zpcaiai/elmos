@@ -1,0 +1,27 @@
+{
+  "policy_id": "lw.preview-window.v1",
+  "preview_seconds": 600,
+  "timer_start": "first-server-verified-interactive-ready",
+  "timer_source": "trusted-server-wall-clock+local-monotonic-watchdog",
+  "prepare_budget_seconds": 600,
+  "cleanup_budget_seconds": 30,
+  "provider_safety_margin_seconds": 15,
+  "extension_by_refresh": false,
+  "pause_freezes_timer": false,
+  "disconnect_freezes_timer": false,
+  "same_session_restart_resets_timer": false,
+  "same_session_ready_resets_timer": false,
+  "close_tab_policy": "retain-until-expiry",
+  "idle_eviction_before_deadline": false,
+  "max_execution_slots_per_account": 3,
+  "concurrency_gate": "atomic; shared with existing execution quotas",
+  "resource_reservation": "full-ready-window+cleanup",
+  "unavailability": "record-gaps; never-report-continuous-if-interrupted",
+  "expiry_enforcement": [
+    "gateway-revoke-and-close-streams",
+    "worker-watchdog",
+    "provider-hard-deadline",
+    "independent-reaper"
+  ],
+  "build_time_counts_as_preview": false
+}

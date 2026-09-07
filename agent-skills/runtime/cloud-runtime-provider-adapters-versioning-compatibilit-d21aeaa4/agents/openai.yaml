@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Runtime Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-runtime-provider-adapters-versioning-compatibilit-d21aeaa4 to implement its fail-closed ELMOS Product B49 contract."

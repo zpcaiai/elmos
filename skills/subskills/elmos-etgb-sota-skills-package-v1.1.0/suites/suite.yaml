@@ -1,0 +1,13 @@
+schema_version: '1.0'
+suite_id: elmos-etgb-sota-v1-1
+version: 1.1.0
+case_files:
+- suites/spring-modernization.jsonl
+- suites/cross-language.jsonl
+- suites/project-generation.jsonl
+- suites/sql-conversion.jsonl
+- suites/cross-cutting.jsonl
+- suites/smoke.jsonl
+coverage_model: matrices/coverage-requirements.yaml
+expected_minimum_case_count: 10000
+release_gates: matrices/release-gates.yaml

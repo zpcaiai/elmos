@@ -1,0 +1,25 @@
+{
+  "_说明": "外部公开报价。每一条都必须带可核对的 source URL 与 checkedOn 日期。这个文件里没有任何估算值。",
+  "checkedOn": "2026-07-29",
+  "fxUsdToCny": 6.7944,
+  "fxSource": "https://www.exchange-rates.org/exchange-rate-history/usd-cny-2026",
+  "models": {
+    "DeepSeek V4-Flash": {
+      "inputPerMillionUsd": 0.14,
+      "outputPerMillionUsd": 0.28,
+      "cachedInputPerMillionUsd": 0.0028,
+      "source": "https://deepseek.ai/pricing"
+    },
+    "DeepSeek V4-Pro": {
+      "inputPerMillionUsd": 0.435,
+      "outputPerMillionUsd": 0.87,
+      "cachedInputPerMillionUsd": 0.003625,
+      "source": "https://deepseek.ai/pricing"
+    },
+    "Qwen3-Plus": {
+      "inputPerMillionUsd": 0.115,
+      "outputPerMillionUsd": 0.287,
+      "source": "https://www.alibabacloud.com/help/zh/model-studio/models"
+    }
+  }
+}

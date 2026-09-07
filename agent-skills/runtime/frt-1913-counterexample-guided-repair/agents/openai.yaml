@@ -1,0 +1,4 @@
+interface:
+  display_name: "Counterexample Guided Repair"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1913-counterexample-guided-repair to run FRT-1913 through the governed FRT runtime with exact scope and fail-closed evidence."

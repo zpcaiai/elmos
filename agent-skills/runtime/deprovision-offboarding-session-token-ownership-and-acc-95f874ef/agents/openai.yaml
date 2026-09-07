@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 031"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $deprovision-offboarding-session-token-ownership-and-acc-95f874ef to implement its fail-closed ELMOS Product Batch 34 contract."

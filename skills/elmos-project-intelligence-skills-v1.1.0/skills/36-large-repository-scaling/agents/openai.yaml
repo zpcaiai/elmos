@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 大型仓库与多仓库系统扩展
+  short_description: 优化百万行、数万文件、Monorepo、多仓库系统的分片、调度、索引、图查询和用户体验。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-large-repository-scaling 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

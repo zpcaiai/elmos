@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/formal-spec.schema.json",
+  "title": "Formal Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "businessLine",
+    "specKind",
+    "version",
+    "sourceHash",
+    "semanticProfile",
+    "status",
+    "body",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "businessLine": {
+      "$ref": "common.schema.json#/$defs/businessLine"
+    },
+    "specKind": {
+      "enum": [
+        "DATA",
+        "API",
+        "WORKFLOW",
+        "SECURITY",
+        "RESOURCE",
+        "FUNCTION",
+        "TRACE",
+        "SQL",
+        "ARCHITECTURE",
+        "LANGUAGE_SEMANTICS"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sourceHash": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "semanticProfile": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "FROZEN",
+        "SUPERSEDED",
+        "REJECTED"
+      ]
+    },
+    "body": {
+      "type": "object"
+    },
+    "sourceMap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "target"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assumptionIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "provenance": {
+      "$ref": "common.schema.json#/$defs/provenance"
+    }
+  }
+}

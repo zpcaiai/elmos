@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "captured",
+  "source": "modules/portfolio-scale/src",
+  "source_digest": "sha256:9694c5bee33c1540a5f037afc2aff9cceef94f9635f34389a254ea0e0269a852",
+  "target": "modules/advanced-verification/src",
+  "target_digest": "sha256:9ccb34927e6a913f14b15924bcb12a97802ad8a25264b94e6833c10d25f763cb",
+  "environment_digest": "sha256:2d793667b581a70ad75b6956efdd710d49796d5a3c8c0ca16194622b23e21810"
+}

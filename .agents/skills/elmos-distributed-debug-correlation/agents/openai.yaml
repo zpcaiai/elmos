@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 分布式调试、异步因果与源目标对照"
+  short_description: "Guide 分布式调试、异步因果与源目标对照 with evidence controls"
+  default_prompt: "Use $elmos-distributed-debug-correlation as guidance for 分布式调试、异步因果与源目标对照 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

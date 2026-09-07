@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.local/suite-customization/v1",
+  "title": "Suite Customization",
+  "type": "object",
+  "required": ["schemaVersion", "customizationId", "suiteInstanceId", "customizationType", "businessValue", "cleanCoreStatus", "usageStatus", "ownerStatus", "sourceArtifactRef"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "customizationId": {"type": "string", "minLength": 1},
+    "suiteInstanceId": {"type": "string", "minLength": 1},
+    "customizationType": {"enum": ["CORE_MODIFICATION", "IN_APP_EXTENSION", "SIDE_BY_SIDE_EXTENSION", "LOW_CODE_EXTENSION", "INTEGRATION_EXTENSION", "REPORTING_EXTENSION", "DATA_EXTENSION", "TEMPORARY_COMPATIBILITY", "UNSUPPORTED_CUSTOMIZATION"]},
+    "businessValue": {"enum": ["BUSINESS_DIFFERENTIATING", "REGULATORY_REQUIRED", "INDUSTRY_REQUIRED", "LOCALIZATION_REQUIRED", "OPERATIONAL_NECESSARY", "DUPLICATES_STANDARD", "OBSOLETE", "UNKNOWN_VALUE"]},
+    "cleanCoreStatus": {"enum": ["CLEAN", "CLEAN_WITH_APPROVED_EXTENSION", "UPGRADE_STABLE", "UPGRADE_AT_RISK", "CORE_MODIFIED", "UNSUPPORTED", "UNKNOWN"]},
+    "usageStatus": {"enum": ["ACTIVE", "SEASONAL", "DORMANT", "HISTORICAL", "UNKNOWN"]},
+    "ownerStatus": {"enum": ["KNOWN", "UNKNOWN"]},
+    "targetPlacement": {"type": "string"},
+    "sourceArtifactRef": {"type": "string", "minLength": 1},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

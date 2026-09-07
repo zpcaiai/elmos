@@ -1,0 +1,90 @@
+{
+  "case_id": "TS-GOV-01-003",
+  "severity": "P0",
+  "test_type": "negative",
+  "steps": [
+    {
+      "id": "negative-inputs",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "negative-inputs"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "result-shape",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "environment-invalid"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "controls",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "control-manifest"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "not-run",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "系统必须Fail Closed或生成明确Obligation，不得静默降级",
+      "established_by": [
+        "negative-inputs",
+        "result-shape"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "任何Release都可追溯到原始Evidence",
+      "established_by": [
+        "controls"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "P0/P1覆盖完整",
+      "established_by": [
+        "controls"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "未执行不等于通过",
+      "established_by": [
+        "not-run"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "not-run"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

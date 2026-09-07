@@ -1,0 +1,32 @@
+apiVersion: elmos.ai/v1
+kind: DurablePipeline
+metadata:
+  name: customer-delivery-lifecycle
+  version: 3.0.0
+spec:
+  durable: true
+  idempotent: true
+  environmentOwnedAuthority: true
+  checkpointAfterEachStep: true
+  hardFailureAction: block-and-rollback
+  steps:
+  - id: qualify
+    emitEvidence: true
+  - id: scope
+    emitEvidence: true
+  - id: baseline
+    emitEvidence: true
+  - id: pilot
+    emitEvidence: true
+  - id: plan-waves
+    emitEvidence: true
+  - id: execute
+    emitEvidence: true
+  - id: accept
+    emitEvidence: true
+  - id: handover
+    emitEvidence: true
+  - id: warranty-lts
+    emitEvidence: true
+  - id: extract-reusable-assets
+    emitEvidence: true

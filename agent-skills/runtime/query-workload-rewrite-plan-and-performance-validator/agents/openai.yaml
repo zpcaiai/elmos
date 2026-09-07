@@ -1,0 +1,4 @@
+interface:
+  display_name: "Query Workload Validator"
+  short_description: "Validate query results plans and performance"
+  default_prompt: "Use $query-workload-rewrite-plan-and-performance-validator to govern this ELMOS Batch 15 workflow."

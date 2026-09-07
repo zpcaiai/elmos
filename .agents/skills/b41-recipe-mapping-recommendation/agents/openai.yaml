@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Recipe Mapping Recommendation"
+  short_description: "Run evidence-bound Batch 41 recipe mapping recommendation work"
+  default_prompt: "Use $b41-recipe-mapping-recommendation to implement and verify this capability with fail-closed evidence."

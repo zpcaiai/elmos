@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Pull Request Bot"
+  short_description: "Implement a least-privilege SCM review bot"
+  default_prompt: "Use $b36-pr-bot to implement a replay-protected pull-request bot without self-approval or broad writes."

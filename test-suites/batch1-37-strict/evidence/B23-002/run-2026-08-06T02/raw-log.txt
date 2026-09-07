@@ -1,0 +1,57 @@
+# case B23-002
+# started_at 2026-08-06T11:06:40Z
+# run_id run-2026-08-06T02
+
+$ [precondition] python3 scripts/test-suite/b23_route_readiness.py --report test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json
+=== Batch 23 route readiness: java-spring-to-csharp-aspnet ===
+
+[PASS] reference-route-declared: route_id=java-spring-to-csharp-aspnet source=['spring-boot-3.x'] target=['aspnet-core-8', 'ef-core-8']
+[GAP ] reference-route-stages-executed: 0/16 stages executed; not-run=['repository-intake', 'semantic-model', 'psp-uir', 'framework-contract', 'code-generation', 'build', 'test-migration', 'repair', 'behavior-verification', 'database-migration', 'pull-request', 'private-runner', 'canary', 'cutover', 'hypercare', 'customer-handoff']
+[GAP ] reference-route-stages-have-evidence: 0/16 stages carry evidence
+[GAP ] source-repository-corpus-present: 0 non-placeholder entr(ies), 0 containing Java sources (placeholders present: ['.gitkeep'])
+[GAP ] holdout-corpus-contains-spring-application: 1 java unit(s) present, 0 contain Spring constructs
+[GAP ] representative-corpus-contains-spring-application: 1 java unit(s) present, 0 contain Spring constructs
+[GAP ] production-recipe-targets-aspnet: 2 recipe source(s) on disk, 0 target ASP.NET (RewriteSpringFoundationTest, RewriteSpringFoundation)
+[GAP ] spring-to-aspnet-recipe-is-production-not-fixture: 'aspnet-core-controller' appears in 0 main source(s) and 1 test source(s); registry blocks with 'no-production-recipe' when nothing matches
+[GAP ] aspnet-code-generation-implemented: 13 lines; emits target source = False (advisor/planner returns a decision record only)
+[GAP ] ef-core-code-generation-implemented: 13 lines; emits target source = False (advisor/planner returns a decision record only)
+[GAP ] framework-recipe-documents-on-disk: 0 recipe-shaped document(s) found repository-wide, 0 of them spring-* -> aspnet-*
+[GAP ] capability-has-production-recipe::REST与Binding: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::DI与Lifecycle: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::Configuration/Options: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::Validation: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::Security: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::JPA到EF Core: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::Transaction/AOP: 0 of 0 route recipes cover this capability
+[GAP ] capability-has-production-recipe::Messaging/Cache/Scheduler: 0 of 0 route recipes cover this capability
+[GAP ] exact-toolchain::java: required 21.0.11; engine says: REFUSED EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11
+[GAP ] exact-toolchain::csharp: required 10.0.301; engine says: REFUSED EXACT_TOOLCHAIN_UNAVAILABLE:dotnet
+[GAP ] unit-level-java-to-csharp-executes: exit=2 response={"status": "BLOCKED", "reason": "EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11"}
+
+1/22 readiness checks hold; 21 gap(s)
+  GAP reference-route-stages-executed
+  GAP reference-route-stages-have-evidence
+  GAP source-repository-corpus-present
+  GAP holdout-corpus-contains-spring-application
+  GAP representative-corpus-contains-spring-application
+  GAP production-recipe-targets-aspnet
+  GAP spring-to-aspnet-recipe-is-production-not-fixture
+  GAP aspnet-code-generation-implemented
+  GAP ef-core-code-generation-implemented
+  GAP framework-recipe-documents-on-disk
+  GAP capability-has-production-recipe::REST与Binding
+  GAP capability-has-production-recipe::DI与Lifecycle
+  GAP capability-has-production-recipe::Configuration/Options
+  GAP capability-has-production-recipe::Validation
+  GAP capability-has-production-recipe::Security
+  GAP capability-has-production-recipe::JPA到EF Core
+  GAP capability-has-production-recipe::Transaction/AOP
+  GAP capability-has-production-recipe::Messaging/Cache/Scheduler
+  GAP exact-toolchain::java
+  GAP exact-toolchain::csharp
+  GAP unit-level-java-to-csharp-executes
+report written to test-suites/batch1-37-strict/evidence/_shared/b23-route-readiness.json
+# exit=1 expect=exit-zero met=False
+
+# preconditions unmet: ['b23-route-readiness'] -- the case body is not executed, because the catalog lists these as preconditions rather than assertions
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Authentication Security Validator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2903-authentication-security-validator to run FRT-2903 through the governed FRT runtime with exact scope and fail-closed evidence."

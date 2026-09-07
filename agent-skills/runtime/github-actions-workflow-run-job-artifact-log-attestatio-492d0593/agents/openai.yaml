@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Github Actions Workflow Run Job Artifact Log Attestation And Oidc Connector"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $github-actions-workflow-run-job-artifact-log-attestatio-492d0593 to implement its fail-closed ELMOS Product B37 contract."

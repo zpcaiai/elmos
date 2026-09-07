@@ -1,0 +1,16 @@
+<view class="card" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text><button size="mini" bindtap="reload">刷新</button></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <view class="source-labels">
+    <text class="source-label">+ Line</text>
+    <text class="source-label">- Line</text>
+    <text class="source-label">1 处破坏性变更 (Breaking Change)</text>
+    <text class="source-label">3 / 4</text>
+    <text class="source-label">4 Operators Active</text>
+    <text class="source-label">75.0%</text>
+  </view>
+  <view class="actions">
+    <button wx:for="{{actions}}" wx:key="id" size="mini" data-action="{{item.id}}" bindtap="runAction">{{item.label}}</button>
+  </view>
+  <view wx:for="{{rows}}" wx:key="key" class="data-row"><text>{{item.key}}</text><text>{{item.value}}</text></view>
+</view>

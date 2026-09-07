@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B35: Concolic Differential Execution"
+  short_description: "Run Precision Migration B35 with evidence controls"
+  default_prompt: "Use $pm-b35-concolic-differential-execution to execute this Precision Migration contract with fail-closed evidence."

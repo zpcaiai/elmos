@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Readiness Evidence Pack Builder"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $production-readiness-evidence-pack-builder to perform this Batch 10 production-hardening task."

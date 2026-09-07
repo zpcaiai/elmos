@@ -1,0 +1,24 @@
+schema_version: 1
+mission_id: mission-example
+revision_id: revision-example
+title: Understand order creation
+mode: guided
+difficulty: beginner
+roles: [backend-developer]
+prerequisites: []
+entry:
+  kind: test
+  ref: test:create-order-happy-path
+learning_objectives:
+  - Identify request validation and transaction boundary.
+  - Explain when the order.created event is published.
+steps:
+  - id: step-1
+    breakpoint_ref: symbol:OrderController.create
+    prompt: Predict which service receives the validated command.
+    hints: [Inspect the call stack, Open the architecture context]
+    completion: learner_prediction_recorded
+assessment:
+  type: rubric
+  pass_score: 0.8
+redaction_profile: training-default

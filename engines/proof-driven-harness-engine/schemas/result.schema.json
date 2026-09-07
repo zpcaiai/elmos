@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/result.schema.json",
+  "title": "Proof harness result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "requestId", "skill", "status", "subjectRevision", "output", "evidenceIds", "runtimeEvidence", "externalEvidence", "certification", "metrics", "errors"],
+  "properties": {
+    "apiVersion": {"const": "elmos.ai/proof-harness/v3"},
+    "requestId": {"type": "string"},
+    "skill": {"type": "string"},
+    "status": {"enum": ["SUCCEEDED", "PARTIAL", "BLOCKED", "FAILED", "CANCELLED", "UNSUPPORTED"]},
+    "subjectRevision": {"$ref": "#/$defs/digest"},
+    "output": {"type": "object"},
+    "evidenceIds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "runtimeEvidence": {"enum": ["LOCAL_EXECUTED_SELF_ATTESTED", "NOT_RUN", "BLOCKED", "FAILED"]},
+    "externalEvidence": {"enum": ["VERIFIED", "NOT_RUN", "BLOCKED", "FAILED", "UNKNOWN"]},
+    "certification": {"enum": ["READY_FOR_EXTERNAL_GATE", "NOT_CERTIFIED", "BLOCKED", "REJECTED"]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wallClockMilliseconds", "inputBytes", "outputBytes", "cacheHit"],
+      "properties": {
+        "wallClockMilliseconds": {"type": "integer", "minimum": 0},
+        "inputBytes": {"type": "integer", "minimum": 0},
+        "outputBytes": {"type": "integer", "minimum": 0},
+        "cacheHit": {"type": "boolean"},
+        "costMicrounits": {"type": "integer", "minimum": 0}
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message", "retryable"],
+        "properties": {
+          "code": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+          "message": {"type": "string", "maxLength": 4096},
+          "retryable": {"type": "boolean"},
+          "provenance": {"type": "object"}
+        }
+      }
+    }
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}
+

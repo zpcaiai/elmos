@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SolutionContract",
+  "type": "object",
+  "required": [
+    "id",
+    "goal",
+    "actors",
+    "inputs",
+    "outputs",
+    "nonFunctional"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "schema"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schema": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "schema"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schema": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nonFunctional": {
+      "type": "object",
+      "required": [
+        "latencyP95Ms",
+        "availability",
+        "maxCostPerRun"
+      ],
+      "properties": {
+        "latencyP95Ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "availability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxCostPerRun": {
+          "type": "number",
+          "minimum": 0
+        },
+        "machineEtaRequired": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "compliance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

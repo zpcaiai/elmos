@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Protection Cryptography and Privacy Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $data-protection-cryptography-and-privacy-validator to perform this Batch 10 production-hardening task."

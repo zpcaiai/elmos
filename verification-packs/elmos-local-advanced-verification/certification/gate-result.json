@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-advanced-verification",
+  "status": "passed",
+  "structural_gate_status": "passed",
+  "certification_requested": false,
+  "certification_decision": "NOT_CERTIFIED",
+  "pack_status": "experimental",
+  "failures": []
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 011"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $service-to-service-workload-identity-and-mtls to implement its fail-closed ELMOS Product Batch 34 contract."

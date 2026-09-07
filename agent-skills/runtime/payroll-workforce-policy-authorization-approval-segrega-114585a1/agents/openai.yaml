@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B43: Payroll Workforce Policy Authorization Approval Segregation And Exception"
+  short_description: "Run ELMOS Product B43 contract with fail-closed evidence"
+  default_prompt: "Use $payroll-workforce-policy-authorization-approval-segrega-114585a1 to implement its fail-closed ELMOS Product B43 contract."

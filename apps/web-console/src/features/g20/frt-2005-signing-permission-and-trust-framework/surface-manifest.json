@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2005",
+  "skill_name": "frt-2005-signing-permission-and-trust-framework",
+  "batch": "G20",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g20/frt-2005-signing-permission-and-trust-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.signing-permission-and-trust-framework",
+  "execution_contract_sha256": "sha256:fb6e7abb046cb5937f7e957c0ec7028ee230afbdb147c2ab47777e2d7ada03b1",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:eafb24722301b4e86111166680941da6718e585c04762a302e1ae7d7bc5b99af",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Marketplace Publisher Onboarding Manager"
+  short_description: "Authoritative Batch 14 Skill 437 workflow"
+  default_prompt: "Use $marketplace-publisher-onboarding-manager to execute its evidence-bound Batch 14 workflow."
+

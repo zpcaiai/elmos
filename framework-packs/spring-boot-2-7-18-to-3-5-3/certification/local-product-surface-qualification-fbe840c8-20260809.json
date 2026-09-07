@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "evidence_class": "LOCAL_QUALIFICATION_SNAPSHOT",
+  "certification_eligible": false,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "pack_version": "0.3.0",
+  "pack_status": "limited",
+  "observed_at": "2026-08-09T10:13:31Z",
+  "repository": {
+    "base_revision": "fbe840c893aa502a5601c5f36aaa14608b1dd09d",
+    "worktree_state": "DIRTY",
+    "scoped_inputs": [
+      {
+        "path": "apps/web-console/e2e/spring-real-journey-ui.spec.ts",
+        "sha256": "21bd39fccf26d97d8018cef8ae6c2ad1d511ed0a56a2f1c0e871f16670a47088"
+      },
+      {
+        "path": "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+        "sha256": "48952fdf5f35488c5edc402b65eb6172c5b2f91f25786b8882e4eff898f83ab4"
+      },
+      {
+        "path": "apps/java-runtime-runner/Dockerfile",
+        "sha256": "038de54f8be31ca10f450e111025a8d92dc7f25fc4e0415f9a6b7bec98dab3dd"
+      },
+      {
+        "path": "apps/java-engine-transformer/Dockerfile",
+        "sha256": "13a15ae6ce3140469a33c6b7e7de658cbf176cd8060937925066097cac595a8d"
+      },
+      {
+        "path": "apps/java-engine-verifier/Dockerfile",
+        "sha256": "1a8caefa9cde0412328fd100afc2b49af6ff5745168adbe0fa92b89eceeda45b"
+      }
+    ]
+  },
+  "overall_evaluation": "NOT_EVALUATED",
+  "certification_decision": "NOT_CERTIFIED",
+  "external_execution_status": "NOT_RUN",
+  "customer_outcome_status": "NOT_EVALUATED",
+  "independent_review_status": "NOT_RUN",
+  "checks": {
+    "browser_development": {
+      "status": "PASSED_LOCAL_ENGINEERING",
+      "api_boundary": "MOCKED",
+      "environment": {
+        "os": "macOS 26.6 arm64",
+        "node": "26.0.0",
+        "pnpm": "10.12.4",
+        "playwright": "1.61.1",
+        "browser": "system Google Chrome 151.0.7922.108"
+      },
+      "desktop": {
+        "viewport": "1440x900",
+        "passed": 7,
+        "failed": 0
+      },
+      "mobile": {
+        "device_profile": "Pixel 7",
+        "viewport": "390x844",
+        "passed": 7,
+        "failed": 0
+      },
+      "axe": {
+        "journeys_analyzed": 2,
+        "violations": 0
+      },
+      "console_errors": 0,
+      "report": {
+        "path": "apps/web-console/test-results/playwright-report/index.html",
+        "sha256": "aeaaf4407ad3ad9eaa0a0c5d037213c7732359f43caf077a5684e1c11f180133",
+        "bytes": 532742,
+        "repository_evidence_promoted": false
+      }
+    },
+    "browser_production": {
+      "status": "BLOCKED_IDENTITY",
+      "browser": "system Google Chrome 151.0.7922.108",
+      "tests_launched": 14,
+      "tests_reaching_spring_assertions": 0,
+      "blocker_code": "OIDC_NOT_CONFIGURED",
+      "observed_redirect": "/spring -> /login",
+      "spring_assertions": "NOT_RUN",
+      "axe": "NOT_RUN"
+    },
+    "browser_firefox": {
+      "status": "NOT_RUN",
+      "reason": "Playwright-managed Firefox was not installed."
+    },
+    "browser_webkit": {
+      "status": "NOT_RUN",
+      "reason": "Playwright-managed WebKit was not installed."
+    },
+    "runtime_runner_image": {
+      "status": "FAILED_INFRASTRUCTURE",
+      "base_manifest_digest": "sha256:8cef5fc7bebe421363ab543a2f4db5caf7d119d8db67d56b0f56c485d2de4d55",
+      "bounded_attempts": 2,
+      "build_ids": [
+        "w8qhanms1j1692qm8bjpeoi1r",
+        "wivij4rgbqbqvijwuilwqmgz8"
+      ],
+      "health_probe_compile": "PASSED_LOCAL",
+      "failure": "Docker Hub anonymous token request reset over the IPv6 path.",
+      "image_present": false,
+      "runtime_smoke": "NOT_RUN"
+    },
+    "transformer_image": {
+      "status": "FAILED_INFRASTRUCTURE",
+      "build_id": "g8e94m55k98g0owalu75d1a5t",
+      "duration_seconds": 838.6,
+      "steps_completed": 18,
+      "steps_total": 22,
+      "reactor_modules_built": [
+        "parent",
+        "domain",
+        "evidence",
+        "engine-api",
+        "application",
+        "scm"
+      ],
+      "failure": "Maven Central zstd-jni 1.5.7-3 transfer ended at 6261696 of 7408362 bytes.",
+      "transformer_module": "SKIPPED",
+      "image_present": false,
+      "runtime_smoke": "NOT_RUN"
+    },
+    "verifier_image": {
+      "status": "BLOCKED_TIMEOUT",
+      "build_id": "o7nczk0q9ug2zfkd7lttzm079",
+      "duration_seconds": 920.6,
+      "steps_completed": 13,
+      "steps_total": 20,
+      "module_build": "PASSED",
+      "main_sources_compiled": 8,
+      "test_sources_compiled": 3,
+      "tests": "SKIPPED_BY_DOCKERFILE",
+      "first_cache_seed": "STARTED_NOT_COMPLETED",
+      "remaining_cache_seeds": "NOT_RUN",
+      "image_present": false,
+      "runtime_smoke": "NOT_RUN"
+    },
+    "exact_route_requalification": {
+      "status": "PASSED_LOCAL_ENGINEERING",
+      "evidence_scope": "SYNTHETIC_EXACT_FIXTURES",
+      "toolchain": {
+        "maven": "3.9.11",
+        "openrewrite_maven_plugin": "6.44.0",
+        "rewrite_spring": "6.35.0"
+      },
+      "routes_passed": 4,
+      "routes_failed": 0,
+      "source_tests": {
+        "executed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "target_tests": {
+        "executed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "runtime_health_checks_passed": 8,
+      "bidirectional_probe_comparisons_passed": 12,
+      "routes": [
+        {
+          "source": "Spring Boot 1.5.22.RELEASE / Java 8",
+          "target": "Spring Boot 3.5.3 / Java 21",
+          "path": "evidence/spring-routes/boot-1.5-java-8-maven-to-boot-3.5.3-java-21.json",
+          "sha256": "6f84b8a41710d796fb95be2881d368963e7944d92eb4f8544923fa4bff3a69f8"
+        },
+        {
+          "source": "Spring Boot 2.3.12.RELEASE / Java 11",
+          "target": "Spring Boot 3.5.3 / Java 21",
+          "path": "evidence/spring-routes/boot-2.0-2.6-maven-to-boot-3.5.3-java-21.json",
+          "sha256": "e8d815bdf1c706c6955887ad0311c2b8bcb82f9cb11ddce61cd8af5fa49e823f"
+        },
+        {
+          "source": "Spring Boot 2.7.18 / Java 17",
+          "target": "Spring Boot 3.5.3 / Java 21",
+          "path": "evidence/spring-routes/boot-2.7-maven-to-boot-3.5.3-java-21.json",
+          "sha256": "b2ec5b29a49123e1a5098d8c88fa27413d0a302a35d935d2957a288ebf92a03c"
+        },
+        {
+          "source": "Spring Boot 3.4.1 / Java 17",
+          "target": "Spring Boot 3.5.3 / Java 21",
+          "path": "evidence/spring-routes/boot-3.0-3.4-maven-to-boot-3.5.3-java-21.json",
+          "sha256": "154a4232791a7ea18474ac30d18050acb0e14cd482d9f0170f4d325d4852669b"
+        }
+      ]
+    },
+    "external_hosted_engineering": {
+      "status": "FAILED",
+      "certification_eligible": false,
+      "organizationally_independent": false,
+      "run_url": "https://github.com/zpcaiai/elmos/actions/runs/31303985981",
+      "head_revision": "fbe840c893aa502a5601c5f36aaa14608b1dd09d",
+      "attempts": 2,
+      "overall_result": "FAILURE",
+      "spring_job_url": "https://github.com/zpcaiai/elmos/actions/runs/31303985981/job/93223575702",
+      "job_tests": {
+        "passed": 23,
+        "failed": 1
+      },
+      "spring_tests": {
+        "passed": 6,
+        "failed": 1
+      },
+      "local_assertion_fix_ci_validation": "NOT_RUN"
+    },
+    "public_nearby_source": {
+      "status": "PASSED_LOCAL_SOURCE_ONLY",
+      "repository": "https://github.com/devfile-samples/devfile-sample-java-springboot-basic",
+      "commit": "02ce74cbda675c781c161352b93ba03b4fbea202",
+      "tree": "3f74fd4f261293031e22d373118d1942fee6d2b7",
+      "archive_sha256": "ea99fe1472ee7174cbe3eb23971e1fe8c214390ece627319db0737f0fd4466cc",
+      "source": "Spring Boot 2.7.18 / Java 11",
+      "execution_maven": "3.9.11",
+      "required_pack_source": "Spring Boot 2.7.18 / Java 17",
+      "exact_tuple_match": false,
+      "source_tests": {
+        "passed": 1,
+        "failed": 0
+      },
+      "startup_http_status": 200,
+      "transformation": "NOT_RUN",
+      "target_execution": "NOT_RUN"
+    },
+    "public_complex_source_baseline": {
+      "status": "FAILED_SOURCE_BASELINE",
+      "repository": "https://github.com/retro-game/retro-game",
+      "commit": "3d08c4b2ca814acfd873fc7874f724089e5b1d85",
+      "tree": "0d1d5b20c725f559d9f996609ebbe11a56832a41",
+      "archive_sha256": "e576ac90d8429dabac2676723005a55a18763ee9fb0263c879d04db35c09b98a",
+      "pom_sha256": "901f3c124d8784b6b976319a3fe067448339f7ad66b2ad312631956984c59492",
+      "source": "Spring Boot 2.7.18 / Java 17",
+      "execution_maven": "3.9.11",
+      "repository_pins_maven": false,
+      "package_with_tests_skipped": "PASSED",
+      "tests": {
+        "executed": 2,
+        "failures": 0,
+        "errors": 2,
+        "skipped": 0
+      },
+      "blockers": [
+        "Native libBattleEngine is unavailable.",
+        "PostgreSQL/JPA application context cannot connect."
+      ],
+      "junit4_integration_tests_discovered": 0,
+      "junit4_integration_tests_not_run": 20,
+      "testcontainers_postgresql_redis": "NOT_RUN",
+      "transformation": "NOT_RUN",
+      "target_execution": "NOT_RUN"
+    },
+    "authorized_customer_repository": {
+      "status": "NOT_RUN",
+      "reason": "No authorized customer repository, immutable commit and acceptance authority were supplied."
+    },
+    "external_independent_verification": {
+      "status": "NOT_RUN",
+      "reason": "The hosted CI run is not an organizationally independent verifier or signed external assessment."
+    }
+  },
+  "gate_updates_eligible": [],
+  "raw_evidence_promotion_status": "NOT_RUN",
+  "limitations": [
+    "Development browser journeys used mocked API responses.",
+    "Production browser journeys were blocked before Spring assertions by missing OIDC configuration.",
+    "No Docker image or rootless runtime smoke evidence was produced.",
+    "The exact route executions use four synthetic fixtures, not four customer repositories.",
+    "The route named for Spring Boot 2.0-2.6 executed only the exact Boot 2.3.12.RELEASE fixture.",
+    "The nearby public source is not the pack's exact Java tuple.",
+    "The complex public source failed its prerequisite source test baseline, so target execution correctly remained NOT_RUN.",
+    "The hosted CI run does not contain the current local browser assertion fix and is not independent certification evidence.",
+    "No authorized customer outcome or independent external review evidence exists."
+  ]
+}

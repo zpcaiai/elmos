@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Target Planner"
+  short_description: "Compare governed database migration targets"
+  default_prompt: "Use $database-target-profile-and-migration-strategy-planner to govern this ELMOS Batch 15 workflow."

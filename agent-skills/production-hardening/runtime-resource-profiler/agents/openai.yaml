@@ -1,0 +1,4 @@
+interface:
+  display_name: "Runtime Resource Profiler"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $runtime-resource-profiler to perform this Batch 10 production-hardening task."

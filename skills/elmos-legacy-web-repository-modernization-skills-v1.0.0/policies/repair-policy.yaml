@@ -1,0 +1,51 @@
+policyVersion: 1.0.0
+maxIterationsPerRootCause: 5
+maxChangedFilesPerAttempt: 12
+maxChangedLocPerAttempt: 800
+principles:
+- first-divergence
+- minimal-patch
+- one-root-cause
+- new-falsifiable-test
+- reversible
+- evidence-constrained
+requiredInputs:
+- mismatch
+- root-cause-hypothesis
+- evidenceRefs
+- irNodeRefs
+- sourceMapRefs
+- affectedTests
+- risk
+forbiddenActions:
+- delete or weaken failing tests
+- add broad normalizer
+- ignore business response fields
+- catch and swallow exceptions to match status
+- disable authentication/authorization/CSRF
+- turn writes into no-op
+- change source baseline
+- mass rewrite unrelated modules
+- increase tool/environment authority
+- modify production data
+approvalRequired:
+- critical security logic
+- critical transaction boundary
+- schema/data migration
+- irreversible effect
+- more than configured patch budget
+stopConditions:
+- same mismatch unchanged for 2 attempts
+- new critical mismatch introduced
+- evidence contradiction unresolved
+- budget exhausted
+- compile/test baseline deteriorates
+- patch scope exceeds transformation unit
+afterEachAttempt:
+- parse
+- compile
+- targeted regression
+- mismatch rerun
+- source-map update
+- risk update
+- checkpoint

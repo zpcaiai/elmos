@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/locale-profile.schema.json",
+  "title": "Locale Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "locale_id",
+    "language_tag",
+    "region",
+    "timezone",
+    "currency",
+    "date_format",
+    "number_format",
+    "content_review_status",
+    "pseudo_localization_status",
+    "legal_approval_status"
+  ],
+  "properties": {
+    "locale_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language_tag": {
+      "type": "string",
+      "minLength": 2
+    },
+    "region": {
+      "type": "string",
+      "minLength": 2
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "date_format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "number_format": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_review_status": {
+      "enum": [
+        "NOT_RUN",
+        "PENDING",
+        "PASSED",
+        "FAILED"
+      ]
+    },
+    "pseudo_localization_status": {
+      "enum": [
+        "NOT_RUN",
+        "PASSED",
+        "FAILED"
+      ]
+    },
+    "legal_approval_status": {
+      "enum": [
+        "NOT_RUN",
+        "PENDING",
+        "APPROVED",
+        "REJECTED"
+      ]
+    }
+  }
+}
+

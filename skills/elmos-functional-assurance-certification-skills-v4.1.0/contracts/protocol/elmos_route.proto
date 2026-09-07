@@ -1,0 +1,5 @@
+syntax = "proto3";
+package elmos.projectfactory.v4;
+message RouteRequest { string tenant_id = 1; string goal_id = 2; string revision_set_id = 3; string idempotency_key = 4; }
+message RouteDecision { enum Status { STATUS_UNSPECIFIED = 0; ACCEPTED = 1; BLOCKED = 2; } Status status = 1; repeated string evidence_refs = 2; }
+service RouteControl { rpc Start(RouteRequest) returns (RouteDecision); }

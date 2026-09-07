@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1912",
+  "skill_name": "frt-1912-cegis-loop",
+  "batch": "G19",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g19/frt-1912-cegis-loop/",
+  "status": "shared_implementation",
+  "handler_kind": "advanced_verification",
+  "capability_key": "frt.g19.cegis-loop",
+  "execution_contract_sha256": "sha256:9cc63eb2c63a32bcce1cfb418e3750c44280cafa89013b52bbd167c25d8c1922",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "properties"
+    ],
+    "optional": [
+      "toolchains",
+      "counterexamples"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2350bb9137ef7366484f8e9dac8df1284b41122f08325cabac264acc72fcacd9",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

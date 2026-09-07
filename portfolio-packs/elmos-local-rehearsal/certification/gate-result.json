@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-rehearsal",
+  "status": "passed",
+  "pack_status": "experimental",
+  "certification_decision": "NOT_CERTIFIED",
+  "failures": []
+}

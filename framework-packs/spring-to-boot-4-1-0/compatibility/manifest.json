@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "direction": "legacy-spring-to-spring-boot",
+  "target": {"spring_boot": "4.1.0", "spring_framework": "7.0.8", "java": "21"},
+  "compatibility_policy": "exact-source-tuple-and-provider-profile",
+  "known_breaking_boundaries": ["javax-to-jakarta", "Spring Security 7", "Hibernate ORM 7", "Tomcat 11", "Boot 4 modular starters", "Boot 4.0-to-4.1 deprecations"],
+  "status": "NOT_RUN"
+}

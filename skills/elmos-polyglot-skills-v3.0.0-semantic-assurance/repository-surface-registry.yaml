@@ -1,0 +1,182 @@
+schemaVersion: elmos.repository-surface-registry/v1
+kind: RepositorySurfaceRegistry
+metadata:
+  name: elmos-legacy-repository-surfaces
+  version: 2.0.0
+spec:
+  surfaces:
+  - id: jcl
+    display: JCL
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-jcl
+    extensions:
+    - .jcl
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - JES/JCL parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - job step ordering
+    - DISP/dataset lifecycle
+    - return-code conditionals
+    - restart points
+  - id: rexx
+    display: REXX
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-rexx
+    extensions:
+    - .rexx
+    - .rex
+    - .exec
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - REXX interpreter/parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - host command environments
+    - stem variables
+    - numeric settings
+    - external function resolution
+  - id: ibmi-cl
+    display: IBM i CL/CLLE
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-ibmi-cl
+    extensions:
+    - .cl
+    - .clle
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - IBM i CL compiler/parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - job/library list state
+    - object authority
+    - message handling
+    - commitment boundaries
+  - id: cobol-copybook
+    display: COBOL Copybook
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-cobol-copybook
+    extensions:
+    - .cpy
+    - .copy
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - copybook parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - REPLACING/includes
+    - level-88 conditions
+    - REDEFINES
+    - OCCURS DEPENDING ON
+  - id: cics-bms
+    display: CICS BMS
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-cics-bms
+    extensions:
+    - .bms
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - BMS parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - map coordinates/attributes
+    - AID keys
+    - field protection
+    - terminal state
+  - id: ims-mfs
+    display: IMS MFS
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-ims-mfs
+    extensions:
+    - .mfs
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - MFS parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - message segmentation
+    - device fields
+    - format routing
+    - transaction codes
+  - id: ibmi-dds
+    display: IBM i DDS
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-ibmi-dds
+    extensions:
+    - .dds
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - DDS parser
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - record formats
+    - access paths
+    - indicators
+    - display/printer attributes
+  - id: legacy-sql-routines
+    display: Legacy SQL/Routine Surface
+    kind: repository-dsl
+    tier: P0-support
+    adapter_skill: elmos-adapter-legacy-sql-routines
+    extensions:
+    - .sql
+    - .ddl
+    - .proc
+    build_tools:
+    - owner runtime/toolchain
+    parsers:
+    - dialect parser
+    - vendor catalog introspection
+    frameworks:
+    - repository support surface
+    verification:
+    - parse/roundtrip fixtures
+    - owner runtime characterization
+    semantic_risks:
+    - transaction isolation
+    - NULL/collation
+    - procedural control flow
+    - optimizer-dependent behavior

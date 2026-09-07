@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/etgb/schemas/requirement-contract.schema.json",
+  "title": "Project Generation Requirement Contract",
+  "type": "object",
+  "required": [
+    "id",
+    "actors",
+    "functional_requirements",
+    "quality_attributes",
+    "acceptance_tests",
+    "assumptions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "functional_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "quality_attributes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "acceptance_tests": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "change_sequence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}

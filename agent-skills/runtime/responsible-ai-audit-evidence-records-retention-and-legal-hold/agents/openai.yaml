@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Responsible Ai Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $responsible-ai-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B45 contract."

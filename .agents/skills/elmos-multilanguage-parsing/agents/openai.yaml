@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 多语言解析与标准化 Code IR"
+  short_description: "Guide 多语言解析与标准化 Code IR with evidence controls"
+  default_prompt: "Use $elmos-multilanguage-parsing as guidance for 多语言解析与标准化 Code IR with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

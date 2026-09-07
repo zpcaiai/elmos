@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-33-cloud-iac-platform-factory-complete-skill-pack",
+  "batch": 33,
+  "title": "Cloud, IaC, Container and Platform Modernization Factory",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b33-cloud-iac-platform-factory-orchestrator",
+    "b33-cloud-iac-platform-factory-domain-model",
+    "b33-cloud-iac-platform-factory-discovery-inventory",
+    "b33-cloud-iac-platform-factory-capability-planning",
+    "b33-cloud-iac-platform-factory-deterministic-engine",
+    "b33-cloud-iac-platform-factory-adapter-provider",
+    "b33-cloud-iac-platform-factory-workflow-runtime",
+    "b33-cloud-iac-platform-factory-lineage-reconciliation",
+    "b33-cloud-iac-platform-factory-security-policy",
+    "b33-cloud-iac-platform-factory-human-approval",
+    "b33-cloud-iac-platform-factory-observability-economics",
+    "b33-cloud-iac-platform-factory-corpus-benchmark",
+    "b33-cloud-iac-platform-factory-failure-recovery",
+    "b33-cloud-iac-platform-factory-integration-api",
+    "b33-cloud-iac-platform-factory-lifecycle-recertification",
+    "b33-cloud-iac-platform-factory-certification-gate"
+  ],
+  "upstream_batch": 32,
+  "files": [
+    {
+      "path": "BATCH32_COMPATIBILITY.md",
+      "sha256": "3d982e61b4ec5f97393ab6a913554dd9881f74044ebd925663a40d30f00b5bf0",
+      "size": 2091
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "71dbf875dc853423f5ff67876cafd6c0a718cf44310edd9119473f97c6109ebd",
+      "size": 2284
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "e5b6f1e4409915eade8b8d92da49304bb06801ceb7dd23f74e67970469877967",
+      "size": 1754
+    },
+    {
+      "path": "README.md",
+      "sha256": "f6434c1f63caa86e6ffce21d60a43d7d7da3d501d5606fc064b921e1eff091a5",
+      "size": 1088
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "e08bc1cbc417aa2ff60ee085cdefb7fa6b3ff68625a7e0d08b1ff9f0df43901a",
+      "size": 3488
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "5bff23b47e36b2dd8875f8599a8366e93d56de35756b7ab1dfbdc91f2e326948",
+      "size": 3041
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "9c0e2fe25c39f3928866f6c8296d3ffec311a12f4cffc32b43410a238c834846",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "a91349698abf039238da5217928082e1f4c637029cb8138f0c2e8da0a18574ad",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "c42b7359553a16ea711cd1d35013d11e5c119f88917517c03e62322db8dad366",
+      "size": 290
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "4e5fa78d19d01e5439db69fe0d98f73a14566930c1fd0a30dd3a8ead1c08ac0b",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "bc5a721a4a2689527b965b306eb604bfc51e700f70bded52e8533e8617d37aa3",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "05873e1efa14adb1c2d910aabe0e31d600a4568a95997a85631522fb8914f942",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "0a5ca1132b80ab5f4f5bab353d9a3d8a2d253d80cc9982a55e67732c7628914c",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "6cc7d29d71c4b599d411df1381df37e58f63ec2c341f961da1c571e81c04c6f9",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "89d47f8a4f33be7b9e74578eff349918bedf9c1acc82f6a847b0db244492845b",
+      "size": 848
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-adapter-provider/SKILL.md",
+      "sha256": "0b3067d49c9d30f0b0b7c52b5cd59aea13debc50c715aaec80d615afce066fac",
+      "size": 3877
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-capability-planning/SKILL.md",
+      "sha256": "acd50ad5d6df5f1615a1cb07f8a504ed073012e980aa88b82ab471cf9404c2d5",
+      "size": 3779
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-certification-gate/SKILL.md",
+      "sha256": "3eb716690f64bc27c71673ea886a3b47c019b77a79289980d595dab97aa4cc65",
+      "size": 3908
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-corpus-benchmark/SKILL.md",
+      "sha256": "f83644d188ed7cd220947f8e9539b22a541a648e50e726bd84b5a4a17be3b575",
+      "size": 3818
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-deterministic-engine/SKILL.md",
+      "sha256": "1af3a2534e50ea39fe083c5c82c2eb3e264334bb672c685611c51695a5d4a6e0",
+      "size": 3795
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-discovery-inventory/SKILL.md",
+      "sha256": "ed159683717e241e77f1d6ca5eafb5835ad47865b5c3d2d8cd8731c36f145def",
+      "size": 3822
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-domain-model/SKILL.md",
+      "sha256": "17396f23ffd6ae2890e72f841044732335588ebe347711172cf92e2fb0adf582",
+      "size": 3849
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-failure-recovery/SKILL.md",
+      "sha256": "54a25fcd211ba5cf8fe7806357a93c1fa2eae837ce36702d37f3b94f42daf05b",
+      "size": 3826
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-human-approval/SKILL.md",
+      "sha256": "fae1ec4999819365b65eda678a85fcac9418d3e4775a1b905fea2b78f0b608c9",
+      "size": 3811
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-integration-api/SKILL.md",
+      "sha256": "9bc55482704cf19f6d05767cf3b5c7cc0c652abc74d51a004670e1f052e7b641",
+      "size": 3796
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-lifecycle-recertification/SKILL.md",
+      "sha256": "76c08fca0a2b2bc5a43548a017c8493bd0c2ed4114f73d24b8d9a975d183a184",
+      "size": 3886
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-lineage-reconciliation/SKILL.md",
+      "sha256": "cb5d4f0fe07de92e7ad1741c23f298fa022aed118ca3ce123fbab7d440111b3f",
+      "size": 3837
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-observability-economics/SKILL.md",
+      "sha256": "b6ec76c53612c32d0707e38166af870b02f3adfacc0644709e28dce944d24fdb",
+      "size": 3852
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-orchestrator/SKILL.md",
+      "sha256": "5a82b002cd0463fcb479edd70af0be4449912781144e21339679063449696a29",
+      "size": 3874
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-security-policy/SKILL.md",
+      "sha256": "3ce392d2e89fd7decdd0bfdda191f6711e9cc81bb151ae0d5b0737588c20f903",
+      "size": 3831
+    },
+    {
+      "path": "skills/b33-cloud-iac-platform-factory-workflow-runtime/SKILL.md",
+      "sha256": "2943b5efd57f4edab640285c3fe0d7feca7bba8dc8a2fbef2fdda61f8ab6382e",
+      "size": 3840
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "c550fe5b01d557831785a17e72e4830e90ac4d2a83021358ab9aaebf5f7b3d04",
+      "size": 362
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "a6f09c842d2e5cd9ccf8b8df908142fcb687b6adb3eeb4d2ae6b0b5ac2f84d08",
+      "size": 1934
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

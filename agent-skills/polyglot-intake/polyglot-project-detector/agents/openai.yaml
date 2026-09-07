@@ -1,0 +1,4 @@
+interface:
+  display_name: "Polyglot Project Detector"
+  short_description: "Detect mixed-language repository structure"
+  default_prompt: "Use $polyglot-project-detector to produce an evidence-backed project fingerprint."

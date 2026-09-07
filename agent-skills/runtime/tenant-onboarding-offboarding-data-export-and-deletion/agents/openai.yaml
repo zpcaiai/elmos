@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Tenant Onboarding Offboarding Data Export And Deletion"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $tenant-onboarding-offboarding-data-export-and-deletion to implement its fail-closed ELMOS Product B34 contract."

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "corpora"
+  ],
+  "properties": {
+    "corpora": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "corpus_id",
+          "class",
+          "version",
+          "owner",
+          "license",
+          "allowed_uses"
+        ],
+        "properties": {
+          "corpus_id": {
+            "type": "string"
+          },
+          "class": {
+            "enum": [
+              "synthetic",
+              "open-source",
+              "internal-holdout",
+              "customer-private"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          },
+          "allowed_uses": {
+            "type": "array"
+          },
+          "tenant_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "content_digest": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

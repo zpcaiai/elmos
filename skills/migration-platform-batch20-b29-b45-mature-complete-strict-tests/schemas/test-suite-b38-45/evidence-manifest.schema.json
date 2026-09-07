@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "case_id",
+    "artifact_sha256",
+    "environment_sha256",
+    "files"
+  ]
+}

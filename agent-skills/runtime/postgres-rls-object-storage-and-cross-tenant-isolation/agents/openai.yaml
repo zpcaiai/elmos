@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 016"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $postgres-rls-object-storage-and-cross-tenant-isolation to implement its fail-closed ELMOS Product Batch 34 contract."

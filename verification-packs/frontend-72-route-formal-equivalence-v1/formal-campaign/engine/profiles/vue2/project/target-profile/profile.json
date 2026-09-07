@@ -1,0 +1,30 @@
+{
+  "id": "vue2",
+  "label": "Vue 2 compatibility target",
+  "frameworkVersion": "2.7.16",
+  "profileVersion": "1.0.0",
+  "status": "LEGACY_CONDITIONAL",
+  "platforms": [
+    "WEB"
+  ],
+  "language": "JavaScript",
+  "languageVersion": "ECMAScript 2022",
+  "runtime": "Node.js",
+  "runtimeVersion": "26.0.0",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Vite",
+  "buildToolVersion": "7.3.6",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "vue-router 3.6.5",
+  "state": "Vue.observable",
+  "rendering": "CSR",
+  "testTool": "Vitest 4.1.10",
+  "runnerProfile": "WEB_LEGACY",
+  "requiredProjectFiles": [
+    "package.json",
+    "vite.config.js",
+    "src/main.js",
+    "src/App.vue"
+  ]
+}

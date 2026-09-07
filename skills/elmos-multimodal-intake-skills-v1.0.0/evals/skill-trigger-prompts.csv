@@ -1,0 +1,101 @@
+id,language,prompt,expected_skill,should_trigger,notes
+01-zh,zh-CN,请在 Elmos 仓库中实现“统一多模态输入总控”。建立所有输入类型共享的会话、状态机、路由、错误隔离和下游交付边界，使下游 Agent 只消费统一内容模型。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-input-orchestrator,true,直接实现请求
+01-scenario,zh-CN,当前 Elmos 遇到这个场景：为 Elmos 实现统一多模态输入总控；当任务涉及音频、图片、PDF、Word、Markdown、TXT、文件夹或压缩包接入、解析编排与下游交接时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-input-orchestrator,true,场景触发
+02-zh,zh-CN,请在 Elmos 仓库中实现“安全断点续传”。提供面向单文件、多文件和大型项目包的安全上传协议，客户端断线后可继续，服务端可验证完整性并避免重复存储。必须给出真实代码、迁移、测试和验收证据。,elmos-secure-resumable-upload,true,直接实现请求
+02-scenario,zh-CN,当前 Elmos 遇到这个场景：实现 Elmos 安全、幂等、可恢复的文件与大对象上传；当任务涉及分片上传、断点续传、预签名 URL、校验和或客户端重连时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-secure-resumable-upload,true,场景触发
+03-zh,zh-CN,请在 Elmos 仓库中实现“文件类型识别与验证”。在任何解析或解压前可靠识别真实文件类型，并给出可审计的置信度、冲突和处理决策。必须给出真实代码、迁移、测试和验收证据。,elmos-file-type-detection-and-validation,true,直接实现请求
+03-scenario,zh-CN,当前 Elmos 遇到这个场景：实现扩展名、MIME、文件魔数和内容特征联合识别；当任务涉及文件格式验证、伪装文件阻止或解析器选择时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-file-type-detection-and-validation,true,场景触发
+04-zh,zh-CN,请在 Elmos 仓库中实现“恶意文件隔离与解析沙箱”。确保所有用户文件在最小权限、无默认网络、受资源限制的环境中被扫描和解析，任何可执行内容均不会在接入阶段运行。必须给出真实代码、迁移、测试和验收证据。,elmos-malware-quarantine-and-sandbox,true,直接实现请求
+04-scenario,zh-CN,当前 Elmos 遇到这个场景：实现上传内容恶意扫描、隔离区和解析沙箱；当任务涉及病毒、Office 宏、PDF 脚本、解析器漏洞或不可信文件执行边界时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-malware-quarantine-and-sandbox,true,场景触发
+05-zh,zh-CN,请在 Elmos 仓库中实现“音频识别与说话人分离”。把音频转换为可编辑、可追溯、带时间范围和置信度的结构化转录，而不是无定位的纯文本。必须给出真实代码、迁移、测试和验收证据。,elmos-audio-asr-and-diarization,true,直接实现请求
+05-scenario,zh-CN,当前 Elmos 遇到这个场景：实现音频预处理、ASR、语言检测、时间戳和说话人分离；当用户上传录音、会议音频或口述需求时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-audio-asr-and-diarization,true,场景触发
+06-zh,zh-CN,请在 Elmos 仓库中实现“图片 OCR 与预处理”。从图片中提取带坐标、阅读顺序、置信度和版面信息的文本，同时保留原图证据。必须给出真实代码、迁移、测试和验收证据。,elmos-image-ocr-and-preprocessing,true,直接实现请求
+06-scenario,zh-CN,当前 Elmos 遇到这个场景：实现图片旋转、校正、增强、切片和 OCR；当任务涉及扫描件、截图、照片、手写文字或图像文本提取时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-image-ocr-and-preprocessing,true,场景触发
+07-zh,zh-CN,请在 Elmos 仓库中实现“UI 截图理解”。将 UI 图片转换为可编辑的结构树、设计语义和可验证实现约束，并与后续代码生成及视觉回归连接。必须给出真实代码、迁移、测试和验收证据。,elmos-visual-ui-understanding,true,直接实现请求
+07-scenario,zh-CN,当前 Elmos 遇到这个场景：把 Web、移动端或桌面端截图解析为页面结构、组件、状态和交互意图；当任务涉及截图生成前端、UI 复刻或视觉验收时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-visual-ui-understanding,true,场景触发
+08-zh,zh-CN,请在 Elmos 仓库中实现“图表与架构图理解”。将图表转换为可编辑、可校验、可追溯的图模型，并支持生成架构文档和代码影响分析。必须给出真实代码、迁移、测试和验收证据。,elmos-diagram-and-architecture-understanding,true,直接实现请求
+08-scenario,zh-CN,当前 Elmos 遇到这个场景：解析流程图、架构图、数据流图、UML、ER 图和手绘图；当任务涉及从图中恢复系统节点、关系、边界或数据流时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-diagram-and-architecture-understanding,true,场景触发
+09-zh,zh-CN,请在 Elmos 仓库中实现“PDF 版面与表格解析”。以逐页混合策略恢复 PDF 的逻辑结构和视觉坐标，保证每段内容可定位到页码与区域。必须给出真实代码、迁移、测试和验收证据。,elmos-pdf-layout-table-parser,true,直接实现请求
+09-scenario,zh-CN,当前 Elmos 遇到这个场景：解析原生、扫描和图文混合 PDF 的文字、表格、图片、目录与版面；当任务涉及 PDF 需求文档或报告接入时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-pdf-layout-table-parser,true,场景触发
+10-zh,zh-CN,请在 Elmos 仓库中实现“Word 文档解析”。保留 Word 逻辑结构、修订语义和来源位置，并在隔离环境中安全处理旧 DOC。必须给出真实代码、迁移、测试和验收证据。,elmos-word-document-parser,true,直接实现请求
+10-scenario,zh-CN,当前 Elmos 遇到这个场景：解析 DOCX/DOC 的标题、表格、图片、批注、修订、脚注和链接；当任务涉及 Word 需求、UAT 报告或版本差异时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-word-document-parser,true,场景触发
+11-zh,zh-CN,请在 Elmos 仓库中实现“Markdown、TXT 与日志解析”。保留 Markdown 语义和纯文本行号，对日志、配置和结构化文本做可逆的类型推断。必须给出真实代码、迁移、测试和验收证据。,elmos-markdown-text-log-parser,true,直接实现请求
+11-scenario,zh-CN,当前 Elmos 遇到这个场景：解析 Markdown/MDX、TXT、配置和日志文件；当任务涉及代码块、行号、日志堆栈、编码识别或超大文本流处理时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-markdown-text-log-parser,true,场景触发
+12-zh,zh-CN,请在 Elmos 仓库中实现“统一多模态内容 IR”。建立稳定、可版本化、可扩展的 Content IR，避免所有内容被扁平化为纯文本，并隔离上游格式与下游 Agent。必须给出真实代码、迁移、测试和验收证据。,elmos-unified-multimodal-content-ir,true,直接实现请求
+12-scenario,zh-CN,当前 Elmos 遇到这个场景：设计并实现 Elmos 的统一多模态内容中间表示；当多个解析器需要共享内容块、关系、质量和来源结构时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-unified-multimodal-content-ir,true,场景触发
+13-zh,zh-CN,请在 Elmos 仓库中实现“来源锚点与证据链”。保证 Elmos 的关键结论可以回到原始文件、具体位置和处理版本，并可验证未被篡改。必须给出真实代码、迁移、测试和验收证据。,elmos-source-anchor-and-provenance,true,直接实现请求
+13-scenario,zh-CN,当前 Elmos 遇到这个场景：为所有提取、推断、需求和生成结果建立原始来源定位；当任务要求页码、坐标、时间戳、行号、代码范围或证据追溯时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-source-anchor-and-provenance,true,场景触发
+14-zh,zh-CN,请在 Elmos 仓库中实现“多模态需求提取”。将非结构化输入转换为可追溯、可审阅、可版本化的需求对象，并严格区分原文事实、模型推断和待确认问题。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-requirement-extraction,true,直接实现请求
+14-scenario,zh-CN,当前 Elmos 遇到这个场景：从文档、音频、图片、图表和项目包中提取功能需求、非功能需求、约束与验收条件；当任务涉及需求理解或项目生成前置分析时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-requirement-extraction,true,场景触发
+15-zh,zh-CN,请在 Elmos 仓库中实现“多资产内容融合”。建立可解释的资产角色、实体关系和内容聚合，保留每个来源而不把差异抹平。必须给出真实代码、迁移、测试和验收证据。,elmos-multi-asset-content-fusion,true,直接实现请求
+15-scenario,zh-CN,当前 Elmos 遇到这个场景：将一次提交中的多个文件、图片、音频和项目目录融合为统一项目上下文；当任务涉及跨文件关联、去重或资料角色识别时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multi-asset-content-fusion,true,场景触发
+16-zh,zh-CN,请在 Elmos 仓库中实现“文档版本与冲突检测”。把冲突作为一等数据对象，依据可配置优先级给出建议但不静默替用户决策。必须给出真实代码、迁移、测试和验收证据。,elmos-document-version-and-conflict-detection,true,直接实现请求
+16-scenario,zh-CN,当前 Elmos 遇到这个场景：识别输入资料的版本、覆盖关系和需求冲突；当 PDF、Word、录音、截图或项目包对同一事项表述不一致时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-document-version-and-conflict-detection,true,场景触发
+17-zh,zh-CN,请在 Elmos 仓库中实现“人工审阅与纠错”。让用户的修正成为可审计版本，而不是直接覆盖原始结果，并可用于重放、评测和词典改进。必须给出真实代码、迁移、测试和验收证据。,elmos-human-review-and-correction,true,直接实现请求
+17-scenario,zh-CN,当前 Elmos 遇到这个场景：为 OCR、ASR、文档解析、图表识别、需求提取和冲突提供人工复核闭环；当系统结果低置信度或用户需要修正时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-human-review-and-correction,true,场景触发
+18-zh,zh-CN,请在 Elmos 仓库中实现“多模态提示注入防护”。把所有资产内容视为不可信数据，分离系统策略、用户授权和文档内指令，并在工具调用前实施能力与参数级控制。必须给出真实代码、迁移、测试和验收证据。,elmos-prompt-injection-defense,true,直接实现请求
+18-scenario,zh-CN,当前 Elmos 遇到这个场景：防止 PDF、Word、图片、音频、代码和网页内容中的指令控制 Agent 或扩大权限；当用户输入会进入 LLM 上下文或触发工具时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-prompt-injection-defense,true,场景触发
+19-zh,zh-CN,请在 Elmos 仓库中实现“解析与模型供应商路由”。基于能力、隐私、准确率、成本、负载和时延选择 provider，并确保回退不改变数据治理边界。必须给出真实代码、迁移、测试和验收证据。,elmos-provider-routing-and-fallback,true,直接实现请求
+19-scenario,zh-CN,当前 Elmos 遇到这个场景：为 ASR、OCR、视觉、嵌入和 LLM 提供可替换供应商路由、熔断和降级；当任务涉及模型选择、成本、隐私约束或 provider 故障时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-provider-routing-and-fallback,true,场景触发
+20-zh,zh-CN,请在 Elmos 仓库中实现“存储、索引与检索”。让大规模输入可持久化、可删除、可版本化、可检索，同时避免把模型上下文当作唯一存储。必须给出真实代码、迁移、测试和验收证据。,elmos-storage-index-and-retrieval,true,直接实现请求
+20-scenario,zh-CN,当前 Elmos 遇到这个场景：设计原始资产、内容 IR、全文、向量、符号和图关系的分层存储与检索；当任务涉及项目知识库、搜索或按需装载上下文时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-storage-index-and-retrieval,true,场景触发
+21-zh,zh-CN,请在 Elmos 仓库中实现“持久任务执行与恢复”。确保服务端任务生命周期独立于客户端连接，并能从最近安全检查点恢复而不重复计费或副作用。必须给出真实代码、迁移、测试和验收证据。,elmos-durable-processing-and-recovery,true,直接实现请求
+21-scenario,zh-CN,当前 Elmos 遇到这个场景：实现长时间解析和索引任务的检查点、恢复、取消与幂等副作用；当客户端断线、服务重启或 worker 崩溃后仍需继续时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-durable-processing-and-recovery,true,场景触发
+22-zh,zh-CN,请在 Elmos 仓库中实现“处理成本与机器 ETA”。以历史遥测和实时阶段进度给出可校准 ETA，明确排除人工开发工期或人日。必须给出真实代码、迁移、测试和验收证据。,elmos-processing-cost-and-eta-estimation,true,直接实现请求
+22-scenario,zh-CN,当前 Elmos 遇到这个场景：估算并追踪 Elmos 自身处理任务的机器墙钟时间、资源成本和模型成本；当页面需要进度、预计完成时间或任务核算时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-processing-cost-and-eta-estimation,true,场景触发
+23-zh,zh-CN,请在 Elmos 仓库中实现“多模态可观测性”。提供跨服务、跨资产、跨 provider 的端到端可观测性，同时避免在日志中泄露原文、密码和密钥。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-observability,true,直接实现请求
+23-scenario,zh-CN,当前 Elmos 遇到这个场景：为上传、扫描、解析、融合、索引、上下文和下游调用建立统一 Trace、Metrics、Logs；当任务涉及排障、SLO、成本或审计时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-observability,true,场景触发
+24-zh,zh-CN,请在 Elmos 仓库中实现“多模态评测框架”。把准确率、流程遵循、安全和效率变成可自动执行的基准，而不是凭主观感觉验收。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-evaluation-framework,true,直接实现请求
+24-scenario,zh-CN,当前 Elmos 遇到这个场景：为 OCR、ASR、版面、UI、图表、需求提取、检索和上下文保持建立可重复评测；当需要验证质量、回归或 provider 更换时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-evaluation-framework,true,场景触发
+25-zh,zh-CN,请在 Elmos 仓库中实现“多模态输入工作台 UI”。让用户清楚看到每个资产的安全、上传、解析、上下文和审阅状态，并能控制资料角色和模型读取权限。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-input-workbench-ui,true,直接实现请求
+25-scenario,zh-CN,当前 Elmos 遇到这个场景：实现拖拽、录音、文件夹和压缩包上传、预览、进度、纠错和冲突审阅界面；当任务涉及 Elmos 多模态前端体验时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-input-workbench-ui,true,场景触发
+26-zh,zh-CN,请在 Elmos 仓库中实现“接入 API 与 SDK”。提供一致、幂等、可分页、可取消、可观测的契约，并通过生成 SDK 降低多语言客户端差异。必须给出真实代码、迁移、测试和验收证据。,elmos-ingestion-api-and-sdk,true,直接实现请求
+26-scenario,zh-CN,当前 Elmos 遇到这个场景：设计多模态输入、上传、解析、查询、纠错和任务提交的版本化 API、SDK；当外部客户端、CLI 或服务需要接入 Elmos 时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-ingestion-api-and-sdk,true,场景触发
+27-zh,zh-CN,请在 Elmos 仓库中实现“数据保留与治理”。让数据用途、驻留、第三方模型发送、保留期限和删除传播可配置、可证明。必须给出真实代码、迁移、测试和验收证据。,elmos-data-retention-and-governance,true,直接实现请求
+27-scenario,zh-CN,当前 Elmos 遇到这个场景：实现多租户输入资产、派生内容、索引、修正和审计数据的分类、保留、导出与彻底删除；当任务涉及隐私、合规或生命周期管理时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-data-retention-and-governance,true,场景触发
+28-zh,zh-CN,请在 Elmos 仓库中实现“下游 Agent 集成”。定义只读证据、受控工具、上下文装载和结果回写边界，防止下游重复解析或被文件内指令劫持。必须给出真实代码、迁移、测试和验收证据。,elmos-downstream-agent-integration,true,直接实现请求
+28-scenario,zh-CN,当前 Elmos 遇到这个场景：把统一输入包安全交给需求分析、代码生成、转换、测试、修复和文档 Agent；当任务涉及多模态结果进入执行型 Agent 时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-downstream-agent-integration,true,场景触发
+29-zh,zh-CN,"请在 Elmos 仓库中实现“Codex 同级上下文容量”。以模型能力注册表而非散落常量管理上下文；当前基线可配置为 1,050,000 tokens、128,000 最大输出，但必须支持运行时更新。必须给出真实代码、迁移、测试和验收证据。",elmos-codex-context-capacity-parity,true,直接实现请求
+29-scenario,zh-CN,当前 Elmos 遇到这个场景：让 Elmos 活跃上下文容量与当前 Codex 同级并动态适配；当任务涉及 1.05M 级窗口、模型切换或容量兼容时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-codex-context-capacity-parity,true,场景触发
+30-zh,zh-CN,请在 Elmos 仓库中实现“上下文预算管理器”。计算真实可用输入容量，按优先级和不可驱逐规则装载内容，并为工具回合与输出保留安全空间。必须给出真实代码、迁移、测试和验收证据。,elmos-context-budget-manager,true,直接实现请求
+30-scenario,zh-CN,当前 Elmos 遇到这个场景：为每次模型调用分配系统、策略、技能、对话、文档、代码、工具结果和输出预算；当任务涉及长上下文装载和超限控制时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-context-budget-manager,true,场景触发
+31-zh,zh-CN,请在 Elmos 仓库中实现“多模态 Token 计量”。建立按模型、模态、来源和任务阶段可复现的 Token/等价预算计量层，使上下文控制、报价、路由与审计使用同一事实来源。必须给出真实代码、迁移、测试和验收证据。,elmos-multimodal-token-accounting,true,直接实现请求
+31-scenario,zh-CN,当前 Elmos 遇到这个场景：当 Elmos 需要估算文本、代码、OCR、音频转录、图像、工具定义与工具结果对模型上下文和费用的占用时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-multimodal-token-accounting,true,场景触发
+32-zh,zh-CN,请在 Elmos 仓库中实现“长上下文装箱与排序”。把有限活动窗口分配给最高价值、最新、可信且覆盖完整的证据，并提供可解释、确定、可回滚的装箱计划。必须给出真实代码、迁移、测试和验收证据。,elmos-long-context-packing-and-ranking,true,直接实现请求
+32-scenario,zh-CN,当前 Elmos 遇到这个场景：当任务候选证据超过活动上下文，必须在不丢失关键约束的前提下选择、排序、去重和装载内容时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-long-context-packing-and-ranking,true,场景触发
+33-zh,zh-CN,请在 Elmos 仓库中实现“上下文压力监控”。通过实时压力状态机和提前量预测，在达到硬限制前安全触发去重、压缩、检查点或阶段切换。必须给出真实代码、迁移、测试和验收证据。,elmos-context-pressure-monitor,true,直接实现请求
+33-scenario,zh-CN,当前 Elmos 遇到这个场景：当长任务需要持续监视上下文窗口、预防溢出并按 NORMAL/ELEVATED/HIGH/CRITICAL 状态采取动作时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-context-pressure-monitor,true,场景触发
+34-zh,zh-CN,请在 Elmos 仓库中实现“结构化上下文压缩”。把冗长历史转换为可验证、可恢复、带来源的任务状态，而不是不可追溯的普通摘要。必须给出真实代码、迁移、测试和验收证据。,elmos-structured-context-compaction,true,直接实现请求
+34-scenario,zh-CN,当前 Elmos 遇到这个场景：当 Elmos 长任务上下文接近容量、需要移出旧历史但必须继续可靠执行时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-structured-context-compaction,true,场景触发
+35-zh,zh-CN,请在 Elmos 仓库中实现“上下文检查点与恢复”。持久保存可重放的任务与上下文状态，使恢复精确、幂等且不重复副作用或计费。必须给出真实代码、迁移、测试和验收证据。,elmos-context-checkpoint-and-recovery,true,直接实现请求
+35-scenario,zh-CN,当前 Elmos 遇到这个场景：当任务要跨会话、客户端断线、进程重启、模型故障或上下文阶段边界继续执行时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-context-checkpoint-and-recovery,true,场景触发
+36-zh,zh-CN,请在 Elmos 仓库中实现“上下文重新水化”。通过来源锚点与检索键精确恢复原始证据，并在装载前验证版本、冲突和预算。必须给出真实代码、迁移、测试和验收证据。,elmos-context-rehydration,true,直接实现请求
+36-scenario,zh-CN,当前 Elmos 遇到这个场景：当当前任务需要之前已压缩、驱逐或仅索引保存的需求、代码、图表、录音、测试或决策时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-context-rehydration,true,场景触发
+37-zh,zh-CN,请在 Elmos 仓库中实现“项目长期记忆与检索”。建立可版本化、可遗忘、可授权、可追溯的项目记忆层，把模型窗口与项目知识总量解耦。必须给出真实代码、迁移、测试和验收证据。,elmos-project-memory-and-retrieval,true,直接实现请求
+37-scenario,zh-CN,当前 Elmos 遇到这个场景：当项目资料、代码、决策、任务历史和测试证据总量长期超过活动上下文，需要跨任务保存和检索时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-project-memory-and-retrieval,true,场景触发
+38-zh,zh-CN,请在 Elmos 仓库中实现“仓库上下文地图”。生成面向上下文规划的分层仓库地图，以低成本概览全局并按影响范围深入到具体符号和证据。必须给出真实代码、迁移、测试和验收证据。,elmos-repository-context-map,true,直接实现请求
+38-scenario,zh-CN,当前 Elmos 遇到这个场景：当 Elmos 需要在大型代码仓库中决定应加载哪些模块、文件、符号、配置和测试到活动上下文时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-repository-context-map,true,场景触发
+39-zh,zh-CN,请在 Elmos 仓库中实现“模型能力发现与注册”。用版本化能力注册表取代散落硬编码，使上下文、路由、费用和兼容判断基于可审计快照。必须给出真实代码、迁移、测试和验收证据。,elmos-model-capability-discovery,true,直接实现请求
+39-scenario,zh-CN,当前 Elmos 遇到这个场景：当 Elmos 接入、切换或升级模型，需要确定上下文窗口、最大输出、模态、工具、结构化输出、价格和区域能力时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-model-capability-discovery,true,场景触发
+40-zh,zh-CN,请在 Elmos 仓库中实现“上下文完整性与丢失检测”。建立关键事实清单、指纹和阶段性完整性门，任何缺失、版本错配或来源断裂都在继续执行前被发现。必须给出真实代码、迁移、测试和验收证据。,elmos-context-integrity-and-loss-detection,true,直接实现请求
+40-scenario,zh-CN,当前 Elmos 遇到这个场景：当上下文被装载、压缩、驱逐、切换模型、恢复任务或重新水化时，需要证明关键事实没有静默丢失或篡改时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-context-integrity-and-loss-detection,true,场景触发
+41-zh,zh-CN,请在 Elmos 仓库中实现“文件夹树输入”。将文件夹作为一等 InputPackage 接收，可靠保留目录、文件、空目录和项目边界，同时绝不采集客户端绝对路径。必须给出真实代码、迁移、测试和验收证据。,elmos-folder-tree-input,true,直接实现请求
+41-scenario,zh-CN,当前 Elmos 遇到这个场景：当用户通过浏览器、桌面端、CLI 或 SDK 提交一个或多个本地文件夹，并要求保留完整相对目录结构时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-folder-tree-input,true,场景触发
+42-zh,zh-CN,请在 Elmos 仓库中实现“多文件夹断点续传”。使文件夹上传在断网、页面关闭、客户端重启和服务故障后可靠继续，不因单个文件失败重传整个项目。必须给出真实代码、迁移、测试和验收证据。,elmos-resumable-multi-file-folder-upload,true,直接实现请求
+42-scenario,zh-CN,当前 Elmos 遇到这个场景：当大型文件夹含数千至数十万个文件，上传需要文件级/分片级并发、去重、暂停、恢复和失败隔离时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-resumable-multi-file-folder-upload,true,场景触发
+43-zh,zh-CN,请在 Elmos 仓库中实现“项目包清单”。用规范化 ProjectPackageManifest 描述全部条目、根目录、角色、安全状态和内容哈希，支撑解压、索引、增量更新与审计。必须给出真实代码、迁移、测试和验收证据。,elmos-project-package-manifest,true,直接实现请求
+43-scenario,zh-CN,当前 Elmos 遇到这个场景：当文件夹或归档需要形成不可变、可比较、可签名的项目包目录树和版本事实来源时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-project-package-manifest,true,场景触发
+44-zh,zh-CN,请在 Elmos 仓库中实现“安全 ZIP/TAR 解压”。在不执行任何内容的前提下对归档先检查后解压，产生可验证清单并隔离所有危险条目。必须给出真实代码、迁移、测试和验收证据。,elmos-secure-zip-tar-extraction,true,直接实现请求
+44-scenario,zh-CN,当前 Elmos 遇到这个场景：当用户上传 ZIP、TAR、TAR.GZ、TGZ 或 GZIP，需要检查、解密并在隔离环境中安全展开时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-secure-zip-tar-extraction,true,场景触发
+45-zh,zh-CN,请在 Elmos 仓库中实现“归档炸弹与路径穿越防御”。在内容落盘前以流式、累计和每层限额阻断路径逃逸、超高膨胀、无限嵌套及链接绕过。必须给出真实代码、迁移、测试和验收证据。,elmos-archive-bomb-and-path-traversal-defense,true,直接实现请求
+45-scenario,zh-CN,当前 Elmos 遇到这个场景：当系统检查或展开任何归档、嵌套压缩包、链接或特殊条目，需要防止 Zip Slip、压缩炸弹和资源耗尽时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-archive-bomb-and-path-traversal-defense,true,场景触发
+46-zh,zh-CN,请在 Elmos 仓库中实现“项目根、语言与框架识别”。基于多信号而非单一扩展名生成带置信度和证据的项目画像，并允许用户校正。必须给出真实代码、迁移、测试和验收证据。,elmos-project-root-language-framework-detection,true,直接实现请求
+46-scenario,zh-CN,当前 Elmos 遇到这个场景：当文件夹或归档解包后需要自动判断真实项目根、monorepo/多项目结构、编程语言、框架、构建系统和入口点时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-project-root-language-framework-detection,true,场景触发
+47-zh,zh-CN,请在 Elmos 仓库中实现“忽略、生成与第三方文件分类”。基于可解释策略将条目标为 Included、MetadataOnly、Excluded、Quarantined、Generated、Vendored、Binary 或 SecretSuspected，减少成本而不静默丢失事实。必须给出真实代码、迁移、测试和验收证据。,elmos-ignore-generated-vendored-file-classification,true,直接实现请求
+47-scenario,zh-CN,当前 Elmos 遇到这个场景：当项目包包含 node_modules、vendor、build、缓存、二进制、生成代码、日志或敏感文件，需要决定解析深度和上下文优先级时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-ignore-generated-vendored-file-classification,true,场景触发
+48-zh,zh-CN,请在 Elmos 仓库中实现“仓库地图与符号索引”。从多语言项目生成可增量、可查询、带源码范围的 Repository Map，为代码理解、生成、转换、测试和上下文装载提供结构事实。必须给出真实代码、迁移、测试和验收证据。,elmos-repository-map-and-symbol-indexing,true,直接实现请求
+48-scenario,zh-CN,当前 Elmos 遇到这个场景：当安全接入的项目包需要建立模块、包、类、接口、函数、API、数据库、消息、测试、配置和依赖图时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-repository-map-and-symbol-indexing,true,场景触发
+49-zh,zh-CN,请在 Elmos 仓库中实现“项目包版本与增量更新”。以内容寻址和不可变版本管理项目包，使更新高效、可审计、可回滚且不破坏已有任务证据。必须给出真实代码、迁移、测试和验收证据。,elmos-project-package-version-and-incremental-update,true,直接实现请求
+49-scenario,zh-CN,当前 Elmos 遇到这个场景：当用户上传新版本文件夹/压缩包、部分文件或重新同步仓库，需要识别新增、修改、删除、重命名并增量更新索引时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-project-package-version-and-incremental-update,true,场景触发
+50-zh,zh-CN,请在 Elmos 仓库中实现“项目包预览与审查界面”。提供透明、可操作的项目包审查工作台，让用户了解系统实际接收、排除、隔离和将要加载的内容。必须给出真实代码、迁移、测试和验收证据。,elmos-project-package-preview-and-review-ui,true,直接实现请求
+50-scenario,zh-CN,当前 Elmos 遇到这个场景：当用户上传文件夹或归档，需要在提交任务前查看目录树、解压风险、项目识别、忽略规则、敏感文件和索引状态时使用。请按生产级标准排查现有实现并补齐缺失能力。,elmos-project-package-preview-and-review-ui,true,场景触发

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 可观测性、SLO 与运营指标"
+  short_description: "Guide 可观测性、SLO 与运营指标 with evidence controls"
+  default_prompt: "Use $elmos-observability-slo as guidance for 可观测性、SLO 与运营指标 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

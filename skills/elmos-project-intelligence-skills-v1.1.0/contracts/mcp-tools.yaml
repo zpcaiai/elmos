@@ -1,0 +1,49 @@
+version: 1.1.0
+tools:
+- name: elmos_get_project_revision
+  read_only: true
+  input:
+    project_id: string
+    revision: string|latest-approved
+  output: revision manifest
+- name: elmos_search_project
+  read_only: true
+  input:
+    project_id: string
+    revision_id: string
+    query: string
+    scope: optional
+  output: authorized search hits with evidence
+- name: elmos_get_symbol_context
+  read_only: true
+  input:
+    symbol_id: string
+    revision_id: string
+  output: definition, references, calls and evidence
+- name: elmos_generate_artifact
+  read_only: false
+  input:
+    project_id: string
+    revision_id: string
+    artifact_type: string
+    template: string
+    idempotency_key: string
+  output: job reference
+- name: elmos_get_job
+  read_only: true
+  input:
+    job_id: string
+  output: status, stage, checkpoint and ETA
+- name: elmos_create_draft_pr
+  read_only: false
+  input:
+    artifact_ids: array
+    repository_id: string
+    base_revision: string
+    idempotency_key: string
+  output: draft PR reference
+security:
+- short-lived credentials
+- server-side authorization
+- audit all invocations
+- repository content is untrusted

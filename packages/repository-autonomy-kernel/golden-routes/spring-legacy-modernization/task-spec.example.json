@@ -1,0 +1,42 @@
+{
+  "taskSpecId": "spring-legacy-modernization-example",
+  "version": "1.0.0",
+  "goal": "Struts/Spring legacy/Spring Boot 1–2 to Spring Boot 4 semantic modernization",
+  "acceptanceCriteria": [
+    {
+      "id": "route-baseline-build",
+      "mandatory": true,
+      "verifierType": "route-baseline-build"
+    },
+    {
+      "id": "route-api-contract",
+      "mandatory": true,
+      "verifierType": "route-api-contract"
+    },
+    {
+      "id": "route-transaction-semantics",
+      "mandatory": true,
+      "verifierType": "route-transaction-semantics"
+    },
+    {
+      "id": "route-security",
+      "mandatory": true,
+      "verifierType": "route-security"
+    },
+    {
+      "id": "route-database-rehearsal",
+      "mandatory": true,
+      "verifierType": "route-database-rehearsal"
+    },
+    {
+      "id": "route-shadow-runtime",
+      "mandatory": true,
+      "verifierType": "route-shadow-runtime"
+    },
+    {
+      "id": "route-rollback",
+      "mandatory": true,
+      "verifierType": "route-rollback"
+    }
+  ]
+}

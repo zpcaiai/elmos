@@ -1,0 +1,6 @@
+interface:
+  display_name: "Independent Assurance"
+  short_description: "Evaluate evidence through an independent, fail-closed assurance path."
+  default_prompt: "Use $elmos-independent-assurance through the exact PDHI v1 K5 runtime with typed scope, allowlisted operations, replayable evidence, and fail-closed external gates."
+policy:
+  allow_implicit_invocation: true

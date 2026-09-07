@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 9 Conformance And Gate Controller"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $batch-9-conformance-and-gate-controller to perform this Batch 9 behavioral-equivalence task."

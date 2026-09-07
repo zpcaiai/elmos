@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Semantic Adapter"
+  short_description: "Extract authoritative Java semantic facts"
+  default_prompt: "Use $java-semantic-adapter to extract authority-backed Java semantics into PSP v1."

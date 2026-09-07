@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mainframe Business Rule Extraction And Domain Slicing"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $mainframe-business-rule-extraction-and-domain-slicing to execute this ELMOS Runtime Skill with fail-closed evidence."

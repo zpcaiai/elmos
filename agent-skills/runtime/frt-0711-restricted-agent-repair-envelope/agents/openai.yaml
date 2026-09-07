@@ -1,0 +1,4 @@
+interface:
+  display_name: "Restricted Agent Repair Envelope"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0711-restricted-agent-repair-envelope to run FRT-0711 through the governed FRT runtime with exact scope and fail-closed evidence."

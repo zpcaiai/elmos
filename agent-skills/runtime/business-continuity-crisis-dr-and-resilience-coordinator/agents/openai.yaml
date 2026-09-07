@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 014"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $business-continuity-crisis-dr-and-resilience-coordinator to apply its fail-closed ELMOS runtime contract."

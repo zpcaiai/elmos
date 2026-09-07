@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Product Maturity Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $product-maturity-workflow-orchestration-assignment-esca-0dad97f9 to implement its fail-closed ELMOS Product B55 contract."

@@ -1,0 +1,22 @@
+apiVersion: elmos.ai/v3delta1
+kind: HarnessAdapterProfile
+metadata:
+  name: codex-stable-0.150.1
+  version: 3.1.0
+spec:
+  provider: openai-codex
+  versionRange: =0.150.1
+  stability: stable
+  capabilities:
+    resultInterception: false
+    modelSpecificFinalizedPlan: partial-preexisting
+    canonicalPermissionProfile: true
+    invocationScopedExtensionCapabilities: false
+    standaloneToolOutputIngress: false
+    typedToolResult: true
+    historyMode:
+    - LEGACY_EMBEDDED
+    - PAGINATED
+  policy:
+    mainOnlyFeatures: DENY
+    fallback: fail-closed-or-compatible-degradation-with-explicit-evidence

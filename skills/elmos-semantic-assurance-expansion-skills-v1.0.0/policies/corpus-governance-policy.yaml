@@ -1,0 +1,9 @@
+schemaVersion: elmos.policy/v1
+kind: CorpusGovernancePolicy
+metadata: {name: corpus-governance, version: 3.0.0}
+spec:
+  requireProvenance: true
+  requireLicenseForRedistribution: true
+  requireImmutableHash: true
+  customerSourceRedistributionDefault: forbidden
+  secretAndPIIScan: required

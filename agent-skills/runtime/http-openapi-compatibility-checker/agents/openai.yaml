@@ -1,0 +1,4 @@
+interface:
+  display_name: "Http Openapi Compatibility Checker"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $http-openapi-compatibility-checker to execute this ELMOS Runtime Skill with fail-closed evidence."

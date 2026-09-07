@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/portfolio-pack.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "status",
+    "mode",
+    "owner",
+    "maintenance_owner",
+    "scope",
+    "contracts",
+    "corpus",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "assessment",
+        "portfolio-migration",
+        "campaign",
+        "platform-upgrade",
+        "scale-certification"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintenance_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "tenant_model",
+        "scm_sources",
+        "organizations",
+        "regions",
+        "languages",
+        "build_systems",
+        "inventory_snapshot_at",
+        "repository_target",
+        "loc_target"
+      ],
+      "properties": {
+        "tenant_model": {
+          "type": "string"
+        },
+        "scm_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "organizations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "build_systems": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "inventory_snapshot_at": {
+          "type": "string"
+        },
+        "repository_target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "loc_target": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "contracts": {
+      "type": "object",
+      "required": [
+        "inventory",
+        "dependency_graph",
+        "work_units",
+        "scale_profile",
+        "campaign",
+        "dr_replay"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "support_matrix_path": {
+      "type": "string"
+    },
+    "corpus": {
+      "type": "object",
+      "required": [
+        "development",
+        "negative",
+        "holdout",
+        "representative_portfolios"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "certification": {
+      "type": "object",
+      "required": [
+        "evidence_path",
+        "result_path"
+      ],
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

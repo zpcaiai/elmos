@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/output-bundle.schema.json",
+  "title": "OutputBundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bundle_id",
+    "output_id",
+    "kind",
+    "format",
+    "sha256",
+    "size_bytes",
+    "status",
+    "created_at",
+    "file_count",
+    "includes_categories",
+    "manifest_ref"
+  ],
+  "properties": {
+    "bundle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "project-with-tests",
+        "tests-only",
+        "qa-evidence",
+        "repair-patches"
+      ]
+    },
+    "format": {
+      "enum": [
+        "zip",
+        "tar",
+        "tar.gz",
+        "tar.zst"
+      ]
+    },
+    "path": {
+      "type": "string"
+    },
+    "uri": {
+      "type": "string"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "enum": [
+        "building",
+        "verified",
+        "failed",
+        "superseded"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verified_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "file_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "includes_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "manifest_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signature": {
+      "type": "object"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "path"
+      ]
+    },
+    {
+      "required": [
+        "uri"
+      ]
+    }
+  ]
+}

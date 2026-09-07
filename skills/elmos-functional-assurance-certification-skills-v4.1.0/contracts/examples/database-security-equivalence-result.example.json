@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "database-security-equivalence-result-example",
+  "status": "READY",
+  "content_hash": "693565b01d455c1f59607fa672fafbda624f95746ded0892c9d89eae9f0dce19",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

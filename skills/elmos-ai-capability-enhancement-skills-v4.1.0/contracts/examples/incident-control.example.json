@@ -1,0 +1,11 @@
+{
+  "incidentId": "inc-1",
+  "scope": "tool",
+  "action": "revoke",
+  "target": "external-write",
+  "authorizedBy": [
+    "security-oncall"
+  ],
+  "status": "contained",
+  "evidenceFreeze": true
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "computer-use-safety-result-example",
+  "status": "READY",
+  "content_hash": "da2a07ce994d8285f75660467cf1d6fb37df9e362ad0d68a31d68eda738081e4",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "enterprise-sso-and-identity-federation"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $enterprise-sso-and-identity-federation to evaluate this enterprise platform capability with evidence."

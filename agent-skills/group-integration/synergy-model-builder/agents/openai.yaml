@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 729: synergy model builder"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $synergy-model-builder to evaluate this capability with evidence."

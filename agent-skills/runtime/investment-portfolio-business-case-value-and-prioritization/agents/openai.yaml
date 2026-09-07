@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 013"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $investment-portfolio-business-case-value-and-prioritization to apply its fail-closed ELMOS runtime contract."

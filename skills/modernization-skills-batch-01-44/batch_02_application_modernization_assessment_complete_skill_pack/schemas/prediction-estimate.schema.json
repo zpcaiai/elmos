@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:prediction-estimate",
+  "title": "PredictionEstimate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "calibration_sample_size",
+    "interval_high",
+    "interval_low",
+    "metric",
+    "point_estimate",
+    "record_id",
+    "schema_version",
+    "scope",
+    "subject_ref"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subject_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metric": {
+      "enum": [
+        "effort-hours",
+        "duration-days",
+        "defect-rate",
+        "automation-ratio"
+      ]
+    },
+    "point_estimate": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]+)?$"
+    },
+    "interval_low": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]+)?$"
+    },
+    "interval_high": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]+)?$"
+    },
+    "calibration_sample_size": {
+      "type": "integer"
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

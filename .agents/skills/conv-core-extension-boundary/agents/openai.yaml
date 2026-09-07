@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Core Extension Boundary"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-core-extension-boundary to execute this ELMOS product-convergence Skill with fail-closed evidence."

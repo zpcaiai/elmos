@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B34: Proof Regression Ci"
+  short_description: "Run Precision Migration B34 with evidence controls"
+  default_prompt: "Use $pm-b34-proof-regression-ci to execute this Precision Migration contract with fail-closed evidence."

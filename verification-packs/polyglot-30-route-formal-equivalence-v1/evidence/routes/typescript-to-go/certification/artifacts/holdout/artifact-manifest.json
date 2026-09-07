@@ -1,0 +1,155 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/typescript-to-go/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/dist/clamp.js",
+    "source-runtime/dist/source_harness.js"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 1557,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:e35cd97d9d0e36993d1e209331553e18511cee1fc11634cfb55937f180a8e859"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:e4fdf555eb297c1f420b1eeace43705492a45763d1e9c867fcb1844591ca3350"
+    },
+    {
+      "bytes": 2954,
+      "path": "formal-composition.json",
+      "sha256": "sha256:7218729e45a9d1271ba84a8cba3f2369a0482a67654ef4b71fccafe201b85b57"
+    },
+    {
+      "bytes": 1081,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:669a75b9f92b578f9ece5e595f03e0d41e0b63520909176d2aa132bf5ea7eec3"
+    },
+    {
+      "bytes": 6989,
+      "path": "formal-input.json",
+      "sha256": "sha256:f9283712ea887aead2e32d9cdd40e285e290542d0d7f37ebf22c86908ec2b56b"
+    },
+    {
+      "bytes": 2332,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:e1d1e3220d8df05b8748d249e311ccf22ef7f7c75790e53704cfc48ba45748b8"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 162,
+      "path": "inputs/clamp.ts",
+      "sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e"
+    },
+    {
+      "bytes": 3448,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:98c4be097a271d254c11d94c8bc3be5cb759b37aecc7361af841bbbb580043c4"
+    },
+    {
+      "bytes": 180,
+      "path": "migrated.go",
+      "sha256": "sha256:0212400d111d8333d1f3f1194a4252199c0669d67ca4a7edb2c1989b65bca00d"
+    },
+    {
+      "bytes": 6842,
+      "path": "route-evidence.json",
+      "sha256": "sha256:108899b158bbb10eab7f0497a3e9d92c807e58c9f28afef98d72f2abe063a00f"
+    },
+    {
+      "bytes": 623,
+      "path": "route_harness.go",
+      "sha256": "sha256:1e934cde9220337c6bdd43495b06b359522fe0e19d26c2d5eaf7e96a12eafe1b"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:2a449c945918a9662fff4df6ec2d706b9626fe4973eb6c50d5c6aa95b151c0d7"
+    },
+    {
+      "bytes": 805,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:607f0ddc05fb0fa4bcf7d17fc078d86c92ae4f06090d6886f91b41d35821ff8c"
+    },
+    {
+      "bytes": 162,
+      "path": "source-runtime/clamp.ts",
+      "sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e"
+    },
+    {
+      "bytes": 534,
+      "path": "source-runtime/source_harness.ts",
+      "sha256": "sha256:35eb8d54964c2ce85d0e43414d10f26d8db92cae0ce91953923a793c6a13d983"
+    },
+    {
+      "bytes": 189,
+      "path": "source-runtime/tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    },
+    {
+      "bytes": 805,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:607f0ddc05fb0fa4bcf7d17fc078d86c92ae4f06090d6886f91b41d35821ff8c"
+    },
+    {
+      "bytes": 793,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:8fade42afff695cd4cff1daa7cba13f13355bd5d3907e91e6355f1559db3dcd9"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "typescript-to-go",
+  "schema_version": 1,
+  "total_bytes": 40456
+}

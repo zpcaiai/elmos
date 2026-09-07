@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "planId": "plan-9ee20e27341068315451ddd4",
+  "healthReportId": "health-b060bd2b37dfac6bda4682a4",
+  "snapshotId": "eval-snapshot",
+  "target": {
+    "javaVersion": 21,
+    "springBootLine": "3.x-approved-by-organization",
+    "jakartaNamespace": "jakarta",
+    "buildToolStrategy": "MAVEN_REACTOR",
+    "assumptions": [],
+    "status": "PASS"
+  },
+  "compatibility": [
+    {"component": "JAVA", "sourceVersion": "8", "targetVersion": "21", "compatible": true, "migrationRequired": true, "rationale": "JDK transition requires baseline build evidence", "status": "PASS", "matrixVersion": "elmos-matrix-2026-07"},
+    {"component": "SPRING_BOOT", "sourceVersion": "2.7.18", "targetVersion": "3.x-approved-by-organization", "compatible": true, "migrationRequired": true, "rationale": "Spring Boot major upgrade and Jakarta review are required", "status": "PASS", "matrixVersion": "elmos-matrix-2026-07"},
+    {"component": "JAKARTA", "sourceVersion": "javax", "targetVersion": "jakarta", "compatible": false, "migrationRequired": true, "rationale": "Source evidence contains legacy Java EE namespaces", "status": "PASS", "matrixVersion": "elmos-matrix-2026-07"}
+  ],
+  "steps": [
+    {
+      "stepId": "S01", "type": "BASELINE_RESTORE", "dependsOn": [], "objective": "Reproduce the current build and test baseline", "risk": "HIGH", "automationScore": 4,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 8, "maximumPersonDays": 16, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.4, "maximumPersonMonths": 0.8, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["baseline-build", "baseline-tests"], "approvalRequired": true
+    },
+    {
+      "stepId": "S02", "type": "JDK_UPGRADE", "dependsOn": ["S01"], "objective": "Upgrade toolchain to Java 21", "risk": "MEDIUM", "automationScore": 54,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 9, "maximumPersonDays": 18, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.5, "maximumPersonMonths": 0.9, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["jdk-version", "compile-result"], "approvalRequired": false
+    },
+    {
+      "stepId": "S03", "type": "BUILD_PLUGIN_UPGRADE", "dependsOn": ["S02"], "objective": "Upgrade build plugins and remove incompatible flags", "risk": "MEDIUM", "automationScore": 49,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 9, "maximumPersonDays": 18, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.5, "maximumPersonMonths": 0.9, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["effective-build", "plugin-compatibility"], "approvalRequired": false
+    },
+    {
+      "stepId": "S04", "type": "SPRING_BOOT_UPGRADE", "dependsOn": ["S03"], "objective": "Move Spring Boot to the approved target line", "risk": "MEDIUM", "automationScore": 44,
+      "effort": {"minimumPersonDays": 6, "likelyPersonDays": 13, "maximumPersonDays": 26, "minimumPersonMonths": 0.3, "likelyPersonMonths": 0.7, "maximumPersonMonths": 1.3, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["dependency-tree", "boot-startup"], "approvalRequired": false
+    },
+    {
+      "stepId": "S05", "type": "JAKARTA_MIGRATION", "dependsOn": ["S04"], "objective": "Migrate Java EE namespaces and contracts to Jakarta", "risk": "MEDIUM", "automationScore": 72,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 8, "maximumPersonDays": 16, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.4, "maximumPersonMonths": 0.8, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["compile-result", "namespace-scan"], "approvalRequired": false
+    },
+    {
+      "stepId": "S06", "type": "SECURITY_MIGRATION", "dependsOn": ["S04"], "objective": "Migrate Spring Security configuration and authorization behavior", "risk": "LOW", "automationScore": 45,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 8, "maximumPersonDays": 16, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.4, "maximumPersonMonths": 0.8, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["security-tests", "authorization-review"], "approvalRequired": true
+    },
+    {
+      "stepId": "S07", "type": "HIBERNATE_MIGRATION", "dependsOn": ["S05"], "objective": "Migrate persistence mappings and query behavior", "risk": "HIGH", "automationScore": 29,
+      "effort": {"minimumPersonDays": 6, "likelyPersonDays": 12, "maximumPersonDays": 24, "minimumPersonMonths": 0.3, "likelyPersonMonths": 0.6, "maximumPersonMonths": 1.2, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["schema-diff", "transaction-tests"], "approvalRequired": true
+    },
+    {
+      "stepId": "S08", "type": "TEST_UPGRADE", "dependsOn": ["S05", "S06", "S07"], "objective": "Upgrade tests and restore or improve baseline coverage", "risk": "LOW", "automationScore": 55,
+      "effort": {"minimumPersonDays": 4, "likelyPersonDays": 9, "maximumPersonDays": 18, "minimumPersonMonths": 0.2, "likelyPersonMonths": 0.5, "maximumPersonMonths": 0.9, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["unit-tests", "integration-tests"], "approvalRequired": false
+    },
+    {
+      "stepId": "S09", "type": "API_VALIDATION", "dependsOn": ["S08"], "objective": "Validate public API and serialization compatibility", "risk": "HIGH", "automationScore": 3,
+      "effort": {"minimumPersonDays": 7, "likelyPersonDays": 14, "maximumPersonDays": 28, "minimumPersonMonths": 0.4, "likelyPersonMonths": 0.7, "maximumPersonMonths": 1.4, "confidence": "LOW", "assumptions": ["Static evidence only", "One experienced modernization engineer"]},
+      "requiredEvidence": ["api-inventory", "compatibility-report"], "approvalRequired": true
+    }
+  ],
+  "waves": [
+    {"number": 1, "stepIds": ["S01"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 2, "stepIds": ["S02"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 3, "stepIds": ["S03"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 4, "stepIds": ["S04"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 5, "stepIds": ["S05", "S06"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 6, "stepIds": ["S07"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 7, "stepIds": ["S08"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"},
+    {"number": 8, "stepIds": ["S09"], "exitCriterion": "All required evidence passes and blocking approvals are recorded"}
+  ],
+  "approvalGates": [
+    {"gateId": "gate-S01", "type": "HUMAN_APPROVAL", "beforeStepId": "S01", "reason": "Step risk exceeds unattended policy or changes a sensitive contract", "requiredEvidence": ["baseline-build", "baseline-tests"], "blocking": true},
+    {"gateId": "gate-S06", "type": "SECURITY_REVIEW", "beforeStepId": "S06", "reason": "Step risk exceeds unattended policy or changes a sensitive contract", "requiredEvidence": ["security-tests", "authorization-review"], "blocking": true},
+    {"gateId": "gate-S07", "type": "DATA_REVIEW", "beforeStepId": "S07", "reason": "Step risk exceeds unattended policy or changes a sensitive contract", "requiredEvidence": ["schema-diff", "transaction-tests"], "blocking": true},
+    {"gateId": "gate-S09", "type": "API_REVIEW", "beforeStepId": "S09", "reason": "Step risk exceeds unattended policy or changes a sensitive contract", "requiredEvidence": ["api-inventory", "compatibility-report"], "blocking": true},
+    {"gateId": "gate-vulnerability-evidence", "type": "EVIDENCE_REQUIRED", "beforeStepId": "S04", "reason": "Vulnerability evidence is incomplete", "requiredEvidence": ["provider-provenance", "vulnerability-report"], "blocking": true}
+  ],
+  "migrationRisk": {
+    "score": 36,
+    "factors": {"inconclusiveEvidence": 15, "criticalVulnerabilities": 0, "highFindings": 21, "testGap": 0, "modules": 0, "publicApis": 0},
+    "rationale": ["Risk is evidence-weighted and capped at 100", "Unknown evidence increases rather than lowers risk"]
+  },
+  "automation": {
+    "score": 70,
+    "factors": {"tests": 20, "inconclusiveEvidence": -20, "highRiskManualWork": -15, "architectureRisk": 0, "deterministicBuild": 15, "rewriteEligible": 20, "publicApiReview": 0},
+    "rationale": ["Automation score estimates deterministic transformation potential", "It does not authorize unattended migration"]
+  },
+  "totalEffort": {
+    "minimumPersonDays": 43,
+    "likelyPersonDays": 90,
+    "maximumPersonDays": 180,
+    "minimumPersonMonths": 2.2,
+    "likelyPersonMonths": 4.5,
+    "maximumPersonMonths": 9.0,
+    "confidence": "LOW",
+    "assumptions": ["Does not include organization queue time", "Re-estimate after baseline and dependency evidence"]
+  },
+  "status": "BLOCKED",
+  "blockingReasons": ["VULNERABILITY_EVIDENCE_INCOMPLETE"]
+}

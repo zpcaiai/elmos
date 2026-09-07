@@ -1,0 +1,25 @@
+batch: 38
+slug: executable-skill-specification
+title: "Executable Skill规范"
+phase: "K 从Skills生成完整项目"
+skills:
+  - name: skill-schema-validator
+    description: "验证 Skill 元数据、输入输出、前置条件、行为契约、测试和兼容声明。"
+  - name: skill-dependency-resolver
+    description: "解析 Skill 依赖、版本范围、传递依赖、可选能力和安装顺序。"
+  - name: skill-conflict-detector
+    description: "发现领域、Schema、权限、状态、资源、路由和依赖冲突。"
+  - name: skill-composition-planner
+    description: "生成满足依赖、顺序、隔离和共享能力的 Skill 组合执行计划。"
+  - name: behavior-contract-compiler
+    description: "把 Skill 业务规则编译为类型、Effect、状态、接口和验证契约。"
+  - name: acceptance-test-compiler
+    description: "把 Skill 验收场景编译为单元、契约、E2E、属性和门禁测试。"
+  - name: domain-model-compiler
+    description: "把实体、值对象、关系、不变量和事件编译为语言无关领域模型。"
+  - name: state-machine-compiler
+    description: "把业务和 UI 状态机编译为生成器、运行时检查和形式义务。"
+  - name: skill-version-compatibility
+    description: "检查 Skill 升级、降级、数据迁移、依赖和生成代码兼容性。"
+  - name: skill-marketplace-package
+    description: "打包签名、许可证、权限、安装、升级、示例、证据和发布元数据。"

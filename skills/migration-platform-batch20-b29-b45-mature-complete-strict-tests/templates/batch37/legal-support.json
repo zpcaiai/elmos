@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "legal_owner": "legal-team",
+  "support_owner": "support-team",
+  "legal": {
+    "evidence_preservation": true,
+    "appeal_enabled": true,
+    "export_controls": true,
+    "sanctions_screening": true
+  },
+  "support": {
+    "tier_ownership": true,
+    "jit_access": true,
+    "publisher_no_response_takeover": true,
+    "diagnostic_redaction": true
+  },
+  "open_blocking_legal_cases": 0,
+  "open_p0_sla_breaches": 0,
+  "evidence_refs": [
+    "legal/evidence.txt",
+    "support/evidence.txt"
+  ]
+}

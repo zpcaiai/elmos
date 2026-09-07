@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 026"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $saml2-relying-party-metadata-login-logout-and-certifica-a1ba7ee7 to implement its fail-closed ELMOS Product Batch 34 contract."

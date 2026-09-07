@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 741: integration raid and dependency manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-raid-and-dependency-manager to evaluate this capability with evidence."

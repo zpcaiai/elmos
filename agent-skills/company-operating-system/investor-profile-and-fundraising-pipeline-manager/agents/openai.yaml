@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 505: investor profile and fundraising pipeline manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $investor-profile-and-fundraising-pipeline-manager to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "voice-of-customer-product-gap-and-roadmap-loop"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $voice-of-customer-product-gap-and-roadmap-loop to evaluate this Batch 13 commercial capability with evidence."

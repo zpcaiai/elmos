@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 039"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $access-review-certification-entitlement-reconciliation-2feb75bd to implement its fail-closed ELMOS Product Batch 34 contract."

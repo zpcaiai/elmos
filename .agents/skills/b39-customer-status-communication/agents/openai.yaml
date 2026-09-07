@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Customer Status Communication"
+  short_description: "Run evidence-bound Batch 39 customer status communication work"
+  default_prompt: "Use $b39-customer-status-communication to implement and verify this capability with fail-closed evidence."

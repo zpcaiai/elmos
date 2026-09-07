@@ -1,0 +1,4 @@
+interface:
+  display_name: "Static Build Time Security Analysis Orchestrator"
+  short_description: "Help with Static Build Time Security Analysis Orchestrator tasks"
+  default_prompt: "Use $static-build-time-security-analysis-orchestrator to execute its ELMOS Batch 17 workflow safely."

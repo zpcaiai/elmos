@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-navigation-modernization",
+  "status": "PASSED_LOCAL_ENGINEERING",
+  "executed_at": "2026-07-26T11:23:00Z",
+  "tool": {
+    "name": "playwright",
+    "version": "1.61.1",
+    "browser_revisions": {
+      "chromium": "1228",
+      "firefox": "1532",
+      "webkit": "2311"
+    }
+  },
+  "profiles": [
+    {
+      "name": "chromium",
+      "viewport": "1440x900",
+      "rendering_accessibility_keyboard": "PASSED",
+      "governed_generation_run_stop": "PASSED"
+    },
+    {
+      "name": "firefox",
+      "viewport": "1440x900",
+      "rendering_accessibility_keyboard": "PASSED",
+      "governed_generation_run_stop": "NOT_RUN"
+    },
+    {
+      "name": "webkit",
+      "viewport": "1440x900",
+      "rendering_accessibility_keyboard": "PASSED",
+      "governed_generation_run_stop": "NOT_RUN"
+    },
+    {
+      "name": "mobile-chromium",
+      "viewport": "390x844",
+      "rendering_accessibility_keyboard": "PASSED",
+      "horizontal_overflow": "PASSED",
+      "governed_generation_run_stop": "NOT_RUN"
+    },
+    {
+      "name": "mobile-webkit",
+      "viewport": "393x852",
+      "rendering_accessibility_keyboard": "PASSED",
+      "horizontal_overflow": "PASSED",
+      "governed_generation_run_stop": "NOT_RUN"
+    }
+  ],
+  "assertions": [
+    "WCAG automated critical violations are zero for the exercised pages",
+    "keyboard focus reaches an interactive control",
+    "invalid Runner credentials fail closed before approval",
+    "mobile document width does not exceed the declared viewport",
+    "the Chromium side-effect journey analyzes, generates, verifies, downloads, starts healthy, stops and remains stopped after persistence polling"
+  ],
+  "commands": [
+    "pnpm exec playwright test e2e/generation-ui.spec.ts --project=chromium",
+    "pnpm exec playwright test e2e/generation-ui.spec.ts --project=firefox --project=mobile-webkit",
+    "pnpm exec playwright test e2e/core-business-lines-ui.spec.ts --project=mobile-chromium",
+    "pnpm exec playwright test e2e/generation-runner.spec.ts --project=chromium --workers=1"
+  ],
+  "limitations": [
+    "the side-effectful Runner journey executes once in isolated Chromium and is intentionally skipped in other profiles",
+    "assistive-technology manual review, customer usability acceptance and external independent verification remain NOT_RUN"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "certification_status": "NOT_CERTIFIED"
+}

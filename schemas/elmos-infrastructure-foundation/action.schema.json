@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/action.schema.json",
+  "title": "ELMOS Action",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_id",
+    "tenant_id",
+    "project_id",
+    "action_digest",
+    "input_root_digest",
+    "toolchain_digest",
+    "command",
+    "working_directory",
+    "declared_outputs",
+    "resources",
+    "sandbox",
+    "timeout_seconds",
+    "priority"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "action_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "input_root_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "toolchain_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "command": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "working_directory": {
+      "type": "string",
+      "pattern": "^/workspace(?:/.*)?$"
+    },
+    "declared_outputs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(?!/)(?!.*\\.\\.).+$"
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpu_millis",
+        "memory_mb",
+        "disk_mb",
+        "pids"
+      ],
+      "properties": {
+        "cpu_millis": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memory_mb": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "disk_mb": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "pids": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "gpu_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "policy_digest"
+      ],
+      "properties": {
+        "tier": {
+          "enum": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4"
+          ]
+        },
+        "policy_digest": {
+          "$ref": "digest.schema.json"
+        }
+      }
+    },
+    "network_policy_ref": {
+      "type": "string"
+    },
+    "secret_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 8
+    },
+    "data_residency": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

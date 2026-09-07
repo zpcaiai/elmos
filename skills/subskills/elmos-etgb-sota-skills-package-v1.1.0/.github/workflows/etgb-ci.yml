@@ -1,0 +1,67 @@
+name: ETGB
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .[dev]
+      - run: python -m compileall -q etgb tests
+      - run: etgb skills-audit
+      - run: etgb validate
+      - run: etgb coverage
+      - run: etgb freeze-candidate examples/release-candidate.yaml --output reports/example-frozen-candidate.json
+      - run: etgb policy-check examples/environment-authority.yaml examples/policy-request-allowed.json
+      - name: Verify deny-by-default policy
+        run: |
+          if etgb policy-check examples/environment-authority.yaml examples/policy-request-denied.json; then
+            echo 'Denied request unexpectedly passed' >&2
+            exit 2
+          fi
+      - run: etgb run --profile smoke --output reports/smoke-results.jsonl
+      - run: etgb score reports/smoke-results.jsonl --output reports/smoke-score.json
+      - run: pytest -q
+      - name: Build signed evidence bundle
+        run: |
+          printf 'ci-test-hmac-key' > /tmp/etgb-hmac.key
+          python scripts/create_evidence_bundle.py \
+            --reports reports \
+            --output-dir reports/etgb-evidence-bundle \
+            --archive reports/etgb-evidence.tar.gz \
+            --hmac-key-file /tmp/etgb-hmac.key
+          etgb evidence-verify reports/etgb-evidence-bundle --hmac-key-file /tmp/etgb-hmac.key
+      - uses: actions/upload-artifact@v4
+        with:
+          name: etgb-evidence
+          path: reports/
+
+  pr-affected-matrix:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: package-integrity
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .[dev]
+      - run: etgb plan --changed-from origin/${{ github.base_ref }} --output reports/pr-plan.json
+      - run: etgb run --plan reports/pr-plan.json --output reports/pr-results.jsonl --allow-unavailable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: etgb-pr-evidence
+          path: reports/

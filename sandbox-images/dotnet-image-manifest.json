@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "selectionPolicy": "DENY_UNLESS_DIGEST_AND_EVIDENCE_APPROVED",
+  "images": [
+    {"profile": "MODERN_LINUX", "platform": "linux/amd64", "base": "mcr.microsoft.com/dotnet/sdk:10.0.301-noble@sha256:493fca072aac81307027cbb7b7c9a82b6e87d222af315504d05dc6530e69b519", "digest": "sha256:493fca072aac81307027cbb7b7c9a82b6e87d222af315504d05dc6530e69b519", "dockerfile": "sandbox-images/linux-dotnet10/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "MODERN_WINDOWS", "platform": "windows/amd64", "base": "mcr.microsoft.com/dotnet/sdk:10.0.301-windowsservercore-ltsc2022@sha256:184efa4544d87892ceed6cc203f1c27285a27007af362ff865d12667c52380a7", "digest": "sha256:184efa4544d87892ceed6cc203f1c27285a27007af362ff865d12667c52380a7", "dockerfile": "sandbox-images/windows-dotnet10/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"},
+    {"profile": "WINDOWS_LEGACY", "platform": "windows/amd64", "base": "mcr.microsoft.com/dotnet/framework/sdk:4.8.1-windowsservercore-ltsc2022@sha256:8381b1df8024558ee4afcfca384d15251203e382251fc95b2228b1952e94b383", "digest": "sha256:8381b1df8024558ee4afcfca384d15251203e382251fc95b2228b1952e94b383", "dockerfile": "sandbox-images/windows-netfx/Dockerfile", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED"}
+  ],
+  "requiredEvidence": ["SMOKE_TEST", "SBOM", "VULNERABILITY_SCAN", "PROVENANCE", "SECRET_SCAN", "TOOLCHAIN_MANIFEST"],
+  "currentHostEvidence": {"host": "macOS-arm64", "windowsLegacy": "NOT_RUN", "windowsModern": "NOT_RUN", "linuxContainer": "NOT_RUN"}
+}

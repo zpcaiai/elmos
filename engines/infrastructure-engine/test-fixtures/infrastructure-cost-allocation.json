@@ -1,0 +1,18 @@
+{
+  "allocationId": "allocation-2026-07",
+  "period": {
+    "start": "2026-07-01",
+    "end": "2026-07-31"
+  },
+  "amount": 1250.5,
+  "currency": "USD",
+  "dimensions": {
+    "organization": "org-1",
+    "service": "orders"
+  },
+  "sharedCostRule": "KEEP_UNALLOCATED",
+  "coverage": 0.96,
+  "freshness": "2026-07-21T00:00:00Z",
+  "allocationMode": "SHOWBACK"
+}
+

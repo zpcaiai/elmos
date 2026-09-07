@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 657: telecom security privacy and operations control pack"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $telecom-security-privacy-and-operations-control-pack to evaluate this capability with evidence."

@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "kind": "expo-react-native-platform-scaffold-materialization-contract",
+  "expo_version": "57.0.8",
+  "react_native_version": "0.86.0",
+  "node_version": "24.12.0",
+  "package_manager": "npm",
+  "ordered_commands": [
+    [
+      "npm",
+      "install",
+      "--package-lock-only",
+      "--ignore-scripts"
+    ],
+    [
+      "npm",
+      "ci",
+      "--ignore-scripts"
+    ],
+    [
+      "npx",
+      "--no-install",
+      "expo",
+      "prebuild",
+      "--platform",
+      "android",
+      "--no-install"
+    ],
+    [
+      "npx",
+      "--no-install",
+      "expo",
+      "prebuild",
+      "--platform",
+      "ios",
+      "--no-install"
+    ]
+  ],
+  "protected_source_paths": [
+    "App.tsx",
+    "src",
+    "app.json",
+    "index.ts",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "required_captured_outputs": [
+    "package-lock.json",
+    "android",
+    "ios"
+  ],
+  "browser_runtime_command": [
+    "npm",
+    "run",
+    "web"
+  ],
+  "browser_export_command": [
+    "npm",
+    "run",
+    "export:web"
+  ],
+  "native_driver_contract": {
+    "scenario_test_id_prefix": "action:",
+    "block_test_id_prefix": "block:",
+    "scenario_count": 18,
+    "block_count": 12,
+    "runtime_source": "REACT_NATIVE_COMPONENT_ACTUAL_EVENTS",
+    "precomputed_observations_allowed": false
+  },
+  "dependency_lock_status": "NOT_RUN",
+  "materialization_status": "NOT_RUN",
+  "android_build_status": "NOT_RUN",
+  "ios_simulator_build_status": "NOT_RUN",
+  "android_runtime_status": "NOT_RUN",
+  "ios_runtime_status": "NOT_RUN",
+  "arbitrary_environment": "NOT_PROVED"
+}

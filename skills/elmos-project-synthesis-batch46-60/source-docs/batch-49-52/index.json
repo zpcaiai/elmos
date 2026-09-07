@@ -1,0 +1,542 @@
+{
+  "engine": "elmos.project-synthesis",
+  "schema": "elmos.project-synthesis.v1",
+  "release": "batch-49-52",
+  "skill_count": 44,
+  "skills": [
+    {
+      "id": "PG033",
+      "name": "user-story-and-use-case-builder",
+      "depends_on": [
+        "PG015",
+        "PG024",
+        "PG028",
+        "PG031"
+      ],
+      "summary": "Builds user stories, use cases, alternate flows, and exception paths from an approved requirement baseline.",
+      "path": "skills/batch-49/PG033-user-story-and-use-case-builder.md"
+    },
+    {
+      "id": "PG034",
+      "name": "business-rule-modeler",
+      "depends_on": [
+        "PG014",
+        "PG028",
+        "PG031",
+        "PG033"
+      ],
+      "summary": "Models validations, calculations, eligibility rules, temporal rules, invariants, and decision tables.",
+      "path": "skills/batch-49/PG034-business-rule-modeler.md"
+    },
+    {
+      "id": "PG035",
+      "name": "domain-entity-value-object-modeler",
+      "depends_on": [
+        "PG014",
+        "PG033",
+        "PG034"
+      ],
+      "summary": "Models aggregates, entities, value objects, identities, invariants, and lifecycle boundaries.",
+      "path": "skills/batch-49/PG035-domain-entity-value-object-modeler.md"
+    },
+    {
+      "id": "PG036",
+      "name": "bounded-context-candidate-builder",
+      "depends_on": [
+        "PG014",
+        "PG015",
+        "PG034",
+        "PG035"
+      ],
+      "summary": "Proposes bounded contexts and context relationships from language, rules, ownership, and change patterns.",
+      "path": "skills/batch-49/PG036-bounded-context-candidate-builder.md"
+    },
+    {
+      "id": "PG037",
+      "name": "domain-event-command-query-modeler",
+      "depends_on": [
+        "PG033",
+        "PG034",
+        "PG035",
+        "PG036"
+      ],
+      "summary": "Models commands, queries, domain events, integration events, handlers, and causality.",
+      "path": "skills/batch-49/PG037-domain-event-command-query-modeler.md"
+    },
+    {
+      "id": "PG038",
+      "name": "workflow-and-state-machine-modeler",
+      "depends_on": [
+        "PG028",
+        "PG033",
+        "PG034",
+        "PG037"
+      ],
+      "summary": "Builds workflows, state machines, transitions, guards, timers, compensations, and terminal outcomes.",
+      "path": "skills/batch-49/PG038-workflow-and-state-machine-modeler.md"
+    },
+    {
+      "id": "PG039",
+      "name": "data-dictionary-builder",
+      "depends_on": [
+        "PG014",
+        "PG018",
+        "PG035"
+      ],
+      "summary": "Builds canonical data definitions, classifications, units, formats, retention, and ownership metadata.",
+      "path": "skills/batch-49/PG039-data-dictionary-builder.md"
+    },
+    {
+      "id": "PG040",
+      "name": "api-contract-draft-builder",
+      "depends_on": [
+        "PG033",
+        "PG037",
+        "PG039"
+      ],
+      "summary": "Drafts language-neutral REST, RPC, event, webhook, and batch interface contracts from approved behavior.",
+      "path": "skills/batch-49/PG040-api-contract-draft-builder.md"
+    },
+    {
+      "id": "PG041",
+      "name": "permission-matrix-builder",
+      "depends_on": [
+        "PG015",
+        "PG033",
+        "PG034",
+        "PG040"
+      ],
+      "summary": "Builds roles, permissions, resource scopes, conditions, segregation-of-duty rules, and administrative boundaries.",
+      "path": "skills/batch-49/PG041-permission-matrix-builder.md"
+    },
+    {
+      "id": "PG042",
+      "name": "requirement-traceability-graph",
+      "depends_on": [
+        "PG004",
+        "PG031",
+        "PG033",
+        "PG034",
+        "PG035",
+        "PG038",
+        "PG040",
+        "PG041"
+      ],
+      "summary": "Builds the complete trace graph from requirements to stories, rules, domain elements, workflows, APIs, permissions, and tests.",
+      "path": "skills/batch-49/PG042-requirement-traceability-graph.md"
+    },
+    {
+      "id": "PG043",
+      "name": "architecture-style-selector",
+      "depends_on": [
+        "PG027",
+        "PG036",
+        "PG042"
+      ],
+      "summary": "Selects and ranks architecture styles using quality attributes, domain shape, delivery constraints, and team fit.",
+      "path": "skills/batch-50/PG043-architecture-style-selector.md"
+    },
+    {
+      "id": "PG044",
+      "name": "system-context-container-planner",
+      "depends_on": [
+        "PG015",
+        "PG024",
+        "PG043"
+      ],
+      "summary": "Creates system-context and container-level architecture views.",
+      "path": "skills/batch-50/PG044-system-context-container-planner.md"
+    },
+    {
+      "id": "PG045",
+      "name": "module-and-service-decomposer",
+      "depends_on": [
+        "PG036",
+        "PG038",
+        "PG043",
+        "PG044"
+      ],
+      "summary": "Decomposes bounded contexts into modules, services, libraries, workers, and adapters.",
+      "path": "skills/batch-50/PG045-module-and-service-decomposer.md"
+    },
+    {
+      "id": "PG046",
+      "name": "quality-attribute-tradeoff-analyzer",
+      "depends_on": [
+        "PG027",
+        "PG043",
+        "PG045"
+      ],
+      "summary": "Evaluates architecture decisions against performance, availability, security, maintainability, cost, and delivery speed.",
+      "path": "skills/batch-50/PG046-quality-attribute-tradeoff-analyzer.md"
+    },
+    {
+      "id": "PG047",
+      "name": "data-ownership-consistency-planner",
+      "depends_on": [
+        "PG035",
+        "PG038",
+        "PG039",
+        "PG045"
+      ],
+      "summary": "Plans data ownership, transaction boundaries, consistency levels, replication, caching, and lifecycle responsibilities.",
+      "path": "skills/batch-50/PG047-data-ownership-consistency-planner.md"
+    },
+    {
+      "id": "PG048",
+      "name": "sync-async-communication-planner",
+      "depends_on": [
+        "PG038",
+        "PG040",
+        "PG045",
+        "PG046"
+      ],
+      "summary": "Chooses synchronous, asynchronous, streaming, batch, callback, and file-exchange communication patterns.",
+      "path": "skills/batch-50/PG048-sync-async-communication-planner.md"
+    },
+    {
+      "id": "PG049",
+      "name": "resilience-and-failure-mode-planner",
+      "depends_on": [
+        "PG027",
+        "PG038",
+        "PG044",
+        "PG048"
+      ],
+      "summary": "Plans retries, circuit breaking, bulkheads, graceful degradation, recovery, replay, and failure observability.",
+      "path": "skills/batch-50/PG049-resilience-and-failure-mode-planner.md"
+    },
+    {
+      "id": "PG050",
+      "name": "security-and-threat-model-planner",
+      "depends_on": [
+        "PG039",
+        "PG041",
+        "PG044",
+        "PG048"
+      ],
+      "summary": "Builds the architecture threat model and maps threats to controls, trust boundaries, abuse cases, and verification.",
+      "path": "skills/batch-50/PG050-security-and-threat-model-planner.md"
+    },
+    {
+      "id": "PG051",
+      "name": "multitenancy-topology-planner",
+      "depends_on": [
+        "PG024",
+        "PG041",
+        "PG046",
+        "PG047"
+      ],
+      "summary": "Plans tenant isolation, identity propagation, data partitioning, noisy-neighbor protection, and tenant lifecycle.",
+      "path": "skills/batch-50/PG051-multitenancy-topology-planner.md"
+    },
+    {
+      "id": "PG052",
+      "name": "observability-architecture-planner",
+      "depends_on": [
+        "PG027",
+        "PG038",
+        "PG044",
+        "PG045",
+        "PG050"
+      ],
+      "summary": "Plans logs, metrics, traces, audits, correlation, dashboards, alerts, SLOs, and diagnostic retention.",
+      "path": "skills/batch-50/PG052-observability-architecture-planner.md"
+    },
+    {
+      "id": "PG053",
+      "name": "deployment-topology-planner",
+      "depends_on": [
+        "PG044",
+        "PG046",
+        "PG049",
+        "PG050",
+        "PG052"
+      ],
+      "summary": "Plans environments, regions, compute, network, storage, scaling, rollout, backup, and disaster recovery topology.",
+      "path": "skills/batch-50/PG053-deployment-topology-planner.md"
+    },
+    {
+      "id": "PG054",
+      "name": "adr-and-architecture-review-pack",
+      "depends_on": [
+        "PG042",
+        "PG043",
+        "PG044",
+        "PG045",
+        "PG046",
+        "PG047",
+        "PG048",
+        "PG049",
+        "PG050",
+        "PG051",
+        "PG052",
+        "PG053"
+      ],
+      "summary": "Compiles architecture decisions, diagrams, risks, tradeoffs, open issues, and review gates into an approval package.",
+      "path": "skills/batch-50/PG054-adr-and-architecture-review-pack.md"
+    },
+    {
+      "id": "PG055",
+      "name": "application-profile-selector",
+      "depends_on": [
+        "PG054"
+      ],
+      "summary": "Selects project shapes such as API, modular monolith, worker, CLI, batch, event processor, desktop, or full stack.",
+      "path": "skills/batch-51/PG055-application-profile-selector.md"
+    },
+    {
+      "id": "PG056",
+      "name": "language-framework-profile-selector",
+      "depends_on": [
+        "PG018",
+        "PG055"
+      ],
+      "summary": "Selects language, framework, persistence, messaging, API, testing, and observability profiles.",
+      "path": "skills/batch-51/PG056-language-framework-profile-selector.md"
+    },
+    {
+      "id": "PG057",
+      "name": "runtime-version-policy-resolver",
+      "depends_on": [
+        "PG056"
+      ],
+      "summary": "Resolves runtime, SDK, compiler, framework, operating-system, database, and container versions.",
+      "path": "skills/batch-51/PG057-runtime-version-policy-resolver.md"
+    },
+    {
+      "id": "PG058",
+      "name": "dependency-catalog-and-bom-planner",
+      "depends_on": [
+        "PG050",
+        "PG056",
+        "PG057"
+      ],
+      "summary": "Creates approved dependency catalogs, BOMs, lock strategies, repositories, licenses, and vulnerability policies.",
+      "path": "skills/batch-51/PG058-dependency-catalog-and-bom-planner.md"
+    },
+    {
+      "id": "PG059",
+      "name": "repository-layout-planner",
+      "depends_on": [
+        "PG045",
+        "PG055",
+        "PG056"
+      ],
+      "summary": "Plans repository roots, applications, modules, libraries, tests, docs, deployment assets, and generated areas.",
+      "path": "skills/batch-51/PG059-repository-layout-planner.md"
+    },
+    {
+      "id": "PG060",
+      "name": "namespace-and-package-planner",
+      "depends_on": [
+        "PG035",
+        "PG056",
+        "PG059"
+      ],
+      "summary": "Plans namespaces, packages, modules, project names, artifact identifiers, and naming conventions.",
+      "path": "skills/batch-51/PG060-namespace-and-package-planner.md"
+    },
+    {
+      "id": "PG061",
+      "name": "build-system-planner",
+      "depends_on": [
+        "PG057",
+        "PG058",
+        "PG059",
+        "PG060"
+      ],
+      "summary": "Plans build tools, project graph, tasks, wrappers, caching, packaging, and reproducible build behavior.",
+      "path": "skills/batch-51/PG061-build-system-planner.md"
+    },
+    {
+      "id": "PG062",
+      "name": "environment-configuration-planner",
+      "depends_on": [
+        "PG047",
+        "PG050",
+        "PG053",
+        "PG055"
+      ],
+      "summary": "Plans configuration keys, defaults, environment overlays, feature flags, secrets, and local development dependencies.",
+      "path": "skills/batch-51/PG062-environment-configuration-planner.md"
+    },
+    {
+      "id": "PG063",
+      "name": "code-style-and-quality-profile",
+      "depends_on": [
+        "PG026",
+        "PG056",
+        "PG061"
+      ],
+      "summary": "Defines formatting, linting, typing, analyzers, warnings, complexity, coverage, and generated-code exemptions.",
+      "path": "skills/batch-51/PG063-code-style-and-quality-profile.md"
+    },
+    {
+      "id": "PG064",
+      "name": "project-blueprint-compiler",
+      "depends_on": [
+        "PG031",
+        "PG042",
+        "PG054",
+        "PG055",
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG059",
+        "PG060",
+        "PG061",
+        "PG062",
+        "PG063"
+      ],
+      "summary": "Compiles approved requirements and architecture into the canonical machine-readable Project Blueprint.",
+      "path": "skills/batch-51/PG064-project-blueprint-compiler.md"
+    },
+    {
+      "id": "PG065",
+      "name": "template-registry",
+      "depends_on": [
+        "PG008",
+        "PG064"
+      ],
+      "summary": "Registers reusable project, module, file, test, configuration, deployment, and documentation templates.",
+      "path": "skills/batch-52/PG065-template-registry.md"
+    },
+    {
+      "id": "PG066",
+      "name": "template-signing-and-provenance",
+      "depends_on": [
+        "PG007",
+        "PG008",
+        "PG065"
+      ],
+      "summary": "Signs templates and records source, publisher, review, dependencies, license, and content lineage.",
+      "path": "skills/batch-52/PG066-template-signing-and-provenance.md"
+    },
+    {
+      "id": "PG067",
+      "name": "semantic-code-model",
+      "depends_on": [
+        "PG037",
+        "PG040",
+        "PG060",
+        "PG064"
+      ],
+      "summary": "Defines the language-neutral semantic model for projects, modules, types, members, dependencies, behavior, tests, and annotations.",
+      "path": "skills/batch-52/PG067-semantic-code-model.md"
+    },
+    {
+      "id": "PG068",
+      "name": "scaffold-composer",
+      "depends_on": [
+        "PG059",
+        "PG064",
+        "PG065",
+        "PG067"
+      ],
+      "summary": "Composes repositories, applications, modules, directories, baseline files, tests, docs, and deployment roots.",
+      "path": "skills/batch-52/PG068-scaffold-composer.md"
+    },
+    {
+      "id": "PG069",
+      "name": "ast-cst-code-emitter",
+      "depends_on": [
+        "PG056",
+        "PG067",
+        "PG068"
+      ],
+      "summary": "Emits compilable target-language source through AST/CST-aware writers and language adapters.",
+      "path": "skills/batch-52/PG069-ast-cst-code-emitter.md"
+    },
+    {
+      "id": "PG070",
+      "name": "configuration-file-emitter",
+      "depends_on": [
+        "PG061",
+        "PG062",
+        "PG063",
+        "PG064",
+        "PG068"
+      ],
+      "summary": "Generates build, runtime, dependency, formatter, linter, container, CI, and environment configuration files.",
+      "path": "skills/batch-52/PG070-configuration-file-emitter.md"
+    },
+    {
+      "id": "PG071",
+      "name": "generated-file-ownership",
+      "depends_on": [
+        "PG059",
+        "PG064",
+        "PG068"
+      ],
+      "summary": "Assigns managed, protected, user-owned, imported, and derived ownership modes to files and symbols.",
+      "path": "skills/batch-52/PG071-generated-file-ownership.md"
+    },
+    {
+      "id": "PG072",
+      "name": "protected-region-and-extension-point",
+      "depends_on": [
+        "PG067",
+        "PG069",
+        "PG071"
+      ],
+      "summary": "Defines protected source regions, partial types, interfaces, hooks, plugins, callbacks, and generated extension contracts.",
+      "path": "skills/batch-52/PG072-protected-region-and-extension-point.md"
+    },
+    {
+      "id": "PG073",
+      "name": "idempotent-generation-engine",
+      "depends_on": [
+        "PG009",
+        "PG064",
+        "PG068",
+        "PG071",
+        "PG072"
+      ],
+      "summary": "Executes deterministic generation plans without duplicating semantic artifacts or creating unstable diffs.",
+      "path": "skills/batch-52/PG073-idempotent-generation-engine.md"
+    },
+    {
+      "id": "PG074",
+      "name": "incremental-merge-engine",
+      "depends_on": [
+        "PG032",
+        "PG069",
+        "PG071",
+        "PG072",
+        "PG073"
+      ],
+      "summary": "Performs AST/CST-aware, ownership-aware, and history-aware merges between generated intent and repository state.",
+      "path": "skills/batch-52/PG074-incremental-merge-engine.md"
+    },
+    {
+      "id": "PG075",
+      "name": "formatter-linter-normalizer",
+      "depends_on": [
+        "PG057",
+        "PG063",
+        "PG069",
+        "PG070",
+        "PG074"
+      ],
+      "summary": "Formats, lints, type-checks, normalizes, and statically validates generated artifacts using pinned toolchains.",
+      "path": "skills/batch-52/PG075-formatter-linter-normalizer.md"
+    },
+    {
+      "id": "PG076",
+      "name": "generation-manifest-and-sbom",
+      "depends_on": [
+        "PG007",
+        "PG058",
+        "PG064",
+        "PG066",
+        "PG071",
+        "PG073",
+        "PG074",
+        "PG075"
+      ],
+      "summary": "Publishes the generation manifest, artifact inventory, provenance, ownership, dependencies, tools, and software bill of materials.",
+      "path": "skills/batch-52/PG076-generation-manifest-and-sbom.md"
+    }
+  ]
+}

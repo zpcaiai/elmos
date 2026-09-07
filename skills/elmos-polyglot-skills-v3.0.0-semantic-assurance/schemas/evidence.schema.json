@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/evidence.schema.json",
+  "title": "ELMOS Evidence",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "type",
+    "runId",
+    "snapshotId",
+    "producer",
+    "createdAt",
+    "artifacts",
+    "claims",
+    "freshness"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.evidence/v1"
+    },
+    "evidenceId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "skill",
+        "version",
+        "toolchain"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ]
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "statement",
+          "status",
+          "support"
+        ]
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "required": [
+        "status",
+        "inputs"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "current",
+            "stale",
+            "unknown"
+          ]
+        },
+        "inputs": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "modules",
+    "shared_infrastructure",
+    "service_split_policy"
+  ],
+  "properties": {
+    "modules": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "owner",
+          "bounded_context",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "bounded_context": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "shared_infrastructure": {
+      "type": "array"
+    },
+    "service_split_policy": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

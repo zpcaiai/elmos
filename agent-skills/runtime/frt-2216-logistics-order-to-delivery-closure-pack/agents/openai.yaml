@@ -1,0 +1,4 @@
+interface:
+  display_name: "Logistics Order-to-Delivery Closure Pack"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2216-logistics-order-to-delivery-closure-pack to run FRT-2216 through the governed FRT runtime with exact scope and fail-closed evidence."

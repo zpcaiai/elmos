@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "EnterpriseAssuranceDossier",
+  "metadata": {
+    "id": "enterprise-assurance-dossier-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "customerScope": "example-customerScope",
+    "sections": [],
+    "evidenceMap": {},
+    "gaps": []
+  }
+}

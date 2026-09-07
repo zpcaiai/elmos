@@ -1,0 +1,330 @@
+{
+  "blockerCount": 40,
+  "blockers": [
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-java-spring-to-csharp-aspnet-core.yaml",
+      "route": "route-java-spring-to-csharp-aspnet-core",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-csharp-aspnet-core-to-java-spring.yaml",
+      "route": "route-csharp-aspnet-core-to-java-spring",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-java-to-kotlin.yaml",
+      "route": "route-java-to-kotlin",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-kotlin-to-java.yaml",
+      "route": "route-kotlin-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-javascript-to-typescript.yaml",
+      "route": "route-javascript-to-typescript",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-objective-c-to-swift.yaml",
+      "route": "route-objective-c-to-swift",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-cpp-to-rust.yaml",
+      "route": "route-cpp-to-rust",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-rust-to-cpp.yaml",
+      "route": "route-rust-to-cpp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-php-laravel-to-typescript-nest.yaml",
+      "route": "route-php-laravel-to-typescript-nest",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-python-fastapi-to-go.yaml",
+      "route": "route-python-fastapi-to-go",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-python-django-to-typescript-nest.yaml",
+      "route": "route-python-django-to-typescript-nest",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-java-android-to-flutter.yaml",
+      "route": "route-java-android-to-flutter",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-kotlin-android-to-flutter.yaml",
+      "route": "route-kotlin-android-to-flutter",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-swift-uikit-to-flutter.yaml",
+      "route": "route-swift-uikit-to-flutter",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-react-to-flutter.yaml",
+      "route": "route-react-to-flutter",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-php-laravel-to-python-fastapi.yaml",
+      "route": "route-php-laravel-to-python-fastapi",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-go-to-rust.yaml",
+      "route": "route-go-to-rust",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-spring-in-place-modernization.yaml",
+      "route": "route-spring-in-place-modernization",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-mainframe-cobol-to-java.yaml",
+      "route": "route-mainframe-cobol-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-mainframe-cobol-to-csharp.yaml",
+      "route": "route-mainframe-cobol-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-ibmi-rpg-to-java.yaml",
+      "route": "route-ibmi-rpg-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-ibmi-rpg-to-csharp.yaml",
+      "route": "route-ibmi-rpg-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-pli-to-java.yaml",
+      "route": "route-pli-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-pli-to-csharp.yaml",
+      "route": "route-pli-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-vb6-to-csharp.yaml",
+      "route": "route-vb6-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-vbscript-to-csharp.yaml",
+      "route": "route-vbscript-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-powerbuilder-to-csharp-react.yaml",
+      "route": "route-powerbuilder-to-csharp-react",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-delphi-to-csharp.yaml",
+      "route": "route-delphi-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-abap-to-java.yaml",
+      "route": "route-abap-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-natural-adabas-to-java.yaml",
+      "route": "route-natural-adabas-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-abl-openedge-to-java.yaml",
+      "route": "route-abl-openedge-to-java",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-c-to-rust.yaml",
+      "route": "route-c-to-rust",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-c-to-cpp-modernization.yaml",
+      "route": "route-c-to-cpp-modernization",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-ada-spark-to-rust.yaml",
+      "route": "route-ada-spark-to-rust",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-rust-to-ada-spark-assurance.yaml",
+      "route": "route-rust-to-ada-spark-assurance",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-fortran-to-cpp.yaml",
+      "route": "route-fortran-to-cpp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-fortran-to-python-numerical.yaml",
+      "route": "route-fortran-to-python-numerical",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-xbase-foxpro-to-csharp.yaml",
+      "route": "route-xbase-foxpro-to-csharp",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-cobol-in-place-modernization.yaml",
+      "route": "route-cobol-in-place-modernization",
+      "status": "BLOCKED"
+    },
+    {
+      "certificationStatus": "NOT_CERTIFIED",
+      "code": "MISSING_ROUTE_PROFILE",
+      "externalEvidenceStatus": "NOT_RUN",
+      "path": "route-profiles/route-rpg-in-place-modernization.yaml",
+      "route": "route-rpg-in-place-modernization",
+      "status": "BLOCKED"
+    }
+  ],
+  "certificationStatus": "NOT_CERTIFIED",
+  "decision": "BLOCKED",
+  "externalEvidenceStatus": "NOT_RUN",
+  "packageId": "elmos-semantic-assurance-expansion-skills-v1.0.0",
+  "schemaVersion": "elmos.semantic-assurance.package-blockers/v1"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Dependency Sca Governance"
+  short_description: "Run evidence-bound Batch 40 dependency sca governance work"
+  default_prompt: "Use $b40-dependency-sca-governance to implement and verify this capability with fail-closed evidence."

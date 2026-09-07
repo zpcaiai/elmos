@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B34: Leanstral Proof Repair"
+  short_description: "Run Precision Migration B34 with evidence controls"
+  default_prompt: "Use $pm-b34-leanstral-proof-repair to execute this Precision Migration contract with fail-closed evidence."

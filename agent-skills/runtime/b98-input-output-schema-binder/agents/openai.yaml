@@ -1,0 +1,4 @@
+interface:
+  display_name: "B98 Input Output Schema Binder"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b98-input-output-schema-binder to execute this ELMOS product-closure Skill with fail-closed evidence."

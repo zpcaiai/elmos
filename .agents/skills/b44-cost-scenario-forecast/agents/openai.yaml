@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Cost Scenario Forecast"
+  short_description: "Run evidence-bound Batch 44 cost scenario forecast work"
+  default_prompt: "Use $b44-cost-scenario-forecast to implement and verify this capability with fail-closed evidence."

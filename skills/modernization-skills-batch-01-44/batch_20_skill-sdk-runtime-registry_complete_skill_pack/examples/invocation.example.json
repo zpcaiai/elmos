@@ -1,0 +1,12 @@
+{
+  "request_id": "b20-example-001",
+  "tenant_id": "example-tenant",
+  "project_id": "example-project",
+  "scope": "Skill SDK, Runtime, Registry and Marketplace Productization",
+  "upstream_certificate_refs": [
+    "batch-19-certificate-example"
+  ],
+  "options": {
+    "dry_run": true
+  }
+}

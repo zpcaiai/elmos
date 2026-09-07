@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Change Review And Verification Gate"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $agent-change-review-and-verification-gate to execute this ELMOS Runtime Skill with fail-closed evidence."

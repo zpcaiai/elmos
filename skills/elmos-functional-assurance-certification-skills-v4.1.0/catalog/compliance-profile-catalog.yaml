@@ -1,0 +1,40 @@
+apiVersion: elmos.ai/v3alpha1
+kind: ComplianceProfileCatalog
+metadata:
+  version: 4.0.0
+spec:
+  profiles:
+  - id: NIST-AI-RMF
+    kind: risk-management-framework
+    status: mapping-supported
+    legalOpinion: false
+  - id: ISO-IEC-42001
+    kind: management-system
+    status: mapping-supported
+    legalOpinion: false
+  - id: OWASP-LLM-TOP-10
+    kind: security-baseline
+    status: test-profile-supported
+    legalOpinion: false
+  - id: OWASP-AGENTIC-TOP-10
+    kind: agentic-security-baseline
+    status: test-profile-supported
+    legalOpinion: false
+  - id: OWASP-AGENTIC-SKILLS-TOP-10
+    kind: skill-security-baseline
+    status: test-profile-supported
+    legalOpinion: false
+  - id: EU-AI-ACT
+    kind: regional-regulation
+    status: applicability-and-control-candidate-only
+    legalOpinion: true
+  - id: CN-GENAI-SERVICE
+    kind: regional-regulation
+    status: applicability-and-control-candidate-only
+    legalOpinion: true
+  - id: CN-AI-CONTENT-LABELING
+    kind: regional-regulation
+    status: labeling-control-profile
+    legalOpinion: true
+  boundary: Profiles generate implementation candidates and evidence obligations; they do not replace jurisdiction-specific
+    legal review.

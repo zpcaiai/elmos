@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "NativeConformanceResult",
+  "metadata": {
+    "id": "native-conformance-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "target": "example-target",
+    "exactVersion": "example-exactVersion",
+    "commandEvidence": [],
+    "decision": "example-decision"
+  }
+}

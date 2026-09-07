@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repair-loop/v1/stop-decision.schema.json",
+  "title": "Batch 8 Stop Decision",
+  "type": "object",
+  "required": ["outcome", "reason", "stableSnapshotId", "rounds", "patchAttempts", "agentCalls", "agentTokens", "costMicros", "blockers", "evidenceRefs"],
+  "properties": {
+    "outcome": {"enum": ["CONVERGED_SUCCESS", "CONVERGED_WITH_WARNINGS", "PARTIALLY_CONVERGED", "BLOCKED_BY_SEMANTIC_GAP", "BLOCKED_BY_ENVIRONMENT", "STOPPED_BY_BUDGET", "STOPPED_BY_OSCILLATION", "STOPPED_BY_NO_PROGRESS", "STOPPED_BY_RISK", "HUMAN_REVIEW_REQUIRED", "FAILED_SAFELY"]},
+    "reason": {"type": "string", "minLength": 1}, "stableSnapshotId": {"type": "string", "minLength": 1},
+    "rounds": {"type": "integer", "minimum": 0}, "patchAttempts": {"type": "integer", "minimum": 0},
+    "agentCalls": {"type": "integer", "minimum": 0}, "agentTokens": {"type": "integer", "minimum": 0},
+    "costMicros": {"type": "integer", "minimum": 0},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

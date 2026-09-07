@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "defaultStatus": "NOT_CONFIGURED",
+  "networkPolicy": "ALLOWLIST_REQUIRED",
+  "credentialPolicy": "SHORT_LIVED_LEASE",
+  "discoveryMode": "READ_ONLY",
+  "adapters": [
+    {"id": "esb-export", "scope": ["CONFIG", "ROUTE", "MAPPING"]},
+    {"id": "ibm-mq", "scope": ["QUEUE_MANAGER", "QUEUE", "CHANNEL", "DLQ"]},
+    {"id": "kafka", "scope": ["TOPIC", "PARTITION", "CONSUMER_GROUP", "OFFSET"]},
+    {"id": "rabbitmq", "scope": ["VHOST", "EXCHANGE", "QUEUE", "BINDING"]},
+    {"id": "schema-registry", "scope": ["SUBJECT", "SCHEMA", "COMPATIBILITY"]},
+    {"id": "api-gateway", "scope": ["ROUTE", "POLICY", "CONSUMER"]},
+    {"id": "as2-edi", "scope": ["PARTNER", "AGREEMENT", "ACKNOWLEDGEMENT"]},
+    {"id": "mft-sftp", "scope": ["FILE_ROUTE", "TRANSFER", "CHECKSUM"]},
+    {"id": "workflow", "scope": ["DEFINITION", "INSTANCE", "TIMER", "COMPENSATION"]},
+    {"id": "runtime-observation", "scope": ["TRACE", "LAG", "QUEUE_DEPTH", "TRANSFER"]},
+    {"id": "replay", "scope": ["APPROVED_RANGE", "CHECKPOINT"]},
+    {"id": "bridge", "scope": ["BRIDGE_STATUS", "TEST_TRAFFIC"]}
+  ],
+  "prohibited": ["PURGE_PRODUCTION_QUEUE", "RESET_PRODUCTION_OFFSET", "DELETE_TOPIC", "MODIFY_PARTNER_CERTIFICATE", "REPLAY_PRODUCTION_MESSAGE", "CREATE_PUBLIC_GATEWAY_ROUTE", "SWITCH_PRODUCER", "ACCEPT_MESSAGE_LOSS"]
+}

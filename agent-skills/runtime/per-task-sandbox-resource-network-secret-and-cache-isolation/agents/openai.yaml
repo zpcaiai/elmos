@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 33-mature Skill 007"
+  short_description: "Run Product Batch 33-mature evidence contract safely"
+  default_prompt: "Use $per-task-sandbox-resource-network-secret-and-cache-isolation to implement its fail-closed ELMOS Product Batch 33-mature contract."

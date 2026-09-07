@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.multimodal-authorization-boundaries",
+  "owner": "elmos-multimodal-intake-security",
+  "target_scope": [
+    "engines/multimodal-intake-engine/src/elmos_multimodal_intake/security.py",
+    "engines/multimodal-intake-engine/src/elmos_multimodal_intake/api.py",
+    "apps/web-console/app/api/multimodal-intake"
+  ],
+  "operators": [
+    {
+      "key": "negate-condition",
+      "risk": "P0"
+    },
+    {
+      "key": "remove-tenant-or-project-binding",
+      "risk": "P0"
+    },
+    {
+      "key": "move-authorization-after-dispatch",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 200,
+    "max_minutes": 30
+  },
+  "required_tests": [
+    "engines/multimodal-intake-engine/tests",
+    "apps/web-console/e2e/multimodal-intake.spec.ts"
+  ],
+  "equivalent_mutant_policy": "independent-human-review-required"
+}

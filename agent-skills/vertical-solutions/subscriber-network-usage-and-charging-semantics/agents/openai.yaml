@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 656: subscriber network usage and charging semantics"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $subscriber-network-usage-and-charging-semantics to evaluate this capability with evidence."

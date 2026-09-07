@@ -1,0 +1,190 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SkillDomainModel
+metadata:
+  name: elmos-proof-assistant-lean-dafny-bridge
+  version: 4.0.0
+spec:
+  entities:
+  - name: ProofAssistantLeanDafnyBridgeProfile
+    identity:
+    - proofassistantleandafnybridgeprofile_id
+    - tenant_id
+    - revision_set_id
+    attributes:
+    - status
+    - schema_version
+    - content_hash
+    - provenance
+    - created_at
+    - updated_at
+    ownerKernel: K3
+  - name: ProofAssistantLeanDafnyBridgePlan
+    identity:
+    - proofassistantleandafnybridgeplan_id
+    - tenant_id
+    - revision_set_id
+    attributes:
+    - status
+    - schema_version
+    - content_hash
+    - provenance
+    - created_at
+    - updated_at
+    ownerKernel: K3
+  - name: ProofAssistantLeanDafnyBridgeRun
+    identity:
+    - proofassistantleandafnybridgerun_id
+    - tenant_id
+    - revision_set_id
+    attributes:
+    - status
+    - schema_version
+    - content_hash
+    - provenance
+    - created_at
+    - updated_at
+    ownerKernel: K3
+  - name: ProofAssistantLeanDafnyBridgeDecision
+    identity:
+    - proofassistantleandafnybridgedecision_id
+    - tenant_id
+    - revision_set_id
+    attributes:
+    - status
+    - schema_version
+    - content_hash
+    - provenance
+    - created_at
+    - updated_at
+    ownerKernel: K3
+  events:
+  - name: Requested
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Profiled
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Planned
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Started
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Checkpointed
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: EvidenceProduced
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Blocked
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Failed
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: Cancelled
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  - name: CompletedCandidate
+    requiredFields:
+    - event_id
+    - tenant_id
+    - goal_id
+    - revision_set_id
+    - run_id
+    - sequence
+    - occurred_at
+    - producer
+    - payload_hash
+  commands:
+  - Profile
+  - Plan
+  - Execute
+  - Pause
+  - Resume
+  - Cancel
+  - Verify
+  - Repair
+  - SealEvidence
+  - RequestCertification
+  invariants:
+  - tenant and RevisionSet never change within an execution epoch
+  - events are append-only and sequence-monotonic
+  - terminal completion is only a projection of K8 decision
+  - unknown side-effect state prevents successful terminal settlement
+  retention:
+    events: policy-defined immutable audit
+    artifacts: content addressed with retention class
+    PII: minimized and separately erasable where legally permitted

@@ -1,0 +1,126 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G24",
+    "slug": "admin-console-completeness",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "管理端能力矩阵、运营治理、异常处置、数据修正与全后台闭环",
+    "transitionFrom": "业务与数据已经实现完整闭环",
+    "transitionTo": "管理端完整查看、治理、审批、修正、对账、恢复和审计所有关键能力，且不依赖数据库脚本",
+    "certificateFamily": "AC",
+    "skills": [
+      {
+        "id": "FRT-2400",
+        "name": "Admin Console Completeness Orchestrator",
+        "path": "skills/frt-2400-admin-console-completeness-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-2401",
+        "name": "Admin Capability Matrix",
+        "path": "skills/frt-2401-admin-capability-matrix/SKILL.md"
+      },
+      {
+        "id": "FRT-2402",
+        "name": "Organization and Tenant Administration",
+        "path": "skills/frt-2402-organization-and-tenant-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2403",
+        "name": "User, Role and Permission Administration",
+        "path": "skills/frt-2403-user-role-and-permission-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2404",
+        "name": "Business Operations Administration",
+        "path": "skills/frt-2404-business-operations-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2405",
+        "name": "Order, Payment and Refund Administration",
+        "path": "skills/frt-2405-order-payment-and-refund-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2406",
+        "name": "Inventory and Resource Administration",
+        "path": "skills/frt-2406-inventory-and-resource-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2407",
+        "name": "Content and Configuration Administration",
+        "path": "skills/frt-2407-content-and-configuration-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2408",
+        "name": "Notification and Message Administration",
+        "path": "skills/frt-2408-notification-and-message-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2409",
+        "name": "Workflow and Approval Administration",
+        "path": "skills/frt-2409-workflow-and-approval-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2410",
+        "name": "Exception and Manual Intervention Console",
+        "path": "skills/frt-2410-exception-and-manual-intervention-console/SKILL.md"
+      },
+      {
+        "id": "FRT-2411",
+        "name": "Data Correction and Reconciliation Console",
+        "path": "skills/frt-2411-data-correction-and-reconciliation-console/SKILL.md"
+      },
+      {
+        "id": "FRT-2412",
+        "name": "Job and Worker Administration",
+        "path": "skills/frt-2412-job-and-worker-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2413",
+        "name": "Skill, Pack and Model Administration",
+        "path": "skills/frt-2413-skill-pack-and-model-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2414",
+        "name": "Artifact, Evidence and Certificate Administration",
+        "path": "skills/frt-2414-artifact-evidence-and-certificate-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2415",
+        "name": "Audit and Security Administration",
+        "path": "skills/frt-2415-audit-and-security-administration/SKILL.md"
+      },
+      {
+        "id": "FRT-2416",
+        "name": "Bulk Operation and Import-Export Generator",
+        "path": "skills/frt-2416-bulk-operation-and-import-export-generator/SKILL.md"
+      },
+      {
+        "id": "FRT-2417",
+        "name": "Admin Search and Advanced Filtering",
+        "path": "skills/frt-2417-admin-search-and-advanced-filtering/SKILL.md"
+      },
+      {
+        "id": "FRT-2418",
+        "name": "Admin Dashboard and KPI Pack",
+        "path": "skills/frt-2418-admin-dashboard-and-kpi-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-2419",
+        "name": "Admin End-to-End Test Generator",
+        "path": "skills/frt-2419-admin-end-to-end-test-generator/SKILL.md"
+      }
+    ],
+    "gates": [
+      "关键业务异常均有管理入口",
+      "高风险管理动作服务端权限、Scope、Reason、Approval和Audit覆盖率=100%",
+      "直接修改Critical DB字段路径=0",
+      "Critical Admin Journey E2E通过",
+      "Bulk操作均有Snapshot、Preview、Limit、Partial Failure、Audit",
+      "Search跨Tenant泄漏=0"
+    ]
+  }
+}

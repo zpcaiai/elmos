@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "profile_key": "multimodal-intake-authorization-v1-profile-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.identity-scope-binding",
+      "description": "Every intake resource is bound to one authenticated tenant, project, actor, and trusted project alias before access.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-tests", "oracle.independent-review"],
+      "required_techniques": ["property", "security", "negative-cross-tenant", "holdout"]
+    },
+    {
+      "claim_id": "claim.operation-authorization",
+      "description": "Each registered Skill operation requires the exact read, write, review, or admin permission and unknown pairs fail closed.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-tests", "oracle.independent-review"],
+      "required_techniques": ["property", "model", "mutation", "security"]
+    },
+    {
+      "claim_id": "claim.deny-no-side-effects",
+      "description": "Anonymous, cross-tenant, escalating, confused-deputy, and unknown-operation requests are denied before receipts or downstream effects.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.negative-tests", "oracle.independent-review"],
+      "required_techniques": ["metamorphic", "mutation", "security", "holdout"]
+    },
+    {
+      "claim_id": "claim.untrusted-content-boundary",
+      "description": "Raw assets and document instructions remain UNTRUSTED_CONTENT and cannot grant tools, permissions, providers, or execution.",
+      "criticality": "P0",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-tests", "oracle.independent-review"],
+      "required_techniques": ["fuzz", "security", "negative-content", "holdout"]
+    },
+    {
+      "claim_id": "claim.append-only-corrections",
+      "description": "Human corrections are append-only, optimistic-lock bound, preserve originals, and do not imply approval or rebuild completion.",
+      "criticality": "P1",
+      "required_oracles": ["oracle.runtime-contract", "oracle.negative-tests"],
+      "required_techniques": ["property", "model", "concurrency", "metamorphic"]
+    }
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "fuzz",
+    "model",
+    "contract",
+    "security",
+    "concurrency",
+    "negative-cross-tenant",
+    "negative-content",
+    "holdout"
+  ],
+  "budgets": {
+    "max_wall_time_minutes": 30,
+    "max_solver_seconds": 60,
+    "max_fuzz_seconds": 300,
+    "max_schedules": 1000,
+    "max_mutants": 500
+  },
+  "stop_conditions": [
+    "critical-oracle-conflict",
+    "budget-exhausted",
+    "unknown-p0-property",
+    "security-violation",
+    "cross-tenant-read-or-write",
+    "denied-request-side-effect"
+  ],
+  "approvals": []
+}

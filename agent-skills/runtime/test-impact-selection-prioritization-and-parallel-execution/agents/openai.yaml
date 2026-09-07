@@ -1,0 +1,4 @@
+interface:
+  display_name: "test-impact-selection-prioritization-and-parallel-execution"
+  short_description: "Apply this Batch 18 quality workflow safely"
+  default_prompt: "Use $test-impact-selection-prioritization-and-parallel-execution to implement this test-quality task with fail-closed evidence boundaries."

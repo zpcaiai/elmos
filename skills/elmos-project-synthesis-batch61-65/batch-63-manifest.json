@@ -1,0 +1,155 @@
+{
+  "batch": 63,
+  "skill_count": 12,
+  "skills": [
+    {
+      "id": "PG191",
+      "name": "golden-project-benchmark-suite",
+      "path": "skills/batch-63/PG191-golden-project-benchmark-suite.md",
+      "depends_on": [
+        "PG077",
+        "PG089",
+        "PG101",
+        "PG124",
+        "PG190"
+      ],
+      "summary": "Defines representative benchmark projects across languages, architectures, and risk levels."
+    },
+    {
+      "id": "PG192",
+      "name": "requirements-understanding-eval",
+      "path": "skills/batch-63/PG192-requirements-understanding-eval.md",
+      "depends_on": [
+        "PG011",
+        "PG020",
+        "PG021",
+        "PG031",
+        "PG191"
+      ],
+      "summary": "Evaluates extraction, ambiguity handling, scope, conflict detection, assumptions, and acceptance criteria."
+    },
+    {
+      "id": "PG193",
+      "name": "architecture-quality-eval",
+      "path": "skills/batch-63/PG193-architecture-quality-eval.md",
+      "depends_on": [
+        "PG043",
+        "PG054",
+        "PG191"
+      ],
+      "summary": "Evaluates architecture simplicity, fit, boundaries, tradeoffs, security, data ownership, and operability."
+    },
+    {
+      "id": "PG194",
+      "name": "code-correctness-eval",
+      "path": "skills/batch-63/PG194-code-correctness-eval.md",
+      "depends_on": [
+        "PG069",
+        "PG075",
+        "PG191"
+      ],
+      "summary": "Evaluates semantic correctness, maintainability, contract conformance, language idioms, and generated-code governance."
+    },
+    {
+      "id": "PG195",
+      "name": "build-run-success-eval",
+      "path": "skills/batch-63/PG195-build-run-success-eval.md",
+      "depends_on": [
+        "PG147",
+        "PG156",
+        "PG158",
+        "PG191"
+      ],
+      "summary": "Evaluates clean setup, build, migration, startup, health, smoke, shutdown, and evidence reproducibility."
+    },
+    {
+      "id": "PG196",
+      "name": "security-compliance-eval",
+      "path": "skills/batch-63/PG196-security-compliance-eval.md",
+      "depends_on": [
+        "PG050",
+        "PG145",
+        "PG162",
+        "PG191"
+      ],
+      "summary": "Evaluates threat controls, authorization, tenant isolation, supply chain, secrets, data handling, and compliance evidence."
+    },
+    {
+      "id": "PG197",
+      "name": "traceability-completeness-eval",
+      "path": "skills/batch-63/PG197-traceability-completeness-eval.md",
+      "depends_on": [
+        "PG042",
+        "PG076",
+        "PG158",
+        "PG169"
+      ],
+      "summary": "Evaluates end-to-end lineage from source requirements through code, tests, evidence, releases, and change history."
+    },
+    {
+      "id": "PG198",
+      "name": "regeneration-safety-eval",
+      "path": "skills/batch-63/PG198-regeneration-safety-eval.md",
+      "depends_on": [
+        "PG173",
+        "PG174",
+        "PG180",
+        "PG191"
+      ],
+      "summary": "Evaluates idempotency, incremental scope, manual-edit preservation, merge behavior, and regression safety."
+    },
+    {
+      "id": "PG199",
+      "name": "cross-language-parity-eval",
+      "path": "skills/batch-63/PG199-cross-language-parity-eval.md",
+      "depends_on": [
+        "PG077",
+        "PG089",
+        "PG101",
+        "PG191"
+      ],
+      "summary": "Compares Java, Python, and .NET implementations of the same approved specification."
+    },
+    {
+      "id": "PG200",
+      "name": "large-project-scalability-eval",
+      "path": "skills/batch-63/PG200-large-project-scalability-eval.md",
+      "depends_on": [
+        "PG181",
+        "PG187",
+        "PG191"
+      ],
+      "summary": "Evaluates performance and reliability of synthesis on large repositories, specifications, graphs, and change sets."
+    },
+    {
+      "id": "PG201",
+      "name": "failure-recovery-chaos-eval",
+      "path": "skills/batch-63/PG201-failure-recovery-chaos-eval.md",
+      "depends_on": [
+        "PG149",
+        "PG150",
+        "PG181",
+        "PG191"
+      ],
+      "summary": "Evaluates recovery from model, tool, runner, network, registry, storage, broker, and approval interruptions."
+    },
+    {
+      "id": "PG202",
+      "name": "project-synthesis-product-certification",
+      "path": "skills/batch-63/PG202-project-synthesis-product-certification.md",
+      "depends_on": [
+        "PG192",
+        "PG193",
+        "PG194",
+        "PG195",
+        "PG196",
+        "PG197",
+        "PG198",
+        "PG199",
+        "PG200",
+        "PG201"
+      ],
+      "summary": "Combines benchmark and policy evidence into a versioned product certification decision."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B93 Thread Memory Lifetime Analyzer"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b93-thread-memory-lifetime-analyzer to execute this ELMOS Language Pack Skill with fail-closed evidence."

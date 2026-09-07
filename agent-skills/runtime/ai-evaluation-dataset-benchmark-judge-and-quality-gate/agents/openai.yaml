@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 23 012"
+  short_description: "Run Batch 23 runtime contract safely"
+  default_prompt: "Use $ai-evaluation-dataset-benchmark-judge-and-quality-gate to apply its fail-closed ELMOS runtime contract."

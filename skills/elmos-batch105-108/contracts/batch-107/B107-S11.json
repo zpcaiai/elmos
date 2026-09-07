@@ -1,0 +1,64 @@
+{
+  "id": "B107-S11",
+  "batch": 107,
+  "name": "page-semantic-assertion-runner",
+  "dependencies": [
+    "B107-S09"
+  ],
+  "inputs": [
+    "BrowserSession",
+    "semantic assertion suite"
+  ],
+  "outputs": [
+    "SemanticAssertionResults",
+    "accessibility snapshots"
+  ],
+  "implementation": {
+    "modules": [
+      "validation/browser/PageSemanticAssertionService.java",
+      "contracts/page-assertion.schema.json",
+      "fixtures/page-assertions/"
+    ],
+    "interfaces": [
+      "POST /api/browser-sessions/{id}/assertions",
+      "event page-assertions.completed"
+    ],
+    "data": [
+      "page_assertion",
+      "semantic_snapshot",
+      "assertion_result"
+    ]
+  },
+  "workflow": [
+    "采集可访问性树和稳定DOM语义",
+    "按role/name/label而非脆弱CSS定位",
+    "执行可见/可用/值/导航断言",
+    "验证表单错误和登录状态",
+    "记录每步快照和失败上下文",
+    "对动态内容使用显式等待条件"
+  ],
+  "tests": [
+    "按钮重命名被发现",
+    "隐藏元素不算可见",
+    "表单错误语义可读",
+    "动态表格等待稳定",
+    "纯像素相似不替代语义断言"
+  ],
+  "evidence": [
+    "semantic-assertions.json",
+    "accessibility-snapshots/",
+    "assertion-results.json"
+  ],
+  "definition_of_done": [
+    "关键页面有语义断言",
+    "定位稳定",
+    "失败可解释",
+    "动态等待有上限",
+    "结果绑定截图"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

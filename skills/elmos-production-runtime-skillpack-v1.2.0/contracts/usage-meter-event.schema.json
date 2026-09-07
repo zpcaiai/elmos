@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "model_call_id",
+    "sequence_no",
+    "cumulative_input_tokens",
+    "cumulative_output_tokens",
+    "metered_credit_cost"
+  ],
+  "properties": {
+    "model_call_id": {
+      "type": "string"
+    },
+    "sequence_no": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "cumulative_input_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cumulative_cached_input_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cumulative_output_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cumulative_reasoning_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "metered_provider_cost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "metered_credit_cost": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}

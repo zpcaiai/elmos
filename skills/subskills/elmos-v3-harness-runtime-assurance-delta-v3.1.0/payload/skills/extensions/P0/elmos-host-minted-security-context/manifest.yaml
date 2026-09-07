@@ -1,0 +1,62 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-005
+  name: elmos-host-minted-security-context
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: CallerMetadata 不可信；身份、租户、许可证和 entitlement 只能由 Harness/Policy Broker 验证并签发。
+  ownerKernels:
+  - K7
+  - K8
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-certification-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-certification-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-invocation-scoped-capability-lease
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-environment-attachment-authority
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - CallerMetadataSanitizer
+  - SecurityContextBroker
+  - EligibilityEvaluator
+  - ContextBindingSigner
+  - AccountRaceGuard
+  invariants:
+  - CallerMetadata, VerifiedSecurityContext and ExecutionAuthority are distinct types
+  - only the Host/Policy Broker can create a verified context
+  - verified context is invocation-scoped and non-forwardable by default
+  - execution authority is the intersection of verified context, owner authority and policy decision
+  upstreamEvidence:
+  - openai/codex#41005
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

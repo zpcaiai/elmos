@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/commercial-platform-manifest.schema.json",
+  "title": "Batch 13 Commercial Platform Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "assessment_run_id",
+    "platform_business",
+    "lifecycle_records",
+    "domains",
+    "motions",
+    "policy",
+    "observed_at",
+    "commercial_operation_executed"
+  ],
+  "properties": {
+    "batch": {
+      "const": 13
+    },
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business": {
+      "$ref": "business-artifact.schema.json"
+    },
+    "lifecycle_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "lifecycle-record.schema.json"
+      }
+    },
+    "domains": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "$ref": "domain-profile.schema.json"
+      }
+    },
+    "motions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "$ref": "motion-profile.schema.json"
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_discovery_coverage",
+        "required_poc_criteria_coverage",
+        "required_poc_evidence_coverage",
+        "required_catalog_quote_coverage",
+        "required_commercial_approval_coverage",
+        "required_onboarding_coverage",
+        "required_milestone_criteria_coverage",
+        "required_raid_owner_coverage",
+        "required_sla_coverage",
+        "required_ticket_tenant_coverage",
+        "required_health_coverage",
+        "required_renewal_plan_coverage",
+        "required_partner_due_diligence_coverage",
+        "required_partner_certification_coverage",
+        "required_cost_visibility",
+        "required_margin_visibility",
+        "required_audit_coverage",
+        "required_value_realization_coverage",
+        "required_evidence_traceability"
+      ],
+      "properties": {
+        "required_discovery_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_poc_criteria_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_poc_evidence_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_catalog_quote_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_commercial_approval_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_onboarding_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_milestone_criteria_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_raid_owner_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_sla_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_ticket_tenant_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_health_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_renewal_plan_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_partner_due_diligence_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_partner_certification_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_cost_visibility": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_margin_visibility": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_audit_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_value_realization_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_evidence_traceability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "commercial_operation_executed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "domains": {
+          "allOf": [
+            {"contains": {"properties": {"domain": {"const": "GO_TO_MARKET"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "CUSTOMER_DISCOVERY"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "SOLUTION_ENGINEERING"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "COMMERCIAL_CONTRACT"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "CUSTOMER_ONBOARDING"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "DELIVERY_MANAGEMENT"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "CUSTOMER_SUCCESS_SUPPORT"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"domain": {"const": "PARTNER_REVENUE_OPERATIONS"}}, "required": ["domain"]}, "minContains": 1, "maxContains": 1}
+          ]
+        },
+        "motions": {
+          "allOf": [
+            {"contains": {"properties": {"motion": {"const": "DIRECT_SALES"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"motion": {"const": "POC_LED_SALES"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"motion": {"const": "ENTERPRISE_SUBSCRIPTION"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"motion": {"const": "PROFESSIONAL_SERVICES"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"motion": {"const": "PARTNER_LED_DELIVERY"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1},
+            {"contains": {"properties": {"motion": {"const": "MANAGED_MIGRATION_SERVICE"}}, "required": ["motion"]}, "minContains": 1, "maxContains": 1}
+          ]
+        }
+      }
+    }
+  ]
+}

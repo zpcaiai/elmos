@@ -1,0 +1,6 @@
+certification:
+  conservative: true
+  status_only_upgrade: forbidden
+  evidence_digest_required: true
+  holdout_required_for_certified: true
+  representative_workload_required: true

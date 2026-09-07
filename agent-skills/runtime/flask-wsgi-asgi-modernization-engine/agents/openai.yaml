@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flask WSGI ASGI Modernization"
+  short_description: "Modernize Flask without forcing framework rewrites"
+  default_prompt: "Use $flask-wsgi-asgi-modernization-engine to modernize this Flask service."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Community Platform And Identity Integrator"
+  short_description: "Authoritative Batch 14 Skill 430 workflow"
+  default_prompt: "Use $community-platform-and-identity-integrator to execute its evidence-bound Batch 14 workflow."
+

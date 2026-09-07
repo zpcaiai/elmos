@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Mature Product Evidence Pack"
+  short_description: "Run evidence-bound Batch 45 mature product evidence pack work"
+  default_prompt: "Use $b45-mature-product-evidence-pack to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,5 @@
+default_deny:
+  network: true
+  host_filesystem: true
+  production_secrets: true
+  arbitrary_shell: true

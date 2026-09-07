@@ -1,0 +1,53 @@
+{
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "contracts": {
+    "campaign": "campaigns/default.json",
+    "dependency_graph": "graph/dependencies.json",
+    "dr_replay": "dr/replay-plan.json",
+    "inventory": "inventory/portfolio.json",
+    "scale_profile": "scale/scale-profile.json",
+    "work_units": "work-units/plan.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "holdout": "corpus/holdout",
+    "negative": "corpus/negative",
+    "representative_portfolios": "corpus/representative-portfolios"
+  },
+  "maintenance_owner": "elmos-platform-team",
+  "mode": "assessment",
+  "owner": "elmos-platform-team",
+  "pack_key": "elmos-local-rehearsal",
+  "schema_version": 1,
+  "scope": {
+    "build_systems": [
+      "maven"
+    ],
+    "inventory_snapshot_at": "2026-07-22T03:37:26Z",
+    "languages": [
+      "java"
+    ],
+    "loc_target": 36564,
+    "organizations": [
+      "elmos-local-workspace"
+    ],
+    "regions": [
+      "local-macos"
+    ],
+    "repository_target": 1,
+    "scm_sources": [
+      "filesystem"
+    ],
+    "tenant_model": "single-tenant-local-development"
+  },
+  "status": "experimental",
+  "support_matrix_path": "support-matrix.json",
+  "tags": [
+    "local-rehearsal",
+    "not-production-certified"
+  ],
+  "version": "0.1.0-local"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "route_id": "angular--to--react",
+  "source_lifting": {
+    "profile_id": "angular",
+    "project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+    "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+  },
+  "target_lowering_relift": {
+    "profile_id": "react",
+    "project_digest": "sha256:5e544167ab78553c8020f13df8332706d2c6c27e585afbb508f5b6cd2d1d25fe",
+    "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+  },
+  "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "semantic_equal": true,
+  "chunk_equal": true,
+  "behavior_equal": true,
+  "solver_outcome": "UNSAT",
+  "status": "PROVED_UNDER_ASSUMPTIONS"
+}

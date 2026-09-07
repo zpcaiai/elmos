@@ -1,0 +1,22 @@
+{
+  "name": "contract-review",
+  "version": "2",
+  "parameters": [
+    {
+      "name": "jurisdiction",
+      "type": "string"
+    }
+  ],
+  "instructions": [
+    "Use cited evidence only"
+  ],
+  "examples": [],
+  "visibleTools": [
+    "search_contracts"
+  ],
+  "outputSchema": "contract-review.schema.json",
+  "policyBindings": [
+    "no-legal-conclusion-without-review"
+  ],
+  "contentHash": "4444444444444444444444444444444444444444444444444444444444444444"
+}

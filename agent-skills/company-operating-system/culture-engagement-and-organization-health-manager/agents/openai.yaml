@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 491: culture engagement and organization health manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $culture-engagement-and-organization-health-manager to evaluate this capability with evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Web Triangle Route Orchestrator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1300-web-triangle-route-orchestrator to run FRT-1300 through the governed FRT runtime with exact scope and fail-closed evidence."

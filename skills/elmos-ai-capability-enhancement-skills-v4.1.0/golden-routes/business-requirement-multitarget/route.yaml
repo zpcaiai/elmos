@@ -1,0 +1,49 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: business-requirement-multitarget
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-ai-golden-route-business-requirement-multitarget
+  workflow: workflows/business-requirement-to-multitarget.yaml
+  source: approved business requirement + acceptance scenarios
+  targets:
+  - dify
+  - langgraph-python
+  - spring-ai-java
+  - openclaw
+  eligibility:
+  - requirements have observable acceptance
+  - critical data/security constraints declared
+  - target versions available for native conformance
+  requiredEvidence:
+  - Dify native import
+  - LangGraph native start/checkpoint/resume
+  - Spring AI native build/start
+  - OpenClaw gateway/skill load
+  - cross-target normalized trace
+  - security/performance/recovery
+  - customer acceptance
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+  nonClaim: This route is a contract until executed on exact source/target revisions with sealed evidence.
+  routeOwner: domain-pack.project-generation
+  routable: false
+  holdoutScenarios:
+  - unseen repository variant
+  - upstream upgrade drift
+  - worker failure and resume
+  - rollback after partial side effect

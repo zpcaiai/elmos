@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-3-to-4",
+  "version": "0.1.0",
+  "mode": "upgrade",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "maintenance_owner": "UNASSIGNED",
+  "review_date": "",
+  "source": {
+    "framework": "spring-boot",
+    "framework_versions": [],
+    "runtime": "java",
+    "runtime_versions": [],
+    "build_tools": [],
+    "provider_versions": {}
+  },
+  "target": {
+    "framework": "spring-boot",
+    "framework_versions": [],
+    "runtime": "java",
+    "runtime_versions": [],
+    "build_tools": [],
+    "provider_versions": {}
+  },
+  "paths": {
+    "support_matrix": "support-matrix.json",
+    "source_fingerprint": "source-fingerprint",
+    "contracts": "contracts",
+    "target_profile": "target-profile/profile.json",
+    "corpus": "corpus",
+    "certification": "certification"
+  },
+  "gates": {
+    "real_source_runtime": true,
+    "real_target_runtime": true,
+    "startup_required": true,
+    "holdout_required": true,
+    "representative_repository_required": true,
+    "critical_unknowns_allowed": 0,
+    "critical_security_regressions_allowed": 0,
+    "critical_transaction_regressions_allowed": 0,
+    "critical_data_regressions_allowed": 0
+  }
+}

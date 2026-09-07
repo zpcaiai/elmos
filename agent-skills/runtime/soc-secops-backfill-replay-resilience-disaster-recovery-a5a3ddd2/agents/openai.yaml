@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B48: Soc Secops Backfill Replay Resilience Disaster Recovery And Continuity"
+  short_description: "Run ELMOS Product B48 contract with fail-closed evidence"
+  default_prompt: "Use $soc-secops-backfill-replay-resilience-disaster-recovery-a5a3ddd2 to implement its fail-closed ELMOS Product B48 contract."

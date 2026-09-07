@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/ecosystem-growth/marketplace-publisher.schema.json",
+  "title": "Marketplace Publisher",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "publisher_id",
+    "organization_id",
+    "identity_status",
+    "tax_profile_status",
+    "payout_status",
+    "agreement_version",
+    "verified_at"
+  ],
+  "properties": {
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identity_status": {
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "REJECTED",
+        "SUSPENDED"
+      ]
+    },
+    "tax_profile_status": {
+      "enum": [
+        "NOT_RUN",
+        "PENDING",
+        "VERIFIED",
+        "BLOCKED"
+      ]
+    },
+    "payout_status": {
+      "enum": [
+        "NOT_CONFIGURED",
+        "PENDING",
+        "READY",
+        "SUSPENDED"
+      ]
+    },
+    "agreement_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verified_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}
+

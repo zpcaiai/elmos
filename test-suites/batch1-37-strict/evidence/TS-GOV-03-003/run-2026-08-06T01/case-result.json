@@ -1,0 +1,78 @@
+{
+  "case_id": "TS-GOV-03-003",
+  "severity": "P0",
+  "test_type": "negative",
+  "steps": [
+    {
+      "id": "environment-invalid",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "environment-invalid"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "fixture-factory",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "fixture-factory"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    },
+    {
+      "id": "not-run",
+      "command": [
+        "python3",
+        "scripts/test-suite/probes.py",
+        "not-run-not-pass"
+      ],
+      "expect": "exit-zero",
+      "exit_code": 0,
+      "met_expectation": true
+    }
+  ],
+  "assertion_trace": [
+    {
+      "index": 0,
+      "assertion": "系统必须Fail Closed或生成明确Obligation，不得静默降级",
+      "established_by": [
+        "environment-invalid"
+      ]
+    },
+    {
+      "index": 1,
+      "assertion": "环境可重建",
+      "established_by": [
+        "fixture-factory"
+      ]
+    },
+    {
+      "index": 2,
+      "assertion": "测试数据无生产秘密",
+      "established_by": [
+        "fixture-factory"
+      ]
+    },
+    {
+      "index": 3,
+      "assertion": "时间与随机性可控",
+      "established_by": [
+        "fixture-factory"
+      ]
+    },
+    {
+      "index": 4,
+      "assertion": "任何失败均不可被摘要状态覆盖",
+      "established_by": [
+        "not-run"
+      ]
+    }
+  ],
+  "all_steps_met_expectation": true
+}

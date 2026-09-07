@@ -1,0 +1,17 @@
+.PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate
+
+b31-skills-test:
+	python3 scripts/batch31/validate_skill_bundle.py
+	python3 -m unittest tests/batch31/test_toolkit.py
+
+b31-pack-validate:
+	@test -n "$(PACK)" || (echo "PACK=<database-pack-key> required" && exit 2)
+	python3 scripts/batch31/validate_database_pack.py database-packs/$(PACK)
+
+b31-ir-validate:
+	@test -n "$(PACK)" || (echo "PACK=<database-pack-key> required" && exit 2)
+	python3 scripts/batch31/validate_canonical_ir.py database-packs/$(PACK)/canonical-ir/model.json
+
+b31-pack-gate:
+	@test -n "$(PACK)" || (echo "PACK=<database-pack-key> required" && exit 2)
+	python3 scripts/batch31/run_database_gate.py database-packs/$(PACK)

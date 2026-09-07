@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "batch": 24,
+  "runnerProfile": "edge-runtime",
+  "imageStatus": "NOT_CONFIGURED",
+  "rootless": true,
+  "readOnlyRootFilesystem": true,
+  "allowPrivilegeEscalation": false,
+  "capabilitiesDrop": [
+    "ALL"
+  ],
+  "networkDefault": "DENY",
+  "networkAllowlistRequired": true,
+  "shortLivedJobLeaseRequired": true,
+  "exactEnvironmentScopeRequired": true,
+  "tenantIsolationRequired": true,
+  "productionMutationDefault": "DENY",
+  "externalOperationExecuted": false,
+  "evidenceStatus": "NOT_RUN"
+}

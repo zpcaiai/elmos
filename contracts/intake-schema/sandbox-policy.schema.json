@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "elmos.polyglot.sandbox-policy.v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["policyVersion", "networkEnabled", "rootReadOnly", "workspaceWrite", "cpuLimit", "memoryMb", "processLimit", "timeoutSeconds", "secretsMounted", "privileged", "hostDockerSocket", "lifecycleScriptsEnabled", "dependencyAllowlist"],
+  "properties": {
+    "policyVersion": {"const": 1}, "networkEnabled": {"const": false}, "rootReadOnly": {"const": true}, "workspaceWrite": {"const": true},
+    "cpuLimit": {"type": "number", "exclusiveMinimum": 0}, "memoryMb": {"type": "integer", "minimum": 128}, "processLimit": {"type": "integer", "minimum": 1},
+    "timeoutSeconds": {"type": "integer", "minimum": 1}, "secretsMounted": {"const": false}, "privileged": {"const": false},
+    "hostDockerSocket": {"const": false}, "lifecycleScriptsEnabled": {"const": false}, "dependencyAllowlist": {"type": "array", "items": {"type": "string"}}
+  }
+}

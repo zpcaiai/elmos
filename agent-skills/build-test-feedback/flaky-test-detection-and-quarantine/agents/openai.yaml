@@ -1,0 +1,4 @@
+interface:
+  display_name: "flaky test detection and quarantine"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $flaky-test-detection-and-quarantine to perform this Batch 8 repair step."

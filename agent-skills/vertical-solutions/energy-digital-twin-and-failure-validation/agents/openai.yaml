@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 631: energy digital twin and failure validation"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $energy-digital-twin-and-failure-validation to evaluate this capability with evidence."

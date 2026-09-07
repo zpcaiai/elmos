@@ -1,0 +1,48 @@
+apiVersion: elmos.ai/v3alpha1
+kind: CommercialGoldenRoute
+metadata:
+  name: measurement-uncertainty-conformity-decision
+  version: 4.0.0
+  status: not-certified
+spec:
+  skill: elmos-measurement-uncertainty-budget-engine
+  workflow: workflows/measurement-uncertainty-decision.yaml
+  description: AI measurement result to uncertainty-aware guarded conformity decision
+  routeOwner: domain-pack.project-generation
+  routable: false
+  eligibility:
+  - exact product/system and intended-use scope
+  - authorized evidence and environment
+  - independent evaluator/certifier competence
+  - no unresolved critical impartiality conflict
+  requiredEvidence:
+  - exact RevisionSet and environment
+  - native method/tool execution
+  - measurement uncertainty or bounded limitation
+  - negative and adversarial tests
+  - independent review and decision
+  - rollback/withdrawal/surveillance plan
+  benchmark:
+    independentRepetitions: 3
+    holdoutRequired: true
+    proficiencyOrPeerComparison: required where applicable
+    customerAcceptanceRequired: true
+    machineWallClockRequired: true
+    costLedgerRequired: true
+  releaseGate:
+    E0toE5: true
+    P05ForProduction: true
+    criticalUnknown: BLOCK
+    sideEffectsSettled: true
+    exactRevisionSet: true
+    evidenceFreshnessRequired: true
+    independentCertifier: true
+    uncertaintyDecisionRuleRequired: true
+  nonClaim: This Golden Route is a production certification contract only until executed in a competent laboratory/evaluation
+    environment and independently decided for the exact scope.
+  holdoutScenarios:
+  - unseen system or dataset variant
+  - method/tool version drift
+  - adversarial and rare-event scenario
+  - worker/evaluator failure and resume
+  - certificate suspension and relying-party update

@@ -1,0 +1,77 @@
+{
+  "campaign_type": "provider-contract-simulation",
+  "case_results": [
+    {
+      "bounded_runtime_error": "ADAPTER_REQUIRED",
+      "bounded_runtime_state": "REQUIRES_ADAPTER",
+      "capability_registry_digest": "sha256:0bcabb9ca4a836eaa99aaca01dc07e56095ed0c35f7c9f02ce499b71e6a9c8c4",
+      "case_digest": "sha256:5f7d0800e56ebaddd36089c556d8ff6fa4efdc2f162ffd9cc3cc14aa2acfa148",
+      "case_id": "provider-001-failure-map",
+      "mapped_error": "EVIDENCE_STALE",
+      "provider_calls_executed": false,
+      "provider_request_digest": "sha256:c7991fd81729d5d2c09b1c030a1cc730290989d4b99e6f06d2a7f90c1a8fe7ab",
+      "provider_response_digest": "sha256:f9a889b3682e420645bbfc7ea7f98a1b58b67f7937ff3deca5af5df8bb85591c",
+      "public_method_registry_digest": "sha256:e083d6229100ffb13a6d77ced04570d40554f72e843f36b43aa4c2527ee031be",
+      "runtime_request_digest": "sha256:f0bb95b731a19446de6272db3de2b2be86a953cd9b0a0b2cbadb2701345d00f6",
+      "runtime_result_digest": "sha256:c7aaa29845539f321f030634bd51cc6d032de6f795622549ed1fcbb1ab436443",
+      "simulated_provider_state": "FAILED",
+      "skill_registry_digest": "sha256:137a619f9d9419b00a79d54b49d199b59dfc204562b3c34f69ffdd015bca219b",
+      "status": "PASSED"
+    },
+    {
+      "bounded_runtime_error": "ADAPTER_REQUIRED",
+      "bounded_runtime_state": "REQUIRES_ADAPTER",
+      "capability_registry_digest": "sha256:0bcabb9ca4a836eaa99aaca01dc07e56095ed0c35f7c9f02ce499b71e6a9c8c4",
+      "case_digest": "sha256:60199beaf1fd8bd4ff17bf83e05e8a3b01f50a2c078f9137e0386f3d1290d216",
+      "case_id": "provider-002-success",
+      "mapped_error": null,
+      "provider_calls_executed": false,
+      "provider_request_digest": "sha256:9c30c237d3b5792d0ec8f12ba02761a16477e2887f5762d2933421b9ca488be8",
+      "provider_response_digest": "sha256:cd98c641c031bb1cd46c1c8118e6754ff4c12ddb14e557b681f1d6c9208daca5",
+      "public_method_registry_digest": "sha256:e083d6229100ffb13a6d77ced04570d40554f72e843f36b43aa4c2527ee031be",
+      "runtime_request_digest": "sha256:86689da218774ab2b4d0663cdefa9b5036ca7be789e7f5d828c4a5220a35f072",
+      "runtime_result_digest": "sha256:6342b6e680d06bc4f355467702b4f97b1e2627bde689f56b30029f4d3ba11102",
+      "simulated_provider_state": "SUCCEEDED",
+      "skill_registry_digest": "sha256:137a619f9d9419b00a79d54b49d199b59dfc204562b3c34f69ffdd015bca219b",
+      "status": "PASSED"
+    }
+  ],
+  "corpus_digest": "sha256:d6a71c18f686e150a3d46eaccd42f106e2599095b8bac030a84d507814e1df53",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+  "evidence_state": "LOCAL_PROVIDER_CONTRACT_SIMULATED_SELF_ATTESTED",
+  "execution_digest": "sha256:a4c5f79af0ef814f491cb30f994c9a343c61f84cb8bc860f3e4036f83f846728",
+  "external_states": {
+    "archive_scripts_executed": false,
+    "external_certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_canary": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
+    "production_writes": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "limitations": [
+    "SELF_ATTESTED",
+    "FIXTURE_ONLY",
+    "REAL_PROVIDER_NOT_RUN"
+  ],
+  "manifest_digest": "sha256:168107f4d62b9bedf8fce3e43f6811057f1ac837db54729f23d78a974913cb11",
+  "receipt_digest": "sha256:54d0b3f9c51288695543fd68f5b6bdfea64a150629a2bd212c8ed246fc6bf5a0",
+  "replay": {
+    "campaign_type": "provider-contract-simulation",
+    "expected_execution_digest": "sha256:a4c5f79af0ef814f491cb30f994c9a343c61f84cb8bc860f3e4036f83f846728",
+    "manifest_digest": "sha256:168107f4d62b9bedf8fce3e43f6811057f1ac837db54729f23d78a974913cb11",
+    "operation": "campaign-replay"
+  },
+  "runtime_binding_digest": "sha256:7aeae6f6b4737f818241c9b65fd20ac3a5b47d68ea618e2ca106c4469a6458cc",
+  "schema_version": "1.0",
+  "scope": {
+    "campaign_id": "provider-contract-simulation-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "project_id": "elmos-7plus1",
+    "source_revision": "working-tree-qualification-v2",
+    "tenant_id": "elmos-local"
+  },
+  "status": "PASSED",
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4"
+}

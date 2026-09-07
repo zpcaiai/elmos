@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MemoryContract",
+  "type": "object",
+  "required": [
+    "stores",
+    "governance"
+  ],
+  "properties": {
+    "stores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "scope",
+          "retention"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "turn",
+              "thread",
+              "session",
+              "user",
+              "organization",
+              "episodic",
+              "semantic",
+              "procedural",
+              "repository"
+            ]
+          },
+          "retention": {
+            "type": "string"
+          },
+          "tenantScoped": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "writePolicy",
+        "deletePropagation",
+        "conflictPolicy"
+      ],
+      "properties": {
+        "writePolicy": {
+          "type": "string"
+        },
+        "deletePropagation": {
+          "type": "boolean"
+        },
+        "conflictPolicy": {
+          "type": "string"
+        },
+        "piiAllowed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

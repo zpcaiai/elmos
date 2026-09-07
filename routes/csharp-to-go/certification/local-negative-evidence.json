@@ -1,0 +1,13 @@
+{
+  "case": "missing-function-fails-closed",
+  "expected_result": "BLOCKED",
+  "external_certification": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "observed_reason": "NO_SUPPORTED_FUNCTIONS",
+  "route": "csharp-to-go",
+  "schema_version": 1,
+  "source_native_analyzer": "EXECUTED",
+  "status": "PASSED",
+  "target_execution": "NOT_REACHED_BY_DESIGN",
+  "test_integrity": "PRESERVED"
+}

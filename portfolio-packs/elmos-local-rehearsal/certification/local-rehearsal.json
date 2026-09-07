@@ -1,0 +1,20 @@
+{
+  "distributed_runner_fleet": "NOT_RUN",
+  "external_scm": "NOT_RUN",
+  "graph": {
+    "edges": 114,
+    "nodes": 63
+  },
+  "inventory": {
+    "coverage": 1.0,
+    "repositories": 1
+  },
+  "million_loc_benchmark": "NOT_RUN",
+  "production_certification": "NOT_RUN",
+  "representative_portfolio": "NOT_RUN",
+  "schema_version": 1,
+  "scope": "local-single-repository",
+  "status": "passed",
+  "thousand_repository_benchmark": "NOT_RUN",
+  "work_units": 62
+}

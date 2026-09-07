@@ -1,0 +1,62 @@
+{
+  "id": "B108-S05",
+  "batch": 108,
+  "name": "manual-intervention-ledger",
+  "dependencies": [
+    "B105-S11",
+    "B108-S01"
+  ],
+  "inputs": [
+    "ManualInterventionLedger source",
+    "approvals",
+    "patches"
+  ],
+  "outputs": [
+    "SignedManualLedger"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/manual/ManualInterventionEvidenceService.java"
+    ],
+    "interfaces": [
+      "POST /api/evidence/manual-ledgers",
+      "event evidence.manual-ledger.completed"
+    ],
+    "data": [
+      "manual_intervention_evidence",
+      "manual_approval_evidence"
+    ]
+  },
+  "workflow": [
+    "验证人工patch摘要",
+    "关联根因、Owner和测试",
+    "验证高风险双人审批",
+    "记录豁免和到期日",
+    "检测后续代码变化使审批失效",
+    "签名并写入EvidenceWorkspace"
+  ],
+  "tests": [
+    "自我审批高风险项拒绝",
+    "过期豁免失败",
+    "Patch改变审批失效",
+    "缺测试/豁免拒绝",
+    "匿名修改进入UNKNOWN"
+  ],
+  "evidence": [
+    "manual-intervention-ledger.json",
+    "approval-signatures.json",
+    "exception-register.json"
+  ],
+  "definition_of_done": [
+    "人工差异100%覆盖",
+    "审批有效",
+    "豁免有期限",
+    "测试义务满足",
+    "账本不可变"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "elmos.sql-dialect.target-reachability",
+  "admitted_source_side": 971,
+  "translatable_to_all_four": 875,
+  "all_four_ratio_of_admitted": 0.9011,
+  "reachable_per_target": {
+    "postgres": 971,
+    "mysql": 937,
+    "oracle": 890,
+    "tsql": 876
+  },
+  "refusals_per_target": {
+    "postgres": {},
+    "mysql": {
+      "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 34
+    },
+    "oracle": {
+      "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 36,
+      "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION": 31,
+      "CERTIFIED_DROP_IF_EXISTS_UNSUPPORTED_BY_TARGET": 14
+    },
+    "tsql": {
+      "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 36,
+      "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION": 30,
+      "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET": 15,
+      "CERTIFIED_DROP_IF_EXISTS_UNSUPPORTED_BY_TARGET": 14
+    }
+  },
+  "lost_by_first_refusal": {
+    "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET": 36,
+    "CERTIFIED_DDL_UNREACHABLE_REFERENTIAL_ACTION": 31,
+    "CERTIFIED_DDL_REGEX_CHECK_UNREACHABLE_ON_TARGET": 15,
+    "CERTIFIED_DROP_IF_EXISTS_UNSUPPORTED_BY_TARGET": 14
+  }
+}

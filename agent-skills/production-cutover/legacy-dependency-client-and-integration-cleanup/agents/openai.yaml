@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legacy Dependency Client and Integration Cleanup"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $legacy-dependency-client-and-integration-cleanup to perform this Batch 11 production-cutover task."

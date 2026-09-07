@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0809",
+  "skill_name": "frt-0809-portal-teleport-and-overlay-mapper",
+  "batch": "G08",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g08/frt-0809-portal-teleport-and-overlay-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "capability_key": "frt.g08.portal-teleport-and-overlay-mapper",
+  "execution_contract_sha256": "sha256:a4573f141a0ed4808f26b2b9413ea46624627366dc3b828513014a5444aa00ee",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1e8af722ece8a734cd8a484bd990a1672ff413c7267ac7486c0323059fd71aa1",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

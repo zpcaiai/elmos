@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Supply Planning Audit Evidence Records Retention And Legal Hold"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $supply-planning-audit-evidence-records-retention-and-legal-hold to implement its fail-closed ELMOS Product B42 contract."

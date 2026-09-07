@@ -1,0 +1,4 @@
+interface:
+  display_name: "B05 Framework Adapter Matrix"
+  short_description: "Help with B05 Framework Adapter Matrix tasks"
+  default_prompt: "Use $b05-framework-adapter-matrix to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

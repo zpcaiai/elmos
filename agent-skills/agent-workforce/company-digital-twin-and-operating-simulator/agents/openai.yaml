@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 587: company digital twin and operating simulator"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $company-digital-twin-and-operating-simulator to evaluate this capability with evidence."

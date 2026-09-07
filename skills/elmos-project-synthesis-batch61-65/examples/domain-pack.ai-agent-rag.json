@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "id": "domain.ai-agent-rag",
+  "version": "1.0.0",
+  "domain": "ai-agent-rag",
+  "glossary": [
+    {
+      "term": "tool grant",
+      "definition": "A short-lived capability allowing a tool operation."
+    }
+  ],
+  "models": [
+    {
+      "id": "AgentRun",
+      "kind": "aggregate"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "RAG-ANSWER",
+      "states": [
+        "RETRIEVE",
+        "GENERATE",
+        "VERIFY",
+        "DELIVER"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "action": "tool.execute",
+      "default": "deny"
+    }
+  ],
+  "integrations": [
+    {
+      "kind": "vector-store"
+    },
+    {
+      "kind": "model-gateway"
+    }
+  ],
+  "tests": [
+    {
+      "id": "TEST-PROMPT-INJECTION",
+      "kind": "security"
+    }
+  ],
+  "policies": [
+    {
+      "id": "POL-CITATION",
+      "statement": "High-risk factual answers require source evidence."
+    }
+  ],
+  "signature": "sig:example"
+}

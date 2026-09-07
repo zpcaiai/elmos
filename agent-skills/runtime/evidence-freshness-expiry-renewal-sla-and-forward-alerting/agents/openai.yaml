@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Evidence Freshness Expiry Renewal Sla And Forward Alerting"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $evidence-freshness-expiry-renewal-sla-and-forward-alerting to implement its fail-closed ELMOS Product B37 contract."

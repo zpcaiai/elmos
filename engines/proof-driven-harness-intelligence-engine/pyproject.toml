@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools==83.0.0", "wheel==0.47.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-proof-driven-harness-intelligence-engine"
+version = "1.0.0"
+description = "Fail-closed typed foundation for Elmos proof-driven harness intelligence"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+elmos-pdhi = "elmos_pdhi.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

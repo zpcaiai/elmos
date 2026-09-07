@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Batch29RouteCertification",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "route_key",
+    "route_version",
+    "status",
+    "gate_results",
+    "metrics",
+    "evidence_refs",
+    "issued_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "route_key": {
+      "type": "string"
+    },
+    "route_version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked"
+      ]
+    },
+    "gate_results": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "next_review_at": {
+      "type": "string"
+    }
+  }
+}

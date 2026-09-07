@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "record_type": "SPRING_BOOT_4_1_LOCAL_PUBLIC_REPOSITORY_ENGINEERING",
+  "evidence_class": "LOCAL_PUBLIC_REPOSITORY_ENGINEERING",
+  "pack_key": "spring-to-boot-4-1-0",
+  "certification_eligible": false,
+  "execution_status": "PASSED_LOCAL_ENGINEERING",
+  "route": {
+    "pack_key": "spring-to-boot-4-1-0",
+    "source_spring_boot": "2.7.18",
+    "source_java": "17",
+    "target_spring_boot": "4.1.0",
+    "target_java": "21"
+  },
+  "recipe": {
+    "recipe_sha256": "127b73217f3bc804066c7db48748cf9cfeeb8ab35e726b3004740462c839e631",
+    "rewrite_spring": "6.35.0",
+    "rewrite_maven_plugin": "6.44.0",
+    "custom_artifact": "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+    "custom_artifact_sha256": "31d2bbb3ea00e5c96da5c70791a603d7ea223b70e7229fe4f38c0f37f0b49612",
+    "custom_artifact_bytes": 7464,
+    "custom_parent_pom_sha256": "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
+    "custom_parent_pom_bytes": 751
+  },
+  "representative_public_repository": {
+    "repository_id": "grade-submission",
+    "source_commit": "a4c48b1dddb8a320c11ee05bdadefc53df74b3a4",
+    "customer_repository": false,
+    "independent_corpus": false,
+    "openrewrite_actual_execution": true,
+    "download_digest_and_size_match": true,
+    "artifact_sha256": "4736d5be7734323afc0472947991350724018b90ddac85b7be7778c678a36712",
+    "artifact_bytes": 15115,
+    "source_tests": {"executed": 1, "failures": 0, "errors": 0, "skipped": 0},
+    "target_tests": {"executed": 1, "failures": 0, "errors": 0, "skipped": 0},
+    "target_jar_sha256": "a2ad209620f3ac06809dca82cd9642acd04ac17971bec3ec14e7ad1503a7c0de",
+    "target_jar_bytes": 62821363,
+    "target_startup": "PASSED_IN_TARGET_TESTS",
+    "independent_verifier": {
+      "status": "PASS",
+      "physically_separate_process": true,
+      "organizationally_independent": false,
+      "scope": "digest, test-summary and target-artifact consistency"
+    }
+  },
+  "holdout_public_repository": {
+    "repository_id": "spring-boot-resilience-resttemplate-sample",
+    "repository_url": "https://github.com/cbot59/spring-boot-resilience-resttemplate-sample",
+    "source_commit": "14fd067a8cf304ad092e338b4c86a8728c603b42",
+    "customer_repository": false,
+    "independent_corpus": false,
+    "openrewrite_actual_execution": true,
+    "download_digest_and_size_match": true,
+    "artifact_sha256": "6fa0efbe72bdbd736c5d7f91e618ad53dd62549584f815c2a39314aa3e55545f",
+    "artifact_bytes": 28294,
+    "source_tests": {"executed": 88, "failures": 0, "errors": 0, "skipped": 0},
+    "target_tests": {"executed": 88, "failures": 0, "errors": 0, "skipped": 0},
+    "target_jar_sha256": "999c72f934d4059e717c0dcc7628b242c5fe3363ccf78338df5ba389dbafeeac",
+    "target_jar_bytes": 25195901,
+    "target_startup": "PASSED",
+    "target_health": {"status": "UP"},
+    "independent_verifier": {
+      "status": "PASS",
+      "physically_separate_process": true,
+      "organizationally_independent": false,
+      "scope": "digest, test-summary, target-artifact and startup-health consistency"
+    }
+  },
+  "external_execution_status": "NOT_RUN",
+  "not_run": {
+    "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
+    "rootless_runner": "NOT_RUN",
+    "rootless_transformer": "NOT_RUN",
+    "rootless_verifier": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "external_certification": "NOT_RUN"
+  },
+  "scope_note": "Two non-customer public archives were executed locally in isolated Maven workspaces. They are local engineering references, not an independent holdout, representative customer repository, organizationally independent verification, or certification evidence."
+}

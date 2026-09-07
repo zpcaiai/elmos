@@ -1,0 +1,25 @@
+{
+  "tenant": {
+    "tenantId": "tenant-demo",
+    "accountId": "acct-demo",
+    "projectId": "project-formal",
+    "dataClassification": "confidential"
+  },
+  "subjectId": "project-formal",
+  "criticalTotal": 10,
+  "byStatus": {
+    "PROVED_SOLVER_TRUSTED": 8,
+    "BOUNDED_NO_COUNTEREXAMPLE": 1,
+    "UNKNOWN_TIMEOUT": 1
+  },
+  "byAssurance": {
+    "A2_SOLVER_PROVED": 8,
+    "A1_BOUNDED": 1,
+    "NONE": 1
+  },
+  "weightedCoverage": 0.8,
+  "uncoveredEntryPoints": [
+    "POST /admin/replay"
+  ],
+  "generatedAt": "2026-08-27T00:00:00Z"
+}

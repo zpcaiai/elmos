@@ -1,0 +1,269 @@
+{
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "generatedBy": "scripts/mature_product_toolkit.py gaps",
+  "expectedArtifacts": [
+    "candidates",
+    "certification",
+    "claims",
+    "curation-case",
+    "evidence",
+    "gate-result",
+    "knowledge-item",
+    "metrics",
+    "ontology",
+    "pack",
+    "prediction-profile",
+    "privacy-policy",
+    "profile",
+    "program",
+    "support-matrix",
+    "zero-tolerance"
+  ],
+  "skillCount": 20,
+  "blockingCount": 27,
+  "openCount": 21,
+  "certifiable": false,
+  "gaps": [
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence-manifest.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.json has not been produced"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "certification-request.sig has not been produced"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json artifactDigest is still the zero digest"
+    },
+    {
+      "category": "provenance",
+      "severity": "blocking",
+      "detail": "pack.json environmentDigest is still the zero digest"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-automation-buildgreen-prediction is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-diagnostic-root-cause-recommendation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-effort-duration-cost-prediction is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-holdout-feedback-calibration is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-human-curation-governance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-confidence-provenance is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-flywheel-gate is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-freshness-versioning is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-graph-ontology is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-isolation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-knowledge-marketplace-sharing is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-migration-entity-relations is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-migration-knowledge-factory is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-migration-risk-prediction is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-migration-run-ingestion is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-pattern-antipattern-extraction is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-privacy-preserving-learning is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-recipe-mapping-recommendation is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-similar-project-retrieval is only experimental in the support matrix"
+    },
+    {
+      "category": "coverage",
+      "severity": "open",
+      "detail": "b41-target-stack-recommendation is only experimental in the support matrix"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "forecastIntervalCoverage has not been measured (threshold 0.9)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "holdoutPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "humanReviewClosureRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "knowledgeLineageCoverage has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "ontologyCoverage has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "privateKnowledgeIsolationPassRate has not been measured (threshold 1.0)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "recommendationPrecisionAtK has not been measured (threshold 0.9)"
+    },
+    {
+      "category": "metric",
+      "severity": "blocking",
+      "detail": "riskCalibrationScore has not been measured (threshold 0.9)"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "privateKnowledgeLeaks has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "targetLeakageFindings has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unattributedKnowledgeItems has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "uncalibratedP0Predictions has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "unsafeRecommendations has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "expiredCertifiedAssetsUsed has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "crossTenantReconstructionFindings has not been evaluated"
+    },
+    {
+      "category": "zero-tolerance",
+      "severity": "blocking",
+      "detail": "testIntegrityViolations has not been evaluated"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "holdout corpus is empty"
+    },
+    {
+      "category": "corpus",
+      "severity": "blocking",
+      "detail": "representative corpus is empty"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence directory holds no artefacts"
+    },
+    {
+      "category": "approval",
+      "severity": "blocking",
+      "detail": "no accountable approver is recorded on the certification"
+    },
+    {
+      "category": "status",
+      "severity": "open",
+      "detail": "certification status is NOT_RUN"
+    },
+    {
+      "category": "evidence",
+      "severity": "blocking",
+      "detail": "evidence.json declares no claims"
+    }
+  ]
+}

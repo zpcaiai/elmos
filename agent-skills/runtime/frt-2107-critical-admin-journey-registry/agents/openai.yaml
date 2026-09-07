@@ -1,0 +1,4 @@
+interface:
+  display_name: "Critical Admin Journey Registry"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2107-critical-admin-journey-registry to run FRT-2107 through the governed FRT runtime with exact scope and fail-closed evidence."

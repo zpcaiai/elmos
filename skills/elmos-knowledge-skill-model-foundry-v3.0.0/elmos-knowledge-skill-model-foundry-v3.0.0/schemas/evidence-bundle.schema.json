@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Elmos Evidence Bundle",
+  "type": "object",
+  "required": [
+    "bundleId",
+    "subject",
+    "inputs",
+    "checks",
+    "decision",
+    "artifacts",
+    "lineage"
+  ],
+  "properties": {
+    "bundleId": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "object"
+    },
+    "inputs": {
+      "type": "array"
+    },
+    "checks": {
+      "type": "array"
+    },
+    "decision": {
+      "enum": [
+        "pass",
+        "fail",
+        "blocked",
+        "conditional"
+      ]
+    },
+    "unresolvedRisks": {
+      "type": "array"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "approvals": {
+      "type": "array"
+    },
+    "lineage": {
+      "type": "object"
+    },
+    "signature": {
+      "type": "object"
+    }
+  }
+}

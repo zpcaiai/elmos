@@ -1,0 +1,37 @@
+{
+  "$id": "elmos.responsible-ai-decision.v1",
+  "type": "object",
+  "required": [
+    "useCaseId",
+    "riskTier",
+    "decision",
+    "controls",
+    "validUntil"
+  ],
+  "properties": {
+    "useCaseId": {
+      "type": "string"
+    },
+    "riskTier": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "APPROVED",
+        "APPROVED_WITH_CONTROLS",
+        "PILOT_ONLY",
+        "HUMAN_REVIEW_REQUIRED",
+        "REJECTED",
+        "REASSESSMENT_REQUIRED"
+      ]
+    },
+    "controls": {
+      "type": "array"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

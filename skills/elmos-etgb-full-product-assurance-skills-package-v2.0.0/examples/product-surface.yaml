@@ -1,0 +1,24 @@
+schema_version: "2.0"
+surface_id: elmos-reference-surface
+candidate_digest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+api_operations:
+  - id: POST-/v1/tasks
+    feature_id: platform-control-plane.task-create-submit-start
+    release_policy: must-pass
+    source: openapi/control-plane.yaml
+  - id: POST-/v1/payments/stripe/webhook
+    feature_id: payment-finance.stripe-webhook
+    release_policy: must-pass
+    source: openapi/payment.yaml
+ui_actions:
+  - id: project-read-code
+    feature_id: project-intelligence.online-code-reader
+    release_policy: must-pass
+agent_routes:
+  - id: mcp-discovery
+    feature_id: agent-protocol-tooling.mcp-tool-resource-prompt-discovery
+    release_policy: must-pass
+artifact_formats:
+  - id: export-pptx
+    feature_id: artifact-document-diagram.pptx-export
+    release_policy: must-pass

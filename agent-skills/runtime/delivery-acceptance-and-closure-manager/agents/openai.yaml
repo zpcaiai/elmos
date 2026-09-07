@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delivery Acceptance And Closure Manager"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $delivery-acceptance-and-closure-manager to execute this ELMOS Runtime Skill with fail-closed evidence."

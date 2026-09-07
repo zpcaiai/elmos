@@ -1,0 +1,1362 @@
+{
+  "package": "elmos-language-packs-batch81-95-complete",
+  "skills": 180,
+  "batches": [
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "skill_id_range": [
+    "PG223",
+    "PG402"
+  ],
+  "files": [
+    {
+      "path": "BATCH_MATRIX.csv",
+      "size_bytes": 3530,
+      "sha256": "b618f74084ae9dcfd13152426a54bc3e68a4b0db4bf02f5564351eb888530f68"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 1348,
+      "sha256": "25ab59a168858e2ae42744609090aa1d4aabb65e013948ce2078cfaa2c5691c6"
+    },
+    {
+      "path": "SKILL_CATALOG.csv",
+      "size_bytes": 64071,
+      "sha256": "8dbfc55664152299110a9c77acbf99a57ac7efe3d27d9789a84d4938826d86f4"
+    },
+    {
+      "path": "batch-81-manifest.json",
+      "size_bytes": 10392,
+      "sha256": "b6f206446c9e5f07a677faa67ada2574067caddf843d9c837cb7bdd6063a7178"
+    },
+    {
+      "path": "batch-82-manifest.json",
+      "size_bytes": 10149,
+      "sha256": "7754e7fbf632e02c60940411991c4bb56e65b00a828629554b78282a0da39d82"
+    },
+    {
+      "path": "batch-83-manifest.json",
+      "size_bytes": 10501,
+      "sha256": "cef400039659fe47c660c9c1da1601eeff6e1b9c547db771fdd4b39547e54493"
+    },
+    {
+      "path": "batch-84-manifest.json",
+      "size_bytes": 10159,
+      "sha256": "19ee55b4a9974be02f3b356d136b3214e34ab43bd37e628934c8f63c7a5508ea"
+    },
+    {
+      "path": "batch-85-manifest.json",
+      "size_bytes": 10518,
+      "sha256": "bbc48a241763ce5d76679d9f0db4d37666cd6dc1f1eff6d5637e330ad83988b6"
+    },
+    {
+      "path": "batch-86-manifest.json",
+      "size_bytes": 10440,
+      "sha256": "3d427670d2660f950feb8fa031b9d7a698ca4bb25a23114858b15ec53366380f"
+    },
+    {
+      "path": "batch-87-manifest.json",
+      "size_bytes": 10296,
+      "sha256": "e979a65fe10db8c6124cf1b4fd86ac9bc83ffec3c1cfc69307edab335ee5be52"
+    },
+    {
+      "path": "batch-88-manifest.json",
+      "size_bytes": 9960,
+      "sha256": "76e5849c88894a6c1a45b332b18de0af5a934924e179da258500259ca681dd3f"
+    },
+    {
+      "path": "batch-89-manifest.json",
+      "size_bytes": 9837,
+      "sha256": "0c20322b8b020ee54f74c1db32cf38d18bafde2bc29ff5adbb560ecf264f8150"
+    },
+    {
+      "path": "batch-90-manifest.json",
+      "size_bytes": 10380,
+      "sha256": "a71c44b77f0b8c4111e64f95d7ce5a692855d7aa12768a21c36424e4f04bb3e0"
+    },
+    {
+      "path": "batch-91-manifest.json",
+      "size_bytes": 10142,
+      "sha256": "03d73581cf89769dee1553ebcb81c16f902c27c988df93804012da55b53242d8"
+    },
+    {
+      "path": "batch-92-manifest.json",
+      "size_bytes": 10244,
+      "sha256": "19876b2c72ed4f1669dc7ec28670604e27e3e79ea6995f48390177f615bfa155"
+    },
+    {
+      "path": "batch-93-manifest.json",
+      "size_bytes": 10312,
+      "sha256": "0e9ce358e2cb3afaba9fb818e4069e4456111bf06d81e94422dfea03ebfea2d5"
+    },
+    {
+      "path": "batch-94-manifest.json",
+      "size_bytes": 9963,
+      "sha256": "594da434ba6b27261771eda9bb0006f65356d0a236e44d8a14164a434175e16d"
+    },
+    {
+      "path": "batch-95-manifest.json",
+      "size_bytes": 10266,
+      "sha256": "bd9d4b3bdb9b5b0021b1a2100ab2244933c7e0285b5d4fcdd09c259957a25d13"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size_bytes": 694,
+      "sha256": "783a2f110423c9c83ebb4789a8c8e229367a03063861724d44123742bd76e5ab"
+    },
+    {
+      "path": "docs/BATCH-81-cobol-mainframe.md",
+      "size_bytes": 1001,
+      "sha256": "6cc579cbaf055e3ad7233e6269eb20027d56f018166a2ffea40937eee59949f6"
+    },
+    {
+      "path": "docs/BATCH-82-sap-abap.md",
+      "size_bytes": 1019,
+      "sha256": "38513f81e7dd1794bf7b6a01380936bb6b96662a0b7264776ce5ea66d85dff8f"
+    },
+    {
+      "path": "docs/BATCH-83-database-procedural.md",
+      "size_bytes": 1111,
+      "sha256": "362e60a087df2811f23cc293fba90831f682f15371547aeb6d97741351ec4f2e"
+    },
+    {
+      "path": "docs/BATCH-84-iec61131-plc.md",
+      "size_bytes": 1001,
+      "sha256": "59c34ad99843f6e2d2c9a9c8586404c40ed79b061ece435e4f57d3bda7b88198"
+    },
+    {
+      "path": "docs/BATCH-85-matlab-simulink.md",
+      "size_bytes": 1090,
+      "sha256": "023abbf6add86b68c4656dbebf0d428d6bff4647940d6bf86c355dee3c7278c1"
+    },
+    {
+      "path": "docs/BATCH-86-modelica-fmi.md",
+      "size_bytes": 1039,
+      "sha256": "977dca597206314bc512fffd1e8b345607bd978d9c6617920140d5256fe2e662"
+    },
+    {
+      "path": "docs/BATCH-87-vb-office.md",
+      "size_bytes": 993,
+      "sha256": "28d120a3514a6587c660394b063e84fd38acbe0f879dd28366ca7a7f03189f5d"
+    },
+    {
+      "path": "docs/BATCH-88-ibmi-rpg.md",
+      "size_bytes": 987,
+      "sha256": "5e441867ea6a463d59c8537a8857f8fd5a39c28fd3e9c6319b88367e44d44956"
+    },
+    {
+      "path": "docs/BATCH-89-r-data-science.md",
+      "size_bytes": 1025,
+      "sha256": "7838c594914bb0edfdad25c535ff742ac18391766b11922571fe1195f036f46c"
+    },
+    {
+      "path": "docs/BATCH-90-sas-modernization.md",
+      "size_bytes": 962,
+      "sha256": "54e517300ebb10eec20cbab34a60939e4fe6f6a4591f759d45311e0ece4d4c76"
+    },
+    {
+      "path": "docs/BATCH-91-salesforce.md",
+      "size_bytes": 1021,
+      "sha256": "c8e13d490f366f6336275d9f0ee7d5a4f389f03d5ddd9a27a80f2de4a21a03fe"
+    },
+    {
+      "path": "docs/BATCH-92-objective-c-swift.md",
+      "size_bytes": 1061,
+      "sha256": "23fdb5a20f5c3a27fe8914ae6d68851da378ba57d7fcb12cd834f88ec06ed053"
+    },
+    {
+      "path": "docs/BATCH-93-delphi-object-pascal.md",
+      "size_bytes": 1015,
+      "sha256": "7a099f0d7479a2dfc2a6898070904487664a56b4448498db8da56cb2619efa97"
+    },
+    {
+      "path": "docs/BATCH-94-beam-erlang-elixir-gleam.md",
+      "size_bytes": 1036,
+      "sha256": "23afd46f06f9c0c9b0ccded02e722bac2669bc089f483620f054d26586f57d6c"
+    },
+    {
+      "path": "docs/BATCH-95-lua-openresty.md",
+      "size_bytes": 1051,
+      "sha256": "4ebdfbaf040cd4bf13a44d08d1c450b63c967195904c2b071253a2fd0dc13c11"
+    },
+    {
+      "path": "docs/CERTIFICATION_GATES.md",
+      "size_bytes": 1017,
+      "sha256": "b0e506528fb12262dada3aa76a192ddee1a921d6bf297aaec4b1fd6b995521cf"
+    },
+    {
+      "path": "examples/batch-81-cobol-mainframe-example.json",
+      "size_bytes": 796,
+      "sha256": "6a30944558f61011b72e8699b407544166441bc556220cbf73ae208f14840051"
+    },
+    {
+      "path": "examples/batch-82-sap-abap-example.json",
+      "size_bytes": 793,
+      "sha256": "88aae691caf1a3393bf4d4152c4e082148dd8a26da818cf9459b40ab1d13fe52"
+    },
+    {
+      "path": "examples/batch-83-database-procedural-example.json",
+      "size_bytes": 805,
+      "sha256": "f29024fa32ab21af7d1b6aa6fb56f6ee640d3482ef41f5bad6f24cdfb3ef89c8"
+    },
+    {
+      "path": "examples/batch-84-iec61131-plc-example.json",
+      "size_bytes": 780,
+      "sha256": "22019a2cf4ba8a1e56d681bae11ba4e8b7cc407b513266497590d29c8dc38163"
+    },
+    {
+      "path": "examples/batch-85-matlab-simulink-example.json",
+      "size_bytes": 788,
+      "sha256": "112ac88ed346e2fc22d54cefda59894d35c8a5f047f8c29c8c9e806948d8b6b5"
+    },
+    {
+      "path": "examples/batch-86-modelica-fmi-example.json",
+      "size_bytes": 785,
+      "sha256": "ec3534dee8afe883163fcea6b43d7fa0cfeae95d5b933133faa75a1d46b420bd"
+    },
+    {
+      "path": "examples/batch-87-vb-office-example.json",
+      "size_bytes": 772,
+      "sha256": "766d1b4a2ed0d15a8a02809b2f3002b4af6f1e38e2bd60febf821acbd7df81a4"
+    },
+    {
+      "path": "examples/batch-88-ibmi-rpg-example.json",
+      "size_bytes": 766,
+      "sha256": "848b026904b61fe282ce44d32cc48c129ac6e55bfef64e9fc73ff4bea8a86559"
+    },
+    {
+      "path": "examples/batch-89-r-data-science-example.json",
+      "size_bytes": 769,
+      "sha256": "7f4841a8bc26b82e23717fe0ae4dabdb40634320c3365009c0acfac457b3b1e5"
+    },
+    {
+      "path": "examples/batch-90-sas-modernization-example.json",
+      "size_bytes": 799,
+      "sha256": "044ddceabe186a3783e744b15a9a9e34b6e72ba5f582bdc04acfd4b2829dce50"
+    },
+    {
+      "path": "examples/batch-91-salesforce-example.json",
+      "size_bytes": 786,
+      "sha256": "73a24edc2a158dd8237ff9cba45719c442957d44673724c1d9f46e8ed4913aea"
+    },
+    {
+      "path": "examples/batch-92-objective-c-swift-example.json",
+      "size_bytes": 785,
+      "sha256": "fd35a7cd354379ea735b5fe0ee90c00334b6ee899d3379c216511beee1d23bd6"
+    },
+    {
+      "path": "examples/batch-93-delphi-object-pascal-example.json",
+      "size_bytes": 803,
+      "sha256": "e5a76f1e73b73d22e9da36fb0daf2e02a0b05a8c631d49a6d42cc4f93ceaf429"
+    },
+    {
+      "path": "examples/batch-94-beam-erlang-elixir-gleam-example.json",
+      "size_bytes": 789,
+      "sha256": "653eda5658edf2e59fe41c90b6a12bd431a024d7456262017013495fe0e6a23b"
+    },
+    {
+      "path": "examples/batch-95-lua-openresty-example.json",
+      "size_bytes": 778,
+      "sha256": "926120120c47fde05cad504776d212376c03edc22512870945ebcdadf5b35aa5"
+    },
+    {
+      "path": "group-packages/elmos-language-packs-batch81-85.zip",
+      "size_bytes": 619482,
+      "sha256": "da3155f9b129974aa1cc837dae98ef4c4ef7e6eefb1dea4d33e99d4ec9e177c8"
+    },
+    {
+      "path": "group-packages/elmos-language-packs-batch86-90.zip",
+      "size_bytes": 620312,
+      "sha256": "9acf00f9600f5f58a144870d6fe3744e37eeb8cf2a1445bf8829b212004b3a3f"
+    },
+    {
+      "path": "group-packages/elmos-language-packs-batch91-95.zip",
+      "size_bytes": 617985,
+      "sha256": "ef3fff36518280777b9aa6f9076a107eda507439786c5573e92870bd6ba17a91"
+    },
+    {
+      "path": "index.json",
+      "size_bytes": 140994,
+      "sha256": "7a101e3327828af69943183f7b7f6ec7698974ca3df2f3f93fde4e9ee67af498"
+    },
+    {
+      "path": "install.sh",
+      "size_bytes": 391,
+      "sha256": "0a7b45e26b87ad8d312e1686feafe76e5641aec43b75bb4843e93b66064ed9f3"
+    },
+    {
+      "path": "schemas/batch-81-cobol-mainframe-v1.schema.json",
+      "size_bytes": 1946,
+      "sha256": "482a5063d80e4fa67d8e6810146335655269e0f5e4698c96ee7f5172b96bf71a"
+    },
+    {
+      "path": "schemas/batch-82-sap-abap-v1.schema.json",
+      "size_bytes": 1932,
+      "sha256": "a994c445bbd60379f21dcfd5db65d8c132bc0effa3ebba53b636e5670e980f2c"
+    },
+    {
+      "path": "schemas/batch-83-database-procedural-v1.schema.json",
+      "size_bytes": 1939,
+      "sha256": "94feb67224d5291ef93bb172df2aadd267ccd75bc8a5fc450bd386bf94851281"
+    },
+    {
+      "path": "schemas/batch-84-iec61131-plc-v1.schema.json",
+      "size_bytes": 1928,
+      "sha256": "62df9daec545a32b08275e6a7287ac72506ab1597522288ea7bae356e76aec72"
+    },
+    {
+      "path": "schemas/batch-85-matlab-simulink-v1.schema.json",
+      "size_bytes": 1937,
+      "sha256": "dff6a3c15ad6709ce058f545103ea2e4ebc16aadeb63bb2f1712d967c7c104cb"
+    },
+    {
+      "path": "schemas/batch-86-modelica-fmi-v1.schema.json",
+      "size_bytes": 1935,
+      "sha256": "2b9b6f156bcd12abe0fed87aab7106901618967f2e13bb8c5df47d868480e5fb"
+    },
+    {
+      "path": "schemas/batch-87-vb-office-v1.schema.json",
+      "size_bytes": 1937,
+      "sha256": "57e9817580a1ac0eb2a95760e43a5e58890328a92fc6252459a342ed056a8b4b"
+    },
+    {
+      "path": "schemas/batch-88-ibmi-rpg-v1.schema.json",
+      "size_bytes": 1932,
+      "sha256": "b65485bc677846ae62fd11bf0d021928e3507037329ad9ba6cb52867237db252"
+    },
+    {
+      "path": "schemas/batch-89-r-data-science-v1.schema.json",
+      "size_bytes": 1922,
+      "sha256": "a59a874728277dfa4839c5b40abb536ef41e226f4477ade349649b150f6546fa"
+    },
+    {
+      "path": "schemas/batch-90-sas-modernization-v1.schema.json",
+      "size_bytes": 1948,
+      "sha256": "4bd82a9f1c28af44c4e8409896830e1aad5e207631c0e5e8309cf77f396a0650"
+    },
+    {
+      "path": "schemas/batch-91-salesforce-v1.schema.json",
+      "size_bytes": 1936,
+      "sha256": "88817f5a4c350fee75c2f097974ad032ff634113ccd4ae83c09e3a35c668de5d"
+    },
+    {
+      "path": "schemas/batch-92-objective-c-swift-v1.schema.json",
+      "size_bytes": 1931,
+      "sha256": "d05a9a7d47300e0db5344c040f07ba0f0e91b74bd30ffa8ceecd6f7dce669a5e"
+    },
+    {
+      "path": "schemas/batch-93-delphi-object-pascal-v1.schema.json",
+      "size_bytes": 1946,
+      "sha256": "83a892bb8a712770a90dc70000f03bca2bd54b4fc4fd73968af93c83552f85d3"
+    },
+    {
+      "path": "schemas/batch-94-beam-erlang-elixir-gleam-v1.schema.json",
+      "size_bytes": 1935,
+      "sha256": "d490362e437d956d12084c236168c02635c26c7b67bae82e2360af8f361dd9c0"
+    },
+    {
+      "path": "schemas/batch-95-lua-openresty-v1.schema.json",
+      "size_bytes": 1947,
+      "sha256": "40d24fe62d1f4e4d922a4bbad98941bd435cc826d221f95ee444e7583aba2c27"
+    },
+    {
+      "path": "scripts/validate_package.py",
+      "size_bytes": 1379,
+      "sha256": "7b94fe69f76312d87e1f6a829d148f103efe67a4c39d9bf8c238befe6b4e0255"
+    },
+    {
+      "path": "skills/batch-81/PG223-mainframe-estate-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13217,
+      "sha256": "3a81258e8e34a5cd2b8e528e59111f3137a26637808753f7e58f171e00a70b17"
+    },
+    {
+      "path": "skills/batch-81/PG224-cobol-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13133,
+      "sha256": "a5d91e3f1970be646583daa6b624d2500560b0f6422efc53edc76bd707dddd2a"
+    },
+    {
+      "path": "skills/batch-81/PG225-copybook-canonical-schema-compiler/SKILL.md",
+      "size_bytes": 13125,
+      "sha256": "8b568ae95965d49ec2115b35eb41fd8dddd34634c71ecb19be57726af7e1be84"
+    },
+    {
+      "path": "skills/batch-81/PG226-jcl-batch-workflow-modeler/SKILL.md",
+      "size_bytes": 13069,
+      "sha256": "b410a2d59264bf75d837f896ee9f210b16320003de5d2c8483e71dd2a36078a1"
+    },
+    {
+      "path": "skills/batch-81/PG227-cics-transaction-modernizer/SKILL.md",
+      "size_bytes": 13116,
+      "sha256": "426ff1cfed6fcaaf304b9fb189ac5172ad4f23d093e2d468395886ce90cc29f0"
+    },
+    {
+      "path": "skills/batch-81/PG228-ims-vsam-db2-data-adapter/SKILL.md",
+      "size_bytes": 13049,
+      "sha256": "f9baba0d910651cdac0c811e3ac507ea7c847a355e447acc678dd5342c5396f1"
+    },
+    {
+      "path": "skills/batch-81/PG229-cobol-business-rule-recovery/SKILL.md",
+      "size_bytes": 13081,
+      "sha256": "4cc873b8d1ad7b7fd8b20d75c3308ea2257199d3c0e2bddd4c54d3f06e7e8dd9"
+    },
+    {
+      "path": "skills/batch-81/PG230-mainframe-api-event-extractor/SKILL.md",
+      "size_bytes": 13128,
+      "sha256": "1b1732f8cc050f055764a9cb878a498ea683718c2624aae4644e6ea66288b463"
+    },
+    {
+      "path": "skills/batch-81/PG231-cobol-to-java-dotnet-generator/SKILL.md",
+      "size_bytes": 13093,
+      "sha256": "585d5da144623afa830cba4c3c67a705a5a087290f206c1e31cbe6620cfb3f27"
+    },
+    {
+      "path": "skills/batch-81/PG232-mainframe-parallel-run-verifier/SKILL.md",
+      "size_bytes": 13140,
+      "sha256": "43f1b66af0960b27b2f2b556bfce00af9bc4a50e0669702f2f89020e0dac9c98"
+    },
+    {
+      "path": "skills/batch-81/PG233-mainframe-security-operations-mapper/SKILL.md",
+      "size_bytes": 13110,
+      "sha256": "bc0c985cd38b0bafe8854125b48244c69ca7b863514d953bd7d1b1ac48890e55"
+    },
+    {
+      "path": "skills/batch-81/PG234-mainframe-cutover-decommission-planner/SKILL.md",
+      "size_bytes": 13158,
+      "sha256": "60a36a1491b42e8743e5af73b08e76f05f27f500c054f61e420b3d47b6c00191"
+    },
+    {
+      "path": "skills/batch-82/PG235-sap-landscape-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13165,
+      "sha256": "ce71c02222237582f22f8d575efcb5d9dddd05a1e1f8d34f9bb970b6f79c480c"
+    },
+    {
+      "path": "skills/batch-82/PG236-classic-abap-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13141,
+      "sha256": "3d1ed26e30505d7b3ac74e65ac1b51bb5fd19f43c6ff52163999baf9c2b03039"
+    },
+    {
+      "path": "skills/batch-82/PG237-abap-dictionary-cds-modeler/SKILL.md",
+      "size_bytes": 13041,
+      "sha256": "deb5d87cb26057f0ddf33ebce50ecb37cd9d8327001b8fc5c1abe5b9f411af9c"
+    },
+    {
+      "path": "skills/batch-82/PG238-bapi-rfc-idoc-contract-extractor/SKILL.md",
+      "size_bytes": 13112,
+      "sha256": "69ab4ca5fb1a6b39ec41e1dc3d7d62269e5f4c619adc81b08843e7d51ed36623"
+    },
+    {
+      "path": "skills/batch-82/PG239-dynpro-to-fiori-ui-modernizer/SKILL.md",
+      "size_bytes": 13094,
+      "sha256": "deede6314b15f305029fc3464de4c790c76b1948b2108fc737684d38121b540a"
+    },
+    {
+      "path": "skills/batch-82/PG240-enhancement-user-exit-clean-core-analyzer/SKILL.md",
+      "size_bytes": 13136,
+      "sha256": "5cdeff09ea5bfb2d2ae93828f6df96136adf39cf35bb5bc4f6fa612cf5fd00b3"
+    },
+    {
+      "path": "skills/batch-82/PG241-abap-cloud-rap-generator/SKILL.md",
+      "size_bytes": 13023,
+      "sha256": "20f038b49ce43206aa8c44a1f3a6bde0973d96ac000a9c3cd0d92653e4915fde"
+    },
+    {
+      "path": "skills/batch-82/PG242-custom-table-data-migration-planner/SKILL.md",
+      "size_bytes": 13106,
+      "sha256": "1e389edca24d11323ec2375fa1d99e651a2aaf18d73da6cb405571f7c5ce0436"
+    },
+    {
+      "path": "skills/batch-82/PG243-abap-unit-atc-test-generator/SKILL.md",
+      "size_bytes": 13047,
+      "sha256": "c183ded77fd65c77cdf640c126de4a7bfbf6ee160398b6b017c07773933c76c1"
+    },
+    {
+      "path": "skills/batch-82/PG244-sap-btp-extension-generator/SKILL.md",
+      "size_bytes": 13041,
+      "sha256": "46f1525539024d8f1eb0cf36ed48600a017a73ab828298bea3360bb7512cec39"
+    },
+    {
+      "path": "skills/batch-82/PG245-transport-change-dependency-planner/SKILL.md",
+      "size_bytes": 13106,
+      "sha256": "73218a321418f488653a323b142a05c84474779bbd6eab2a06705012df08a2e7"
+    },
+    {
+      "path": "skills/batch-82/PG246-sap-cutover-regression-certifier/SKILL.md",
+      "size_bytes": 13088,
+      "sha256": "7fbdeab525585c8db417270c67c6e94f8ca680fcd11a25964d48b950ee023633"
+    },
+    {
+      "path": "skills/batch-83/PG247-database-program-unit-discovery/SKILL.md",
+      "size_bytes": 13204,
+      "sha256": "b29a5e5cd71d0e129871d8f869f0422058e323dabf64db114e2f84f1278bf8e9"
+    },
+    {
+      "path": "skills/batch-83/PG248-plsql-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13174,
+      "sha256": "d78d5a3bfb2f9585e20be6dae5a0299ae10b8c3b48531a7e0e277287214775b9"
+    },
+    {
+      "path": "skills/batch-83/PG249-tsql-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13168,
+      "sha256": "9a840759fea2813d0d9a2d896483dbaeba1ad2177d785e68cfe5cfb22369eb18"
+    },
+    {
+      "path": "skills/batch-83/PG250-plpgsql-sqlpl-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13222,
+      "sha256": "22c0a0f15ade5dc9e3aa610cc039715a5f097f805fc1fc278e8e67eaeb98fc1a"
+    },
+    {
+      "path": "skills/batch-83/PG251-stored-procedure-business-rule-extractor/SKILL.md",
+      "size_bytes": 13235,
+      "sha256": "4bed1a11ad461153c8d06db9e9345b83f66159901f90e3dd0dcf477d1146c4bd"
+    },
+    {
+      "path": "skills/batch-83/PG252-trigger-job-dblink-impact-analyzer/SKILL.md",
+      "size_bytes": 13169,
+      "sha256": "a1906d62279b3dba5f20ce28ed85c9283a925987ab1908da091f06cbd4010ba0"
+    },
+    {
+      "path": "skills/batch-83/PG253-dynamic-sql-injection-safety-analyzer/SKILL.md",
+      "size_bytes": 13187,
+      "sha256": "c41d933d18c21419461c06353087bdd7139da0ba6ec08bae1d82f9e3a5115a80"
+    },
+    {
+      "path": "skills/batch-83/PG254-database-logic-retain-refactor-extract-decider/SKILL.md",
+      "size_bytes": 13230,
+      "sha256": "43dd6911b17a763fe6cc62bfef040be63c925a8a179fb7733acfcd4cd6e6e8b1"
+    },
+    {
+      "path": "skills/batch-83/PG255-procedure-to-service-generator/SKILL.md",
+      "size_bytes": 13134,
+      "sha256": "ff666bf7ff06d16c92e00a6f3e45bcf96e026beaf6facbc8f0bf83813e3b3214"
+    },
+    {
+      "path": "skills/batch-83/PG256-database-code-test-harness-generator/SKILL.md",
+      "size_bytes": 13170,
+      "sha256": "be530c3d850fa7a75f1d17740a7d53a60c4de511c300c4f6abf00b26cadf7b9b"
+    },
+    {
+      "path": "skills/batch-83/PG257-transaction-concurrency-equivalence-verifier/SKILL.md",
+      "size_bytes": 13259,
+      "sha256": "7ee2e3f01c883356742291ea30b738ec57b74992434f36e9a9ba27ffe8789d7a"
+    },
+    {
+      "path": "skills/batch-83/PG258-database-program-modernization-certifier/SKILL.md",
+      "size_bytes": 13211,
+      "sha256": "c23ee77becc4760b779c566530ffbc521248a3e2c9e22e80c613b8a54989e11d"
+    },
+    {
+      "path": "skills/batch-84/PG259-plc-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13174,
+      "sha256": "b16b5cd3f09d6fc31faf81e228d6e57a5b92671fd1caee8fa742a2e68da4fe83"
+    },
+    {
+      "path": "skills/batch-84/PG260-iec61131-structured-text-parser/SKILL.md",
+      "size_bytes": 13120,
+      "sha256": "7958a00eee8ff1632e354960650576a76bfb698ad5fd34840f2cd53c340da2ab"
+    },
+    {
+      "path": "skills/batch-84/PG261-ladder-fbd-sfc-semantic-modeler/SKILL.md",
+      "size_bytes": 13086,
+      "sha256": "d6f4c8d22fea04f298460d35d99a94ec21289e3318972a54a3a098ecaf49990e"
+    },
+    {
+      "path": "skills/batch-84/PG262-io-tag-memory-map-compiler/SKILL.md",
+      "size_bytes": 13064,
+      "sha256": "901c9d756b5d82d8c6d8b0ce92171ca0f453e51e20c159f849a09e7861a118d7"
+    },
+    {
+      "path": "skills/batch-84/PG263-scan-cycle-task-priority-analyzer/SKILL.md",
+      "size_bytes": 13109,
+      "sha256": "b6401fc65a0931569f434adcd30b4728f540ba7ebc6630fe37ee2b0cc70522bd"
+    },
+    {
+      "path": "skills/batch-84/PG264-interlock-alarm-state-machine-generator/SKILL.md",
+      "size_bytes": 13134,
+      "sha256": "351a6688cf0f274267578989c2ba4678ac8af3f366b138ff41490276c59a5c89"
+    },
+    {
+      "path": "skills/batch-84/PG265-plcopen-xml-import-export-adapter/SKILL.md",
+      "size_bytes": 13084,
+      "sha256": "2b1ce9e3f0135a401be6ba4d362ba81b849948b386aafba7af4e292c664a9781"
+    },
+    {
+      "path": "skills/batch-84/PG266-plc-vendor-project-adapter/SKILL.md",
+      "size_bytes": 13042,
+      "sha256": "b30d54d88a27b7ad229753525b73743c60b983401e40e31c6ff4db3f7ef0c8ba"
+    },
+    {
+      "path": "skills/batch-84/PG267-plc-simulation-test-harness/SKILL.md",
+      "size_bytes": 13103,
+      "sha256": "413e1271da6eacdf7523f7b9e07676eedac022733b00eddb6b9b52e783b5ebbb"
+    },
+    {
+      "path": "skills/batch-84/PG268-opcua-digital-twin-bridge/SKILL.md",
+      "size_bytes": 13056,
+      "sha256": "1f8351a8cba70746fdabd12f620aa9c26f060ec184b19a075839bd2ea132932b"
+    },
+    {
+      "path": "skills/batch-84/PG269-safety-boundary-sil-approval-gate/SKILL.md",
+      "size_bytes": 13098,
+      "sha256": "8343aa16f5e58161ceb2e6a1b815866f589c2d6a59bfa93e6c853b7ea0b7c0c9"
+    },
+    {
+      "path": "skills/batch-84/PG270-plc-deployment-change-certifier/SKILL.md",
+      "size_bytes": 13103,
+      "sha256": "f9e9855c4eb0a55b8db80dc6427435605dc5a2f007f06c0ea6da6f712ab81a41"
+    },
+    {
+      "path": "skills/batch-85/PG271-matlab-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13205,
+      "sha256": "1e26a0ba41c19199c3f6657370a7b5c145d68920175bcad210c1393f0c023cfa"
+    },
+    {
+      "path": "skills/batch-85/PG272-matlab-code-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13169,
+      "sha256": "02897576a6dda047f78fed705a473e6918c54298e56e35ba58b548e6afd404a1"
+    },
+    {
+      "path": "skills/batch-85/PG273-simulink-model-graph-compiler/SKILL.md",
+      "size_bytes": 13095,
+      "sha256": "3f525c826139be59d52f12b683f72e9cf27e87501b00e3e0774224ff18ce8e80"
+    },
+    {
+      "path": "skills/batch-85/PG274-stateflow-semantics-and-transition-modeler/SKILL.md",
+      "size_bytes": 13165,
+      "sha256": "016e9f380fc316ab4fd42ae421cf6cbe3d7bd3a6094febdf2b844a029e38515c"
+    },
+    {
+      "path": "skills/batch-85/PG275-simscape-data-dictionary-integrator/SKILL.md",
+      "size_bytes": 13123,
+      "sha256": "86abaa073206a93dc5ff3ff5018d3c40d87e53db472be3b1d384b4c2031996eb"
+    },
+    {
+      "path": "skills/batch-85/PG276-algorithm-to-matlab-project-generator/SKILL.md",
+      "size_bytes": 13135,
+      "sha256": "cfb99f11c07c57e960aa76bf5dbbe4d415a552646d060173b36ff71fd619e365"
+    },
+    {
+      "path": "skills/batch-85/PG277-natural-language-to-simulink-model-generator/SKILL.md",
+      "size_bytes": 13177,
+      "sha256": "f2caab978b769d1f9b14072021c4dcc58686546624a33007e8764cd1f2dd9581"
+    },
+    {
+      "path": "skills/batch-85/PG278-matlab-python-julia-interop-bridge/SKILL.md",
+      "size_bytes": 13123,
+      "sha256": "c7ba16e22f2a794e90d4e23da6e82ee26774f1eca96a15d948caf2a51327ee7f"
+    },
+    {
+      "path": "skills/batch-85/PG279-matlab-coder-embedded-code-generator/SKILL.md",
+      "size_bytes": 13129,
+      "sha256": "5e7cf394e8d9e08cc00c354be5ed382453967aeffa87c88ce3708dcc58fb5b55"
+    },
+    {
+      "path": "skills/batch-85/PG280-sil-pil-hil-test-harness-generator/SKILL.md",
+      "size_bytes": 13117,
+      "sha256": "a6800af0b01c0f170a346b7469db244b9d4ce476e43f9b971d77642b0a2ad24e"
+    },
+    {
+      "path": "skills/batch-85/PG281-numerical-equivalence-verifier/SKILL.md",
+      "size_bytes": 13134,
+      "sha256": "18c1afdc6576fc98e17f9800b3cb0c668d65d6cd4494d874587bb27d39fec8f7"
+    },
+    {
+      "path": "skills/batch-85/PG282-model-code-traceability-certifier/SKILL.md",
+      "size_bytes": 13111,
+      "sha256": "aadda24130948ccf7958eac308e278902bc74ae9d433725cb33deb3fa61b842d"
+    },
+    {
+      "path": "skills/batch-86/PG283-modelica-library-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13249,
+      "sha256": "a1860bd7353b0a68e374be2747acb67bcb1fb35fefee16fea819a607f1919475"
+    },
+    {
+      "path": "skills/batch-86/PG284-modelica-parser-and-equation-graph/SKILL.md",
+      "size_bytes": 13183,
+      "sha256": "4f8289f218e71936bb1c0713edbcb97304d3aee8255f6c33ddce320960943e2d"
+    },
+    {
+      "path": "skills/batch-86/PG285-physical-component-connector-modeler/SKILL.md",
+      "size_bytes": 13161,
+      "sha256": "6dfc114d4a4715b31c5cea5c352a0d5302c7332dff3d5ed4a4c8eb0dc868bc1c"
+    },
+    {
+      "path": "skills/batch-86/PG286-unit-dimension-consistency-verifier/SKILL.md",
+      "size_bytes": 13196,
+      "sha256": "e4489fdbc0d0450696d6d6762cd6e1fce4b0934989985f824f0e559903784f98"
+    },
+    {
+      "path": "skills/batch-86/PG287-initial-equation-event-solver-analyzer/SKILL.md",
+      "size_bytes": 13184,
+      "sha256": "1922c13cfce6a0ea19c80383b853a4a85efbef3993e1ee5e9c5e2b6e28b590f1"
+    },
+    {
+      "path": "skills/batch-86/PG288-modelica-system-model-generator/SKILL.md",
+      "size_bytes": 13131,
+      "sha256": "349a75da99c81635208cab1691696631a84e3b2b0e41701d169c6a7a7fd68618"
+    },
+    {
+      "path": "skills/batch-86/PG289-fmi-fmu-export-import-adapter/SKILL.md",
+      "size_bytes": 13105,
+      "sha256": "de6a5f19bb1ae2e2b54bef2a6ffaa262069cf677ec77a2ba2c0528215cc7e5d0"
+    },
+    {
+      "path": "skills/batch-86/PG290-co-simulation-orchestrator/SKILL.md",
+      "size_bytes": 13101,
+      "sha256": "f88273c8ced25b8d7f9c15c60b1d7e029c24a542f232fa4034f4a26735a267e4"
+    },
+    {
+      "path": "skills/batch-86/PG291-parameter-estimation-calibration-engine/SKILL.md",
+      "size_bytes": 13179,
+      "sha256": "ce3d69b4cb0cd4ea89a9986f48ef40b0bb0b620f10ff4e3beed1843acad0abb3"
+    },
+    {
+      "path": "skills/batch-86/PG292-simulation-regression-verifier/SKILL.md",
+      "size_bytes": 13166,
+      "sha256": "1bc99dbbb461e41728021e261feafbd3f5ddccbc4a79b7024a61b9543bc5c720"
+    },
+    {
+      "path": "skills/batch-86/PG293-telemetry-model-drift-detector/SKILL.md",
+      "size_bytes": 13125,
+      "sha256": "ab7be42c80d3234bb6e6a21e439c16aef42e556f9ad9c4517b362b7631174dc1"
+    },
+    {
+      "path": "skills/batch-86/PG294-digital-twin-runtime-certifier/SKILL.md",
+      "size_bytes": 13142,
+      "sha256": "74e524a7c28c1ddc49e5584bbb545a5ea34780e80ad0eb7dbabc7b2fc62bf86c"
+    },
+    {
+      "path": "skills/batch-87/PG295-vb6-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13138,
+      "sha256": "cad892dfeb825a8efe741be1d6d30a81e3f93c1af25041d160795596bf43b665"
+    },
+    {
+      "path": "skills/batch-87/PG296-vb6-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13072,
+      "sha256": "8fec6c5f6a38471a9c34e418ba16295d3977c4b51b95e848205585dc11307227"
+    },
+    {
+      "path": "skills/batch-87/PG297-com-activex-dependency-analyzer/SKILL.md",
+      "size_bytes": 13061,
+      "sha256": "9c56c0f2ea4b21e868bc315f56aa94bd0f09b06cc8b86809beca15042bbfdfc9"
+    },
+    {
+      "path": "skills/batch-87/PG298-vb-forms-ui-event-modeler/SKILL.md",
+      "size_bytes": 13014,
+      "sha256": "205f21f1c7751283835f6dd137ec3ff97312a75ed0618818d0654ce6767fbac0"
+    },
+    {
+      "path": "skills/batch-87/PG299-vba-office-macro-discovery/SKILL.md",
+      "size_bytes": 13084,
+      "sha256": "ff4b1617ca47a496e9d8aa80bad91f742919a0b8a5b635bd9d0eb663fc6168f6"
+    },
+    {
+      "path": "skills/batch-87/PG300-vba-32-64bit-compatibility-analyzer/SKILL.md",
+      "size_bytes": 13085,
+      "sha256": "4b6fcef42bf43816464367073e56f87473e6e654ea4623c29d5ddceefa9ee0e4"
+    },
+    {
+      "path": "skills/batch-87/PG301-vbnet-modernization-profile/SKILL.md",
+      "size_bytes": 13108,
+      "sha256": "ea441f483e7560e55e602470b1716ba6c0a01e60bdf34c7d82cc30cf261a6f63"
+    },
+    {
+      "path": "skills/batch-87/PG302-vb6-to-csharp-generator/SKILL.md",
+      "size_bytes": 13002,
+      "sha256": "c8e7b5c71fc655c0b318bd6cb31c94404b71e3cc254e4b3d5a4874eff06c04eb"
+    },
+    {
+      "path": "skills/batch-87/PG303-vba-to-office-scripts-python-powerautomate-generator/SKILL.md",
+      "size_bytes": 13176,
+      "sha256": "3d54ae41922567a8d3a339648cb3863571f365abeecb5a88801fbb9e693d82d9"
+    },
+    {
+      "path": "skills/batch-87/PG304-access-database-application-modernizer/SKILL.md",
+      "size_bytes": 13133,
+      "sha256": "e397c1da8629782dd91f8886b979941983e8d0f54947e76048ea5a0a942b26c2"
+    },
+    {
+      "path": "skills/batch-87/PG305-windows-interop-regression-verifier/SKILL.md",
+      "size_bytes": 13115,
+      "sha256": "10aeec398650a0cd18211ee8a58f1330ff17cee268d698c627a1d3fed64817e2"
+    },
+    {
+      "path": "skills/batch-87/PG306-vb-modernization-certifier/SKILL.md",
+      "size_bytes": 13037,
+      "sha256": "9d48c8d132d4b15e3ee1ea796907ba2de3fba2d913d3281303871fdadd63cff8"
+    },
+    {
+      "path": "skills/batch-88/PG307-ibmi-landscape-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13167,
+      "sha256": "34b1f2e63bcdbd58dcedbd6ee7d5011e272cd328f9333521b8029391767ebd5a"
+    },
+    {
+      "path": "skills/batch-88/PG308-rpg-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13083,
+      "sha256": "fff5c0c73a5ad3be999ee620b781496721d4aa501674562754c20d9b061723db"
+    },
+    {
+      "path": "skills/batch-88/PG309-cl-job-workflow-modeler/SKILL.md",
+      "size_bytes": 13013,
+      "sha256": "a51e5490610560a2cf548f12983451b1e2e9bb6474b6a80328e23143ff9780ab"
+    },
+    {
+      "path": "skills/batch-88/PG310-dds-display-printer-file-modeler/SKILL.md",
+      "size_bytes": 13067,
+      "sha256": "2643b3cf5f5b0a4539156690d1806b73481e5e65638aa648e6897af5ba4a8f00"
+    },
+    {
+      "path": "skills/batch-88/PG311-db2i-data-access-mapper/SKILL.md",
+      "size_bytes": 12994,
+      "sha256": "84687c6d1a3fad8e80cbf74ae7cbffa032fbec7ac7e895726bfb1e4a9aa01708"
+    },
+    {
+      "path": "skills/batch-88/PG312-ile-service-program-binding-analyzer/SKILL.md",
+      "size_bytes": 13102,
+      "sha256": "7918ef156f7c0e2a9e1832d90bd39c621bdaac3ee8066a5654f646c9683ae0ad"
+    },
+    {
+      "path": "skills/batch-88/PG313-5250-ui-to-web-modernizer/SKILL.md",
+      "size_bytes": 13066,
+      "sha256": "e19c3388b7d093d9eca6b6c4f10fb2af7cbb8fa8d7935ff441bad6d9dbd94e22"
+    },
+    {
+      "path": "skills/batch-88/PG314-rpg-to-java-dotnet-generator/SKILL.md",
+      "size_bytes": 13043,
+      "sha256": "70e9c38192ec951854bd08421811aa96c687ac7dd5e6751438a7941859d398a0"
+    },
+    {
+      "path": "skills/batch-88/PG315-cl-to-workflow-batch-generator/SKILL.md",
+      "size_bytes": 13055,
+      "sha256": "3ff3a27a73e78b6ff4a5cf7263f67324b550141709084abf89afe29892bdd5b1"
+    },
+    {
+      "path": "skills/batch-88/PG316-ibmi-integration-adapter/SKILL.md",
+      "size_bytes": 13005,
+      "sha256": "6d8fd0d96b38b60f857e619433f08ee4c1f425c2bb84ab0ba055808e73704716"
+    },
+    {
+      "path": "skills/batch-88/PG317-ibmi-parallel-run-record-verifier/SKILL.md",
+      "size_bytes": 13114,
+      "sha256": "0edda078bd78416155b4604e1639209c25cd9bd85efba1012363ac24264ac160"
+    },
+    {
+      "path": "skills/batch-88/PG318-ibmi-cutover-certifier/SKILL.md",
+      "size_bytes": 13024,
+      "sha256": "44f6ce05c36e289737a6af026069f63ca71a64b343224669cae80e719ccdaec7"
+    },
+    {
+      "path": "skills/batch-89/PG319-r-project-package-discovery/SKILL.md",
+      "size_bytes": 13138,
+      "sha256": "0edeee637c726962d7c0aa36cb5a3719a43cde12096578946dc4a063ce9dd7ef"
+    },
+    {
+      "path": "skills/batch-89/PG320-r-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13108,
+      "sha256": "554ad7abc2269ba47a4ed8cbe2035d3d9dffe4ee35b1850d9d0423ea051b5053"
+    },
+    {
+      "path": "skills/batch-89/PG321-renv-reproducibility-planner/SKILL.md",
+      "size_bytes": 13097,
+      "sha256": "487faf7e46963fe7c81827413dd642c3e2b4895d04edc3bff46310fdd0b5ab29"
+    },
+    {
+      "path": "skills/batch-89/PG322-tidyverse-datatable-pipeline-modeler/SKILL.md",
+      "size_bytes": 13128,
+      "sha256": "aada71891069a62f5c4e01bac61dbb4c9b60c287555f8df4d5f0d1f5db1ec058"
+    },
+    {
+      "path": "skills/batch-89/PG323-r-package-project-generator/SKILL.md",
+      "size_bytes": 13074,
+      "sha256": "7f42b79194068ab0489269eb6cfb0bac324d16b76e157684aead82a5a1db44b4"
+    },
+    {
+      "path": "skills/batch-89/PG324-quarto-rmarkdown-report-generator/SKILL.md",
+      "size_bytes": 13110,
+      "sha256": "d63976f0fad13f62ec872b7fa426e8d242f123ea7c26d6739cdc87d660a63b35"
+    },
+    {
+      "path": "skills/batch-89/PG325-shiny-application-generator/SKILL.md",
+      "size_bytes": 13074,
+      "sha256": "1c2524562a8432aa787438a481c33a3cc09a2739c441d55f4c72b13f60ad2c2d"
+    },
+    {
+      "path": "skills/batch-89/PG326-plumber-api-generator/SKILL.md",
+      "size_bytes": 13038,
+      "sha256": "25a9ee5fc6939638f7f839d09828d1c890698f8e60d5dace04f3e9a5a665c639"
+    },
+    {
+      "path": "skills/batch-89/PG327-targets-workflow-generator/SKILL.md",
+      "size_bytes": 13068,
+      "sha256": "4010eab08fb855799ea4613c2fc9d239aed17d6060d0c5d18f8818c14ae92691"
+    },
+    {
+      "path": "skills/batch-89/PG328-testthat-statistical-test-generator/SKILL.md",
+      "size_bytes": 13122,
+      "sha256": "a3412be69870e50fa47d07a45aac62918ee52c1da365a82a095261625d5ab4f9"
+    },
+    {
+      "path": "skills/batch-89/PG329-r-python-julia-interop-bridge/SKILL.md",
+      "size_bytes": 13092,
+      "sha256": "2fdd53cb2e562bf260416e543c82ad94a99e4dc952862aa2ec04d9f8bc781fcc"
+    },
+    {
+      "path": "skills/batch-89/PG330-statistical-reproducibility-certifier/SKILL.md",
+      "size_bytes": 13151,
+      "sha256": "83e5d0b091f7e59aa49796bbbf76963cb2cca90c98d1ca6df28e1c75b74bd5c2"
+    },
+    {
+      "path": "skills/batch-90/PG331-sas-estate-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13160,
+      "sha256": "95d098ccd635d224c35d75a58fadde24c0ff64d795f9e48e395ef6963f9b404a"
+    },
+    {
+      "path": "skills/batch-90/PG332-sas-data-step-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13160,
+      "sha256": "5eeba39f1a11bea76ebafe88f64a53ec8ef5beb4b0633be4df404de6168a8557"
+    },
+    {
+      "path": "skills/batch-90/PG333-sas-macro-expansion-analyzer/SKILL.md",
+      "size_bytes": 13071,
+      "sha256": "7b5912b29e334e16a3ac73dea2667e45b91ae65f44b69a13401a1e55ec420852"
+    },
+    {
+      "path": "skills/batch-90/PG334-proc-sql-query-modeler/SKILL.md",
+      "size_bytes": 13024,
+      "sha256": "3816cee9203e8f93e4f4b5b3fb3dcfdfba4500bc9e120543a33936a5d3db1873"
+    },
+    {
+      "path": "skills/batch-90/PG335-sas-format-informat-catalog/SKILL.md",
+      "size_bytes": 13054,
+      "sha256": "5cb4fe27102ee6b3b1b48d2b9c1eed9663291dc8aa0ea311d47265d989ec4ae5"
+    },
+    {
+      "path": "skills/batch-90/PG336-sas-job-workflow-modeler/SKILL.md",
+      "size_bytes": 13036,
+      "sha256": "cc68a9377abd218b17a95ac699e1ca40110ecb5b79163449583c15b816cf8ab6"
+    },
+    {
+      "path": "skills/batch-90/PG337-sas-to-python-r-sql-generator/SKILL.md",
+      "size_bytes": 13066,
+      "sha256": "3e1a4b96290b6dda860835e123935b23408709a09f3c0e996fa88a7b31abff24"
+    },
+    {
+      "path": "skills/batch-90/PG338-sas-cas-viya-integration-adapter/SKILL.md",
+      "size_bytes": 13070,
+      "sha256": "946906bcd7e0ab4de022f0f11f62165db5a7390b22e87c07e969e4a35eae7d82"
+    },
+    {
+      "path": "skills/batch-90/PG339-statistical-numerical-equivalence-verifier/SKILL.md",
+      "size_bytes": 13185,
+      "sha256": "718c54a5adf4d9ac01579e84396c25ddaef50e08ec266d94a13cd85806d1f513"
+    },
+    {
+      "path": "skills/batch-90/PG340-sas-data-lineage-security-mapper/SKILL.md",
+      "size_bytes": 13065,
+      "sha256": "681c424c6cb882041eb2333da1d2ba66670db220ad32b33a683dfdaf2d357440"
+    },
+    {
+      "path": "skills/batch-90/PG341-sas-parallel-run-validation/SKILL.md",
+      "size_bytes": 13054,
+      "sha256": "ef382eb05e4abc804c3530218504a337cf3ac8f73cd55e643ca9f5ed997349b3"
+    },
+    {
+      "path": "skills/batch-90/PG342-sas-modernization-certifier/SKILL.md",
+      "size_bytes": 13071,
+      "sha256": "801663a0a378ffd742e23857bab5251438eafc13033f559dc893ef7c595e51be"
+    },
+    {
+      "path": "skills/batch-91/PG343-salesforce-org-metadata-discovery/SKILL.md",
+      "size_bytes": 13142,
+      "sha256": "e676f724a00424c650ba6a99b2bce67c812833ea4d33da47ae9ab8dc27ad3a08"
+    },
+    {
+      "path": "skills/batch-91/PG344-apex-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13094,
+      "sha256": "b3f7033eed59ff436aed00187c86de90f06faad1b28deebe7ddd7185945a3742"
+    },
+    {
+      "path": "skills/batch-91/PG345-soql-sosl-query-analyzer/SKILL.md",
+      "size_bytes": 13035,
+      "sha256": "b68ff73549fb645ca1492c410c35ab4f34e998b9880bf264c585f871bf505de0"
+    },
+    {
+      "path": "skills/batch-91/PG346-trigger-bulkification-governor-limit-analyzer/SKILL.md",
+      "size_bytes": 13161,
+      "sha256": "78294a78a9e6feaf5ca5b301d59ba7744076443da2aa2093261b958521bbbd3c"
+    },
+    {
+      "path": "skills/batch-91/PG347-lwc-application-generator/SKILL.md",
+      "size_bytes": 13030,
+      "sha256": "2a092e84f937989447aaee2750faf83975ddfc1382f91e8c03a2f6da44903510"
+    },
+    {
+      "path": "skills/batch-91/PG348-visualforce-to-lwc-modernizer/SKILL.md",
+      "size_bytes": 13095,
+      "sha256": "60407e5d4dbede36888eb1396b71228606e9d407b1d1c1c60c2eb354e80f69d0"
+    },
+    {
+      "path": "skills/batch-91/PG349-flow-apex-orchestration-generator/SKILL.md",
+      "size_bytes": 13078,
+      "sha256": "efcf9f62b1747789fa15fc56e30769ebca513eb03e54aea7bf22f25cf0230002"
+    },
+    {
+      "path": "skills/batch-91/PG350-platform-event-integration-generator/SKILL.md",
+      "size_bytes": 13096,
+      "sha256": "db7696fc519e03ab4d0b63e40e44060d5cf9adeb8215e6f15e2fff43620d6cb2"
+    },
+    {
+      "path": "skills/batch-91/PG351-salesforce-security-sharing-fsl-crud-generator/SKILL.md",
+      "size_bytes": 13156,
+      "sha256": "bdcf5124bd57c16f36e4d3d93712d23a5c564038826e5d01d66256900adde1ca"
+    },
+    {
+      "path": "skills/batch-91/PG352-sfdx-package-ci-generator/SKILL.md",
+      "size_bytes": 13030,
+      "sha256": "8b3df05046da3b0324a663a4ccb2918598079cd13c66e9aee30391353030a5d2"
+    },
+    {
+      "path": "skills/batch-91/PG353-apex-test-mutation-generator/SKILL.md",
+      "size_bytes": 13048,
+      "sha256": "27fb8355bfae780205ca434376f93fcb74015d17f85141e52e4de2b307c1a23e"
+    },
+    {
+      "path": "skills/batch-91/PG354-salesforce-release-certifier/SKILL.md",
+      "size_bytes": 13065,
+      "sha256": "ad709467d18307a400aa052d78e93b62d6b21e31d8336f06389acc75da636197"
+    },
+    {
+      "path": "skills/batch-92/PG355-objectivec-project-discovery/SKILL.md",
+      "size_bytes": 13089,
+      "sha256": "62588d2321c8a8b6a5cff4510ba485088a00371d150d1d0c73ce55f238700c92"
+    },
+    {
+      "path": "skills/batch-92/PG356-objectivec-parser-runtime-model/SKILL.md",
+      "size_bytes": 13077,
+      "sha256": "54280431ea16ec7bbe10c86cdadc3c9176551cf2e2783cbe18a32e4b4cf4c0ff"
+    },
+    {
+      "path": "skills/batch-92/PG357-cocoa-cocoatouch-framework-mapper/SKILL.md",
+      "size_bytes": 13036,
+      "sha256": "0bcfc6351cc262ab802cb60f65ba70b01ec4b7b162e79a6de575e037dc70e4b6"
+    },
+    {
+      "path": "skills/batch-92/PG358-arc-memory-ownership-analyzer/SKILL.md",
+      "size_bytes": 13042,
+      "sha256": "1754262e72319aa1d026148146a62ea5f665cb2ccadbae1309640b8fad1ce34c"
+    },
+    {
+      "path": "skills/batch-92/PG359-objectivec-swift-interop-header-generator/SKILL.md",
+      "size_bytes": 13103,
+      "sha256": "454987f2bfc29418014cc63f5d9f3385744eee943f315ffc3f7089ac404626b6"
+    },
+    {
+      "path": "skills/batch-92/PG360-objectivec-to-swift-migrator/SKILL.md",
+      "size_bytes": 13056,
+      "sha256": "730bb1f9ebe7fd75d6ab44dd9136494bc167ebcc7d9210f7ee488f728514fae2"
+    },
+    {
+      "path": "skills/batch-92/PG361-storyboard-xib-to-swiftui-modernizer/SKILL.md",
+      "size_bytes": 13114,
+      "sha256": "7a3f2a13c8d421965fd3ed12b062942d659e61b622a8cc6f33199642fed6173e"
+    },
+    {
+      "path": "skills/batch-92/PG362-coredata-networking-migration-generator/SKILL.md",
+      "size_bytes": 13091,
+      "sha256": "388859d5b8351e3dd39f1f3ab19b5d0094f668ba8c79958a18e82c55bf97779d"
+    },
+    {
+      "path": "skills/batch-92/PG363-gcd-operationqueue-to-swift-concurrency-migrator/SKILL.md",
+      "size_bytes": 13176,
+      "sha256": "9503ce6bd5bfba12f5b71afb37783ec3eb188e07c133545d6f0be48c58e7046b"
+    },
+    {
+      "path": "skills/batch-92/PG364-objectivec-regression-test-generator/SKILL.md",
+      "size_bytes": 13073,
+      "sha256": "d2f7036f00b5e6bbbbf7fef1a39a7abe3b72bbad3bbffccfd4b36c68eb8b299a"
+    },
+    {
+      "path": "skills/batch-92/PG365-apple-binary-api-compatibility-checker/SKILL.md",
+      "size_bytes": 13126,
+      "sha256": "3df7a6ea147ec4e3505d4f3cd105588557b38eea7991a772fbf12199859b8e14"
+    },
+    {
+      "path": "skills/batch-92/PG366-objectivec-swift-cutover-certifier/SKILL.md",
+      "size_bytes": 13078,
+      "sha256": "9a83bf290baabb01dc8b9832f63da5b81ff661bd336b1d3c188836055e5f2cd5"
+    },
+    {
+      "path": "skills/batch-93/PG367-delphi-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13104,
+      "sha256": "bd05d43cc6a806de85ceee48d326fe549dd7cf933d212ed9e642b6a0c14688fe"
+    },
+    {
+      "path": "skills/batch-93/PG368-object-pascal-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13080,
+      "sha256": "2f803ec1711dd79e971afd4f4c86ea8393ba3f723ad2c2009351f50d89925f97"
+    },
+    {
+      "path": "skills/batch-93/PG369-vcl-fmx-ui-modeler/SKILL.md",
+      "size_bytes": 12920,
+      "sha256": "636bcfccf56530393527b4357edeec956f8d247ae526e3663a49cc97b513843f"
+    },
+    {
+      "path": "skills/batch-93/PG370-bpl-dcp-package-dependency-analyzer/SKILL.md",
+      "size_bytes": 13033,
+      "sha256": "08d6f3b6d489584ee2577479f1a378009467150e8d87f78e165b11975f4ec6d0"
+    },
+    {
+      "path": "skills/batch-93/PG371-dataset-firedac-bde-data-mapper/SKILL.md",
+      "size_bytes": 12979,
+      "sha256": "c977f1e27f5ba81b12b561a288806da4581071130cabe1069a1ecb84223baeaa"
+    },
+    {
+      "path": "skills/batch-93/PG372-delphi-com-windows-api-interop-analyzer/SKILL.md",
+      "size_bytes": 13057,
+      "sha256": "fbc71a0ca2b3cc20820a97fb35c705e8265b6c2d66c4b78633a829a53ae3f9a3"
+    },
+    {
+      "path": "skills/batch-93/PG373-delphi-to-dotnet-cpp-generator/SKILL.md",
+      "size_bytes": 12992,
+      "sha256": "c21fa7c29d528426ac90bb6e4dbef97eb1c26abe261616926c4f5f2cc49e4434"
+    },
+    {
+      "path": "skills/batch-93/PG374-delphi-form-to-modern-ui-generator/SKILL.md",
+      "size_bytes": 13016,
+      "sha256": "03e465065a56dd02c481a40fb561c4b13a415d887a29bdb956d1358e7b0b8248"
+    },
+    {
+      "path": "skills/batch-93/PG375-thread-memory-lifetime-analyzer/SKILL.md",
+      "size_bytes": 13009,
+      "sha256": "ff8167cac7ec460766ea0a1ae333e96d525abb18565a0219e544e35e069b4bc6"
+    },
+    {
+      "path": "skills/batch-93/PG376-delphi-test-harness-generator/SKILL.md",
+      "size_bytes": 12986,
+      "sha256": "6df0c9edbe63dcd913d6d6fb6df5854c2fe922cb31cc64d2d180130606b6bb61"
+    },
+    {
+      "path": "skills/batch-93/PG377-delphi-numerical-binary-regression-verifier/SKILL.md",
+      "size_bytes": 13111,
+      "sha256": "737ec2684010492c57755fea12e2a42633baff001e9cbf3514294c86a2fbbecf"
+    },
+    {
+      "path": "skills/batch-93/PG378-delphi-modernization-certifier/SKILL.md",
+      "size_bytes": 13009,
+      "sha256": "e57e25ec6b5ad9415e9ca8bd9375224ea60ce1663e0d5b977400bab17c3ecde9"
+    },
+    {
+      "path": "skills/batch-94/PG379-beam-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13183,
+      "sha256": "f215988d13044a1fc1bf94f638b4ef10c5bcb41e12fafa3f85289ba678a088e3"
+    },
+    {
+      "path": "skills/batch-94/PG380-erlang-parser-and-otp-model/SKILL.md",
+      "size_bytes": 13099,
+      "sha256": "f844d39b1e4ceb55dada17c7e103919c63918956e33cc92bba0645c311cb5e2e"
+    },
+    {
+      "path": "skills/batch-94/PG381-elixir-mix-project-profile/SKILL.md",
+      "size_bytes": 13141,
+      "sha256": "5857c24219c84246b8faab0837ad311d8ef127e26f6a79c3a0f61a32cc4951c1"
+    },
+    {
+      "path": "skills/batch-94/PG382-gleam-project-profile/SKILL.md",
+      "size_bytes": 13111,
+      "sha256": "eb4eea08f23c014017ab42437e0c9a6989ec1c530441d22a4dae577a783b571f"
+    },
+    {
+      "path": "skills/batch-94/PG383-otp-supervision-tree-generator/SKILL.md",
+      "size_bytes": 13083,
+      "sha256": "0a18bcc74c62580cf3cfc89ae844b11e7b478471318769e254f833c7f633adcd"
+    },
+    {
+      "path": "skills/batch-94/PG384-genserver-state-machine-generator/SKILL.md",
+      "size_bytes": 13101,
+      "sha256": "1f3b6bbd9f77316d6b7051db6c635954a51dc540bbcc50944f58cf4b5d8b2a47"
+    },
+    {
+      "path": "skills/batch-94/PG385-distributed-node-cluster-topology-planner/SKILL.md",
+      "size_bytes": 13166,
+      "sha256": "9ad93e0e2676581b4f19d03324fc44a1499133e9b15c5b999ccb0de62c18100b"
+    },
+    {
+      "path": "skills/batch-94/PG386-beam-messaging-backpressure-generator/SKILL.md",
+      "size_bytes": 13125,
+      "sha256": "e1e74c1f0a6095f1a5ec560a347a9117e0dc26df17545e20b43b5853dc5fcf20"
+    },
+    {
+      "path": "skills/batch-94/PG387-ets-mnesia-data-modeler/SKILL.md",
+      "size_bytes": 13041,
+      "sha256": "5c07eed143d979b2f7e93685ce4ac1746b96d8c3e144f29d1d20d08176543078"
+    },
+    {
+      "path": "skills/batch-94/PG388-phoenix-liveview-api-generator/SKILL.md",
+      "size_bytes": 13083,
+      "sha256": "f854d0d1287afb0188b05d9b7979d37124efc96fa1cc036d81cdb7b1ce52b384"
+    },
+    {
+      "path": "skills/batch-94/PG389-beam-property-concurrency-fault-test-generator/SKILL.md",
+      "size_bytes": 13179,
+      "sha256": "f9f27e96b2efc56e857c1632595f09974ba4e0753fd2b1d536d52a8763b85d72"
+    },
+    {
+      "path": "skills/batch-94/PG390-beam-release-upgrade-certifier/SKILL.md",
+      "size_bytes": 13100,
+      "sha256": "6eeeea8abf1ba8075efcc6fc0a806b0d9483ffcc968bf9720139802f163f5678"
+    },
+    {
+      "path": "skills/batch-95/PG391-lua-project-discovery-and-inventory/SKILL.md",
+      "size_bytes": 13130,
+      "sha256": "bbec21c325f3f7a952c2807adc333b2d05080cc56ce926bea576ca3478013f8f"
+    },
+    {
+      "path": "skills/batch-95/PG392-lua-parser-and-semantic-model/SKILL.md",
+      "size_bytes": 13064,
+      "sha256": "36f4f39b27e6fb37dd70677231536e4d0d21de641fd659c9c0186bd64b7d6fa6"
+    },
+    {
+      "path": "skills/batch-95/PG393-openresty-nginx-application-profile/SKILL.md",
+      "size_bytes": 13148,
+      "sha256": "dce61e194c995c883a9c05950bf06282cb30e6eb4bdb706c1885ed12dc8ad5e0"
+    },
+    {
+      "path": "skills/batch-95/PG394-lua-embedded-host-interop-generator/SKILL.md",
+      "size_bytes": 13066,
+      "sha256": "4c8c87dd5c174bf280926a64f3e8c3bfd5b04c71b764448c305a4b818020e02f"
+    },
+    {
+      "path": "skills/batch-95/PG395-lua-plugin-sandbox-capability-enforcer/SKILL.md",
+      "size_bytes": 13079,
+      "sha256": "2c0399c3545f448c4fbd6d99747a34b9cb7fc15aa5e4efe1acb36bb724fbea1b"
+    },
+    {
+      "path": "skills/batch-95/PG396-lua-coroutine-concurrency-modeler/SKILL.md",
+      "size_bytes": 13054,
+      "sha256": "700e6058240437917b46adccc1e8d395a85bd56d7ad34cd9bd4a186da2f090fb"
+    },
+    {
+      "path": "skills/batch-95/PG397-lua-resty-http-cache-gateway-generator/SKILL.md",
+      "size_bytes": 13084,
+      "sha256": "2f35e17dccd37470978441fd0bf2c74b2cca28975ee66250dada7e3ddf3f309e"
+    },
+    {
+      "path": "skills/batch-95/PG398-lua-game-embedded-scripting-profile/SKILL.md",
+      "size_bytes": 13148,
+      "sha256": "9b905722384ee2f82443a893eba9c3aefd222d38372ec883fd83566e12f6afde"
+    },
+    {
+      "path": "skills/batch-95/PG399-lua-package-build-config-generator/SKILL.md",
+      "size_bytes": 13060,
+      "sha256": "125b616b12614cbfd5a178d5d250a5c66472b7b6c2528ef5374c6cbfaed7d25e"
+    },
+    {
+      "path": "skills/batch-95/PG400-lua-test-fuzz-generator/SKILL.md",
+      "size_bytes": 12994,
+      "sha256": "2e78119108ec4591e6fcd1428d9c65daa0f7abeae890f6f14e6b5fe211372f63"
+    },
+    {
+      "path": "skills/batch-95/PG401-lua-runtime-version-compatibility-checker/SKILL.md",
+      "size_bytes": 13143,
+      "sha256": "cbc1dbeff2297ac35ec275f81a7d28187bb1c1430b0903540fd5ec9b1011ca20"
+    },
+    {
+      "path": "skills/batch-95/PG402-lua-openresty-deployment-certifier/SKILL.md",
+      "size_bytes": 13077,
+      "sha256": "991c763a7f06e251936c256b023aee624a76d5561e00cbd9600ee55fc59fe8ec"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch81-cobol-mainframe.zip",
+      "size_bytes": 65750,
+      "sha256": "b511c6779f8335a7b190359f1104445216d44a2103ddc938dba3ac5d37945b09"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch82-sap-abap.zip",
+      "size_bytes": 65549,
+      "sha256": "d7eee2e87b4251a645d40b7e547404c55d5e7ca3341aa2d07848ec3203786318"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch83-database-procedural.zip",
+      "size_bytes": 65695,
+      "sha256": "9c09c5d56665e653ba38e1add0aea2ed013a2c4be23026bdfce016e492ee1976"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch84-iec61131-plc.zip",
+      "size_bytes": 66122,
+      "sha256": "f5df43f3a723c2f348131a7e70c40e0a8e28d9777cff0331e0821b7fb8fc34d8"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch85-matlab-simulink.zip",
+      "size_bytes": 65442,
+      "sha256": "01d60aae3bab59119dfd03d7e02beaec9829ae5606fb05b3fc3e2ddc3e8769a5"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch86-modelica-fmi.zip",
+      "size_bytes": 65272,
+      "sha256": "4918d0cce11d5f8722f59c0da044783dcc06f42219b5ab3374aadd6b20b5e9ef"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch87-vb-office.zip",
+      "size_bytes": 65156,
+      "sha256": "6cc6f32f9b1fa9338be17dea7823a44575787aebbf3cf6417b7c8f449971a312"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch88-ibmi-rpg.zip",
+      "size_bytes": 65281,
+      "sha256": "ec3fbafdfaec17c497e194a9a92548c824ad7948e030d27ae154e334d1898429"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch89-r-data-science.zip",
+      "size_bytes": 64819,
+      "sha256": "fd4018d6da2acc39ecf7fbb90153344df39d33b7135da126a20e5ea1ca985f86"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch90-sas-modernization.zip",
+      "size_bytes": 65215,
+      "sha256": "3d772ea613444b32f6f5744dab80cf81e74f0ddb821900b9b6b4a51858ac42d2"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch91-salesforce.zip",
+      "size_bytes": 65153,
+      "sha256": "90a4cc5b8f155bdbb57a65cc50cb4a8bff9d2c3b886fdf55d3f2a45e2081b2b8"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch92-objective-c-swift.zip",
+      "size_bytes": 65711,
+      "sha256": "9417c3a5efe2664ab46eb1d38ebbac1ebd7a5d627f5b55d3485b830afa6934e2"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch93-delphi-object-pascal.zip",
+      "size_bytes": 65694,
+      "sha256": "5625c07260cab9ee2b03cd8f5a42ada34be60566bfc06a97120121e1f3c06331"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch94-beam-erlang-elixir-gleam.zip",
+      "size_bytes": 66251,
+      "sha256": "294dee07725bd90d489cc6301ba444188d381f4a95f62547b8982521af3f75ce"
+    },
+    {
+      "path": "subpackages/elmos-language-pack-batch95-lua-openresty.zip",
+      "size_bytes": 65320,
+      "sha256": "5b162118dcb4fa3fff9f4f4b37232e8e667915c6cf5d649a77c43422d4952085"
+    },
+    {
+      "path": "validate.sh",
+      "size_bytes": 74,
+      "sha256": "7827bf1cf17c620092cecea18be794122cb6c9371a10fbe89de4338a7864c1c5"
+    }
+  ]
+}

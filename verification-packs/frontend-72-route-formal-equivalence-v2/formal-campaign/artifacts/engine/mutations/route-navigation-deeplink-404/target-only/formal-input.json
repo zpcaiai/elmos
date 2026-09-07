@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "route-navigation-deeplink-404",
+  "obligation_symbol": "diff_navigation",
+  "variant": "TARGET_ONLY",
+  "pointer": "/navigation/fallback",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:518bf7dde86e4c466223e1dc6269997a3e67f758cd2d52d2c109e0f6eef33f36",
+  "canonical_block_digest": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+  "mutant_block_digest": "sha256:7dcab66359b44998eae50c2202927d83c9adebe875cc5a080c6e47aba0ddd2be",
+  "counterexample_replay": {
+    "block_id": "route-navigation-deeplink-404",
+    "pointer": "/navigation/fallback",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "requestedPath": "/",
+      "selectedRouteId": "route.home",
+      "selectedPath": "/",
+      "resolution": "DECLARED",
+      "navigationLabel": "主要导航",
+      "fallback": "FIRST_DECLARED_ROUTE",
+      "deepLink": true,
+      "requiresAuth": false
+    },
+    "mutant_observation": {
+      "requestedPath": "/",
+      "selectedRouteId": "route.home",
+      "selectedPath": "/",
+      "resolution": "DECLARED",
+      "navigationLabel": "主要导航",
+      "fallback": "FIRST_DECLARED_ROUTE__MUTANT",
+      "deepLink": true,
+      "requiresAuth": false
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

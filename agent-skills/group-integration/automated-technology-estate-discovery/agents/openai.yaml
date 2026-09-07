@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 675: automated technology estate discovery"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $automated-technology-estate-discovery to evaluate this capability with evidence."

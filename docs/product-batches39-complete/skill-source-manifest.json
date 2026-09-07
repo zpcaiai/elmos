@@ -1,0 +1,504 @@
+{
+  "namespace_policy": {
+    "product_commercialization": "Product Batch B39 Finance",
+    "migration_pack": "Migration Pack M39 Global SRE"
+  },
+  "generated_by": "tooling/integrate_product_batch39_complete_skill_pack.py",
+  "external_execution_evidence": "NOT_RUN",
+  "pack_skill_count": 48,
+  "canonical_product_skill_count_with_prior_families": 339,
+  "superseded_prior_record_count": 0,
+  "superseded_prior_records": [],
+  "packages": [
+    {
+      "product_batch": 39,
+      "directory": "elmos-codex-skills-batch39-complete",
+      "version": "3.9-complete",
+      "skill_count": 48,
+      "renamed_for_codex": 34,
+      "manifest_sha256": "c6f00b2a22dfa6751c533e144508512b97cbf28029fc7c6d26f42c4b0603c2fc"
+    }
+  ],
+  "records": [
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "financial-billing-commercial-operations-orchestrator",
+      "source_name": "financial-billing-commercial-operations-orchestrator",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/financial-billing-commercial-operations-orchestrator/SKILL.md",
+      "sha256": "174e243c0f28715af24565c1480dd0883e437f17557c5b12a41b31e7519ce0ca"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "multi-tenant-metering-event-contract-and-usage-ledger",
+      "source_name": "multi-tenant-metering-event-contract-and-usage-ledger",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/multi-tenant-metering-event-contract-and-usage-ledger/SKILL.md",
+      "sha256": "0e4359f4a8fd6ff0ea374d607e9ea3170d59232c40f7eac0f9175fb90d695a9b"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "meter-definition-dimension-aggregation-correction-and-d-2a0091ff",
+      "source_name": "meter-definition-dimension-aggregation-correction-and-data-quality",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/meter-definition-dimension-aggregation-correction-and-d-2a0091ff/SKILL.md",
+      "sha256": "e94c72c4cde68a42fb84e6a21567973c67b79e8e65798662cb0ac91357cf45a5"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "product-catalog-price-book-plan-rate-card-entitlement-d-3b2357f2",
+      "source_name": "product-catalog-price-book-plan-rate-card-entitlement-discount-and-promotion",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/product-catalog-price-book-plan-rate-card-entitlement-d-3b2357f2/SKILL.md",
+      "sha256": "ee3887681a18cc784adc1550f36741519428436b1290a8667555aa1c389ce3ae"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "quote-cpq-contract-amendment-commitment-minimum-and-approval",
+      "source_name": "quote-cpq-contract-amendment-commitment-minimum-and-approval",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/quote-cpq-contract-amendment-commitment-minimum-and-approval/SKILL.md",
+      "sha256": "99cef876722edf92547c3953f410b56602d29dbcfd7f1d2d61c9d3ebf875331c"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "order-subscription-provisioning-entitlement-lifecycle-a-f610de24",
+      "source_name": "order-subscription-provisioning-entitlement-lifecycle-and-orchestration",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/order-subscription-provisioning-entitlement-lifecycle-a-f610de24/SKILL.md",
+      "sha256": "838cca6351192abeafc27646e610208b9eace4d9b76d4c9785f7c64823871d71"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "rating-charging-billing-period-invoice-line-and-adjustm-ce0d1257",
+      "source_name": "rating-charging-billing-period-invoice-line-and-adjustment-engine",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/rating-charging-billing-period-invoice-line-and-adjustm-ce0d1257/SKILL.md",
+      "sha256": "486cb0627492b13e7b27c8d37f527134d7fd08a7ea18087dd00ac1b24b83d222"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "tax-determination-registration-nexus-vat-gst-sales-tax-811c6382",
+      "source_name": "tax-determination-registration-nexus-vat-gst-sales-tax-withholding-and-einvoicing",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/tax-determination-registration-nexus-vat-gst-sales-tax-811c6382/SKILL.md",
+      "sha256": "1cfa873a69cb1ab2abff49aa003ca3d52fe54bfcf2114763cb85b1a18bd749ab"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "invoice-document-en16931-peppol-credit-note-delivery-an-071e632b",
+      "source_name": "invoice-document-en16931-peppol-credit-note-delivery-and-acceptance",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/invoice-document-en16931-peppol-credit-note-delivery-an-071e632b/SKILL.md",
+      "sha256": "05b829a16d3d1b339634a16b05ea5ff27e6bf0994929a3154bf23fc47b973a64"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "accounts-receivable-payment-allocation-refund-dispute-a-d05210b5",
+      "source_name": "accounts-receivable-payment-allocation-refund-dispute-and-dunning",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/accounts-receivable-payment-allocation-refund-dispute-a-d05210b5/SKILL.md",
+      "sha256": "d93a14ff55a151d053a0858eefd66f0c1ba3065243634908bc71170992b820a5"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "credit-policy-limit-risk-deposit-collection-writeoff-an-68df36c2",
+      "source_name": "credit-policy-limit-risk-deposit-collection-writeoff-and-bad-debt",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/credit-policy-limit-risk-deposit-collection-writeoff-an-68df36c2/SKILL.md",
+      "sha256": "1a6b9965f235fbc1efcbc432f14b8ed3002812efd303f668fd03aaf75328ecdd"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "revenue-recognition-ifrs15-asc606-performance-obligatio-223bb13a",
+      "source_name": "revenue-recognition-ifrs15-asc606-performance-obligation-allocation-and-schedule",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/revenue-recognition-ifrs15-asc606-performance-obligatio-223bb13a/SKILL.md",
+      "sha256": "f76853d5a10422c131aa6141f77ab118c815d0fb7d1e27526f654f63f976b43c"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "contract-asset-liability-deferred-revenue-unbilled-ar-a-92997cb5",
+      "source_name": "contract-asset-liability-deferred-revenue-unbilled-ar-and-financial-subledger",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/contract-asset-liability-deferred-revenue-unbilled-ar-a-92997cb5/SKILL.md",
+      "sha256": "3b8d8b841d686ce4e1fb495b612cae74b70ef0b08ee7506cda8f752650082df8"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "commercial-operations-renewal-expansion-churn-forecast-adcd4c9e",
+      "source_name": "commercial-operations-renewal-expansion-churn-forecast-and-revenue-assurance",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/commercial-operations-renewal-expansion-churn-forecast-adcd4c9e/SKILL.md",
+      "sha256": "f07841ac263e38fe14a1057c16c1c3b72e100b6694c014a407ab2a834d522625"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "billing-finance-reconciliation-period-close-audit-evide-13e9caf7",
+      "source_name": "billing-finance-reconciliation-period-close-audit-evidence-and-reporting",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/billing-finance-reconciliation-period-close-audit-evide-13e9caf7/SKILL.md",
+      "sha256": "cdd2319ac6d5a74efcb31decdf2baaaaccb85564a826a774affbaf684054440e"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39A",
+      "package_version": "3.9-complete",
+      "name": "financial-commercial-security-quality-chaos-and-release-gates",
+      "source_name": "financial-commercial-security-quality-chaos-and-release-gates",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/financial-commercial-security-quality-chaos-and-release-gates/SKILL.md",
+      "sha256": "1fb914add970b6ee209aad0ab4bdf9b10e0eaf8f8c8ea6265eec687394398074"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-treasury-financial-risk-operations-orchestrator",
+      "source_name": "payment-treasury-financial-risk-operations-orchestrator",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-treasury-financial-risk-operations-orchestrator/SKILL.md",
+      "sha256": "32e461961435e0954c7b6d6e6bee06744e7b11bfd7ef609d107c041bd0b4337d"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "unified-payment-intent-instruction-attempt-settlement-a-86fcf414",
+      "source_name": "unified-payment-intent-instruction-attempt-settlement-and-cash-movement-domain",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/unified-payment-intent-instruction-attempt-settlement-a-86fcf414/SKILL.md",
+      "sha256": "3e337c710bf717ab4a48f6a3bd2ed0d6b5213f7428ba98d35a2016e2b6791be9"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "psp-bank-payment-rail-connector-capability-authenticati-a7678f08",
+      "source_name": "psp-bank-payment-rail-connector-capability-authentication-and-lifecycle",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/psp-bank-payment-rail-connector-capability-authenticati-a7678f08/SKILL.md",
+      "sha256": "61fa29b974fd084d4278371b57a8400d053c58de7fc2035efbec52fe2a85309f"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-routing-orchestration-fee-sla-retry-idempotency-04d13478",
+      "source_name": "payment-routing-orchestration-fee-sla-retry-idempotency-and-failover",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-routing-orchestration-fee-sla-retry-idempotency-04d13478/SKILL.md",
+      "sha256": "63b5f6becaf2e06e5e38db08706d75b809c3a26591f6f48799ca609bb382d100"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "beneficiary-bank-account-virtual-account-mandate-and-ve-b90a1d92",
+      "source_name": "beneficiary-bank-account-virtual-account-mandate-and-verification-of-payee",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/beneficiary-bank-account-virtual-account-mandate-and-ve-b90a1d92/SKILL.md",
+      "sha256": "4e163c64de7edfbb396155f09a1aea568b84e0cbf5d0d227630771cc2cdb3577"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "cash-application-remittance-matching-allocation-and-una-70e1955a",
+      "source_name": "cash-application-remittance-matching-allocation-and-unapplied-cash",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/cash-application-remittance-matching-allocation-and-una-70e1955a/SKILL.md",
+      "sha256": "b8568cc315a60bdb618dbbd783e268b9b52b4049e4ae94961365c6fec48e35a7"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "refund-reversal-return-chargeback-dispute-and-representment",
+      "source_name": "refund-reversal-return-chargeback-dispute-and-representment",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/refund-reversal-return-chargeback-dispute-and-representment/SKILL.md",
+      "sha256": "a524c740015d4bcf25437aa5747f5d8ca4609a4aac4e60a40262ceda639b9083"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation",
+      "source_name": "bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/bank-statement-iso20022-camt-bai2-ingestion-and-reconciliation/SKILL.md",
+      "sha256": "03ca692784d82ed0b5250180129c750d2b49dcd071b6f17c5cad7d9b7abe1d22"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "fx-market-data-quote-trade-hedge-settlement-revaluation-deba3154",
+      "source_name": "fx-market-data-quote-trade-hedge-settlement-revaluation-and-exposure",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/fx-market-data-quote-trade-hedge-settlement-revaluation-deba3154/SKILL.md",
+      "sha256": "b1053b1e280328f76b9efbede1b23d589ba4f9a896071c2bdc83d054f795c7df"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "treasury-bank-account-liquidity-pooling-sweep-limit-and-funding",
+      "source_name": "treasury-bank-account-liquidity-pooling-sweep-limit-and-funding",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/treasury-bank-account-liquidity-pooling-sweep-limit-and-funding/SKILL.md",
+      "sha256": "7a50081ebe14b4c7728e6c0139e7cdedf36bf03487a73f736b7fc0eb2e3a3569"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "cash-forecast-scenario-variance-confidence-and-liquidit-0f01ed8f",
+      "source_name": "cash-forecast-scenario-variance-confidence-and-liquidity-planning",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/cash-forecast-scenario-variance-confidence-and-liquidit-0f01ed8f/SKILL.md",
+      "sha256": "8acf91d72cb50c3df57d6eb70d62bbc3a53b6da1b48903db214dadef21c305ca"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-fraud-risk-signal-rule-model-decision-case-and-step-up",
+      "source_name": "payment-fraud-risk-signal-rule-model-decision-case-and-step-up",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-fraud-risk-signal-rule-model-decision-case-and-step-up/SKILL.md",
+      "sha256": "de8ded16148178543bf0e2c8ca9d8828bc2156f9da66f6dccc79727e126ce749"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "treasury-mandate-signer-approval-segregation-limit-and-25c147ab",
+      "source_name": "treasury-mandate-signer-approval-segregation-limit-and-payment-factory-control",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/treasury-mandate-signer-approval-segregation-limit-and-25c147ab/SKILL.md",
+      "sha256": "c8a348587682db6eb9be2c1869f379b8d4d7d759c274d4536b4f72fa6b8212a1"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-security-pci-tokenization-pan-vault-encryption-2b43d393",
+      "source_name": "payment-security-pci-tokenization-pan-vault-encryption-key-and-secret-boundary",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-security-pci-tokenization-pan-vault-encryption-2b43d393/SKILL.md",
+      "sha256": "147ee47f19739da4e0716d5768cda3819fd5ebce21ae47ff7dcb848bd123d42d"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-treasury-operations-cockpit-position-reconcilia-eb2c94f7",
+      "source_name": "payment-treasury-operations-cockpit-position-reconciliation-fraud-and-sla",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-treasury-operations-cockpit-position-reconcilia-eb2c94f7/SKILL.md",
+      "sha256": "e4b6ea2479e56cbc78c1a431e48fae6c4e0fddd09f01fd1d1828551e8eb4c1d2"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39B",
+      "package_version": "3.9-complete",
+      "name": "payment-treasury-conformance-security-chaos-performance-80eac559",
+      "source_name": "payment-treasury-conformance-security-chaos-performance-and-release-gates",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/payment-treasury-conformance-security-chaos-performance-80eac559/SKILL.md",
+      "sha256": "803466edfd9b074525cf7c2c16ac3844a0b06f2a591c25fc4cea0fb826a90b57"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "finance-analytics-planning-unit-economics-orchestrator",
+      "source_name": "finance-analytics-planning-unit-economics-orchestrator",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/finance-analytics-planning-unit-economics-orchestrator/SKILL.md",
+      "sha256": "f1365b019e34272ea873589b4a6b1c52deb0aeb3de7508e4a93e7fe3844e4e6e"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "finance-semantic-layer-kpi-registry-definition-lineage-d51cf019",
+      "source_name": "finance-semantic-layer-kpi-registry-definition-lineage-and-restatement",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/finance-semantic-layer-kpi-registry-definition-lineage-d51cf019/SKILL.md",
+      "sha256": "64f6863563727572e4df5a005d2ad2299d1206cef550a70dd58f7aa4c1f6eb51"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-56eab865",
+      "source_name": "mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-metric-engine",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/mrr-arr-acv-tcv-bookings-billings-revenue-and-recurring-56eab865/SKILL.md",
+      "sha256": "b54adbc7410664c8c34ad164743ac1b012047b522b3c65e9f70ba743a80f1d8d"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "revenue-bridge-new-expansion-contraction-churn-reactiva-2ff9845b",
+      "source_name": "revenue-bridge-new-expansion-contraction-churn-reactivation-and-fx-waterfall",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/revenue-bridge-new-expansion-contraction-churn-reactiva-2ff9845b/SKILL.md",
+      "sha256": "32cec4662b89c4474bffbfd81c17ece49322af18c2d6eccefb2936e12db5ecd5"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "cohort-retention-grr-nrr-survival-and-customer-lifecycl-90b618c9",
+      "source_name": "cohort-retention-grr-nrr-survival-and-customer-lifecycle-analytics",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/cohort-retention-grr-nrr-survival-and-customer-lifecycl-90b618c9/SKILL.md",
+      "sha256": "1b8e5c345dd8dd72d58b7245c0ae8b2a5de6ffa42e90242bff068b9bb1fd17d0"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "gross-margin-cogs-contribution-margin-and-cost-classification",
+      "source_name": "gross-margin-cogs-contribution-margin-and-cost-classification",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/gross-margin-cogs-contribution-margin-and-cost-classification/SKILL.md",
+      "sha256": "8d6976162458446365a018642c9cb0f310d2ee6de7029807bb37667897c1742e"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "focus-cost-ingestion-shared-cost-allocation-showback-ch-e447c8d0",
+      "source_name": "focus-cost-ingestion-shared-cost-allocation-showback-chargeback-and-unit-cost",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/focus-cost-ingestion-shared-cost-allocation-showback-ch-e447c8d0/SKILL.md",
+      "sha256": "6a33e5cbc4a1d917c2b800fd07775947f9f642cbb15229d66f65bbc0ccc2595c"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "budget-driver-based-planning-workforce-capex-opex-and-v-367cf9de",
+      "source_name": "budget-driver-based-planning-workforce-capex-opex-and-version-control",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/budget-driver-based-planning-workforce-capex-opex-and-v-367cf9de/SKILL.md",
+      "sha256": "4c0cfffb657a75df328769ffa6ac1faf121694deb614a18ddb15ee4fca1c3848"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "rolling-forecast-scenario-assumption-sensitivity-confid-fa11ca65",
+      "source_name": "rolling-forecast-scenario-assumption-sensitivity-confidence-and-stress-test",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/rolling-forecast-scenario-assumption-sensitivity-confid-fa11ca65/SKILL.md",
+      "sha256": "6665d48014405a1dc3f9bc9ec7780bfc96b209249a1e843ca267c509d5d379dc"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "variance-price-volume-mix-fx-timing-rate-and-driver-analysis",
+      "source_name": "variance-price-volume-mix-fx-timing-rate-and-driver-analysis",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/variance-price-volume-mix-fx-timing-rate-and-driver-analysis/SKILL.md",
+      "sha256": "ca981a0abdc720d67ca774e7618d7de63f72a90fe1e453b3d23d8d0ca6a14f03"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "pricing-analytics-packaging-discount-waterfall-elastici-96176e3c",
+      "source_name": "pricing-analytics-packaging-discount-waterfall-elasticity-and-experiment",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/pricing-analytics-packaging-discount-waterfall-elastici-96176e3c/SKILL.md",
+      "sha256": "fa505032ea13a1642b686a66454e9895111f0c8528c0999dd501508d760db2a8"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "customer-product-segment-profitability-ltv-cac-payback-fbe4d362",
+      "source_name": "customer-product-segment-profitability-ltv-cac-payback-and-cost-to-serve",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/customer-product-segment-profitability-ltv-cac-payback-fbe4d362/SKILL.md",
+      "sha256": "08c7f34cd1ea370f65dad87821ae11471d2d55b9e8d3b0b9413a9ecb182ff2f9"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "finance-actual-plan-forecast-reconciliation-close-and-m-77c0342f",
+      "source_name": "finance-actual-plan-forecast-reconciliation-close-and-management-reporting",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/finance-actual-plan-forecast-reconciliation-close-and-m-77c0342f/SKILL.md",
+      "sha256": "cf1780e0cbbb748f4ea4ab69300e3dd7cf87c4e10a4cd43797635f88f82315b7"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative",
+      "source_name": "executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/executive-finance-cockpit-ifrs18-mpm-board-pack-and-narrative/SKILL.md",
+      "sha256": "585d4e5fac9a6ee1f71d51e4b868edae376fd9546ad6f8e38cb8e3185403275e"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "finance-planning-workflow-owner-review-approval-lock-an-6ac09e81",
+      "source_name": "finance-planning-workflow-owner-review-approval-lock-and-collaboration",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/finance-planning-workflow-owner-review-approval-lock-an-6ac09e81/SKILL.md",
+      "sha256": "356e8b99bc10d3f0b96b996ae4a108b66b165fa82ad51f48de5c05837d627051"
+    },
+    {
+      "family": "elmos-product-commercialization-b39-complete",
+      "product_batch": 39,
+      "batch": "39C",
+      "package_version": "3.9-complete",
+      "name": "finance-analytics-quality-security-performance-and-release-gates",
+      "source_name": "finance-analytics-quality-security-performance-and-release-gates",
+      "source_path": "elmos-codex-skills-batch39-complete/agent-skills/runtime/finance-analytics-quality-security-performance-and-release-gates/SKILL.md",
+      "sha256": "d812ddfe4b6d723dffb1c7ae7a838b2f1f22d0f1bddbfc642bb3d315d914b168"
+    }
+  ]
+}

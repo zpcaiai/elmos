@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.delivery-policy.v1",
+  "title": "ELMOS Delivery Policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "ci",
+    "security",
+    "container",
+    "deployment",
+    "release",
+    "recovery"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "ci": {
+      "type": "object"
+    },
+    "security": {
+      "type": "object"
+    },
+    "container": {
+      "type": "object"
+    },
+    "deployment": {
+      "type": "object"
+    },
+    "release": {
+      "type": "object"
+    },
+    "recovery": {
+      "type": "object"
+    }
+  }
+}

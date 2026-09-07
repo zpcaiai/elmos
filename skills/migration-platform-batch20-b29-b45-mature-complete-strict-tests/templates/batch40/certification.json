@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "example-supply-chain-compliance",
+  "status": "experimental",
+  "metrics": {
+    "secure_sdlc_control_coverage": 0,
+    "threat_model_coverage": 0,
+    "sbom_coverage": 0,
+    "signature_verification_rate": 0,
+    "provenance_coverage": 0,
+    "vulnerability_sla_compliance": 0,
+    "audit_evidence_freshness_rate": 0,
+    "independent_assessment_closure_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "critical_open_vulnerabilities": 1,
+    "secret_leaks": 1,
+    "unsigned_production_artifacts": 1,
+    "tampered_artifacts_accepted": 1,
+    "unresolved_license_blocks": 1,
+    "builder_attestation_failures": 1,
+    "runner_downgrade_acceptances": 1,
+    "cross_tenant_evidence_leaks": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": [],
+  "approved_by": []
+}

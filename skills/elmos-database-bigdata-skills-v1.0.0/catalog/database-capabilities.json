@@ -1,0 +1,1562 @@
+{
+  "registry_version": "2026-08-19.1",
+  "generated_at": "2026-08-19",
+  "policy": {
+    "version_resolution": "Resolve product and connector versions at project runtime; do not assume latest from this static catalog.",
+    "evidence_required": true,
+    "benchmark_required_for_critical_roles": true,
+    "adapter_status_meaning": {
+      "catalog-only": "Selection knowledge only; no claim of executable integration.",
+      "reference-generator": "Package contains generation guidance, not a verified provider integration.",
+      "verified-adapter": "May only be assigned after repository-specific integration tests."
+    }
+  },
+  "technologies": [
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "technology_kind": "database",
+      "roles": [
+        "system-of-record",
+        "relational-oltp",
+        "json",
+        "geospatial",
+        "vector-extension"
+      ],
+      "data_models": [
+        "relational",
+        "document",
+        "vector"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 2,
+        "write_throughput": 3,
+        "read_latency": 4,
+        "analytical_scan": 2,
+        "real_time_ingest": 3,
+        "full_text": 3,
+        "vector": 3,
+        "graph": 1,
+        "time_series": 3,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 2,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "general OLTP",
+        "moderate-scale multi-tenant SaaS",
+        "JSON plus relational",
+        "pgvector when scale fits"
+      ],
+      "avoid_for": [
+        "massive write scale without sharding plan",
+        "petabyte analytical scans"
+      ],
+      "official_docs": "https://www.postgresql.org/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "mysql",
+      "name": "MySQL",
+      "technology_kind": "database",
+      "roles": [
+        "system-of-record",
+        "relational-oltp"
+      ],
+      "data_models": [
+        "relational",
+        "document"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 2,
+        "write_throughput": 4,
+        "read_latency": 4,
+        "analytical_scan": 2,
+        "real_time_ingest": 3,
+        "full_text": 2,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 2,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "web OLTP",
+        "broad ecosystem",
+        "CDC source"
+      ],
+      "avoid_for": [
+        "complex cross-shard transactions without distributed layer",
+        "large analytical scans"
+      ],
+      "official_docs": "https://dev.mysql.com/doc/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "tidb",
+      "name": "TiDB",
+      "technology_kind": "distributed-sql",
+      "roles": [
+        "system-of-record",
+        "distributed-oltp",
+        "htap"
+      ],
+      "data_models": [
+        "relational"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 3,
+        "analytical_scan": 4,
+        "real_time_ingest": 4,
+        "full_text": 1,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 1,
+        "lakehouse": 1,
+        "operational_complexity": 4,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "MySQL-compatible distributed SQL",
+        "horizontal scale",
+        "HTAP"
+      ],
+      "avoid_for": [
+        "small workloads where distributed complexity is unjustified"
+      ],
+      "official_docs": "https://docs.pingcap.com/tidb/stable/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "cockroachdb",
+      "name": "CockroachDB",
+      "technology_kind": "distributed-sql",
+      "roles": [
+        "system-of-record",
+        "distributed-oltp",
+        "geo-distributed"
+      ],
+      "data_models": [
+        "relational"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 3,
+        "analytical_scan": 2,
+        "real_time_ingest": 3,
+        "full_text": 1,
+        "vector": 2,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 4,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "geo-distributed SQL",
+        "survivability",
+        "PostgreSQL-wire-compatible apps"
+      ],
+      "avoid_for": [
+        "single-region small workloads",
+        "heavy OLAP"
+      ],
+      "official_docs": "https://www.cockroachlabs.com/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "oceanbase",
+      "name": "OceanBase",
+      "technology_kind": "distributed-sql",
+      "roles": [
+        "system-of-record",
+        "distributed-oltp",
+        "htap"
+      ],
+      "data_models": [
+        "relational"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 3,
+        "analytical_scan": 3,
+        "real_time_ingest": 4,
+        "full_text": 1,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 4,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "large distributed transactional systems",
+        "MySQL/Oracle compatibility evaluation"
+      ],
+      "avoid_for": [
+        "small teams without distributed database operations"
+      ],
+      "official_docs": "https://en.oceanbase.com/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "technology_kind": "document-database",
+      "roles": [
+        "system-of-record",
+        "document"
+      ],
+      "data_models": [
+        "document"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": false,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 4,
+        "analytical_scan": 2,
+        "real_time_ingest": 4,
+        "full_text": 3,
+        "vector": 3,
+        "graph": 1,
+        "time_series": 3,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 3,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "evolving document aggregates",
+        "developer-friendly JSON model"
+      ],
+      "avoid_for": [
+        "join-heavy relational domains",
+        "unbounded document growth"
+      ],
+      "official_docs": "https://www.mongodb.com/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "redis_valkey",
+      "name": "Redis / Valkey",
+      "technology_kind": "key-value",
+      "roles": [
+        "cache",
+        "session",
+        "rate-limit",
+        "low-latency-serving",
+        "stream"
+      ],
+      "data_models": [
+        "key-value"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 4,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 0,
+        "real_time_ingest": 5,
+        "full_text": 2,
+        "vector": 2,
+        "graph": 1,
+        "time_series": 3,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 3,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "cache",
+        "ephemeral state",
+        "sub-millisecond serving"
+      ],
+      "avoid_for": [
+        "sole durable source of record without durability design",
+        "large scans"
+      ],
+      "official_docs": "https://valkey.io/topics/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "cassandra",
+      "name": "Apache Cassandra",
+      "technology_kind": "wide-column",
+      "roles": [
+        "distributed-write-store",
+        "time-series-like",
+        "event-store"
+      ],
+      "data_models": [
+        "wide-column"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 4,
+        "analytical_scan": 1,
+        "real_time_ingest": 5,
+        "full_text": 0,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "high write scale",
+        "multi-region availability",
+        "query-driven denormalization"
+      ],
+      "avoid_for": [
+        "ad hoc queries",
+        "cross-partition transactions",
+        "join-heavy workloads"
+      ],
+      "official_docs": "https://cassandra.apache.org/doc/latest/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "hbase",
+      "name": "Apache HBase",
+      "technology_kind": "wide-column",
+      "roles": [
+        "wide-column-store",
+        "hadoop-serving"
+      ],
+      "data_models": [
+        "wide-column"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 3,
+        "analytical_scan": 2,
+        "real_time_ingest": 4,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 0,
+        "lakehouse": 1,
+        "operational_complexity": 5,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": false,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "Hadoop ecosystem",
+        "sparse wide tables",
+        "large sequential key workloads"
+      ],
+      "avoid_for": [
+        "small teams",
+        "ad hoc relational analytics"
+      ],
+      "official_docs": "https://hbase.apache.org/book.html",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "neo4j",
+      "name": "Neo4j",
+      "technology_kind": "graph-database",
+      "roles": [
+        "graph-serving",
+        "relationship-analysis"
+      ],
+      "data_models": [
+        "property-graph"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": false,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 3,
+        "write_throughput": 3,
+        "read_latency": 4,
+        "analytical_scan": 3,
+        "real_time_ingest": 3,
+        "full_text": 2,
+        "vector": 3,
+        "graph": 5,
+        "time_series": 1,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 3,
+        "cost_efficiency": 2
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "deep relationship traversal",
+        "fraud/identity/knowledge graph"
+      ],
+      "avoid_for": [
+        "simple relational lookups",
+        "massive cheap scans"
+      ],
+      "official_docs": "https://neo4j.com/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "timescaledb",
+      "name": "TimescaleDB",
+      "technology_kind": "time-series-relational",
+      "roles": [
+        "time-series",
+        "relational-oltp",
+        "analytics"
+      ],
+      "data_models": [
+        "relational",
+        "time-series"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": false,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 3,
+        "write_throughput": 4,
+        "read_latency": 4,
+        "analytical_scan": 4,
+        "real_time_ingest": 4,
+        "full_text": 2,
+        "vector": 2,
+        "graph": 0,
+        "time_series": 5,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 3,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "SQL time-series",
+        "IoT/metrics with relational joins"
+      ],
+      "avoid_for": [
+        "extreme multi-region write scale without validation"
+      ],
+      "official_docs": "https://docs.timescale.com/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "technology_kind": "time-series",
+      "roles": [
+        "time-series",
+        "metrics"
+      ],
+      "data_models": [
+        "time-series"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": false,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 4,
+        "write_throughput": 5,
+        "read_latency": 4,
+        "analytical_scan": 3,
+        "real_time_ingest": 5,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 5,
+        "federation": 0,
+        "lakehouse": 1,
+        "operational_complexity": 3,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "metrics and time-series ingestion",
+        "retention/downsampling"
+      ],
+      "avoid_for": [
+        "general transactional workload",
+        "complex relational model"
+      ],
+      "official_docs": "https://docs.influxdata.com/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "opensearch",
+      "name": "OpenSearch",
+      "technology_kind": "search-engine",
+      "roles": [
+        "full-text-search",
+        "log-analytics",
+        "vector-search"
+      ],
+      "data_models": [
+        "search",
+        "document",
+        "vector"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 5,
+        "analytical_scan": 3,
+        "real_time_ingest": 4,
+        "full_text": 5,
+        "vector": 4,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 4,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "full-text",
+        "logs",
+        "hybrid lexical/vector search"
+      ],
+      "avoid_for": [
+        "authoritative transactional store",
+        "frequent arbitrary updates at massive scale without tuning"
+      ],
+      "official_docs": "https://opensearch.org/docs/latest/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "pgvector",
+      "name": "pgvector",
+      "technology_kind": "vector-extension",
+      "roles": [
+        "vector-search",
+        "hybrid-relational-vector"
+      ],
+      "data_models": [
+        "vector",
+        "relational"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 2,
+        "write_throughput": 3,
+        "read_latency": 4,
+        "analytical_scan": 2,
+        "real_time_ingest": 3,
+        "full_text": 3,
+        "vector": 4,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 1,
+        "lakehouse": 0,
+        "operational_complexity": 2,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": true
+      },
+      "best_for": [
+        "moderate-scale vector search with relational metadata",
+        "simple operations"
+      ],
+      "avoid_for": [
+        "very large vector scale without benchmark",
+        "specialized ANN needs"
+      ],
+      "official_docs": "https://github.com/pgvector/pgvector",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "milvus",
+      "name": "Milvus",
+      "technology_kind": "vector-database",
+      "roles": [
+        "vector-search",
+        "embedding-serving"
+      ],
+      "data_models": [
+        "vector"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 5,
+        "analytical_scan": 1,
+        "real_time_ingest": 4,
+        "full_text": 1,
+        "vector": 5,
+        "graph": 0,
+        "time_series": 0,
+        "federation": 0,
+        "lakehouse": 1,
+        "operational_complexity": 4,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "large-scale ANN",
+        "embedding retrieval"
+      ],
+      "avoid_for": [
+        "system of record",
+        "complex relational filtering without validation"
+      ],
+      "official_docs": "https://milvus.io/docs",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "qdrant",
+      "name": "Qdrant",
+      "technology_kind": "vector-database",
+      "roles": [
+        "vector-search",
+        "hybrid-filtered-vector"
+      ],
+      "data_models": [
+        "vector"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 4,
+        "write_throughput": 4,
+        "read_latency": 5,
+        "analytical_scan": 1,
+        "real_time_ingest": 4,
+        "full_text": 2,
+        "vector": 5,
+        "graph": 0,
+        "time_series": 0,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 3,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "filtered vector retrieval",
+        "simpler self-hosted vector service"
+      ],
+      "avoid_for": [
+        "authoritative transactional workload"
+      ],
+      "official_docs": "https://qdrant.tech/documentation/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "clickhouse",
+      "name": "ClickHouse",
+      "technology_kind": "olap-database",
+      "roles": [
+        "real-time-analytics",
+        "observability",
+        "data-warehouse"
+      ],
+      "data_models": [
+        "columnar-olap",
+        "time-series",
+        "vector"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 5,
+        "real_time_ingest": 5,
+        "full_text": 3,
+        "vector": 3,
+        "graph": 0,
+        "time_series": 5,
+        "federation": 2,
+        "lakehouse": 4,
+        "operational_complexity": 4,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "real-time analytics",
+        "logs/metrics",
+        "high-throughput columnar queries"
+      ],
+      "avoid_for": [
+        "OLTP system of record",
+        "frequent row-level transactions"
+      ],
+      "official_docs": "https://clickhouse.com/docs",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_doris",
+      "name": "Apache Doris",
+      "technology_kind": "olap-database",
+      "roles": [
+        "real-time-analytics",
+        "data-warehouse",
+        "lakehouse-query"
+      ],
+      "data_models": [
+        "columnar-olap"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 5,
+        "real_time_ingest": 5,
+        "full_text": 2,
+        "vector": 2,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 3,
+        "lakehouse": 4,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "real-time BI",
+        "MPP analytics",
+        "lakehouse acceleration"
+      ],
+      "avoid_for": [
+        "transactional source of record"
+      ],
+      "official_docs": "https://doris.apache.org/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "starrocks",
+      "name": "StarRocks",
+      "technology_kind": "olap-database",
+      "roles": [
+        "real-time-analytics",
+        "data-warehouse",
+        "lakehouse-query"
+      ],
+      "data_models": [
+        "columnar-olap"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 5,
+        "real_time_ingest": 5,
+        "full_text": 2,
+        "vector": 2,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 4,
+        "lakehouse": 5,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "real-time analytics",
+        "multi-table joins",
+        "lakehouse query"
+      ],
+      "avoid_for": [
+        "OLTP source of record"
+      ],
+      "official_docs": "https://docs.starrocks.io/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_druid",
+      "name": "Apache Druid",
+      "technology_kind": "olap-database",
+      "roles": [
+        "real-time-analytics",
+        "event-analytics"
+      ],
+      "data_models": [
+        "columnar-olap",
+        "time-series"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 4,
+        "real_time_ingest": 5,
+        "full_text": 2,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 5,
+        "federation": 1,
+        "lakehouse": 2,
+        "operational_complexity": 5,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "event/time-oriented OLAP",
+        "sub-second slice-and-dice"
+      ],
+      "avoid_for": [
+        "relational transactions",
+        "heavy arbitrary joins"
+      ],
+      "official_docs": "https://druid.apache.org/docs/latest/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_pinot",
+      "name": "Apache Pinot",
+      "technology_kind": "olap-database",
+      "roles": [
+        "user-facing-analytics",
+        "real-time-analytics"
+      ],
+      "data_models": [
+        "columnar-olap"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 5,
+        "analytical_scan": 4,
+        "real_time_ingest": 5,
+        "full_text": 2,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 4,
+        "federation": 1,
+        "lakehouse": 2,
+        "operational_complexity": 5,
+        "cost_efficiency": 3
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "high-concurrency user-facing analytics",
+        "fresh event data"
+      ],
+      "avoid_for": [
+        "OLTP",
+        "complex transactional updates"
+      ],
+      "official_docs": "https://docs.pinot.apache.org/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_iceberg",
+      "name": "Apache Iceberg",
+      "technology_kind": "table-format",
+      "roles": [
+        "lakehouse-table",
+        "historical-analytics"
+      ],
+      "data_models": [
+        "columnar-table"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 3,
+        "analytical_scan": 5,
+        "real_time_ingest": 4,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 3,
+        "federation": 5,
+        "lakehouse": 5,
+        "operational_complexity": 3,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "open lakehouse",
+        "schema/partition evolution",
+        "multi-engine reads"
+      ],
+      "avoid_for": [
+        "sub-millisecond serving",
+        "small OLTP"
+      ],
+      "official_docs": "https://iceberg.apache.org/docs/latest/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "delta_lake",
+      "name": "Delta Lake",
+      "technology_kind": "table-format",
+      "roles": [
+        "lakehouse-table",
+        "batch-stream-unification"
+      ],
+      "data_models": [
+        "columnar-table"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 5,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 3,
+        "analytical_scan": 5,
+        "real_time_ingest": 4,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 3,
+        "federation": 4,
+        "lakehouse": 5,
+        "operational_complexity": 3,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "Spark-centric lakehouse",
+        "ACID tables",
+        "batch/stream tables"
+      ],
+      "avoid_for": [
+        "low-latency serving",
+        "non-compatible engines without validation"
+      ],
+      "official_docs": "https://docs.delta.io/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_hudi",
+      "name": "Apache Hudi",
+      "technology_kind": "table-format",
+      "roles": [
+        "lakehouse-table",
+        "incremental-processing",
+        "upsert-heavy-lake"
+      ],
+      "data_models": [
+        "columnar-table"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 3,
+        "analytical_scan": 5,
+        "real_time_ingest": 5,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 3,
+        "federation": 4,
+        "lakehouse": 5,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "incremental lakehouse",
+        "upsert/change streams"
+      ],
+      "avoid_for": [
+        "simple append-only lake when operational simplicity dominates"
+      ],
+      "official_docs": "https://hudi.apache.org/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "trino",
+      "name": "Trino",
+      "technology_kind": "query-engine",
+      "roles": [
+        "federated-query",
+        "lakehouse-query",
+        "interactive-sql"
+      ],
+      "data_models": [
+        "federated-sql"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 1,
+        "horizontal_scale": 5,
+        "write_throughput": 1,
+        "read_latency": 4,
+        "analytical_scan": 5,
+        "real_time_ingest": 1,
+        "full_text": 0,
+        "vector": 1,
+        "graph": 0,
+        "time_series": 2,
+        "federation": 5,
+        "lakehouse": 5,
+        "operational_complexity": 3,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "distributed SQL across heterogeneous sources",
+        "lakehouse interactive query"
+      ],
+      "avoid_for": [
+        "OLTP storage",
+        "unbounded source scans without pushdown"
+      ],
+      "official_docs": "https://trino.io/docs/current/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "duckdb",
+      "name": "DuckDB",
+      "technology_kind": "embedded-olap",
+      "roles": [
+        "local-analytics",
+        "testing",
+        "embedded-olap"
+      ],
+      "data_models": [
+        "columnar-olap"
+      ],
+      "deployments": [
+        "on-prem",
+        "edge"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 0,
+        "write_throughput": 3,
+        "read_latency": 5,
+        "analytical_scan": 5,
+        "real_time_ingest": 2,
+        "full_text": 0,
+        "vector": 2,
+        "graph": 0,
+        "time_series": 3,
+        "federation": 3,
+        "lakehouse": 3,
+        "operational_complexity": 1,
+        "cost_efficiency": 5
+      },
+      "hard_flags": {
+        "strong_consistency": true,
+        "multi_row_transactions": true,
+        "on_prem": true,
+        "managed_cloud": false,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "local development",
+        "in-process analytics",
+        "test fixtures"
+      ],
+      "avoid_for": [
+        "distributed multi-user production service without architecture layer"
+      ],
+      "official_docs": "https://duckdb.org/docs/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_kafka",
+      "name": "Apache Kafka",
+      "technology_kind": "event-streaming",
+      "roles": [
+        "event-backbone",
+        "cdc-log",
+        "replay"
+      ],
+      "data_models": [
+        "append-log"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 4,
+        "analytical_scan": 1,
+        "real_time_ingest": 5,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 3,
+        "federation": 0,
+        "lakehouse": 0,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "durable event streaming",
+        "replay",
+        "CDC backbone"
+      ],
+      "avoid_for": [
+        "database replacement",
+        "ad hoc analytical queries"
+      ],
+      "official_docs": "https://kafka.apache.org/documentation/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_flink",
+      "name": "Apache Flink",
+      "technology_kind": "processing-engine",
+      "roles": [
+        "stream-processing",
+        "batch-processing",
+        "stateful-compute"
+      ],
+      "data_models": [
+        "bounded-unbounded-dataflow"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 4,
+        "horizontal_scale": 5,
+        "write_throughput": 5,
+        "read_latency": 0,
+        "analytical_scan": 4,
+        "real_time_ingest": 5,
+        "full_text": 0,
+        "vector": 0,
+        "graph": 0,
+        "time_series": 5,
+        "federation": 2,
+        "lakehouse": 4,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "stateful event-time streaming",
+        "unified bounded/unbounded processing"
+      ],
+      "avoid_for": [
+        "persistent serving database"
+      ],
+      "official_docs": "https://nightlies.apache.org/flink/flink-docs-stable/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    },
+    {
+      "id": "apache_spark",
+      "name": "Apache Spark",
+      "technology_kind": "processing-engine",
+      "roles": [
+        "batch-processing",
+        "structured-streaming",
+        "machine-learning"
+      ],
+      "data_models": [
+        "distributed-dataframe"
+      ],
+      "deployments": [
+        "on-prem",
+        "private-cloud",
+        "public-cloud"
+      ],
+      "open_source": true,
+      "heuristic_scores_0_to_5": {
+        "transactions": 2,
+        "horizontal_scale": 5,
+        "write_throughput": 4,
+        "read_latency": 0,
+        "analytical_scan": 5,
+        "real_time_ingest": 4,
+        "full_text": 0,
+        "vector": 1,
+        "graph": 3,
+        "time_series": 3,
+        "federation": 2,
+        "lakehouse": 5,
+        "operational_complexity": 4,
+        "cost_efficiency": 4
+      },
+      "hard_flags": {
+        "strong_consistency": false,
+        "multi_row_transactions": false,
+        "on_prem": true,
+        "managed_cloud": true,
+        "native_cdc_source": false
+      },
+      "best_for": [
+        "large-scale batch",
+        "SQL/dataframes",
+        "ML",
+        "micro-batch streaming"
+      ],
+      "avoid_for": [
+        "ultra-low-latency continuous processing without validation"
+      ],
+      "official_docs": "https://spark.apache.org/docs/latest/",
+      "adapter_status": "catalog-only",
+      "score_warning": "Heuristic seed only; production decisions require versioned evidence and representative benchmark."
+    }
+  ]
+}

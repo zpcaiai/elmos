@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "nodeId": "java-orders",
+  "organizationId": "org-fixture",
+  "nodeType": "SERVICE",
+  "name": "Java Orders",
+  "language": "JAVA",
+  "repositoryId": "repo-orders",
+  "deployableId": "deploy-orders",
+  "environment": "PRODUCTION",
+  "evidenceRefs": ["evidence:manifest:orders"]
+}

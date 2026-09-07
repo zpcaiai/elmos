@@ -1,0 +1,61 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos Project Intelligence Events
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  revisionIngested:
+    address: elmos.project-intelligence.revision.ingested.v1
+    messages:
+      revisionIngested:
+        $ref: "#/components/messages/RevisionIngested"
+  analysisCheckpointed:
+    address: elmos.project-intelligence.analysis.stage.checkpointed.v1
+    messages:
+      analysisCheckpointed:
+        $ref: "#/components/messages/AnalysisCheckpointed"
+  artifactCompleted:
+    address: elmos.project-intelligence.artifact.completed.v1
+    messages:
+      artifactCompleted:
+        $ref: "#/components/messages/ArtifactCompleted"
+  artifactStale:
+    address: elmos.project-intelligence.artifact.stale.v1
+    messages:
+      artifactStale:
+        $ref: "#/components/messages/ArtifactStale"
+  driftDetected:
+    address: elmos.project-intelligence.drift.detected.v1
+    messages:
+      driftDetected:
+        $ref: "#/components/messages/DriftDetected"
+operations: {}
+components:
+  schemas:
+    EventEnvelope:
+      type: object
+      required: [event_id, event_type, occurred_at, tenant_id, project_id, idempotency_key, payload]
+      properties:
+        event_id: {type: string}
+        event_type: {type: string}
+        occurred_at: {type: string, format: date-time}
+        tenant_id: {type: string}
+        project_id: {type: string}
+        revision_id: {type: [string, "null"]}
+        analysis_run_id: {type: [string, "null"]}
+        job_id: {type: [string, "null"]}
+        idempotency_key: {type: string}
+        traceparent: {type: [string, "null"]}
+        payload_ref: {type: [string, "null"]}
+        payload: {type: object}
+  messages:
+    RevisionIngested:
+      payload: {$ref: "#/components/schemas/EventEnvelope"}
+    AnalysisCheckpointed:
+      payload: {$ref: "#/components/schemas/EventEnvelope"}
+    ArtifactCompleted:
+      payload: {$ref: "#/components/schemas/EventEnvelope"}
+    ArtifactStale:
+      payload: {$ref: "#/components/schemas/EventEnvelope"}
+    DriftDetected:
+      payload: {$ref: "#/components/schemas/EventEnvelope"}

@@ -1,0 +1,129 @@
+# 运行时 Trace、日志与静态图谱融合 — Module Specification
+
+## 1. Epic
+
+- **Epic ID**：`EPIC-18`
+- **Skill**：`elmos-runtime-trace-fusion`
+- **批次**：`BATCH-04-architecture-flow-data`
+- **目标**：在不把有限观测误当完整事实的前提下，用运行证据提高架构、流程和影响分析可信度。
+
+## 2. 用户价值
+
+接入 OpenTelemetry Trace、结构化日志、覆盖率和性能剖析，将实际运行边与静态图谱关联。用于确认流程、发现动态调用和比较静态/运行架构。
+
+## 3. 功能需求
+
+| ID | 需求 |
+|---|---|
+| `REQ-18-01` | 保留采样率、时间范围、环境和数据新鲜度。 |
+| `REQ-18-02` | 支持脱敏、尾部采样和租户隔离。 |
+| `REQ-18-03` | Trace 与 revision 不确定时必须标记。 |
+| `REQ-18-04` | 运行图按环境分层，不合并 dev/prod。 |
+| `REQ-18-05` | 支持源/目标双运行差分。 |
+
+## 4. API 触点
+
+- `/api/v1/runtime/import`
+- `/api/v1/runtime/graph`
+- `/api/v1/runtime/static-diff`
+
+所有 API 必须：
+
+- 使用 `/api/v1` 版本前缀或清晰的内部契约版本；
+- 携带 `tenant_id`、`project_id`、`revision_id/analysis_run_id` 的服务端上下文；
+- 支持幂等键、分页、错误码和权限校验；
+- 不在错误消息中泄露代码、凭据或跨租户对象；
+- 对长任务返回 `job_id`、状态、检查点和可恢复错误。
+
+## 5. 主要领域实体
+
+- `ArchitectureModel`
+- `Capability`
+- `Flow`
+- `DataAsset`
+- `Integration`
+- `RuntimeObservation`
+
+实体必须包含必要的：
+
+- stable ID；
+- tenant/project scope；
+- revision 或 version；
+- created/updated/actor；
+- provenance/evidence；
+- optimistic lock 或 immutable version。
+
+## 6. 事件与异步工作
+
+建议事件命名：`elmos.project-intelligence.<domain>.<event>.v1`。
+
+- 开始、完成、失败、取消和检查点事件必须可区分；
+- 事件携带引用 ID，不携带大段源代码；
+- 消费者必须幂等；
+- 外部副作用保存 idempotency key；
+- poison message 进入隔离队列并生成可操作诊断。
+
+## 7. UI/交互要求
+
+- 页面必须显示 revision、分析覆盖、可信度和数据新鲜度。
+- 长任务显示阶段、已完成单位、P50/P90 机器 ETA、重试和恢复入口。
+- 用户可从结论跳转证据；无证据时显示 Unknown/Inferred。
+- 人工编辑、锁定、审批和自动生成状态视觉区分。
+- 权限不足不得通过搜索、缩略图、缓存或深链泄漏信息。
+
+## 8. 非功能要求
+
+- API、图查询、渲染和长任务分别定义 p50/p95/p99。
+- 支持水平扩展、背压、配额和 graceful degradation。
+- 所有持久化 Schema 与事件有版本和迁移路径。
+- 安全默认拒绝、Secrets Broker、审计、传输/静态加密。
+- 可通过内容哈希、版本和输入 manifest 重现。
+
+## 9. 关键指标
+
+- 入口覆盖率
+- 流程步骤召回率
+- 血缘准确率
+- 架构节点置信度
+
+## 10. 交付物
+
+- `runtime-graph.json`
+- `static-runtime-diff.md`
+- `trace-link-report.json`
+
+## 11. 任务清单
+
+| Task | 标题 | 类型 | 优先级 |
+|---|---|---|---|
+| `ELMOS-PI-18-T01` | 接收或导入 OTLP Trace/Span 与环境标签 | implementation | P1 |
+| `ELMOS-PI-18-T02` | 规范化 service/resource/code attributes | implementation | P1 |
+| `ELMOS-PI-18-T03` | 将 span 关联到 API、symbol、database、message 和 external system | implementation | P1 |
+| `ELMOS-PI-18-T04` | 聚合调用频率、延迟、错误和关键路径 | implementation | P1 |
+| `ELMOS-PI-18-T05` | 比较静态候选边与运行观测边 | implementation | P1 |
+| `ELMOS-PI-18-T06` | 发布 runtime evidence 并触发受影响 artifact 更新 | implementation | P1 |
+| `ELMOS-PI-18-T07` | 实现权限、安全和不可信输入防护 | security | P1 |
+| `ELMOS-PI-18-T08` | 接入日志、指标、Trace、错误分类和审计 | observability | P1 |
+| `ELMOS-PI-18-T09` | 建立单元、契约、集成、E2E 与回归测试 | testing | P1 |
+| `ELMOS-PI-18-T10` | 更新 API、Schema、文档、追踪矩阵并完成验收 | documentation | P1 |
+
+## 12. 验收标准
+
+| ID | 验收标准 |
+|---|---|
+| `AC-18-01` | 已知 Trace 可正确映射到服务/接口/数据库。 |
+| `AC-18-02` | 静态与运行差异有明确原因分类。 |
+| `AC-18-03` | 采样限制显示在每个运行结论旁。 |
+| `AC-18-04` | 跨环境查询不会混淆。 |
+| `AC-18-05` | 高容量导入有背压与保留策略。 |
+
+## 13. 依赖
+
+- `elmos-project-intelligence-graph`
+
+## 14. 失败与恢复
+
+- 将错误分类为 user-fixable、transient、capacity、permission、unsupported、internal。
+- 可重试错误使用指数退避和最大次数；不可重试错误保留输入、日志和检查点。
+- 恢复前验证 revision、配置、规则、模型、模板和权限是否仍兼容。
+- 取消操作释放租约和临时资源，但保留审计与已确认 artifact。

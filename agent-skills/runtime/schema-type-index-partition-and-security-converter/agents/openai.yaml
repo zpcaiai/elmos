@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Schema Converter"
+  short_description: "Convert schema types indexes and security"
+  default_prompt: "Use $schema-type-index-partition-and-security-converter to govern this ELMOS Batch 15 workflow."

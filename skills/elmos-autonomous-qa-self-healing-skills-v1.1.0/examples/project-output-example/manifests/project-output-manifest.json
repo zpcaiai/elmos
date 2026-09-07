@@ -1,0 +1,277 @@
+{
+  "schema_version": "1.0",
+  "output_id": "out_example_001",
+  "project_id": "example-calculator",
+  "revision_id": "rev_example_001",
+  "run_id": "run_example_001",
+  "run_mode": "verify",
+  "source_snapshot_id": "snapshot_example_001",
+  "status": "partial",
+  "output_mode": "sidecar",
+  "created_at": "2026-08-20T05:00:00Z",
+  "published_at": "2026-08-20T05:57:33.178637Z",
+  "artifacts": [
+    {
+      "artifact_id": "art_delivery_summary",
+      "category": "report",
+      "role": "delivery_summary",
+      "path": "DELIVERY_SUMMARY.md",
+      "content_type": "text/markdown",
+      "sha256": "5694f966776e0767530f6da646eb3317f85e09ce91d05123c13443a15a083287",
+      "size_bytes": 134,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    },
+    {
+      "artifact_id": "art_test_set_manifest",
+      "category": "manifest",
+      "role": "test_artifact_set_manifest",
+      "path": "manifests/test-artifact-set.json",
+      "content_type": "application/json",
+      "sha256": "d1768436d91df966fe1e7ea273e513918074ab704b605556646bc91b36e7f16c",
+      "size_bytes": 1413,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    },
+    {
+      "artifact_id": "art_tests_readme",
+      "category": "test_config",
+      "role": "generated_tests_readme",
+      "path": "project/GENERATED_TESTS_README.md",
+      "content_type": "text/markdown",
+      "sha256": "f4a15dc7bf43c8f80a9e45ebdce3028b582191505805e58d344b8e4b57144fe8",
+      "size_bytes": 218,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true,
+      "requirement_refs": [
+        "REQ-CALC-001"
+      ],
+      "test_case_refs": [
+        "TC-CALC-001"
+      ]
+    },
+    {
+      "artifact_id": "art_package",
+      "category": "test_config",
+      "role": "application_and_test_package_manifest",
+      "path": "project/package.json",
+      "content_type": "application/json",
+      "sha256": "aca63992cc7aee76ceb7f5d27695038cfc58010295ff12b440860b759166769f",
+      "size_bytes": 285,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true,
+      "test_case_refs": [
+        "TC-CALC-001"
+      ],
+      "requirement_refs": [
+        "REQ-CALC-001"
+      ]
+    },
+    {
+      "artifact_id": "art_app_add",
+      "category": "application_source",
+      "role": "application_source",
+      "path": "project/src/add.ts",
+      "content_type": "text/typescript",
+      "sha256": "9a30ac96b5d5c1b67eca69e1e2cf0798817d9578c8d7d904a81a67b983b35cba",
+      "size_bytes": 70,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    },
+    {
+      "artifact_id": "art_test_add",
+      "category": "test_source",
+      "role": "unit_test",
+      "path": "project/tests/unit/add.spec.ts",
+      "content_type": "text/typescript",
+      "sha256": "f9997107d6f4ed4bb67a8c0f950326ae2465f46c4fb57484c20b17c48e2ab8a2",
+      "size_bytes": 217,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true,
+      "language": "TypeScript",
+      "framework": "Vitest",
+      "test_type": "unit",
+      "native_test_target": "npm test",
+      "requirement_refs": [
+        "REQ-CALC-001"
+      ],
+      "test_case_refs": [
+        "TC-CALC-001"
+      ],
+      "retention_class": "standard",
+      "sensitivity": "internal"
+    },
+    {
+      "artifact_id": "art_plan",
+      "category": "test_plan",
+      "role": "test_plan",
+      "path": "qa/plans/test-plan.md",
+      "content_type": "text/markdown",
+      "sha256": "4d5084589f30ec26f495f6dd60dc601f9bcaada78ade6fbe01674f42ad47c82d",
+      "size_bytes": 188,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    },
+    {
+      "artifact_id": "art_report",
+      "category": "report",
+      "role": "qa_summary",
+      "path": "qa/reports/summary.md",
+      "content_type": "text/markdown",
+      "sha256": "5aa0637765162d7bc72b23fc1c7d7217d907fd465977b2d448a5581294f57b50",
+      "size_bytes": 125,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    },
+    {
+      "artifact_id": "art_replay_smoke",
+      "category": "replay_script",
+      "role": "smoke_replay",
+      "path": "replay/run-smoke.sh",
+      "content_type": "text/x-shellscript",
+      "sha256": "96105dd57a395128b50b6f9d4ac7a86c7992e570b59dec830f1d34bc8cc409af",
+      "size_bytes": 96,
+      "producer": "example-builder-v1.1.0",
+      "created_at": "2026-08-20T05:00:00Z",
+      "validation_status": "generated",
+      "required": true
+    }
+  ],
+  "bundles": [
+    {
+      "bundle_id": "bundle_out_example_001_project-with-tests",
+      "output_id": "out_example_001",
+      "kind": "project-with-tests",
+      "format": "zip",
+      "path": "bundles/example-calculator-rev_example_001-project-with-tests.zip",
+      "sha256": "472fbcdda1be019407fd677a26b22eb47438916ee8d10e031fe92f49d64de77b",
+      "size_bytes": 2675,
+      "status": "verified",
+      "created_at": "2026-08-20T05:57:33.177483Z",
+      "verified_at": "2026-08-20T05:57:33.177483Z",
+      "file_count": 7,
+      "includes_categories": [
+        "application_config",
+        "application_source",
+        "ci_config",
+        "manifest",
+        "replay_script",
+        "test_baseline",
+        "test_config",
+        "test_data",
+        "test_fixture",
+        "test_mock",
+        "test_source"
+      ],
+      "manifest_ref": "bundle-content-manifest.json",
+      "content_manifest_path": "bundle-content-manifest.json"
+    },
+    {
+      "bundle_id": "bundle_out_example_001_tests-only",
+      "output_id": "out_example_001",
+      "kind": "tests-only",
+      "format": "zip",
+      "path": "bundles/example-calculator-rev_example_001-tests-only.zip",
+      "sha256": "6b479e1e74decc195553c718ea3aea906a25e3e307f3c17b8288a4881d16d7fc",
+      "size_bytes": 2443,
+      "status": "verified",
+      "created_at": "2026-08-20T05:57:33.178072Z",
+      "verified_at": "2026-08-20T05:57:33.178072Z",
+      "file_count": 6,
+      "includes_categories": [
+        "ci_config",
+        "manifest",
+        "replay_script",
+        "test_baseline",
+        "test_config",
+        "test_data",
+        "test_fixture",
+        "test_mock",
+        "test_source"
+      ],
+      "manifest_ref": "bundle-content-manifest.json",
+      "content_manifest_path": "bundle-content-manifest.json"
+    },
+    {
+      "bundle_id": "bundle_out_example_001_qa-evidence",
+      "output_id": "out_example_001",
+      "kind": "qa-evidence",
+      "format": "zip",
+      "path": "bundles/example-calculator-rev_example_001-qa-evidence.zip",
+      "sha256": "2f57d560f0de4faa2bfe2d4eae47e9cfd7ed9dae44426649d0349b0fd7802219",
+      "size_bytes": 2019,
+      "status": "verified",
+      "created_at": "2026-08-20T05:57:33.178541Z",
+      "verified_at": "2026-08-20T05:57:33.178541Z",
+      "file_count": 5,
+      "includes_categories": [
+        "certificate",
+        "coverage",
+        "defect",
+        "evidence",
+        "manifest",
+        "patch",
+        "performance_baseline",
+        "report",
+        "security_result",
+        "test_plan",
+        "test_result",
+        "traceability"
+      ],
+      "manifest_ref": "bundle-content-manifest.json",
+      "content_manifest_path": "bundle-content-manifest.json"
+    }
+  ],
+  "entrypoints": {
+    "install": [
+      "npm ci"
+    ],
+    "test_discover": [
+      "npm run test:discover"
+    ],
+    "test_smoke": [
+      "npm run test:smoke"
+    ],
+    "test_all": [
+      "npm test"
+    ],
+    "replay_failed": [
+      "../replay/run-smoke.sh"
+    ],
+    "by_type": {
+      "unit": [
+        "npm test -- project/tests/unit/add.spec.ts"
+      ]
+    }
+  },
+  "quality_summary": {
+    "required_tests": 1,
+    "materialized_required_tests": 1,
+    "generated_test_files": 1,
+    "discovered_test_files": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1,
+    "flaky_confirmed": 0,
+    "quality_gates_passed": false
+  },
+  "metadata": {
+    "example_only": true
+  }
+}

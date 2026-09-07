@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/ai-factory/v4/zero-trust-identity-policy.schema.json",
+  "title": "Zero Trust Identity Policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "revision_set_id",
+    "artifact_id",
+    "status",
+    "content_hash",
+    "evidence_refs",
+    "rules",
+    "exceptions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "READY",
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "UNKNOWN",
+        "UNSUPPORTED"
+      ]
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{16,128}$"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "effect"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "effect": {
+            "enum": [
+              "allow",
+              "deny",
+              "review"
+            ]
+          },
+          "condition": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

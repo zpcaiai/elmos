@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-35-advanced-verification-factory-complete-skill-pack",
+  "batch": 35,
+  "title": "Advanced Verification, Fuzzing, Mutation and Formal Assurance Factory",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b35-advanced-verification-factory-orchestrator",
+    "b35-advanced-verification-factory-domain-model",
+    "b35-advanced-verification-factory-discovery-inventory",
+    "b35-advanced-verification-factory-capability-planning",
+    "b35-advanced-verification-factory-deterministic-engine",
+    "b35-advanced-verification-factory-adapter-provider",
+    "b35-advanced-verification-factory-workflow-runtime",
+    "b35-advanced-verification-factory-lineage-reconciliation",
+    "b35-advanced-verification-factory-security-policy",
+    "b35-advanced-verification-factory-human-approval",
+    "b35-advanced-verification-factory-observability-economics",
+    "b35-advanced-verification-factory-corpus-benchmark",
+    "b35-advanced-verification-factory-failure-recovery",
+    "b35-advanced-verification-factory-integration-api",
+    "b35-advanced-verification-factory-lifecycle-recertification",
+    "b35-advanced-verification-factory-certification-gate"
+  ],
+  "upstream_batch": 34,
+  "files": [
+    {
+      "path": "BATCH34_COMPATIBILITY.md",
+      "sha256": "de8c81689aad257f5e5e19cf09afe9fb8c25fa823f8682421ad39d27b33b024e",
+      "size": 2117
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "4eef5b6560247f5ebf7f2f4ea2a2de4460f31fb63a0456fb4e24032849590640",
+      "size": 2291
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "ff22b95328d2f496092a77ca57da4ab56984640f3a8dd2e71646b919d873d032",
+      "size": 1788
+    },
+    {
+      "path": "README.md",
+      "sha256": "deb3450dfd9edbf68630d6ba553f065c8466758cb60d1c8de76a71de35bb9230",
+      "size": 1082
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "b5dbc731076b4d476d3c8134a4e1a04403b7d909b469742c9180c2bd3388944b",
+      "size": 3559
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "aeffaff04af032c0fa720b7fc95c935bb8fc914ca87f905b8ed8b3dc5f499d4f",
+      "size": 3102
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "dda7a2ef8dc5a47928ac5ba306601c4c4b43a2a753a322948ccacb4e8353b7d0",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "beec2c03c0ff950228219c17eb20eb9f5e587a3b52a3c4dc9fd2d20dc79b09b1",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "481f6ce44532b8d2fbdd0703fdefd8f58230f5dd067aa9b3474a3fcd143f2f75",
+      "size": 303
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "04dfc882f3f575da31a253fb5cf484e6c7fcb65c6982df31ef4d71bbbdda3532",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "a951fedc37b2c3be4f9e86868c6196fa6fc43ab0bad0bebc49cf63ab8e7cb575",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "4fc8cd5a6ec90a59077a235d533dcada3734178a3668b6d84554b5ded70b01f0",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "6e36217a48ca7ff7f316c5e4717d9b611aabc83cf549f4973ff46a5eff2f2003",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "6a0ad23b2ba3b31e04d4ad2a959f599861ecd7fc65c670672dcc206088052d7f",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "8ddb3faa00c6b99964ba6de4158966f279ce99163f883c46d54fa3bf010651b4",
+      "size": 848
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-adapter-provider/SKILL.md",
+      "sha256": "88a852c6d852bdd455caf187b9f9d1a5c9cca281be361e78b33e106ff19467d6",
+      "size": 3868
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-capability-planning/SKILL.md",
+      "sha256": "308136f2c26f427fbe3fc632d550a0ab4922fbbd1d0b355b1e55b9a5535e4916",
+      "size": 3770
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-certification-gate/SKILL.md",
+      "sha256": "39b544d9b252a356fcf56985a29d7200b2f954b6f6b7a0c443a7ff8c9295e3ba",
+      "size": 3899
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-corpus-benchmark/SKILL.md",
+      "sha256": "13faf25b6f69a1e246332aa0aec6b6c63067ebc3bc1f2f4fee904dbd7531ec2e",
+      "size": 3809
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-deterministic-engine/SKILL.md",
+      "sha256": "88991a040a23e2f5e82efa80a076276015cd81a1e5636142233fec3877b6832f",
+      "size": 3786
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-discovery-inventory/SKILL.md",
+      "sha256": "451fc6dfdcf91f21b1c0ccd9a07ff2696be5cc0a6741cc5a9f44010a172bfcdc",
+      "size": 3813
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-domain-model/SKILL.md",
+      "sha256": "78fa81bef9e28e0baa3feb9c369b1e5ef7ebece9ed8988dfa780188c1824d91e",
+      "size": 3840
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-failure-recovery/SKILL.md",
+      "sha256": "5b5f83c98eb208d97ad0f8f03c530213547d6cfe3c95f5aee1036b97c2470cd9",
+      "size": 3817
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-human-approval/SKILL.md",
+      "sha256": "ce6402c737793b33a6ca9a590109ec40992d05dcbb33eb4b2a71685551e6ea9d",
+      "size": 3802
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-integration-api/SKILL.md",
+      "sha256": "376bae1f10179e16c1b08e0dfcbc0dddf345f3f9d645db94095959f7cd021618",
+      "size": 3787
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-lifecycle-recertification/SKILL.md",
+      "sha256": "72a4d57debdb99300d39d739ba4194d02083f0f65fd33d47855cbfe655050581",
+      "size": 3877
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-lineage-reconciliation/SKILL.md",
+      "sha256": "f372a62a077cef6877604c8c1f59c1fb3b019b3339f124f6a1cd0828fd4ec71a",
+      "size": 3828
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-observability-economics/SKILL.md",
+      "sha256": "690e0c8ee4a49ef559e5ff4b569eb537a128175f7012aab4cf4c3288e03f90ee",
+      "size": 3843
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-orchestrator/SKILL.md",
+      "sha256": "acc5a1f80441907249d5cbf37b14ca1fa62f90740e97a4657a850e9bfa3ace9c",
+      "size": 3865
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-security-policy/SKILL.md",
+      "sha256": "3c6579d3f3e40f7315f01ac4c6cae96e056bc5222749eda3aa4132df7a1a03cf",
+      "size": 3822
+    },
+    {
+      "path": "skills/b35-advanced-verification-factory-workflow-runtime/SKILL.md",
+      "sha256": "02398cf85957fd45ed532f6b17e448240104ae1c82aa06bcb8d34ab40d22df53",
+      "size": 3831
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "1a64b457fa9aa1fbdb03061b87e1fbdad3686addf31b471280a7006bb090d2c4",
+      "size": 373
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "cbb4bebb6be26d6d54ff2b243acaccf128221efb2e4ea153194b0b1b19b4c794",
+      "size": 1947
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

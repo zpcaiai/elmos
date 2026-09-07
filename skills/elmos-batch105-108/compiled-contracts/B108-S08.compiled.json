@@ -1,0 +1,66 @@
+{
+  "contract": {
+    "id": "B108-S08",
+    "batch": 108,
+    "name": "test-and-coverage-before-after-summarizer",
+    "dependencies": [
+      "B105-S12",
+      "B108-S02"
+    ],
+    "inputs": [
+      "baseline/candidate test and performance evidence"
+    ],
+    "outputs": [
+      "BeforeAfterSummary",
+      "metric deltas"
+    ],
+    "implementation": {
+      "modules": [
+        "reporting/metrics/BeforeAfterSummaryService.java",
+        "analytics/modernization/before_after.sql"
+      ],
+      "interfaces": [
+        "GET /api/projects/{id}/before-after-summary",
+        "event report.before-after.completed"
+      ],
+      "data": [
+        "before_after_metric",
+        "metric_delta"
+      ]
+    },
+    "workflow": [
+      "\u6807\u51c6\u5316\u6d4b\u8bd5/\u8986\u76d6\u7387/API/\u6784\u5efa/\u542f\u52a8\u6307\u6807",
+      "\u6821\u9a8c\u4e24\u4fa7\u53e3\u5f84\u548c\u5de5\u5177\u7248\u672c",
+      "\u8ba1\u7b97\u7edd\u5bf9\u548c\u76f8\u5bf9\u53d8\u5316",
+      "\u5bf9\u7f3a\u5931/\u4e0d\u540c\u6bd4\u8f83\u53e3\u5f84\u6807UNKNOWN",
+      "\u751f\u6210\u8868\u683c\u4e0e\u673a\u5668JSON",
+      "\u94fe\u63a5\u5230\u539f\u59cb\u8bc1\u636e"
+    ],
+    "tests": [
+      "\u6d4b\u8bd5\u6846\u67b6\u7248\u672c\u53d8\u5316\u4f46\u53e3\u5f84\u517c\u5bb9",
+      "\u7f3a\u57fa\u7ebf\u4e0d\u8ba1\u7b97\u767e\u5206\u6bd4",
+      "\u8d1f\u6570/\u65e0\u7a77\u5f02\u5e38\u5904\u7406",
+      "\u8df3\u8fc7\u589e\u52a0\u9192\u76ee\u6807\u8bb0",
+      "\u6bcf\u9879\u53ef\u4e0b\u94bb"
+    ],
+    "evidence": [
+      "before-after-summary.json",
+      "before-after-summary.md",
+      "metric-lineage.json"
+    ],
+    "definition_of_done": [
+      "\u53e3\u5f84\u4e00\u81f4",
+      "UNKNOWN\u663e\u5f0f",
+      "\u65e0\u5938\u5927\u767e\u5206\u6bd4",
+      "\u6bcf\u9879\u6709\u8bc1\u636e",
+      "\u7ba1\u7406\u5c42\u53ef\u8bfb"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:844f06b295dedf8e18909d98987ebbb3e226035479f6e2c08eaa9d67fa4680c1",
+  "compiledVersion": 1
+}

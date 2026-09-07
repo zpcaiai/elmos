@@ -1,0 +1,4 @@
+interface:
+  display_name: "B24 Data Lineage Completeness"
+  short_description: "Help with B24 Data Lineage Completeness tasks"
+  default_prompt: "Use $b24-data-lineage-completeness to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

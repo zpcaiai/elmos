@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Readiness Analyzer"
+  short_description: "Assess migration test readiness"
+  default_prompt: "Use $test-readiness-analyzer for ELMOS Batch 3 test evidence."

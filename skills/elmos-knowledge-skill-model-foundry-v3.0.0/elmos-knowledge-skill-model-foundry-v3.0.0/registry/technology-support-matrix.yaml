@@ -1,0 +1,127 @@
+apiVersion: elmos.ai/v1
+kind: TechnologySupportMatrix
+metadata:
+  version: 3.0.0
+  generatedAt: '2026-08-29'
+  status: specification-ready
+spec:
+  languagesAndBuilds:
+  - java-jvm-language-adapter
+  - kotlin-jvm-language-adapter
+  - scala-jvm-language-adapter
+  - groovy-jvm-language-adapter
+  - csharp-dotnet-language-adapter
+  - fsharp-dotnet-language-adapter
+  - python-language-adapter
+  - go-language-adapter
+  - rust-language-adapter
+  - c-language-adapter
+  - cpp-language-adapter
+  - typescript-language-adapter
+  - javascript-language-adapter
+  - php-language-adapter
+  - ruby-language-adapter
+  - swift-language-adapter
+  - objectivec-language-adapter
+  - dart-flutter-language-adapter
+  - lua-language-adapter
+  - r-language-adapter
+  - matlab-language-adapter
+  - cobol-language-adapter
+  - abap-language-adapter
+  - sql-procedural-language-adapter
+  - maven-gradle-ant-build-adapter
+  - dotnet-msbuild-nuget-adapter
+  - npm-pnpm-yarn-bun-adapter
+  - python-uv-poetry-pip-adapter
+  - cargo-rustup-build-adapter
+  - go-modules-workspace-adapter
+  - cmake-bazel-meson-ninja-adapter
+  - make-autotools-build-adapter
+  - swiftpm-cocoapods-xcode-adapter
+  - composer-php-build-adapter
+  - bundler-ruby-build-adapter
+  - language-adapter-conformance-matrix
+  databaseEngines:
+  - oracle-database-adapter
+  - sqlserver-database-adapter
+  - postgresql-database-adapter
+  - mysql-mariadb-database-adapter
+  - db2-database-adapter
+  - sybase-ase-database-adapter
+  - teradata-database-adapter
+  - snowflake-database-adapter
+  - bigquery-database-adapter
+  - redshift-database-adapter
+  - sqlite-database-adapter
+  - clickhouse-database-adapter
+  - tidb-database-adapter
+  - oceanbase-database-adapter
+  - dameng-database-adapter
+  - kingbase-database-adapter
+  - mongodb-database-adapter
+  - cassandra-scylladb-adapter
+  - redis-keyvalue-adapter
+  - neo4j-graph-adapter
+  - dynamodb-document-adapter
+  - elasticsearch-opensearch-adapter
+  - database-driver-orm-compatibility
+  - database-adapter-certification-matrix
+  frameworksAndRuntimes:
+  - spring-framework-adapter
+  - jakartaee-javaee-adapter
+  - struts1-adapter
+  - struts2-adapter
+  - servlet-jsp-adapter
+  - jsf-adapter
+  - hibernate-jpa-adapter
+  - mybatis-adapter
+  - dotnet-aspnetcore-adapter
+  - dotnet-framework-webforms-adapter
+  - django-adapter
+  - flask-fastapi-adapter
+  - rails-adapter
+  - laravel-symfony-adapter
+  - express-nestjs-adapter
+  - nextjs-react-adapter
+  - vue-nuxt-adapter
+  - angular-adapter
+  - flutter-adapter
+  - react-native-adapter
+  - android-compose-adapter
+  - ios-swiftui-adapter
+  - qt-cpp-adapter
+  - electron-tauri-adapter
+  - grpc-adapter
+  - graphql-adapter
+  - kafka-pulsar-rabbit-adapter
+  - spark-flink-beam-adapter
+  - airflow-dagster-adapter
+  - dbt-adapter
+  - kubernetes-helm-adapter
+  - terraform-pulumi-adapter
+  - langchain-langgraph-adapter
+  - dify-agent-platform-adapter
+  - spring-ai-adapter
+  - framework-adapter-certification-matrix
+  cloudPlatforms:
+  - aws-cloud-adapter
+  - azure-cloud-adapter
+  - gcp-cloud-adapter
+  - alibaba-cloud-adapter
+  - tencent-cloud-adapter
+  - huawei-cloud-adapter
+  - private-openstack-adapter
+  - vmware-platform-adapter
+  - baremetal-edge-adapter
+  - kubernetes-platform-adapter
+  - serverless-platform-adapter
+  - object-storage-adapter
+  - managed-database-adapter
+  - managed-messaging-adapter
+  - identity-kms-secret-adapter
+  - cloud-platform-exit-portability
+  supportLevels:
+    specification-ready: contract and conformance requirements exist; implementation not implied
+    implemented: runtime adapter exists and passes E1-E2
+    production-certified: target version matrix passes E3-E5

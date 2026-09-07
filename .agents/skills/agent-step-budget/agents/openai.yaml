@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Step Budget"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $agent-step-budget for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

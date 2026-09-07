@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Globalization Access Observability Sla Cockpit Alerting And Operations"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $globalization-access-observability-sla-cockpit-alerting-e8bcb19e to implement its fail-closed ELMOS Product B55 contract."

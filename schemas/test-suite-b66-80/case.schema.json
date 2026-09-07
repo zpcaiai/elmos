@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "case.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "batch",
+    "source_skill_id",
+    "owner_test_skill",
+    "title",
+    "priority",
+    "category",
+    "polarity",
+    "given",
+    "when",
+    "then",
+    "oracle",
+    "evidence_required",
+    "zero_tolerance",
+    "required_real_system",
+    "replayable",
+    "status"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "batch": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 66,
+          "maximum": 80
+        },
+        {
+          "const": "cross"
+        }
+      ]
+    },
+    "source_skill_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_skill_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_skill_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_skill_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "owner_test_skill": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2"
+      ]
+    },
+    "category": {
+      "type": "string"
+    },
+    "polarity": {
+      "enum": [
+        "positive",
+        "negative",
+        "cross-cutting"
+      ]
+    },
+    "given": {
+      "type": "string"
+    },
+    "when": {
+      "type": "string"
+    },
+    "then": {
+      "type": "string"
+    },
+    "oracle": {
+      "type": "object",
+      "required": [
+        "description",
+        "independence_required"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "independence_required": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tools_or_fixtures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string"
+      }
+    },
+    "zero_tolerance": {
+      "type": "boolean"
+    },
+    "required_real_system": {
+      "type": "boolean"
+    },
+    "replayable": {
+      "type": "boolean"
+    },
+    "max_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "const": "not-run"
+    }
+  }
+}

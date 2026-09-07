@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: elmos-repository-autonomy-kernel
+Version: 2.1.0
+Summary: Fail-closed durable runtime and capability core for the Elmos Repository Autonomy Kernel
+Requires-Python: >=3.11
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Provides-Extra: postgres
+Requires-Dist: psycopg[binary]<4,>=3.2; extra == "postgres"

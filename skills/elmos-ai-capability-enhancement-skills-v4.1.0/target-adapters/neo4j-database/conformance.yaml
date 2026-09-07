@@ -1,0 +1,48 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterConformanceSuite
+metadata:
+  adapter: neo4j-database
+  version: 4.0.0
+spec:
+  cases:
+  - id: CONF-01
+    assertion: manifest/profile parse
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-02
+    assertion: minimal native artifact load
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-03
+    assertion: representative project start
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-04
+    assertion: unsupported critical feature block
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-05
+    assertion: authority deny
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-06
+    assertion: evidence binding
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-07
+    assertion: upgrade drift invalidation
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  - id: CONF-08
+    assertion: uninstall/rollback
+    evidence: machine-readable native command/version/digest/result
+    required: true
+  releaseDecision:
+  - CONFORMANT
+  - BOUNDED
+  - BLOCKED
+  forbid:
+  - mock-only CONFORMANT
+  - unpinned release claim
+  - UNKNOWN as PASS
+  - adapter self-certification

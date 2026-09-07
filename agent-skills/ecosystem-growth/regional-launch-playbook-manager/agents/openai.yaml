@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Launch Playbook Manager"
+  short_description: "Authoritative Batch 14 Skill 451 workflow"
+  default_prompt: "Use $regional-launch-playbook-manager to execute its evidence-bound Batch 14 workflow."
+

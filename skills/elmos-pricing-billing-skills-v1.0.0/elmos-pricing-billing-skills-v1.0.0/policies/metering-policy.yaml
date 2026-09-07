@@ -1,0 +1,40 @@
+apiVersion: elmos.billing/v1
+kind: MeteringPolicy
+metadata:
+  version: 1
+  status: draft
+idempotency:
+  scope: [tenant_id, source_system, source_event_id]
+  duplicate_behavior: return_original_result
+immutability:
+  update_usage_event: forbidden
+  correction_mode: reversal_or_supplemental_event
+units:
+  model_input_tokens: token
+  model_output_tokens: token
+  cache_read_tokens: token
+  cache_write_tokens: token
+  embedding_tokens: token
+  rerank_units: request_unit
+  sandbox_cpu_ms: millisecond
+  sandbox_gpu_ms: millisecond
+  browser_ms: millisecond
+  test_cpu_ms: millisecond
+  storage_byte_hours: byte_hour
+  network_egress_bytes: byte
+  third_party_calls: call
+billability:
+  customer: rate_and_charge
+  platform: internal_cost_only
+  free: internal_cost_only
+  failed_retry: internal_cost_only_unless_policy_override
+  byok_excluded: exclude_customer_owned_model_cost_only
+  review: hold_settlement
+late_events:
+  open_window: apply_normally
+  closed_window: create_adjustment_candidate
+  never_rewrite_finalized_invoice: true
+reconciliation:
+  task_runtime: near_real_time
+  vendor_usage: daily
+  vendor_invoice: monthly

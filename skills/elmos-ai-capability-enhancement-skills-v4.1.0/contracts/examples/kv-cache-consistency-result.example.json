@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "kv-cache-consistency-result-example",
+  "status": "READY",
+  "content_hash": "a505cc3f2dc3b31ae04cac6a837bca45370c0b4e0ba7ff7db4d34531e23837aa",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "findings": [],
+  "metrics": {
+    "coverage": 1.0
+  },
+  "decision": "REVIEW"
+}

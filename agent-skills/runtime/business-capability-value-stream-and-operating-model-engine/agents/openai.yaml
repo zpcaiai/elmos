@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 26 003"
+  short_description: "Run Batch 26 runtime contract safely"
+  default_prompt: "Use $business-capability-value-stream-and-operating-model-engine to apply its fail-closed ELMOS runtime contract."

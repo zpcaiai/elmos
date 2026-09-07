@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/skill-contract.schema.json",
+  "title": "ELMOS Executable Skill Contract",
+  "type": "object",
+  "required": [
+    "id",
+    "batch",
+    "name",
+    "dependencies",
+    "inputs",
+    "outputs",
+    "implementation",
+    "workflow",
+    "tests",
+    "evidence",
+    "definition_of_done"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^B(105|106|107|108)-S(0[1-9]|1[0-6])$"
+    },
+    "batch": {
+      "enum": [
+        105,
+        106,
+        107,
+        108
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1
+    },
+    "implementation": {
+      "type": "object",
+      "required": [
+        "modules",
+        "interfaces",
+        "data"
+      ]
+    },
+    "workflow": {
+      "type": "array",
+      "minItems": 5
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 4
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 3
+    },
+    "definition_of_done": {
+      "type": "array",
+      "minItems": 4
+    },
+    "risk_controls": {
+      "type": "array",
+      "minItems": 2
+    }
+  },
+  "additionalProperties": false
+}

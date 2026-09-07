@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "pack_key": "multimodal-intake-authorization-v1",
+  "metrics": {},
+  "zero_tolerance": {},
+  "evidence_refs": [
+    "artifacts/local-target-artifact.json",
+    "environment/local-validation-environment.json",
+    "certification/local-binding-evidence.json"
+  ],
+  "local_binding": {
+    "status": "LOCAL_CAPTURED_SELF_ATTESTED",
+    "receipt_bytes": 1919,
+    "receipt_sha256": "sha256:a0ba414177355672f5212b2eaa1020070117d1993a1270717a254b5c61bdfc15",
+    "target_artifact_digest": "sha256:2ed935793e08ed399f1fc8640c546cb99afa8a529bf39e1f9394dfd0fbf72433",
+    "environment_digest": "sha256:e7f91fd09ed5470ea35bb13feb134a8d7e323243630932c1ecde3a920225efe7"
+  },
+  "notes": [
+    "Exact local source, target-artifact, and environment byte bindings are recorded as self-attested engineering evidence only.",
+    "External providers, independent holdout, representative workloads, browser/device validation, and certification review are NOT_RUN."
+  ]
+}

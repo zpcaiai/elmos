@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sandbox and Worktree Isolation"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0108-sandbox-and-worktree-isolation to run FRT-0108 through the governed FRT runtime with exact scope and fail-closed evidence."

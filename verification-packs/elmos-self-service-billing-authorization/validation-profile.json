@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-self-service-billing-authorization-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.jwt-derived-organization",
+      "description": "Tenant identity is derived only from a validated JWT and cannot be supplied by a request tenant header.",
+      "criticality": "P0",
+      "required_techniques": ["negative-authentication", "scope-authorization"]
+    },
+    {
+      "claim_id": "claim.database-tenant-isolation",
+      "description": "Billing tenant rows fail closed without exact transaction context and are isolated by forced RLS.",
+      "criticality": "P0",
+      "required_techniques": ["negative-cross-tenant", "missing-context", "write-isolation"]
+    }
+  ],
+  "stop_conditions": [
+    "unknown-p0-property",
+    "cross-tenant-read",
+    "cross-tenant-write",
+    "identity-provider-not-configured"
+  ],
+  "approvals": []
+}

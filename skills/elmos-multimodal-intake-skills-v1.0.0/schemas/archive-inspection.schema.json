@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/archive-inspection.schema.json",
+  "title": "Elmos ArchiveInspection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inspection_id",
+    "asset_id",
+    "archive_format",
+    "encrypted",
+    "entries",
+    "counters",
+    "decision",
+    "policy_version",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "inspection_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "archive_format": {
+      "enum": [
+        "ZIP",
+        "TAR",
+        "TAR_GZ",
+        "TGZ",
+        "GZIP",
+        "UNKNOWN"
+      ]
+    },
+    "encrypted": {
+      "type": "boolean"
+    },
+    "password_state": {
+      "enum": [
+        "NOT_REQUIRED",
+        "REQUIRED",
+        "PROVIDED",
+        "INVALID",
+        "EXPIRED"
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entryInspection"
+      }
+    },
+    "counters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive_bytes",
+        "declared_uncompressed_bytes",
+        "actual_uncompressed_bytes",
+        "entry_count",
+        "max_directory_depth",
+        "nested_depth",
+        "max_expansion_ratio"
+      ],
+      "properties": {
+        "archive_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "declared_uncompressed_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actual_uncompressed_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_directory_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nested_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_expansion_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cpu_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wall_clock_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "decision": {
+      "enum": [
+        "ALLOW",
+        "ALLOW_WITH_REVIEW",
+        "PASSWORD_REQUIRED",
+        "QUARANTINE",
+        "REJECT",
+        "LIMIT_EXCEEDED",
+        "CORRUPT",
+        "UNSUPPORTED"
+      ]
+    },
+    "finding_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "entryInspection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "raw_name",
+        "normalized_path",
+        "entry_type",
+        "decision"
+      ],
+      "properties": {
+        "entry_id": {
+          "type": "string"
+        },
+        "raw_name": {
+          "type": "string"
+        },
+        "normalized_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entry_type": {
+          "enum": [
+            "FILE",
+            "DIRECTORY",
+            "SYMLINK",
+            "HARDLINK",
+            "DEVICE",
+            "FIFO",
+            "SOCKET",
+            "ARCHIVE",
+            "OTHER"
+          ]
+        },
+        "declared_size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actual_size": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "compression_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "link_target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "ALLOW",
+            "METADATA_ONLY",
+            "QUARANTINE",
+            "REJECT"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

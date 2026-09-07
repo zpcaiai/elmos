@@ -1,0 +1,318 @@
+{
+  "batch": 72,
+  "title": "Dart and Flutter Multiplatform Project Pack",
+  "subject": "Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging",
+  "skill_count": 12,
+  "id_range": [
+    "PG297",
+    "PG308"
+  ],
+  "toolchain": [
+    "dart",
+    "flutter",
+    "build_runner",
+    "dart analyze",
+    "flutter test",
+    "integration_test"
+  ],
+  "source_markers": [
+    "pubspec.yaml",
+    "pubspec.lock",
+    "lib/",
+    "test/",
+    "integration_test/",
+    "android/",
+    "ios/"
+  ],
+  "skills": [
+    {
+      "id": "PG297",
+      "batch": 72,
+      "name": "b72-flutter-project-profile-detector",
+      "title": "Flutter Project Profile Detector",
+      "summary": "Inspect and model Flutter Project Profile Detector for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-project-profile-detector/SKILL.md",
+      "catalog_path": "skills/batch-72/PG297-flutter-project-profile-detector.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296"
+      ],
+      "outputs": [
+        "flutter_project_profile_detector.json",
+        "flutter_project_profile_detector_artifacts/",
+        "flutter_project_profile_detector_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG298",
+      "batch": 72,
+      "name": "b72-flutter-dependency-workspace-reproducer",
+      "title": "Flutter Dependency Workspace Reproducer",
+      "summary": "Reproduce deterministically Flutter Dependency Workspace Reproducer for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-dependency-workspace-reproducer/SKILL.md",
+      "catalog_path": "skills/batch-72/PG298-flutter-dependency-workspace-reproducer.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG297"
+      ],
+      "outputs": [
+        "flutter_dependency_workspace_reproducer_plan.json",
+        "flutter_dependency_workspace_reproducer_artifacts/",
+        "flutter_dependency_workspace_reproducer_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG299",
+      "batch": 72,
+      "name": "b72-flutter-clean-architecture-generator",
+      "title": "Flutter Clean Architecture Generator",
+      "summary": "Generate runnable and maintainable Flutter Clean Architecture Generator for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-clean-architecture-generator/SKILL.md",
+      "catalog_path": "skills/batch-72/PG299-flutter-clean-architecture-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG298"
+      ],
+      "outputs": [
+        "flutter_clean_architecture_generator_plan.json",
+        "flutter_clean_architecture_generator_artifacts/",
+        "flutter_clean_architecture_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG300",
+      "batch": 72,
+      "name": "b72-flutter-state-routing-generator",
+      "title": "Flutter State Routing Generator",
+      "summary": "Generate runnable and maintainable Flutter State Routing Generator for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-state-routing-generator/SKILL.md",
+      "catalog_path": "skills/batch-72/PG300-flutter-state-routing-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG299"
+      ],
+      "outputs": [
+        "flutter_state_routing_generator_plan.json",
+        "flutter_state_routing_generator_artifacts/",
+        "flutter_state_routing_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG301",
+      "batch": 72,
+      "name": "b72-flutter-api-data-layer-generator",
+      "title": "Flutter API Data Layer Generator",
+      "summary": "Generate runnable and maintainable Flutter API Data Layer Generator for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-api-data-layer-generator/SKILL.md",
+      "catalog_path": "skills/batch-72/PG301-flutter-api-data-layer-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG300"
+      ],
+      "outputs": [
+        "flutter_api_data_layer_generator_plan.json",
+        "flutter_api_data_layer_generator_artifacts/",
+        "flutter_api_data_layer_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG302",
+      "batch": 72,
+      "name": "b72-flutter-offline-sync-generator",
+      "title": "Flutter Offline Sync Generator",
+      "summary": "Generate runnable and maintainable Flutter Offline Sync Generator for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-offline-sync-generator/SKILL.md",
+      "catalog_path": "skills/batch-72/PG302-flutter-offline-sync-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG301"
+      ],
+      "outputs": [
+        "flutter_offline_sync_generator_plan.json",
+        "flutter_offline_sync_generator_artifacts/",
+        "flutter_offline_sync_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG303",
+      "batch": 72,
+      "name": "b72-flutter-platform-channel-generator",
+      "title": "Flutter Platform Channel Generator",
+      "summary": "Generate runnable and maintainable Flutter Platform Channel Generator for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-platform-channel-generator/SKILL.md",
+      "catalog_path": "skills/batch-72/PG303-flutter-platform-channel-generator.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG302"
+      ],
+      "outputs": [
+        "flutter_platform_channel_generator_plan.json",
+        "flutter_platform_channel_generator_artifacts/",
+        "flutter_platform_channel_generator_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG304",
+      "batch": 72,
+      "name": "b72-flutter-responsive-multiplatform-ui",
+      "title": "Flutter Responsive Multiplatform UI",
+      "summary": "Implement and validate Flutter Responsive Multiplatform UI for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-responsive-multiplatform-ui/SKILL.md",
+      "catalog_path": "skills/batch-72/PG304-flutter-responsive-multiplatform-ui.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG303"
+      ],
+      "outputs": [
+        "flutter_responsive_multiplatform_ui_plan.json",
+        "flutter_responsive_multiplatform_ui_artifacts/",
+        "flutter_responsive_multiplatform_ui_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG305",
+      "batch": 72,
+      "name": "b72-flutter-accessibility-localization",
+      "title": "Flutter Accessibility Localization",
+      "summary": "Implement and validate Flutter Accessibility Localization for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-accessibility-localization/SKILL.md",
+      "catalog_path": "skills/batch-72/PG305-flutter-accessibility-localization.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG304"
+      ],
+      "outputs": [
+        "flutter_accessibility_localization_plan.json",
+        "flutter_accessibility_localization_artifacts/",
+        "flutter_accessibility_localization_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG306",
+      "batch": 72,
+      "name": "b72-flutter-test-golden-integration-harness",
+      "title": "Flutter Test Golden Integration Harness",
+      "summary": "Implement and validate Flutter Test Golden Integration Harness for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-test-golden-integration-harness/SKILL.md",
+      "catalog_path": "skills/batch-72/PG306-flutter-test-golden-integration-harness.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG305"
+      ],
+      "outputs": [
+        "flutter_test_golden_integration_harness_plan.json",
+        "flutter_test_golden_integration_harness_artifacts/",
+        "flutter_test_golden_integration_harness_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG307",
+      "batch": 72,
+      "name": "b72-flutter-release-signing-packager",
+      "title": "Flutter Release Signing Packager",
+      "summary": "Generate runnable and maintainable Flutter Release Signing Packager for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-release-signing-packager/SKILL.md",
+      "catalog_path": "skills/batch-72/PG307-flutter-release-signing-packager.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG306"
+      ],
+      "outputs": [
+        "flutter_release_signing_packager_plan.json",
+        "flutter_release_signing_packager_artifacts/",
+        "flutter_release_signing_packager_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md"
+      ]
+    },
+    {
+      "id": "PG308",
+      "batch": 72,
+      "name": "b72-flutter-build-run-certifier",
+      "title": "Flutter Build Run Certifier",
+      "summary": "Execute and independently verify Flutter Build Run Certifier for Flutter/Dart mobile, web, and desktop applications, state, routing, APIs, offline sync, platform channels, responsive UI, accessibility, testing, and release packaging, preserving ownership, compatibility, security, reproducibility, and evidence boundaries.",
+      "path": "agent-skills/runtime/b72-flutter-build-run-certifier/SKILL.md",
+      "catalog_path": "skills/batch-72/PG308-flutter-build-run-certifier.md",
+      "depends_on": [
+        "PG183",
+        "PG184",
+        "PG185",
+        "PG191",
+        "PG296",
+        "PG307"
+      ],
+      "outputs": [
+        "flutter_build_run_certifier_plan.json",
+        "flutter_build_run_certifier_artifacts/",
+        "flutter_build_run_certifier_verification.json",
+        "evidence_bundle.json",
+        "completion_report.md",
+        "certification_result.json",
+        "scope_and_limitations.md"
+      ]
+    }
+  ]
+}

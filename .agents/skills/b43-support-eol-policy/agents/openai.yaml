@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 43: Support Eol Policy"
+  short_description: "Run evidence-bound Batch 43 support eol policy work"
+  default_prompt: "Use $b43-support-eol-policy to implement and verify this capability with fail-closed evidence."

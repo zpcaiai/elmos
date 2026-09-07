@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B50: Industrial Twin Master Data Identity Hierarchy And Effective Dating"
+  short_description: "Run ELMOS Product B50 contract with fail-closed evidence"
+  default_prompt: "Use $industrial-twin-master-data-identity-hierarchy-and-effe-3282d6c0 to implement its fail-closed ELMOS Product B50 contract."

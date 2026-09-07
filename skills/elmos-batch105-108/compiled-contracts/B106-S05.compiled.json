@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "id": "B106-S05",
+    "batch": 106,
+    "name": "python-preview-runtime-adapter",
+    "dependencies": [
+      "B106-S03"
+    ],
+    "inputs": [
+      "validated RuntimeManifest",
+      "Python environment snapshot"
+    ],
+    "outputs": [
+      "PythonBuildSpec",
+      "PythonRunSpec",
+      "dependency cache key"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/adapters/python/PythonPreviewAdapter.java",
+        "private-runner/internal/runtime/python.go",
+        "images/python/"
+      ],
+      "interfaces": [
+        "adapter runtime.python.compile",
+        "event runtime.adapter.python.ready"
+      ],
+      "data": [
+        "python_runtime_spec",
+        "python_env_lock"
+      ]
+    },
+    "workflow": [
+      "\u8bc6\u522bpyproject/requirements/lock\u6587\u4ef6",
+      "\u4fdd\u7559\u5ba2\u6237\u9501\u6587\u4ef6\u5e76\u56fa\u5b9aPython\u5b9e\u73b0/ABI",
+      "\u9009\u62e9uv/pip/Poetry\u9002\u914d\u8def\u5f84",
+      "\u68c0\u6d4bASGI/WSGI/Streamlit\u5165\u53e3",
+      "\u6ce8\u5165host 0.0.0.0\u548cPORT",
+      "\u8f93\u51fawheel\u7f13\u5b58\u3001\u542f\u52a8\u548c\u5065\u5eb7\u89c4\u683c"
+    ],
+    "tests": [
+      "\u65e0\u9501\u6587\u4ef6\u751f\u6210\u5019\u9009\u4f46\u6807\u8bb0\u98ce\u9669",
+      "sdist\u6784\u5efa\u9ed8\u8ba4\u65e0Secret\u4e14\u53d7\u7f51\u7edc\u9650\u5236",
+      "FastAPI\u5165\u53e3\u6b63\u786e",
+      "Django settings\u7f3a\u5931\u8fd4\u56de\u963b\u65ad",
+      "ABI\u4e0d\u517c\u5bb9wheel\u88ab\u62d2\u7edd"
+    ],
+    "evidence": [
+      "python-build-spec.json",
+      "python-run-spec.json",
+      "environment-lock.json",
+      "wheel-report.json"
+    ],
+    "definition_of_done": [
+      "\u9501\u6587\u4ef6\u7b56\u7565\u4fdd\u7559",
+      "ABI\u660e\u786e",
+      "\u542f\u52a8\u5165\u53e3\u552f\u4e00",
+      "\u7f51\u7edc\u6784\u5efa\u7b56\u7565\u53d7\u63a7",
+      "FastAPI/Django fixture\u901a\u8fc7"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:57a6ced518b175dac33dd79e23fd028ddb156d0679ee6ca461115ead1c0c2f8d",
+  "compiledVersion": 1
+}

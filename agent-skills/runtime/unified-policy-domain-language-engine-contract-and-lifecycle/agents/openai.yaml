@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Unified Policy Domain Language Engine Contract And Lifecycle"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $unified-policy-domain-language-engine-contract-and-lifecycle to implement its fail-closed ELMOS Product B38 contract."

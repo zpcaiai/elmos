@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "audit_key": "build-cache-v1.2-eleven-new-skills-production-call-chain-v1",
+  "observed_date": "2026-08-22",
+  "execution_class": "static-source-call-chain-audit",
+  "certification_effect": "NONE",
+  "skills": [
+    {
+      "name": "elmos-provider-prompt-cache-adapters",
+      "production_shaped_call_chain": false,
+      "status": "DISCONNECTED",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/prompt_cache.py"
+      ],
+      "observed_gap": "ProviderAdapterRegistry and PromptCacheController have no non-test caller; prompt compilation does not dispatch a provider request or persist normalized provider usage."
+    },
+    {
+      "name": "elmos-canonical-prompt-prefix-layout",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/prompt_cache.py",
+        "engines/build-cache-engine/src/elmos_build_cache/prompt_tools.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/cli.py"
+      ],
+      "observed_gap": "Compiler, API, CLI, and durable manifest path exist, but the compiled logical prompt is not consumed by a production provider adapter/model dispatch path."
+    },
+    {
+      "name": "elmos-append-only-repository-context-ledger",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/context_ledger.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/api.py"
+      ],
+      "observed_gap": "Hash-chained API persistence exists, but file/search/build instrumentation, precise staleness processing, and ledger-to-next-model-prompt projection are not composed into the production pipeline."
+    },
+    {
+      "name": "elmos-cache-preserving-context-compaction",
+      "production_shaped_call_chain": false,
+      "status": "DISCONNECTED",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/context_compaction.py"
+      ],
+      "observed_gap": "ContextCompactionService has no non-test API, CLI, pipeline, warmup, or checkpoint-adoption caller."
+    },
+    {
+      "name": "elmos-environment-snapshot-cache",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/environment_cache.py",
+        "engines/build-cache-engine/src/elmos_build_cache/environment_service.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/cli.py"
+      ],
+      "observed_gap": "Verified inspect is exposed, but seal/population and actual restore execution have no production pipeline caller."
+    },
+    {
+      "name": "elmos-cache-affinity-routing",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/affinity.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/api.py"
+      ],
+      "observed_gap": "Authenticated API decision path is fail closed and requires signed inventory, but the repository has no deployment composition that supplies an attested registry and principal authorization resolver; default construction returns unavailable."
+    },
+    {
+      "name": "elmos-multi-layer-cache-coordinator",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/coordinator.py",
+        "engines/build-cache-engine/src/elmos_build_cache/pipeline.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py"
+      ],
+      "observed_gap": "The pipeline uses the coordinator for the authoritative Action Cache under a signed serving gate; provider, context, and environment layers are explicitly not wired."
+    },
+    {
+      "name": "elmos-cache-miss-diagnostics",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/miss_diagnostics.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_store.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py"
+      ],
+      "observed_gap": "Action-layer observations persist and are explainable through API; provider, context, environment, and affinity runtime outcomes are not emitted into the unified stream."
+    },
+    {
+      "name": "elmos-codex-claude-parity-benchmark",
+      "production_shaped_call_chain": false,
+      "status": "DISCONNECTED_HARNESS",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/parity.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_harness.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/cli.py"
+      ],
+      "observed_gap": "API and CLI validate caller-supplied metrics and evidence, but ParityScenarioHarness has no non-test runner registry, durable job, API, CLI, CI, or release invocation."
+    },
+    {
+      "name": "elmos-cache-hit-slo-autotuning",
+      "production_shaped_call_chain": false,
+      "status": "DISCONNECTED",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/slo_autotune.py"
+      ],
+      "observed_gap": "SloAutotuner and ProgressiveRolloutController have no non-test observation, persistence, approval, serving-control, API, CLI, or pipeline caller."
+    },
+    {
+      "name": "elmos-codex-claude-cache-parity-rollout",
+      "production_shaped_call_chain": true,
+      "status": "PARTIAL",
+      "implemented_refs": [
+        "engines/build-cache-engine/src/elmos_build_cache/config.py",
+        "engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py",
+        "engines/build-cache-engine/src/elmos_build_cache/pipeline.py",
+        "engines/build-cache-engine/src/elmos_build_cache/api.py",
+        "engines/build-cache-engine/src/elmos_build_cache/cli.py"
+      ],
+      "observed_gap": "Measured-only status, Action observation, signed coordinator serving gate, and rollback latch exist; provider/context/compaction/environment/affinity/harness/SLO serving chains and external rollout evidence remain absent."
+    }
+  ],
+  "summary": {
+    "skill_count": 11,
+    "complete_production_chains": 0,
+    "partial_production_chains": 7,
+    "disconnected_or_harness_disconnected": 4,
+    "external_evidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "QaEvidenceBundle",
+  "metadata": {
+    "id": "qa-evidence-bundle-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "runIds": [],
+    "coverage": {},
+    "results": [],
+    "evidenceRoot": "example-evidenceRoot"
+  }
+}

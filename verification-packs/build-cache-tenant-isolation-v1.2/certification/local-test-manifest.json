@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "manifest_key": "build-cache-tenant-isolation-v1.2-local-tests-v1",
+  "environment_ref": "environment/local-validation-environment.json",
+  "execution_status": "STRUCTURE_VALIDATED_RUNTIME_TESTS_NOT_RUN",
+  "commands": [
+    {
+      "command_id": "PACK-STRUCTURE",
+      "command": "engines/build-cache-engine/.venv/bin/python scripts/batch35/validate_verification_pack.py verification-packs/build-cache-tenant-isolation-v1.2",
+      "status": "PASS",
+      "result_ref": "certification/raw/pack-structure.txt"
+    },
+    {
+      "command_id": "ORACLE-REGISTRY",
+      "command": "python3 scripts/batch35/validate_oracle_registry.py verification-packs/build-cache-tenant-isolation-v1.2/oracle-registry.json",
+      "status": "NOT_RUN",
+      "result_ref": null
+    },
+    {
+      "command_id": "P0-TARGETED-PYTEST",
+      "command": "engines/build-cache-engine/.venv/bin/pytest -q engines/build-cache-engine/tests/test_api.py engines/build-cache-engine/tests/test_affinity.py engines/build-cache-engine/tests/test_parity_api.py engines/build-cache-engine/tests/test_parity_store.py engines/build-cache-engine/tests/test_environment_service.py engines/build-cache-engine/tests/test_context_ledger.py engines/build-cache-engine/tests/test_context_compaction.py engines/build-cache-engine/tests/test_coordinator.py engines/build-cache-engine/tests/test_metadata_store_contract.py",
+      "status": "NOT_RUN",
+      "result_ref": null
+    },
+    {
+      "command_id": "P0-RUFF",
+      "command": "engines/build-cache-engine/.venv/bin/ruff check engines/build-cache-engine/src/elmos_build_cache/affinity.py engines/build-cache-engine/src/elmos_build_cache/api.py engines/build-cache-engine/src/elmos_build_cache/context_compaction.py engines/build-cache-engine/src/elmos_build_cache/context_ledger.py engines/build-cache-engine/src/elmos_build_cache/coordinator.py engines/build-cache-engine/src/elmos_build_cache/environment_service.py engines/build-cache-engine/src/elmos_build_cache/parity_api.py engines/build-cache-engine/src/elmos_build_cache/parity_harness.py engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py engines/build-cache-engine/src/elmos_build_cache/parity_store.py",
+      "status": "NOT_RUN",
+      "result_ref": null
+    },
+    {
+      "command_id": "P0-MYPY",
+      "command": "engines/build-cache-engine/.venv/bin/mypy --strict engines/build-cache-engine/src/elmos_build_cache/affinity.py engines/build-cache-engine/src/elmos_build_cache/api.py engines/build-cache-engine/src/elmos_build_cache/context_compaction.py engines/build-cache-engine/src/elmos_build_cache/context_ledger.py engines/build-cache-engine/src/elmos_build_cache/coordinator.py engines/build-cache-engine/src/elmos_build_cache/environment_service.py engines/build-cache-engine/src/elmos_build_cache/parity_api.py engines/build-cache-engine/src/elmos_build_cache/parity_harness.py engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py engines/build-cache-engine/src/elmos_build_cache/parity_store.py",
+      "status": "NOT_RUN",
+      "result_ref": null
+    }
+  ],
+  "external_evidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

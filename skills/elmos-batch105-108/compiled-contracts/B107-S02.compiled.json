@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "id": "B107-S02",
+    "batch": 107,
+    "name": "openapi-runtime-discovery",
+    "dependencies": [
+      "B107-S01"
+    ],
+    "inputs": [
+      "healthy PublicEndpoint",
+      "candidate paths",
+      "auth policy"
+    ],
+    "outputs": [
+      "RuntimeOpenAPI",
+      "discovery trace",
+      "spec digest"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/openapi/OpenApiDiscoveryService.java",
+        "adapters/openapi/normalizer/"
+      ],
+      "interfaces": [
+        "POST /api/runtime-runs/{id}/openapi:discover",
+        "event openapi.discovered"
+      ],
+      "data": [
+        "runtime_openapi",
+        "openapi_discovery_attempt"
+      ]
+    },
+    "workflow": [
+      "\u5c1d\u8bd5\u58f0\u660e\u8def\u5f84\u548c\u5e38\u89c1OpenAPI\u8def\u5f84",
+      "\u4f7f\u7528\u4e34\u65f6\u8ba4\u8bc1\u8bf7\u6c42",
+      "\u9650\u5236\u54cd\u5e94\u5927\u5c0f\u548c\u91cd\u5b9a\u5411",
+      "\u89e3\u6790JSON/YAML\u5e76\u6267\u884c\u89c4\u8303\u6821\u9a8c",
+      "\u89c4\u8303\u5316server URL\u548c\u65e0\u5173\u751f\u6210\u987a\u5e8f",
+      "\u4fdd\u5b58\u539f\u59cb\u4e0e\u89c4\u8303\u5316\u6458\u8981"
+    ],
+    "tests": [
+      "HTML\u9519\u8bef\u9875\u4e0d\u5f97\u8bef\u8ba4OpenAPI",
+      "\u65e0\u8ba4\u8bc1\u8fd4\u56de401\u7ed9\u51fa\u660e\u786e\u963b\u65ad",
+      "\u574f\u89c4\u8303\u5931\u8d25",
+      "\u91cd\u5b9a\u5411\u5faa\u73af\u53d7\u9650",
+      "\u9759\u6001\u4e0e\u8fd0\u884c\u89c4\u8303\u4e0d\u540c\u65f6\u4fdd\u7559\u4e24\u8005"
+    ],
+    "evidence": [
+      "openapi-raw.json",
+      "openapi-normalized.json",
+      "discovery-trace.json",
+      "spec.sha256"
+    ],
+    "definition_of_done": [
+      "\u6765\u81ea\u771f\u5b9eRun",
+      "\u89c4\u8303\u6709\u6548",
+      "\u8ba4\u8bc1\u4e0d\u6cc4\u9732",
+      "\u539f\u59cb\u4e0e\u89c4\u8303\u5316\u90fd\u4fdd\u5b58",
+      "\u6458\u8981\u53ef\u590d\u7b97"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:4080209d478acf2b279beb103399ee7945566879cac821b1e084db88ae23367b",
+  "compiledVersion": 1
+}

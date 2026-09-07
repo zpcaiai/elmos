@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-self-service-billing-authorization",
+  "version": "1.0.0",
+  "status": "experimental",
+  "owner": "elmos-control-plane-security",
+  "maintenance_owner": "elmos-commercial-billing",
+  "scope": {
+    "migration_route": "self-service-billing-authorization",
+    "risk_tier": "P0",
+    "validation_kind": "local-jwt-rls-negative-rehearsal",
+    "external_identity_provider": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_production_workload": "NOT_RUN"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json"
+  },
+  "tags": ["authorization", "tenant-rls", "billing", "not-certified"]
+}

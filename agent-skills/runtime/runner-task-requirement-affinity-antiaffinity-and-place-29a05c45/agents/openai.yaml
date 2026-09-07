@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B36: Runner Task Requirement Affinity Antiaffinity And Placement Policy"
+  short_description: "Run ELMOS Product B36 contract with fail-closed evidence"
+  default_prompt: "Use $runner-task-requirement-affinity-antiaffinity-and-place-29a05c45 to implement its fail-closed ELMOS Product B36 contract."

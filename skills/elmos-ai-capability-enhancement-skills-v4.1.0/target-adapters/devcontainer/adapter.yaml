@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: devcontainer
+  ecosystem: Development Containers
+  version: 4.0.0
+spec:
+  adapterKind: dev-environment
+  maturity: P1
+  modes:
+  - build
+  - features
+  - services
+  - validate
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - devcontainer exact-version profile
+  - devcontainer capability and semantic-gap map
+  - devcontainer native conformance evidence
+  - devcontainer deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

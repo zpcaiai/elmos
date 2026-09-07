@@ -1,0 +1,78 @@
+version: 1
+principle: adapters_are_replaceable_and_versions_are_pinned_per_project
+
+test_types:
+  unit_component:
+    preferred_by_ecosystem:
+      java_kotlin: [JUnit, Kotest]
+      python: [pytest]
+      csharp: [xUnit, NUnit]
+      go: [go_test]
+      rust: [cargo_test]
+      cpp: [GoogleTest, Catch2]
+      php: [PHPUnit, Pest]
+      typescript_javascript: [Vitest, Jest]
+      swift_objc: [XCTest]
+      flutter: [flutter_test]
+  api_contract:
+    generic: [OpenAPI_schema_validation, GraphQL_schema_validation, gRPC_contract_tests, consumer_driven_contracts]
+  database:
+    generic: [ephemeral_database, migration_runner, SQL_assertions, execution_plan_capture]
+  message_workflow:
+    generic: [ephemeral_broker, schema_registry_validation, workflow_replay, fault_injection]
+  ui_e2e:
+    web: [Playwright]
+    mobile: [platform_native_ui_test, Appium_when_required]
+  visual:
+    generic: [deterministic_screenshot_runner, semantic_layout_diff]
+  accessibility:
+    web: [axe_core_plus_keyboard_journey]
+  performance:
+    generic: [k6, Gatling, JMeter]
+  security:
+    static: [Semgrep_or_language_native_SAST]
+    dependency: [SBOM_plus_vulnerability_scanner]
+    dynamic: [OWASP_ZAP_or_equivalent]
+  mutation:
+    java: [PIT]
+    python: [mutmut]
+    dotnet: [Stryker_NET]
+    javascript_typescript: [StrykerJS]
+    other: [adapter_specific_mutation_engine]
+  property_fuzz:
+    python: [Hypothesis]
+    rust: [proptest, cargo_fuzz]
+    go: [native_fuzzing]
+    java_kotlin: [property_based_framework]
+    javascript_typescript: [fast_check]
+  resilience:
+    generic: [Toxiproxy, Chaos_Mesh_or_equivalent]
+  evidence:
+    generic: [JUnit_XML, OpenTelemetry, structured_logs, screenshots, videos, HAR, coverage_formats]
+
+selection_rules:
+  - prefer_existing_project_toolchain_when_trustworthy
+  - never_install_unpinned_tool_in_certification_mode
+  - run_tool_in_sandbox
+  - normalize_results_to_elmos_schemas
+  - unsupported_capability_must_be_explicit
+
+artifact_output_contract:
+  required_roles:
+    - test_source
+    - test_config
+    - test_fixture
+    - test_data
+    - test_mock
+    - test_baseline
+    - replay_script
+  validation_sequence:
+    - format
+    - syntax
+    - discover
+    - build
+    - smoke
+    - execute
+  every_file_manifested: true
+  native_layout_mapping: mappings/native-test-layouts.yaml
+

@@ -1,0 +1,65 @@
+batch: 16
+slug: backend-direction-packs
+title: "后端30条有方向转换包"
+phase: "E 后端语言互转"
+skills:
+  - name: java-to-csharp-direction-pack
+    description: "提供从 Java 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: java-to-go-direction-pack
+    description: "提供从 Java 到 Go 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: java-to-rust-direction-pack
+    description: "提供从 Java 到 Rust 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: java-to-python-direction-pack
+    description: "提供从 Java 到 Python 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: java-to-typescript-direction-pack
+    description: "提供从 Java 到 TypeScript/Node.js 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: csharp-to-java-direction-pack
+    description: "提供从 C# 到 Java 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: csharp-to-go-direction-pack
+    description: "提供从 C# 到 Go 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: csharp-to-rust-direction-pack
+    description: "提供从 C# 到 Rust 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: csharp-to-python-direction-pack
+    description: "提供从 C# 到 Python 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: csharp-to-typescript-direction-pack
+    description: "提供从 C# 到 TypeScript/Node.js 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: go-to-java-direction-pack
+    description: "提供从 Go 到 Java 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: go-to-csharp-direction-pack
+    description: "提供从 Go 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: go-to-rust-direction-pack
+    description: "提供从 Go 到 Rust 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: go-to-python-direction-pack
+    description: "提供从 Go 到 Python 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: go-to-typescript-direction-pack
+    description: "提供从 Go 到 TypeScript/Node.js 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: rust-to-java-direction-pack
+    description: "提供从 Rust 到 Java 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: rust-to-csharp-direction-pack
+    description: "提供从 Rust 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: rust-to-go-direction-pack
+    description: "提供从 Rust 到 Go 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: rust-to-python-direction-pack
+    description: "提供从 Rust 到 Python 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: rust-to-typescript-direction-pack
+    description: "提供从 Rust 到 TypeScript/Node.js 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: python-to-java-direction-pack
+    description: "提供从 Python 到 Java 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: python-to-csharp-direction-pack
+    description: "提供从 Python 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: python-to-go-direction-pack
+    description: "提供从 Python 到 Go 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: python-to-rust-direction-pack
+    description: "提供从 Python 到 Rust 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: python-to-typescript-direction-pack
+    description: "提供从 Python 到 TypeScript/Node.js 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: typescript-to-java-direction-pack
+    description: "提供从 TypeScript/Node.js 到 Java 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: typescript-to-csharp-direction-pack
+    description: "提供从 TypeScript/Node.js 到 C# 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: typescript-to-go-direction-pack
+    description: "提供从 TypeScript/Node.js 到 Go 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: typescript-to-rust-direction-pack
+    description: "提供从 TypeScript/Node.js 到 Rust 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"
+  - name: typescript-to-python-direction-pack
+    description: "提供从 TypeScript/Node.js 到 Python 的仓库级专用转换与验证包，覆盖类型、错误、副作用、并发、框架、依赖和目标惯用实现。"

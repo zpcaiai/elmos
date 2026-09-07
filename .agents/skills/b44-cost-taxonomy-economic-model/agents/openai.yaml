@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Cost Taxonomy Economic Model"
+  short_description: "Run evidence-bound Batch 44 cost taxonomy economic model work"
+  default_prompt: "Use $b44-cost-taxonomy-economic-model to implement and verify this capability with fail-closed evidence."

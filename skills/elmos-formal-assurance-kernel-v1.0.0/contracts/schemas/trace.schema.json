@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/trace.schema.json",
+  "title": "Observable Trace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "traceId",
+    "tenant",
+    "subjectId",
+    "events",
+    "startedAt"
+  ],
+  "properties": {
+    "traceId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "subjectId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "startedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sequence",
+          "kind",
+          "logicalTime",
+          "payloadHash"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "kind": {
+            "enum": [
+              "HTTP",
+              "SESSION",
+              "DB_READ",
+              "DB_WRITE",
+              "MESSAGE",
+              "EXTERNAL_CALL",
+              "FILE",
+              "AUTH_DECISION",
+              "EXCEPTION",
+              "LOG",
+              "CHECKPOINT"
+            ]
+          },
+          "logicalTime": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object"
+          },
+          "payloadHash": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          },
+          "causedBy": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

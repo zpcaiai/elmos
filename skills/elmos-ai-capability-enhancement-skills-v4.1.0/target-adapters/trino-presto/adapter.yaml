@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: trino-presto
+  ecosystem: Trino/Presto
+  version: 4.0.0
+spec:
+  adapterKind: federated-sql
+  maturity: P1
+  modes:
+  - catalogs
+  - sql
+  - connectors
+  - security
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - trino-presto exact-version profile
+  - trino-presto capability and semantic-gap map
+  - trino-presto native conformance evidence
+  - trino-presto deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

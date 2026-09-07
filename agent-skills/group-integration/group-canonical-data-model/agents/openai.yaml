@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 699: group canonical data model"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-canonical-data-model to evaluate this capability with evidence."

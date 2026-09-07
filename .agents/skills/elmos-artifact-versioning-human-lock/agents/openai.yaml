@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Artifact 版本与人工内容保护"
+  short_description: "Guide Artifact 版本与人工内容保护 with evidence controls"
+  default_prompt: "Use $elmos-artifact-versioning-human-lock as guidance for Artifact 版本与人工内容保护 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

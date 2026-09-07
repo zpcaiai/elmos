@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "release_id": "elmos.local.extension@0.1.0",
+  "extension_id": "elmos.local.extension",
+  "version": "0.1.0",
+  "channel": "preview",
+  "status": "draft",
+  "artifact_digest": "sha256:99e42d6513f44e085288b89cb4916d353412bde111fc89a76a2f50e9e9a51e87",
+  "signature_ref": "releases/sample/signature.sig",
+  "sbom_ref": "releases/sample/sbom.json",
+  "provenance_ref": "releases/sample/provenance.json",
+  "certification_ref": "certification/certification.json",
+  "published_at": "NOT_RUN",
+  "immutable": true,
+  "revocation": {},
+  "signature_status": "NOT_RUN",
+  "external_release_status": "NOT_RUN"
+}

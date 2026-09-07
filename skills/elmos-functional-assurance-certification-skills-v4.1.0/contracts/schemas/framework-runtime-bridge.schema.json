@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/3.0.0/framework-runtime-bridge.schema.json",
+  "title": "FrameworkRuntimeBridge",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "elmos.ai/v3alpha1"
+    },
+    "kind": {
+      "const": "FrameworkRuntimeBridge"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "revisionSetId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revisionSetId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "sourceFramework",
+        "targetFramework",
+        "lifecycleMappings",
+        "obligations"
+      ],
+      "properties": {
+        "sourceFramework": {
+          "type": "string"
+        },
+        "targetFramework": {
+          "type": "string"
+        },
+        "lifecycleMappings": {
+          "type": "array"
+        },
+        "obligations": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

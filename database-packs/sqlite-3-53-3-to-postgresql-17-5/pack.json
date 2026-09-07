@@ -1,0 +1,70 @@
+{
+  "data_owner": "ELMOS Synthetic Fixture Owner",
+  "gates": {
+    "canonical_ir_coverage": 0.95,
+    "data_reconciliation": 1.0,
+    "fingerprint_coverage": 0.95,
+    "p0_correctness": 1.0,
+    "source_map_coverage": 0.95
+  },
+  "maintenance_owner": "ELMOS Database Pack Maintainers",
+  "mode": "migration",
+  "owner": "ELMOS Database Migration",
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "paths": {
+    "canonical_ir": "canonical-ir/model.json",
+    "certification": "certification",
+    "fingerprint": "source-fingerprint",
+    "migration_plan": "migration/data-migration-plan.json",
+    "target_profile": "target-profile/profile.json"
+  },
+  "review_by": "2026-10-26",
+  "schema_version": 1,
+  "scope": {
+    "objects": [
+      "work_orders",
+      "idx_work_orders_tenant_created"
+    ],
+    "schemas": [
+      "main"
+    ],
+    "workload_classes": [
+      "typed-ddl",
+      "tenant-query",
+      "constraint-negative",
+      "transaction-rollback"
+    ]
+  },
+  "source": {
+    "charset": "UTF-8",
+    "collation": "BINARY",
+    "dialect": "sqlite",
+    "driver_versions": [
+      "python-stdlib:3.14.6"
+    ],
+    "edition": "public-domain",
+    "engine": "sqlite",
+    "extensions": [],
+    "timezone": "UTC-text-ISO8601",
+    "versions": [
+      "3.53.3"
+    ]
+  },
+  "status": "experimental",
+  "target": {
+    "charset": "UTF8",
+    "collation": "C",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "psql:17.5"
+    ],
+    "edition": "community",
+    "engine": "postgresql",
+    "extensions": [],
+    "timezone": "UTC",
+    "versions": [
+      "17.5"
+    ]
+  },
+  "version": "1.0.0"
+}

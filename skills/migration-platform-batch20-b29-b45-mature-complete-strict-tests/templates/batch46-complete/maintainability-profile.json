@@ -1,0 +1,17 @@
+{
+  "thresholds": {
+    "max_complexity_regression": 0.05,
+    "max_duplication": 0.03,
+    "min_idiomaticity": 0.9,
+    "max_compatibility_runtime_ratio": 0.1,
+    "min_testability": 0.9,
+    "min_documentation_coverage": 0.9,
+    "min_ownership_coverage": 1.0
+  },
+  "prohibited_domains": [
+    "authentication",
+    "authorization",
+    "transaction-core",
+    "money-calculation"
+  ]
+}

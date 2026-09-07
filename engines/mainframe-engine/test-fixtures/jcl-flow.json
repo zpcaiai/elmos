@@ -1,0 +1,1 @@
+{"stepId":"POSTPAY","jobId":"DAILYPAY","sequence":20,"executionTarget":"PAYMENT1","conditions":[{"if":"RC <= 4"}],"ddStatements":[{"dd":"INPAY","dataset":"PAY.GDG(-1)"}],"restartable":true,"returnCodePolicy":{"businessFailure":[12]},"datasetEdges":["CONSUMES:PAY.GDG(-1)"]}

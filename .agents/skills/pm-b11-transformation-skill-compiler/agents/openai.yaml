@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B11: Transformation Skill Compiler"
+  short_description: "Run Precision Migration B11 with evidence controls"
+  default_prompt: "Use $pm-b11-transformation-skill-compiler to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Engine Contract"
+  short_description: "Operate the isolated ELMOS Python engine safely"
+  default_prompt: "Use $python-engine-contract-and-worker to route this Python modernization job safely."

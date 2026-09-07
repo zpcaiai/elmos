@@ -1,0 +1,68 @@
+schema_version: '1.0'
+model_id: ETGB-COVERAGE-1.0
+definition: 100% means every required matrix cell has at least the declared variants and Oracle classes.
+business_lines:
+  spring-modernization:
+    matrix: matrices/spring-modernization.yaml
+    dimensions:
+    - archetype
+    - feature
+    - variant
+    required_variants: 2
+  cross-language:
+    matrix: matrices/cross-language.yaml
+    dimensions:
+    - pair
+    - feature
+    - variant
+    required_variants: 2
+  project-generation:
+    matrix: matrices/project-generation.yaml
+    dimensions:
+    - stack
+    - template-or-change
+    - deployment-or-mode
+    required_variants: 1
+  sql-conversion:
+    matrix: matrices/sql-conversion.yaml
+    dimensions:
+    - pair
+    - feature
+    - variant
+    required_variants: 2
+  cross-cutting:
+    matrix: matrices/cross-cutting.yaml
+    dimensions:
+    - business-line
+    - scenario
+    - fault-position
+    required_variants: 2
+mandatory_oracle_classes:
+- static
+- build
+- behavior
+- state-side-effect
+- security
+- performance
+- disclosure
+mandatory_test_techniques:
+- example-based
+- property-based
+- differential
+- metamorphic
+- fuzz
+- mutation
+- fault-injection
+- temporal-hidden
+mandatory_evidence:
+- input-digest
+- source-commit
+- toolchain-digest
+- model-version
+- skill-version
+- commands
+- stdout-stderr
+- oracle-results
+- cost
+- wall-clock
+- artifacts-digest

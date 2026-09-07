@@ -1,0 +1,113 @@
+{
+  "batch": 62,
+  "skill_count": 10,
+  "skills": [
+    {
+      "id": "PG181",
+      "name": "synthesis-agent-orchestrator",
+      "path": "skills/batch-62/PG181-synthesis-agent-orchestrator.md",
+      "depends_on": [
+        "PG005",
+        "PG008",
+        "PG009",
+        "PG180"
+      ],
+      "summary": "Coordinates specialist agents, skills, tools, approvals, budgets, and state transitions for Project Synthesis."
+    },
+    {
+      "id": "PG182",
+      "name": "planner-coder-reviewer-agent-team",
+      "path": "skills/batch-62/PG182-planner-coder-reviewer-agent-team.md",
+      "depends_on": [
+        "PG181"
+      ],
+      "summary": "Defines separated planner, implementer, reviewer, tester, security, and certifier responsibilities."
+    },
+    {
+      "id": "PG183",
+      "name": "skill-discovery-and-routing",
+      "path": "skills/batch-62/PG183-skill-discovery-and-routing.md",
+      "depends_on": [
+        "PG008",
+        "PG062",
+        "PG181"
+      ],
+      "summary": "Discovers and ranks Skills by contract compatibility, capability, policy, language, domain, and evidence quality."
+    },
+    {
+      "id": "PG184",
+      "name": "skill-input-output-contract-validator",
+      "path": "skills/batch-62/PG184-skill-input-output-contract-validator.md",
+      "depends_on": [
+        "PG002",
+        "PG003",
+        "PG007",
+        "PG183"
+      ],
+      "summary": "Validates Skill manifests, schemas, preconditions, outputs, evidence, and version compatibility."
+    },
+    {
+      "id": "PG185",
+      "name": "skill-sandbox-permission-enforcer",
+      "path": "skills/batch-62/PG185-skill-sandbox-permission-enforcer.md",
+      "depends_on": [
+        "PG008",
+        "PG147",
+        "PG184"
+      ],
+      "summary": "Enforces process, filesystem, network, repository, secret, deployment, and data capabilities for Skills and agents."
+    },
+    {
+      "id": "PG186",
+      "name": "model-routing-and-budget-controller",
+      "path": "skills/batch-62/PG186-model-routing-and-budget-controller.md",
+      "depends_on": [
+        "PG009",
+        "PG181"
+      ],
+      "summary": "Routes tasks across models and controls token, latency, monetary, and retry budgets."
+    },
+    {
+      "id": "PG187",
+      "name": "context-pack-builder",
+      "path": "skills/batch-62/PG187-context-pack-builder.md",
+      "depends_on": [
+        "PG004",
+        "PG009",
+        "PG182"
+      ],
+      "summary": "Builds minimal, source-grounded context packs for each specialist agent."
+    },
+    {
+      "id": "PG188",
+      "name": "domain-pack-sdk",
+      "path": "skills/batch-62/PG188-domain-pack-sdk.md",
+      "depends_on": [
+        "PG065",
+        "PG184"
+      ],
+      "summary": "Defines packaging, extension, validation, testing, and publication contracts for Domain Packs."
+    },
+    {
+      "id": "PG189",
+      "name": "template-skill-marketplace-publisher",
+      "path": "skills/batch-62/PG189-template-skill-marketplace-publisher.md",
+      "depends_on": [
+        "PG066",
+        "PG188"
+      ],
+      "summary": "Publishes governed Skills, templates, profiles, and Domain Packs into an internal or external marketplace."
+    },
+    {
+      "id": "PG190",
+      "name": "skill-version-compatibility-manager",
+      "path": "skills/batch-62/PG190-skill-version-compatibility-manager.md",
+      "depends_on": [
+        "PG184",
+        "PG188",
+        "PG189"
+      ],
+      "summary": "Manages Skill, schema, template, model adapter, and Domain Pack compatibility across platform releases."
+    }
+  ]
+}

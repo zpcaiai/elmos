@@ -1,0 +1,33 @@
+schema_version: '1.1'
+authority_id: auth-validation-example
+environment_id: env-validation-example
+owner_type: environment
+owner_id: worker-validation-001
+tenant_id: 00000000-0000-0000-0000-000000000001
+role: validation-worker
+capabilities:
+  - harness.prepare
+  - harness.baseline
+  - harness.build
+  - harness.validate
+  - harness.score
+  - harness.publish
+  - filesystem.read
+  - process.execute
+filesystem:
+  read_roots:
+    - /workspace/target-readonly
+    - /workspace/hidden-tests
+  write_roots:
+    - /workspace/evidence-staging
+network:
+  mode: deny
+  allowlist: []
+secrets:
+  allowed_refs: []
+hidden_tests:
+  read: true
+  write: false
+  execute: true
+fencing_token: 1
+expires_at: '2027-01-01T00:00:00Z'

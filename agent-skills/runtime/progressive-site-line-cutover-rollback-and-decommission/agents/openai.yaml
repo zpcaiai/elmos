@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 24 017"
+  short_description: "Run Batch 24 runtime contract safely"
+  default_prompt: "Use $progressive-site-line-cutover-rollback-and-decommission to apply its fail-closed ELMOS runtime contract."

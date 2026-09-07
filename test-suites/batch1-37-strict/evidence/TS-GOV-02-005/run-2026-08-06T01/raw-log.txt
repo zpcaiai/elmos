@@ -1,0 +1,52 @@
+# case TS-GOV-02-005
+# started_at 2026-08-06T10:11:23Z
+# run_id run-2026-08-06T01
+
+$ python3 scripts/test-suite/probes.py skill-binding
+=== probe: skill-binding ===
+[PASS] unknown-skill-reference-rejected
+[PASS] skill-name-traversal-rejected
+[PASS] every-catalog-skill-exists-on-disk :: missing=[]
+
+3/3 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py path-escape
+=== probe: path-escape ===
+[PASS] escape-parent-traversal-rejected
+[PASS] escape-nested-traversal-rejected
+[PASS] escape-absolute-path-rejected
+[PASS] escape-null-byte-rejected
+[PASS] escape-empty-reference-rejected
+[PASS] legitimate-reference-accepted
+[PASS] gate-rejects-evidence-outside-suite :: ['TS-GOV-01-001: invalid evidence reference ../outside-evidence.json: path escapes allowed root: ../outside-evidence.json']
+
+7/7 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py traceability
+=== probe: traceability ===
+[PASS] catalog-count-matches-declaration :: 408 vs 408
+[PASS] every-batch-has-a-P0-positive-case :: missing=[]
+[PASS] every-batch-has-a-P0-negative-case :: missing=[]
+[PASS] every-case-declares-required-evidence :: []
+[PASS] every-case-binds-an-implemented-skill :: []
+[PASS] append-only-case-history-exists
+[PASS] history-covers-every-live-case :: []
+[PASS] history-is-never-truncated :: 408 >= 408
+
+8/8 controls held
+# exit=0 expect=exit-zero met=True
+
+$ python3 scripts/test-suite/probes.py not-run-not-pass
+=== probe: not-run-not-pass ===
+[PASS] gate-exits-non-zero-when-nothing-ran
+[PASS] decision-is-blocked
+[PASS] field-evidence-status-is-not-run
+[PASS] every-p0-p1-not-run-is-a-blocker
+[PASS] zero-cases-counted-as-passed
+[PASS] unsigned-self-declared-pass-blocked :: ['passed results lack an externally trusted signed certification request']
+
+6/6 controls held
+# exit=0 expect=exit-zero met=True
+

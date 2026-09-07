@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Artifact Container Signing"
+  short_description: "Run evidence-bound Batch 40 artifact container signing work"
+  default_prompt: "Use $b40-artifact-container-signing to implement and verify this capability with fail-closed evidence."

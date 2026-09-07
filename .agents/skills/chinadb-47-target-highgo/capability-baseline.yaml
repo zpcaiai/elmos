@@ -1,0 +1,22 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "HighGo HGDB",
+  "discovery_required": true,
+  "preferred_sources": [
+    "Oracle",
+    "DB2",
+    "SQL Server"
+  ],
+  "native_tool_hooks": [
+    "HgMigration"
+  ],
+  "procedural_policy": "enterprise_capability_not_community_assumption",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

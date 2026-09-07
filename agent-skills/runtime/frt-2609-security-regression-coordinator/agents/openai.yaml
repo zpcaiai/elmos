@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Regression Coordinator"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-2609-security-regression-coordinator to run FRT-2609 through the governed FRT runtime with exact scope and fail-closed evidence."

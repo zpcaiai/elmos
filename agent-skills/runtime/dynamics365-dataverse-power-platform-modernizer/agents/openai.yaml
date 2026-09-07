@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dynamics365 Dataverse Power Platform Modernizer"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $dynamics365-dataverse-power-platform-modernizer to govern this enterprise suite modernization task with fail-closed evidence."

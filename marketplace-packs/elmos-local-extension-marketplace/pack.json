@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "pack_key": "elmos-local-extension-marketplace",
+  "version": "0.1.0",
+  "status": "experimental",
+  "owner": "elmos-marketplace",
+  "maintenance_owner": "elmos-platform",
+  "scope": {
+    "product_version": "0.1.0",
+    "protocol_version": "1.0.0",
+    "edition": "local",
+    "risk_tier": "P1",
+    "environment_digest": "sha256:a786a4208f28cd5f1a4351952879f9d0a4c7fb9b783684a733b173c6283f1e0c"
+  },
+  "contracts": {
+    "extension_manifest": "extensions/sample/manifest.json",
+    "sandbox_policy": "sandbox/policy.json",
+    "publisher_profile": "publishers/elmos-local.json",
+    "compatibility_matrix": "compatibility/matrix.json",
+    "commercial_policy": "commercial/policy.json",
+    "dependency_lock": "dependencies/lock.json",
+    "runtime_health": "runtime/health.json",
+    "catalog_entry": "catalog/catalog-entry.json",
+    "ranking_policy": "catalog/ranking-policy.json",
+    "publisher_lifecycle": "publishers/lifecycle.json",
+    "recertification_policy": "certification/recertification-policy.json",
+    "extension_migration": "migrations/extension-migration.json",
+    "continuity_plan": "continuity/revocation-plan.json",
+    "legal_support": "legal-support/policy.json",
+    "private_marketplace": "private-marketplace/policy.json",
+    "offline_mirror": "offline-mirror/policy.json",
+    "operations_policy": "operations/operations-policy.json",
+    "commercial_settlement": "commercial/settlement.json",
+    "eol_policy": "lifecycle/eol-policy.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_extensions": "corpus/representative-extensions",
+    "closure_holdout": "corpus/closure-holdout",
+    "representative_lifecycle": "corpus/representative-lifecycle"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json",
+    "closure_certification_path": "certification/closure-certification.json",
+    "closure_result_path": "certification/closure-gate-result.json"
+  },
+  "tags": [
+    "batch37",
+    "closure-complete"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/architecture-graph.schema.json",
+  "title": "Typed architecture graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "repositoryDigest", "nodes", "edges", "unresolved", "provenance"],
+  "properties": {
+    "schemaVersion": {"const": "3.0.0"},
+    "repositoryDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "name", "attributes", "sourceAnchors"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"enum": ["repository", "module", "service", "database", "table", "message", "topic", "external", "endpoint", "symbol", "runtime"]},
+          "name": {"type": "string"},
+          "attributes": {"type": "object"},
+          "sourceAnchors": {"type": "array", "items": {"type": "object"}}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "source", "target", "kind", "confidence", "evidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "kind": {"enum": ["contains", "depends_on", "calls", "reads", "writes", "publishes", "subscribes", "exposes", "deploys", "implements"]},
+          "confidence": {"enum": ["compiler", "parser", "configuration", "runtime", "unresolved"]},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "object"}}
+        }
+      }
+    },
+    "unresolved": {"type": "array", "items": {"type": "object"}},
+    "provenance": {"type": "object"}
+  }
+}
+

@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Legacy Estate Migration Planner"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-legacy-estate-migration-planner to execute this ELMOS product-closure Skill with fail-closed evidence."

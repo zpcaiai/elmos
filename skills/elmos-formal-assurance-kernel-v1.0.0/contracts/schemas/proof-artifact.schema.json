@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/formal-assurance/v1/proof-artifact.schema.json",
+  "title": "Proof Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenant",
+    "runId",
+    "artifactType",
+    "ref",
+    "createdAt",
+    "immutable"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "tenant": {
+      "$ref": "common.schema.json#/$defs/tenantContext"
+    },
+    "runId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "artifactType": {
+      "enum": [
+        "FORMULA",
+        "MODEL",
+        "LOG",
+        "CERTIFICATE",
+        "COUNTEREXAMPLE",
+        "TRACE",
+        "COVERAGE",
+        "REPORT",
+        "SBOM",
+        "SIGNATURE",
+        "REPLAY_BUNDLE"
+      ]
+    },
+    "ref": {
+      "$ref": "common.schema.json#/$defs/artifactRef"
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "immutable": {
+      "const": true
+    },
+    "independentlyCheckable": {
+      "type": "boolean"
+    },
+    "retentionClass": {
+      "enum": [
+        "EPHEMERAL",
+        "STANDARD",
+        "AUDIT",
+        "LEGAL_HOLD"
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "currency": "CNY",
+  "quality_mode": "balanced",
+  "byok": false,
+  "platform_fixed_minor": 8000,
+  "platform_internal_cost_minor": 2500,
+  "resources": [
+    {
+      "code": "model-input",
+      "category": "managed_model",
+      "quantity": "2.4",
+      "unit_size": "1",
+      "customer_rate_minor_per_unit": 12000,
+      "vendor_cost_minor_per_unit": 7000,
+      "customer_owned_provider": true
+    },
+    {
+      "code": "model-output",
+      "category": "managed_model",
+      "quantity": "0.8",
+      "unit_size": "1",
+      "customer_rate_minor_per_unit": 30000,
+      "vendor_cost_minor_per_unit": 18000,
+      "customer_owned_provider": true
+    },
+    {
+      "code": "sandbox-cpu",
+      "category": "infrastructure",
+      "quantity": "5",
+      "unit_size": "1",
+      "customer_rate_minor_per_unit": 2400,
+      "vendor_cost_minor_per_unit": 900
+    },
+    {
+      "code": "tests",
+      "category": "infrastructure",
+      "quantity": "3",
+      "unit_size": "1",
+      "customer_rate_minor_per_unit": 1800,
+      "vendor_cost_minor_per_unit": 700
+    }
+  ],
+  "acceptance_cost_minor": 6000,
+  "support_cost_minor": 3000,
+  "scope_risk_reserve_minor": 5000,
+  "runtime_components": [
+    {
+      "name": "analysis",
+      "parallel_group": "phase-1",
+      "seconds": 1800
+    },
+    {
+      "name": "dependency-scan",
+      "parallel_group": "phase-1",
+      "seconds": 900
+    },
+    {
+      "name": "implementation",
+      "parallel_group": "phase-2",
+      "seconds": 4200
+    },
+    {
+      "name": "tests",
+      "parallel_group": "phase-3",
+      "seconds": 2400
+    }
+  ],
+  "human_effort_reference": {
+    "value": 10,
+    "unit": "person_days"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "policy": "certificate_revocation",
+  "positive": {
+    "certificate_not_revoked": true,
+    "no_active_drift_trigger": true,
+    "scope_matches_exact_revision": true
+  },
+  "negative": {
+    "expectedAllow": false,
+    "reason": "one required condition absent or false"
+  }
+}

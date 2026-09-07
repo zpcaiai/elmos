@@ -1,0 +1,79 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-repository-refinement-composer
+  title: Repository Refinement Composer
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 用 Assume–Guarantee 把函数、模块、服务和 API 层证明组合为仓库级可观察行为精化结论。
+  dependencies:
+  - elmos-rule-preservation-prover
+  - elmos-cross-language-product-program
+  - elmos-formal-assurance-orchestrator
+  capabilities:
+  - assume-guarantee reasoning
+  - interface contracts
+  - compositional refinement
+  - dependency SCC handling
+  inputs:
+  - name: module proofs
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: service contracts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: dependency graph
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: entrypoint inventory
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: repository proof graph
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: coverage gaps
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: composed result
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

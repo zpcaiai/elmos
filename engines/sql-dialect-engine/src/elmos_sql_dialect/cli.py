@@ -1,0 +1,294 @@
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from .chinadb import CHINADB_TARGETS, chinadb_capabilities, translate_chinadb_ddl
+from .engine import translate_ddl
+from .models import Dialect, DialectError, RouteError, TypeMigrationPolicy
+from .profiles import NamespaceProfile
+from .scan import render_markdown, report_to_json, scan_repository
+from .toolchains import verify_toolchain
+
+SUBCOMMANDS = ("translate", "scan", "chinadb-capabilities")
+
+
+def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    p = subparsers.add_parser("translate", help="translate one certified SQL statement between dialects")
+    p.add_argument("--source-file", required=True, type=Path)
+    p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
+    p.add_argument("--target-dialect", default=None, choices=[d.value for d in Dialect])
+    p.add_argument(
+        "--chinadb-target",
+        default=None,
+        choices=[target.id for target in CHINADB_TARGETS],
+        help="emit certified-profile DDL through an explicit ChinaDB compatibility mode",
+    )
+    p.add_argument(
+        "--compatibility-mode",
+        default=None,
+        help="required with --chinadb-target; never treated as a silent dialect alias",
+    )
+    p.add_argument(
+        "--statement-kind",
+        default="TABLE",
+        choices=[
+            "TABLE",
+            "INDEX",
+            "INSERT",
+            "UPDATE",
+            "ALTER",
+            "DROP",
+            "SCHEMA",
+            "FUNCTION",
+            "PROCEDURE",
+            "TRIGGER",
+            "VIEW",
+            "COMMENT",
+            "GRANT",
+            "REVOKE",
+            "POLICY",
+            "DO",
+        ],
+    )
+    p.add_argument("--dsn", default=None, help="optional real-database DSN/connection params for execution validation")
+    p.add_argument(
+        "--namespace-map",
+        default=None,
+        help="JSON object mapping source schema names to target schema names",
+    )
+    p.add_argument(
+        "--namespace-profile",
+        default=None,
+        help="JSON namespace profile with name, mapping and optional digest; mutually exclusive with --namespace-map",
+    )
+    p.add_argument("--output", required=True, type=Path)
+
+
+def _run_translate(args: argparse.Namespace) -> int:
+    verify_toolchain()
+    sql = args.source_file.read_text(encoding="utf-8")
+    namespace_map = None
+    namespace_profile = None
+    if args.namespace_map is not None:
+        try:
+            raw_map = json.loads(args.namespace_map)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_MAP: {exc}") from exc
+        if not isinstance(raw_map, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in raw_map.items()
+        ):
+            raise RouteError("INVALID_NAMESPACE_MAP: expected a JSON object of string-to-string mappings")
+        namespace_map = raw_map
+    if args.namespace_profile is not None:
+        if namespace_map is not None:
+            raise RouteError("INVALID_NAMESPACE_PROFILE: use --namespace-profile or --namespace-map, not both")
+        try:
+            raw_profile = json.loads(args.namespace_profile)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_PROFILE: {exc}") from exc
+        if not isinstance(raw_profile, dict):
+            raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
+        namespace_profile = NamespaceProfile.from_payload(raw_profile)
+    translate_kwargs = {
+        "statement_kind": args.statement_kind,
+        "dsn": args.dsn,
+        "namespace_map": namespace_map,
+        "namespace_profile": namespace_profile,
+    }
+    if args.chinadb_target is not None:
+        if args.target_dialect is not None:
+            raise RouteError(
+                "CHINADB_TARGET_AND_DIALECT_MUTUALLY_EXCLUSIVE: use --chinadb-target with "
+                "--compatibility-mode, or --target-dialect, not both"
+            )
+        if not args.compatibility_mode:
+            raise RouteError(
+                "CHINADB_COMPATIBILITY_MODE_REQUIRED: --chinadb-target requires an explicit "
+                "--compatibility-mode from that target's allow-list"
+            )
+        report = translate_chinadb_ddl(
+            sql,
+            args.source_dialect,
+            args.chinadb_target,
+            args.compatibility_mode,
+            **translate_kwargs,
+        )
+        emitted_dialect = report.get("mappedDialect")
+    else:
+        if args.compatibility_mode:
+            raise RouteError(
+                "COMPATIBILITY_MODE_REQUIRES_CHINADB_TARGET: --compatibility-mode is only valid "
+                "with --chinadb-target"
+            )
+        if args.target_dialect is None:
+            raise RouteError(
+                "TARGET_DIALECT_REQUIRED: provide --target-dialect or --chinadb-target"
+            )
+        report = translate_ddl(
+            sql,
+            args.source_dialect,
+            args.target_dialect,
+            **translate_kwargs,
+        )
+        emitted_dialect = args.target_dialect
+    args.output.mkdir(parents=True, exist_ok=True)
+    (args.output / "translation-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    if report["emitted"] is not None and emitted_dialect:
+        extension = {"postgres": "sql", "mysql": "sql", "oracle": "sql", "tsql": "sql"}[emitted_dialect]
+        (args.output / f"emitted.{extension}").write_text(report["emitted"] + "\n", encoding="utf-8")
+    print(json.dumps(report, indent=2))
+    return 0 if report["status"] == "PASSED" else 2
+
+
+def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    p = subparsers.add_parser(
+        "scan",
+        help="scan SQL units: automatic candidates plus 100%% explicit disposition coverage",
+    )
+    p.add_argument("--repository", required=True, type=Path)
+    p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
+    p.add_argument("--output", default=None, type=Path)
+    p.add_argument("--examples", default=5, type=int)
+    p.add_argument("--all-findings", action="store_true")
+    p.add_argument(
+        "--namespace-map", default=None, help="JSON object mapping source schema names to target schema names"
+    )
+    p.add_argument(
+        "--namespace-profile",
+        default=None,
+        help="JSON namespace profile with name, mapping and optional digest; mutually exclusive with --namespace-map",
+    )
+    p.add_argument(
+        "--require-disposition-complete",
+        action="store_true",
+        help="succeed when every discovered unit has a non-unknown disposition",
+    )
+    p.add_argument(
+        "--type-policy",
+        default=None,
+        help="JSON object or path to JSON file specifying TypeMigrationPolicy",
+    )
+    p.add_argument(
+        "--allow-alter-column",
+        action="store_true",
+        help="allow ALTER COLUMN TYPE statements during scan",
+    )
+
+
+def _run_scan(args: argparse.Namespace) -> int:
+    """The pre-check exists so the subset boundary is visible BEFORE a
+    migration is committed to, not from the wreckage of a failed run."""
+    namespace_map = None
+    namespace_profile = None
+    if args.namespace_map is not None:
+        try:
+            raw_map = json.loads(args.namespace_map)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_MAP: {exc}") from exc
+        if not isinstance(raw_map, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in raw_map.items()
+        ):
+            raise RouteError("INVALID_NAMESPACE_MAP: expected a JSON object of string-to-string mappings")
+        namespace_map = raw_map
+    if args.namespace_profile is not None:
+        if namespace_map is not None:
+            raise RouteError("INVALID_NAMESPACE_PROFILE: use --namespace-profile or --namespace-map, not both")
+        try:
+            raw_profile = json.loads(args.namespace_profile)
+        except json.JSONDecodeError as exc:
+            raise RouteError(f"INVALID_NAMESPACE_PROFILE: {exc}") from exc
+        if not isinstance(raw_profile, dict):
+            raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
+        namespace_profile = NamespaceProfile.from_payload(raw_profile)
+
+    type_policy = None
+    if getattr(args, "type_policy", None) is not None:
+        try:
+            policy_raw = args.type_policy
+            if Path(policy_raw).exists():
+                policy_dict = json.loads(Path(policy_raw).read_text(encoding="utf-8"))
+            else:
+                policy_dict = json.loads(policy_raw)
+        except Exception as exc:
+            raise RouteError(f"INVALID_TYPE_POLICY: {exc}") from exc
+        if not isinstance(policy_dict, dict):
+            raise RouteError("INVALID_TYPE_POLICY: expected a JSON object")
+        type_policy = TypeMigrationPolicy(**policy_dict)
+
+    allow_alter_column = bool(getattr(args, "allow_alter_column", False))
+
+    report = scan_repository(
+        args.repository,
+        Dialect(args.source_dialect),
+        examples_per_blocker=args.examples,
+        include_all_findings=args.all_findings,
+        namespace_map=namespace_map,
+        namespace_profile=namespace_profile,
+        type_policy=type_policy,
+        allow_alter_column=allow_alter_column,
+    )
+    if args.output is not None:
+        args.output.mkdir(parents=True, exist_ok=True)
+        (args.output / "feasibility-report.json").write_text(report_to_json(report), encoding="utf-8")
+        # The migration decision gets made by someone who will not read JSON.
+        (args.output / "feasibility-report.md").write_text(render_markdown(report), encoding="utf-8")
+    print(report_to_json(report))
+    if args.require_disposition_complete:
+        return (
+            0
+            if (
+                report.disposition_coverage == 1.0
+                and report.totals["dispositionUnknown"] == 0
+                and report.totals["scanErrors"] == 0
+            )
+            else 2
+        )
+    return 0 if report.totals["outOfSubset"] == 0 and report.totals["scanErrors"] == 0 else 2
+
+
+def _chinadb_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    p = subparsers.add_parser(
+        "chinadb-capabilities",
+        help="show the fail-closed ChinaDB domestic target registry",
+    )
+    p.add_argument("--output", default=None, type=Path)
+
+
+def _run_chinadb_capabilities(args: argparse.Namespace) -> int:
+    payload = json.dumps(chinadb_capabilities(), indent=2, ensure_ascii=False) + "\n"
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(payload, encoding="utf-8")
+    print(payload, end="")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-sql-dialect")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    _translate_parser(subparsers)
+    _scan_parser(subparsers)
+    _chinadb_parser(subparsers)
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    try:
+        if args.command == "translate":
+            return _run_translate(args)
+        if args.command == "scan":
+            return _run_scan(args)
+        if args.command == "chinadb-capabilities":
+            return _run_chinadb_capabilities(args)
+        raise RouteError(f"UNKNOWN_COMMAND: {args.command!r}")  # pragma: no cover
+    except (RouteError, DialectError) as exc:
+        print(json.dumps({"status": "BLOCKED", "reason": str(exc)}, indent=2))
+        return 2
+
+
+if __name__ == "__main__":  # pragma: no cover
+    sys.exit(main())

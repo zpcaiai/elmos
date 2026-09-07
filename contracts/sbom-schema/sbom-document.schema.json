@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.sbom-document.v1",
+  "type": "object",
+  "required": ["sbomId", "format", "stage", "subjectDigest", "completeness", "componentRefs"],
+  "properties": {
+    "sbomId": {"type": "string"}, "format": {"enum": ["SPDX", "CYCLONEDX", "CUSTOMER_REQUIRED"]},
+    "stage": {"enum": ["SOURCE_SBOM", "BUILD_SBOM", "ARTIFACT_SBOM", "DEPLOYED_SBOM"]},
+    "subjectDigest": {"type": "string"},
+    "completeness": {"enum": ["COMPLETE", "COMPLETE_DECLARED_SCOPE", "INCOMPLETE_FIRST_PARTY", "INCOMPLETE_THIRD_PARTY", "UNKNOWN"]},
+    "componentRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

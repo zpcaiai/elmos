@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/sales-poc-evidence.schema.json",
+  "title": "B13-A Sales and POC Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "qualified_discovery_coverage",
+    "poc_criteria_predefined_coverage",
+    "unapproved_poc_scope_changes",
+    "poc_evidence_coverage",
+    "discovery_bypass_commitments",
+    "unscanned_automation_commitments",
+    "hidden_poc_failures",
+    "poc_budget_control_passed",
+    "technical_qualification_independent",
+    "customer_acceptance_recorded",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "qualified_discovery_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "poc_criteria_predefined_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unapproved_poc_scope_changes": {
+      "const": 0
+    },
+    "poc_evidence_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "discovery_bypass_commitments": {
+      "const": 0
+    },
+    "unscanned_automation_commitments": {
+      "const": 0
+    },
+    "hidden_poc_failures": {
+      "const": 0
+    },
+    "poc_budget_control_passed": {
+      "const": true
+    },
+    "technical_qualification_independent": {
+      "const": true
+    },
+    "customer_acceptance_recorded": {
+      "const": true
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

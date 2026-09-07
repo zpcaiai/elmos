@@ -1,0 +1,4 @@
+interface:
+  display_name: "B66 React Vite Spa Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b66-react-vite-spa-generator to execute this ELMOS project Skill with fail-closed evidence."

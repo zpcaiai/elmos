@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Error Budget Governance"
+  short_description: "Run evidence-bound Batch 39 error budget governance work"
+  default_prompt: "Use $b39-error-budget-governance to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 增量分析、缓存与检查点"
+  short_description: "Guide 增量分析、缓存与检查点 with evidence controls"
+  default_prompt: "Use $elmos-incremental-analysis-cache as guidance for 增量分析、缓存与检查点 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

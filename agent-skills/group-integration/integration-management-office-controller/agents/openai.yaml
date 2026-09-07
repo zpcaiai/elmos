@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 673: integration management office controller"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-management-office-controller to evaluate this capability with evidence."

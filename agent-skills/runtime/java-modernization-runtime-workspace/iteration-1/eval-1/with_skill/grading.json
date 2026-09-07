@@ -1,0 +1,27 @@
+{
+  "expectations": [
+    {
+      "text": "The report identifies Maven, Java 8, and Spring Boot 2.7.18 from source evidence.",
+      "passed": true,
+      "evidence": "health-report.json contains buildSystem=MAVEN, detectedJavaVersion=8, and springBootVersion=2.7.18."
+    },
+    {
+      "text": "The report does not claim a successful build and marks unresolved dependency or vulnerability evidence INCONCLUSIVE.",
+      "passed": true,
+      "evidence": "The report status is INCONCLUSIVE, vulnerabilityEvidence is INCONCLUSIVE with VULNERABILITY_PROVIDER_NOT_CONFIGURED, and the transitive graph finding is INCONCLUSIVE."
+    },
+    {
+      "text": "The report includes per-file SHA-256 evidence plus health and risk scores.",
+      "passed": true,
+      "evidence": "Three path-bound SHA-256 evidenceDigests are present together with healthScore=61 and overallRisk=HIGH."
+    }
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "execution_metrics": {"tool_calls": {"HTTP": 1}, "total_tool_calls": 1, "total_steps": 1, "errors_encountered": 0, "output_chars": 3768, "transcript_chars": 0},
+  "timing": {"executor_duration_seconds": 0.2, "grader_duration_seconds": 0.0, "total_duration_seconds": 0.2},
+  "claims": [
+    {"claim": "The scanner found three high-severity source risks.", "type": "factual", "verified": true, "evidence": "The findings array has three entries with severity HIGH."},
+    {"claim": "No successful customer build was claimed.", "type": "evidence-boundary", "verified": true, "evidence": "The report preserves INCONCLUSIVE status and requires approved build evidence for the transitive graph."}
+  ],
+  "user_notes_summary": {"uncertainties": ["OSV was deliberately disabled for this evaluation."], "needs_review": [], "workarounds": []}
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: Sre Reliability Analytics Kpi Scoring Forecast And Diagnostics"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $sre-reliability-analytics-kpi-scoring-forecast-and-diagnostics to implement its fail-closed ELMOS Product B47 contract."

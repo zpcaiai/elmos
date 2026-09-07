@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Verification Factory"
+  short_description: "Coordinate evidence-bound advanced verification"
+  default_prompt: "Use $b35-verification-factory to implement and verify this capability with fail-closed evidence."

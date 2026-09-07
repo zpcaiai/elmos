@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-run.schema.json",
+  "title": "TestRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "project_id",
+    "snapshot_id",
+    "mode",
+    "status",
+    "created_at",
+    "quality_gate_version",
+    "test_results"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "plan-only",
+        "generate",
+        "verify",
+        "repair",
+        "certify",
+        "continuous"
+      ]
+    },
+    "status": {
+      "enum": [
+        "created",
+        "ingesting",
+        "spec_blocked",
+        "planning",
+        "generating",
+        "validating_tests",
+        "environment_preparing",
+        "executing",
+        "triaging",
+        "repair_planning",
+        "patching",
+        "impact_regression",
+        "full_regression",
+        "certifying",
+        "waiting_approval",
+        "passed",
+        "failed",
+        "cancelled",
+        "paused",
+        "materializing_test_artifacts",
+        "publishing_output"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "started_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "quality_gate_version": {
+      "type": "string"
+    },
+    "budgets": {
+      "type": "object"
+    },
+    "eta": {
+      "type": "object",
+      "properties": {
+        "predicted_wall_clock_seconds": {
+          "type": "number"
+        },
+        "confidence_low_seconds": {
+          "type": "number"
+        },
+        "confidence_high_seconds": {
+          "type": "number"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "test_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "test_case_id",
+          "status",
+          "attempts"
+        ],
+        "properties": {
+          "test_case_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "blocked",
+              "flaky_confirmed",
+              "not_applicable"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "duration_seconds": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "defect_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "patch_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "checkpoint_ref": {
+      "type": "string"
+    },
+    "project_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "mode": {
+          "enum": [
+            "embedded",
+            "sidecar",
+            "both"
+          ]
+        },
+        "include_test_sources": {
+          "type": "boolean"
+        },
+        "include_qa_evidence": {
+          "type": "boolean"
+        },
+        "include_replay": {
+          "type": "boolean"
+        },
+        "bundle_formats": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "zip",
+              "tar",
+              "tar.gz",
+              "tar.zst"
+            ]
+          }
+        },
+        "publish_partial_on_failure": {
+          "type": "boolean"
+        }
+      }
+    },
+    "output_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "materialized_artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  }
+}

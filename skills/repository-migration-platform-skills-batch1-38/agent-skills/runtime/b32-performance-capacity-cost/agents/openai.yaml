@@ -1,0 +1,4 @@
+interface:
+  display_name: "B32 Performance Capacity Cost"
+  short_description: "Help with B32 Performance Capacity Cost tasks"
+  default_prompt: "Use $b32-performance-capacity-cost to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

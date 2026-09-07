@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Adapter Conformance Certification"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0412-source-adapter-conformance-certification to run FRT-0412 through the governed FRT runtime with exact scope and fail-closed evidence."

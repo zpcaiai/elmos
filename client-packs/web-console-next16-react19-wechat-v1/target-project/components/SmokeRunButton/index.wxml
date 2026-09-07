@@ -1,0 +1,12 @@
+<view class="card" data-component="{{componentName}}">
+  <button class="heading" bindtap="toggleExpanded" aria-expanded="{{expanded}}">{{title}}</button>
+  <view wx:if="{{expanded}}" class="content">
+    <text class="source-label">/api/smoke/capability</text>
+    <text class="source-label">/api/smoke/sessions</text>
+    <text class="source-label">AVAILABLE</text>
+    <text class="source-label">NOT_RUN</text>
+    <text class="source-label">POST</text>
+    <text class="source-label">SMOKE_ACTION_FAILED</text>
+    <view wx:for="{{rows}}" wx:key="key"><text>{{item.key}}: {{item.value}}</text></view>
+  </view>
+</view>

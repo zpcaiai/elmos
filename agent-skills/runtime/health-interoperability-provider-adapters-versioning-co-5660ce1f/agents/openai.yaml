@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B52: Health Interoperability Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B52 contract with fail-closed evidence"
+  default_prompt: "Use $health-interoperability-provider-adapters-versioning-co-5660ce1f to implement its fail-closed ELMOS Product B52 contract."

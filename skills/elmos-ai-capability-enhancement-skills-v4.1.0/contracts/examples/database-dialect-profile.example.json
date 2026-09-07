@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "DatabaseDialectProfile",
+  "metadata": {
+    "id": "database-dialect-profile-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "database": "example-database",
+    "engineVersion": "example-engineVersion",
+    "compatibilityMode": "example-compatibilityMode",
+    "semantics": {}
+  }
+}

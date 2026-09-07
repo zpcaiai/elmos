@@ -1,0 +1,62 @@
+{
+  "id": "B108-S01",
+  "batch": 108,
+  "name": "migration-evidence-directory-scaffolder",
+  "dependencies": [
+    "B107-S16"
+  ],
+  "inputs": [
+    "project/run IDs",
+    "evidence policy"
+  ],
+  "outputs": [
+    "EvidenceWorkspace",
+    "artifact index template"
+  ],
+  "implementation": {
+    "modules": [
+      "evidence/scaffold/EvidenceWorkspaceService.java",
+      "templates/evidence-layout/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/evidence-workspaces",
+      "event evidence.workspace.created"
+    ],
+    "data": [
+      "evidence_workspace",
+      "evidence_slot"
+    ]
+  },
+  "workflow": [
+    "创建内容寻址工作区",
+    "生成标准目录和slot定义",
+    "绑定租户/项目/Baseline/Candidate",
+    "设置写入者权限和保留策略",
+    "初始化索引与哈希链",
+    "提供本地/对象存储映射"
+  ],
+  "tests": [
+    "跨租户路径拒绝",
+    "重复创建幂等",
+    "非法文件名规范化",
+    "未声明slot写入拒绝",
+    "保留策略生效"
+  ],
+  "evidence": [
+    "evidence-workspace.json",
+    "artifact-index.json",
+    "retention-policy.json"
+  ],
+  "definition_of_done": [
+    "标准布局完整",
+    "身份绑定",
+    "写权限最小化",
+    "索引可更新",
+    "不含绝对客户路径"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

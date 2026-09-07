@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "implementation": "apps/java-engine-worker",
+  "api": "/engine/v1/spring-upgrades",
+  "disabled_by_default": true,
+  "required_attestations": [
+    "rootless Runner",
+    "read-only root filesystem",
+    "all Linux capabilities dropped",
+    "separate verifier identity"
+  ],
+  "download_requires_independent_pass": true,
+  "startup_requires_independent_pass": true,
+  "durable_state_authority": "ELMOS control plane"
+}

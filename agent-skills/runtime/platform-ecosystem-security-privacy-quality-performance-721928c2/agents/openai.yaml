@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Platform Ecosystem Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $platform-ecosystem-security-privacy-quality-performance-721928c2 to implement its fail-closed ELMOS Product B55 contract."

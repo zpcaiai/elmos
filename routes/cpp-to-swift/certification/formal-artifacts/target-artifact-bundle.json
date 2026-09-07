@@ -1,0 +1,25 @@
+{
+  "route_key": "cpp-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 152,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:fc27a2216a9ebb405070401c0076898ed1e1d9fea173dbe7b32631a0d4b217d7"
+    },
+    {
+      "bytes": 64,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:60e1d743d39815192b75408226ae9b2fbf05520a60f8a366371af9d2aabb2191"
+    },
+    {
+      "bytes": 157,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:78bf04aa18b1c01f2298d87ebe6ee6b01502390766144d8a66c44626407c12d7"
+    }
+  ]
+}

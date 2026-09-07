@@ -1,0 +1,76 @@
+apiVersion: elmos.ai/v2alpha1
+kind: Skill
+metadata:
+  name: elmos-semantic-gap-obligation-generator
+  title: Semantic Gap Obligation Generator
+  version: 1.0.0
+  packageId: elmos-formal-assurance-kernel-v1.0.0
+  priority: P0
+  domain: cross-language
+  owners:
+  - formal-assurance-platform
+  - domain-owner
+  labels:
+    commercial: production-contract
+    failClosed: 'true'
+    tenantScoped: 'true'
+spec:
+  summary: 识别整数范围、溢出、Null/Option、Unicode、Map 顺序、浮点、时间、序列化和取消语义差距并生成证明义务。
+  dependencies:
+  - elmos-proof-obligation-planner
+  - elmos-language-semantic-profile
+  - elmos-semantic-ir-formal-semantics
+  capabilities:
+  - range analysis
+  - type relation synthesis
+  - semantic diff rules
+  - SMT obligations
+  inputs:
+  - name: source/target profiles
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: type maps
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  - name: dataflow facts
+    required: true
+    schemaRef: contracts/schemas/formal-spec.schema.json
+  outputs:
+  - name: gap obligations
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: safe mapping suggestions
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  - name: unsupported diagnostics
+    schemaRef: contracts/schemas/proof-artifact.schema.json
+  proofStatuses:
+  - PROVED_CERTIFIED
+  - PROVED_INDUCTIVE
+  - PROVED_SOLVER_TRUSTED
+  - PROVED_FOR_SUPPORTED_FRAGMENT
+  - BOUNDED_NO_COUNTEREXAMPLE
+  - REFUTED_WITH_COUNTEREXAMPLE
+  - UNKNOWN_TIMEOUT
+  - UNKNOWN_RESOURCE_LIMIT
+  - UNSUPPORTED
+  - ASSUMPTION_REQUIRED
+  - RUNTIME_MONITORED
+  - WAIVED_BY_APPROVER
+  runtime:
+    executionMode: durable-asynchronous
+    sandbox: secretless-deny-network
+    idempotencyRequired: true
+    checkpointing: true
+    machineEtaUnit: wall-clock-seconds
+    accountConcurrencyLimit: 3
+  security:
+    classification: tenant-confidential
+    crossTenantCache: deny-by-default
+    evidenceIntegrity: sha256-content-addressed
+    adapterFailureMode: fail-closed
+  releaseGates:
+  - P05_DEPLOYMENT_COMPLETE
+  - E1_STATIC
+  - E2_MODEL
+  - E3_DIFFERENTIAL
+  - E4_FAILURE_INJECTION
+  - E5_CUSTOMER_GOLDEN_ROUTE

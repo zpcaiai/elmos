@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B29 Multi Language Routes"
+  short_description: "Help with Tst B29 Multi Language Routes tasks"
+  default_prompt: "Use $tst-b29-multi-language-routes to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

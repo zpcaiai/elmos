@@ -1,0 +1,6 @@
+interface:
+  display_name: "Polyglot Syntax Front End"
+  short_description: "Run polyglot-syntax-front-end with bounded commercial controls"
+  default_prompt: "Use $polyglot-syntax-front-end through the authenticated public CommercialCapabilityExpansionService.execute surface with exact scope; private handler resolution is runtime-owned and evidence fails closed."
+policy:
+  allow_implicit_invocation: true

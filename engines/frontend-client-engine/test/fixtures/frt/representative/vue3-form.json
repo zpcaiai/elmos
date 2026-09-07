@@ -1,0 +1,8 @@
+{
+  "corpusRole": "synthetic-representative",
+  "files": {
+    "package.json": "{\"dependencies\":{\"vue\":\"3.5.39\"}}",
+    "src/App.vue": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nconst name = ref(\"\");\n</script>\n<template><main><label for=\"name\">Name</label><input id=\"name\" v-model=\"name\"><p>{{ name }}</p></main></template>"
+  },
+  "expectedStatus": "GENERATED"
+}

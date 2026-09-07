@@ -1,0 +1,71 @@
+{
+  "id": "B106-S16",
+  "batch": 106,
+  "name": "preview-runtime-provider-abstraction",
+  "dependencies": [
+    "B106-S10",
+    "B106-S11",
+    "B106-S15"
+  ],
+  "inputs": [
+    "provider adapters",
+    "capability declarations",
+    "certification fixtures"
+  ],
+  "outputs": [
+    "SandboxProvider SPI",
+    "provider capability matrix",
+    "certification results"
+  ],
+  "implementation": {
+    "modules": [
+      "runtime/providers/SandboxProvider.java",
+      "runtime/providers/vercel/",
+      "runtime/providers/e2b/",
+      "runtime/providers/fly/",
+      "runtime/providers/kata/"
+    ],
+    "interfaces": [
+      "SPI create/exec/exposePort/streamLogs/extend/stop/destroy/snapshot",
+      "event provider.certified"
+    ],
+    "data": [
+      "provider_registration",
+      "provider_capability",
+      "provider_certification"
+    ]
+  },
+  "workflow": [
+    "定义稳定Provider接口和统一错误码",
+    "实现能力协商与最小公共语义",
+    "适配身份、超时、网络和端口差异",
+    "运行创建/执行/暴露/延期/销毁契约测试",
+    "运行失败注入和幂等测试",
+    "只有认证Provider进入生产路由"
+  ],
+  "tests": [
+    "不支持能力返回UNSUPPORTED而非静默降级",
+    "destroy重复调用幂等",
+    "网络故障恢复测试",
+    "Provider凭证隔离",
+    "假Provider伪造销毁回执被拒绝"
+  ],
+  "evidence": [
+    "provider-spi.json",
+    "capability-matrix.json",
+    "contract-test-results.json",
+    "provider-certificate.json"
+  ],
+  "definition_of_done": [
+    "至少一个Provider端到端通过",
+    "错误模型统一",
+    "能力可查询",
+    "生产仅路由认证Provider",
+    "替换Provider不改变上层Workflow"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

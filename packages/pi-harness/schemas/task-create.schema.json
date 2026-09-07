@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["project_id", "objective"],
+  "additionalProperties": true,
+  "properties": {
+    "project_id": {"type": "string", "format": "uuid"},
+    "objective": {"type": "string", "minLength": 1},
+    "inputs": {"type": "array"},
+    "constraints": {"type": "object"},
+    "budgets": {"type": "object"},
+    "execution": {"type": "object"}
+  }
+}

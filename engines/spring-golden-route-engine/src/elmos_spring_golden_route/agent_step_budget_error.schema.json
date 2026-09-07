@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/agent-step-budget-error-v1.json",
+  "title": "ELMOS Agent Step Budget Error v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision",
+    "error",
+    "message",
+    "details",
+    "customer_evidence_status",
+    "external_evidence_status",
+    "certification"
+  ],
+  "properties": {
+    "decision": {"const": "BLOCKED"},
+    "error": {
+      "enum": [
+        "IDEMPOTENCY_CONFLICT",
+        "STEP_BUDGET_AUTHORIZATION_DENIED",
+        "STEP_BUDGET_CONFLICT",
+        "STEP_BUDGET_EXHAUSTED",
+        "STEP_BUDGET_NOT_FOUND",
+        "STEP_BUDGET_SCHEMA_MIGRATION_REQUIRED",
+        "STEP_BUDGET_VALIDATION_FAILED",
+        "STEP_SETTLEMENT_REQUIRED"
+      ]
+    },
+    "message": {"type": "string", "minLength": 1},
+    "details": {"type": "object"},
+    "customer_evidence_status": {"const": "NOT_RUN"},
+    "external_evidence_status": {"const": "NOT_RUN"},
+    "certification": {"const": "NOT_CERTIFIED"}
+  }
+}

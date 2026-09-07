@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "bundle_id",
+    "version",
+    "default_effect",
+    "rules"
+  ],
+  "properties": {
+    "bundle_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "default_effect": {
+      "const": "deny"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "effect",
+          "conditions",
+          "reasons",
+          "obligations",
+          "owner"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "effect": {
+            "enum": [
+              "allow",
+              "deny"
+            ]
+          },
+          "conditions": {
+            "type": "object"
+          },
+          "reasons": {
+            "type": "array"
+          },
+          "obligations": {
+            "type": "array"
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

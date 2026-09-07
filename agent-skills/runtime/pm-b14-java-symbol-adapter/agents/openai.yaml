@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B14: Java Symbol Adapter"
+  short_description: "Run Precision Migration B14 with evidence controls"
+  default_prompt: "Use $pm-b14-java-symbol-adapter to execute this Precision Migration contract with fail-closed evidence."

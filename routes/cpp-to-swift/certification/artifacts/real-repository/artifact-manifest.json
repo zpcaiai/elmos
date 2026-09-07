@@ -1,0 +1,152 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/cpp-to-swift/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1929,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:ea08df4b4aeaee0a40346502a171b4dc718f7b709b9c2313a4725945d3c0432d"
+    },
+    {
+      "bytes": 13178,
+      "path": "chunk-map.json",
+      "sha256": "sha256:98356b39769b4a87e43901c7b86550b7508d4d5d86203cac972dc835deb71571"
+    },
+    {
+      "bytes": 3197,
+      "path": "formal-composition.json",
+      "sha256": "sha256:186dfb4fd5a24751e59f5258f07e3939fcc18c06771b790a467566fd00233bed"
+    },
+    {
+      "bytes": 1990,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:1da7c083c3efc5c0c13fcbbd7d7c757b6943d7f5b28a8a12d3e599823a993bfd"
+    },
+    {
+      "bytes": 10021,
+      "path": "formal-input.json",
+      "sha256": "sha256:471c421870548610918088ce7f7e34853d89129a91f98e5c9a5ba746bb1d5d8b"
+    },
+    {
+      "bytes": 2539,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:f7f262f09a28d020b124e1f85257491afc9c2da1a130937a9c5f0a1d8e307f74"
+    },
+    {
+      "bytes": 357,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:a76b8ea8492b53067da2944118305bfbdb664abc5db2b3ec060e77712cde97be"
+    },
+    {
+      "bytes": 128,
+      "path": "inputs/decision.cpp",
+      "sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f"
+    },
+    {
+      "bytes": 4326,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:909fd1e6cbe610a4df50c4a310af2d584e128c14b1380afde98cf02818a0f60e"
+    },
+    {
+      "bytes": 1131,
+      "path": "main.swift",
+      "sha256": "sha256:589fc528ff7dd3934c648f9f3ed9b2a4779ccacbdd30383f419027bd34619087"
+    },
+    {
+      "bytes": 157,
+      "path": "migrated.swift",
+      "sha256": "sha256:78bf04aa18b1c01f2298d87ebe6ee6b01502390766144d8a66c44626407c12d7"
+    },
+    {
+      "bytes": 9229,
+      "path": "route-evidence.json",
+      "sha256": "sha256:49c09e84cd91aa5f53ee6f0416a9beba0c63e730f990c2bc54f383d7152ff788"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:c819d943ce49a388cc0a8308c4a303304ebca454d97fb2f994c6ec94a2ddc9d6"
+    },
+    {
+      "bytes": 1710,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc"
+    },
+    {
+      "bytes": 128,
+      "path": "source-runtime/decision.cpp",
+      "sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f"
+    },
+    {
+      "bytes": 2247,
+      "path": "source-runtime/source_harness.cpp",
+      "sha256": "sha256:ba2eab1b7f4aaa27b130501c3f215547172351d65a9576340e26c6a60b746d1f"
+    },
+    {
+      "bytes": 1710,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc"
+    },
+    {
+      "bytes": 2385,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:bf5a5db9572e632bbfabfb96fc281c158272d284589be4319b4fc12ca6b44688"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "cpp-to-swift",
+  "schema_version": 1,
+  "total_bytes": 56671
+}

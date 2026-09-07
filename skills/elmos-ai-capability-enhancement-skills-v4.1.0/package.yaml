@@ -1,0 +1,67 @@
+apiVersion: elmos.ai/v3alpha1
+kind: SplitSkillsPackage
+metadata:
+  name: elmos-ai-capability-enhancement-skills
+  version: 4.1.0
+  packageId: elmos-ai-capability-enhancement-skills-v4.1.0
+  generatedAt: '2026-08-28'
+  sourcePackage: elmos-ai-native-project-factory-total-skills-v4.0.0
+  sourcePackageVersion: 4.0.0
+  maturity: production-capability-implementation-contract
+spec:
+  packageRole: capability
+  parentDomainPack: project-generation
+  architecture: Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3
+  routeOwner: domain-pack.project-generation
+  routableEntryDelta: 0
+  preservesRoutableEntryCount: 16
+  companionPackage:
+    name: elmos-functional-assurance-certification-skills
+    versionConstraint: '>=4.1.0,<4.2.0'
+    relationship: optional-for-E4-E5-P05
+  componentVersionPolicy: inherited from source package 4.0.0; split packaging version is 4.1.0
+  standaloneCompletionCeiling: E3_NO_CERTIFICATE
+  counts:
+    skills: 296
+    perSkillFiles: 3848
+    externalDependencyEdges: 61
+    adapters: 264
+    perAdapterFiles: 2112
+    schemas: 219
+    examples: 219
+    workflows: 35
+    policies: 43
+    policyTests: 43
+    migrations: 20
+    goldenRoutes: 23
+    implementationBatches: 30
+    implementationTasks: 296
+    traceability: 296
+    referenceModules: 71
+    referenceTests: 145
+    nativeFixtureFiles: 39
+    docs: 40
+  defaults:
+    failureMode: fail-closed
+    networkPolicy: deny
+    unknownToolDecision: deny
+    unknownProofDecision: block-critical
+    etaUnit: machine-wall-clock-seconds
+  runtimeRequirements:
+    python: '>=3.11'
+    postgresql: '17'
+    jsonSchema: 2020-12
+    policy: OPA/Rego or equivalent
+    objectStorage: content-addressed/WORM
+  autoDiscovery:
+    skills: agent-skills/runtime/*/SKILL.md
+    schemas: contracts/schemas/*.schema.json
+    adapters: target-adapters/*/adapter.yaml
+    workflows: workflows/*.yaml
+    policies: policies/rego/*.rego
+    goldenRoutes: golden-routes/*/route.yaml
+  releaseBoundary: Candidate generation/readiness only; certification companion required for E5/P05
+  nonClaims:
+  - Package validation is not native product completion or production certification.
+  - No external accreditation, statutory approval, customer acceptance, E5 or P05 is inferred from package contents.
+  - Shared contract files do not create duplicate Skill ownership.

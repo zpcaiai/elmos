@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "1.0",
+  "scenarios": [
+    {
+      "id": 1,
+      "name": "license-bound commercial software",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 2,
+      "name": "shared VM workload split",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 3,
+      "name": "SIGTERM graceful shutdown",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 4,
+      "name": "local upload state",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 5,
+      "name": "per-workload resource profiles",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 6,
+      "name": "liveness semantics",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 7,
+      "name": "NetworkPolicy enforcement",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 8,
+      "name": "PDB protection boundary",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 9,
+      "name": "serverless cold start",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 10,
+      "name": "serverless retry idempotency",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 11,
+      "name": "IaC first import replacement",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 12,
+      "name": "unauthorized drift",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 13,
+      "name": "cross-tenant state",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 14,
+      "name": "mesh has no benefit",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 15,
+      "name": "ambient L7 migration",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 16,
+      "name": "cross-language trace break",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 17,
+      "name": "sensitive baggage",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 18,
+      "name": "autoscaling downstream capacity",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 19,
+      "name": "FinOps versus SLO",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 20,
+      "name": "idle cost allocation",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 21,
+      "name": "backup without restore",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 22,
+      "name": "zone failure topology",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 23,
+      "name": "multi-cloud capability value",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 24,
+      "name": "unexecutable exit plan",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 25,
+      "name": "DNS rollback window",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    },
+    {
+      "id": 26,
+      "name": "legacy unknown consumer",
+      "expected": "FAIL_CLOSED_OR_EXPLICIT_GOVERNED_DECISION"
+    }
+  ]
+}
+

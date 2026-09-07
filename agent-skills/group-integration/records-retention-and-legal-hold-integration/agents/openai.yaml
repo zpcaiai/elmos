@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 704: records retention and legal hold integration"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $records-retention-and-legal-hold-integration to evaluate this capability with evidence."

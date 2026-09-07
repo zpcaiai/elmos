@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.invalid/schemas/batch39/support-matrix.schema.json",
+  "title": "Batch 39 support-matrix",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "id",
+    "batch",
+    "capabilities"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "batch": {
+      "const": 39
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 22,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "capabilityId",
+          "status",
+          "owner",
+          "evidenceRefs"
+        ],
+        "properties": {
+          "capabilityId": {
+            "enum": [
+              "b39-autoscaling-capacity-control",
+              "b39-backup-restore-recovery",
+              "b39-change-management-freeze",
+              "b39-chaos-resilience-fault-injection",
+              "b39-customer-status-communication",
+              "b39-enterprise-support-sla",
+              "b39-error-budget-governance",
+              "b39-global-observability-telemetry",
+              "b39-global-operations-gate",
+              "b39-global-sre-operations-factory",
+              "b39-incident-command",
+              "b39-job-fairness-tenant-isolation",
+              "b39-multiregion-failover",
+              "b39-oncall-follow-the-sun",
+              "b39-operations-evidence-reporting",
+              "b39-platform-cost-anomaly-monitoring",
+              "b39-problem-root-cause-loop",
+              "b39-production-readiness-review",
+              "b39-scheduled-restore-dr-exercise",
+              "b39-service-catalog-sli-slo",
+              "b39-sla-service-credit-governance",
+              "b39-tenant-project-migration-health"
+            ]
+          },
+          "status": {
+            "enum": [
+              "research",
+              "experimental",
+              "limited",
+              "certified",
+              "deprecated",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,338 @@
+{
+  "schemaVersion": "elmos.route-registry/v2",
+  "kind": "RouteRegistry",
+  "metadata": {
+    "name": "elmos-polyglot-route-registry-v2",
+    "version": "2.0.0"
+  },
+  "spec": {
+    "profiles": [
+      {
+        "id": "route-java-spring-to-csharp-aspnet-core",
+        "source": "java",
+        "target": "csharp",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-java-spring-to-csharp-aspnet-core.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-csharp-aspnet-core-to-java-spring",
+        "source": "csharp",
+        "target": "java",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-csharp-aspnet-core-to-java-spring.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-java-to-kotlin",
+        "source": "java",
+        "target": "kotlin",
+        "mode": "same-runtime-modernization",
+        "profile": "route-profiles/route-java-to-kotlin.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-kotlin-to-java",
+        "source": "kotlin",
+        "target": "java",
+        "mode": "same-runtime-conversion",
+        "profile": "route-profiles/route-kotlin-to-java.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-javascript-to-typescript",
+        "source": "javascript",
+        "target": "typescript",
+        "mode": "gradual-modernization",
+        "profile": "route-profiles/route-javascript-to-typescript.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-objective-c-to-swift",
+        "source": "objc",
+        "target": "swift",
+        "mode": "incremental-mobile-modernization",
+        "profile": "route-profiles/route-objective-c-to-swift.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-cpp-to-rust",
+        "source": "cpp",
+        "target": "rust",
+        "mode": "safety-modernization",
+        "profile": "route-profiles/route-cpp-to-rust.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-rust-to-cpp",
+        "source": "rust",
+        "target": "cpp",
+        "mode": "interop-or-conversion",
+        "profile": "route-profiles/route-rust-to-cpp.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-php-laravel-to-typescript-nest",
+        "source": "php",
+        "target": "typescript",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-php-laravel-to-typescript-nest.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-python-fastapi-to-go",
+        "source": "python",
+        "target": "go",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-python-fastapi-to-go.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-python-django-to-typescript-nest",
+        "source": "python",
+        "target": "typescript",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-python-django-to-typescript-nest.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-java-android-to-flutter",
+        "source": "java",
+        "target": "flutter",
+        "mode": "mobile-recomposition",
+        "profile": "route-profiles/route-java-android-to-flutter.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-kotlin-android-to-flutter",
+        "source": "kotlin",
+        "target": "flutter",
+        "mode": "mobile-recomposition",
+        "profile": "route-profiles/route-kotlin-android-to-flutter.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-swift-uikit-to-flutter",
+        "source": "swift",
+        "target": "flutter",
+        "mode": "mobile-recomposition",
+        "profile": "route-profiles/route-swift-uikit-to-flutter.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-react-to-flutter",
+        "source": "react",
+        "target": "flutter",
+        "mode": "cross-ui-recomposition",
+        "profile": "route-profiles/route-react-to-flutter.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-php-laravel-to-python-fastapi",
+        "source": "php",
+        "target": "python",
+        "mode": "cross-stack",
+        "profile": "route-profiles/route-php-laravel-to-python-fastapi.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-go-to-rust",
+        "source": "go",
+        "target": "rust",
+        "mode": "systems-modernization",
+        "profile": "route-profiles/route-go-to-rust.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-spring-in-place-modernization",
+        "source": "java",
+        "target": "java",
+        "mode": "same-stack-modernization",
+        "profile": "route-profiles/route-spring-in-place-modernization.yaml",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-mainframe-cobol-to-java",
+        "source": "cobol",
+        "target": "java",
+        "profile": "route-profiles/route-mainframe-cobol-to-java.yaml",
+        "skill": "elmos-mainframe-cobol-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-mainframe-cobol-to-csharp",
+        "source": "cobol",
+        "target": "csharp",
+        "profile": "route-profiles/route-mainframe-cobol-to-csharp.yaml",
+        "skill": "elmos-mainframe-cobol-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ibmi-rpg-to-java",
+        "source": "rpg",
+        "target": "java",
+        "profile": "route-profiles/route-ibmi-rpg-to-java.yaml",
+        "skill": "elmos-ibmi-rpg-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ibmi-rpg-to-csharp",
+        "source": "rpg",
+        "target": "csharp",
+        "profile": "route-profiles/route-ibmi-rpg-to-csharp.yaml",
+        "skill": "elmos-ibmi-rpg-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-pli-to-java",
+        "source": "pli",
+        "target": "java",
+        "profile": "route-profiles/route-pli-to-java.yaml",
+        "skill": "elmos-pli-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-pli-to-csharp",
+        "source": "pli",
+        "target": "csharp",
+        "profile": "route-profiles/route-pli-to-csharp.yaml",
+        "skill": "elmos-pli-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-vb6-to-csharp",
+        "source": "vb6",
+        "target": "csharp",
+        "profile": "route-profiles/route-vb6-to-csharp.yaml",
+        "skill": "elmos-vb6-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-vbscript-to-csharp",
+        "source": "vbscript",
+        "target": "csharp",
+        "profile": "route-profiles/route-vbscript-to-csharp.yaml",
+        "skill": "elmos-vbscript-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-powerbuilder-to-csharp-react",
+        "source": "powerscript",
+        "target": "csharp",
+        "profile": "route-profiles/route-powerbuilder-to-csharp-react.yaml",
+        "skill": "elmos-powerbuilder-to-csharp-react-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-delphi-to-csharp",
+        "source": "object-pascal",
+        "target": "csharp",
+        "profile": "route-profiles/route-delphi-to-csharp.yaml",
+        "skill": "elmos-delphi-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-abap-to-java",
+        "source": "abap",
+        "target": "java",
+        "profile": "route-profiles/route-abap-to-java.yaml",
+        "skill": "elmos-abap-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-natural-adabas-to-java",
+        "source": "natural",
+        "target": "java",
+        "profile": "route-profiles/route-natural-adabas-to-java.yaml",
+        "skill": "elmos-natural-adabas-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-abl-openedge-to-java",
+        "source": "abl",
+        "target": "java",
+        "profile": "route-profiles/route-abl-openedge-to-java.yaml",
+        "skill": "elmos-abl-openedge-to-java-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-c-to-rust",
+        "source": "c",
+        "target": "rust",
+        "profile": "route-profiles/route-c-to-rust.yaml",
+        "skill": "elmos-c-to-rust-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-c-to-cpp-modernization",
+        "source": "c",
+        "target": "cpp",
+        "profile": "route-profiles/route-c-to-cpp-modernization.yaml",
+        "skill": "elmos-c-to-cpp-modernization-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-ada-spark-to-rust",
+        "source": "ada-spark",
+        "target": "rust",
+        "profile": "route-profiles/route-ada-spark-to-rust.yaml",
+        "skill": "elmos-ada-spark-to-rust-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-rust-to-ada-spark-assurance",
+        "source": "rust",
+        "target": "ada-spark",
+        "profile": "route-profiles/route-rust-to-ada-spark-assurance.yaml",
+        "skill": "elmos-rust-to-ada-spark-assurance-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-fortran-to-cpp",
+        "source": "fortran",
+        "target": "cpp",
+        "profile": "route-profiles/route-fortran-to-cpp.yaml",
+        "skill": "elmos-fortran-to-cpp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-fortran-to-python-numerical",
+        "source": "fortran",
+        "target": "python",
+        "profile": "route-profiles/route-fortran-to-python-numerical.yaml",
+        "skill": "elmos-fortran-to-python-numerical-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-xbase-foxpro-to-csharp",
+        "source": "xbase",
+        "target": "csharp",
+        "profile": "route-profiles/route-xbase-foxpro-to-csharp.yaml",
+        "skill": "elmos-xbase-foxpro-to-csharp-golden-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-cobol-in-place-modernization",
+        "source": "cobol",
+        "target": "cobol",
+        "profile": "route-profiles/route-cobol-in-place-modernization.yaml",
+        "skill": "elmos-cobol-in-place-modernization-route",
+        "readiness": "not-run"
+      },
+      {
+        "id": "route-rpg-in-place-modernization",
+        "source": "rpg",
+        "target": "rpg",
+        "profile": "route-profiles/route-rpg-in-place-modernization.yaml",
+        "skill": "elmos-rpg-in-place-modernization-route",
+        "readiness": "not-run"
+      }
+    ],
+    "genericRouting": {
+      "primaryTechnologyCount": 28,
+      "orderedRouteCellsIncludingSelf": 784,
+      "referenceRouteCount": 40,
+      "rule": "Every cell is assessable through IR. Only reference/implemented routes with fresh executed evidence can advance beyond not-run; low-fitness routes may be rejected."
+    }
+  }
+}

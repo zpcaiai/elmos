@@ -1,0 +1,6 @@
+{
+  "output": "reports/sample-risk-plan.json",
+  "selected": 12,
+  "affected": [],
+  "plan_digest": "sha256:603d4b834ca531232d04e703adcbb2b1790c52470110db8be3fcfb4f8bafc71e"
+}

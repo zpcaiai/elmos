@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 018"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $control-tower-elmos-unified-lifecycle-and-evidence-integration to implement its evidence-bound ELMOS Product Batch 30 contract."

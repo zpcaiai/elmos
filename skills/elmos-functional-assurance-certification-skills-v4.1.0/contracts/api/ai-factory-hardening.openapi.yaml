@@ -1,0 +1,173 @@
+openapi: 3.2.0
+info:
+  title: Elmos AI-Native Project Factory Hardening API
+  version: 1.1.0
+servers:
+- url: https://elmos.invalid/api/v1
+  description: placeholder; deployment must replace and bind exact environment
+paths:
+  /skills/compile:
+    post:
+      operationId: compileSkillIR
+      summary: Compile a host-neutral Agent Skill IR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompileRequest'
+      responses:
+        '202':
+          description: Durable run accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunHandle'
+        '409':
+          description: Critical semantic or authority conflict
+  /skills/{skillId}/emit:
+    post:
+      operationId: emitPortableSkill
+      parameters:
+      - in: path
+        name: skillId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - hosts
+              properties:
+                hosts:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+      responses:
+        '202':
+          description: Emission run accepted
+        '422':
+          description: Unsupported critical host feature
+  /mcp/tasks/{taskId}:
+    get:
+      operationId: getMcpTask
+      parameters:
+      - in: path
+        name: taskId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Current fenced task projection
+        '404':
+          description: Unknown task
+    post:
+      operationId: updateMcpTask
+      parameters:
+      - in: path
+        name: taskId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Idempotent update applied
+        '409':
+          description: Stale epoch/fencing or illegal transition
+  /identities/delegate:
+    post:
+      operationId: issueDelegatedIdentity
+      responses:
+        '201':
+          description: Short-lived scope-reducing credential issued
+        '403':
+          description: Attestation/scope/consent denied
+  /evaluations/shadow:
+    post:
+      operationId: startShadowEvaluation
+      responses:
+        '202':
+          description: Side-effect-free shadow run accepted
+        '403':
+          description: Privacy or side-effect policy denied
+  /incidents/{incidentId}/controls:
+    post:
+      operationId: applyIncidentControl
+      parameters:
+      - in: path
+        name: incidentId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Containment control durably applied
+        '409':
+          description: Stale control generation
+  /certifications/{revisionSetId}:
+    post:
+      operationId: certifyRevisionSet
+      parameters:
+      - in: path
+        name: revisionSetId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Certificate or bounded/blocked decision
+        '409':
+          description: Evidence incomplete, stale or side effects unresolved
+components:
+  schemas:
+    CompileRequest:
+      type: object
+      required:
+      - revisionSetId
+      - source
+      properties:
+        revisionSetId:
+          type: string
+        source:
+          type: object
+        authority:
+          type: object
+        targets:
+          type: array
+          items:
+            type: string
+    RunHandle:
+      type: object
+      required:
+      - runId
+      - executionEpoch
+      - status
+      properties:
+        runId:
+          type: string
+        executionEpoch:
+          type: integer
+          minimum: 1
+        status:
+          enum:
+          - ACCEPTED
+          - RUNNING
+          - PAUSED
+          - BLOCKED
+          - COMPLETED
+          - CANCELLED
+        machineEtaSeconds:
+          type: number
+          minimum: 0
+x-elmos-controls:
+  authorityOwner: Environment
+  idempotencyRequired: true
+  tenantRlsRequired: true
+  completionAuthority: K8 independent certifier
+  unknownPolicy: fail-closed

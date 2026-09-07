@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B23 Spring to Aspnet"
+  short_description: "Help with Tst B23 Spring to Aspnet tasks"
+  default_prompt: "Use $tst-b23-spring-to-aspnet to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

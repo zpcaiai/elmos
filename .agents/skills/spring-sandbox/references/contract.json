@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-056",
+  "name": "spring-sandbox",
+  "title": "Sandbox & Secret Broker",
+  "description": "在隔离 Runner 执行不可信构建，Secret 通过短期最小权限 Broker 注入。",
+  "batch": "17",
+  "batch_slug": "agent-repair-durable-safety",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-sandbox/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-human-approval"
+  ],
+  "outputs": [
+    "sandbox-evidence.json",
+    "resource-usage.json",
+    "security-findings.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "Container/microVM isolation",
+    "Egress allowlist",
+    "CPU/memory/time quota",
+    "Short-lived credentials",
+    "Image/artifact provenance"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "重复请求不得重复写操作",
+    "Worker crash/network partition 下最多一次有效副作用",
+    "deny 在 handler 前生效",
+    "Agent 不得修改 holdout/降低断言"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: sandbox-evidence.json, resource-usage.json, security-findings.json"
+  ],
+  "stop_conditions": [
+    "Provider dispatch 或副作用状态 ambiguous 且无法对账",
+    "Doom loop/重复 patch 无进展",
+    "上下文完整性审计失败",
+    "无合格 approver"
+  ],
+  "definition_of_done": [
+    "断线/重启后任务可继续且不丢 durable state",
+    "所有 Tool I/O 经过 schema/permission",
+    "Agent patch 最小并通过 targeted+regression tests"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

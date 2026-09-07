@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B46: B2B Edi Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B46 contract with fail-closed evidence"
+  default_prompt: "Use $b2b-edi-provider-adapters-versioning-compatibility-and-migration to implement its fail-closed ELMOS Product B46 contract."

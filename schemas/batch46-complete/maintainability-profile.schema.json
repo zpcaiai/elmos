@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "thresholds",
+    "prohibited_domains"
+  ],
+  "properties": {
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "max_complexity_regression",
+        "max_duplication",
+        "min_idiomaticity",
+        "max_compatibility_runtime_ratio",
+        "min_testability",
+        "min_documentation_coverage",
+        "min_ownership_coverage"
+      ],
+      "properties": {
+        "max_complexity_regression": {
+          "type": "number"
+        },
+        "max_duplication": {
+          "type": "number"
+        },
+        "min_idiomaticity": {
+          "type": "number"
+        },
+        "max_compatibility_runtime_ratio": {
+          "type": "number"
+        },
+        "min_testability": {
+          "type": "number"
+        },
+        "min_documentation_coverage": {
+          "type": "number"
+        },
+        "min_ownership_coverage": {
+          "type": "number"
+        }
+      }
+    },
+    "prohibited_domains": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

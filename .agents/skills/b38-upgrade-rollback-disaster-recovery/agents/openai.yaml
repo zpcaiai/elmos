@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 38: Upgrade Rollback Disaster Recovery"
+  short_description: "Run evidence-bound Batch 38 upgrade rollback disaster recovery w"
+  default_prompt: "Use $b38-upgrade-rollback-disaster-recovery to implement and verify this capability with fail-closed evidence."

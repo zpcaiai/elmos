@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.contract-verification.v1",
+  "type": "object",
+  "required": ["contractId", "type", "consumer", "provider", "consumerVersion", "providerVersion", "contractVersion", "status", "evidenceRefs"],
+  "properties": {
+    "contractId": {"type": "string"},
+    "type": {"enum": ["HTTP", "GRPC", "SOAP", "MESSAGE", "FILE", "DATABASE_VIEW", "MODEL", "CLIENT_BFF"]},
+    "consumer": {"type": "string"}, "provider": {"type": "string"},
+    "consumerVersion": {"type": "string"}, "providerVersion": {"type": "string"}, "contractVersion": {"type": "string"},
+    "status": {"enum": ["CAN_DEPLOY", "CANNOT_DEPLOY", "VERIFICATION_UNKNOWN", "CONSUMER_UNKNOWN", "PROVIDER_UNKNOWN", "EXCEPTION_REQUIRED"]},
+    "providerStateIsolated": {"type": "boolean"},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

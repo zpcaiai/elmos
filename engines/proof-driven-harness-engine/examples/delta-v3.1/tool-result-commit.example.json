@@ -1,0 +1,20 @@
+{
+  "callIdentity": {
+    "authoritySnapshotId": "auth-1",
+    "callId": "c-1",
+    "environmentId": "env-1",
+    "executionPlanHash": "sha256:plan",
+    "invocationId": "i-9"
+  },
+  "commitState": "COMMITTED",
+  "effectiveResultRef": "cas:effective",
+  "interceptorChain": [
+    {
+      "decisionHash": "sha256:d",
+      "interceptorId": "redactor",
+      "version": "1.0.0"
+    }
+  ],
+  "mutationProvenanceRef": "cas:mutation",
+  "rawResultRef": "cas:raw"
+}

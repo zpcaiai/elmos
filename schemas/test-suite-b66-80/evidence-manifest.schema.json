@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "evidence-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "source_sha256",
+    "environment_sha256",
+    "fixture_sha256",
+    "commands",
+    "artifacts",
+    "raw_logs",
+    "replay_command",
+    "created_at",
+    "manifest_sha256"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string"
+    },
+    "environment_sha256": {
+      "type": "string"
+    },
+    "fixture_sha256": {
+      "type": "string"
+    },
+    "commands": {
+      "type": "array"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "raw_logs": {
+      "type": "array"
+    },
+    "replay_command": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$id": "elmos.remediation-policy.v1",
+  "type": "object",
+  "required": [
+    "policyId",
+    "trigger",
+    "action",
+    "automationLevel",
+    "maximumBlastRadius",
+    "verification",
+    "rollback"
+  ],
+  "properties": {
+    "policyId": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "object"
+    },
+    "action": {
+      "type": "object"
+    },
+    "automationLevel": {
+      "type": "string"
+    },
+    "maximumBlastRadius": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "rollback": {
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

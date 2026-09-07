@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/scope-baseline.schema.json",
+  "title": "scope-baseline",
+  "type": "object",
+  "required": ["schema_version", "artifact", "root", "corpus", "languages_by_file_count", "risk_and_gap_register"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "artifact": { "const": "scope-baseline" },
+    "root": { "type": "string", "minLength": 1 },
+    "corpus": {
+      "type": "object",
+      "required": ["files", "characters", "estimated_tokens", "counting_method"],
+      "properties": {
+        "files": { "type": "integer", "minimum": 0 },
+        "characters": { "type": "integer", "minimum": 0 },
+        "estimated_tokens": { "type": "integer", "minimum": 0 },
+        "counting_method": { "enum": ["tiktoken", "cjk-aware-heuristic"] },
+        "exact_counts": { "type": "boolean" }
+      }
+    },
+    "skills": { "type": "object" },
+    "languages_by_file_count": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "language_count": { "type": "integer", "minimum": 0 },
+    "build_systems": { "type": "array", "items": { "type": "string" } },
+    "largest_groups": { "type": "array" },
+    "route_matrix": {
+      "type": ["object", "null"],
+      "properties": {
+        "declared_route_count": { "type": ["integer", "null"] },
+        "declared_routes": { "type": "integer" },
+        "languages": { "type": "array", "items": { "type": "string" } },
+        "language_count": { "type": "integer" },
+        "pending_analyzer_languages": { "type": "array", "items": { "type": "string" } },
+        "route_directories": { "type": "integer" },
+        "route_set_names": { "type": "array", "items": { "type": "string" } },
+        "authority_path": { "type": "string" }
+      }
+    },
+    "denominator_claims_in_prose": { "type": "object" },
+    "has_git": { "type": "boolean" },
+    "risk_and_gap_register": { "$ref": "risk-and-gap-register.schema.json" }
+  }
+}

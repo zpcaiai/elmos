@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 005"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $ci-standardization-reusable-workflow-and-component-catalog to apply its fail-closed ELMOS runtime contract."

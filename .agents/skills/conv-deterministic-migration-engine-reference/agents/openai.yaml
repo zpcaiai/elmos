@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Deterministic Migration Engine Reference"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-deterministic-migration-engine-reference to execute this ELMOS product-convergence Skill with fail-closed evidence."

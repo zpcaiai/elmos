@@ -1,0 +1,6 @@
+{
+  "schema": "elmos.test-tool-adapters.v1",
+  "defaultStatus": "NOT_CONFIGURED",
+  "defaultNetwork": "DENY",
+  "adapters": ["junit", "dotnet-test", "pytest", "javascript-test", "playwright", "pact", "hypothesis", "pit", "stryker", "testcontainers", "wiremock", "test-management"]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B49: Cloud Platform Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B49 contract with fail-closed evidence"
+  default_prompt: "Use $cloud-platform-automation-copilot-recommendation-and-hu-e3a3e793 to implement its fail-closed ELMOS Product B49 contract."

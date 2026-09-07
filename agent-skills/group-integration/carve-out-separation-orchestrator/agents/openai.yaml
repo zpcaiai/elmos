@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 725: carve out separation orchestrator"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $carve-out-separation-orchestrator to evaluate this capability with evidence."

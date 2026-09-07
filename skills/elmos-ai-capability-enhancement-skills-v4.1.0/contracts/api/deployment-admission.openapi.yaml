@@ -1,0 +1,38 @@
+openapi: 3.2.0
+info:
+  title: Certificate-bound Deployment Admission API
+  version: 4.0.0
+paths:
+  /v1/admission/evaluate:
+    post:
+      operationId: evaluateDeploymentAdmission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tenant_id
+              - revision_set_id
+              - artifact_digest
+              - certificate_id
+              - environment_digest
+              properties:
+                tenant_id:
+                  type: string
+                revision_set_id:
+                  type: string
+                artifact_digest:
+                  type: string
+                certificate_id:
+                  type: string
+                environment_digest:
+                  type: string
+      responses:
+        '200':
+          description: Typed admission decision
+        '403':
+          description: Denied
+        '409':
+          description: Stale or revoked certificate

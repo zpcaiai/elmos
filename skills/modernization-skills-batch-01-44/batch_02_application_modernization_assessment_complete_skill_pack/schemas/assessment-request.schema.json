@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:assessment-request",
+  "title": "AssessmentRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "portfolio_id",
+    "record_id",
+    "requested_depth",
+    "schema_version",
+    "scope",
+    "tenant_id"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "portfolio_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requested_depth": {
+      "enum": [
+        "inventory",
+        "structural",
+        "semantic",
+        "probe"
+      ]
+    },
+    "access_grants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "data_residency": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

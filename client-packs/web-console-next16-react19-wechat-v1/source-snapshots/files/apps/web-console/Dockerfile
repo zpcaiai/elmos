@@ -1,0 +1,38 @@
+FROM node:24.14.0-alpine3.22@sha256:76db75ca7e7da9148ae42c92d9be12d12a8d7b03e171f18339355d8078d644a0 AS build
+WORKDIR /workspace/apps/web-console
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN corepack enable && corepack prepare pnpm@10.12.4 --activate
+COPY apps/web-console/package.json apps/web-console/pnpm-lock.yaml ./
+RUN --mount=type=cache,id=elmos-web-pnpm-store,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --store-dir=/pnpm/store \
+      --fetch-retries=5 --fetch-retry-factor=2 \
+      --fetch-retry-mintimeout=1000 --fetch-retry-maxtimeout=20000 \
+      --network-concurrency=4
+COPY apps/web-console/app ./app
+COPY apps/web-console/public ./public
+COPY apps/web-console/types ./types
+COPY apps/web-console/next-env.d.ts apps/web-console/next.config.ts \
+     apps/web-console/proxy.ts apps/web-console/tsconfig.json ./
+COPY contracts/pricing-catalog-schema /workspace/contracts/pricing-catalog-schema
+RUN pnpm build
+
+FROM node:24.14.0-alpine3.22@sha256:76db75ca7e7da9148ae42c92d9be12d12a8d7b03e171f18339355d8078d644a0 AS runtime
+# Turbopack external-package aliases in .next/node_modules are relative to the
+# build workspace root. Preserve that topology so the content-addressed
+# mammoth/html-to-text/pdfjs aliases resolve after the stage copy.
+WORKDIR /workspace/apps/web-console
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    HOSTNAME=0.0.0.0 \
+    PORT=3000
+RUN addgroup -S -g 10001 elmos \
+    && adduser -S -D -H -u 10001 -G elmos elmos
+COPY --from=build --chown=10001:10001 /workspace/apps/web-console/package.json ./package.json
+COPY --from=build --chown=10001:10001 /workspace/apps/web-console/node_modules ./node_modules
+COPY --from=build --chown=10001:10001 /workspace/apps/web-console/.next ./.next
+COPY --from=build --chown=10001:10001 /workspace/apps/web-console/public ./public
+USER 10001:10001
+EXPOSE 3000
+HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=4 \
+  CMD wget -q -O /dev/null "http://127.0.0.1:3000/api/health?probe=readiness" || exit 1
+CMD ["./node_modules/.bin/next", "start", "--hostname", "0.0.0.0", "--port", "3000"]

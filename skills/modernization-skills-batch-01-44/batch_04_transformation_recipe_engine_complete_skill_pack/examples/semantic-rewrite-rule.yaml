@@ -1,0 +1,9 @@
+# Example instance for batch-04: semantic-rewrite-rule
+direction: example
+match: example
+priority: 1
+record_id: example
+rewrite: example
+rule_id: example
+schema_version: 1.0.0
+scope: example

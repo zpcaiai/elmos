@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B38 45 Environment Fixture Chaos Factory"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b38-45-environment-fixture-chaos-factory to run its exact Batch 38-45 cases with fail-closed evidence."

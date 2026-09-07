@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2217",
+  "skill_name": "frt-2217-energy-dispatch-to-reconciliation-closure-pack",
+  "batch": "G22",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g22/frt-2217-energy-dispatch-to-reconciliation-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.energy-dispatch-to-reconciliation-closure-pack",
+  "execution_contract_sha256": "sha256:4ca01d15f26afdf282f69190dcbff18c19eb705ffb5b98defd6c222d463c1cdf",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:64b389c91bb12717e41bac816b2586e6ff79d5d785643860209d84b6a7a0f6bb",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

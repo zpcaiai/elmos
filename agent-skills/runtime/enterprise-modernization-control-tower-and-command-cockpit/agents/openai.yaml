@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 014"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $enterprise-modernization-control-tower-and-command-cockpit to implement its evidence-bound ELMOS Product Batch 30 contract."

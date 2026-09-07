@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Of Truth and Write Authority Manager"
+  short_description: "Run this Batch 11 cutover capability"
+  default_prompt: "Use $source-of-truth-and-write-authority-manager to perform this Batch 11 production-cutover task."

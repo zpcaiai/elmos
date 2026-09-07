@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "abi-ffi-boundary-example",
+  "status": "READY",
+  "content_hash": "3ee3a04a3765df77d4a767586003867b3ea95a693e7d96934ccb8e265a351a77",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

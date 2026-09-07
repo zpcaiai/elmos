@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-checkpoint.schema.json",
+  "title": "Execution Checkpoint",
+  "type": "object",
+  "required": [
+    "jobId",
+    "stepId",
+    "attemptId",
+    "state",
+    "inputHash",
+    "policySnapshotHash",
+    "fencingToken",
+    "artifacts",
+    "createdAt"
+  ],
+  "properties": {
+    "jobId": {
+      "type": "string"
+    },
+    "stepId": {
+      "type": "string"
+    },
+    "attemptId": {
+      "type": "string"
+    },
+    "transformationUnitId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "enum": [
+        "started",
+        "safe-point",
+        "committed",
+        "failed",
+        "cancelled",
+        "rolled-back"
+      ]
+    },
+    "inputHash": {
+      "type": "string"
+    },
+    "policySnapshotHash": {
+      "type": "string"
+    },
+    "ownerEnvironmentId": {
+      "type": "string"
+    },
+    "leaseId": {
+      "type": "string"
+    },
+    "fencingToken": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "sideEffects": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "resumeCursor": {
+      "type": "object"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

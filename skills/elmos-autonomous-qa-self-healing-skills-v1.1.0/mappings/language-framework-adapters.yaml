@@ -1,0 +1,61 @@
+version: 1
+adapter_contract:
+  required_methods:
+    - detect
+    - discover_modules
+    - generate_test
+    - validate_test
+    - build
+    - execute
+    - collect_coverage
+    - collect_diagnostics
+    - apply_patch
+    - verify_patch
+    - plan_output_layout
+    - materialize_test_sources
+    - enumerate_output_artifacts
+    - validate_native_test_target
+  required_metadata:
+    - adapter_id
+    - adapter_version
+    - supported_languages
+    - supported_frameworks
+    - supported_test_types
+    - required_runtime
+    - sandbox_permissions
+
+adapters:
+  java:
+    detect: [pom.xml, build.gradle, build.gradle.kts]
+    frameworks: [Spring, Jakarta_EE, Micronaut, Quarkus]
+  kotlin:
+    detect: [build.gradle.kts, settings.gradle.kts]
+    frameworks: [Spring, Ktor, Android]
+  python:
+    detect: [pyproject.toml, requirements.txt, setup.py]
+    frameworks: [FastAPI, Django, Flask]
+  csharp:
+    detect: ['*.sln', '*.csproj']
+    frameworks: [ASP.NET_Core, MAUI, WPF]
+  go:
+    detect: [go.mod]
+    frameworks: [net_http, Gin, Echo, Fiber]
+  rust:
+    detect: [Cargo.toml]
+    frameworks: [Axum, Actix, Rocket, Tauri]
+  cpp:
+    detect: [CMakeLists.txt, meson.build]
+    frameworks: [Qt, Boost, native]
+  php:
+    detect: [composer.json]
+    frameworks: [Laravel, Symfony]
+  typescript_javascript:
+    detect: [package.json, tsconfig.json]
+    frameworks: [Node.js, NestJS, Express, Next.js, Vue, React]
+  objc_swift:
+    detect: ['*.xcodeproj', Package.swift, Podfile]
+    frameworks: [UIKit, SwiftUI, Cocoa]
+  flutter:
+    detect: [pubspec.yaml]
+    frameworks: [Flutter]
+

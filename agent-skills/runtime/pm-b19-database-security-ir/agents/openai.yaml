@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B19: Database Security Ir"
+  short_description: "Run Precision Migration B19 with evidence controls"
+  default_prompt: "Use $pm-b19-database-security-ir to execute this Precision Migration contract with fail-closed evidence."

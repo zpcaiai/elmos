@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Pack Lifecycle Certification Unifier"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-pack-lifecycle-certification-unifier to execute this ELMOS product-convergence Skill with fail-closed evidence."

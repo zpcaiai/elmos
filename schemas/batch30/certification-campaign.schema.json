@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/certification-campaign.schema.json",
+  "title": "ELMOS Batch 30 P0-P11 certification campaign",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "campaign_id", "pack_key", "tuple_binding", "scope",
+    "corpora", "rule_freeze", "phases", "required_external_evidence_types",
+    "thresholds", "status_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "elmos.batch30.certification-campaign.v1"},
+    "campaign_id": {"$ref": "#/$defs/identity"},
+    "pack_key": {"$ref": "#/$defs/identity"},
+    "tuple_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_commit", "source_snapshot_digest", "exact_tuple", "target_artifact",
+        "target_profile", "policy", "version_tuple"
+      ],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_snapshot_digest": {"$ref": "#/$defs/digest"},
+        "exact_tuple": {"$ref": "#/$defs/contentBinding"},
+        "target_artifact": {"$ref": "#/$defs/sizedContentBinding"},
+        "target_profile": {"$ref": "#/$defs/contentBinding"},
+        "policy": {"$ref": "#/$defs/contentBinding"},
+        "version_tuple": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "target"],
+          "properties": {
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "framework", "framework_version", "java", "maven",
+                "servlet_namespace", "servlet_api", "container"
+              ],
+              "properties": {
+                "framework": {"$ref": "#/$defs/identity"},
+                "framework_version": {"$ref": "#/$defs/version"},
+                "java": {"$ref": "#/$defs/version"},
+                "maven": {"$ref": "#/$defs/version"},
+                "servlet_namespace": {"$ref": "#/$defs/identity"},
+                "servlet_api": {"$ref": "#/$defs/version"},
+                "container": {"$ref": "#/$defs/version"}
+              }
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "framework", "framework_version", "spring_framework_version", "java",
+                "maven", "servlet_namespace", "servlet_api", "container"
+              ],
+              "properties": {
+                "framework": {"$ref": "#/$defs/identity"},
+                "framework_version": {"$ref": "#/$defs/version"},
+                "spring_framework_version": {"$ref": "#/$defs/version"},
+                "java": {"$ref": "#/$defs/version"},
+                "maven": {"$ref": "#/$defs/version"},
+                "servlet_namespace": {"$ref": "#/$defs/identity"},
+                "servlet_api": {"$ref": "#/$defs/version"},
+                "container": {"$ref": "#/$defs/version"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_tuple_only", "certified_capability_ids", "excluded_capability_ids",
+        "support_matrix_subject_digest"
+      ],
+      "properties": {
+        "exact_tuple_only": {"const": true},
+        "certified_capability_ids": {"$ref": "#/$defs/nonEmptyUniqueIdentities"},
+        "excluded_capability_ids": {"$ref": "#/$defs/nonEmptyUniqueIdentities"},
+        "support_matrix_subject_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "corpora": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["development", "holdout", "representative", "customer"],
+      "properties": {
+        "development": {"$ref": "#/$defs/corpus"},
+        "holdout": {"$ref": "#/$defs/corpus"},
+        "representative": {"$ref": "#/$defs/corpus"},
+        "customer": {"$ref": "#/$defs/corpus"}
+      }
+    },
+    "rule_freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rules", "recipe_manifest_digest", "frozen_at", "holdout_authoring_forbidden"],
+      "properties": {
+        "rules": {"$ref": "#/$defs/contentBinding"},
+        "recipe_manifest_digest": {"$ref": "#/$defs/digest"},
+        "frozen_at": {"type": "string", "format": "date-time"},
+        "holdout_authoring_forbidden": {"const": true}
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "prefixItems": [
+        {"$ref": "#/$defs/p0"}, {"$ref": "#/$defs/p1"}, {"$ref": "#/$defs/p2"},
+        {"$ref": "#/$defs/p3"}, {"$ref": "#/$defs/p4"}, {"$ref": "#/$defs/p5"},
+        {"$ref": "#/$defs/p6"}, {"$ref": "#/$defs/p7"}, {"$ref": "#/$defs/p8"},
+        {"$ref": "#/$defs/p9"}, {"$ref": "#/$defs/p10"}, {"$ref": "#/$defs/p11"}
+      ],
+      "items": false
+    },
+    "required_external_evidence_types": {"$ref": "#/$defs/allEvidenceTypes"},
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_fingerprint_coverage", "framework_contract_coverage", "build_green_rate",
+        "startup_pass_rate", "p0_contract_pass_rate", "source_map_coverage", "route_coverage",
+        "critical_unknowns", "silent_framework_drops", "critical_security_regressions",
+        "critical_transaction_regressions", "critical_data_regressions",
+        "duplicate_message_or_job_effects", "test_integrity_violations", "skipped_tests",
+        "flaky_tests", "waivers", "minimum_source_builds", "minimum_target_builds",
+        "minimum_startup_attempts", "minimum_security_scanners",
+        "minimum_performance_requests", "minimum_performance_soak_seconds",
+        "performance_slo_p95_ms", "performance_slo_throughput_rps",
+        "minimum_rollback_attempts", "rollback_rto_objective_seconds"
+      ],
+      "properties": {
+        "source_fingerprint_coverage": {"const": 1.0},
+        "framework_contract_coverage": {"const": 1.0},
+        "build_green_rate": {"const": 1.0},
+        "startup_pass_rate": {"const": 1.0},
+        "p0_contract_pass_rate": {"const": 1.0},
+        "source_map_coverage": {"const": 1.0},
+        "route_coverage": {"const": 1.0},
+        "critical_unknowns": {"const": 0},
+        "silent_framework_drops": {"const": 0},
+        "critical_security_regressions": {"const": 0},
+        "critical_transaction_regressions": {"const": 0},
+        "critical_data_regressions": {"const": 0},
+        "duplicate_message_or_job_effects": {"const": 0},
+        "test_integrity_violations": {"const": 0},
+        "skipped_tests": {"const": 0},
+        "flaky_tests": {"const": 0},
+        "waivers": {"const": 0},
+        "minimum_source_builds": {"const": 2},
+        "minimum_target_builds": {"const": 2},
+        "minimum_startup_attempts": {"const": 2},
+        "minimum_security_scanners": {"const": 3},
+        "minimum_performance_requests": {"const": 10000},
+        "minimum_performance_soak_seconds": {"const": 3600},
+        "performance_slo_p95_ms": {"const": 100.0},
+        "performance_slo_throughput_rps": {"const": 400.0},
+        "minimum_rollback_attempts": {"const": 3},
+        "rollback_rto_objective_seconds": {"const": 60.0}
+      }
+    },
+    "status_boundary": {
+      "const": {
+        "external_evidence": "NOT_RUN",
+        "production_certification": "NOT_CERTIFIED",
+        "local_runner_may_certify": false,
+        "promotion_requires_reverification": true
+      }
+    }
+  },
+  "$defs": {
+    "identity": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$"},
+    "version": {"type": "string", "minLength": 1, "not": {"pattern": "(?:[Ll][Aa][Tt][Ee][Ss][Tt]|\\*|^[Xx]$)"}},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "path": {"type": "string", "minLength": 1, "not": {"pattern": "^(?:/|.*(?:^|/)\\.\\.(?:/|$))"}},
+    "contentBinding": {
+      "type": "object", "additionalProperties": false, "required": ["path", "digest"],
+      "properties": {"path": {"$ref": "#/$defs/path"}, "digest": {"$ref": "#/$defs/digest"}}
+    },
+    "sizedContentBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "digest", "size_bytes"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"}, "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "nonEmptyUniqueIdentities": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identity"}
+    },
+    "corpus": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "independent", "execution_status", "authoring_allowed"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"}, "independent": {"type": "boolean"},
+        "execution_status": {"$ref": "#/$defs/localStatus"},
+        "authoring_allowed": {"type": "boolean"}
+      }
+    },
+    "localStatus": {
+      "enum": ["PASSED_LOCAL", "PASSED_LOCAL_EXACT_FIXTURE", "PARTIAL_LOCAL", "PREPARED_NOT_RUN", "NOT_RUN", "PASSED_EXPERIMENTAL_NOT_CERTIFIED"]
+    },
+    "evidenceType": {
+      "enum": [
+        "source_build", "target_build", "source_startup", "target_startup",
+        "behavioral_equivalence", "security", "performance", "operability", "sbom",
+        "rollback", "independent_review", "customer_acceptance", "external_certification"
+      ]
+    },
+    "allEvidenceTypes": {
+      "type": "array", "minItems": 13, "maxItems": 13, "uniqueItems": true,
+      "prefixItems": [
+        {"const": "source_build"}, {"const": "target_build"},
+        {"const": "source_startup"}, {"const": "target_startup"},
+        {"const": "behavioral_equivalence"}, {"const": "security"},
+        {"const": "performance"}, {"const": "operability"}, {"const": "sbom"},
+        {"const": "rollback"}, {"const": "independent_review"},
+        {"const": "customer_acceptance"}, {"const": "external_certification"}
+      ],
+      "items": false
+    },
+    "phaseBase": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "owner_role", "required_evidence_types", "pass_criteria", "execution_status"],
+      "properties": {
+        "id": {"type": "string"}, "title": {"type": "string", "minLength": 1},
+        "owner_role": {"$ref": "#/$defs/identity"},
+        "required_evidence_types": {"type": "array", "items": {"$ref": "#/$defs/evidenceType"}},
+        "pass_criteria": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "execution_status": {"$ref": "#/$defs/localStatus"}
+      }
+    },
+    "p0": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P0"}, "required_evidence_types": {"maxItems": 0}}}]},
+    "p1": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P1"}, "required_evidence_types": {"maxItems": 0}}}]},
+    "p2": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P2"}}}]},
+    "p3": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P3"}}}]},
+    "p4": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P4"}}}]},
+    "p5": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P5"}}}]},
+    "p6": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P6"}}}]},
+    "p7": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P7"}}}]},
+    "p8": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P8"}}}]},
+    "p9": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P9"}}}]},
+    "p10": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P10"}}}]},
+    "p11": {"allOf": [{"$ref": "#/$defs/phaseBase"}, {"properties": {"id": {"const": "P11"}, "required_evidence_types": {"maxItems": 0}}}]}
+  }
+}

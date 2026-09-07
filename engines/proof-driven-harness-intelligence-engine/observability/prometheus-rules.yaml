@@ -1,0 +1,65 @@
+groups:
+  - name: elmos-pdhi-availability
+    interval: 30s
+    rules:
+      - alert: ElmosPdhiTargetDown
+        expr: up{job="elmos-pdhi"} == 0
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: PDHI target is not scrapeable
+          runbook: docs/OPERATIONS.md#service-unavailable
+      - alert: ElmosPdhiReadinessFailed
+        expr: min by (component) (elmos_pdhi_readiness) < 1
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: PDHI required component is not ready
+          runbook: docs/OPERATIONS.md#readiness-failure
+      - alert: ElmosPdhiHttpServerErrorRatio
+        expr: |
+          sum(rate(elmos_pdhi_http_requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(elmos_pdhi_http_requests_total[5m])), 0.001)
+          > 0.02
+        for: 10m
+        labels:
+          severity: ticket
+        annotations:
+          summary: PDHI HTTP 5xx ratio is above two percent
+          runbook: docs/OPERATIONS.md#elevated-errors
+  - name: elmos-pdhi-durability
+    interval: 30s
+    rules:
+      - alert: ElmosPdhiUnknownExternalEffect
+        expr: elmos_pdhi_unsettled_effects{state="UNKNOWN"} > 0
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: External effect outcome is unknown; automatic retry is unsafe
+          runbook: docs/OPERATIONS.md#unknown-external-effect
+      - alert: ElmosPdhiOutboxBacklog
+        expr: elmos_pdhi_outbox_oldest_pending_seconds > 300
+        for: 5m
+        labels:
+          severity: ticket
+        annotations:
+          summary: PDHI outbox delivery is delayed
+          runbook: docs/OPERATIONS.md#outbox-backlog
+      - alert: ElmosPdhiRlsScopeFailure
+        expr: increase(elmos_pdhi_rls_scope_failures_total[5m]) > 0
+        labels:
+          severity: page
+        annotations:
+          summary: A PostgreSQL tenant/project scope assertion failed
+          runbook: docs/OPERATIONS.md#rls-scope-failure
+      - alert: ElmosPdhiCertificationUnknown
+        expr: increase(elmos_pdhi_certification_unknown_total[15m]) > 0
+        labels:
+          severity: page
+        annotations:
+          summary: A certification gate produced UNKNOWN or inconclusive state
+          runbook: docs/OPERATIONS.md#certification-unknown

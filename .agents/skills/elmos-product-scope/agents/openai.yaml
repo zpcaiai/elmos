@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 产品范围与需求基线"
+  short_description: "Guide 产品范围与需求基线 with evidence controls"
+  default_prompt: "Use $elmos-product-scope as guidance for 产品范围与需求基线 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

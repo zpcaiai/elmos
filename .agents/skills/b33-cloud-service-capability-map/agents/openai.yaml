@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Cloud Service Capability Map"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-cloud-service-capability-map to execute this ELMOS Runtime Skill with fail-closed evidence."

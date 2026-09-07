@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-local-advanced-verification",
+  "capabilities": [
+    {
+      "key": "property-based-testing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "metamorphic-testing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "mutation-testing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "structured-fuzzing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "model-based-testing",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "bounded-finite-domain-proof",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "schedule-exploration",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "numeric-verification",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "security-properties",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "data-money-invariants",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "query-equivalence",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "oracle-governance",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "counterexample-replay",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "assurance-case",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Validated only by deterministic local Java tests; no independent holdout or production workload."
+      ]
+    },
+    {
+      "key": "external-smt-symbolic-execution",
+      "status": "blocked",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "solver/proof.json"
+      ],
+      "limitations": [
+        "NOT_RUN: no external solver or symbolic executor is configured."
+      ]
+    }
+  ]
+}

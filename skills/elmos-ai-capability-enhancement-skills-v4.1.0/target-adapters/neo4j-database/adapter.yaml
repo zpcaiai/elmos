@@ -1,0 +1,43 @@
+apiVersion: elmos.ai/v3alpha1
+kind: TargetAdapter
+metadata:
+  name: neo4j-database
+  ecosystem: Neo4j Database
+  version: 4.0.0
+spec:
+  adapterKind: graph-database
+  maturity: P1
+  modes:
+  - cypher
+  - schema
+  - transactions
+  - cdc
+  interfaces:
+  - detect
+  - profile
+  - import
+  - lower
+  - emit
+  - native_validate
+  - upgrade
+  - evidence
+  versionPolicy:
+    discovery: official metadata, source lockfile or exact customer environment
+    pin: exact version and artifact digest at release
+    evidenceInvalidation:
+    - API/DSL/schema/protocol change
+    - runtime/plugin change
+    - security advisory or signer revocation
+    - conformance suite change
+  authority:
+    ambientFilesystem: false
+    ambientNetwork: false
+    ambientSecrets: false
+    requestScoped: true
+    failureMode: fail-closed
+  artifacts:
+  - neo4j-database exact-version profile
+  - neo4j-database capability and semantic-gap map
+  - neo4j-database native conformance evidence
+  - neo4j-database deployment/rollback profile
+  releaseBoundary: adapter package presence is not native conformance

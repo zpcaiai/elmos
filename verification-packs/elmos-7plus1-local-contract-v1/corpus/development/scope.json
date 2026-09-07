@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-development-v1",
+  "data_classification": "synthetic-public-and-pinned-archive-metadata",
+  "authorized_inputs": [
+    "eight pinned archive identities",
+    "valid canonical shared-member fixtures",
+    "valid local runtime request envelopes",
+    "all exact Skill and public-method bindings"
+  ],
+  "execution_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "tuning_allowed": true
+}

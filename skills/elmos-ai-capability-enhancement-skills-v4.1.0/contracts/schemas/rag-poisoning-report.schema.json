@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RAGPoisoningReport",
+  "type": "object",
+  "required": [
+    "campaignId",
+    "payloads",
+    "detected",
+    "crossTenantHits",
+    "deletePersistenceHits",
+    "decision"
+  ],
+  "properties": {
+    "campaignId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payloads": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "detected": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "crossTenantHits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deletePersistenceHits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "pass",
+        "bounded",
+        "blocked"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

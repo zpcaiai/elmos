@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Tenant Domain Hierarchy Lifecycle And Isolation"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $tenant-domain-hierarchy-lifecycle-and-isolation to implement its fail-closed ELMOS Product B34 contract."

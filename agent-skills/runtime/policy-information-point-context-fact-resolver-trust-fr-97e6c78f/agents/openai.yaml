@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B38: Policy Information Point Context Fact Resolver Trust Freshness And External Data"
+  short_description: "Run ELMOS Product B38 contract with fail-closed evidence"
+  default_prompt: "Use $policy-information-point-context-fact-resolver-trust-fr-97e6c78f to implement its fail-closed ELMOS Product B38 contract."

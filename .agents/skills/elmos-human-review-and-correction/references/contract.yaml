@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 17
+name: elmos-human-review-and-correction
+title: 人工审阅与纠错
+objective: 让用户的修正成为可审计版本，而不是直接覆盖原始结果，并可用于重放、评测和词典改进。
+dependencies:
+- elmos-source-anchor-and-provenance
+inputs:
+- 待审内容、置信度、用户修改
+outputs:
+- Correction、Approval、派生重建任务
+responsibilities:
+- 建立 review queue、claim、edit、approve、reject 和 reopen 工作流
+- 支持文本、说话人、时间段、bbox、表格、需求和冲突修正
+- 保存原始值、修正值、操作者、原因和时间
+- 将已批准修正传播到派生索引和下游任务
+deliverables:
+- ReviewTask、Correction 模型与 API
+- 音频、图片和文档审阅界面契约
+- 并发编辑、撤销和传播测试
+acceptance:
+- 任何修正可回退并保留历史
+- 并发修改有乐观锁或等效控制
+- 低置信度结果可被批量定位
+- 批准修正后相关索引和需求一致更新
+data_entities:
+- review_tasks
+- user_corrections
+- review_decisions
+events:
+- review.requested
+- correction.approved
+- correction.reverted
+metrics:
+- review_backlog
+- correction_rate
+failure_modes:
+- 并发覆盖
+- 修正传播失败
+- 无权限审阅
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B30: Navigation And Storage Comparator"
+  short_description: "Run Precision Migration B30 with evidence controls"
+  default_prompt: "Use $pm-b30-navigation-and-storage-comparator to execute this Precision Migration contract with fail-closed evidence."

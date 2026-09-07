@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "transformation_key": "quality-polish-0.2.0",
+  "source_snapshot_digest": "8e5774c3217f91140e341ec8c9c48d9ed375d5acf655679ebb7f56d38a7bed54",
+  "target": "apps/web-console",
+  "changes": [
+    "increase primary typography, spacing, contrast, and information hierarchy",
+    "add Batch 1-55 qualification workspace without weakening evidence boundaries",
+    "add keyboard command navigation with focus restoration",
+    "add 44px mobile touch targets and bottom navigation",
+    "add forced-colors and reduced-motion adaptations"
+  ],
+  "visual_baseline_action": "none",
+  "authorization_change": "none",
+  "external_certification_claim": false
+}

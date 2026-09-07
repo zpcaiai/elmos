@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B34 Portfolio Scale"
+  short_description: "Help with Tst B34 Portfolio Scale tasks"
+  default_prompt: "Use $tst-b34-portfolio-scale to implement and verify this strict Batch 1–37 test scope with immutable evidence and fail-closed results."

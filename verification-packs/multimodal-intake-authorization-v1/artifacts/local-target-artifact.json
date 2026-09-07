@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_CAPTURED_SELF_ATTESTED",
+  "artifact_digest": "sha256:2ed935793e08ed399f1fc8640c546cb99afa8a529bf39e1f9394dfd0fbf72433",
+  "digest_algorithm": "sha256 of UTF-8 RFC 8259 JSON with sorted keys and compact separators over digest_input",
+  "digest_input": {
+    "schema_version": 1,
+    "artifact_key": "elmos-multimodal-intake-engine-runtime-v1",
+    "artifact_kind": "python-runtime-source-and-package-data",
+    "artifact_root": "engines/multimodal-intake-engine",
+    "files": [
+      {
+        "path": "pyproject.toml",
+        "bytes": 679,
+        "sha256": "sha256:7ed9b4f1239a2f1d5818943e2531a7323baedb915f7fae3a9b3ac3530393d0fb"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/__init__.py",
+        "bytes": 71456,
+        "sha256": "sha256:fdbce40dd79351db07d1ae0b0d04364eca0b97e94a1ff4c6612d153413fd3748"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/_data/openapi/operation-input-contracts.schema.json",
+        "bytes": 106797,
+        "sha256": "sha256:753d89a0e0535f9e9a4302cab53c84683f65c8dc790e193f06618d7679394b65"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/_migrations.py",
+        "bytes": 4810,
+        "sha256": "sha256:0c3b7ce367e26c5fdc38abca563251bdbcfe473d5d20fc5b815b599ff7dc0e7d"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/acceptance_catalog.py",
+        "bytes": 6731,
+        "sha256": "sha256:93ed9f338b39a8e60e4e89c8e16628bd42f8152486f56f522cfb6e5e96d4ca84"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/api.py",
+        "bytes": 6280,
+        "sha256": "sha256:a7689afe782771538080f928f1b9a294299689e69825d24ca5f099ebac39019e"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/archive_publication.py",
+        "bytes": 62639,
+        "sha256": "sha256:fbaea16dfbc518cdb4f871b5336c7a36c6e8c452b651d75104d9dd1ce8d6b7f2"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/canonical.py",
+        "bytes": 8928,
+        "sha256": "sha256:b91215930ac170353b702cc6639f6e1ad9a9d4917a2f966708c7693c789beafe"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/cli.py",
+        "bytes": 77929,
+        "sha256": "sha256:95c3e567198799f8343abe1c79ccd1ceeae6a6ea950fe8e9295dab86154afc07"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/content.py",
+        "bytes": 66400,
+        "sha256": "sha256:9d3d886ce8c538d3c18069f640d440bf910207bce5cce4921d77d906700b5121"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/content_projection.py",
+        "bytes": 30952,
+        "sha256": "sha256:44af6647eac6c3598ecff4fac4e24d94e6b91ffbc368e33a2097af6ce255cc23"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/context.py",
+        "bytes": 65174,
+        "sha256": "sha256:0cb25a6371f5b7cf201e5f38cb29a96e625b865906fafa4abd8887bf55343e71"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/context_lifecycle.py",
+        "bytes": 44550,
+        "sha256": "sha256:221ac63ed18ab880af273dcf411577e14e91bffa5598f377f4086231680cde8f"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/contracts.py",
+        "bytes": 13708,
+        "sha256": "sha256:91130810f0cbd7b9f708009cc0c46dc295def3a1e97416599748340ae81ab560"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/downstream_agent.py",
+        "bytes": 71523,
+        "sha256": "sha256:8b553a12f986a3da5d144dbe9afb2fc886a2e7d24399acdad4713532535c3f3d"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/durable_evaluation.py",
+        "bytes": 71899,
+        "sha256": "sha256:01ad554e7d4a769678f863c5c4e32cf56affa61de0f4dca1f9f597a090355694"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/errors.py",
+        "bytes": 1704,
+        "sha256": "sha256:eb3a1c9902430843fd3ce1d961297463462958e363d555dd7249270d595f9465"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/evaluation.py",
+        "bytes": 1354,
+        "sha256": "sha256:10077b8a9784acc8843c43d8e7ff0d398d84a618da38912746ccd7dde3105577"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/governance.py",
+        "bytes": 26212,
+        "sha256": "sha256:abdcade047f489d6883409a00f8a306068875d4ae4cec52577d01fbb1f1521b2"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/http_server.py",
+        "bytes": 41704,
+        "sha256": "sha256:fd14d1bd853a83fff8355d5e1ee2e9d7903a67feda8eb55554c63425187ed0fc"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/human_review.py",
+        "bytes": 34119,
+        "sha256": "sha256:95d7445c187bbcf444249d71d34c62c0903e72a7c474559b37f2c69bda2b130a"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/human_review_workflow.py",
+        "bytes": 295882,
+        "sha256": "sha256:1f369f0c07cbdb7865b87cd52d5a7f2db041df9c1c394c47e6bef59dcf9f5b49"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/knowledge_worker.py",
+        "bytes": 26928,
+        "sha256": "sha256:5a7cbc18d89be58082eda8d65615c0bf16f7e6ed4f2748e692e8b5e00f8afc98"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/001_initial.sql",
+        "bytes": 13160,
+        "sha256": "sha256:a0c391187edab520e238be85b72a51f8eed07c433c679b56f27799118c3f6484"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/004_persistent_knowledge.sql",
+        "bytes": 7246,
+        "sha256": "sha256:eb74235671c5c4e70cea005a39e6c00c093ff34741e56085c0eb286dfb0de182"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/005_knowledge_worker_evidence.sql",
+        "bytes": 650,
+        "sha256": "sha256:6d59f535e90dd776db882221bf33a0ca656fa0d43aeb22c3f24a6b6064cb59f7"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/006_knowledge_source_tombstones.sql",
+        "bytes": 2263,
+        "sha256": "sha256:91da91171f1f4e41185bb41582ae543d7a5ea13c00f1dc299835acf89e0140d3"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/007_progress_job_version.sql",
+        "bytes": 178,
+        "sha256": "sha256:52b8b45f666b42096b103bde42414d4b27bb000b902e3dcbf75272a5351fdd8d"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/008_knowledge_outbox_delivery_state.sql",
+        "bytes": 3227,
+        "sha256": "sha256:30d934d04b1d69abefba648ceb1ab55c8ea193bf27d9445cf5d088df336430de"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/009_skill_execution_dispatch_phase.sql",
+        "bytes": 710,
+        "sha256": "sha256:76f051c763aaae5281a9f1f5e2869a26b6c0d5f5bd1d8c4fb7267a3f6539a0f3"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/010_human_review_corrections.sql",
+        "bytes": 2032,
+        "sha256": "sha256:190989508f42c306d72ea6c6539a067fd403d8c66fdf1b4cc2e689e0f3c11c5d"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/011_human_review_workflow.sql",
+        "bytes": 15020,
+        "sha256": "sha256:35c13974dce6ed37bac55b5139206d1a4ef56a82f3da7f41ac852a82fc1dbc1a"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/012_skill_execution_response_digest.sql",
+        "bytes": 587,
+        "sha256": "sha256:bd82a5cd27f64c204bab2cc5f575b890658109a26de99e6399d6f451bff90494"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/013_core_outbox_payload_integrity.sql",
+        "bytes": 590,
+        "sha256": "sha256:216af471f1319bb7b731717f9578989c29ff3b2fb875ff68cebb53db635e6d03"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/014_human_review_authoritative_sources.sql",
+        "bytes": 14668,
+        "sha256": "sha256:2d06a0a83dfa2e41fe39e70ec524af24aa7f17017fb241212c78de94d159a4f9"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/015_human_review_enqueue_recovery.sql",
+        "bytes": 2737,
+        "sha256": "sha256:bd4bdf291143c7367f9cf38627920458797143cfd24dab63ea9d796df4fb36d5"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/016_human_review_target_head_reservations.sql",
+        "bytes": 18814,
+        "sha256": "sha256:5a7779593a63dc86155186868c6db7fbfc1ab6dba8a3720743e801656b5cf3b3"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/017_archive_expansion_lineage.sql",
+        "bytes": 7818,
+        "sha256": "sha256:9e8bd1fce2f091e70d931412004cf5d3ee13ba7e7f644665d185ac25e38a484a"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/018_governance_deletion_workflow.sql",
+        "bytes": 9780,
+        "sha256": "sha256:7ad530079d5a822db4f593805763c27682b6586009aeb5b1d3ac7ee8758f46fb"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/019_context_lifecycle.sql",
+        "bytes": 9216,
+        "sha256": "sha256:cd69535b6b0d92404f860b8c553134ac564f781aacabf6a7d1b22c9e3602d298"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/020_project_package_lifecycle.sql",
+        "bytes": 6206,
+        "sha256": "sha256:c17202f07ca059bbb5022fa17301a8f0b19faa7db7dc4a0a68541d0549cde309"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/021_telemetry_cost_ledger.sql",
+        "bytes": 7792,
+        "sha256": "sha256:04728f4767ba271bd0309ae6c36f4ba90e0d00dc5320a15260fbcc54c1a08f46"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/022_downstream_agent_integration.sql",
+        "bytes": 13953,
+        "sha256": "sha256:7d6969fbd9800f566458215a0f69538e77030f063052cfee11d4f7da8b35b7e7"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/023_processing_job_cancellation.sql",
+        "bytes": 2456,
+        "sha256": "sha256:7d88583471e7d8537d8208b175320ba2035afc9a0c780b1d413ae85d87e15e21"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/migrations/024_core_outbox_delivery_receipts.sql",
+        "bytes": 1690,
+        "sha256": "sha256:d3b0e9614299fba3c92e84d15159420de9d51ab4d9f17208bb8d1aea979ddae7"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/models.py",
+        "bytes": 14155,
+        "sha256": "sha256:16942e265e555147c76e90b0a5bfc822f96d554925b069500bd98dcde8e44484"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/observability.py",
+        "bytes": 20133,
+        "sha256": "sha256:fb656cb9a731f4e7f18f2b2386fa21f46dbe459af93a2ce3e653b981588d528d"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/operation_registry.py",
+        "bytes": 24116,
+        "sha256": "sha256:1209b9efd457bdad22e3658effdf988cec0e58d5d589a1d621790972ea35aa8b"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/parsers.py",
+        "bytes": 50232,
+        "sha256": "sha256:2aa6601a66c731b008f2605ae97ea968bc81f780560976a6b1fef5def0226abe"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/persistent_knowledge.py",
+        "bytes": 146809,
+        "sha256": "sha256:3ec9cf7cbc7c48a2e3fa095e8482d75a6cbad65257d879d7937c5bc0665f8bf8"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/progress_stream.py",
+        "bytes": 15467,
+        "sha256": "sha256:07df36495016ba3f43cf1ec7b3a13386aedb691a439440d2515496a6ac2e1bd4"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/project_package_lifecycle.py",
+        "bytes": 44841,
+        "sha256": "sha256:4444d580bde246e4d976f25f5f8c905fb9de1cf6a66ef196fb02f86c632c7eaa"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/projects.py",
+        "bytes": 90983,
+        "sha256": "sha256:5e6c4236cf1305f75a1268dfd426ff5dcd0511c4eeac2affecb2a8a1ed320f83"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/providers.py",
+        "bytes": 26431,
+        "sha256": "sha256:1a55fe41c2c4c0dbb87ee7b698e21260e9dfdaeff7e65e251aa8b245a7acf181"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/sdk.py",
+        "bytes": 78179,
+        "sha256": "sha256:95050cd2be39ca5947662f37ac28e257717b1b8a139bb929aad65e5ff761d8c0"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/security.py",
+        "bytes": 26696,
+        "sha256": "sha256:6418195b587a1e3fcaeff549bbc12a28d922f26b3d4ceb3c875d8794fe0a540c"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/skill_runtime.py",
+        "bytes": 44937,
+        "sha256": "sha256:61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/store.py",
+        "bytes": 460487,
+        "sha256": "sha256:5ad0fd4086afc7c2383e5819958663d9640d0a32961e64444b17789605ee9275"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/surface_bridge.py",
+        "bytes": 55942,
+        "sha256": "sha256:56b112ea1714c0c7f64cc0db705c1e9644fa1c266e56fd8c7cfd93773d11172a"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/telemetry_lifecycle.py",
+        "bytes": 25327,
+        "sha256": "sha256:1f89a6ad79831b004817158deac0940f3f45d0090b9b062d051226fc5f86aacd"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/uploads.py",
+        "bytes": 11775,
+        "sha256": "sha256:9cfd3e23df94281f07597b0a51733f1091a5605f69ea5feaef687aaf3435f7f3"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/webhooks.py",
+        "bytes": 14328,
+        "sha256": "sha256:b137bd960993db00893e7d5e797c1192f161a48dc11a003f9e1d8d97d21f7448"
+      },
+      {
+        "path": "src/elmos_multimodal_intake/workflow.py",
+        "bytes": 61716,
+        "sha256": "sha256:022c2e398a99708a919c9a138dd75bfd70da9c705fcde57599e5578a1fc7b526"
+      }
+    ]
+  },
+  "file_count": 63,
+  "total_bytes": 2491705,
+  "limitations": [
+    "This local source and package-data inventory is engineering evidence only.",
+    "Tests, provider binaries, browser/device execution, independent verification, deployment, and production artifacts are outside this bounded target artifact."
+  ]
+}

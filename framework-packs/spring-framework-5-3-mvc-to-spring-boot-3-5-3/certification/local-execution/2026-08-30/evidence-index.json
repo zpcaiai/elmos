@@ -1,0 +1,107 @@
+{
+  "certification_eligible" : false,
+  "claim_scope" : "LOCAL_ENGINEERING_EXACT_FIXTURE_ONLY",
+  "external_execution_status" : "NOT_RUN",
+  "files" : [ {
+    "bytes" : 9873951,
+    "path" : "artifacts/executed-source-spring-mvc-5.3.39.war",
+    "sha256" : "ad40f44d02fbebe7300f2c1aefa4ba27fcae3dd180d2ae839e0e3685e3aba42d"
+  }, {
+    "bytes" : 28990394,
+    "path" : "artifacts/executed-spring-boot-3.5.3.war",
+    "sha256" : "7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97"
+  }, {
+    "bytes" : 17347,
+    "path" : "artifacts/migrated-spring-boot-3.5.3.zip",
+    "sha256" : "f85763c1d86a6af8e39cbdcb0d98571595e58e9ecf8a047b1df6e0ebf1fcd298"
+  }, {
+    "bytes" : 7464,
+    "path" : "artifacts/rewrite-recipe-seed/io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.jar",
+    "sha256" : "a2291b649d9d84a36f455e3ef8eb477efdfda9a05c6b9026b76391d8e6a0d45c"
+  }, {
+    "bytes" : 751,
+    "path" : "artifacts/rewrite-recipe-seed/io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.pom",
+    "sha256" : "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a"
+  }, {
+    "bytes" : 10461,
+    "path" : "artifacts/rewrite-recipe-seed/io/elmos/elmos-parent/0.1.0-SNAPSHOT/elmos-parent-0.1.0-SNAPSHOT.pom",
+    "sha256" : "ada08c7433515cf79992c725f180ef12398803b4eb1372444821cc951e10efa8"
+  }, {
+    "bytes" : 1189,
+    "path" : "evidence/complex-capability-verification.json",
+    "sha256" : "85f63088d86e75e075efaac72fea5c0d756c2a7d0c18dd887a3f49cf55f83125"
+  }, {
+    "bytes" : 21735,
+    "path" : "evidence/control.log",
+    "sha256" : "eeb15fcb89509047071861c31f95b0422038846e50aaa6c26339befeeca1d166"
+  }, {
+    "bytes" : 19436,
+    "path" : "evidence/framework-contract-model.json",
+    "sha256" : "56dd7fdbdd51a76be85cf3c18693fc02a3befbc0d5e62719926d75b260693278"
+  }, {
+    "bytes" : 638,
+    "path" : "evidence/route-selection.json",
+    "sha256" : "b9e3b039a836709cea9b3827d17e53ac1f8e4929b48bb20a2f818ee75ca96190"
+  }, {
+    "bytes" : 3223,
+    "path" : "evidence/source-build.log",
+    "sha256" : "9e399420de5c0cef8f9c0a4481e3e6e2a60536e06b6cf6950ba1b35fc5cc8e5e"
+  }, {
+    "bytes" : 5108,
+    "path" : "evidence/source-snapshot-manifest.json",
+    "sha256" : "e7272d33177f48e5dcea5e2057a1dfe310fae03defb9133dc8f189542285b9a4"
+  }, {
+    "bytes" : 3919,
+    "path" : "evidence/source-startup.log",
+    "sha256" : "0aabcdfceb4d5570a43b464623c0b781a1ea2ebb01ff79c542f5761e4b97c378"
+  }, {
+    "bytes" : 753,
+    "path" : "evidence/source-test-summary.json",
+    "sha256" : "6d585f58917f6c3310e4310882e1162d4e2149a4c01c67f79ddd6f03793f99f4"
+  }, {
+    "bytes" : 3497,
+    "path" : "evidence/spring-mvc-http-oracle.json",
+    "sha256" : "9e5c313ead60dc3aefb21fb21671ccbcea53b453c42118aa30494ee00db99e8c"
+  }, {
+    "bytes" : 7758,
+    "path" : "evidence/target-build.log",
+    "sha256" : "7958a11b7a16e40444905f58526b28a3526fa9612c5524c09bfd481b7589b709"
+  }, {
+    "bytes" : 5227,
+    "path" : "evidence/target-materialization-receipt.json",
+    "sha256" : "4b41ebdb536e879d8fdadb7f51b4984370917866f0b092051ddf8244a48c6f9e"
+  }, {
+    "bytes" : 2071,
+    "path" : "evidence/target-materialization-source-map.json",
+    "sha256" : "d486aa8ff9c9a8ea673ba9a029ae54dcc035c5c2f9537e87aca7c9435af64785"
+  }, {
+    "bytes" : 3320,
+    "path" : "evidence/target-startup.log",
+    "sha256" : "d75d31ed892894766b75e6beae3721cf05f1f7f960ab97114f451b7a6c2ece6c"
+  }, {
+    "bytes" : 1060,
+    "path" : "evidence/target-test-summary.json",
+    "sha256" : "5cb811fee14910a7d358b69d5f14b146feb0d9a148ad94ecb4f9579851f2b934"
+  }, {
+    "bytes" : 994,
+    "path" : "evidence/test-parity.json",
+    "sha256" : "54d24fcd6a8e8a3e497ceea7970b86fa0b262c209c37e6d8d5cbb2558d53d9df"
+  }, {
+    "bytes" : 4052,
+    "path" : "exact-tuple-binding.json",
+    "sha256" : "f487c24648b0c0480653b41f6fb9f2c5fb701c1774c1859353e4e400130c0103"
+  }, {
+    "bytes" : 13107,
+    "path" : "local-qualification.json",
+    "sha256" : "d0992366ca2b4cc07412ef181f1d29c61ead3d7a23564458b73eea8229f5b03c"
+  }, {
+    "bytes" : 4081,
+    "path" : "qualification-policy.json",
+    "sha256" : "e7e1e19b10a2e7545f859204542c9a1afbe3aeaa49478415c4050340bac7e88c"
+  } ],
+  "pack_key" : "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "receipt_binding" : "The index deliberately does not self-reference; it binds the final receipt, every receipt-owned raw evidence file, the exact tuple and policy, the migrated-repository ZIP, and both executable WARs by byte count and SHA-256.",
+  "run_id" : "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-30",
+  "schema_version" : "1.1",
+  "status" : "PASSED_LOCAL"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conv Validation Lab Evidence Store"
+  short_description: "Run this ELMOS product-convergence Skill with evidence"
+  default_prompt: "Use $conv-validation-lab-evidence-store to execute this ELMOS product-convergence Skill with fail-closed evidence."

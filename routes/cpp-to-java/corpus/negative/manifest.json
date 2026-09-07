@@ -1,0 +1,19 @@
+{
+  "case_ids": [
+    "cpp-long-width",
+    "cpp-unsigned-domain",
+    "java-int-width",
+    "java-string-raw-reference-equality",
+    "missing-symbol-fails-closed",
+    "specialized-non-finite-case-unsupported",
+    "specialized-number-arithmetic-unsupported",
+    "specialized-overflow-outside-no-error-domain",
+    "specialized-string-semantics-unsupported",
+    "undeclared-directed-route-fails-closed"
+  ],
+  "expected_result": "BLOCKED",
+  "independent": true,
+  "route_key": "cpp-to-java",
+  "rule_authoring_input": false,
+  "schema_version": 1
+}

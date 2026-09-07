@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 638: healthcare behavior clinical safety and evaluation"
+  short_description: "Operate authoritative Batch 17 capability"
+  default_prompt: "Use $healthcare-behavior-clinical-safety-and-evaluation to evaluate this capability with evidence."

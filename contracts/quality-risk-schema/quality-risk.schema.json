@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.quality-risk.v1",
+  "type": "object",
+  "required": ["riskId", "subjectId", "inherentRisk", "residualRisk", "coverageStatus", "riskModelVersion", "evidenceRefs"],
+  "properties": {
+    "riskId": {"type": "string"}, "subjectId": {"type": "string"},
+    "inherentRisk": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL", "UNKNOWN"]},
+    "residualRisk": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL", "UNKNOWN"]},
+    "coverageStatus": {"enum": ["COVERED", "PARTIALLY_COVERED", "UNCOVERED", "COVERAGE_UNKNOWN", "COVERED_BY_MANUAL"]},
+    "riskModelVersion": {"type": "string"},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

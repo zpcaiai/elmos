@@ -1,0 +1,11 @@
+{
+  "obligationId": "PROOF-ID",
+  "statement": "target refines source under assumptions",
+  "scope": [
+    "symbol"
+  ],
+  "status": "not-run",
+  "assumptions": [],
+  "tool": {},
+  "artifactHash": ""
+}

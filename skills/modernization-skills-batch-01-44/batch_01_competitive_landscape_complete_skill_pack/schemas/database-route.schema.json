@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-01:database-route",
+  "title": "DatabaseRoute",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "procedural_coverage",
+    "record_id",
+    "schema_coverage",
+    "schema_version",
+    "scope",
+    "source_engine",
+    "target_engine"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_engine": {
+      "enum": [
+        "oracle",
+        "sqlserver",
+        "mysql",
+        "postgresql",
+        "db2",
+        "other"
+      ]
+    },
+    "target_engine": {
+      "enum": [
+        "oracle",
+        "sqlserver",
+        "mysql",
+        "postgresql",
+        "db2",
+        "other"
+      ]
+    },
+    "schema_coverage": {
+      "enum": [
+        "none",
+        "partial",
+        "full",
+        "unknown"
+      ]
+    },
+    "procedural_coverage": {
+      "enum": [
+        "none",
+        "partial",
+        "full",
+        "unknown"
+      ]
+    },
+    "data_movement": {
+      "enum": [
+        "none",
+        "bulk",
+        "cdc",
+        "dual-write",
+        "unknown"
+      ]
+    },
+    "fact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

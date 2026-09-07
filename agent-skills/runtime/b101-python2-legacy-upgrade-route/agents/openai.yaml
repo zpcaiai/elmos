@@ -1,0 +1,4 @@
+interface:
+  display_name: "B101 Python2 Legacy Upgrade Route"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b101-python2-legacy-upgrade-route to execute this ELMOS product-closure Skill with fail-closed evidence."

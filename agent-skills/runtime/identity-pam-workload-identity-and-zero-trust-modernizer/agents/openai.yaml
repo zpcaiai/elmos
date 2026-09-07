@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identity Pam Workload Identity and Zero Trust Modernizer"
+  short_description: "Identity Pam Workload Identity and Zero Trust Modernizer helper"
+  default_prompt: "Use $identity-pam-workload-identity-and-zero-trust-modernizer to execute its ELMOS Batch 17 workflow safely."

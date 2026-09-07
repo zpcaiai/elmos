@@ -1,0 +1,4 @@
+interface:
+  display_name: "B75 SQL Query Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b75-sql-query-generator to execute this ELMOS project Skill with fail-closed evidence."

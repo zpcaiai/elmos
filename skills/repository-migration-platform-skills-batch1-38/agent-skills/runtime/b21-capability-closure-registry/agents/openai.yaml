@@ -1,0 +1,4 @@
+interface:
+  display_name: "B21 Capability Closure Registry"
+  short_description: "Help with B21 Capability Closure Registry tasks"
+  default_prompt: "Use $b21-capability-closure-registry to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

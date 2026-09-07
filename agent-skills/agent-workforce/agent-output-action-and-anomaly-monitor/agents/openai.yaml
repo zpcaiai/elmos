@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 568: agent output action and anomaly monitor"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-output-action-and-anomaly-monitor to evaluate this capability with evidence."

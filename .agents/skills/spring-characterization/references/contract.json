@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-034",
+  "name": "spring-characterization",
+  "title": "Baseline Characterization",
+  "description": "捕获旧系统 API、数据库、安全、消息、配置、错误、启动和性能行为。",
+  "batch": "15",
+  "batch_slug": "baseline-repository-intelligence",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/spring-characterization/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-env-snapshot"
+  ],
+  "outputs": [
+    "baseline-characterization.json",
+    "behavior-fingerprints",
+    "coverage-map.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "HTTP/DB/Auth/Event/Job 行为指纹",
+    "PII 脱敏",
+    "P0 覆盖图",
+    "未知行为显式"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "Graph critical fact 可追踪到源码或运行 Evidence",
+    "P0 endpoint/data/security/async 均有场景",
+    "修复 Agent 不得读取 holdout oracle"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: baseline-characterization.json, behavior-fingerprints, coverage-map.json"
+  ],
+  "stop_conditions": [
+    "P0 行为无可执行 Baseline",
+    "关键 Graph completeness 低于阈值",
+    "测试 oracle 同源且无独立验证"
+  ],
+  "definition_of_done": [
+    "所有 P0 capabilities 有源行为、Graph 和 verifier",
+    "Repository Graph 可版本化回放",
+    "行为语料包含正例、负例、边界和 holdout"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

@@ -1,0 +1,140 @@
+{
+  "project_id": "demo-offline-lakehouse",
+  "tenant_id": "tenant-demo-b",
+  "business_goal": "建设企业级湖仓，统一财务、供应链、销售和文件数据，支持每日关账、经营分析和可追溯回算。",
+  "project_types": [
+    "offline-warehouse",
+    "lakehouse",
+    "data-governance"
+  ],
+  "sources": [
+    {
+      "id": "erp",
+      "kind": "relational-database",
+      "technology": "Oracle",
+      "estimated_volume_gb": 2400,
+      "change_mode": "incremental",
+      "owner": "finance"
+    },
+    {
+      "id": "scm",
+      "kind": "relational-database",
+      "technology": "SQL Server",
+      "estimated_volume_gb": 1800,
+      "change_mode": "incremental",
+      "owner": "supply-chain"
+    },
+    {
+      "id": "crm",
+      "kind": "saas-api",
+      "technology": "CRM API",
+      "estimated_volume_gb": 350,
+      "change_mode": "api",
+      "owner": "sales"
+    },
+    {
+      "id": "documents",
+      "kind": "object-storage",
+      "technology": "S3-compatible",
+      "estimated_volume_gb": 22000,
+      "change_mode": "file",
+      "owner": "operations"
+    },
+    {
+      "id": "historical-csv",
+      "kind": "file-share",
+      "technology": "CSV",
+      "estimated_volume_gb": 8000,
+      "change_mode": "file",
+      "owner": "data"
+    }
+  ],
+  "consumers": [
+    {
+      "id": "finance-close",
+      "kind": "reconciliation-job",
+      "freshness_ms": 86400000,
+      "query_pattern": "stable joins and full reconciliation",
+      "owner": "finance"
+    },
+    {
+      "id": "bi",
+      "kind": "bi-dashboard",
+      "freshness_ms": 14400000,
+      "query_pattern": "star schema aggregation",
+      "owner": "management"
+    },
+    {
+      "id": "data-science",
+      "kind": "notebook",
+      "freshness_ms": 86400000,
+      "query_pattern": "large scans and feature extraction",
+      "owner": "ai"
+    }
+  ],
+  "data_characteristics": {
+    "volume_tb": 34.55,
+    "growth_tb_per_month": 2.2,
+    "peak_events_per_second": 25,
+    "average_event_bytes": null,
+    "variety": [
+      "structured",
+      "semi-structured",
+      "unstructured",
+      "binary"
+    ],
+    "retention_days": 2555,
+    "late_data_max_seconds": 172800,
+    "skew_risk": "medium"
+  },
+  "slo": {
+    "p95_read_ms": 5000,
+    "p95_write_ms": null,
+    "freshness_ms": 14400000,
+    "availability_percent": 99.9,
+    "rpo_seconds": 86400,
+    "rto_seconds": 14400
+  },
+  "consistency": {
+    "model": "bounded-staleness",
+    "transactions": "cross-system",
+    "ordering_scope": "business_date",
+    "delivery_semantics": "at-least-once"
+  },
+  "security": {
+    "classification": [
+      "confidential",
+      "financial"
+    ],
+    "contains_pii": true,
+    "data_residency": [
+      "CN"
+    ],
+    "tenant_isolation": "shared-schema",
+    "audit_required": true
+  },
+  "constraints": {
+    "deployment": [
+      "on-prem",
+      "private-cloud"
+    ],
+    "budget_tier": "medium",
+    "operations_maturity": "medium",
+    "preferred_open_source": true,
+    "must_have": [
+      "open-source",
+      "on-prem",
+      "strict-reconciliation",
+      "regulatory-batch-baseline",
+      "data-fabric"
+    ],
+    "forbidden": []
+  },
+  "assumptions": [
+    {
+      "statement": "对象存储支持所选表格式所需的一致性语义。",
+      "confidence": 0.65,
+      "validation": "运行提交冲突、原子可见性和恢复测试。"
+    }
+  ]
+}

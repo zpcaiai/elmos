@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/mature-product/batch39/certification.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "batch",
+    "packKey",
+    "status",
+    "evidenceRefs",
+    "holdoutPassRate",
+    "representativePassRate",
+    "criticalFindings",
+    "metrics"
+  ],
+  "properties": {
+    "batch": {
+      "const": 39
+    },
+    "packKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "NOT_RUN",
+        "LIMITED",
+        "CERTIFIED",
+        "BLOCKED"
+      ]
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "holdoutPassRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "representativePassRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "criticalFindings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sloPassRate",
+        "restorePassRate",
+        "incidentExercisePassRate"
+      ],
+      "properties": {
+        "sloPassRate": {
+          "type": "number",
+          "minimum": 0
+        },
+        "restorePassRate": {
+          "type": "number",
+          "minimum": 0
+        },
+        "incidentExercisePassRate": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "CERTIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidenceRefs": {
+            "minItems": 1
+          },
+          "holdoutPassRate": {
+            "const": 1
+          },
+          "representativePassRate": {
+            "const": 1
+          },
+          "criticalFindings": {
+            "const": 0
+          }
+        }
+      }
+    }
+  ]
+}

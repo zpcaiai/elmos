@@ -1,0 +1,15 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "CertificationWaiver",
+  "metadata": {
+    "id": "certification-waiver-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "claim": "example-claim",
+    "justification": "example-justification",
+    "owner": "example-owner",
+    "expiresAt": "2026-08-28T00:00:00Z"
+  }
+}

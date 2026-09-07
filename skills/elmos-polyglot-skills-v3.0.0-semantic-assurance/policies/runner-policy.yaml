@@ -1,0 +1,41 @@
+schemaVersion: elmos.execution-policy/v1
+policyId: REPLACE-ME
+defaultDecision: deny
+filesystem:
+  read:
+    - ${SNAPSHOT_ROOT}/**
+  write:
+    - ${WORKTREE_ROOT}/**
+    - ${OUTPUT_ROOT}/**
+  deny:
+    - "**/.ssh/**"
+    - "**/.aws/**"
+    - "**/.gnupg/**"
+commands:
+  allow:
+    - git
+    - python3
+  deny:
+    - sudo
+    - ssh
+network:
+  default: deny
+  allow: []
+secrets:
+  mode: runtime-handles-only
+  exposeValuesToModel: false
+resources:
+  wallTimeMinutes: 120
+  cpu: "4"
+  memoryMiB: 8192
+  diskMiB: 20480
+approvals:
+  requiredFor:
+    - production-write
+    - destructive-database-operation
+    - irreversible-data-change
+    - privilege-expansion
+    - cryptographic-change
+audit:
+  tamperEvident: true
+  redactSecrets: true

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "batch": 24,
+  "outcomeOnMissingEvidence": "BLOCKED",
+  "outcomeOnStaleEvidence": "BLOCKED",
+  "independentEvidenceRequired": true,
+  "productionDecisionAuthority": "INDEPENDENT_CONTROL_PLANE_AND_HUMAN"
+}

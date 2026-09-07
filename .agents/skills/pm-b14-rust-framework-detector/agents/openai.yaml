@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B14: Rust Framework Detector"
+  short_description: "Run Precision Migration B14 with evidence controls"
+  default_prompt: "Use $pm-b14-rust-framework-detector to execute this Precision Migration contract with fail-closed evidence."

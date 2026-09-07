@@ -1,0 +1,36 @@
+{
+  "apiVersion": "elmos.ai/v2alpha1",
+  "kind": "VerifierAdapter",
+  "metadata": {
+    "name": "z3",
+    "versionPolicy": "release-time-pinned"
+  },
+  "spec": {
+    "engine": "z3",
+    "evidenceTrust": "SOLVER_TRUSTED",
+    "supportedProperties": [
+      "SMT",
+      "BITVECTOR",
+      "FLOATING_POINT"
+    ],
+    "execution": {
+      "command": [
+        "z3",
+        "-smt2",
+        "input.smt2"
+      ],
+      "timeoutSeconds": 600,
+      "memoryMb": 2048
+    },
+    "security": {
+      "network": "deny",
+      "secrets": "none",
+      "filesystem": "read-only-input-temp-output"
+    },
+    "inputMediaTypes": [
+      "application/smtlib"
+    ],
+    "outputParser": "elmos.parsers.z3",
+    "licenseReviewRequired": true
+  }
+}

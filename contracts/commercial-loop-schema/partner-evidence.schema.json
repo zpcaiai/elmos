@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/partner-evidence.schema.json",
+  "title": "B13-E Partner Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "due_diligence_coverage",
+    "project_certification_coverage",
+    "workspace_isolation_passed",
+    "unauthorized_customer_access_events",
+    "delivery_quality_gates_enforced",
+    "uncertified_high_risk_migrations",
+    "settlement_reconciliation_passed",
+    "unreconciled_settlements",
+    "partner_data_leaks",
+    "marketplace_asset_governance_passed",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "due_diligence_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "project_certification_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "workspace_isolation_passed": {
+      "const": true
+    },
+    "unauthorized_customer_access_events": {
+      "const": 0
+    },
+    "delivery_quality_gates_enforced": {
+      "const": true
+    },
+    "uncertified_high_risk_migrations": {
+      "const": 0
+    },
+    "settlement_reconciliation_passed": {
+      "const": true
+    },
+    "unreconciled_settlements": {
+      "const": 0
+    },
+    "partner_data_leaks": {
+      "const": 0
+    },
+    "marketplace_asset_governance_passed": {
+      "const": true
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

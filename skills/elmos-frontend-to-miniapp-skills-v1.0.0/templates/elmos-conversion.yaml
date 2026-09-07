@@ -1,0 +1,26 @@
+schema_version: "1.0"
+workspace:
+  root: runs
+  source_mode: read-only
+  artifact_store: content-addressed
+orchestration:
+  checkpoint_after_each_skill: true
+  max_parallel_targets: 4
+  max_auto_repair_iterations: 3
+  resume_policy: latest-valid-checkpoint
+policy:
+  native_output_required: true
+  silent_feature_drop: deny
+  webview_fallback: deny
+  full_page_canvas_fallback: deny
+  real_side_effects: approval-required
+registry:
+  capability_path: registry/capabilities
+  component_path: registry/components
+  platform_profiles_path: registry/platform-profiles
+  require_verified_at: true
+evidence:
+  hash: sha256
+  claim_evidence_required: true
+  record_system_wall_clock: true
+  record_cost: true

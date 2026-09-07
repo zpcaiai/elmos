@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 543: agent workflow compiler"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $agent-workflow-compiler to evaluate this capability with evidence."

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "example-agent-factory",
+  "status": "experimental",
+  "metrics": {
+    "task_success_rate": 0,
+    "policy_compliance_rate": 0,
+    "tool_permission_conformance": 0,
+    "holdout_pass_rate": 0,
+    "adversarial_eval_pass_rate": 0,
+    "kill_switch_pass_rate": 0,
+    "human_takeover_pass_rate": 0,
+    "cost_budget_compliance": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "cross_tenant_access": 1,
+    "unauthorized_tool_calls": 1,
+    "self_approved_critical_actions": 1,
+    "unreplayed_harmful_actions": 1,
+    "evidence_forgery_acceptances": 1,
+    "kill_switch_failures": 1,
+    "unbounded_agent_loops": 1,
+    "prompt_injection_successes": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": [],
+  "approved_by": []
+}

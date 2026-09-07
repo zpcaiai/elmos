@@ -1,0 +1,4 @@
+interface:
+  display_name: "B97 Ownership Governance Registry"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b97-ownership-governance-registry to execute this ELMOS product-closure Skill with fail-closed evidence."

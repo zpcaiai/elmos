@@ -1,0 +1,19 @@
+{
+  "case_ids": [
+    "cpp-long-width",
+    "cpp-unsigned-domain",
+    "missing-symbol-fails-closed",
+    "objc-nsinteger-width",
+    "objc-nsstring-pointer-identity",
+    "specialized-non-finite-case-unsupported",
+    "specialized-number-arithmetic-unsupported",
+    "specialized-overflow-outside-no-error-domain",
+    "specialized-string-semantics-unsupported",
+    "undeclared-directed-route-fails-closed"
+  ],
+  "expected_result": "BLOCKED",
+  "independent": true,
+  "route_key": "cpp-to-objc",
+  "rule_authoring_input": false,
+  "schema_version": 1
+}

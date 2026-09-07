@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B51: Lastmile Delivery Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B51 contract with fail-closed evidence"
+  default_prompt: "Use $lastmile-delivery-workflow-orchestration-assignment-esc-ef06048e to implement its fail-closed ELMOS Product B51 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flutter Widget State and Navigation Mapper"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-1608-flutter-widget-state-and-navigation-mapper to run FRT-1608 through the governed FRT runtime with exact scope and fail-closed evidence."

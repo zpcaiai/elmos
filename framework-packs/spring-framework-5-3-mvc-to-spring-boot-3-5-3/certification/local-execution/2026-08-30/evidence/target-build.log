@@ -1,0 +1,89 @@
+STAGE BUILD_AND_TEST Running the target repository's complete maven build with Java 21
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< io.elmos.fixtures:legacy-spring-mvc-boot >--------------
+[INFO] Building legacy-spring-mvc-boot 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ legacy-spring-mvc-boot ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ legacy-spring-mvc-boot ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 7 source files with javac [debug parameters release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ legacy-spring-mvc-boot ---
+[INFO] skip non existing resourceDirectory /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ legacy-spring-mvc-boot ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ legacy-spring-mvc-boot ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running io.elmos.legacy.web.LegacyOrderControllerTest
+17:25:06.901 [main] INFO org.hibernate.validator.internal.util.Version -- HV000001: Hibernate Validator 8.0.2.Final
+17:25:07.190 [main] INFO org.springframework.mock.web.MockServletContext -- Initializing Spring TestDispatcherServlet ''
+17:25:07.190 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Initializing Servlet ''
+17:25:07.192 [main] INFO org.springframework.test.web.servlet.TestDispatcherServlet -- Completed initialization in 1 ms
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.510 s -- in io.elmos.legacy.web.LegacyOrderControllerTest
+[INFO] Running io.elmos.legacy.LegacyMvcApplicationTest
+17:25:07.351 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [io.elmos.legacy.LegacyMvcApplicationTest]: LegacyMvcApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+17:25:07.390 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration io.elmos.legacy.LegacyMvcApplication for test class io.elmos.legacy.LegacyMvcApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2026-08-30T17:25:07.549+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : Starting LegacyMvcApplicationTest using Java 21.0.11 with PID 84118 (started by stephen in /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated)
+2026-08-30T17:25:07.551+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : No active profile set, falling back to 1 default profile: "default"
+2026-08-30T17:25:08.146+08:00  INFO 84118 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-08-30T17:25:08.146+08:00  INFO 84118 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-08-30T17:25:08.149+08:00  INFO 84118 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-08-30T17:25:08.153+08:00  INFO 84118 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 7 ms
+2026-08-30T17:25:08.180+08:00  INFO 84118 --- [           main] i.elmos.legacy.LegacyMvcApplicationTest  : Started LegacyMvcApplicationTest in 0.756 seconds (process running for 1.623)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/maven-home/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.6/byte-buddy-agent-1.17.6.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.304 s -- in io.elmos.legacy.LegacyMvcApplicationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- war:3.4.0:war (default-war) @ legacy-spring-mvc-boot ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [legacy-spring-mvc-boot] in [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/src/main/webapp]
+[INFO] Building war: /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (repackage) @ legacy-spring-mvc-boot ---
+[INFO] Replacing main artifact /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war.original
+[INFO] 
+[INFO] --- spring-boot:3.5.3:repackage (default) @ legacy-spring-mvc-boot ---
+[INFO] Replacing main artifact /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /private/tmp/elmos-mvc-exact-runtime.RXogV6/qualification/runs/spring-mvc-5.3.39-to-boot-3.5.3/migrated/target/legacy-spring-mvc-boot.war.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  48.403 s
+[INFO] Finished at: 2026-08-30T09:25:18Z
+[INFO] ------------------------------------------------------------------------
+complex capability verification status=NOT_APPLICABLE

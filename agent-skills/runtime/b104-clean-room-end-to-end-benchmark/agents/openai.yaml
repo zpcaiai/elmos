@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Clean Room End to End Benchmark"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-clean-room-end-to-end-benchmark to execute this ELMOS product-closure Skill with fail-closed evidence."

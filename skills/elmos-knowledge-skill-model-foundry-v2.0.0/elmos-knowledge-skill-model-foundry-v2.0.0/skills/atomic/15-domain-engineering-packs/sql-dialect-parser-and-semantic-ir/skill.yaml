@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: sql-dialect-parser-and-semantic-ir
+  version: 2.0.0
+  pack: 15-domain-engineering-packs
+  priority: P0
+  owner: TBD
+spec:
+  description: 解析多数据库 SQL、PL/SQL、T-SQL、PL/pgSQL 和扩展语法。
+  kernel: Domain Packs over K1-K8
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: repository
+    required: true
+  - name: target contract
+    required: true
+  - name: semantic IR
+    required: true
+  - name: domain knowledge
+    required: true
+  - name: verification environment
+    required: true
+  outputs:
+  - name: transformation plan
+    contentAddressed: true
+  - name: patch set
+    contentAddressed: true
+  - name: test suite
+    contentAddressed: true
+  - name: equivalence evidence
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - repo.analyze
+    - semantic.transform
+    - patch.apply
+    - build.test
+    - diff.verify
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - inventory-complete
+    - behavior-preserved
+    - tests-adequate
+    - migration-reversible
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 482: recruiting strategy and requisition planner"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $recruiting-strategy-and-requisition-planner to evaluate this capability with evidence."

@@ -1,0 +1,152 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: industrial-system-asset-inventory
+  version: 3.0.0
+  pack: 33-industrial-iot-edge-robotics
+  priority: P0
+  owner: industrial-systems-team
+spec:
+  description: 盘点 PLC、设备、机器人、网关、SCADA、协议、网络、固件、证书和安全等级。
+  kernel: K3 Cyber-Physical IR + K6 SIL/HIL Verification
+  riskClass: medium
+  exposure: atomic-registry-only
+  businessLines:
+  - industrial-iot-robotics
+  capabilityTags:
+  - 33-industrial-iot-edge-robotics
+  - asset
+  - industrial
+  - industrial-iot-robotics
+  - inventory
+  - system
+  triggers:
+  - 任务明确要求：盘点 PLC、设备、机器人、网关、SCADA、协议、网络、固件、证书和安全等级。
+  - 任务属于 industrial-iot-robotics，需要仓库级、可重放、带证据和回滚的执行。
+  - 注册表确认 industrial-system-asset-inventory 与目标技术栈、版本、租户和风险相容。
+  negativeTriggers:
+  - 仅询问概念或写作，不访问仓库、数据、环境或工具。
+  - 没有租户授权、版本锁定、基线、验收标准或验证环境。
+  - 目标是绕过测试、权限、签名、证据、审计或回滚门。
+  - 已有更窄且风险更低的确定性 Skill 能完整处理任务。
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  - baseline.snapshotAvailable == true
+  - evidence.serviceAvailable == true
+  inputs:
+  - name: task contract
+    required: true
+  - name: tenant and repository identity
+    required: true
+  - name: version-pinned environment
+    required: true
+  - name: acceptance and evidence obligations
+    required: true
+  - name: device, protocol, hazard, timing and simulation profiles
+    required: true
+  outputs:
+  - name: execution plan
+    contentAddressed: true
+  - name: versioned artifacts or patch set
+    contentAddressed: true
+  - name: verification and evidence bundle
+    contentAddressed: true
+  - name: risk, cost and machine wall-clock report
+    contentAddressed: true
+  - name: rollback or compensation record
+    contentAddressed: true
+  workflow:
+  - inventory-assets-and-hazards
+  - extract-protocol-and-state-ir
+  - design-edge-cloud-boundaries
+  - generate-or-migrate
+  - simulate-and-hil-test
+  - field-canary-and-observe
+  - certify-or-failsafe
+  tools:
+    allowed:
+    - device.discover
+    - protocol.parse
+    - simulation.run
+    - hil.execute
+    - edge.deploy
+    - safety.verify
+    - evidence.write
+    defaultDeny: true
+    parameterValidationRequired: true
+    environmentOwnedAuthority: true
+  dependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  - multimodal-artifact-ingestion
+  - runtime-static-correlation
+  - formal-invariant-synthesis
+  invariants:
+  - asset-and-protocol-covered
+  - real-time-and-safety-invariants-pass
+  - sil-hil-pass
+  - cybersecurity-boundary-pass
+  - field-rollback-ready
+  - tenant-boundary-preserved
+  - source-and-target-traceable
+  - no-hidden-test-weakening
+  - no-evidence-fabrication
+  - machine-wall-clock-recorded
+  failureModes:
+  - unsupported-source-or-target-version
+  - insufficient-semantic-or-contract-coverage
+  - deterministic-verification-failure
+  - security-privacy-or-license-policy-failure
+  - performance-or-capacity-regression
+  - rollback-or-recovery-evidence-missing
+  execution:
+    class: durable-replayable
+    idempotencyRequired: true
+    checkpointRequired: true
+    independentVerificationRequired: true
+    productionWriteApprovalRequired: true
+    maxUnverifiedSideEffects: 0
+  evidence:
+    requiredGates:
+    - asset-and-protocol-covered
+    - real-time-and-safety-invariants-pass
+    - sil-hil-pass
+    - cybersecurity-boundary-pass
+    - field-rollback-ready
+    minimumLevel: E3
+    sourceBindingRequired: true
+    independentReplayRequired: true
+  rollback:
+    required: true
+    strategy: restore-versioned-checkpoint-and-compensate-side-effects
+    rehearsalRequired: false
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+    minimumDatasetTier: Gold
+    humanAcceptanceRequired: false
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true
+    emitProgress: true
+    emitEvidenceLineage: true
+    sensitiveContentDefault: redacted
+  compatibility:
+    packageVersion: 3.0.0
+    runtime: Elmos Proof-Driven Agentic Harness v3+
+    versionPinned: true
+    matrixRequired: true
+  maturity:
+    status: specification-ready
+    runtimeImplementation: required
+    certificationTarget: E3
+  support:
+    supportTier: LTS-candidate
+    deprecationPolicyRequired: true

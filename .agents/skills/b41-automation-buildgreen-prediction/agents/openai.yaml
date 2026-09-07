@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Automation Buildgreen Prediction"
+  short_description: "Run evidence-bound Batch 41 automation buildgreen prediction wor"
+  default_prompt: "Use $b41-automation-buildgreen-prediction to implement and verify this capability with fail-closed evidence."

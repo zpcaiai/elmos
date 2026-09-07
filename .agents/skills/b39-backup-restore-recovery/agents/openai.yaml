@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 39: Backup Restore Recovery"
+  short_description: "Run evidence-bound Batch 39 backup restore recovery work"
+  default_prompt: "Use $b39-backup-restore-recovery to implement and verify this capability with fail-closed evidence."

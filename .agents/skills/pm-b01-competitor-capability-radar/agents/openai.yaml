@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B01: Competitor Capability Radar"
+  short_description: "Run Precision Migration B01 with evidence controls"
+  default_prompt: "Use $pm-b01-competitor-capability-radar to execute this Precision Migration contract with fail-closed evidence."

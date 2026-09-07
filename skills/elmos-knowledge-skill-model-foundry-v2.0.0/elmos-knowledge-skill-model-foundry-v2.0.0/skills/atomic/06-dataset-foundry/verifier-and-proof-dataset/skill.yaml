@@ -1,0 +1,70 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: verifier-and-proof-dataset
+  version: 2.0.0
+  pack: 06-dataset-foundry
+  priority: P0
+  owner: TBD
+spec:
+  description: 构建补丁正确性、测试充分性、行为等价和证据缺口训练数据。
+  kernel: K6 Dataset Foundry
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: experience episode
+    required: true
+  - name: knowledge object
+    required: true
+  - name: human feedback
+    required: true
+  - name: verification evidence
+    required: true
+  outputs:
+  - name: versioned dataset
+    contentAddressed: true
+  - name: dataset card
+    contentAddressed: true
+  - name: lineage graph
+    contentAddressed: true
+  - name: training eligibility decision
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - dataset.build
+    - lineage.emit
+    - pii.redact
+    - license.check
+    - eval.freeze
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - rights-cleared
+    - tenant-safe
+    - deduplicated
+    - split-safe
+    - quality-threshold
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

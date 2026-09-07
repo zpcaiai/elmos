@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "policy_key": "sample-developer-telemetry",
+  "events": [
+    {
+      "event": "workflow.completed",
+      "purpose": "measure successful developer workflow",
+      "fields": [
+        "workflow",
+        "surface",
+        "duration_bucket",
+        "result_class"
+      ],
+      "sampling": 1.0
+    }
+  ],
+  "forbidden_fields": [
+    "source_code",
+    "secret",
+    "prompt",
+    "review_comment",
+    "absolute_path",
+    "employee_productivity_score"
+  ],
+  "retention_days": 30,
+  "residency": [
+    "tenant-approved-region"
+  ],
+  "individual_performance_monitoring": false
+}

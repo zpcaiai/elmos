@@ -1,0 +1,4 @@
+interface:
+  display_name: "cross-language-contract-catalog-and-consumer-matrix"
+  short_description: "ELMOS Batch 13 composite modernization control"
+  default_prompt: "Use $cross-language-contract-catalog-and-consumer-matrix to evaluate this Batch 13 composite modernization task with fail-closed evidence gates."

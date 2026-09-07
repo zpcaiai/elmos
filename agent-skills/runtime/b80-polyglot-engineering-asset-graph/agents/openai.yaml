@@ -1,0 +1,4 @@
+interface:
+  display_name: "B80 Polyglot Engineering Asset Graph"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b80-polyglot-engineering-asset-graph to execute this ELMOS project Skill with fail-closed evidence."

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2610",
+  "skill_name": "frt-2610-performance-regression-coordinator",
+  "batch": "G26",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g26/frt-2610-performance-regression-coordinator/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.performance-regression-coordinator",
+  "execution_contract_sha256": "sha256:45e2c0901292028c228bf2c47fe332e37266348b39885fe28adf1435a328b1bc",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:81240d635a3a63b3e4ed3dc2320de40c78bf8c85198caebaaa53cbb6f0c96465",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

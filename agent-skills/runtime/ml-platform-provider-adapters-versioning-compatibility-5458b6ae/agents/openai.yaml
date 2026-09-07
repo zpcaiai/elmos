@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B45: Ml Platform Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B45 contract with fail-closed evidence"
+  default_prompt: "Use $ml-platform-provider-adapters-versioning-compatibility-5458b6ae to implement its fail-closed ELMOS Product B45 contract."

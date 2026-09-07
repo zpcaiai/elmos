@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/schemas/model-validation-decision.v1.json",
+  "title": "Model Artifact Inference and Training Validation Decision",
+  "type": "object",
+  "required": ["artifactStatus", "inferenceStatus", "trainingStatus", "decision", "blockers", "hardwareDifferenceSeparated"],
+  "properties": {
+    "artifactStatus": {"type": "string"},
+    "inferenceStatus": {"type": "string"},
+    "trainingStatus": {"type": "string"},
+    "decision": {"enum": ["PASS", "PASS_WITH_WARNINGS", "HUMAN_REVIEW_REQUIRED", "FAIL", "INCONCLUSIVE"]},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "hardwareDifferenceSeparated": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 003"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $git-scm-consolidation-migration-and-governance to apply its fail-closed ELMOS runtime contract."

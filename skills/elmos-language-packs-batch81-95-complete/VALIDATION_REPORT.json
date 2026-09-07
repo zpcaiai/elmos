@@ -1,0 +1,11 @@
+{
+  "status": "PASSED",
+  "stdout": "{\n  \"status\": \"PASSED\",\n  \"skills\": 180,\n  \"first_id\": \"PG223\",\n  \"last_id\": \"PG402\",\n  \"schemas\": 15,\n  \"examples\": 15\n}\n",
+  "stderr": "",
+  "skill_count": 180,
+  "batch_count": 15,
+  "schema_count": 15,
+  "example_count": 15,
+  "individual_packages": 15,
+  "group_packages": 3
+}

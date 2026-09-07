@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "mode": "DETECT_DIAGNOSE_PROPOSE_AUTOMATIC",
+  "sourceMutation": "APPROVAL_AND_EXTERNAL_SCM_REQUIRED",
+  "requiredBindings": [
+    "tenant",
+    "business_line",
+    "incident",
+    "recipe",
+    "precondition_digest",
+    "expected_diagnostic_delta",
+    "required_tests",
+    "rollback_plan"
+  ],
+  "protectedChanges": [
+    "tests",
+    "security_boundaries",
+    "transactions",
+    "money",
+    "database_schema",
+    "public_api",
+    "deployment"
+  ],
+  "stalePolicy": "FAIL_CLOSED",
+  "concurrentUpdatePolicy": "EXPECTED_VERSION_REQUIRED",
+  "externalExecutionEvidence": "NOT_RUN"
+}

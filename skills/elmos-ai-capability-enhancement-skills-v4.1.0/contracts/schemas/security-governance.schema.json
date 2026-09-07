@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SecurityGovernance",
+  "type": "object",
+  "required": [
+    "identity",
+    "tenancy",
+    "tools",
+    "data",
+    "sandbox"
+  ],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "required": [
+        "oidc",
+        "agentIdentity"
+      ],
+      "properties": {
+        "oidc": {
+          "type": "boolean"
+        },
+        "agentIdentity": {
+          "type": "boolean"
+        },
+        "mfaForApprovals": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tenancy": {
+      "type": "object",
+      "required": [
+        "isolation",
+        "rls"
+      ],
+      "properties": {
+        "isolation": {
+          "type": "string"
+        },
+        "rls": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tools": {
+      "type": "object",
+      "required": [
+        "defaultDecision",
+        "requestScopedAuthority"
+      ],
+      "properties": {
+        "defaultDecision": {
+          "const": "deny"
+        },
+        "requestScopedAuthority": {
+          "type": "boolean"
+        },
+        "approvalForExternalWrite": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "classification",
+        "residency"
+      ],
+      "properties": {
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "residency": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "piiPolicy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sandbox": {
+      "type": "object",
+      "required": [
+        "secretless",
+        "networkDefault",
+        "nonRoot"
+      ],
+      "properties": {
+        "secretless": {
+          "type": "boolean"
+        },
+        "networkDefault": {
+          "const": "deny"
+        },
+        "nonRoot": {
+          "type": "boolean"
+        },
+        "readOnlyRoot": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

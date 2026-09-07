@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "batch",
+    "source_ref",
+    "target_objective",
+    "workspace_ref",
+    "actors",
+    "scope"
+  ],
+  "properties": {
+    "batch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 38
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workspace_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actors": {
+      "type": "object",
+      "required": ["builder_id", "verifier_id"],
+      "properties": {
+        "builder_id": {"type": "string", "minLength": 1},
+        "verifier_id": {"type": "string", "minLength": 1},
+        "certificate_authority_id": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["environment", "tenant", "region", "assumptions"],
+      "properties": {
+        "environment": {"type": "string", "minLength": 1},
+        "tenant": {"type": "string", "minLength": 1},
+        "region": {"type": "string", "minLength": 1},
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "certificate_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dry_run": {
+      "type": "boolean",
+      "default": true
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "argv", "cwd", "timeout_seconds"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "cwd": {"type": "string", "minLength": 1},
+          "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 86400}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

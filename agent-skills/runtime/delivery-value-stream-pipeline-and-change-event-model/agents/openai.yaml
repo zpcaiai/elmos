@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 004"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $delivery-value-stream-pipeline-and-change-event-model to apply its fail-closed ELMOS runtime contract."

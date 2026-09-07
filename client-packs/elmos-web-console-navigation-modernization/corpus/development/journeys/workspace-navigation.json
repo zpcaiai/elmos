@@ -1,0 +1,14 @@
+{
+  "id": "journey.workspace-navigation",
+  "synthetic_data": true,
+  "steps": [
+    "Open overview",
+    "Navigate to migration workspace",
+    "Filter M29-M37 capabilities",
+    "Inspect M36 and switch to Marketplace",
+    "Create a memory-only assessment draft",
+    "Navigate to commercialization workspace",
+    "Inspect each B34-B38 trust stage"
+  ],
+  "expected": "Every external execution and certification state remains visibly NOT_RUN, BLOCKED, or explicitly limited."
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 527: ai strategy and operating principles builder"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-strategy-and-operating-principles-builder to evaluate this capability with evidence."

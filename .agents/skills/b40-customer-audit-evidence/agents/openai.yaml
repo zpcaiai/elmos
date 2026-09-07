@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Customer Audit Evidence"
+  short_description: "Run evidence-bound Batch 40 customer audit evidence work"
+  default_prompt: "Use $b40-customer-audit-evidence to implement and verify this capability with fail-closed evidence."

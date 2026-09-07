@@ -1,0 +1,6 @@
+{
+  "baseline": "fp16",
+  "candidate": "int8",
+  "maxQualityLoss": 0.01,
+  "safetyRegressionAllowed": false
+}

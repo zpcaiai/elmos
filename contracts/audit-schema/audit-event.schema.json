@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.audit-event.v1",
+  "title": "ELMOS Audit Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event",
+    "previousHash",
+    "eventHash"
+  ],
+  "properties": {
+    "event": {
+      "type": "object",
+      "required": [
+        "eventId",
+        "organizationId",
+        "actorType",
+        "actorId",
+        "action",
+        "resourceType",
+        "resourceId",
+        "occurredAt"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string"
+        },
+        "actorType": {
+          "type": "string"
+        },
+        "actorId": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "resourceType": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "previousHash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "eventHash": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
+

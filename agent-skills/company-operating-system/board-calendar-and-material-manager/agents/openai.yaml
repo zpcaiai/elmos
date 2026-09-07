@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 519: board calendar and material manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $board-calendar-and-material-manager to evaluate this capability with evidence."

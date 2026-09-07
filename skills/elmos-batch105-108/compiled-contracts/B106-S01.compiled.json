@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "id": "B106-S01",
+    "batch": 106,
+    "name": "polyglot-project-runtime-detector",
+    "dependencies": [
+      "B105-S16"
+    ],
+    "inputs": [
+      "certified candidate repository",
+      "runtime detection policies"
+    ],
+    "outputs": [
+      "RuntimeDetectionResult",
+      "service candidates",
+      "ambiguity findings"
+    ],
+    "implementation": {
+      "modules": [
+        "runtime/detection/RuntimeDetectorService.java",
+        "private-runner/internal/detect/runtime.go",
+        "registry/runtime-detectors/"
+      ],
+      "interfaces": [
+        "POST /api/projects/{id}/runtime:detect",
+        "event runtime.detected"
+      ],
+      "data": [
+        "runtime_detection",
+        "service_candidate",
+        "runtime_signal"
+      ]
+    },
+    "workflow": [
+      "\u626b\u63cfDockerfile/Compose\u548c\u8bed\u8a00\u6784\u5efa\u6587\u4ef6",
+      "\u8bc6\u522bJava/Python/.NET/Go/Node\u53ca\u6846\u67b6",
+      "\u4ece\u914d\u7f6e\u3001\u4ee3\u7801\u548c\u6d4b\u8bd5\u63a8\u65ad\u7aef\u53e3\u4e0e\u5065\u5eb7\u8def\u5f84",
+      "\u8bc6\u522b\u591a\u670d\u52a1\u3001\u6570\u636e\u5e93\u548c\u540e\u53f0\u8fdb\u7a0b",
+      "\u5bf9\u51b2\u7a81\u4fe1\u53f7\u6253\u5206\u5e76\u8981\u6c42\u9009\u62e9\u4e3b\u670d\u52a1",
+      "\u8f93\u51fa\u5019\u9009RuntimeSpec\u800c\u4e0d\u6267\u884c\u4ee3\u7801"
+    ],
+    "tests": [
+      "Spring Boot pom\u6b63\u786e\u8bc6\u522b",
+      "\u591a\u4e2acsproj\u8fd4\u56de\u6b67\u4e49\u800c\u975e\u4efb\u9009",
+      "\u7ed1\u5b9alocalhost\u7684\u542f\u52a8\u914d\u7f6e\u88ab\u6807\u8bb0",
+      "\u786c\u7f16\u7801\u7aef\u53e3\u4e0e\u73af\u5883\u53d8\u91cf\u51b2\u7a81\u6709\u63d0\u793a",
+      "\u6076\u610f\u6587\u4ef6\u540d\u4e0d\u89e6\u53d1\u547d\u4ee4\u6267\u884c"
+    ],
+    "evidence": [
+      "runtime-detection.json",
+      "service-candidates.json",
+      "ambiguity-findings.json"
+    ],
+    "definition_of_done": [
+      "\u652f\u6301\u56db\u79cd\u540e\u7aef\u8bed\u8a00",
+      "\u6240\u6709\u63a8\u65ad\u6709\u8bc1\u636e",
+      "\u591a\u670d\u52a1\u4e0d\u8bef\u5224\u5355\u670d\u52a1",
+      "\u4e0d\u6267\u884c\u4e0d\u53ef\u4fe1\u4ee3\u7801",
+      "\u7ed3\u679c\u53ef\u751f\u6210Manifest"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:edfe5f342affca372fc8cd0fa1927885ed8c87dcb0912161353766a1b08d9c3d",
+  "compiledVersion": 1
+}

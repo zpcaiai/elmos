@@ -1,0 +1,11 @@
+{
+  "routeId": "angular--to--react-native",
+  "source": "angular",
+  "target": "react-native",
+  "sourceProfileVersion": "22.0.8",
+  "targetProfileVersion": "0.86.0",
+  "supportState": "ADAPTER_REQUIRED",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

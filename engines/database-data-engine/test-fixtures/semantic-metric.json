@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "metricId": "revenue-v3",
+  "name": "Revenue",
+  "domain": "finance",
+  "owner": "finance-domain",
+  "expression": "sum(order_amount) - sum(refund_amount)",
+  "grain": ["day", "region"],
+  "filter": "order_status = 'SETTLED'",
+  "timezone": "Asia/Shanghai",
+  "currency": "CNY",
+  "version": "3.0.0",
+  "effectiveDate": "2026-07-21"
+}

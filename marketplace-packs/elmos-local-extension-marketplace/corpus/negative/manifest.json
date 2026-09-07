@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source_digest": "sha256:275b0bd61698d90cbde77f258a8cfc2560f85c4fbd438d16d8d983b5ca0c4f35",
+  "dataset_digest": "sha256:de30dd72aedc7f7e057322edfd22261550f52c0b76cdf2d436d1adbc61d5b965",
+  "independent": false,
+  "execution_kind": "real-local-maven",
+  "authorization_refs": [],
+  "evidence_refs": [
+    "certification/local-test-result.json"
+  ],
+  "reason": null
+}

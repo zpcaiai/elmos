@@ -1,0 +1,68 @@
+schema_version: 1.0.0
+ordinal: 45
+name: elmos-archive-bomb-and-path-traversal-defense
+title: 归档炸弹与路径穿越防御
+objective: 在内容落盘前以流式、累计和每层限额阻断路径逃逸、超高膨胀、无限嵌套及链接绕过。
+dependencies:
+- elmos-file-type-detection-and-validation
+- elmos-malware-quarantine-and-sandbox
+inputs:
+- 归档条目流
+- 沙箱根句柄
+- 版本化 ArchivePolicy
+- 实时资源计数
+outputs:
+- ALLOW/REJECT/QUARANTINE 决策
+- 资源使用快照
+- 安全发现
+- 稳定错误码
+responsibilities:
+- 对每个条目解码、规范化并解析目标路径，拒绝绝对路径、盘符、UNC、NUL、父级逃逸和编码混淆。
+- 在真实父目录/链接语义下验证最终目标仍位于沙箱根，而非仅做字符串前缀比较。
+- 跟踪归档大小、声明/实际展开大小、单文件大小、条目数、目录深度、压缩比、嵌套深度、CPU和时间。
+- 采用逐条和累计双重限额；声明元数据不可信，实际写入时持续计数并可立即终止。
+- 拒绝或仅记录符号链接、硬链接、设备、FIFO、socket、稀疏文件滥用和覆盖碰撞。
+- 对嵌套归档使用全局预算，防止每层单独合规但累计爆炸。
+- 提供稳定安全错误码、隔离报告和人工审查入口，不在错误信息泄露主机路径。
+- 维护攻击语料库，覆盖 ZIP/TAR/GZIP 的已知绕过模式和属性测试。
+deliverables:
+- ArchiveSafetyDecision 与限额策略
+- 安全路径解析、累计资源计数和终止机制
+- 攻击语料、fuzz/property 测试与沙箱逃逸测试
+- 安全告警、隔离和审计输出
+acceptance:
+- '`../`、绝对路径、盘符、UNC、编码变体和链接链均不能逃逸'
+- 压缩炸弹在超过策略前终止，不导致节点磁盘或内存耗尽
+- 限额按租户/套餐可配置并带安全上下界和版本
+- 嵌套归档共享累计预算
+- 特殊文件和链接默认不被创建或跟随
+- 攻击回归集和 fuzz 测试无路径逃逸、宿主写入或资源失控
+data_entities:
+- archive_safety_checks
+- archive_resource_counters
+- archive_security_findings
+events:
+- archive.path_traversal.blocked
+- archive.bomb.suspected
+- archive.limit.exceeded
+- archive.special_entry.blocked
+metrics:
+- archive_escape_attempt_count
+- zip_bomb_early_stop_rate
+- resource_limit_overshoot_bytes
+- security_false_negative_count
+failure_modes:
+- unicode traversal bypass
+- symlink race
+- declared size lies
+- nested budget reset
+- sparse file expansion
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

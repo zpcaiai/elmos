@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "proof_id",
+    "property_id",
+    "solver",
+    "status",
+    "assumptions",
+    "input_digest",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "proof_id": {
+      "type": "string"
+    },
+    "property_id": {
+      "type": "string"
+    },
+    "solver": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "options",
+        "timeout_ms"
+      ],
+      "additionalProperties": true
+    },
+    "status": {
+      "enum": [
+        "proved",
+        "disproved",
+        "unknown",
+        "timeout",
+        "unsupported",
+        "invalid"
+      ]
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "input_digest": {
+      "type": "string"
+    },
+    "model_ref": {
+      "type": "string"
+    },
+    "certificate_ref": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "concrete_replay_ref": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

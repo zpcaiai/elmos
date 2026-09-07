@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency Conflict Analyzer"
+  short_description: "Analyze dependency convergence risks"
+  default_prompt: "Use $dependency-conflict-analyzer for ELMOS Batch 3 dependency evidence."

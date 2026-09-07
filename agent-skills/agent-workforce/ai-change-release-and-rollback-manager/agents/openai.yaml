@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 574: ai change release and rollback manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $ai-change-release-and-rollback-manager to evaluate this capability with evidence."

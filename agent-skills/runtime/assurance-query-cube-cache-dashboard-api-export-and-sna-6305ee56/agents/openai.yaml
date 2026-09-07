@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Assurance Query Cube Cache Dashboard Api Export And Snapshot Publication"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $assurance-query-cube-cache-dashboard-api-export-and-sna-6305ee56 to implement its fail-closed ELMOS Product B37 contract."

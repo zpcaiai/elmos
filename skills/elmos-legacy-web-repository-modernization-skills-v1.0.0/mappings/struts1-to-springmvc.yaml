@@ -1,0 +1,227 @@
+mappingVersion: 1.0.0
+source: Struts 1.x
+target: Spring Boot 4 / Spring MVC
+defaultRule: mapping requires confirmed IR and evidence; no class-name-only rewrite
+constructs:
+- source: ActionServlet
+  targetCandidates:
+  - DispatcherServlet
+  - SpringBootServletInitializer
+  requiredIR:
+  - effective routes
+  - module config
+  - init params
+  risk: high
+- source: RequestProcessor.process
+  targetCandidates:
+  - Filter
+  - HandlerInterceptor
+  - ArgumentResolver
+  - ControllerAdvice
+  - compatibility pipeline
+  requiredIR:
+  - ordered steps
+  - short circuits
+  - overrides
+  risk: critical
+- source: custom RequestProcessor override
+  targetCandidates:
+  - dedicated Spring extension point
+  - compatibility pipeline
+  requiredIR:
+  - override call graph
+  - before/after behavior
+  risk: critical
+- source: ActionMapping
+  targetCandidates:
+  - '@RequestMapping'
+  - route metadata registry
+  requiredIR:
+  - path
+  - methods
+  - roles
+  - scope
+  - validate
+  - input
+  - forward/include
+  risk: critical
+- source: Action
+  targetCandidates:
+  - '@Controller'
+  - '@RestController'
+  - service orchestration
+  requiredIR:
+  - action method
+  - state fields
+  - effects
+  - exceptions
+  risk: high
+- source: DispatchAction
+  targetCandidates:
+  - multiple handler methods
+  - explicit dispatch resolver
+  requiredIR:
+  - parameter/method selection
+  - fallback
+  risk: critical
+- source: LookupDispatchAction
+  targetCandidates:
+  - explicit request command mapping
+  requiredIR:
+  - message key to method map
+  - locale
+  risk: critical
+- source: MappingDispatchAction
+  targetCandidates:
+  - multiple request mappings
+  requiredIR:
+  - mapping path to method
+  risk: high
+- source: ActionForm
+  targetCandidates:
+  - DTO/@ModelAttribute
+  - LegacyFormLifecycleBinder
+  requiredIR:
+  - scope
+  - attribute key
+  - reset
+  - populate
+  - validate
+  risk: critical
+- source: DynaActionForm
+  targetCandidates:
+  - generated typed DTO
+  - map-backed compatibility DTO
+  requiredIR:
+  - dynamic properties
+  - types
+  - initial values
+  risk: critical
+- source: ActionForm.reset
+  targetCandidates:
+  - binder pre-populate hook
+  - compatibility binder
+  requiredIR:
+  - field-specific reset
+  - session form
+  risk: critical
+- source: ActionForm.validate
+  targetCandidates:
+  - Spring Validator
+  - Jakarta Validation + adapter
+  requiredIR:
+  - timing
+  - messages
+  - input navigation
+  risk: critical
+- source: Commons Validator
+  targetCandidates:
+  - Jakarta Validation
+  - generated Spring Validator
+  requiredIR:
+  - validation.xml
+  - validator-rules
+  - dependency/order
+  risk: high
+- source: ActionForward redirect=false
+  targetCandidates:
+  - 'forward:'
+  - ModelAndView
+  - view name
+  requiredIR:
+  - module-relative URI
+  - request attributes
+  risk: critical
+- source: ActionForward redirect=true
+  targetCandidates:
+  - 'redirect:'
+  - RedirectView
+  requiredIR:
+  - context path
+  - URL encoding
+  - status
+  risk: critical
+- source: mapping.forward/include
+  targetCandidates:
+  - pre-handler dispatch adapter
+  requiredIR:
+  - short circuit
+  - dispatcher type
+  risk: critical
+- source: ExceptionConfig/ExceptionHandler
+  targetCandidates:
+  - '@ControllerAdvice'
+  - HandlerExceptionResolver
+  requiredIR:
+  - matching precedence
+  - scope
+  - forward
+  - rollback
+  risk: critical
+- source: ActionMessages/ActionErrors
+  targetCandidates:
+  - BindingResult
+  - Model
+  - FlashMap/session bridge
+  requiredIR:
+  - scope
+  - one-time consumption
+  - message bundle
+  risk: high
+- source: MessageResources
+  targetCandidates:
+  - MessageSource
+  requiredIR:
+  - bundle
+  - locale fallback
+  - parameter interpolation
+  risk: high
+- source: Tiles
+  targetCandidates:
+  - preserve Tiles/JSP
+  - view composition adapter
+  - later template migration
+  requiredIR:
+  - definitions inheritance
+  - dynamic attributes
+  risk: high
+- source: html/bean/logic tags
+  targetCandidates:
+  - preserve taglib
+  - JSTL/Thymeleaf later
+  requiredIR:
+  - view reads
+  - side effects
+  risk: high
+- source: MultipartRequestHandler
+  targetCandidates:
+  - MultipartFile
+  - multipart lifecycle adapter
+  requiredIR:
+  - limits
+  - temp
+  - finish/rollback
+  risk: critical
+- source: module config/prefix
+  targetCandidates:
+  - context path/request mapping partition
+  requiredIR:
+  - module routing
+  - message resources
+  - controller config
+  risk: critical
+- source: roles attribute
+  targetCandidates:
+  - Spring Security authorization
+  requiredIR:
+  - principal roles
+  - deny behavior
+  risk: critical
+- source: Action instance cache
+  targetCandidates:
+  - stateless singleton
+  - request-scope adapter
+  requiredIR:
+  - mutable fields
+  - thread safety
+  risk: critical

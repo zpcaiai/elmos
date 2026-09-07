@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-22T17:05:44+08:00",
+  "scope": "local project-generation UI journey evidence only",
+  "browser": "Google Chrome 150.0.7871.129",
+  "runtime": "Node.js 24.14.0",
+  "framework": "Next.js 16.2.10 with React 19.2.7",
+  "project_synthesis_contract": "1.0.0",
+  "synthetic_data": true,
+  "viewports": [
+    {"width":1440,"height":1000,"journey":"overview navigation, exact target selection, validation, memory-only draft, Command-K navigation"},
+    {"width":1024,"height":768,"journey":"two-column tablet layout and boundary review"},
+    {"width":390,"height":844,"journey":"five-destination mobile navigation, responsive form, target cards, preview and touch targets"}
+  ],
+  "checks": {
+    "typescript_strict": "PASSED",
+    "next_production_build": "PASSED",
+    "generation_route_static_prerender": "PASSED",
+    "overview_workspace_navigation": "PASSED",
+    "command_palette_navigation": "PASSED",
+    "mobile_bottom_navigation": "PASSED",
+    "exact_java_21_spring_boot_3_5_3": "PASSED",
+    "exact_python_3_12_fastapi_0_116_1": "PASSED",
+    "exact_csharp_dotnet_10_aspnet_core": "PASSED",
+    "native_pattern_validation": "PASSED",
+    "at_least_one_target_validation": "PASSED",
+    "memory_only_draft_announcement": "PASSED",
+    "selected_target_preview": "PASSED",
+    "cli_reference_not_executed": "PASSED",
+    "not_run_boundary_visible": "PASSED",
+    "not_certified_boundary_visible": "PASSED",
+    "desktop_horizontal_overflow": 0,
+    "tablet_horizontal_overflow": 0,
+    "mobile_horizontal_overflow": 0,
+    "mobile_visible_targets_below_44px": 0,
+    "browser_console_and_page_errors": 0,
+    "external_generation_execution": "NOT_RUN",
+    "approval_workflow": "NOT_RUN",
+    "approved_visual_baseline": "NOT_RUN",
+    "cross_browser": "NOT_RUN",
+    "assistive_technology": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "production_certification": "NOT_RUN"
+  },
+  "screenshots": [
+    {"path":"elmos-project-generation-desktop-final.png","sha256":"bc7b6a0e60514cc3138fa0de9a00c5ddb19cf64c8db6bbe662d55bc232b14921"},
+    {"path":"elmos-project-generation-mobile.png","sha256":"2d92ce48759820308e47ecd1e65de6bd1bec60250f170afe846c03496b714911"}
+  ],
+  "mobile_target_sizes": {
+    "navigation_items": "71x49",
+    "target_cards": "318x88",
+    "primary_submit": "318x44"
+  },
+  "target_files": [
+    {"path":"apps/web-console/app/generation/page.tsx","sha256":"e9e543434898f50b9e4cf213c39182cbf7681eff05d09d01f8ddbb724f2b3de0"},
+    {"path":"apps/web-console/app/generation/ProjectGenerationStudio.tsx","sha256":"743c329d5f086e8b1001a3b22b49146e40a0306844f6899b6dee6c2ed08a7634"},
+    {"path":"apps/web-console/app/components/AppShell.tsx","sha256":"e0139931b28e15b02a5b04d38ae78335b1150f1932040c66a8a398429146013f"},
+    {"path":"apps/web-console/app/page.tsx","sha256":"3c3f23e88f8fd21a2d42b26363282beacfa2b132707113fd21c119c84610eea8"},
+    {"path":"apps/web-console/app/components/StatusChip.tsx","sha256":"ce1cfc466e50064bb2e157b84a4bfefa7eda4e6a302808042f18a7fa5c2597a0"},
+    {"path":"apps/web-console/app/styles.css","sha256":"6dbf3115f2ec3b22b3d3fffc59e3c94b5db6bb37dce3122583f4045bfd586c45"}
+  ],
+  "certification_claim": false
+}

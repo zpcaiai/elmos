@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-b14",
+  "releasePlanId": "release-14",
+  "currentStage": "INTERNAL",
+  "requestedStage": "CANARY",
+  "decision": "PROMOTE",
+  "automatic": true,
+  "blockers": [],
+  "evidenceRefs": ["ev-web", "ev-desktop", "ev-android", "ev-ios", "ev-bff", "ev-backend"]
+}

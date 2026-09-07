@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B47: It Asset Provider Adapters Versioning Compatibility And Migration"
+  short_description: "Run ELMOS Product B47 contract with fail-closed evidence"
+  default_prompt: "Use $it-asset-provider-adapters-versioning-compatibility-and-513f0c2f to implement its fail-closed ELMOS Product B47 contract."

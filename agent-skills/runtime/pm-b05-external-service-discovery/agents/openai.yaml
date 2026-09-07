@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B05: External Service Discovery"
+  short_description: "Run Precision Migration B05 with evidence controls"
+  default_prompt: "Use $pm-b05-external-service-discovery to execute this Precision Migration contract with fail-closed evidence."

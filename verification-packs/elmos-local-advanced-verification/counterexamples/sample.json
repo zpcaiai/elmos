@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "ce.negative-control-critical-mutant",
+  "technique": "mutation-negative-control",
+  "claim_id": "claim.local-fail-closed-governance",
+  "failure_fingerprint": "sha256:18b9847beaa1786af4deaa5b3e7c4dc937c74cc299d6409196b2da570c0b4be8",
+  "environment_digest": "sha256:2d793667b581a70ad75b6956efdd710d49796d5a3c8c0ca16194622b23e21810",
+  "artifact_digests": [
+    "sha256:9ccb34927e6a913f14b15924bcb12a97802ad8a25264b94e6833c10d25f763cb"
+  ],
+  "input_ref": "counterexamples/input.json",
+  "trace_ref": "certification/local-test-result.json",
+  "replay": {
+    "command": "mvn -pl modules/advanced-verification -am -Dtest=AdvancedVerificationTechniquesTest -Dsurefire.failIfNoSpecifiedTests=false test",
+    "expected_fingerprint": "sha256:18b9847beaa1786af4deaa5b3e7c4dc937c74cc299d6409196b2da570c0b4be8"
+  },
+  "status": "reproduced",
+  "owner": "elmos-verification-engineering",
+  "classification": "expected-negative-control"
+}

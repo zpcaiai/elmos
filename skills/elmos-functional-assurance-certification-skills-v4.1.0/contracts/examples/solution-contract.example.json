@@ -1,0 +1,40 @@
+{
+  "id": "sc-1",
+  "goal": "Answer contract questions with grounded citations and approval before legal conclusions",
+  "actors": [
+    {
+      "id": "employee",
+      "role": "requester"
+    },
+    {
+      "id": "reviewer",
+      "role": "approver"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "question",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "name": "answer",
+      "schema": {
+        "type": "object"
+      }
+    }
+  ],
+  "nonFunctional": {
+    "latencyP95Ms": 5000,
+    "availability": 0.999,
+    "maxCostPerRun": 1.5,
+    "machineEtaRequired": true
+  },
+  "compliance": [
+    "tenant-isolation",
+    "pii-redaction"
+  ]
+}

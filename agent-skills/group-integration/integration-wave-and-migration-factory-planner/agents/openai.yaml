@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 688: integration wave and migration factory planner"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $integration-wave-and-migration-factory-planner to evaluate this capability with evidence."

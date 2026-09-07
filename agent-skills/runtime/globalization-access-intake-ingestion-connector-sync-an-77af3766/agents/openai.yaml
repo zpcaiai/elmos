@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B55: Globalization Access Intake Ingestion Connector Sync And Idempotency"
+  short_description: "Run ELMOS Product B55 contract with fail-closed evidence"
+  default_prompt: "Use $globalization-access-intake-ingestion-connector-sync-an-77af3766 to implement its fail-closed ELMOS Product B55 contract."

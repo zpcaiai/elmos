@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: Object Lock Retention Legal Hold Records Management And Disposition"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $object-lock-retention-legal-hold-records-management-and-6b853d65 to implement its fail-closed ELMOS Product B37 contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Cross-Service Operability Closure"
+  short_description: "Verify service discovery and runtime wiring"
+  default_prompt: "Use $elmos-cross-service-operability-closure to detect and repair ELMOS service wiring gaps."

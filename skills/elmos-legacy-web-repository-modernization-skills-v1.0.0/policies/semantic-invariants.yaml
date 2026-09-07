@@ -1,0 +1,213 @@
+policyVersion: 1.0.0
+defaultSeverity: high
+invariants:
+- id: INV-ROUTE-001
+  category: route
+  severity: critical
+  rule: 每个源有效路由必须有唯一目标处理者，除非 migration plan 显式声明 Strangler owner。
+  oracle: effective-route-table-diff
+- id: INV-ROUTE-002
+  category: route
+  severity: critical
+  rule: 目标不得新增未授权公开路由、HTTP 方法或 dispatcher type。
+  oracle: route-expansion-diff
+- id: INV-DISPATCH-001
+  category: navigation
+  severity: critical
+  rule: forward、include、redirect、chain、error-dispatch 不得隐式互换。
+  oracle: navigation-dispatch-oracle
+- id: INV-DISPATCH-002
+  category: navigation
+  severity: high
+  rule: redirect 状态码、Location、context path 和 URL encoding 必须一致或为 allowed delta。
+  oracle: http-protocol-oracle
+- id: INV-DISPATCH-003
+  category: navigation
+  severity: high
+  rule: forward/include/error dispatch 的 request attributes 与 filter dispatch 必须保留。
+  oracle: dispatch-state-oracle
+- id: INV-PIPE-001
+  category: lifecycle
+  severity: critical
+  rule: pipeline step 的相对顺序、短路和 after/unwind 顺序必须等价。
+  oracle: pipeline-trace-oracle
+- id: INV-STRUTS1-001
+  category: binding
+  severity: critical
+  rule: ActionForm reset 必须发生在 populate 前。
+  oracle: binding-lifecycle-oracle
+- id: INV-STRUTS1-002
+  category: validation
+  severity: critical
+  rule: ActionForm validation 必须发生在 Action invocation 前并保留 failure navigation。
+  oracle: validation-oracle
+- id: INV-STRUTS1-003
+  category: state
+  severity: high
+  rule: ActionForm request/session scope、attribute key 和复用语义必须保持。
+  oracle: session-state-oracle
+- id: INV-STRUTS1-004
+  category: concurrency
+  severity: critical
+  rule: Action 实例共享状态不得因目标 bean 生命周期产生新增竞态或数据串扰。
+  oracle: concurrency-oracle
+- id: INV-STRUTS2-001
+  category: lifecycle
+  severity: critical
+  rule: interceptor stack 顺序、条件、参数、短路和 after unwind 必须保持。
+  oracle: interceptor-trace-oracle
+- id: INV-STRUTS2-002
+  category: view-model
+  severity: high
+  rule: ValueStack/OGNL 可见属性与解析优先级必须由显式 view/model contract 覆盖。
+  oracle: view-model-oracle
+- id: INV-STRUTS2-003
+  category: navigation
+  severity: critical
+  rule: Result type、result code、wildcard fallback 和 action chain 必须保持。
+  oracle: result-oracle
+- id: INV-SERVLET-001
+  category: container
+  severity: critical
+  rule: Filter order、mapping、dispatcher type 和 asyncSupported 必须保持。
+  oracle: filter-chain-oracle
+- id: INV-SERVLET-002
+  category: container
+  severity: high
+  rule: Servlet/Filter/Listener init/destroy/load-on-startup 与实例生命周期必须保持或有显式 adapter。
+  oracle: lifecycle-oracle
+- id: INV-SERVLET-003
+  category: async
+  severity: critical
+  rule: async start/dispatch/complete/error/timeout 语义必须保持。
+  oracle: async-oracle
+- id: INV-SERVLET-004
+  category: streaming
+  severity: critical
+  rule: response commit、buffer、writer/outputstream、content length 和 checksum 必须保持。
+  oracle: stream-oracle
+- id: INV-BIND-001
+  category: binding
+  severity: critical
+  rule: 请求参数来源、别名、集合/nested path、null/empty/default 和类型转换必须保持。
+  oracle: binding-oracle
+- id: INV-BIND-002
+  category: security
+  severity: critical
+  rule: 目标 binding allowlist 不得比已确认源契约更宽。
+  oracle: mass-assignment-oracle
+- id: INV-BIND-003
+  category: locale
+  severity: high
+  rule: charset、locale、timezone、date/number conversion 与 conversion error 必须保持。
+  oracle: locale-conversion-oracle
+- id: INV-VALID-001
+  category: validation
+  severity: high
+  rule: 字段错误、全局错误、message key、locale、input view 和显示 scope 必须保持。
+  oracle: validation-message-oracle
+- id: INV-STATE-001
+  category: state
+  severity: critical
+  rule: request/session/application/thread/static/cache/DB 状态 key、生命周期与读写序必须保持。
+  oracle: state-oracle
+- id: INV-STATE-002
+  category: session
+  severity: critical
+  rule: session 创建、失效、timeout、cookie path/domain/flags 和跨请求状态机必须保持或获批。
+  oracle: session-oracle
+- id: INV-STATE-003
+  category: session
+  severity: high
+  rule: 集群 session 序列化与版本兼容不得回退。
+  oracle: session-replication-oracle
+- id: INV-VIEW-001
+  category: view
+  severity: high
+  rule: JSP/Tiles/taglib 所需 model/request/session attributes 必须保持。
+  oracle: view-contract-oracle
+- id: INV-VIEW-002
+  category: side-effect
+  severity: critical
+  rule: custom tag/JSP 中发现的副作用必须显式迁移或保留。
+  oracle: view-side-effect-oracle
+- id: INV-SEC-001
+  category: security
+  severity: critical
+  rule: 认证、角色/权限、匿名、拒绝和登录跳转矩阵必须保持，除非 hardening delta。
+  oracle: security-matrix-oracle
+- id: INV-SEC-002
+  category: security
+  severity: critical
+  rule: CSRF/token/double-submit 的保护语义和重复写防护不得削弱。
+  oracle: csrf-idempotency-oracle
+- id: INV-SEC-003
+  category: security
+  severity: high
+  rule: Cookie Secure/HttpOnly/SameSite、session fixation 和安全 header 变化必须显式报告。
+  oracle: security-header-oracle
+- id: INV-TX-001
+  category: transaction
+  severity: critical
+  rule: 事务 begin/commit/rollback、传播、隔离和异常规则必须保持。
+  oracle: transaction-oracle
+- id: INV-TX-002
+  category: database
+  severity: critical
+  rule: 关键数据库写入的行、字段、次数和顺序必须 100% 等价。
+  oracle: database-oracle
+- id: INV-EFFECT-001
+  category: side-effect
+  severity: critical
+  rule: 外部 effect destination、payload、headers、count、order、commit 与 idempotency key 必须保持。
+  oracle: effect-oracle
+- id: INV-EX-001
+  category: exception
+  severity: critical
+  rule: 异常匹配优先级、status、view/body、transaction rollback 和 logging/audit 行为必须保持。
+  oracle: exception-oracle
+- id: INV-I18N-001
+  category: i18n
+  severity: high
+  rule: MessageResources/bundle key、fallback、locale 和参数插值必须保持。
+  oracle: message-oracle
+- id: INV-UPLOAD-001
+  category: upload
+  severity: critical
+  rule: multipart limits、temp lifecycle、filename/content type、finish/rollback 与 validation 必须保持。
+  oracle: upload-oracle
+- id: INV-DEPLOY-001
+  category: deployment
+  severity: critical
+  rule: context path、welcome file、error page、MIME、static resource 和 WEB-INF 可见性不得改变。
+  oracle: deployment-oracle
+- id: INV-CLASSLOADER-001
+  category: deployment
+  severity: high
+  rule: container shared library/JNDI/classloader 行为必须消除、替代或显式保留。
+  oracle: container-contract-oracle
+- id: INV-CONC-001
+  category: concurrency
+  severity: critical
+  rule: ThreadLocal 必须在所有正常/异常/异步路径清理并正确传播所需上下文。
+  oracle: threadlocal-oracle
+- id: INV-CONC-002
+  category: concurrency
+  severity: critical
+  rule: 相同 session 并发请求与共享 singleton 状态不得产生新增竞态。
+  oracle: concurrency-oracle
+- id: INV-NAMESPACE-001
+  category: dependency
+  severity: critical
+  rule: javax→jakarta 必须符号级处理，目标运行路径不得残留不兼容 API。
+  oracle: namespace-compatibility-oracle
+- id: INV-TRACE-001
+  category: evidence
+  severity: high
+  rule: 每个目标语义节点必须有 source-map、测试或运行验证引用。
+  oracle: provenance-coverage-oracle
+- id: INV-UNKNOWN-001
+  category: evidence
+  severity: critical
+  rule: critical unknown 必须阻断 E5。
+  oracle: unknown-ledger-gate

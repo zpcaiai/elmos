@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 36: Review Comment Approval"
+  short_description: "Run evidence-bound Batch 36 review comment approval work"
+  default_prompt: "Use $b36-review-comment-approval to implement and verify this capability with fail-closed evidence."

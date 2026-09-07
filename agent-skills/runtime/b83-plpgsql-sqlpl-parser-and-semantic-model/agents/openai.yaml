@@ -1,0 +1,4 @@
+interface:
+  display_name: "B83 Plpgsql Sqlpl Parser and Semantic Model"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b83-plpgsql-sqlpl-parser-and-semantic-model to execute this ELMOS Language Pack Skill with fail-closed evidence."

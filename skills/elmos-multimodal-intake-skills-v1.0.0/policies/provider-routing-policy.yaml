@@ -1,0 +1,53 @@
+schema_version: 1.0.0
+policy_id: elmos-provider-routing-default
+version: 1.0.0
+selection_order:
+- TENANT_ALLOWLIST
+- DATA_CLASS_AND_REGION
+- REQUIRED_MODALITY
+- CAPABILITY
+- QUALITY
+- LATENCY
+- COST
+- LOAD
+default_privacy_mode: PRIVATE_OR_LOCAL_FIRST
+data_classes:
+  PUBLIC:
+    third_party_allowed: true
+  INTERNAL:
+    third_party_allowed: TENANT_POLICY
+  CONFIDENTIAL:
+    third_party_allowed: false
+    private_endpoint_or_local_required: true
+  SECRET:
+    provider_routing: LOCAL_ONLY_OR_BLOCK
+    redaction_required: true
+fallback:
+  enabled: true
+  max_provider_attempts: 3
+  preserve_idempotency: true
+  do_not_fallback_to_less_private_provider: true
+  record_reason: true
+quality:
+  low_confidence_threshold: 0.75
+  route_low_confidence_to_higher_quality: true
+  human_review_after_exhaustion: true
+cost:
+  estimate_before_call: true
+  tenant_budget_check: true
+  record_provider_receipt: true
+  reconcile_actual_usage: true
+  avoid_duplicate_charge_on_retry: true
+capability:
+  require_fresh_snapshot: true
+  max_snapshot_age_hours: 24
+  unknown_limit_behavior: BLOCK_OR_CONSERVATIVE
+  probe_admin_only: true
+egress:
+  deny_unapproved_domains: true
+  proxy_provider_calls: true
+  log_metadata_not_content: true
+health:
+  circuit_breaker: true
+  latency_slo_routing: true
+  status_degradation_event: true

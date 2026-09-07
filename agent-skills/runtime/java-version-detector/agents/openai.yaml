@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Version Detector"
+  short_description: "Detect declared and runtime Java levels"
+  default_prompt: "Use $java-version-detector for ELMOS Batch 3 JDK evidence."

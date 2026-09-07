@@ -1,0 +1,20 @@
+run_id: legacy-run-001
+source:
+  technology: cobol
+  repository: /path/to/source
+  dialect: enterprise-cobol
+support_surfaces: [jcl, cobol-copybook, cics-bms, legacy-sql-routines]
+target:
+  technology: java
+  profile: spring-boot
+strategy: assess-then-convert
+required_gates:
+  - source-baseline
+  - record-layout
+  - transaction
+  - data-equivalence
+  - security
+  - performance
+  - dual-run
+  - production-certification
+readiness: not-run

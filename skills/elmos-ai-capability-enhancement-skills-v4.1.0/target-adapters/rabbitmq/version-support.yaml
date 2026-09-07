@@ -1,0 +1,20 @@
+apiVersion: elmos.ai/v3alpha1
+kind: AdapterVersionSupport
+metadata:
+  adapter: rabbitmq
+  version: 4.0.0
+spec:
+  discovery: runtime/source fingerprint
+  supportStates:
+  - detected-only
+  - experimental
+  - conditional
+  - certified
+  - blocked
+  releasePin:
+  - upstream version
+  - artifact/container digest
+  - adapter digest
+  - conformance corpus version
+  driftInvalidatesEvidence: true
+  placeholders: release-time only

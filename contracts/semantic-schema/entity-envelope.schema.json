@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/psp/v1/entity-envelope.schema.json",
+  "title": "PSP v1 Entity Envelope",
+  "type": "object",
+  "required": ["protocolVersion", "entityKind", "entityId", "snapshotId", "semanticRunId", "projectId", "language", "payload", "provenance"],
+  "properties": {
+    "protocolVersion": {"const": "1.0"},
+    "entityKind": {"enum": ["file", "token", "comment", "syntax-node", "scope", "symbol", "type", "reference", "inheritance-edge", "call-site", "call-edge", "control-flow", "source-map", "diagnostic", "metric", "external-dependency"]},
+    "entityId": {"type": "string", "minLength": 1},
+    "snapshotId": {"type": "string", "minLength": 1},
+    "semanticRunId": {"type": "string", "minLength": 1},
+    "projectId": {"type": "string", "minLength": 1},
+    "language": {"enum": ["java", "python", "csharp", "javascript", "typescript"]},
+    "payload": {"type": "object"},
+    "provenance": {"$ref": "provenance.schema.json"}
+  },
+  "additionalProperties": false
+}

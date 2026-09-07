@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/equivalence-report.schema.json",
+  "title": "Behavioral Equivalence Report",
+  "type": "object",
+  "required": [
+    "reportVersion",
+    "mode",
+    "legacyArtifact",
+    "targetArtifact",
+    "dimensions",
+    "mismatches",
+    "summary",
+    "gate"
+  ],
+  "properties": {
+    "reportVersion": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "strict",
+        "normalized",
+        "hardened"
+      ]
+    },
+    "legacyArtifact": {
+      "type": "string"
+    },
+    "targetArtifact": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "denominator",
+          "verified",
+          "equivalent",
+          "normalizedEquivalent",
+          "mismatch",
+          "unknown"
+        ],
+        "properties": {
+          "denominator": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verified": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "equivalent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "normalizedEquivalent": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mismatch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unknown": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "mismatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "scenarioId",
+          "dimension",
+          "severity",
+          "classification",
+          "legacyObservationRef",
+          "targetObservationRef"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "scenarioId": {
+            "type": "string"
+          },
+          "dimension": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "classification": {
+            "type": "string"
+          },
+          "firstDivergence": {
+            "type": "object"
+          },
+          "legacyObservationRef": {
+            "type": "string"
+          },
+          "targetObservationRef": {
+            "type": "string"
+          },
+          "normalizerApplied": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rootCauseId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "summary": {
+      "type": "object"
+    },
+    "gate": {
+      "type": "object",
+      "required": [
+        "status",
+        "blockingReasons"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "blocked",
+            "waived"
+          ]
+        },
+        "blockingReasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

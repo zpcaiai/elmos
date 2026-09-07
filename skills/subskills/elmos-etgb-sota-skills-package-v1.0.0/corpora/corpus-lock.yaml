@@ -1,0 +1,276 @@
+schema_version: '1.0'
+generated_at: '2026-08-27'
+repositories:
+- id: spring-petclinic-framework
+  repository: spring-petclinic/spring-framework-petclinic
+  commit: f2b1c6df3a89f4d0294c7402b48ea351af2c92ca
+  business_lines:
+  - spring-modernization
+  purpose: Plain Spring MVC/JSP/XML modernization Golden Route
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: apache-struts-examples
+  repository: apache/struts-examples
+  commit: b8b977ab44ae2658d737e418507559857e627089
+  business_lines:
+  - spring-modernization
+  purpose: Struts 2 feature fixtures and mixed security/session behavior
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: apache-roller
+  repository: apache/roller
+  commit: f1422f4448f9ff502600069a1c316bafea02b3d7
+  business_lines:
+  - spring-modernization
+  purpose: Real WAR/JSP/Struts/Spring/Security/JPA modernization
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: broadleaf-legacy-demo
+  repository: BroadleafCommerce/LegacyDemoSite
+  commit: 40873dc30bc9ae01406253083cc1d159817049f6
+  business_lines:
+  - spring-modernization
+  purpose: Deprecated commerce application migration reference
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: realworld-spec
+  repository: realworld-apps/realworld
+  commit: ebbcdeb8d55b42a3a613c787560498b8ef10003f
+  business_lines:
+  - cross-language
+  - project-generation
+  purpose: Shared API specification and implementation comparison
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: repo-trans-bench
+  repository: DeepSoftwareAnalytics/RepoTransBench
+  commit: f9f89ea27ca886571a5e59a8bb9a25deab5bd1c2
+  business_lines:
+  - cross-language
+  purpose: Executable repository-level multilingual translation benchmark
+  license_review: required
+  redistribution: metadata-only
+  resource_class: xlarge
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: rust-repo-trans
+  repository: SYSUSELab/RustRepoTrans
+  commit: 7026a8a9c8d4a524cbb554ff9b8100df4020114c
+  business_lines:
+  - cross-language
+  purpose: Repository translation into Rust with dependencies and tests
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: trans-repo
+  repository: microsoft/TransRepo
+  commit: a4825ba97cb2227773ec33c4c79a582d786ec639
+  business_lines:
+  - cross-language
+  purpose: Java-to-C# skeleton and test benchmark
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: project-eval
+  repository: RyanLoil/ProjectEval
+  commit: 34f838c3da58e816b63d1a6f2ab7956d62a19e09
+  business_lines:
+  - project-generation
+  purpose: Interactive project-generation evaluation
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: dev-eval
+  repository: seketeam/DevEval
+  commit: c1653455e0a18480a29aa07ba51636070f113316
+  business_lines:
+  - project-generation
+  purpose: Practical repository-context code generation tasks
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: human-evo
+  repository: DeepSoftwareAnalytics/HumanEvo
+  commit: 1dc28854c2dd1a5bf1f348727e833b9c3264e731
+  business_lines:
+  - project-generation
+  purpose: Evolution-aware temporal benchmark
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: repo-exec
+  repository: FSoft-AI4Code/RepoExec
+  commit: 3998bb5170a2ee8174eb8e9ca1eebf6f85f07b55
+  business_lines:
+  - project-generation
+  purpose: Executable repository-level correctness
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: jhipster-sample-app
+  repository: jhipster/jhipster-sample-app
+  commit: f8da577c944ecc4db46fc961a1ba022d5bbf8964
+  business_lines:
+  - project-generation
+  purpose: Commercial-grade generator baseline
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: jooq-sakila
+  repository: jOOQ/sakila
+  commit: e089a5b1ec9af0df7a9c6a5d47d49fa1736a4e84
+  business_lines:
+  - sql-conversion
+  purpose: Cross-database schema/data/routine reference corpus
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: sqlancer
+  repository: sqlancer/sqlancer
+  commit: 9eb1db82e16f1ece0470cc9f424eaf8ba7809e21
+  business_lines:
+  - sql-conversion
+  purpose: DBMS differential/metamorphic fuzzing reference
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: sqlglot
+  repository: tobymao/sqlglot
+  commit: 3110e151bfe6e229ec6b85708a56a9340a56c6a6
+  business_lines:
+  - sql-conversion
+  purpose: SQL parser/transpiler baseline and dialect corpus
+  license_review: required
+  redistribution: metadata-only
+  resource_class: large
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none
+- id: aws-db-migration-tester
+  repository: aws-samples/sample-db-migration-tester
+  commit: c904cecf2283783501659ba55661b559cef3e4ce
+  business_lines:
+  - sql-conversion
+  purpose: Source/target routine execution validation reference
+  license_review: required
+  redistribution: metadata-only
+  resource_class: medium
+  fetch:
+    type: git
+    depth: 1
+  policy:
+    network: allowlisted
+    scripts: sandbox-only
+    secrets: none

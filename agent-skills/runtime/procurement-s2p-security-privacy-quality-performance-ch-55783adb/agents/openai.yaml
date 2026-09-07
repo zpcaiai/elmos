@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Security Privacy Quality Performance Chaos And Release Gates"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-security-privacy-quality-performance-ch-55783adb to implement its fail-closed ELMOS Product B42 contract."

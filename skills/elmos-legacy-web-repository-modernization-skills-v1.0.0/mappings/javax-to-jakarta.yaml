@@ -1,0 +1,72 @@
+mappingVersion: 1.0.0
+targetBaseline:
+  jakartaEE: '11'
+  servlet: '6.1'
+  springFramework: 7.x
+  springBoot: 4.x
+namespaces:
+- from: javax.servlet
+  to: jakarta.servlet
+  strategy: symbol+xml+reflection+service-loader
+  risk: critical
+- from: javax.validation
+  to: jakarta.validation
+  strategy: symbol+provider compatibility
+  risk: high
+- from: javax.persistence
+  to: jakarta.persistence
+  strategy: symbol+ORM provider+XML namespace
+  risk: critical
+- from: javax.transaction
+  to: jakarta.transaction
+  strategy: symbol+transaction manager
+  risk: critical
+- from: javax.annotation
+  to: jakarta.annotation
+  strategy: symbol+lifecycle semantics
+  risk: high
+- from: javax.jms
+  to: jakarta.jms
+  strategy: symbol+provider/client compatibility
+  risk: critical
+- from: javax.mail
+  to: jakarta.mail
+  strategy: symbol+provider compatibility
+  risk: high
+- from: javax.xml.bind
+  to: jakarta.xml.bind
+  strategy: symbol+runtime/provider+generated source
+  risk: high
+- from: javax.ws.rs
+  to: jakarta.ws.rs
+  strategy: symbol+implementation compatibility
+  risk: high
+- from: javax.ejb
+  to: jakarta.ejb or Spring replacement
+  strategy: semantic migration, not namespace-only
+  risk: critical
+- from: javax.naming
+  to: javax.naming
+  strategy: Java SE namespace remains; do not blindly replace
+  risk: critical
+- from: javax.sql
+  to: javax.sql
+  strategy: Java SE namespace remains; do not blindly replace
+  risk: critical
+- from: javax.crypto
+  to: javax.crypto
+  strategy: Java SE namespace remains; do not replace
+  risk: critical
+scan:
+- imports
+- fully qualified names
+- annotations
+- XML schemas
+- reflection strings
+- ServiceLoader files
+- serialized class names
+- JSP/taglib directives
+- generated sources
+- bytecode descriptors
+- tests/mocks
+forbidden: global textual replacement of 'javax.' with 'jakarta.'

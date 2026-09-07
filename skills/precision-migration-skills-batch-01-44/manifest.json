@@ -1,0 +1,3557 @@
+{
+  "package": "precision-migration-skills-batch-01-44",
+  "version": "1.0.0",
+  "batch_count": 44,
+  "skill_count": 587,
+  "status_values": [
+    "PROVED",
+    "VERIFIED",
+    "CONDITIONALLY_VERIFIED",
+    "REQUIRES_ADAPTER",
+    "REQUIRES_HUMAN_REVIEW",
+    "UNSUPPORTED",
+    "FAILED"
+  ],
+  "files": [
+    {
+      "path": "LICENSE",
+      "size": 245,
+      "sha256": "993d3d4a183f6e2b58e94e63ea81a175f1dfc6b014a11927dfe8cccffb7dd88b"
+    },
+    {
+      "path": "README.md",
+      "size": 2919,
+      "sha256": "766075bb3829370b09ede828fa1c7f29bb16e4e8a0d2d7055667d9e6ebe9f23d"
+    },
+    {
+      "path": "VERSION",
+      "size": 6,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/SKILL.md",
+      "size": 3272,
+      "sha256": "0a7d99a7d155f89f4825c9cbfa3ed41d1b0584c9a88436448a8a3c353c150556"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/catalog.yaml",
+      "size": 1141,
+      "sha256": "f2d3f6d50c29aae511140b140b08fb92c74e4a6cba987f7ef00db8dbdb98d066"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/build-buy-partner-decision/SKILL.md",
+      "size": 4337,
+      "sha256": "8a5a1666b4f204912e56c815ca85d44e813ce3cf9e9bcc0cba40ae5f533e96b8"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/capability-gap-analyzer/SKILL.md",
+      "size": 4337,
+      "sha256": "5d3a2bc9195c9a524becd9a934bde8cb0bbf9ef783429d5cc5a43a37545a7828"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/competitor-capability-radar/SKILL.md",
+      "size": 4394,
+      "sha256": "59ba58456c462c2267600f9379581392a110bb9eb6feb333521b71b6c84c6c41"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/differentiation-strategy-generator/SKILL.md",
+      "size": 4369,
+      "sha256": "2bb9b6838c818570179ea691ab5bd2dc1ae7e71f04fa523666d6fb67243eb8e8"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/platform-commoditization-risk/SKILL.md",
+      "size": 4323,
+      "sha256": "a78878bb3b76b39493d80818bb4b8bf03e10a28cf1b105424bd261c1e4a9f451"
+    },
+    {
+      "path": "batches/batch-01-competition-positioning/skills/vertical-market-selector/SKILL.md",
+      "size": 4273,
+      "sha256": "77ce2f74129cc850fe4e3182e736fb642037d584ae65782a0fa7cdd3d4af48fc"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/SKILL.md",
+      "size": 3855,
+      "sha256": "837ce1d3218592b54a5dede2ee2c3f17bb0198976ef2c9648ed0d00c3e40b133"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/catalog.yaml",
+      "size": 1498,
+      "sha256": "142a4f7ab570341755f0ea05f2efc3a50a5d75b9c17e773ff0e4704b35f03425"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/application-architecture-recovery/SKILL.md",
+      "size": 4409,
+      "sha256": "c251425392a3ac5fe42d092e74baae2cb9434c3a4fa5398d8a45e6620fd52e73"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/assessment-report-generator/SKILL.md",
+      "size": 4290,
+      "sha256": "c46c03a547cd973a56258f2e18be7fd1a0b736423f9bcc88141a55073c60e75b"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/modernization-blocker-discovery/SKILL.md",
+      "size": 4381,
+      "sha256": "56729d8b12ead76e62605c2101d7e949fa72267bc0704200b712474ac32c4283"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/modernization-option-comparator/SKILL.md",
+      "size": 4316,
+      "sha256": "fdad96b22670ec1f1754c3eda523af5fe28bcd55bec2d0f18619a0a38c3c7361"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/modernization-readiness-score/SKILL.md",
+      "size": 4353,
+      "sha256": "7623ae3529ea59a19fbaf4b44dd2652598d6343f25cbbe2ae98df9eee38d7495"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/repository-modernization-assessment/SKILL.md",
+      "size": 4443,
+      "sha256": "be69d66ce0c7a9e675e576664feddeffe1708ddcd5241e997b6645d7625a8eb8"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/representative-slice-pilot/SKILL.md",
+      "size": 4318,
+      "sha256": "76de66f3536f71a3e9f24b94117eaf8c3a5933de8f860536209a03a87696b9f4"
+    },
+    {
+      "path": "batches/batch-02-modernization-assessment/skills/technical-debt-inventory/SKILL.md",
+      "size": 4343,
+      "sha256": "cde86b22a00d60609eb6716d19c4c9a07dac23f224d7fa54a33372577715c26e"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/SKILL.md",
+      "size": 3689,
+      "sha256": "e3046a9df574547ebe00879ea55a54ca2bc1721b57c0ad8540eb84544275bbe6"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/catalog.yaml",
+      "size": 1394,
+      "sha256": "7a0ae9260c8ad0c49f50168076a876aa08c2ff341d61dc4aef77d5a62112882c"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/conversion-cost-estimator/SKILL.md",
+      "size": 4283,
+      "sha256": "914f4a9666a619ec56152cbeeae6ff839c5bc09804ac12e304d53501e1f22c4e"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/conversion-duration-estimator/SKILL.md",
+      "size": 4330,
+      "sha256": "6f288afbe8ca9a54bb5c9d0885344fdd05c7d5dc3281a478858f98e2edf80bd4"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/conversion-feasibility-estimator/SKILL.md",
+      "size": 4309,
+      "sha256": "ec51d1a036b33538e35d7528d7cce99722ccdb0ad44e3a5249605cb531ef5476"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/conversion-risk-register/SKILL.md",
+      "size": 4312,
+      "sha256": "07d7c8c6b2f61df24c577e9aa87ba6985a362a3a50ac5f34bc0cb52f362f319b"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/conversion-success-range-estimator/SKILL.md",
+      "size": 4355,
+      "sha256": "222b676c08bc30a4bb309f3327cb5b7f5c5022539ee139db3b74ec6e86d69b83"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/estimate-confidence-calibrator/SKILL.md",
+      "size": 4342,
+      "sha256": "1a1635b369d8006eca436ef5c803a4c839e666d496b52908d43ced90001ad4d4"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/iteration-count-planner/SKILL.md",
+      "size": 4291,
+      "sha256": "4714e20f44c2e3a0580d6e8ebb6c59e8d3dbc140ba964bbc4ba37a5b7c9191bb"
+    },
+    {
+      "path": "batches/batch-03-feasibility-estimation/skills/manual-effort-estimator/SKILL.md",
+      "size": 4228,
+      "sha256": "5c16a9825951cb50a50866719d1f768c0abb994f4d767ad9dc126aac21f6aaea"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/SKILL.md",
+      "size": 3749,
+      "sha256": "5b773f7e79bba56a572a85fa97821389b79d4ea09a0b9eacceb4f4d5021c198f"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/catalog.yaml",
+      "size": 1426,
+      "sha256": "cb67cc37f5f6c8cdb70199ca9cfea11044548b99d0b325d7703f88bf94dc9dca"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/architecture-migration-strategy/SKILL.md",
+      "size": 4313,
+      "sha256": "12690dd308a08bc1cd2a9f7c12b917dbf82570c19286cce4345265716d33db5c"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/do-not-convert-advisor/SKILL.md",
+      "size": 4294,
+      "sha256": "14dc16cfeac2175bc084bcdfac84bbc74ab8b2a6f18f24fd79ef26de602e9d13"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/migration-alternative-generator/SKILL.md",
+      "size": 4358,
+      "sha256": "97c2cacbb13314fd1c9f922596c2e3588304e9b27fbb2fde8cb55406702eb989"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/migration-business-case/SKILL.md",
+      "size": 4281,
+      "sha256": "4758de41ef518222b9e1c0dd9638978a82f9eb25fca17bf1d40fe5c1ab01b470"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/target-framework-selector/SKILL.md",
+      "size": 4255,
+      "sha256": "b8fa7ba546346bce03b21636887ba6fcaf926bf3ba860d31efedc65aa1e0d372"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/target-language-suitability-analysis/SKILL.md",
+      "size": 4407,
+      "sha256": "ebbf6ee7654634f2f0d24fef85b54fb45d370ce326624c84efd269b5ab322060"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/target-platform-benefit-analysis/SKILL.md",
+      "size": 4333,
+      "sha256": "b143c6ba9bf277be620f59016a5e112bc550722a72d11db20c9119ab117b11da"
+    },
+    {
+      "path": "batches/batch-04-target-recommendation/skills/team-capability-fit-analysis/SKILL.md",
+      "size": 4331,
+      "sha256": "eb2f0a19481415fbbe9d2e88cc50a96cfc3c28ac44dadf819294adabe60d54cc"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/SKILL.md",
+      "size": 4449,
+      "sha256": "b3663302bbaed1a2a70c867089fda8821adce60260c2be312608a8cd09a2dce9"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/catalog.yaml",
+      "size": 1901,
+      "sha256": "f28c15e3ee7dc2708ded64c5679b43e874561c7a7598588c75a55ec41feb4e30"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/build-system-detector/SKILL.md",
+      "size": 4195,
+      "sha256": "df20bac77b1e0de75362cfc6b6cd9a64fb86f46461da25df00c6f7d33a6e46a8"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/business-rule-extractor/SKILL.md",
+      "size": 4218,
+      "sha256": "7e80dd043496b6a13a4fc18c2afadf80d8e27c6f9ef7bf95deacbaf191fbbbbc"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/call-graph-builder/SKILL.md",
+      "size": 4181,
+      "sha256": "5ac9120aab5d2c59461386572976363cf70fae362641924e219a3249c9cb8627"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/data-flow-graph-builder/SKILL.md",
+      "size": 4188,
+      "sha256": "55a025727c574a392646a14b164b6eaa16b7d16d7769c18116001432b8819f0b"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/database-access-discovery/SKILL.md",
+      "size": 4269,
+      "sha256": "5e34c829adf78a2136dcc01f283fb15c830ec1d5bd6bd2b53e6c22b6206263c0"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/dependency-and-plugin-discovery/SKILL.md",
+      "size": 4245,
+      "sha256": "1cf4d0a1e9fe413108ace6ff2421f14253e4235a1d7412d686d3b592b325ae8c"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/effect-and-side-effect-discovery/SKILL.md",
+      "size": 4277,
+      "sha256": "cb4efea808ca869f922c5e7b288b79851459ba2b3f0038d859b142f9c9d44cec"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/external-service-discovery/SKILL.md",
+      "size": 4172,
+      "sha256": "4604368023dbe15890af67f6238b66e6e3492cc934a30b3ae0839b1a4c8d058a"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/repository-inventory-scanner/SKILL.md",
+      "size": 4284,
+      "sha256": "68d30663095a6f6c5a516200c3af093791d89f3e6e002174551c473e95655348"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/runtime-trace-fusion/SKILL.md",
+      "size": 4256,
+      "sha256": "3206554a4f7d34212667a3ad987642829b608a700c66e66fc76fd13018107daf"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/semantic-slice-extractor/SKILL.md",
+      "size": 4193,
+      "sha256": "39a20dd8d75024a4c4615810808bcc83232e419557d68b9a5fbdf108bbe848e7"
+    },
+    {
+      "path": "batches/batch-05-repository-semantic-recovery/skills/symbol-and-type-indexer/SKILL.md",
+      "size": 4170,
+      "sha256": "e94f70ef33f2461cb3f500f8829b3b80a81d30910f4b69952fe80de62dab3ea9"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/SKILL.md",
+      "size": 3966,
+      "sha256": "0ef8210a7d30d7ba111432d28cf10ea9c1a2cdb59f9633e4a5eb73b04c3bd336"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/catalog.yaml",
+      "size": 1604,
+      "sha256": "cef087c2a4741ff82fe3cea902d63cf756630acb0ca56f6752dd40a83b5bab6e"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/build-command-generator/SKILL.md",
+      "size": 4227,
+      "sha256": "94ab53a3f8008c6adca169e82d64098fe12ffa3b98d38775599aab63c4088dda"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/compiler-diagnostic-normalizer/SKILL.md",
+      "size": 4214,
+      "sha256": "2e2c6e93a445bb4b19299a04a8361521ff94c70956202152ffc6fb3d5d7d3338"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/compiler-version-resolver/SKILL.md",
+      "size": 4237,
+      "sha256": "a8ed722011d61c063583920b60e94dbcb28a2c2eb6dc3e04236a6eb935bff713"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/package-manager-adapter/SKILL.md",
+      "size": 4208,
+      "sha256": "10991ce7157dbad576931886a61f1af705530f5da244f08f0f5215990ae63f3b"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/platform-worker-router/SKILL.md",
+      "size": 4191,
+      "sha256": "611cd20cf1941a21b1698803b0ab4619ecb33cbe620dae38b0fddf38c12ca002"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/runtime-environment-provisioner/SKILL.md",
+      "size": 4218,
+      "sha256": "5a8acb346f09ac1669913ae8e7574b6e89b01661b9a499c128ded4f1dafc0c4a"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/runtime-version-resolver/SKILL.md",
+      "size": 4216,
+      "sha256": "81e9ad3f73477232cce87bc870ce36982574c1e7d214dbb9a985ec6c804a9e22"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/test-runner-adapter/SKILL.md",
+      "size": 4149,
+      "sha256": "efc5b23e2aac066b15a3051b51b2657e35af02fc32a64659c08911f14129fc71"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/toolchain-manifest-detector/SKILL.md",
+      "size": 4243,
+      "sha256": "ffbd78beddfb3e5dc97ab1e02810458887916ce84f6b5f33661ed528e7e2151f"
+    },
+    {
+      "path": "batches/batch-06-toolchain-registry/skills/toolchain-reproducibility-certificate/SKILL.md",
+      "size": 4285,
+      "sha256": "ece92adbb1a530dd5d6153997f367c619eccbaeb80870ae17471798e4c2f105c"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/SKILL.md",
+      "size": 3981,
+      "sha256": "0a68c3783b648249203131ee16e9cd868f69402c75396be36d5d575514c6aba9"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/catalog.yaml",
+      "size": 1595,
+      "sha256": "a54e7233644fd950779bb4f884cc72171005b481f4042674b1c1d1dda7f935d4"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/artifact-signing-and-provenance/SKILL.md",
+      "size": 4223,
+      "sha256": "5327b252431d54984e80f4d9442e07366853919b94bcf44222fb70bd883421be"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/dependency-proxy-and-cache/SKILL.md",
+      "size": 4216,
+      "sha256": "f5e815f882518778cf48cc4b32c0389612acd720f5855d5d05d4fc06e59d0e3b"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/ephemeral-workspace-manager/SKILL.md",
+      "size": 4211,
+      "sha256": "0b123f2ba46d4dcd63420170db4b8b85aaa54783b76ead86406f04b840137ca0"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/execution-audit-recorder/SKILL.md",
+      "size": 4224,
+      "sha256": "44a5ef3b05803d3d8f781b8498297c85b2a59a110efedb7b5d9369ff96fccaaf"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/malicious-build-script-detector/SKILL.md",
+      "size": 4267,
+      "sha256": "ee9ba7d6b7148f38307de210b40494689eb70b50ee943dd68c075459c3042015"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/network-egress-policy/SKILL.md",
+      "size": 4227,
+      "sha256": "651605355fc4b6376c30ae32c9f00250380c616a41a08e1cd1be0e02cc16ff5a"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/reproducible-build-validator/SKILL.md",
+      "size": 4190,
+      "sha256": "039765a146759ecde787bf40ccea214e0c092067f6be0d1185a3e68e1b0ec3d7"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/resource-quota-governor/SKILL.md",
+      "size": 4194,
+      "sha256": "95deca1e6b22bde97ab88c144b77b826be6d712e972955301a615cb38fd136a6"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/secret-scope-manager/SKILL.md",
+      "size": 4176,
+      "sha256": "c05b8dc371417c8482c8f5c7597db8429c9f08b8f08e6e3d2081c1f1946c76d2"
+    },
+    {
+      "path": "batches/batch-07-sandbox-security-reproducibility/skills/untrusted-code-sandbox/SKILL.md",
+      "size": 4193,
+      "sha256": "5f41caea76fd8d371fe06312aacf22e42b302de34fd0e85bf6a839bc040e57b4"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/SKILL.md",
+      "size": 4334,
+      "sha256": "c7e96eb43bbd2c5688e5fa9dd7cc19970d5993ce8fe8d347e769ddfe88381908"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/catalog.yaml",
+      "size": 1778,
+      "sha256": "facfbe8b0e2f23003f813f4c49ddd6a39deb34029aa3d2b5db59798397713115"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/canonical-primitive-types/SKILL.md",
+      "size": 4190,
+      "sha256": "992e7d667cf847fef0b859c49a20196494f07f0b062c0d121a7c9937913aacb6"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/collection-semantics-model/SKILL.md",
+      "size": 4186,
+      "sha256": "581bf1cf3864aa379af4ecfe82e9585500784697970b808e7b90881306dbe59b"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/datetime-timezone-model/SKILL.md",
+      "size": 4144,
+      "sha256": "1112d85ef946fc94bfd4117809cdeb914c0f5483ad5b026f3d98a60dd304470c"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/decimal-and-rounding-model/SKILL.md",
+      "size": 4111,
+      "sha256": "c68e4802cb11ea1155ae8195258958c4e67a248f0b23f132ec01b9949a2f2b51"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/generic-and-variance-model/SKILL.md",
+      "size": 4168,
+      "sha256": "62e7fd8b73c24f3f37c3dc4ae7355d40a627dc5cfbb5338273c557e25bd9c9d2"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/gradual-type-recovery/SKILL.md",
+      "size": 4190,
+      "sha256": "761501df3b400128eca076ab46168cf88e38dbd967f9ae85b106c0e3c2807b3c"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/null-missing-undefined-model/SKILL.md",
+      "size": 4172,
+      "sha256": "a5589a5d0ea1a8a2be4b2eefb777d4a89f1a09d1a5c81eda398158765f828286"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/numeric-semantics-model/SKILL.md",
+      "size": 4150,
+      "sha256": "5bb499d140324b12724033df707909d48927f47e67cc484f5515d22ce3562bb8"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/option-result-union-model/SKILL.md",
+      "size": 4145,
+      "sha256": "3a6fbfe93acf1c3c176dde1a77b9fa2da3c88315ae45211c2a64ea1ee9eb4f99"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/ownership-and-lifetime-model/SKILL.md",
+      "size": 4205,
+      "sha256": "03103f9197b114de2ed5c0203afc044e2ac302274809d7db8066dbb02f0bbbce"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/refinement-type-contracts/SKILL.md",
+      "size": 4172,
+      "sha256": "77f6d2a6b637e1cdc4cebf2e2b81260795658cd2fa782c850e8ac1b7f59d9fe7"
+    },
+    {
+      "path": "batches/batch-08-canonical-type-system/skills/serialization-type-model/SKILL.md",
+      "size": 4161,
+      "sha256": "a59ddeffd2f7203a68883a59b2fb2c992eb178df09927f122357443e9d67d1d5"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/SKILL.md",
+      "size": 4321,
+      "sha256": "7f12a824469f667f9f98ce1164f8a9fe365f3036de35edfdf5022dfb5f24adff"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/catalog.yaml",
+      "size": 1827,
+      "sha256": "5a6c64fef0eeb4af789b5f51af0d1775be847f3703089bee44e39f15c81bca85"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/async-cancellation-model/SKILL.md",
+      "size": 4198,
+      "sha256": "d765ae635d9d5bddd557596ccd146a3f427e4283a37d671a62d67014e6ae1976"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/business-state-machine-ir/SKILL.md",
+      "size": 4179,
+      "sha256": "728a934c08346f756adaad5f9e776392b6e827a2d373462a04deac83bb82754b"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/database-effect-model/SKILL.md",
+      "size": 4246,
+      "sha256": "d5000c7af80d7e26799eada5f0239e78702bc98d3efcd0a5eaf704abda975e18"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/effect-system/SKILL.md",
+      "size": 4167,
+      "sha256": "53bb83d53644897319d591e065b821f9433d18c93b444cb200d5a5e92d3b7688"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/external-call-effect-model/SKILL.md",
+      "size": 4220,
+      "sha256": "d29f1bfde833c79f3c6f65a508e36f4a78d27ddc0ae1fcc0f1bfe0ac0e56c381"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/message-effect-model/SKILL.md",
+      "size": 4181,
+      "sha256": "21dd403918f164afb1657de4f68931e87a97e8d69f6cb395bd94f13ca434f437"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/observable-behavior-ir/SKILL.md",
+      "size": 4206,
+      "sha256": "95f89cc65f7b8d8f6f77845521214bb2478971778d1c1761ac7e89903d2fc6f6"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/protocol-and-workflow-ir/SKILL.md",
+      "size": 4150,
+      "sha256": "63b7e33874bd3797996e69de83fc96fdae8dac08228be3356512de34bfc2d8bb"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/resource-lifecycle-model/SKILL.md",
+      "size": 4228,
+      "sha256": "badf98d3c49468dd18f74960a63098531d9cc6ec21fdadc4f2e670b860174b35"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/semantic-loss-ledger/SKILL.md",
+      "size": 4199,
+      "sha256": "68b5aa798938eca42bf1191ce8cc72a710aaac0eb863f3bc466cd925802b9bff"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/transaction-effect-model/SKILL.md",
+      "size": 4165,
+      "sha256": "aff61728724b79a70cbfb8bf506de36497bc86d65c829abc0a993229ef15e08f"
+    },
+    {
+      "path": "batches/batch-09-effect-state-observation/skills/ui-state-machine-ir/SKILL.md",
+      "size": 4219,
+      "sha256": "a2f6f59c0c6842eeec62a8f9ab16d97c00fb0a1772edf7bd00c669b44aabb958"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/SKILL.md",
+      "size": 4221,
+      "sha256": "4a992992dbed1fcdf909befa75d20025936a47f32b544698b6b8929a7bd8cb1d"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/catalog.yaml",
+      "size": 1780,
+      "sha256": "1d14bdc106efd03236916a6338f5421d227601dbe15560ad5c3a54286cc77456"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/backend-application-ir/SKILL.md",
+      "size": 4173,
+      "sha256": "f5b1ab26a49c8d85c6b31257d2a4187892db98ca7a0505b253fe642c7e85011d"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/controller-endpoint-ir/SKILL.md",
+      "size": 4191,
+      "sha256": "7cb69a0b7aaa8256eb83a9eef7d39acf2ec71b430c88e57609b34292b795e7e8"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/dependency-injection-ir/SKILL.md",
+      "size": 4175,
+      "sha256": "56ed7119a432bbb87c170997050b4ff5bc29742530289c1769e1150fad95c6ec"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/domain-and-service-ir/SKILL.md",
+      "size": 4186,
+      "sha256": "bae2170412c05d660db2e749fdec0b2e953ac7a37f6196b72171db25ed31fdcd"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/event-and-lifecycle-ir/SKILL.md",
+      "size": 4200,
+      "sha256": "6e2d7f5afc3ada618df025ca64f3399f19c23ced764052b1bfc4271e26f8f743"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/frontend-component-ir/SKILL.md",
+      "size": 4232,
+      "sha256": "d033570e55251d75fbf5d5012ca603e16bf4d1f9918b4b5ab0e1d36fef65432d"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/message-consumer-ir/SKILL.md",
+      "size": 4161,
+      "sha256": "2d441cc65df1bc5cb486d92aa87317e4221c0ffa799839beaa7b425cae3ee097"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/platform-capability-ir/SKILL.md",
+      "size": 4200,
+      "sha256": "e92d78d50612c51ed8b2706ede09c493ad623af4d8ee1715d0bb44886557c3ac"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/repository-and-orm-ir/SKILL.md",
+      "size": 4183,
+      "sha256": "8b232b38e4f870940d145b3a224e671328bc122b8a735aaf0aafbf1fc903b7e3"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/route-navigation-ir/SKILL.md",
+      "size": 4167,
+      "sha256": "8921c10aa4df6d84c5495d53b9f34f2b0ed816092a4588cfd1d55d38168432e4"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/scheduled-job-ir/SKILL.md",
+      "size": 4098,
+      "sha256": "6d2003dedbc8919e224ec83ef0b5436fb37442f3ecff742a92c172637a5d08fa"
+    },
+    {
+      "path": "batches/batch-10-backend-frontend-semantic-ir/skills/ui-layout-constraint-ir/SKILL.md",
+      "size": 4215,
+      "sha256": "1b9ecc1f8be6c6f969a0a6c83ba39d32c24c69463b1bd6c2d5f231e214e86e69"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/SKILL.md",
+      "size": 4933,
+      "sha256": "348f2263a19a7733f423a1eba50aa975f52df4aa40aa742893d797a46800927a"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/catalog.yaml",
+      "size": 2116,
+      "sha256": "a072538594682e623c9919adabfb5a00effc198349869af2d30d771d5f7f3a37"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/code-example-rule-induction/SKILL.md",
+      "size": 4189,
+      "sha256": "54f47a74720e485aca1cac5e33f53c0f9626f7301f88d8deb5538f05c60f4984"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/declarative-recipe-dsl/SKILL.md",
+      "size": 4194,
+      "sha256": "6cfb50dde33f5191a953964016068a896d756faf020e46fd739b9213bbb46b0d"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/imperative-recipe-runtime/SKILL.md",
+      "size": 4172,
+      "sha256": "5c37756dc20f5bb2a4f01c8afc79183b6794321139520cfef7d3d19cb30b8870"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/managed-transformation-pack/SKILL.md",
+      "size": 4135,
+      "sha256": "907d35cc36f09bbecd4f2a10d8bd7b60236fce7a2d15ae0b5ff4a3b4bb8c6b46"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/multi-cycle-transformation-engine/SKILL.md",
+      "size": 4155,
+      "sha256": "59219efd76f282c432131f7d2a2ec95dfa178c0edc8d5597c727c061988e596d"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/natural-language-transformation-definition/SKILL.md",
+      "size": 4282,
+      "sha256": "763cea24d296b58c7450567df10c7f42db72915cd9e4263aafb0e1a875354c5d"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/organization-private-transformation-pack/SKILL.md",
+      "size": 4248,
+      "sha256": "83a6b2d4bc8cbba6fadd5d86a8ab5744fc30e2560ceba3492bc1d39b3cf228a4"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/recipe-composition-and-ordering/SKILL.md",
+      "size": 4128,
+      "sha256": "5bd4cca126047cc6684c8c3bf007ddcec657ed716e7313fb820d950c3ef6177f"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/recipe-precondition-engine/SKILL.md",
+      "size": 4174,
+      "sha256": "fb800e1cce22a1f2987db81738504ec26d45a74b1d2f2911a543d3d561292375"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/recipe-versioning/SKILL.md",
+      "size": 4085,
+      "sha256": "80a2db5d27bd6838fea09a7b1f2611fffa8ccd4987306796411210ecbe868971"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/reference-knowledge-loader/SKILL.md",
+      "size": 4211,
+      "sha256": "051bd00d4111f52d1ee73ec6e5b8654955ac2d1c5febaf3fd316edab5f064406"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/scanning-recipe-engine/SKILL.md",
+      "size": 4118,
+      "sha256": "67787fcfa99fbe5a463f11383a46898728ff801419a4ad98923a94dc6e9c7bbe"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/transformation-registry/SKILL.md",
+      "size": 4141,
+      "sha256": "175050a62fb094cb551c6cce6b252a5e88b713ebb58da646352779aefdf8cd4b"
+    },
+    {
+      "path": "batches/batch-11-transformation-skill-recipe/skills/transformation-skill-compiler/SKILL.md",
+      "size": 4214,
+      "sha256": "1c20abf53b8b05cafc9539fdeeaa777e6dcb828457f99efc0a970162477b0329"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/SKILL.md",
+      "size": 3829,
+      "sha256": "b429e408d6a311c4783518eb633c97f6f9bcd24a85374d586e2004beab852250"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/catalog.yaml",
+      "size": 1482,
+      "sha256": "ab6c77a423f9c818e832d9eb9a013346bf25a59cc12d3add84760d4f26238d71"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/comment-and-format-preservation/SKILL.md",
+      "size": 4181,
+      "sha256": "18f719480dd879d64f9a8345e5352c7a780a14a8a0081c38fbb580ee0d96283e"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/import-and-namespace-rewriter/SKILL.md",
+      "size": 4162,
+      "sha256": "15faa66969c9638987c7382871e378d4c2b678f10557a418270b5f938710eef0"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/lossless-source-tree/SKILL.md",
+      "size": 4156,
+      "sha256": "c3cd5b0366de7daf1d42787be4f898116c69360f16bd07363c94ac1332a8e92f"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/minimal-change-generator/SKILL.md",
+      "size": 4170,
+      "sha256": "796e95715d2d50b60ccc005a67b5787eaf8f4fa5d562aeb5f8980286d981ea64"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/rollback-patch-generator/SKILL.md",
+      "size": 4125,
+      "sha256": "827cbdfd17abd46b6b8b34734b60609af075e8b02b7d58d68700a30d8ab22c47"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/semantic-diff-generator/SKILL.md",
+      "size": 4195,
+      "sha256": "0dc88898cfb062b65375ff402b39015fc4108fbfe6913e7529c484c3e1fc25be"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/source-location-mapper/SKILL.md",
+      "size": 4139,
+      "sha256": "be634c6e4e7d0d8b3a8b4e11494bf7ac58a7f7597ab2462ee4c3464e37baddb8"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/symbol-safe-renaming/SKILL.md",
+      "size": 4138,
+      "sha256": "4a654d92768d7fe1840ca6dc1118ac5290219cc961362bb2d22e58b440d1bf54"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/transformation-result-set/SKILL.md",
+      "size": 4154,
+      "sha256": "a174bf554d471ec99828b987846eb5c1b08d1771d57b0bc540fc77960d2cd301"
+    },
+    {
+      "path": "batches/batch-12-lossless-semantic-transformation/skills/type-attributed-tree/SKILL.md",
+      "size": 4102,
+      "sha256": "0954f7fbb64b6b7f5925acedd7182d77280e1704e832b798b499c68abd5d553e"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/SKILL.md",
+      "size": 3936,
+      "sha256": "df3c51fb5b5cbb2fe87a8ae4fbaad96c7d4be7b5f32cc0da71890a69db7a914f"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/catalog.yaml",
+      "size": 1545,
+      "sha256": "7793435302f2b1117a6e01f5ec4761513c65424e794c98265a6f689f9bd78bab"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/adapter-and-shim-generator/SKILL.md",
+      "size": 4189,
+      "sha256": "7bec418302dd34c715fdfe65a3f948539168482a506c9d97dd3dea4bde7bdd37"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/candidate-cost-ranker/SKILL.md",
+      "size": 4137,
+      "sha256": "23f40ecb232cf867e2bed48181d670b3016dc47a6d7b83770017c7887d625fb4"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/candidate-verifiability-ranker/SKILL.md",
+      "size": 4164,
+      "sha256": "9949e3f94166f55a9148801ef4c485c9a070bd7ba793118592012dd886705593"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/deterministic-rule-generator/SKILL.md",
+      "size": 4178,
+      "sha256": "272db41d3d74b0755ff3034181a3af99a61517a4bf76ebb4a3422aea95875f8f"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/egraph-equivalence-search/SKILL.md",
+      "size": 4193,
+      "sha256": "ed6262148cb4c2aff1db84c01f75db77dc541a3943c0cbeae41e29eae0a9756a"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/idiomatic-target-code-generator/SKILL.md",
+      "size": 4208,
+      "sha256": "e1ec0f4053fda3971854e7376523d1c3a4d9612278d4f0f262d60007fff4dcf5"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/library-api-rag/SKILL.md",
+      "size": 4119,
+      "sha256": "74d689f94f7a04fca662d44c696ce54f14679b1ceddc77b74ee4051c4293dc08"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/llm-candidate-generator/SKILL.md",
+      "size": 4204,
+      "sha256": "ee53e1143d97e13ef4fe8393ae3db561706ed78e8deff383ca494f1ead8d9d05"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/multi-candidate-search/SKILL.md",
+      "size": 4124,
+      "sha256": "88d3ac0c1ce41f91dc6132747d513702367faf78b89c2f105dd8860458b1c8a2"
+    },
+    {
+      "path": "batches/batch-13-neurosymbolic-candidate-generation/skills/unsupported-semantics-classifier/SKILL.md",
+      "size": 4228,
+      "sha256": "671eee8aec1fc45e5f179344a06c5b6c9acd32889363d8a9c8ea4bfa975f3229"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/SKILL.md",
+      "size": 15363,
+      "sha256": "05701a770a6d34fc9cb647d4b3fbcb6cf90898dd0b5e790c022a7078a549a1c5"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/catalog.yaml",
+      "size": 8784,
+      "sha256": "9ec6395ffb151f52ce8b3a28dbaaa2f25b928d52bbcb4ce6c11995344fdc4371"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-async-concurrency-adapter/SKILL.md",
+      "size": 4360,
+      "sha256": "348a1d69a6cd68f867d4530d82d0e5337e3dcfef760826a0af7fce166fce0009"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-cfg-ssa-adapter/SKILL.md",
+      "size": 4331,
+      "sha256": "a50ea41441cfb39e0650f227addfc03ce7409012a05a1851c7dad4787d8fb691"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-code-generator/SKILL.md",
+      "size": 4339,
+      "sha256": "dcab5ffe418884ebb92580b29b5078debf87adf78ce32534a72483deee4280f5"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-error-exception-adapter/SKILL.md",
+      "size": 4332,
+      "sha256": "f42d356b97277c4ef26f6a87cd40bc70e1216619385a6531ad3868761b9245a3"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-formatter-linter-adapter/SKILL.md",
+      "size": 4352,
+      "sha256": "86c3c1de26c24b2ec6684eae197064d9da1d8a2bd5d63b0c64a387bc0bf1ad42"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-framework-detector/SKILL.md",
+      "size": 4352,
+      "sha256": "75f47b387f23dbc639d7bcc9dc6c3e13d60ee97cbff40fee18c242cbdb08d135"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-parser-adapter/SKILL.md",
+      "size": 4386,
+      "sha256": "34405465fd78bf02d02e9fdec5e18edb97995f147e79f26cdeeec05ed6d53ffb"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-symbol-adapter/SKILL.md",
+      "size": 4350,
+      "sha256": "a0992a11842e7293413702fff47e6edfa159d59cb94250461ae97f5fb01fc8f9"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-test-adapter/SKILL.md",
+      "size": 4313,
+      "sha256": "4747fd770fccaea64c5b188031e9e97213fe6c94f6f19aa262070e0e9b37fee8"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/csharp-type-adapter/SKILL.md",
+      "size": 4304,
+      "sha256": "059085920222d3f4f0d161dcddd2f16cf4cc5088cf646fdc01d4bb5fc79d1c0d"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-async-concurrency-adapter/SKILL.md",
+      "size": 4336,
+      "sha256": "d68d643e41aee9ce1749cdd62a995b823559147d2459588d487d205ad2ac5280"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-cfg-ssa-adapter/SKILL.md",
+      "size": 4307,
+      "sha256": "19286e53c8f79a7a319224d9169439fd2c87241cdc052fc7301a5d5335b2ce87"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-code-generator/SKILL.md",
+      "size": 4315,
+      "sha256": "946de0c985ba3f1cef9dd074c040f55697a90260770fb07c1602306f392373c3"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-error-exception-adapter/SKILL.md",
+      "size": 4308,
+      "sha256": "25a251e7e23fe8b6ff171f25dcfec490e6d4aebcd6a66cd1a7682ff4bc613d27"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-formatter-linter-adapter/SKILL.md",
+      "size": 4328,
+      "sha256": "ef7b8d7a3219e3bc94a7c9b6ff70436043d2500579652a8c403fa00d9722f78f"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-framework-detector/SKILL.md",
+      "size": 4328,
+      "sha256": "3e9d46d461bcfe716feaf2ed7d8b80bad3c6bd66853fe78ff15ec57a8097521c"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-parser-adapter/SKILL.md",
+      "size": 4362,
+      "sha256": "79f39112efe26962e72441ec28f5c6ba6a19215eabed417638bc7395efae5933"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-symbol-adapter/SKILL.md",
+      "size": 4326,
+      "sha256": "7da6a3a0de8431512146de8b7c72e2ef21715f35dbdf769b84af7dcf8e3e9fba"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-test-adapter/SKILL.md",
+      "size": 4289,
+      "sha256": "ce2c35cf47aee342362df03b756315228aa6bac49238ddfab8eaec9ff9c1b7e7"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/go-type-adapter/SKILL.md",
+      "size": 4280,
+      "sha256": "fcc12dd484ecc8c4f809f0c93457eb0576fd65e34b40a8574efefcf4d4323117"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-async-concurrency-adapter/SKILL.md",
+      "size": 4354,
+      "sha256": "943726e19175da2c841ea2f27cb3c3ffffe3f5e476d350937337df165f6dc433"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-cfg-ssa-adapter/SKILL.md",
+      "size": 4325,
+      "sha256": "775e8d31f5b5f448fd59d9a65e6c31c57199d0d1b920f139a0393146310122a6"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-code-generator/SKILL.md",
+      "size": 4333,
+      "sha256": "c11429c2185ae6a9ed30487aec1f25653ced906fb8fc4a34d65fe0dda03adfa9"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-error-exception-adapter/SKILL.md",
+      "size": 4326,
+      "sha256": "959b90e4d4e920fef4ac115421e17c494f7c232caa46ebb092c65621cfd62ac9"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-formatter-linter-adapter/SKILL.md",
+      "size": 4346,
+      "sha256": "c25549f3fdbf6f99b7884e94f2ab1b6f2a43abd473ab0b8caf15825cae899470"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-framework-detector/SKILL.md",
+      "size": 4346,
+      "sha256": "9b0991c7d4162965f755138945ed057c8c6f07b0cca1ff4225449ebd8902a0ef"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-parser-adapter/SKILL.md",
+      "size": 4380,
+      "sha256": "6fb5ee3d14ead6c139f0b7eb03eed84906da4208f568cd1a62864ddea70a24bc"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-symbol-adapter/SKILL.md",
+      "size": 4344,
+      "sha256": "172b5930461942a953988061264b1172fe0a0c263f3eb54a6dda3089a9caade2"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-test-adapter/SKILL.md",
+      "size": 4307,
+      "sha256": "4e3330b9f954500a9527b6bfdfc2d1eb67cb28fbf59fc5ea9190834ee7e77b94"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/java-type-adapter/SKILL.md",
+      "size": 4298,
+      "sha256": "813cbe9c4a9706b4d242b716b6d87061654f09c32a642fc0c7f57b09e28b0954"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-async-concurrency-adapter/SKILL.md",
+      "size": 4372,
+      "sha256": "9feb0908e4bede949e9161b6ae424a304bafbf573f3a7abb4a5c1fb3570c2108"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-cfg-ssa-adapter/SKILL.md",
+      "size": 4343,
+      "sha256": "5a962a2bbfb4aa89c608bd4fae42b613b4c079089e2b63dc58b56e41e560c068"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-code-generator/SKILL.md",
+      "size": 4351,
+      "sha256": "f74249ddda9d62a6c925ff768350037cb02ca45e55dd00264c1611a4706e275f"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-error-exception-adapter/SKILL.md",
+      "size": 4344,
+      "sha256": "e542e5f9c8bdc7a4524f8aff78d6e29e4ef97839a2e53a5a8483779c38d9fd03"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-formatter-linter-adapter/SKILL.md",
+      "size": 4364,
+      "sha256": "27998a7e86c9135fb15f81a54b14b33156a953461f0038ad927527fd786f1611"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-framework-detector/SKILL.md",
+      "size": 4364,
+      "sha256": "6fce255fe274f84436890d74e1ce4891ad05d2e2e327e6d63403d3b7026c7d04"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-parser-adapter/SKILL.md",
+      "size": 4398,
+      "sha256": "28f1761ab1a62367da1c2b4c9eb7299dc536f9627038332f86aaa9402a227072"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-symbol-adapter/SKILL.md",
+      "size": 4362,
+      "sha256": "ee4843b8460d30c4bba984b900b664e6120aab049ebb75c646f33edfd9968b89"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-test-adapter/SKILL.md",
+      "size": 4325,
+      "sha256": "b2296414d682db71e5355917f451958e2aaad76c8c53b780337807eca41fae89"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/python-type-adapter/SKILL.md",
+      "size": 4316,
+      "sha256": "badc4bb1a2dc7090c5501480efa90e1bd72c52296ce8e5e3559b0d3ff2f1d4e3"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-async-concurrency-adapter/SKILL.md",
+      "size": 4354,
+      "sha256": "ce1760c8ed421d9f6e2a735da7a19839dffdd96f05cc689f19495db5b15d8744"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-cfg-ssa-adapter/SKILL.md",
+      "size": 4325,
+      "sha256": "eb13fcdca9afda84e3001382bbb8b7720783f8e63dcdc1a3c3417e1974fbb71d"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-code-generator/SKILL.md",
+      "size": 4333,
+      "sha256": "d95430d3717c60992f21c0592ac22d696047b6cd0ea94b620434402b52f90c35"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-error-exception-adapter/SKILL.md",
+      "size": 4326,
+      "sha256": "8e54d392ff22694c95fc7773466c0f0f90e8b9a40afb11468300ae749c93ec01"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-formatter-linter-adapter/SKILL.md",
+      "size": 4346,
+      "sha256": "26fe9f50f5d2acc9a37995ba55b7e3d2423a3204c50fc19a24fdc8a3a6299175"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-framework-detector/SKILL.md",
+      "size": 4346,
+      "sha256": "05b0cc7c8c216130a3bda9ff0521de0a741913b6bf34ddf93708ec4defb0efc3"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-parser-adapter/SKILL.md",
+      "size": 4380,
+      "sha256": "3fad303f9a54cae54f0fa6f4606d3d571cd97dba82d0a686aaceb5f1fa062c62"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-symbol-adapter/SKILL.md",
+      "size": 4344,
+      "sha256": "5ceb4cead115c02b3aba9da4def98a34eb69bc0797aecb23859994b23cf2822c"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-test-adapter/SKILL.md",
+      "size": 4307,
+      "sha256": "9f139db008bbdca25c831d015682d4a2560cc1f00f1127665ceccf5d2f8bab77"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/rust-type-adapter/SKILL.md",
+      "size": 4298,
+      "sha256": "ac1b2800c533ea8063618c200edabd73d9f3a26d434de84ef6a34375da9ffb00"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-async-concurrency-adapter/SKILL.md",
+      "size": 4432,
+      "sha256": "74d87dda25c586269acbd0bb732ab4afd408d15bee6990555c3583e68c6fdcb3"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-cfg-ssa-adapter/SKILL.md",
+      "size": 4403,
+      "sha256": "eb89456e428585ea96d6ee053c48970340446fdb0216cbd227bd8974283cda78"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-code-generator/SKILL.md",
+      "size": 4411,
+      "sha256": "1afc0b89557621fbfe673eb026284518f399ba6860d45ea46263e66bb2bdefb1"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-error-exception-adapter/SKILL.md",
+      "size": 4404,
+      "sha256": "8729ef6f7761fb46282f47d84dfa5dad59065c24e5450ec47e49a34467bf65c2"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-formatter-linter-adapter/SKILL.md",
+      "size": 4424,
+      "sha256": "da6287f064577756e2a2134e25be196a49d8d6d8c00a720d25705dec9de5b5f0"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-framework-detector/SKILL.md",
+      "size": 4424,
+      "sha256": "d2899092a84cbcd9ccc1c44b4ad201b5a6e38feb65c111168129d604283cf26a"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-parser-adapter/SKILL.md",
+      "size": 4458,
+      "sha256": "977ee1f3d5278edfdefb199e981f1e860f2e83d609c43e97a6dcc84657b23cbe"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-symbol-adapter/SKILL.md",
+      "size": 4422,
+      "sha256": "34fa1ae3125120cf8cbb3732b890202218f761ccf5366de41dc3214c03b28830"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-test-adapter/SKILL.md",
+      "size": 4385,
+      "sha256": "278e447d9d1991591ff5316e23b8bd2eef2f3c40e1ced4f4a3bc8cfc8d1f4798"
+    },
+    {
+      "path": "batches/batch-14-backend-compiler-adapters/skills/typescript-type-adapter/SKILL.md",
+      "size": 4376,
+      "sha256": "ec3ee6df316256cf51dbabec8a39e8061295b25aaa5d9b8e6f82f8e85c2a15f0"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/SKILL.md",
+      "size": 5011,
+      "sha256": "d98e2e3cf5fe6083efff706fe1345b61bbd4557f0f65d5a5e0104b0fe0c28e6c"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/catalog.yaml",
+      "size": 2148,
+      "sha256": "0b3ac7d8bb9549088668e03ed3dcd91d137870899987821cc6344591afa1e292"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/collection-pipeline-lowering/SKILL.md",
+      "size": 4374,
+      "sha256": "02d2cc4a8cca74dae1e666f877fac4f07624a5b9a39d1e6269cb13b2504951bc"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/configuration-lowering/SKILL.md",
+      "size": 4287,
+      "sha256": "f571427bd09694eea969e7ba1a441cab1a7a90437795d5a2afca311d166cd549"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/dependency-injection-lowering/SKILL.md",
+      "size": 4328,
+      "sha256": "2fe80a1ce7f183650af5ab4b4bc1183bbf59c4bc2be7fb2cfaca9f7c02662b18"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/exception-to-result-error-lowering/SKILL.md",
+      "size": 4398,
+      "sha256": "259ed20003498924d2ba3bc77dedb1163366de236495dc5ffabdc7852d271182"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/generic-type-lowering/SKILL.md",
+      "size": 4300,
+      "sha256": "a7509443a5a5851305d28ac6f0a00a545009ea58601c8b9f37d8394ddd069255"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/inheritance-to-composition-lowering/SKILL.md",
+      "size": 4379,
+      "sha256": "ba3162419e53b1af08acc95c3d1f7de06c729fe612b2ccc4aa15836a39836ffd"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/interface-trait-protocol-lowering/SKILL.md",
+      "size": 4357,
+      "sha256": "701df55b9869d41da2a4b0cfa3911d1c1ae470c4115d69ed42947a143a573534"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/logging-observability-lowering/SKILL.md",
+      "size": 4321,
+      "sha256": "c2712721fb18986e95652f9556c50f0486a723901d93f4a279825a994201aa7d"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/null-to-option-pointer-lowering/SKILL.md",
+      "size": 4353,
+      "sha256": "ea42c9d720ed02c72b15c8c7fb9dc5ac925e1f551d27e01837d3785756c45f7f"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/orm-and-transaction-lowering/SKILL.md",
+      "size": 4347,
+      "sha256": "af376988e8bdeeef0b44270361939af155a29ef7f29f269221848700460a7e2c"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/reflection-elimination/SKILL.md",
+      "size": 4347,
+      "sha256": "f1e71c806a92bd01f4ceb6359cf66383d77fc3fc39a342d213fffdb8cfc59baf"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/resource-ownership-lowering/SKILL.md",
+      "size": 4327,
+      "sha256": "e02215fb2baef11d8ce7a1f7766940d435e66aaddd4003ba68489f28deddfb68"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/sync-async-lowering/SKILL.md",
+      "size": 4284,
+      "sha256": "5fbcd305e8a60db2bb0cbbed8aa9cfef3eda6616b091b69192f9f3d691497cad"
+    },
+    {
+      "path": "batches/batch-15-backend-semantic-lowering/skills/thread-goroutine-future-lowering/SKILL.md",
+      "size": 4352,
+      "sha256": "4f8aa4c8c9fdcda9f2c72edf523681894289ee82801d12a8131b0786f73ef2b7"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/SKILL.md",
+      "size": 10940,
+      "sha256": "ed461788ec9e80a650c17032c6b5d13242262f20f470d9ce7d46ea33deb6f3c7"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/catalog.yaml",
+      "size": 6467,
+      "sha256": "379ce2bd39cc07d6db6b66678552440c0a163aea91a4eed95a26e4ec854ac158"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/csharp-to-go-direction-pack/SKILL.md",
+      "size": 4629,
+      "sha256": "a9ac9e1887e75441cd2b00abe5639eadb251535b7ac0728cd03990c41ef98041"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/csharp-to-java-direction-pack/SKILL.md",
+      "size": 4645,
+      "sha256": "2b49ce83b86bf1dea0cc5f8dbcb0b4c0831f1f0d8ec30814e539d7222ff2e182"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/csharp-to-python-direction-pack/SKILL.md",
+      "size": 4661,
+      "sha256": "2e2118a2ffac3d005f6c4d9715b2977d571f289c72b3e2e564624e5e8acb0790"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/csharp-to-rust-direction-pack/SKILL.md",
+      "size": 4645,
+      "sha256": "afc83ccd7eb792d728de519f501978ea9fd91541070fdb464064a152398fc9a9"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/csharp-to-typescript-direction-pack/SKILL.md",
+      "size": 4717,
+      "sha256": "8682f7aacedb657226d713d9efb6395d51614720abc8f0dad7c4226ce79bd828"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/go-to-csharp-direction-pack/SKILL.md",
+      "size": 4629,
+      "sha256": "780401b1194b389caa5dd8124a35e3fd2b539bcca8ab7756193ea752cc5657bf"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/go-to-java-direction-pack/SKILL.md",
+      "size": 4625,
+      "sha256": "b5d6bcc81ad132fb2d27b00f3c2b1d3da5ce64b52e3c4259dc2b7acedf63a5ec"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/go-to-python-direction-pack/SKILL.md",
+      "size": 4641,
+      "sha256": "198b05bb0e80fb230c33558672a50573140be7f4d76de100a1c8ab742406bf2e"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/go-to-rust-direction-pack/SKILL.md",
+      "size": 4625,
+      "sha256": "a07ae51a820956afb50f98316948fa8110aeb40469d0ff9789773d52d85d6268"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/go-to-typescript-direction-pack/SKILL.md",
+      "size": 4697,
+      "sha256": "e518d5df134a72a78163d0bb9431a7d33a56de953fe7848b27cf246ed766a79b"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/java-to-csharp-direction-pack/SKILL.md",
+      "size": 4645,
+      "sha256": "9106f2920f86130db9e9c237fc9e8b6cf18c05fdee1ff464c36660afa4f70311"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/java-to-go-direction-pack/SKILL.md",
+      "size": 4625,
+      "sha256": "38c14085f6ccfc8b9877abdc431b0309fdd856971d58163b7d32a72f00dab666"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/java-to-python-direction-pack/SKILL.md",
+      "size": 4657,
+      "sha256": "62c6c787861b8a194924f69f10c22382da784a04106a8f75be26566e6ce09ce1"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/java-to-rust-direction-pack/SKILL.md",
+      "size": 4641,
+      "sha256": "2397f2ad83ec0a3c5eb29456a32fa187594dd62741c46ff8b237b2805999522a"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/java-to-typescript-direction-pack/SKILL.md",
+      "size": 4713,
+      "sha256": "a4be53d8fcc9ee060ff0a0fcb193faa73168ee3f31d12f7f5ed82e4e2f59072b"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/python-to-csharp-direction-pack/SKILL.md",
+      "size": 4661,
+      "sha256": "33f00b83af487f7ee0dbfbf8ee94f4ca341c5c6d4c74a17aa32bfabb1d491736"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/python-to-go-direction-pack/SKILL.md",
+      "size": 4641,
+      "sha256": "b844c5a9364ecdf64fa1808eddb362b26c8347d3affac2143d0e36f7f3911cbe"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/python-to-java-direction-pack/SKILL.md",
+      "size": 4657,
+      "sha256": "778dd1112ded1dab13c4db7fb3690f1fa9755208078221686bd802ae170d910b"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/python-to-rust-direction-pack/SKILL.md",
+      "size": 4657,
+      "sha256": "5ce7dc6d5c7586031593a15d9eaa8c2a184746ca3b0f53b2680e5a7f4a7f07d5"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/python-to-typescript-direction-pack/SKILL.md",
+      "size": 4729,
+      "sha256": "fce08c7871d1f02201a1ae0bd0b10229cb3ea25e5b457050a95849085b09a257"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/rust-to-csharp-direction-pack/SKILL.md",
+      "size": 4645,
+      "sha256": "c75ebfb7b40306daf5d7cb47390632226cd87d66c187b28a6237681832c1de14"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/rust-to-go-direction-pack/SKILL.md",
+      "size": 4625,
+      "sha256": "76c5b0ad10c1826841220804084bf613c62031b651ac783857d2923c81425de9"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/rust-to-java-direction-pack/SKILL.md",
+      "size": 4641,
+      "sha256": "b3f6e418356ae296875d6fdb098a6629a06ee82956d6a1ce5047bdd23904336d"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/rust-to-python-direction-pack/SKILL.md",
+      "size": 4657,
+      "sha256": "a9adf95a333158d7a61009ee02f76d3511369df5bf2a1305a7e62c38f7d70a7d"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/rust-to-typescript-direction-pack/SKILL.md",
+      "size": 4713,
+      "sha256": "2bc4890296cd916761cbfc588f17e5ab04fa21adee7c5ba18b9491cf386f2fbe"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/typescript-to-csharp-direction-pack/SKILL.md",
+      "size": 4717,
+      "sha256": "49968e37b272b6bd8255a2c25fd74f2eedd2570396170f78dfd0a48c2b273719"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/typescript-to-go-direction-pack/SKILL.md",
+      "size": 4697,
+      "sha256": "86faf24927d0db3c253391aba9ebc1aa01785af94dcad0ebbee74276b788eccd"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/typescript-to-java-direction-pack/SKILL.md",
+      "size": 4713,
+      "sha256": "0554bcbaf189e341ecc1b11d9b4deec1421aff5d604c00c061832291e9deddca"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/typescript-to-python-direction-pack/SKILL.md",
+      "size": 4729,
+      "sha256": "63b7d50c284ab14b362e7c9a563b2563e6b8bd41e75867de79c59e16d554a273"
+    },
+    {
+      "path": "batches/batch-16-backend-direction-packs/skills/typescript-to-rust-direction-pack/SKILL.md",
+      "size": 4713,
+      "sha256": "7c870a502fa1c6110f0204d16050629cfa5cb435cb909bcad2b62a12c1f33b0a"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/SKILL.md",
+      "size": 4456,
+      "sha256": "4c1d640deea06fac1af59461acf4d0c67a7b7b9b0241a02a6e373c9e15b80573"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/catalog.yaml",
+      "size": 1820,
+      "sha256": "b68a0f6abf9ef8030bded8f6c4c4c65b28da73c53a9926ebe19455e998b2dd08"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/accessibility-semantic-tree/SKILL.md",
+      "size": 4310,
+      "sha256": "d85390ddd88da9236cda84c977c17e64d2f99e5eb0eb8b920e6dd738a40b69e7"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/component-contract-recovery/SKILL.md",
+      "size": 4327,
+      "sha256": "1fb7dbb20d6a85c8a88d496b619589e0dcc9889f6df90607adf892251597d5b3"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/event-effect-trace-recovery/SKILL.md",
+      "size": 4336,
+      "sha256": "88beef9fb5514ec596bd9b25559d9bf58d2751531a84c4e2b5908bc3d18375e9"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/form-validation-mapping/SKILL.md",
+      "size": 4287,
+      "sha256": "5e2a1eabaeaa88c2d7c2e82691b387ab09ea0d6074c449a320235e2c5e5e5c93"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/layout-constraint-mapping/SKILL.md",
+      "size": 4285,
+      "sha256": "194c5d3e4336b5d604ae1595f3db6ec358f6b107e1af574c7d8b5ce47d87703a"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/lifecycle-semantic-mapping/SKILL.md",
+      "size": 4293,
+      "sha256": "5df8e37af8eefda55e66a37f2053b7b8a213e024bab9a9960c245b466acea50c"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/local-storage-mapping/SKILL.md",
+      "size": 4280,
+      "sha256": "18168ee1fbd3b32b604d131502d0c9cc4ea30b185e4e08ccfffd256d9d06a0ce"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/network-request-semantic-mapping/SKILL.md",
+      "size": 4332,
+      "sha256": "bdde536e527815e223c11f8959e2105909e1daf4d2e0f6febe6f48b753c5fb3d"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/reactive-dependency-analysis/SKILL.md",
+      "size": 4327,
+      "sha256": "ef12ef2f6d15915bab3d4501180bbba48a1f5f5717b53d5515c25a304bdab975"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/route-navigation-mapping/SKILL.md",
+      "size": 4274,
+      "sha256": "522c405a3c5182dbfca44d40a5f80bb4e25a66994806c9f631eff48e83210cd5"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/slot-children-content-mapping/SKILL.md",
+      "size": 4305,
+      "sha256": "28dd512d95f8d24e3f1ada2964bd17f3c373463cf7a1203773b347dee3ae889e"
+    },
+    {
+      "path": "batches/batch-17-frontend-semantic-conversion/skills/ui-state-machine-recovery/SKILL.md",
+      "size": 4363,
+      "sha256": "f5303c1ac9a6ce642efd3310e4345fa684770177f0d3a2d6a77e5ba3699a17dc"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/SKILL.md",
+      "size": 12139,
+      "sha256": "5422e2d405f8b410aa188f0e75e9da6a0b4e5d96b672563f544f8b91175d7834"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/catalog.yaml",
+      "size": 7243,
+      "sha256": "4a789aef5556903d6526da450eabf9d81c6347a101c537b54bf23ab1c6f7b33a"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/arkui-to-flutter-direction-pack/SKILL.md",
+      "size": 4688,
+      "sha256": "1a6fe5bcada3ea877a0c394029345f40ab8ece326062896929c52a2c65efbae9"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/arkui-to-react-direction-pack/SKILL.md",
+      "size": 4672,
+      "sha256": "76c353f0cb571e6f1de001a86908740e2dae48dcfb106e0ac0ab259ca787ff0b"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/arkui-to-vue2-direction-pack/SKILL.md",
+      "size": 4667,
+      "sha256": "8f9bb3e6bd6318032f329efbe56e123b465590a7da7077bdae0b5d54c389c2ae"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/arkui-to-vue3-direction-pack/SKILL.md",
+      "size": 4667,
+      "sha256": "4fb92c146738b09ea17a6b58686c5752622dd8d817bb1df36866d3472bc19472"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/arkui-to-wechat-miniprogram-direction-pack/SKILL.md",
+      "size": 4767,
+      "sha256": "52436f4081cd846cded991fa5445fa551f9690cf524239f029cf753520470b88"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/flutter-to-arkui-direction-pack/SKILL.md",
+      "size": 4688,
+      "sha256": "c772e9d7ad1718cb663439087a94330a910bc6e817d914609597dcb57ef8bc08"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/flutter-to-react-direction-pack/SKILL.md",
+      "size": 4670,
+      "sha256": "27c7509ab88d154e6411796405a1eb10d37f023035927adda7afd4f084bae1e9"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/flutter-to-vue2-direction-pack/SKILL.md",
+      "size": 4665,
+      "sha256": "1e221d021f082ed0ad2038fd06d919d1fd0b51a7bad20d9a9890d25e053f0d87"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/flutter-to-vue3-direction-pack/SKILL.md",
+      "size": 4665,
+      "sha256": "f11da575725e1a09616e5b497601c550ba0fbf9b279fb2435fdcd3deb09ecf18"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/flutter-to-wechat-miniprogram-direction-pack/SKILL.md",
+      "size": 4765,
+      "sha256": "02971484a542b48caf505d2a973b76623f8dbfccc231241aeefd29745fa2f975"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/javascript-to-typescript-modernization-pack/SKILL.md",
+      "size": 4526,
+      "sha256": "3e3d913e061c9355a196d691c3683a64e0e71ba8f04e78ef82aa4ed3a880c3d6"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-class-to-hooks-modernization-pack/SKILL.md",
+      "size": 4506,
+      "sha256": "db91f320e231efa275175843b314fdccdef165b24c625c981be7c49c0349f098"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-to-arkui-direction-pack/SKILL.md",
+      "size": 4672,
+      "sha256": "76aec6f5cf26f7e23da51e72d56f11c82e763a6490fbd39abef5983da580f19e"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-to-flutter-direction-pack/SKILL.md",
+      "size": 4670,
+      "sha256": "5548eaa0eb6cb34e2af8a29503ede43add77829026cbd7e96ea0b5a01d1c4ae4"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-to-vue2-direction-pack/SKILL.md",
+      "size": 4649,
+      "sha256": "8a7ff35b062f4e681423ca81098b77dc5de5e98bdf7fd54d4f49279cc306b3de"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-to-vue3-direction-pack/SKILL.md",
+      "size": 4649,
+      "sha256": "407a8cd027379c1547c0b10f0f3c62c972253f5ce558ba5fea6c7968bb5c8832"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/react-to-wechat-miniprogram-direction-pack/SKILL.md",
+      "size": 4749,
+      "sha256": "9d77ffeea0a24f63a36cf466e298dce09b30957cdac83752e1a6bddfaedd84fb"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue2-to-arkui-direction-pack/SKILL.md",
+      "size": 4667,
+      "sha256": "52af9344ec1e16e4c722a01dd3b8efecdf55b75d5b40affc218c7834589309c0"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue2-to-flutter-direction-pack/SKILL.md",
+      "size": 4665,
+      "sha256": "dd2ab6b49d308d04edd3ac5765042884acaadd6f30e253ef249a53d2ab6726c7"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue2-to-react-direction-pack/SKILL.md",
+      "size": 4649,
+      "sha256": "77a0b4ba44ac40c0ae2cb1f4c74b706429b72cbffe77bbe60864bc94475a65b5"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue2-to-vue3-direction-pack/SKILL.md",
+      "size": 4644,
+      "sha256": "ca2683f5c786637ac18bca143ed720683a418367b434a6d10d79a20c76cffca2"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue2-to-wechat-miniprogram-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "973ebc47b345b68b21ee00d41eb74755db0800033d52b5e77456eca321f4af25"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue3-to-arkui-direction-pack/SKILL.md",
+      "size": 4667,
+      "sha256": "f149801ff7aa87f76ee6aad07f85b94c7aa76c513d8d34e7940855a8546b2a12"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue3-to-flutter-direction-pack/SKILL.md",
+      "size": 4665,
+      "sha256": "e60545d815944de4a4e2584b61e8bbb002a880ff0df5b1001902b87029400726"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue3-to-react-direction-pack/SKILL.md",
+      "size": 4649,
+      "sha256": "cdc0cd0f40ff0f2a965536ff5d369f9f70ef1d0e746f060c76d3481a7ebb4bcc"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue3-to-vue2-direction-pack/SKILL.md",
+      "size": 4644,
+      "sha256": "3dd11f82d093d172da9ea071875470c751ba21cdf647ef0960c8b880c53a328c"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/vue3-to-wechat-miniprogram-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "7e974b017f139c401daabb99f25f7d8800ae5e0b095ec98abad72e37557576d4"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/wechat-miniprogram-to-arkui-direction-pack/SKILL.md",
+      "size": 4767,
+      "sha256": "720c8ed8d2ab7305e797c52f6a7de7e5fc7cd3eaaef110ad5ede202f515addf0"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/wechat-miniprogram-to-flutter-direction-pack/SKILL.md",
+      "size": 4765,
+      "sha256": "ec66954b7047c35384b440025132c03853c686dd0b3cf0374783ea6f83cfb595"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/wechat-miniprogram-to-react-direction-pack/SKILL.md",
+      "size": 4749,
+      "sha256": "670013e294decae3ab71ec9a11dc06080d87147b166961e3bf4465f648a29dbe"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/wechat-miniprogram-to-vue2-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "92b99bc41235a064d8acf4925a96475d05b1cda51d95ee83a65c3e648963d2f7"
+    },
+    {
+      "path": "batches/batch-18-frontend-direction-packs/skills/wechat-miniprogram-to-vue3-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "c7ec9c723142c186712333017797d1531a763906bea0ec2300ecef365d08c313"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/SKILL.md",
+      "size": 4196,
+      "sha256": "5c6a681488a08d60824bd0013a5ff5c86ccabed211162e915d0c0cd04c02bea7"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/catalog.yaml",
+      "size": 1752,
+      "sha256": "6bf3bd953f087d08e25a9d684b7919a361e01ab6e0d0be49932aeea9d0c0ba88"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/constraint-and-index-ir/SKILL.md",
+      "size": 4327,
+      "sha256": "c09d18f2f467b598ab98776efe156174942752dd92fa7dde40baaedd7fa5728f"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/database-effect-ir/SKILL.md",
+      "size": 4365,
+      "sha256": "7fbf2ccc9cf05f16e5da796ad8907f1cee7046bb32c6301a5b3e5bc0159fcea8"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/database-schema-ir/SKILL.md",
+      "size": 4317,
+      "sha256": "9f8b3bb880002c0377e7f5fb3edeb0e6bfe2d4e37c93758e7f06ce747686cc6b"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/database-security-ir/SKILL.md",
+      "size": 4324,
+      "sha256": "bd209628d69c5d602fbbc2a1a73e6d7d67ac2565a7b51e2fd065f4c37f4964e1"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/database-type-system/SKILL.md",
+      "size": 4399,
+      "sha256": "ccce08b3907b29395a036b02b1c301b6225b516164ebac6d2f92dae24dd62689"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/procedure-control-flow-ir/SKILL.md",
+      "size": 4406,
+      "sha256": "bab94f101dc436870a7b9e900f12f0f0c6407c8353d81011ba77f8d8c3e580c3"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/query-plan-ir/SKILL.md",
+      "size": 4337,
+      "sha256": "f06dc59691d06c380bee581ee2d6c9ceced30e306dec1a0fbea417067ae60d59"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/replication-and-cdc-ir/SKILL.md",
+      "size": 4307,
+      "sha256": "3ef249ce41bb702502a7695d620307211f072c7f5a01cc9551baebe106183550"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/sequence-identity-ir/SKILL.md",
+      "size": 4279,
+      "sha256": "d48179ed449cd7878d46373bc5766a2cc294cc08d3b848e3e375aba3925457c0"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/sql-expression-ir/SKILL.md",
+      "size": 4300,
+      "sha256": "2ad0e8bfac6514c9782f344decc66f491e47125bd91a8148d0e22c00aaefaafd"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/transaction-isolation-ir/SKILL.md",
+      "size": 4290,
+      "sha256": "478931fc4ab2a14efb571a78710539ea87c6521f39c58e35082bcf0dd5e94da9"
+    },
+    {
+      "path": "batches/batch-19-database-semantic-ir/skills/trigger-and-event-ir/SKILL.md",
+      "size": 4291,
+      "sha256": "1b4778edbba857a92c000dcbc846b9e9e30f5ac1290abc811abd780d16c312ef"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/SKILL.md",
+      "size": 4302,
+      "sha256": "aaf1f1d9fcf6d7274f009b752739c5b5dc82ead738a2f392991ffd8d8159e5ce"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/catalog.yaml",
+      "size": 1720,
+      "sha256": "5fd83d200ac56f9f3744a6d1bb9b66e27369dc5215e94fc653dd7b41936a4a4e"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/cutover-and-rollback-plan/SKILL.md",
+      "size": 4300,
+      "sha256": "b705f8a62f318fa1e08d20197aab04c2bd08143144b75ce299a7adb28139597b"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/data-checksum-validation/SKILL.md",
+      "size": 4241,
+      "sha256": "848759ead5e27adb3bcda7807e5fd4699f3290a74bd58b283b0328c6cd701e33"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/data-profile-and-quality-analysis/SKILL.md",
+      "size": 4382,
+      "sha256": "5e5fa39242e8b06b99a7810de17057b900f29bbf87505970aceaedf967d8711b"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/data-type-mapping/SKILL.md",
+      "size": 4305,
+      "sha256": "41e822479ee4c1f8384d6c1b5e86320bc2c370211c28196a3d58d679b679af6f"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/full-load-migration/SKILL.md",
+      "size": 4261,
+      "sha256": "46a436c7a00587c171c1e140b59f6dfd62f73ec0a47770271b316f465cedfa85"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/incremental-cdc-migration/SKILL.md",
+      "size": 4288,
+      "sha256": "d7dcfe14465b013c686feb80021ca2cedfc7ae7a773c832b73dd62fcde05e00e"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/index-and-partition-converter/SKILL.md",
+      "size": 4332,
+      "sha256": "6c05c698afdc6467c348b2a339b146caa4919d06807f5491d9a60de386ee4bf4"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/row-level-differential-validation/SKILL.md",
+      "size": 4292,
+      "sha256": "faa98f1bcd49222bd6e99861e64508dec5cc32a9c0db993e7342c176a6a08aa7"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/schema-inventory/SKILL.md",
+      "size": 4326,
+      "sha256": "022fda3ef4ac7a23a098e953395e39dacef14d147564acd7b5f677b0287de693"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/sequence-and-identity-converter/SKILL.md",
+      "size": 4321,
+      "sha256": "914ed8f679ca1fe951287b0804d6732ff714216b18a49e9b0bb22620cb3c511b"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/table-and-constraint-converter/SKILL.md",
+      "size": 4337,
+      "sha256": "77ee86f80f9e95de98bf471a6315ce783245ba62f58d6fe1b645c0dc69840d80"
+    },
+    {
+      "path": "batches/batch-20-database-schema-data-migration/skills/view-and-materialized-view-converter/SKILL.md",
+      "size": 4349,
+      "sha256": "abfdfa2babb1d3e5036a067d48221b149401311ee4d2595a16268e56d3b9c16f"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/SKILL.md",
+      "size": 4872,
+      "sha256": "e95f9aadcccdbf42cce16345529cdfaed3b8b56c0ac44606013e38543b36212a"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/catalog.yaml",
+      "size": 2062,
+      "sha256": "39baab7145dd934f931c67d4e672727e805a5db40cdd6dec1b960795cbeb2dab"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/cursor-semantics-converter/SKILL.md",
+      "size": 4341,
+      "sha256": "726290380d41b24b165b35fb1cc58aa09e63bd5ca23765f41cc1a4e78d119ad9"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/dynamic-sql-converter/SKILL.md",
+      "size": 4334,
+      "sha256": "4131f52f00a86284ecd14e8672c0147ab2499def75a0b5fa1a7192839f589de8"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/exception-handler-converter/SKILL.md",
+      "size": 4325,
+      "sha256": "102b73284a2bf21b99136238018638f590263303dd5bafc5c1e76568b9f29678"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/package-state-converter/SKILL.md",
+      "size": 4371,
+      "sha256": "616d679262de2f55a147de4d84a559e176a2e10618c4282185d135492b64d12e"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/procedure-cfg-builder/SKILL.md",
+      "size": 4349,
+      "sha256": "03f4405160d2d11c27869802544291a1782e3bf43e4d40cbfd9275ac37e3d49b"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/procedure-differential-test-generator/SKILL.md",
+      "size": 4423,
+      "sha256": "d304505254f59e60b884a5ca62f6d50ed008ed9b22a71ddc64cc1a7d42f2bd64"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/procedure-performance-validator/SKILL.md",
+      "size": 4378,
+      "sha256": "b1a8367e8959a31097e7d6aebe80b9ac886f11b3487f442417c82471b370527e"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/procedure-side-effect-analyzer/SKILL.md",
+      "size": 4420,
+      "sha256": "aa36a472ec76122bd3d23187ae72a7c334af2f700da01aff8cc322ee96ca1b39"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/procedure-symbolic-validator/SKILL.md",
+      "size": 4414,
+      "sha256": "9d51021f451cb4f31d502fdf8a43c7d02c172d3225c46eee0ffc0d35e5625382"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/scheduled-event-converter/SKILL.md",
+      "size": 4327,
+      "sha256": "b8d1363add24737eef115283f142ce1c9ee5b272db919ed4c93e916a1f031d63"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/stored-procedure-parser/SKILL.md",
+      "size": 4374,
+      "sha256": "70557dfd4cc08411dadc1c7ecb4378df92735e9fef3b8986b63c9e1b7f8249ba"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/temporary-object-converter/SKILL.md",
+      "size": 4323,
+      "sha256": "340a3d907661c3047a5a8dd151253d2042141713786c5f6a5ddd9f0b3b4d861b"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/transaction-boundary-converter/SKILL.md",
+      "size": 4361,
+      "sha256": "7de58110fe3752801d94625cc518e15ca500c2823793a4fa55030f08d5c62971"
+    },
+    {
+      "path": "batches/batch-21-stored-procedure-conversion/skills/trigger-semantics-converter/SKILL.md",
+      "size": 4322,
+      "sha256": "e118731cfe1efdc1838eb6afe8c2739e62a56faf9886b1446615e67bec616e3c"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/SKILL.md",
+      "size": 4971,
+      "sha256": "17e29fbcfe722c70ccd3ff72914ff715369ad4c2d2b4d2c3e45546a7380fa886"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/catalog.yaml",
+      "size": 2111,
+      "sha256": "b441a07212fea9c407c89e4876fee6771a797a6850a7c899e1ed3be9e4bdb005"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-advanced-queue/SKILL.md",
+      "size": 4315,
+      "sha256": "ca354ffb43a88d00b933c88e1939f1b2dc12c2357a10fe25736dee3dcd2c25ca"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-autonomous-transaction/SKILL.md",
+      "size": 4382,
+      "sha256": "4bfc95ffe5f6361b751009f0f1c16c30cded57062ddf00346dfcd6618e8e90ec"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-bulk-collect-forall/SKILL.md",
+      "size": 4307,
+      "sha256": "a78675778b3d7b6f8f4bd9a93f29fbf107b4dcb96a553ce194b604fc1758e03e"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-collection/SKILL.md",
+      "size": 4271,
+      "sha256": "9949ddf52716cafe6dead2db909a2dc0edd5d5e044d510b2f0d335720024ae09"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-database-link/SKILL.md",
+      "size": 4307,
+      "sha256": "94f5ccf5ed38b9e216a260a829fae1d898209c5ab6bcede55bc0e4e292084ecf"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-feature-migration-decision/SKILL.md",
+      "size": 4440,
+      "sha256": "d81651e78f015e26255874a272f73d726eda86c956ab97c6e9baf1dcdf3c76ef"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-fine-grained-access-control/SKILL.md",
+      "size": 4338,
+      "sha256": "62b25e8722c123be8e4cdc879540d226383c45048b22cd0451f2ce0dbf7ed077"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-flashback/SKILL.md",
+      "size": 4266,
+      "sha256": "506081045b686bde6840b1783efbfd58c52431b5cdeecd9e65316c727550cf73"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-hierarchical-query/SKILL.md",
+      "size": 4281,
+      "sha256": "a9f575494ad0a085750b6c51149b92d041ec05eb0daf1f0ae92717fa809a09e0"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-materialized-view/SKILL.md",
+      "size": 4321,
+      "sha256": "8431283603cdf858cce50ebaa085d45b5039f2ec0add68cf93fb99a6ea44f685"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-null-and-date-semantics/SKILL.md",
+      "size": 4348,
+      "sha256": "c8fc4306f9204dc55ae850195510e117834b6c43970c8da9f187f22e94763451"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-object-type/SKILL.md",
+      "size": 4249,
+      "sha256": "74e9c14c728df2d1ba8e6fbaeb39f7914767fe6719811130a6aa40f32d40950e"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-plsql-package-and-state/SKILL.md",
+      "size": 4387,
+      "sha256": "a979f11b70c2ae0e7e35ac0d0b861ca85c259a8cd3c7b8049428edf2213c070c"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-scheduler/SKILL.md",
+      "size": 4263,
+      "sha256": "956bdf27a803cbc271576eafa00e3be7b9d203282e396df2ae02b5ff57392f76"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-sequence/SKILL.md",
+      "size": 4240,
+      "sha256": "45764f8fb6d1906156064f1ac801ba909a3fcbb3c5025830868e86f7c141c6b4"
+    },
+    {
+      "path": "batches/batch-22-oracle-proprietary-pack/skills/oracle-synonym/SKILL.md",
+      "size": 4274,
+      "sha256": "ed6e80bdd625129e26791ed3c2c28c44edb804c20fee11c2f2028ddea2668a01"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/SKILL.md",
+      "size": 5167,
+      "sha256": "fe4f7e313de9e3b2f8505d713abe5874e41dbff4e305d0ce1fd4cfea736c9851"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/catalog.yaml",
+      "size": 2228,
+      "sha256": "daa660f934d8845810b030bd654fc676506bcd322d9af057fd5849f8760659a8"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-agent/SKILL.md",
+      "size": 4277,
+      "sha256": "24646c90d85896599d079c1cbe9c89515f988564b4c41cfa3c999878fa6c701f"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-always-encrypted/SKILL.md",
+      "size": 4335,
+      "sha256": "811410d3628e885ef9ea47412503bf3eedd6c6ce37c1b6da7603c2440e3feac2"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-cdc-and-change-tracking/SKILL.md",
+      "size": 4349,
+      "sha256": "40e6e65bed3a1aa356b9b3cb17448acc808d1d7940655c5db6354677a65e3325"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-clr-stored-procedure/SKILL.md",
+      "size": 4328,
+      "sha256": "4dbabcb94f47093a889ccf2671ef7fe3e3171baf21f5b818be842a2f67aea233"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-identity-and-sequence/SKILL.md",
+      "size": 4348,
+      "sha256": "5d28a1537c85b328a5ba377d31399c9ac5d2970ca1c6bc025c3d819e92552abf"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-indexed-view/SKILL.md",
+      "size": 4300,
+      "sha256": "83f6191b8ad982d99cb6dc3c965f2d0f8a29e8154833daffe3dc0986d30a54c2"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-linked-server/SKILL.md",
+      "size": 4329,
+      "sha256": "a83d9a3a7bae8e8aa3ab8a1ccc20cf9642d0b80c0aaf48db6ccf4ce5cba97b92"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-merge/SKILL.md",
+      "size": 4292,
+      "sha256": "e95fed2155f4618d0008190e23d6f2869c410e5b585e2d36ebacf3d51b39eb52"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-query-hint-and-plan/SKILL.md",
+      "size": 4380,
+      "sha256": "49d1c5e5e1f50e3a37102907db345fd84f452ee74597c6e2d01ce13d2f1dbb28"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-row-level-security/SKILL.md",
+      "size": 4309,
+      "sha256": "08df80325d5bae16b3b8612ef6285bc56d12ea04915ecf086cddcbfd10917a1b"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-service-broker/SKILL.md",
+      "size": 4313,
+      "sha256": "7ca80fc4db992f523b77ae5bd4c887583cde2343d89d0eaca86927f5d0ddedb8"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-ssis-dependency/SKILL.md",
+      "size": 4354,
+      "sha256": "132f45f4444ad423a774844058da2fa0d78949be17ebd60434b6f7cdb1430601"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-table-variable/SKILL.md",
+      "size": 4292,
+      "sha256": "b56d03dbe6a749caa741622ce4873da064c15d7bca73db9d545199fa29dd5e1e"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-temporal-table/SKILL.md",
+      "size": 4310,
+      "sha256": "5c2887dbf925c117f75476324435d7228d9ce523c433607febdf925d827c8051"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-temporary-table/SKILL.md",
+      "size": 4336,
+      "sha256": "539f0401c73b308eb53f6fe48fec688a0b50df097e2cf6a34cfab1d2839604c3"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-try-catch/SKILL.md",
+      "size": 4291,
+      "sha256": "020ebb13126bfdabc9185838002789495e2db11b540e578c7d5ac8e7c909ad60"
+    },
+    {
+      "path": "batches/batch-23-sqlserver-proprietary-pack/skills/sqlserver-tsql/SKILL.md",
+      "size": 4281,
+      "sha256": "06042ec714aa3d692196214db5a8caddbab0000d415154c8e4a33278c5ea4297"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/SKILL.md",
+      "size": 4645,
+      "sha256": "e93c315ead39a4f3c195301eac4fad9242c9286176a07cd31a7e9fc11935c586"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/catalog.yaml",
+      "size": 1936,
+      "sha256": "81a807608b3dd05ed244522c09b9d7b39938730d08006524295a511782641914"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-auto-increment/SKILL.md",
+      "size": 4290,
+      "sha256": "6ed046dd9f6445bbf2147ddfadb1ff907153118d4729620b9ec374c697cd5de1"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-character-set-and-collation/SKILL.md",
+      "size": 4382,
+      "sha256": "3d717775a59d9e4b275fe7144102ea3bedaa83b07ad5030a938cde216973fba6"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-enum-and-set/SKILL.md",
+      "size": 4280,
+      "sha256": "09fed3d01ecfed3f699a84f28fd6a77bdb3cab08a049b527981f86e89344b73d"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-event-scheduler/SKILL.md",
+      "size": 4280,
+      "sha256": "6c8e10e25a2d4779c18505655c8564c3da0d846efc11d39708c6a58ff432d524"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-generated-column/SKILL.md",
+      "size": 4273,
+      "sha256": "722c081e851908e86a8726d7e307c6af6b83065b700144c9e6803e74efc06e4f"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-implicit-type-conversion/SKILL.md",
+      "size": 4343,
+      "sha256": "498518b1e388e6a11be19611d955041b3c05074d019806ca3cda68fa44f3a7d6"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-innodb-transaction-behavior/SKILL.md",
+      "size": 4337,
+      "sha256": "335ffe89e2603c2f71630d3483f7cc193fb30df3ff6cae4c805e8a8612bec3d5"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-json/SKILL.md",
+      "size": 4222,
+      "sha256": "766d8d2fd30d3e8598f88bd8185596b1cb20d3c8e1ceea27f43e62a9655c830e"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-on-duplicate-key/SKILL.md",
+      "size": 4339,
+      "sha256": "2aca30db43928d51efc72920158b833bc6abb857463fcbaa35e40b43fdbbcecf"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-partition/SKILL.md",
+      "size": 4265,
+      "sha256": "cb8d759fc8695232f23c1ed4d03ad5faaabac52e12d4f7f39fe74aaa7eba59e5"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-replication-and-binlog/SKILL.md",
+      "size": 4333,
+      "sha256": "1bfaf771536212c4bb6f5d702bd41bad8c452b13a4a6776f1d359c2dbd1408a6"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-spatial/SKILL.md",
+      "size": 4231,
+      "sha256": "34bb05ed1b22e5cb51e4b25bdf0137107e719ffc56c6631397f0fda7338ad5b8"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-sql-mode/SKILL.md",
+      "size": 4269,
+      "sha256": "901d5b50e5d911d9380268c899005db876d202f8e4ada89f222ac03e9151491c"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-stored-procedure-and-function/SKILL.md",
+      "size": 4380,
+      "sha256": "5f957953b55066b386e26a8e6464622ea0b5db82143d7a92931063a5d4313451"
+    },
+    {
+      "path": "batches/batch-24-mysql-proprietary-pack/skills/mysql-trigger/SKILL.md",
+      "size": 4258,
+      "sha256": "97a5e2963cc6d12c963e676138d82be2796f56b8a6607ee4b60e3a73bb58fb30"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/SKILL.md",
+      "size": 5131,
+      "sha256": "ab7232b6ce8289439bbec854b0c3a0dea6a8573f3b3a10559ffe71a86971774d"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/catalog.yaml",
+      "size": 2161,
+      "sha256": "7f45931213dec92d845f37af1d14bc1fc8e6da735ec7d8df58aced79e4cc9536"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-array-range-composite/SKILL.md",
+      "size": 4354,
+      "sha256": "dcaa4db7ccf25ef52ee4d2c293d731a530f7b107136d2e6a9202b82ba1723c71"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-custom-operator-and-type/SKILL.md",
+      "size": 4384,
+      "sha256": "6abb7636462c067b6c8c13e5a0c8fa5f848504b6ff12b8cab81abeba01f54d2c"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-event-trigger/SKILL.md",
+      "size": 4311,
+      "sha256": "9285f52bf4c436e8da752ad80c26354983c3aef9ab2953820ec45922cf5c5620"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-extension/SKILL.md",
+      "size": 4357,
+      "sha256": "2b8bfc46cf6274d69f78b36ae6becd6a17c2fbd65294b7a1186f28e80952fc10"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-foreign-data-wrapper/SKILL.md",
+      "size": 4364,
+      "sha256": "d75aa5342136f7f364cae1405b5d1c8554b2e5cae5cbdd312794ffebdfaa2c16"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-jsonb/SKILL.md",
+      "size": 4301,
+      "sha256": "31f10e7c8f5e405025845e6aed74f7d47cc9ba2ea503462467637637a8ad74fb"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-listen-notify/SKILL.md",
+      "size": 4347,
+      "sha256": "76a71b258d62474d8c7806bcb26285afabfc69cb06a3e83e9e0e1051b49ff6cf"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-logical-decoding/SKILL.md",
+      "size": 4338,
+      "sha256": "55068b2f96660d13298e44acdcbdd0b07a095bf68c2053c0905d0803eeb05baa"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-logical-replication/SKILL.md",
+      "size": 4341,
+      "sha256": "7eb432cee74a25cb0a5fad02dfe4d505929b0af890962443fcb13a2d5fd37837"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-materialized-view/SKILL.md",
+      "size": 4331,
+      "sha256": "394e2733560a5928c6f001c0f1fc50073cd838f93914cefb519d9aeee3299a1a"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-on-conflict/SKILL.md",
+      "size": 4295,
+      "sha256": "a18f63b723086e5c5934ff9e1ec579adf413440c510784387a3544d418812743"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-partial-expression-index/SKILL.md",
+      "size": 4363,
+      "sha256": "db15177007f6d6c86c2e2d377ed56f1156f7aa0612c3091b1e91a451902de1be"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-plpgsql/SKILL.md",
+      "size": 4317,
+      "sha256": "f140f554dc59974c6edec8cb6e851bb615f46b3eeb328872463a785ca2ffba96"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-returning/SKILL.md",
+      "size": 4279,
+      "sha256": "7fd554fe0d8ae2afbbf36170691a22cf3144a9ed2c6db6df14a4b021ff9fa8a3"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-row-level-security/SKILL.md",
+      "size": 4330,
+      "sha256": "621b8a6e0b3768a965ad1e39c6d7cf8a1c1285bfb925293a6060d10b7ae06e2c"
+    },
+    {
+      "path": "batches/batch-25-postgresql-proprietary-pack/skills/postgresql-sequence-and-identity/SKILL.md",
+      "size": 4357,
+      "sha256": "fe9ae142cffdbc9d1969d8fbbc4d1431e0e4df045a6b9195fbc9cffa61db0bb3"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/SKILL.md",
+      "size": 5914,
+      "sha256": "ba1c9f1dfbe6115e1372cb15231a38789efe3fa159caecacda00b5b97931dcf5"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/catalog.yaml",
+      "size": 2842,
+      "sha256": "166a2ffa1c200cfdb833e8c1a3df1a0089d4da07fa5ad7de78c218219c1f3d9b"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/mysql-to-oracle-database-direction-pack/SKILL.md",
+      "size": 4717,
+      "sha256": "f4c0df446551560d79b9208d3e8fa967957a9b73d59b5cb50a40c9b7dc86b9f1"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/mysql-to-postgresql-database-direction-pack/SKILL.md",
+      "size": 4749,
+      "sha256": "b5184413af774ff2255dcc73043cfd2745a6da308f31d2e810a31bb46026d404"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/mysql-to-sqlserver-database-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "e01ab78b12fef4cb922a93cb4e372bd1b4953357c1f066d0a4d962d6f65c426f"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/oracle-to-mysql-database-direction-pack/SKILL.md",
+      "size": 4717,
+      "sha256": "b529050e525490b9c9c88bc1e4a917f0cd905cb089b643cd04ef02f14e7093b6"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/oracle-to-postgresql-database-direction-pack/SKILL.md",
+      "size": 4757,
+      "sha256": "755bdc4f195042f464d0c3ae30f69a83f4c195742eb2faccd749243b8ce42a44"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/oracle-to-sqlserver-database-direction-pack/SKILL.md",
+      "size": 4752,
+      "sha256": "d17d4c3d741266c1d7387115393d08745ace58281468a2b395642837fe7caf9d"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/postgresql-to-mysql-database-direction-pack/SKILL.md",
+      "size": 4749,
+      "sha256": "17c19301da2bba8745f85dde80e11b0c98eef1ba20465cbad76b5a8c3bdecacd"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/postgresql-to-oracle-database-direction-pack/SKILL.md",
+      "size": 4757,
+      "sha256": "7082eed1966b05cf6edbbb0896e4de188d1040661c46ad73e5b8ab53bff45a99"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/postgresql-to-sqlserver-database-direction-pack/SKILL.md",
+      "size": 4784,
+      "sha256": "a660896cbe238324665e847bb7ed9b64a9091a2b5a9df24ae4cee746afdb55ac"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/sqlserver-to-mysql-database-direction-pack/SKILL.md",
+      "size": 4744,
+      "sha256": "3bc3cc8c5dfc70da0ab5b5e3552f99f763cef93a4ef341331c12a879ae956c6b"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/sqlserver-to-oracle-database-direction-pack/SKILL.md",
+      "size": 4752,
+      "sha256": "810c5704d20cfed7491b4a484c9afc231ffca726f5cf378e88819785998084ca"
+    },
+    {
+      "path": "batches/batch-26-database-direction-packs/skills/sqlserver-to-postgresql-database-direction-pack/SKILL.md",
+      "size": 4784,
+      "sha256": "86d67cbc3dd421dce75b6027170ae2e6c30c7154fc091a5c73b0462547f1227a"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/SKILL.md",
+      "size": 4415,
+      "sha256": "4956c3a3601cd25abc7985b0ef5fc4246c28e6f17b5f477305b47f0b8645300a"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/catalog.yaml",
+      "size": 1807,
+      "sha256": "4a310a332b594ad5f87a9a5993c9ed92a9cd0ffed35bc7458849bc81e6446dc8"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/application-database-dual-validation/SKILL.md",
+      "size": 4457,
+      "sha256": "1b53cb4f65f4e52e60cdd3743b97a9b59e51e7eb29526e34f7c6b6550555961c"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/cross-layer-performance-tuning/SKILL.md",
+      "size": 4370,
+      "sha256": "91145d83f9a339c19e93b951cf9eb1484c729158571cd354440800eff466414c"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/database-error-code-mapping/SKILL.md",
+      "size": 4391,
+      "sha256": "739906fae0179778231ca467f5fcd91ded9419b835b80606335b837499e5eeb6"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/embedded-sql-discovery/SKILL.md",
+      "size": 4332,
+      "sha256": "a20e616bd907801bafeea4356e3e33263f37b970eea8a43ffb9323a5488ceb81"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/jdbc-ado-odbc-driver-migration/SKILL.md",
+      "size": 4352,
+      "sha256": "9fc886256cdf0b4f4da856fdd939dce51e02a812811d925ac002c84e1c788859"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/native-query-rewriter/SKILL.md",
+      "size": 4322,
+      "sha256": "07a3ff7a4ae47f8e5b78f274c6ddc90e70edca48076e93cdbbb72e362a9116f1"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/orm-dialect-migration/SKILL.md",
+      "size": 4304,
+      "sha256": "be70b599848ef10f4c2dcec9b87442bf43054344a6fa78358cde54e9a4d666c1"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/pagination-and-locking-rewriter/SKILL.md",
+      "size": 4378,
+      "sha256": "bf8bb73b4a4061b482302cd786ce56d334921dc1396809a51c97a50343f28335"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/query-builder-migration/SKILL.md",
+      "size": 4281,
+      "sha256": "7ae66f2ed0d80c7e176763a1fd13aa6b68ebc4debf169a1d127619637c014318"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/query-plan-regression-analysis/SKILL.md",
+      "size": 4394,
+      "sha256": "c1f901591ecec941d187994b4d1c542ec3790ab1f67470c841212ec1d7e8bc5e"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/stored-procedure-call-rewriter/SKILL.md",
+      "size": 4412,
+      "sha256": "8ba19d728428c8d9cf26af6999dd0cfe6ddf5302fe801f2fae120ba5732b4a0d"
+    },
+    {
+      "path": "batches/batch-27-application-database-joint-migration/skills/transaction-api-rewriter/SKILL.md",
+      "size": 4298,
+      "sha256": "3b3900211e271ede34409524fe9ca0185340dfb6aea27cdf0d080dd410c60139"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/SKILL.md",
+      "size": 3425,
+      "sha256": "40528aaf09bb37d43fedb7f93c7e1e6c8432de865415f69c8827aad7f2c40029"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/catalog.yaml",
+      "size": 1285,
+      "sha256": "8ef33f205f5f000b5b1611dfd532ecd6bfbd9e25e86e49e8932063f73dc4a93e"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/assertion-quality-analyzer/SKILL.md",
+      "size": 4271,
+      "sha256": "b4c7ded193304c7e42e1be2dcec0853957bfab4154e9e506b27ca4e3d81d55cf"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/missing-test-gap-analysis/SKILL.md",
+      "size": 4285,
+      "sha256": "a47371e3b32aad6b07a24cea60e455ad5f17d0af5defb775354ff63113dfce8d"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/skipped-and-flaky-test-detector/SKILL.md",
+      "size": 4278,
+      "sha256": "fa25cd094fa10261aae70beb79e849a3e14b5db9a9a2ccdab5392cec4ff4b31b"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/source-test-inventory/SKILL.md",
+      "size": 4219,
+      "sha256": "d16387c9f98fdd63abb471ae4eac9f2edf60f7ed7a291c53e8c624ca76fd84bf"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/test-coverage-normalizer/SKILL.md",
+      "size": 4259,
+      "sha256": "fa74f5635284370550d38dca813aaac020aafc736d4cf1a51f8118be97f1fc70"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/test-migration-feasibility/SKILL.md",
+      "size": 4227,
+      "sha256": "e40b33bba5a1cad7dae1143a600cd88e71ac347b606651a79d6288d4ddbc4c47"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/test-mutation-strength-assessment/SKILL.md",
+      "size": 4270,
+      "sha256": "0303df665a654deae11630e7f300277d67fe162f275e51014473dd8f83db9c78"
+    },
+    {
+      "path": "batches/batch-28-source-test-assessment/skills/test-oracle-classifier/SKILL.md",
+      "size": 4351,
+      "sha256": "dc735a32a858ee32241ef6dfca0b2ee13724680611f7e261d961d504963e37c0"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/SKILL.md",
+      "size": 4723,
+      "sha256": "db141784a4fa810da0304fa2a768d4076f52091b73a42eec33f87a32129dc129"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/catalog.yaml",
+      "size": 1994,
+      "sha256": "ff593828ec6aa2922a45a07f60fd9cd2d4b5a058be78ef7069c76e3f5fa28e4e"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/business-invariant-test-generator/SKILL.md",
+      "size": 4298,
+      "sha256": "4e1823f496a6eb6fe7cccc0ac4fa5d4a0c1d6faa15d72cbc7172b07c47106ec6"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/concurrency-test-generator/SKILL.md",
+      "size": 4245,
+      "sha256": "97fd2fba4b7e9d2458cc86dd7f23ee7826b7e5b1878e4ac3d2753af37a654c5a"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/controller-route-test-generator/SKILL.md",
+      "size": 4261,
+      "sha256": "9ce36a09096804b90d335c9ef1f30ddc623458ab192d549f565151fe5c778ef5"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/database-state-test-generator/SKILL.md",
+      "size": 4335,
+      "sha256": "d16c69f9d9c1602e8cce625a58cc06a6aacb9723a01879cb28f320992cf4b1ac"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/dto-validation-test-generator/SKILL.md",
+      "size": 4263,
+      "sha256": "7993e077fc4aa30273488ed67077ff5d24c041a64e0d8aa1e941a84086e172d8"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/fuzz-test-generator/SKILL.md",
+      "size": 4216,
+      "sha256": "65c25e65c323188779d1c92d8b939e73a15471b7fc7b8a658970e258095da13d"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/graphql-test-generator/SKILL.md",
+      "size": 4216,
+      "sha256": "b505abbe62e15d08c65d4f38a51c92efe5e7c91a069c253fd9688959212b80ca"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/mutation-test-generator/SKILL.md",
+      "size": 4233,
+      "sha256": "70550f087d737ce1a71f1b74b8eba2c38812402c07b1c1b4c6c53e6e9c1fb11c"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/openapi-contract-test-generator/SKILL.md",
+      "size": 4279,
+      "sha256": "cb1a63a7af5083a26da2e0557e8c54b6aea59693ca82494191d0863f3e986352"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/production-trace-test-generator/SKILL.md",
+      "size": 4264,
+      "sha256": "23c8efbb20018ca10995b07605a07f4831d9e027f626a0f03d7530f8f532336c"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/property-test-generator/SKILL.md",
+      "size": 4206,
+      "sha256": "95888f11726987f52d8490e884ed10eda9a331a71d94fabbd7f7c4c39866285b"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/protobuf-api-test-generator/SKILL.md",
+      "size": 4229,
+      "sha256": "2a20c7a259b554e7f47321407a497f38c1e50e6f4aeebb0d1baa32017c3a01d7"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/side-effect-test-generator/SKILL.md",
+      "size": 4275,
+      "sha256": "ca8cad943bdfa8cd7af26cf00cfb6ff039d8bb2fc59dcfcdf05bc12c964bac52"
+    },
+    {
+      "path": "batches/batch-29-automatic-test-generation/skills/user-journey-test-generator/SKILL.md",
+      "size": 4226,
+      "sha256": "684666fc07f17f88a4bbae89c44bf3022c6358e3444c670d7ced96d794ee55f7"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/SKILL.md",
+      "size": 4393,
+      "sha256": "c175375ad9d5d0b538276f83beed70927fb3233945a57392cc33ee7cc45c1fc7"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/catalog.yaml",
+      "size": 1808,
+      "sha256": "feed3a7d6a10141fea1d0db2774f92c662c84e4de1623aa2383ddc0be34d3d41"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/clock-random-uuid-controller/SKILL.md",
+      "size": 4278,
+      "sha256": "8499d10af417ccd39b8daea14ff57a08a84b802ab088489074abca2b17a1f9c9"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/database-state-comparator/SKILL.md",
+      "size": 4299,
+      "sha256": "bc70f465f8f4a1f30236e2dc82963c76e0675f7b337c2b4f04c24decab315ef2"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/external-call-comparator/SKILL.md",
+      "size": 4264,
+      "sha256": "31c11bf886e841ea4ca74398b0eddd2fe72025b66251a88352ea1f6766784921"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/http-differential-comparator/SKILL.md",
+      "size": 4242,
+      "sha256": "5b9d09e61328e1bb424992072c7d6c8873e4da2517ec2f7985f2511b6a2e350f"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/input-and-environment-synchronizer/SKILL.md",
+      "size": 4323,
+      "sha256": "edb70623ae814c796697cf802f6252994f46aa8578e769f7cc3f3d784651fa24"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/message-side-effect-comparator/SKILL.md",
+      "size": 4264,
+      "sha256": "26f26ac678031cab195193e71b5b43192d4453d9ee8d67e54d7b453500e158dc"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/navigation-and-storage-comparator/SKILL.md",
+      "size": 4264,
+      "sha256": "941407871045e0fd112f49f60bed1f02beb411b19b3d6fd64c6c386a5844b682"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/performance-differential-comparator/SKILL.md",
+      "size": 4280,
+      "sha256": "0e785b77380422ae7b96744c081889874557ed9a8055f9db83e91efd85b664a7"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/source-target-dual-runner/SKILL.md",
+      "size": 4242,
+      "sha256": "f1ed7ddd93709fb90cb1ab0ce1b42447168263611b93e35978c0b2b6daf580ed"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/trace-graph-comparator/SKILL.md",
+      "size": 4173,
+      "sha256": "a17928b6e9bc52ee8c700c2b71c7e4dab249dd028b19248d6435f23dd12df982"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/ui-semantic-tree-comparator/SKILL.md",
+      "size": 4292,
+      "sha256": "77b4f0f6150b003da11f5511b152c60e648e7ab671952f835d98ddee8e74bf92"
+    },
+    {
+      "path": "batches/batch-30-dual-run-differential/skills/visual-differential-comparator/SKILL.md",
+      "size": 4313,
+      "sha256": "8c7064950f88815ba8002481c6fd5808de6c5c68ec8456c5547057137fe1754d"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/SKILL.md",
+      "size": 4453,
+      "sha256": "6a9d6845bb3cf4173c658d4c368543442f680886975f0498ec2fd25b0dd94f13"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/catalog.yaml",
+      "size": 1854,
+      "sha256": "82837351f0e6f78b60af2172e462bcd91b795ebc43b3b6e30fb82e8c9ee388c2"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/behavior-mismatch-classifier/SKILL.md",
+      "size": 4341,
+      "sha256": "0e0b02b2173abdeb74d235b291420dfa5176d6577e3c135fe43e1ed59e260e4b"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/counterexample-guided-repair/SKILL.md",
+      "size": 4308,
+      "sha256": "2a7fcc82a001c16501d72238a7ea47e0cc53764443100b74d096d38eb042e84a"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/manual-redesign-decision/SKILL.md",
+      "size": 4218,
+      "sha256": "00e322cf2f817175e6409a334aaa057f42d4ebbee2bf633d039a0127ffbb0e4f"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/minimal-counterexample-generator/SKILL.md",
+      "size": 4292,
+      "sha256": "5c1a69aa68f1294f4440f8c591673873a6e4f0a0823e9c7d4ccb9b4687d785b4"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/missing-feature-detector/SKILL.md",
+      "size": 4230,
+      "sha256": "73aa008e4ec64e63ae174fde09a13539b4b2c0c676e95e7585ca73002a3ab370"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/patch-existing-decision/SKILL.md",
+      "size": 4201,
+      "sha256": "f562fbba2333da36bf7da22781a4b48518c2f369bfd578c86ae1fa84398f5b72"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/regenerate-module-decision/SKILL.md",
+      "size": 4261,
+      "sha256": "9b6a8e270e810e6f4a941e72b42838369308513684c6a0c59970e4a4c5545f41"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/repair-evidence-generator/SKILL.md",
+      "size": 4248,
+      "sha256": "2658be7e7b90a5beb48abaccec204c4f7016befa66a6c09d7195909a52c7f027"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/repair-regression-validator/SKILL.md",
+      "size": 4276,
+      "sha256": "5427ca40b7e1da26246db99e0b4660f51b3c76228f9f40218bebcadfb636297f"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/retranslate-project-decision/SKILL.md",
+      "size": 4253,
+      "sha256": "bf3844c933b6cedb4dff52fddf52e2bf462b11484a3fad65a54a26e095459058"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/source-target-feature-matrix/SKILL.md",
+      "size": 4332,
+      "sha256": "83529ecabf1cd6f9c87a3c8e9996cb4f8b4828b630368d1736962c1ee7b52f23"
+    },
+    {
+      "path": "batches/batch-31-failed-conversion-repair/skills/suspected-code-slice-locator/SKILL.md",
+      "size": 4242,
+      "sha256": "20a35e5f5ef52454494dff8e5b2b2bb8e485913a945538b2b3d13cdbef2f96cb"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/SKILL.md",
+      "size": 4354,
+      "sha256": "a2c5b14592aa7f527c767716eac5eb568b1660dad5debe21f3ee457f4a07246b"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/catalog.yaml",
+      "size": 1825,
+      "sha256": "6638bd4ac659397605bba0236d69f6731e3cbc209edf69f0f890c42677ec48e3"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/coverage-guided-fuzzing/SKILL.md",
+      "size": 4244,
+      "sha256": "61396e6061b385a316a01b02a0f553d5e5361e9cfa622965efe388c1d85ec940"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/crash-point-exploration/SKILL.md",
+      "size": 4244,
+      "sha256": "00060181d4125e0fbc439e8f7179a91758ac7ab7d46d67f75981cac60cc1a964"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/deterministic-record-replay/SKILL.md",
+      "size": 4282,
+      "sha256": "9f7ce25f93aeeeeb4a73729b2e2c771473f79cfefef160f75ead286e8921db0d"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/differential-fuzzing/SKILL.md",
+      "size": 4238,
+      "sha256": "99f26d4d51e71b6df99ca95b9c1415ea879b7340e75df233823508a58d9e3e51"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/fault-injection/SKILL.md",
+      "size": 4195,
+      "sha256": "970f33f6b18dfd7d37fc87b34def3705f44d74d99498f2db79b413264a692dd8"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/language-pair-mutation-testing/SKILL.md",
+      "size": 4318,
+      "sha256": "2a6d4af9ec49d34f0c5411401c7092efbfeccc8af3249ab5b9234dd800b54410"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/metamorphic-testing/SKILL.md",
+      "size": 4221,
+      "sha256": "ae288691f617c17ea9517f8d4625eb6d0d5425b4ba29ee5aeea0b19a0bc6ded3"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/performance-stress-validation/SKILL.md",
+      "size": 4283,
+      "sha256": "409b73040ec76d80d80bf89f3bb3dde6f7f37b3d865dc33f5af1c2f518d4e9d6"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/resource-leak-validation/SKILL.md",
+      "size": 4276,
+      "sha256": "7d623caa73fc6729178ca11ae565876cf22960e8ac0245bcfbb0638d53d5feb0"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/retry-idempotency-validation/SKILL.md",
+      "size": 4260,
+      "sha256": "83847f0333ddb094b1148bba758398a1f3a3eee3102564f44dce066ccfc1e92f"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/systematic-concurrency-exploration/SKILL.md",
+      "size": 4329,
+      "sha256": "5b51cdea4083e35dbc8a59fcb959a4f3d0789965e6cd5ca3a25b5d4b17d179c8"
+    },
+    {
+      "path": "batches/batch-32-advanced-dynamic-validation/skills/transaction-atomicity-validation/SKILL.md",
+      "size": 4298,
+      "sha256": "5f90d065f93ee9a0ceed04cfbe6ee73bfc5453b6ee7a9455aa4897ae17360886"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/SKILL.md",
+      "size": 3971,
+      "sha256": "f37fec80866ad89a97ffbbdb5ba512411c5386f20537fa4c0bd3392c60d8a86d"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/catalog.yaml",
+      "size": 1501,
+      "sha256": "01f8a5e1e64ff7e31c7b9550a60cdfa0b8a5b2497ce45037c2bab517ac9875d7"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/effect-preservation-obligation/SKILL.md",
+      "size": 4269,
+      "sha256": "89823a731341546135115a9ffcf996ac6c53b77c6fab97e08f0f3ea55fe574c9"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/nullability-preservation-obligation/SKILL.md",
+      "size": 4324,
+      "sha256": "aaefcc302df2b84f3d86e742ae7741f89fb2f790ea3c806d25f9a8cc38812864"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/numeric-semantics-obligation/SKILL.md",
+      "size": 4259,
+      "sha256": "7e85d984fae16a71786a71c0171b084ea5a86a9dc9803ffdeb89189259f10a19"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/permission-non-expansion-obligation/SKILL.md",
+      "size": 4282,
+      "sha256": "0eeaa560e377b34b7cdbe71c99ac68e4be4521f09ad99e5f8ca7e9357b629e57"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/pure-function-equivalence-obligation/SKILL.md",
+      "size": 4305,
+      "sha256": "37e9274be60c5d9b9d2fbddde106f04df8dda938bc98523a536f54f9405860ab"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/serializer-roundtrip-obligation/SKILL.md",
+      "size": 4280,
+      "sha256": "83e23465d29213ca515ba0bbcbe4274de697b149bffe8f7c93233a5e6aab72e6"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/state-refinement-obligation/SKILL.md",
+      "size": 4239,
+      "sha256": "dcbe20872efc742cacfa5832331d6d60f5f8e94d91c26d36a6c78dd1019d8924"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/trace-refinement-obligation/SKILL.md",
+      "size": 4248,
+      "sha256": "3c56adf40d0de5668ef2d052f788a75dcea85b84d931073571cc85e7e42dd0f2"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/transaction-invariant-obligation/SKILL.md",
+      "size": 4285,
+      "sha256": "0ac75823700af6cfe0dc4ec8e9edb8ee7d1b7f4398ff51c7cf8d048692e962bc"
+    },
+    {
+      "path": "batches/batch-33-proof-obligations/skills/type-preservation-obligation/SKILL.md",
+      "size": 4292,
+      "sha256": "6e58037729028386050c091d4bd54a906569b2b2481941bd82f05ed62663b4a2"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/SKILL.md",
+      "size": 3716,
+      "sha256": "439cfc07b97ed64117b7e004a1263714c98c1982d76a04490172b17af70ff5ca"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/catalog.yaml",
+      "size": 1400,
+      "sha256": "7b8c68ec1a8d833c7bee427dc51045e17d91b6e575b8aa44468d94aad3df5028"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/lean-kernel-certificate/SKILL.md",
+      "size": 4253,
+      "sha256": "263be37a8be29e75e2c559865c84b60db44e68b5dd9c2520798c86cfd93c9fb0"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/lean-theorem-generator/SKILL.md",
+      "size": 4269,
+      "sha256": "76f69799df4e9af43cebb57f129aa6bd6492711fe46b0b78887932c52135d4a1"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/leanstral-proof-repair/SKILL.md",
+      "size": 4233,
+      "sha256": "05ee2a54b72bd94e3208d05e40d325360fe01a0d1e81014940d10c180ccbfba5"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/leanstral-proof-synthesis/SKILL.md",
+      "size": 4206,
+      "sha256": "f683fb4739a7c4d3497bf97d91746ab97f6b2d955d2bdb444a7e877c08458e3f"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/lemma-library-retrieval/SKILL.md",
+      "size": 4190,
+      "sha256": "d26cad16b8f79db032af70fa491a21300c5e96d6ad8c0912af1f160e46402f69"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/proof-build-runner/SKILL.md",
+      "size": 4207,
+      "sha256": "542f61b72a9db20ce6b7b75d6711c1ad04c8c2da4f159383aee5450d1d3b2fb3"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/proof-regression-ci/SKILL.md",
+      "size": 4206,
+      "sha256": "2382b858497e5668698ace916b5bf7554148470c55c8e011e8cdadd822d30d6c"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/semantic-core-lean-model/SKILL.md",
+      "size": 4282,
+      "sha256": "9a0486da54fe382b0b9de9ab2c2330c7ebd049bf240ed766f28b70be0bf27d87"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/sorry-and-axiom-detector/SKILL.md",
+      "size": 4209,
+      "sha256": "30e072e5b3741539c4017e72e9babf67325176a2438aaf091fe2542a95cc2793"
+    },
+    {
+      "path": "batches/batch-34-leanstral-lean-proof/skills/unproved-obligation-ledger/SKILL.md",
+      "size": 4259,
+      "sha256": "6168b8b52235782af7648ca1f4df6cb83880f49f971c085ffde91e5718cda717"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/SKILL.md",
+      "size": 3838,
+      "sha256": "e57a96d7d3ef209bc4504f2b4764895f99a42a0e9af8c59dd89063f2ec0906c3"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/catalog.yaml",
+      "size": 1452,
+      "sha256": "5d2897a8cd42455abb2d481b9bd3d3ddd938151b8b8b66d005ffc9631591dfc1"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/abstract-interpretation/SKILL.md",
+      "size": 4230,
+      "sha256": "6b513dc9e4856378ba3c73ad0530c87b899f8d4e783e3e6714d0391cd81d0cc3"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/alloy-architecture-validator/SKILL.md",
+      "size": 4237,
+      "sha256": "5496dd960b8b82001a373c14a0bd9e5fb926bfa46c7907048101a7d3d52c8efd"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/concolic-differential-execution/SKILL.md",
+      "size": 4228,
+      "sha256": "166f8240a44833cbdd8e5eda0ddca8209ebb2bb4db279eafb85074d12cacca72"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/formal-runtime-evidence-merger/SKILL.md",
+      "size": 4303,
+      "sha256": "08105067e44ed7c24b95358dc13eb5c0f189487e67993bc469537c0d83355cb4"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/model-checking-runner/SKILL.md",
+      "size": 4226,
+      "sha256": "2705847e45aca01ce39961f5271c47fdbfa7399528a11e96a0fa7b55573b0948"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/proof-counterexample-to-test/SKILL.md",
+      "size": 4285,
+      "sha256": "26c0b6f07ab2e4ea31f4cbc0de4d362ce2bc9b2b2c756fda6f7184d0ae531789"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/relational-verification/SKILL.md",
+      "size": 4194,
+      "sha256": "0397299975fd5f8ba2a1641c8fc351a038c31cfee692f0a84a684319425038c2"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/smt-translation-validator/SKILL.md",
+      "size": 4252,
+      "sha256": "093a73f7e9323bfa0f961ac380f4629f636b86e5f95dc7573c278af98107d599"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/symbolic-execution/SKILL.md",
+      "size": 4229,
+      "sha256": "6defd300219213f349fa9aa0e3a417b6e9c5364de54349bb22e615a6246adbd6"
+    },
+    {
+      "path": "batches/batch-35-formal-analysis-toolchain/skills/tla-state-machine-generator/SKILL.md",
+      "size": 4226,
+      "sha256": "2ae78423741d95e2bb022f766eba1ae4c351d5b9438ce6d92c243e779840ed7e"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/SKILL.md",
+      "size": 3851,
+      "sha256": "d54290abd572db7a73ff697ba1bb0466b57bc18cf830a4ad77f48fab92f2dce8"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/catalog.yaml",
+      "size": 1514,
+      "sha256": "b2aa3af6814fda2f8d560ba74d14a1da9a1daeafbc5e16008371c603c68584e3"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/byok-provider-adapter/SKILL.md",
+      "size": 4181,
+      "sha256": "260ec65f479a33fb6e8e4b51c90ea496946d4f55428c76fc8550c9f2d976c5dc"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/cost-aware-model-routing/SKILL.md",
+      "size": 4209,
+      "sha256": "4f3cec6612ad17425a48887ab39d57bcc2b2249d3ba269b3e25ed5292d6a8e85"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/cost-per-accepted-module/SKILL.md",
+      "size": 4173,
+      "sha256": "af67ee649a7b24f24961bb000b326c118579424f63316773fc7110d910dfc768"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/heterogeneous-model-review/SKILL.md",
+      "size": 4210,
+      "sha256": "0e969aad6760f9d60554d13847e21d85b98ce83bacded32471e9ea4614e1aa37"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/language-pair-model-ranking/SKILL.md",
+      "size": 4169,
+      "sha256": "b5cccf20556afd14e2fa9d2d4d8b78d978c8503282e29031440e9387aa89ffa5"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/model-capability-registry/SKILL.md",
+      "size": 4231,
+      "sha256": "9cd8e5c2448c05867a5718cd046bd8ffdafd58f766efccf8feea082f3a41547d"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/model-output-calibration/SKILL.md",
+      "size": 4173,
+      "sha256": "5f0dda5b35600b0966f7024a346aa626e93e0d9225ae00791da5ec7765024714"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/private-model-routing/SKILL.md",
+      "size": 4176,
+      "sha256": "fcce85f620fa08e2acc264b612c79f6b53b0c0d668cdaa0347de309a5c6ce5b4"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/stronger-model-escalation/SKILL.md",
+      "size": 4214,
+      "sha256": "cc949c366ba7943ea2921a6aaba356d09377e6d02b35df0fa5b953ea5faab109"
+    },
+    {
+      "path": "batches/batch-36-model-routing-review/skills/task-risk-scoring/SKILL.md",
+      "size": 4174,
+      "sha256": "c1ddd7f24e62338eac3fd76914cdd004ea33c86da11e2766699cc48a7a84b983"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/SKILL.md",
+      "size": 4193,
+      "sha256": "0321e875f8fafb0e152502eddb6d698bab1accf8c327603016e03eca7c2e7363"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/catalog.yaml",
+      "size": 1736,
+      "sha256": "92c92ff9aa8e3955e9d4827ddc25286459466f29c547d292d012c8a129a413bb"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/build-repair-agent/SKILL.md",
+      "size": 4134,
+      "sha256": "e75dc9c4aace45e338440ca191409d2d54b3c94ca9ae8774764fe96c16b528a2"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/difference-diagnosis-agent/SKILL.md",
+      "size": 4168,
+      "sha256": "2598b75f58fbfae10d9c129733fe977326a4dd15b4d8205583616d5f55afa4de"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/human-approval-gate/SKILL.md",
+      "size": 4196,
+      "sha256": "c2587a294f97f5248314eba21805ffca991cf23039dea3f28b1adbaf0bab3dbe"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/migration-task-decomposer/SKILL.md",
+      "size": 4163,
+      "sha256": "d715f7ce7829e369d80073786be05c778530bf45707a0c573b2ff063211d69ff"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/multi-agent-worktree-manager/SKILL.md",
+      "size": 4210,
+      "sha256": "f960bf68bbb90b3a92e6f6f8ec27068bc80d2bee0825b33ca949131f526b186f"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/pause-resume-cancel/SKILL.md",
+      "size": 4160,
+      "sha256": "9f1054e44c71b312eab44a5a36c545f7262a56896d48416514c26e1fc1a5ddbc"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/proof-agent/SKILL.md",
+      "size": 4129,
+      "sha256": "d3b839ba083a3f42475d87008b8fd09b45f1b1c26124ab62bcaeddd737a74f24"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/retry-and-idempotency/SKILL.md",
+      "size": 4182,
+      "sha256": "d589645ad69c45224b8768599d837f2e0d297fd6ecc9f1a7961288cade09239b"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/security-review-agent/SKILL.md",
+      "size": 4161,
+      "sha256": "de93eb79c3f89ce604a99bc21a0e93453ceff3d2312fd306139912620543006e"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/semantic-slice-task-planner/SKILL.md",
+      "size": 4187,
+      "sha256": "d204c3e7bdfbe9de1454552062854de6f3874ec50b66905d9438bb8a4cec2939"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/test-migration-agent/SKILL.md",
+      "size": 4141,
+      "sha256": "70e67cf1d0b75ecab2177e77dcc6f45374b35784678915549f93d3dbfbabb4c7"
+    },
+    {
+      "path": "batches/batch-37-agentic-migration-harness/skills/token-and-resource-governance/SKILL.md",
+      "size": 4219,
+      "sha256": "0cfec9e0ff8bfa4d941b0e5518e837fdaeaefb2bd8179c6944a33b6576e04142"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/SKILL.md",
+      "size": 3887,
+      "sha256": "858fcba087312cfa16aff7f5fbe437b23b59e92269e2e6398027475a8225f614"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/catalog.yaml",
+      "size": 1505,
+      "sha256": "a7691e0b8cebfeed1c8de3d8c4821b998fa2aa5934fdd9e0734321b194156308"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/acceptance-test-compiler/SKILL.md",
+      "size": 4196,
+      "sha256": "8a1c8fde2d367260002a0fc389633028a431dc94e8870d662258e5c7c773f174"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/behavior-contract-compiler/SKILL.md",
+      "size": 4215,
+      "sha256": "1d41182735dae2365256b72c04e032eb17cd9cec525e877c38b6d059d7579bb6"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/domain-model-compiler/SKILL.md",
+      "size": 4205,
+      "sha256": "02426540e69d18b5eda34584351dbb6dc52b6f8ea974f72c4040a3a8576a1016"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-composition-planner/SKILL.md",
+      "size": 4182,
+      "sha256": "8505907bd8b5dc11777b7e4ffd31b99b7e2f21e31116f3299334c510b0dd551f"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-conflict-detector/SKILL.md",
+      "size": 4175,
+      "sha256": "d5f4625c86d3d86565b66539941d3cd6e848f889bf6fc969a50518dd25efe307"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-dependency-resolver/SKILL.md",
+      "size": 4198,
+      "sha256": "aa850b55bda0178bcc8ccb0128fefb053ebe52732009a077e5485475721f8c70"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-marketplace-package/SKILL.md",
+      "size": 4222,
+      "sha256": "78f5a4cff87c5f2eedf3ec6f78d528f585ec9bfd5e122e9881bbb3d70ffcc826"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-schema-validator/SKILL.md",
+      "size": 4219,
+      "sha256": "510ed94d30781b0652ae34ed370ef3b2d855b9f4445cc6a05ed54e68477b5b21"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/skill-version-compatibility/SKILL.md",
+      "size": 4199,
+      "sha256": "31f0318d0430d3f237e1db625e92cc1ce5c8f0868e907afad9686eb5c84e91e8"
+    },
+    {
+      "path": "batches/batch-38-executable-skill-specification/skills/state-machine-compiler/SKILL.md",
+      "size": 4186,
+      "sha256": "f4f687cfe3e41101a45b4111f2f274bc7cb19ac6cea6061096eb8081322645e1"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/SKILL.md",
+      "size": 4754,
+      "sha256": "e9d96a97474f8f83fba2d855f5249af6f3b0588ed3ff9f29b2cf304991d73456"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/catalog.yaml",
+      "size": 2040,
+      "sha256": "c654ceb5cbbfcec225cc223549d0541a3e57a380fd1a69e0e3120f44946bfa81"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/admin-generator/SKILL.md",
+      "size": 4141,
+      "sha256": "bd4b82239ac93bf439b616f51d06e60389c33e8b513ed97b47e39bed09aaa5ca"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/architecture-blueprint-generator/SKILL.md",
+      "size": 4301,
+      "sha256": "cdb9ac5f6580091c218a9999de11e640d0e2c32d27a4c9c522b0c0c2309da6d2"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/backend-generator/SKILL.md",
+      "size": 4172,
+      "sha256": "1cb1683839447dd2b7617622b19e6d394d2d95f865e2f4b3580e28edf83ac76d"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/ci-cd-generator/SKILL.md",
+      "size": 4150,
+      "sha256": "4aa612673988bf114bca4458286aa7a00f6c282f49217692164219e8cb09b671"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/complete-project-manifest/SKILL.md",
+      "size": 4251,
+      "sha256": "6ad62c76a46acae310a35490d412d2b088c9396a6d234fa4f5e30c18d3974b4a"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/database-generator/SKILL.md",
+      "size": 4210,
+      "sha256": "f322f652d674bc982b1260bd5c09e47a09187e19f25f618ed7939ee85cfa5487"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/deployment-generator/SKILL.md",
+      "size": 4193,
+      "sha256": "242d108b0108b55d8f58f584cfb3c18951f22246d2833c9e64c6db85eb7ba69d"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/documentation-and-runbook-generator/SKILL.md",
+      "size": 4241,
+      "sha256": "e021f4930866067131b9323c12011db40c52d155258935b1825897c6b41fde81"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/frontend-generator/SKILL.md",
+      "size": 4220,
+      "sha256": "b65ef098e697ea6e0f827870d2944b07b26bb3f832f8f556abbfcd6269a80d30"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/observability-generator/SKILL.md",
+      "size": 4163,
+      "sha256": "9ced765be7ae7eb51d5c5517de546ac2616627c88167fb3966058ddea42aa527"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/project-completeness-score/SKILL.md",
+      "size": 4186,
+      "sha256": "d869c331c4688b972f38f91af956d8e5dc178b3750bf2e6afa861800aa85fd24"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/repository-template-registry/SKILL.md",
+      "size": 4229,
+      "sha256": "ddf7daf2405b4616ff8e4e3a872ff2a1f8d974888cdae5830a103a4712b6f7c8"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/security-crosscutting-generator/SKILL.md",
+      "size": 4239,
+      "sha256": "662652acef485686236424f7cb8764dbbe4a7956cca8c23581ebc5ca7fc1b30f"
+    },
+    {
+      "path": "batches/batch-39-complete-project-generation/skills/worker-and-scheduler-generator/SKILL.md",
+      "size": 4237,
+      "sha256": "bf3dcee18a09e1ea899932c2f3b83fdfc8ed9d5ce980cdfb7291c9f656564ab6"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/SKILL.md",
+      "size": 2766,
+      "sha256": "ae131388ab0e095a81a2ae79be591857fd0cd4810c7dbc32f4f023d9b104b295"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/catalog.yaml",
+      "size": 854,
+      "sha256": "a53a1c8d88bec20682a2de9f36935da998d96229cca144b8c5c4052eb640674b"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/skills/asset-reuse-planner/SKILL.md",
+      "size": 4197,
+      "sha256": "0584189993e6d6c39c230129a96f06cadbe05e38e2de0359b074ada3fc626f1e"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/skills/compare-and-repair/SKILL.md",
+      "size": 4184,
+      "sha256": "37dba91e06f169c095af0016c719122006075ec7eb2dcebe943d2445543d95c5"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/skills/convert-and-certify/SKILL.md",
+      "size": 4186,
+      "sha256": "42bd5104aebf698f51a97536125651f249717b04dc238da9f5cb7b025752f707"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/skills/generate-from-skills/SKILL.md",
+      "size": 4227,
+      "sha256": "bc5b69d6f81a815296a67e3d029fa0d2e82c6734d93d34644fe8fc0762605318"
+    },
+    {
+      "path": "batches/batch-40-product-entry-modes/skills/migration-mode-selector/SKILL.md",
+      "size": 4208,
+      "sha256": "b2f42d6b5006d26198f6b1b27113bba6874282f5b255ab3ca1b9a984827f2bf8"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/SKILL.md",
+      "size": 3836,
+      "sha256": "b0a3106014e19ce2b89004ed35ca3cf6a253d7fe4c3d44611f68e800d4789cee"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/catalog.yaml",
+      "size": 1507,
+      "sha256": "505cc895cf63995ccb25cd8d60574bafaef3a72b4e04e56170fe350b3bef9514"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/certificate-signing/SKILL.md",
+      "size": 4168,
+      "sha256": "01c6d4a9057768788f2358645798d1ed7c03fc362080bb2d472afc7fcd3b8cc2"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/conversion-provenance/SKILL.md",
+      "size": 4202,
+      "sha256": "1b39f472a6d2001d21c02208971e503376ab944212177e899128f05df2ede53e"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/correctness-level-classifier/SKILL.md",
+      "size": 4330,
+      "sha256": "25a885a8d59279b336c65fcf6cad02d6779f4060dd5d443639015f919508fc8a"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/evidence-manifest/SKILL.md",
+      "size": 4230,
+      "sha256": "fb8280d15c92bb00dd71e0f20e2dfea615767b58116107b7f28b8ae6ad23ad27"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/module-equivalence-certificate/SKILL.md",
+      "size": 4262,
+      "sha256": "c7f45d3dac3e7ea8ac91399e1f29c4dc0153278509609a4fabdd84f4da393c54"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/release-gate-engine/SKILL.md",
+      "size": 4194,
+      "sha256": "b7e311c2c891946dbaac506db768021db7335899c014d9214e7912100d3ac8e7"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/rule-proof-certificate/SKILL.md",
+      "size": 4231,
+      "sha256": "8d5fe3d9f6fca9f8a64eb10752f069375a8c849459f27b5d0517cbfd2eefc1c9"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/runtime-evidence-package/SKILL.md",
+      "size": 4237,
+      "sha256": "6eb6adf63d2b798d74f4fa49777dca9b4809f4c227633e302238a710a39db58b"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/semantic-loss-report/SKILL.md",
+      "size": 4200,
+      "sha256": "3717b10d8b4095d11ba11631cff99829668c3766744e4e46b0bfd341c2f0f964"
+    },
+    {
+      "path": "batches/batch-41-evidence-release-gates/skills/unresolved-obligation-report/SKILL.md",
+      "size": 4279,
+      "sha256": "59800be4a08d226d127e1f7dfb604b5b14089c356e3d9197108475df20e827dd"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/SKILL.md",
+      "size": 3739,
+      "sha256": "af1bf7d1acfc26f58655201535900d1ae82db9dc456e04e600548d73a8e9529e"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/catalog.yaml",
+      "size": 1464,
+      "sha256": "72d2632d65447a8018c15d90ab22a53c064763605888350f125e63015ff1480b"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/automatic-rollback/SKILL.md",
+      "size": 4186,
+      "sha256": "d2b707025d4988cf4cde18a03dc9536befd7181eecd99e8ea6209737c84cf66d"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/canary-traffic-planner/SKILL.md",
+      "size": 4181,
+      "sha256": "0d1f0cc1201469da6ad9edd5dfa99dbca3c4af0e9beb5ca4e80136c2348aa5e8"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/dual-write-validation/SKILL.md",
+      "size": 4186,
+      "sha256": "3a87a04e76b28b6c8eb5812c350f39d5ea4b53ea3674015048c85d9aa621e717"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/live-event-replay/SKILL.md",
+      "size": 4184,
+      "sha256": "73037a8a7ca3c282ed09454ce76d1fe96634cf29729a86db2d3c372e2035a1b5"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/migration-wave-planner/SKILL.md",
+      "size": 4166,
+      "sha256": "e9be0d79267d717901e5eedcbd9c39aee153649180d521b00845cf82bd5e9661"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/post-cutover-monitoring/SKILL.md",
+      "size": 4241,
+      "sha256": "a675bb42bc86c7c4f085134620101a455e5608ad3b53a8f68f09ba9cd8e60a9e"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/production-shadow-run/SKILL.md",
+      "size": 4249,
+      "sha256": "ef6383eac46ede2efeb62d1b026b18544eeeef3dc0e32ab2cd2146135f57e8c2"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/progressive-cutover/SKILL.md",
+      "size": 4167,
+      "sha256": "e42cb8e369921e1eb53f3d9b6cb4b6acaa5cea84de4ffec8a41d4c64d0abcdb5"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/side-effect-suppression/SKILL.md",
+      "size": 4268,
+      "sha256": "c6c586f3033d97329281d810eeaf04cb7dcf7e78d91754fa67ae8e64bf3415e0"
+    },
+    {
+      "path": "batches/batch-42-shadow-canary-cutover/skills/strangler-routing/SKILL.md",
+      "size": 4193,
+      "sha256": "1a9ef5ef9cfcef0629fe39f903999bcbe47f19a5c95a336140ab58ae3cfae362"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/SKILL.md",
+      "size": 4014,
+      "sha256": "015e102ce25c3ad633392bf184d43ad9cba2e2092a612e5afbf75fc0fdf6c05c"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/catalog.yaml",
+      "size": 1527,
+      "sha256": "1948cb272228d8b82eeb769cd4d591bb8ea11a749a4be74fe09837e40233e643"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/counterexample-knowledge-store/SKILL.md",
+      "size": 4276,
+      "sha256": "9514876b912942f6c29833928ba1d6bf93d91ad23b53609ba507d8a167ab2f9b"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/direction-pack-continuous-improvement/SKILL.md",
+      "size": 4369,
+      "sha256": "b6d99ee27b1040f182f76895f8669800fba47997a45c1ca60d1c49b7843e6070"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/framework-obsolescence-monitor/SKILL.md",
+      "size": 4234,
+      "sha256": "d3a7447c8c7669775dce8d6351ec5a75daa81e9387c2d6dee2f3b37b553a6033"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/golden-repository-regression/SKILL.md",
+      "size": 4266,
+      "sha256": "ca4cf96a0f3bcff11bac0a57ad784db1dca9c9ac681b351868c61b16996a1457"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/rule-performance-monitor/SKILL.md",
+      "size": 4228,
+      "sha256": "5f4bba1c4149c87fad0cd4433b389a8c0e6833eef90e6e78250b0cfdaa90d2c1"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/scheduled-repository-analysis/SKILL.md",
+      "size": 4253,
+      "sha256": "d246f0d45a9ffd773b0009441a0b10995cde7a404130bb4941e8942bb3d2ebc8"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/security-modernization-scan/SKILL.md",
+      "size": 4255,
+      "sha256": "67ae7bf1746aa952d4695a333698e470fd431ee30cca58c3740998ae68eb9b02"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/successful-repair-rule-induction/SKILL.md",
+      "size": 4235,
+      "sha256": "3d61a8ed90ee16e9ceb0a9dd523e2b98d81e7e4a24a22ef5bc070511a7440967"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/technical-debt-drift-detection/SKILL.md",
+      "size": 4222,
+      "sha256": "b48d25b0e9cf594f1ef753300a488f252ee4aa0cc92d16a751c211bda57002aa"
+    },
+    {
+      "path": "batches/batch-43-continuous-modernization-learning/skills/transformation-quality-learning/SKILL.md",
+      "size": 4281,
+      "sha256": "f756064ec6f94dbc96ab42b17023b786e2782f732679951e8bed4c5687d35814"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/SKILL.md",
+      "size": 4280,
+      "sha256": "84d2636e76b60e3d68d3fb2deacbdc3d61d5fa1b36a30875cba2190a2e4f08c6"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/catalog.yaml",
+      "size": 1801,
+      "sha256": "5f87a37435258ac344122ee1bd2e8e8079afd1c14aba896e65e955fe9c79b454"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/air-gapped-installation/SKILL.md",
+      "size": 4247,
+      "sha256": "2d4f7444eb88376e21864349da3e0c40af842108ae90031389e0c339bab101e7"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/audit-and-compliance/SKILL.md",
+      "size": 4214,
+      "sha256": "2df7f7b24900e3a8196f37a797da7e198aa960878efb4c5885b6dba2794bbd94"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/customer-private-rule-pack/SKILL.md",
+      "size": 4253,
+      "sha256": "b78e738a876f2cfa2ad7751ade4dfece383abc1bbe83c337c209de16b74b5604"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/enterprise-reporting/SKILL.md",
+      "size": 4208,
+      "sha256": "b99b6a7909713b7440009ccd22a50ebe1c3598092964d165e052747a638a0c5a"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/license-and-entitlement/SKILL.md",
+      "size": 4247,
+      "sha256": "d302c4d17bbd3ca8ff81328998a47c7bd6efa719849402e95ce9e8be50169692"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/multi-tenant-isolation/SKILL.md",
+      "size": 4242,
+      "sha256": "7011c2373d94b6a9a96a7fefef8d1fd9d392f49aedfcac37ecf97863ed150f7c"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/offline-toolchain-registry/SKILL.md",
+      "size": 4291,
+      "sha256": "0c59b9dcb441ea120e71f0c2434663623776f5d60162290b9266100434a908c9"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/private-deployment-planner/SKILL.md",
+      "size": 4246,
+      "sha256": "a85473c7c07626915f39e235d41ef6a9a126f1a4cb90e629164052b830819ab0"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/private-model-gateway/SKILL.md",
+      "size": 4263,
+      "sha256": "612c18e7f17b540d255695e1fa97bccfe70c151dad97b67e39453233544a0b1e"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/rbac-and-sso/SKILL.md",
+      "size": 4144,
+      "sha256": "d63f29f6133e861728d75525102c905f951cf1029af3b166ccbd23e7f2b36cbc"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/sla-and-support-readiness/SKILL.md",
+      "size": 4257,
+      "sha256": "0e40143ddb7b8dc89c1cad704e86ad76a1cf934c55cdc6b78033b5b20743e3b2"
+    },
+    {
+      "path": "batches/batch-44-enterprise-private-commercialization/skills/white-label-partner-mode/SKILL.md",
+      "size": 4243,
+      "sha256": "a060de6c25e91d120ed9ddeb20557c035dbdb50b7dfc9a1fdda9101075871b65"
+    },
+    {
+      "path": "catalog.csv",
+      "size": 172081,
+      "sha256": "9a1e199bba6e3e31bcd233692147f7fb2e6173aa72eb1bfeaff2c97d2ac803f7"
+    },
+    {
+      "path": "catalog.json",
+      "size": 249507,
+      "sha256": "e49356700aca57dc66e496dd0bebc6be27c2a8a3ab3bbf4b2f39d390afb292da"
+    },
+    {
+      "path": "docs/architecture.md",
+      "size": 423,
+      "sha256": "44312ff14996e692e4c4be34db876b318c0cbe4c90cdc237f7e26502b5260f0a"
+    },
+    {
+      "path": "docs/batch-index.md",
+      "size": 3358,
+      "sha256": "35839bed29a8c0f45932ab83a47f77f9eb66f63cae2b445d436c5750ab47af0c"
+    },
+    {
+      "path": "docs/conversation-coverage.md",
+      "size": 885,
+      "sha256": "2ce854505764a142e054b2b2a957b85430510aca1e47132dd7907b83d345e49f"
+    },
+    {
+      "path": "docs/design-inspirations.md",
+      "size": 1164,
+      "sha256": "088e69a35e46bb06b7b57ae9124be9c84af44f877a312d2ed844360a8fc446f9"
+    },
+    {
+      "path": "docs/evidence-model.md",
+      "size": 209,
+      "sha256": "d91db46e273df581b6629763e4c916ba5f24f5cf3a46ebba4017acff7f7814fa"
+    },
+    {
+      "path": "docs/implementation-roadmap.md",
+      "size": 400,
+      "sha256": "b7f304f28520daf1059bfe70d2e011dc19f30289bf5558bf28111bd3189ed217"
+    },
+    {
+      "path": "docs/operation-modes.md",
+      "size": 303,
+      "sha256": "6a1605d6e061fdc6e519d81009280a3b2569e8d5753b6d21541693e579395e53"
+    },
+    {
+      "path": "docs/security-model.md",
+      "size": 249,
+      "sha256": "b8b5d066d5605e9f4617ccbb23d431d63e112b6b7729f566a212a1260bf1b14e"
+    },
+    {
+      "path": "docs/skill-authoring-guide.md",
+      "size": 246,
+      "sha256": "185e88a24ee9913b158c75c4457ce2eaa5620ffe3090af18f1c7d2c0e8033ac5"
+    },
+    {
+      "path": "docs/status-model.md",
+      "size": 272,
+      "sha256": "731579a43497862c04cf69a2c0bc80fc53a89f9678d1c81b2bede7991fb6a69c"
+    },
+    {
+      "path": "examples/contracts/behavior-contract-order.yaml",
+      "size": 400,
+      "sha256": "d76fd3efe5a13de6ebccb517e2f14c2c8638cdce109f26f3f6c5f7b9df19699f"
+    },
+    {
+      "path": "examples/contracts/release-gate-high-risk.yaml",
+      "size": 435,
+      "sha256": "91cc5ac2676f22b762843b75e03da8d23b58d1710da4869872d8f53bcd51fff0"
+    },
+    {
+      "path": "examples/workflows/assess-modernization.yaml",
+      "size": 259,
+      "sha256": "379f2919336eec020acd7ea4836ebe2325868ff826e704fd95833fd746679af3"
+    },
+    {
+      "path": "examples/workflows/compare-and-repair-vue-flutter.yaml",
+      "size": 311,
+      "sha256": "04d130f40537d1211491151a6de5d2a2090fb0bf42c3b83b1d6b74e45fcdfc0d"
+    },
+    {
+      "path": "examples/workflows/convert-and-certify-java-spring-vue.yaml",
+      "size": 226,
+      "sha256": "de30f88fdbff6686f6fc9b9779f6363ae18b5cdae538537259fbf0ea54bdec9e"
+    },
+    {
+      "path": "examples/workflows/generate-from-skills.yaml",
+      "size": 280,
+      "sha256": "fa11cacc288bf0e0ad703fb8ca5c4cb85585fe71ee8f3a48d9c821f740fdee17"
+    },
+    {
+      "path": "examples/workflows/oracle-to-postgresql.yaml",
+      "size": 280,
+      "sha256": "755a33c944ef5725e3bd11a59135fc2575716e691433e9533d9928496c24e448"
+    },
+    {
+      "path": "examples/workflows/proof-assisted-conversion.yaml",
+      "size": 331,
+      "sha256": "36d660745542e9c2130946364afc5410e8aa702fe3189e8e5a951e1519d1dde7"
+    },
+    {
+      "path": "install.py",
+      "size": 1947,
+      "sha256": "ce53b44c775393867550adcdc5e2b5be53bb88b7c8aacf9c7d089ef6e672aff8"
+    },
+    {
+      "path": "meta/precision-migration-orchestrator/SKILL.md",
+      "size": 1992,
+      "sha256": "4f3c48c712e4c46e043ba7f7d8b7b869df6895bf09ac6c54311b982960503647"
+    },
+    {
+      "path": "schemas/behavior-contract.schema.json",
+      "size": 807,
+      "sha256": "95a873089d778110e048f53f2abae72875a2d30795f1cd8271b5dbfd74325e27"
+    },
+    {
+      "path": "schemas/conversion-assessment.schema.json",
+      "size": 872,
+      "sha256": "68bcec017c2b5ecff8732763694a670470d91f6ecc653b0c041ba4d02ff7c19e"
+    },
+    {
+      "path": "schemas/evidence-manifest.schema.json",
+      "size": 994,
+      "sha256": "111bee6b86c576c8779fa5f9839b4432a9a337c502c375df0d8a32690aeba5e1"
+    },
+    {
+      "path": "schemas/release-gate.schema.json",
+      "size": 974,
+      "sha256": "15b2e911ca20f9b338f216ec16de7680ecbf33906a09e72d3d8f5abea2098a4c"
+    },
+    {
+      "path": "schemas/semantic-loss.schema.json",
+      "size": 952,
+      "sha256": "a0269b672ecffa13202a583b77845446bae631ee204a298325acdf70e2050aa0"
+    },
+    {
+      "path": "schemas/skill-input.schema.json",
+      "size": 469,
+      "sha256": "1cf372b35e0c48acbcc637204af520e9e3fc43605c7411c04810f000acc6d1c5"
+    },
+    {
+      "path": "schemas/skill-output.schema.json",
+      "size": 723,
+      "sha256": "531b3ad45aaeab17cb5b9d0bfd516ed19ca44c71b11f58268ca30507612ac12e"
+    },
+    {
+      "path": "verify_package.py",
+      "size": 1855,
+      "sha256": "d3956a0b6a379a0bbbc5d1f01135cf7a017c971744f3eef9398a02aa1a30d34f"
+    }
+  ]
+}

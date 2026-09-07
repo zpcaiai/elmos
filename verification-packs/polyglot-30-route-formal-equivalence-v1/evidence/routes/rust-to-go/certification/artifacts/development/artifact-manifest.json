@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/rust-to-go/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1496,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:9e7420745e3c58376b0adeabb798b41262c203ef8ca47f775c61ccd2348db2f7"
+    },
+    {
+      "bytes": 8303,
+      "path": "chunk-map.json",
+      "sha256": "sha256:c2290a26d939efd0b18d70658d8919b8e7dfd89318c0337be15c9a13818fd9df"
+    },
+    {
+      "bytes": 2944,
+      "path": "formal-composition.json",
+      "sha256": "sha256:d391f2bb326ff0c27d06614808bad2cb611e204865c478fbe24e148433cfc0ff"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:2712cebae84773369ea6468c27775efb4000e3d79d89e4105718f0bf6f5e1051"
+    },
+    {
+      "bytes": 6792,
+      "path": "formal-input.json",
+      "sha256": "sha256:c4d11b6f4dd2b80307100f2e9f6de63c71986b0146b7bd797d77c0b34e624d56"
+    },
+    {
+      "bytes": 2322,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:25ec2fc7eb6e50b22ffec35b0dd605906d637af4996aa23e9547bb8fa93a5b54"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 122,
+      "path": "inputs/pricing.rs",
+      "sha256": "sha256:ca052d633572faa15dbbe178c5c51088a2de5a93cdb84a3148f04384407dcc4f"
+    },
+    {
+      "bytes": 3427,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:7474281d33934b188b3798fe7a6f94459582c0f6743045fa93f25a70a168c2f8"
+    },
+    {
+      "bytes": 361,
+      "path": "migrated.go",
+      "sha256": "sha256:606e5af0c37b299ae616f4f1c0476f33dfe3ef005d5c92584609e9a35c42ae3f"
+    },
+    {
+      "bytes": 6711,
+      "path": "route-evidence.json",
+      "sha256": "sha256:94d4860cb75794ef1f4448a3962023a78f1227b11637d136d807c4eddf0bf5d8"
+    },
+    {
+      "bytes": 636,
+      "path": "route_harness.go",
+      "sha256": "sha256:5570728e9a876cb4ee2932a8468d942a361005b7304642c8516ad74a3bd075ca"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 674,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:a33be9e2aed7e1f8d637bdc2b62b714a89cba356afdc5325f2a62935ef153deb"
+    },
+    {
+      "bytes": 122,
+      "path": "source-runtime/pricing.rs",
+      "sha256": "sha256:ca052d633572faa15dbbe178c5c51088a2de5a93cdb84a3148f04384407dcc4f"
+    },
+    {
+      "bytes": 466,
+      "path": "source-runtime/source_harness.rs",
+      "sha256": "sha256:0c90768795dec901e0607b05c8580b26b32f324343280271bc36adea8aae18d8"
+    },
+    {
+      "bytes": 674,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:a33be9e2aed7e1f8d637bdc2b62b714a89cba356afdc5325f2a62935ef153deb"
+    },
+    {
+      "bytes": 665,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:4d9f958c76f2fb37c951dfa07e149c8f08267a86af351c01d2ba323d02363929"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "rust-to-go",
+  "schema_version": 1,
+  "total_bytes": 37156
+}

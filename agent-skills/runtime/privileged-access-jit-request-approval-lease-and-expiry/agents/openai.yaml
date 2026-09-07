@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 34 Skill 037"
+  short_description: "Run Product Batch 34 evidence contract safely"
+  default_prompt: "Use $privileged-access-jit-request-approval-lease-and-expiry to implement its fail-closed ELMOS Product Batch 34 contract."

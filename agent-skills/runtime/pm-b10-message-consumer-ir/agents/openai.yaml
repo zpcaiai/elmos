@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B10: Message Consumer Ir"
+  short_description: "Run Precision Migration B10 with evidence controls"
+  default_prompt: "Use $pm-b10-message-consumer-ir to execute this Precision Migration contract with fail-closed evidence."

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "policyId": "elmos-composite-default-v1",
+  "languages": ["JAVA", "DOTNET", "PYTHON"],
+  "unknownConsumerPolicy": "BLOCK_DESTRUCTIVE_CHANGE",
+  "productionWritePolicy": "REQUIRE_HUMAN_APPROVAL",
+  "shadowWritePolicy": "REQUIRE_SIDE_EFFECT_SUPPRESSION",
+  "decommissionPolicy": "REQUIRE_ZERO_TRAFFIC_CONSUMERS_WRITES_AND_BATCH_ACCESS",
+  "runtimeConfidence": {
+    "declaredAndObserved": 0.95,
+    "repeatedRuntime": 0.9,
+    "staticDirect": 0.8,
+    "configuration": 0.6,
+    "logCorrelationOnly": 0.5,
+    "nameSimilarity": null
+  }
+}

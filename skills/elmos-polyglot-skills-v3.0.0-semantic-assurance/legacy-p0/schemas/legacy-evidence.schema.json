@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/legacy-evidence.schema.json",
+  "title": "Legacy Evidence",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "run_id",
+    "snapshot_id",
+    "producer",
+    "commands",
+    "artifacts",
+    "status"
+  ],
+  "properties": {
+    "run_id": {},
+    "snapshot_id": {},
+    "producer": {},
+    "commands": {},
+    "artifacts": {},
+    "status": {}
+  }
+}

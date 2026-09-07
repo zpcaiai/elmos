@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.external-smt-not-run",
+  "property_id": "property.seeded-bounded-evaluation",
+  "solver": {
+    "name": "external-smt",
+    "version": "NOT_CONFIGURED",
+    "options": {},
+    "timeout_ms": 0
+  },
+  "status": "unsupported",
+  "assumptions": [
+    "Local unit tests exercise a finite bounded enumerator only; this is not a universal proof."
+  ],
+  "input_digest": "sha256:9ccb34927e6a913f14b15924bcb12a97802ad8a25264b94e6833c10d25f763cb",
+  "evidence_refs": [
+    "certification/local-test-result.json"
+  ]
+}

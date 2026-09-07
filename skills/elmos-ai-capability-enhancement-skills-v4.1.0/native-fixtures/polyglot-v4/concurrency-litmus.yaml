@@ -1,0 +1,4 @@
+case: lost-update
+source: java
+target: rust
+expected: no semantic weakening

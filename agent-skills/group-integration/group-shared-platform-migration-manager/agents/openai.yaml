@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 687: group shared platform migration manager"
+  short_description: "Operate authoritative Batch 18 capability"
+  default_prompt: "Use $group-shared-platform-migration-manager to evaluate this capability with evidence."

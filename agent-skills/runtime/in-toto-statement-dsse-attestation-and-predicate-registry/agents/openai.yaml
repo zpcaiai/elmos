@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B37: In Toto Statement Dsse Attestation And Predicate Registry"
+  short_description: "Run ELMOS Product B37 contract with fail-closed evidence"
+  default_prompt: "Use $in-toto-statement-dsse-attestation-and-predicate-registry to implement its fail-closed ELMOS Product B37 contract."

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-20:workflow-run",
+  "title": "WorkflowRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workflow_id",
+    "definition_version",
+    "tenant_id",
+    "project_id",
+    "state",
+    "idempotency_key"
+  ],
+  "properties": {
+    "workflow_id": {
+      "type": "string"
+    },
+    "definition_version": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "idempotency_key": {
+      "type": "string"
+    },
+    "checkpoints": {
+      "type": "array"
+    },
+    "approvals": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

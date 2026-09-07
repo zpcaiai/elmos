@@ -1,0 +1,4 @@
+interface:
+  display_name: "B30 Spring Boot Upgrade"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b30-spring-boot-upgrade to execute this ELMOS Runtime Skill with fail-closed evidence."

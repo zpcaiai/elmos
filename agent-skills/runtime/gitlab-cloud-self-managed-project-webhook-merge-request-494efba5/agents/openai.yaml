@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 35 Skill 012"
+  short_description: "Run Product Batch 35 evidence contract safely"
+  default_prompt: "Use $gitlab-cloud-self-managed-project-webhook-merge-request-494efba5 to implement its fail-closed ELMOS Product Batch 35 contract."

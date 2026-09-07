@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 44: Verified Workload Unit Cost"
+  short_description: "Run evidence-bound Batch 44 verified workload unit cost work"
+  default_prompt: "Use $b44-verified-workload-unit-cost to implement and verify this capability with fail-closed evidence."

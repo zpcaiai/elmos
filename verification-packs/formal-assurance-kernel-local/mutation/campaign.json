@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.sample",
+  "owner": "elmos-formal-assurance-engineering",
+  "target_scope": [
+    "engines/formal-assurance-engine/src/elmos_formal_assurance"
+  ],
+  "operators": [
+    {
+      "key": "negate-condition",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 100,
+    "max_minutes": 30
+  },
+  "required_tests": [
+    "tests/p0"
+  ],
+  "equivalent_mutant_policy": "human-reviewed"
+}

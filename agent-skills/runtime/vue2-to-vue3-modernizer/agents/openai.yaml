@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue Modernizer"
+  short_description: "Modernize Vue 2 through controlled compatibility"
+  default_prompt: "Use $vue2-to-vue3-modernizer to plan a Vue 2.7 and Vue compatibility migration with per-component exit gates."

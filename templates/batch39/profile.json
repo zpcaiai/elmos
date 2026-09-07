@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "example-sre-operations",
+  "batch": 39,
+  "riskTier": "P0",
+  "requiredHoldout": true,
+  "requiredRepresentativeWorkloads": true,
+  "minimumEvidenceTraceCoverage": 0.99,
+  "metricThresholds": {
+    "serviceCatalogCoverage": 1.0,
+    "sloComplianceRate": 0.999,
+    "incidentResponseExercisePassRate": 1.0,
+    "restorePassRate": 1.0,
+    "multiregionFailoverPassRate": 1.0,
+    "fairSchedulingPassRate": 1.0,
+    "supportSlaPassRate": 1.0,
+    "productionReadinessPassRate": 1.0,
+    "evidenceTraceCoverage": 0.98
+  },
+  "zeroTolerance": [
+    "unresolvedSev1Incidents",
+    "rpoBreaches",
+    "rtoBreaches",
+    "tenantStarvationEvents",
+    "unownedCriticalAlerts",
+    "missingCriticalRunbooks",
+    "crossTenantObservabilityLeaks",
+    "testIntegrityViolations"
+  ],
+  "metadata": {}
+}

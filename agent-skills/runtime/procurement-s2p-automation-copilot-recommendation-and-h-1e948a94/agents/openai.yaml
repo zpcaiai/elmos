@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B42: Procurement S2P Automation Copilot Recommendation And Human Review"
+  short_description: "Run ELMOS Product B42 contract with fail-closed evidence"
+  default_prompt: "Use $procurement-s2p-automation-copilot-recommendation-and-h-1e948a94 to implement its fail-closed ELMOS Product B42 contract."

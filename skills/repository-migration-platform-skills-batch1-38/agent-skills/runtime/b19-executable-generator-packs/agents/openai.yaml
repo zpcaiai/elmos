@@ -1,0 +1,4 @@
+interface:
+  display_name: "B19 Executable Generator Packs"
+  short_description: "Help with B19 Executable Generator Packs tasks"
+  default_prompt: "Use $b19-executable-generator-packs to execute its evidence-governed repository migration workflow and report every unmet gate explicitly."

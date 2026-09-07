@@ -1,0 +1,205 @@
+{
+  "artifact_manifest_version": 1,
+  "scope": [
+    "scripts/test-suite/*.py",
+    "schemas/test-suite/*.json",
+    "test-suites/batch1-37-strict/suite.json",
+    "test-suites/batch1-37-strict/strict-profile.json",
+    "test-suites/batch1-37-strict/coverage-matrix.json",
+    "test-suites/batch1-37-strict/cases/catalog.json",
+    "test-suites/batch1-37-strict/cases/manifest.json"
+  ],
+  "file_count": 38,
+  "files": [
+    {
+      "path": "scripts/test-suite/_common.py",
+      "sha256": "fb3eae18006a23a9218aef72e39afaf48898d420338b8a318d5a7edbefc2533b",
+      "bytes": 13542
+    },
+    {
+      "path": "scripts/test-suite/b23_route_readiness.py",
+      "sha256": "f99965e6a6e637924acb68f7786a4883cecb28a06b45de21e0e570d9b69705b2",
+      "bytes": 14421
+    },
+    {
+      "path": "scripts/test-suite/b29_route_preconditions.py",
+      "sha256": "a92c6da56323562fbe46c8bd5f76528a76fe3319e67fb59111c3448d9bc4b8b9",
+      "bytes": 4700
+    },
+    {
+      "path": "scripts/test-suite/cleanup_qualification_outputs.py",
+      "sha256": "5dcc52f30f23c98e9191c0e2eefd65bef3596507b0259647bf17d22c8e7fe195",
+      "bytes": 2538
+    },
+    {
+      "path": "scripts/test-suite/generate_case_manifest.py",
+      "sha256": "7ed47c30d40772d73f6fc77aac88cca1ccc84d054667c365fbf03949d868763f",
+      "bytes": 1707
+    },
+    {
+      "path": "scripts/test-suite/generate_integration_manifest.py",
+      "sha256": "e3ff7e4cef6fc860cddb3406d0f4a79a5da55d0509a18ee75e751772492f2b8d",
+      "bytes": 4951
+    },
+    {
+      "path": "scripts/test-suite/probes.py",
+      "sha256": "c5c7e11c7755e75b044736ec8b79d9ad315ddf69f87e5a57a701af0586443711",
+      "bytes": 29613
+    },
+    {
+      "path": "scripts/test-suite/run_batch1_55_slightly_strict_gate.py",
+      "sha256": "f61bd5eb1962bad6b81c6ed95f865e4cffa5c7ebcf90cbcd24df646364edf0ce",
+      "bytes": 4023
+    },
+    {
+      "path": "scripts/test-suite/run_batch1_65_slightly_strict_gate.py",
+      "sha256": "1ee5d2923f2be1d7e064e5b4dc7d03a3190e227dfb8ae8a218933d56a6143085",
+      "bytes": 9290
+    },
+    {
+      "path": "scripts/test-suite/run_batch66_80_slightly_strict_gate.py",
+      "sha256": "fff23ee038f5eb5a44264833d212dd86dffc46e22af01f312667b4ca9539b888",
+      "bytes": 5193
+    },
+    {
+      "path": "scripts/test-suite/run_batch81_95_language_pack_gate.py",
+      "sha256": "cc1fc6e81f25a2900c57ddee3bec472cf574392cf90ca10afd697c4d2ed878dd",
+      "bytes": 8287
+    },
+    {
+      "path": "scripts/test-suite/run_case.py",
+      "sha256": "476126c5367416e9facdc5d08b51d744cd1d374fd6e30c1b2d6b598fb054882d",
+      "bytes": 23462
+    },
+    {
+      "path": "scripts/test-suite/run_repository_qualification.py",
+      "sha256": "5b1d7170b903afefdcfc732babcac3d1a140930f4d525300bca6d3fd67d01b7f",
+      "bytes": 14048
+    },
+    {
+      "path": "scripts/test-suite/run_strict_test_gate.py",
+      "sha256": "4a347057a9bcd14dc010fcbff7abf5834477317a7abacf39333cb07fdd276110",
+      "bytes": 24733
+    },
+    {
+      "path": "scripts/test-suite/scaffold_test_results.py",
+      "sha256": "2db82d1418c092808a8ae605b25a4ce000d7a777b8f808fd8787b61b998196a9",
+      "bytes": 1311
+    },
+    {
+      "path": "scripts/test-suite/validate_batch1_55_slightly_strict.py",
+      "sha256": "0781a11dd6365204deed0a657109c76f3e5a1ca4e9206f2143d5eebfb3fd7017",
+      "bytes": 14288
+    },
+    {
+      "path": "scripts/test-suite/validate_batch1_65_slightly_strict.py",
+      "sha256": "5368365a9d9eb07c4a451c00b4c57cb4182c0ac77c94791b917ed77391904759",
+      "bytes": 23546
+    },
+    {
+      "path": "scripts/test-suite/validate_batch66_80_slightly_strict.py",
+      "sha256": "a240e3bda64784f1eba720e3fc50be920f4d80aa78a9caa754ca6f723138f82a",
+      "bytes": 19743
+    },
+    {
+      "path": "scripts/test-suite/validate_batch81_95_language_packs.py",
+      "sha256": "868d867d5a48bd6466a93044fab5ac8fa7d363f2565d2b67f605fe0ec1607443",
+      "bytes": 21149
+    },
+    {
+      "path": "scripts/test-suite/validate_coverage_matrix.py",
+      "sha256": "10d7d261036ba6b04d152eb2bbb2b526106f4a9a276524d10c7e896cc5407059",
+      "bytes": 4242
+    },
+    {
+      "path": "scripts/test-suite/validate_evidence_manifest.py",
+      "sha256": "6d4fa2fbfaf57571224dd5d1072d015f4a53a2914e789620b7ec4f4f7e576a5c",
+      "bytes": 1846
+    },
+    {
+      "path": "scripts/test-suite/validate_schema_bundle.py",
+      "sha256": "0fe7326bc8689433ee99dc87df55e4b08f42328a0614b0667dc5654f2ed202c5",
+      "bytes": 4018
+    },
+    {
+      "path": "scripts/test-suite/validate_skill_bundle.py",
+      "sha256": "7dc0e745e5c2a322ab0e260dc887e4911e81b3863f0ca4f4e9c59b3c7675a419",
+      "bytes": 6032
+    },
+    {
+      "path": "scripts/test-suite/validate_test_catalog.py",
+      "sha256": "b647d861f1d343b874c2117397d70702bdcd5fcb6cdda617a3fe0e5c11a2b88d",
+      "bytes": 3067
+    },
+    {
+      "path": "schemas/test-suite/coverage-matrix.schema.json",
+      "sha256": "42150a284504c64eabcbf1236ba41539a4d108c1fcd46a77717880b279630b70",
+      "bytes": 1578
+    },
+    {
+      "path": "schemas/test-suite/evidence-manifest.schema.json",
+      "sha256": "9165bb353e769f104f92ee8dbd42a6c469f46a4bc14f10811374b666314c9b59",
+      "bytes": 3157
+    },
+    {
+      "path": "schemas/test-suite/release-gate.schema.json",
+      "sha256": "126ba20be80004ab7431dec2231ed4289a8a1eb41f8ae4d1b1ce56fa48abc6bb",
+      "bytes": 1626
+    },
+    {
+      "path": "schemas/test-suite/strict-profile.schema.json",
+      "sha256": "1be15bbd630c245eece71868f756db2994749b296db2bf992bd674c609fa9115",
+      "bytes": 1827
+    },
+    {
+      "path": "schemas/test-suite/test-case.schema.json",
+      "sha256": "809e22a2f62adbf86f78d72f71c4a1e0917450acfd04146b2cbf6b36786e171d",
+      "bytes": 1894
+    },
+    {
+      "path": "schemas/test-suite/test-environment.schema.json",
+      "sha256": "80ee4c8447eb3f0cced6a679e98e327e494832a28c88032454374238a937c63a",
+      "bytes": 1223
+    },
+    {
+      "path": "schemas/test-suite/test-result.schema.json",
+      "sha256": "0e029efe2122fc3836da97bf8f809c59b3d17851ce562f8c08cfe7705712ecb4",
+      "bytes": 3366
+    },
+    {
+      "path": "schemas/test-suite/test-suite.schema.json",
+      "sha256": "7c736ed44869b8be0a86d5a23bcde7fc93caf0f34f6c1a5ed3b8aa51e214f156",
+      "bytes": 1456
+    },
+    {
+      "path": "schemas/test-suite/waiver.schema.json",
+      "sha256": "effda289f0506e895c32b6d501df10d7974dbcb7359d06af2f0fa2cfbb1c452a",
+      "bytes": 1311
+    },
+    {
+      "path": "test-suites/batch1-37-strict/suite.json",
+      "sha256": "9ad7e8270209fe3299f013031283fcc6bbae12000c16e5f04fc2a6e32fa1013e",
+      "bytes": 537
+    },
+    {
+      "path": "test-suites/batch1-37-strict/strict-profile.json",
+      "sha256": "4effc40e71781b0ef2fe7df00f0f7cb8601fc42e1fa8677980a0ab7bc8fe8224",
+      "bytes": 1620
+    },
+    {
+      "path": "test-suites/batch1-37-strict/coverage-matrix.json",
+      "sha256": "4a9d8d4893d6e5ae8f0807d359bf47f2113c262cfc267eb759f490e22f5e682b",
+      "bytes": 6526
+    },
+    {
+      "path": "test-suites/batch1-37-strict/cases/catalog.json",
+      "sha256": "1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+      "bytes": 729462
+    },
+    {
+      "path": "test-suites/batch1-37-strict/cases/manifest.json",
+      "sha256": "aa5d654367250f44a731365be0a4d55b0c764de0aae897e8d4ba3d754201e9f1",
+      "bytes": 7758
+    }
+  ]
+}

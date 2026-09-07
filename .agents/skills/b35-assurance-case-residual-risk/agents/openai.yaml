@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 35: Assurance Case Residual Risk"
+  short_description: "Run evidence-bound Batch 35 assurance case residual risk work"
+  default_prompt: "Use $b35-assurance-case-residual-risk to implement and verify this capability with fail-closed evidence."

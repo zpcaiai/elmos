@@ -1,0 +1,20 @@
+schema_version: '1.0'
+reporting_currency: USD
+modes:
+  PREPAID_CREDIT:
+    recognize_on: usage_consumed
+    allocation: usage_value
+  PAY_AS_YOU_GO:
+    recognize_on: usage_finalized
+    allocation: direct_task
+  FIXED_PROJECT:
+    recognize_on: milestone_accepted
+    allocation: configured_weights
+  SUBSCRIPTION:
+    recognize_on: daily_ratable_service
+    allocation: active_task_usage_then_unallocated_pool
+rules:
+  separate_billed_recognized_collected: true
+  refunds_reverse_recognition: policy_driven
+  taxes_excluded_from_revenue: true
+  payment_fees_reported_separately: true

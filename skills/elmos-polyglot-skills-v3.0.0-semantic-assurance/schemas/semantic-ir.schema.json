@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/semantic-ir.schema.json",
+  "title": "ELMOS Semantic IR",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "irId",
+    "technology",
+    "symbols",
+    "types",
+    "flows",
+    "effects",
+    "losses"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.semantic-ir/v1"
+    },
+    "snapshotId": {
+      "type": "string"
+    },
+    "irId": {
+      "type": "string"
+    },
+    "technology": {
+      "type": "string"
+    },
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "source"
+        ]
+      }
+    },
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind"
+        ]
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "entry",
+          "exits"
+        ]
+      }
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "owner",
+          "kind"
+        ]
+      }
+    },
+    "losses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "severity",
+          "source",
+          "status"
+        ]
+      }
+    }
+  }
+}

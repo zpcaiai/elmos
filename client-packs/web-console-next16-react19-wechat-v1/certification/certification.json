@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "pack_key": "web-console-next16-react19-wechat-v1",
+  "status": "experimental",
+  "owner": "independent-client-gate",
+  "exact_tuple": {
+    "source": {
+      "stack": "nextjs-react-web-console",
+      "versions": [
+        "next-16.3.0-react-19.2.7-typescript-5.9.2"
+      ],
+      "language": "typescript",
+      "language_versions": [
+        "5.9.2"
+      ],
+      "runtime": "nodejs",
+      "runtime_versions": [
+        "26.0.0"
+      ],
+      "build_tool": "next-16.3.0",
+      "package_manager": "pnpm-10.12.4",
+      "router": [
+        "next-app-router-16.3.0"
+      ],
+      "renderer": [
+        "react-dom-19.2.7",
+        "next-server-client-components-16.3.0"
+      ],
+      "state": [
+        "react-hooks-19.2.7",
+        "context-providers"
+      ],
+      "forms": [
+        "react-controlled-and-uncontrolled-forms"
+      ],
+      "styling": [
+        "css-modules",
+        "global-css",
+        "inline-style"
+      ],
+      "design_system": [
+        "web-console-local-design-system"
+      ],
+      "api_client": [
+        "fetch-relative-api-contract"
+      ],
+      "identity": [
+        "account-session-context",
+        "server-cookie-session"
+      ],
+      "i18n": [
+        "zh-CN",
+        "en-US"
+      ],
+      "test_tools": [
+        "typescript-5.9.2",
+        "next-build-16.3.0",
+        "playwright-1.61.1"
+      ],
+      "browsers": [
+        "chromium-playwright-source-NOT_RUN"
+      ],
+      "devices": []
+    },
+    "target": {
+      "stack": "wechat-native-miniapp-candidate",
+      "versions": [
+        "wechat-base-library-3.9.1"
+      ],
+      "language": "javascript",
+      "language_versions": [
+        "ecmascript-2022"
+      ],
+      "runtime": "wechat-miniapp-runtime-candidate",
+      "runtime_versions": [
+        "3.9.1"
+      ],
+      "build_tool": "wechat-devtools-2.01.2510290",
+      "package_manager": "none-native-project",
+      "router": [
+        "app-json-native-pages-v1"
+      ],
+      "renderer": [
+        "native-wxml"
+      ],
+      "state": [
+        "component-data-setData",
+        "typed-plain-state-decoder-v1"
+      ],
+      "forms": [
+        "native-input-change-contract-v1"
+      ],
+      "styling": [
+        "native-wxss",
+        "css-module-token-map-v1"
+      ],
+      "design_system": [
+        "web-console-wechat-token-adapter-v1"
+      ],
+      "api_client": [
+        "cancellable-wx-request-adapter-v1"
+      ],
+      "identity": [
+        "storage-backed-session-adapter-v1"
+      ],
+      "i18n": [
+        "zh-CN-source-copy-candidate",
+        "en-US-source-copy-candidate"
+      ],
+      "test_tools": [
+        "component-dialect-real-wxml-parser",
+        "wechat-devtools-2.01.2510290-local-installation"
+      ],
+      "browsers": [],
+      "devices": [
+        "wechat-devtools-emulator-NOT_RUN",
+        "wechat-physical-device-NOT_RUN"
+      ]
+    }
+  },
+  "evidence_refs": [
+    "certification/local-static-evidence.json",
+    "certification/source-build-evidence.json",
+    "certification/official-wechat-build-evidence.json",
+    "certification/external-evidence-status.json"
+  ],
+  "recertification_triggers": [
+    "source snapshot change",
+    "component inventory or closure change",
+    "target profile toolchain or base library change",
+    "adapter runtime change",
+    "corpus baseline acceptance or evidence policy change"
+  ],
+  "certification_decision": "NOT_CERTIFIED",
+  "production_claim_authorized": false
+}

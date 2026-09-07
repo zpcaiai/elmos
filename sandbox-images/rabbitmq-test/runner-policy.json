@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","runner":"RABBITMQ_TEST","rootless":true,"network":"ISOLATED","productionCredentials":false,"ephemeralCluster":true,"faultInjection":true,"autoDestroy":true}

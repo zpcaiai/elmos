@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Payment Security Pci Tokenization Pan Vault Encryption Key And Secret Boundary"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $payment-security-pci-tokenization-pan-vault-encryption-2b43d393 to implement its fail-closed ELMOS Product B39 contract."

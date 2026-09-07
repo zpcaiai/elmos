@@ -1,0 +1,99 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "B29-007-run-2026-08-06T03",
+  "case_id": "B29-007",
+  "case_digest": "sha256:5f8e57f51d2e2603cccb8e76f3bb994cdb708ac1627beec2042a8c2ce9056875",
+  "catalog_digest": "sha256:1b73b935f8ef2c15c1e0c2fcf2416a45eb076bca910ac8ee1d8363907312d6e5",
+  "artifact_digest": "sha256:1ac0539494bed2b2e9a2da8f37d3bcda58af1c4defe916f6cbac78d17532a968",
+  "environment_digest": "sha256:87b30a9e0344122bd62a74a7126f07692bfede81d44d9abaafcc88db03767a3c",
+  "execution_kind": "real",
+  "started_at": "2026-08-06T11:32:07Z",
+  "finished_at": "2026-08-06T11:32:07Z",
+  "executor": {
+    "id": "elmos-strict-runner@automation",
+    "role": "executor"
+  },
+  "authorization_refs": [
+    "LOCAL-DEV-2026-08-06"
+  ],
+  "files": [
+    {
+      "role": "artifact-digest",
+      "path": "artifact-manifest.json",
+      "sha256": "1ac0539494bed2b2e9a2da8f37d3bcda58af1c4defe916f6cbac78d17532a968",
+      "bytes": 7314,
+      "immutable": true
+    },
+    {
+      "role": "coverage-link",
+      "path": "coverage-link.json",
+      "sha256": "88d9fef696023310ff2a845d45b60acbfaa636132f1ab1c404075c83041d8964",
+      "bytes": 272,
+      "immutable": true
+    },
+    {
+      "role": "environment-binding",
+      "path": "environment-binding.json",
+      "sha256": "87b30a9e0344122bd62a74a7126f07692bfede81d44d9abaafcc88db03767a3c",
+      "bytes": 195,
+      "immutable": true
+    },
+    {
+      "role": "input-manifest",
+      "path": "input-manifest.json",
+      "sha256": "33739b99da3f116286f92ec0ddd7c2fc8f4bc78a43c4776bde1b211550294500",
+      "bytes": 1905,
+      "immutable": true
+    },
+    {
+      "role": "raw-execution-log",
+      "path": "raw-log.txt",
+      "sha256": "adfe38b0c3349494a83b730bef56a3e9c11374d83aa9082cdee9d5cea9ca6f13",
+      "bytes": 1211,
+      "immutable": true
+    },
+    {
+      "role": "replay-command",
+      "path": "replay-command.txt",
+      "sha256": "8c081ee8a6676bb71fa419c7caf38bea51b58eac85cb3a56e1f8dac774ecaea5",
+      "bytes": 151,
+      "immutable": true
+    },
+    {
+      "role": "state-before-after",
+      "path": "state-before-after.json",
+      "sha256": "443acaeb8f0f77e8af712e91d3137555a87e74c8e15780e9405b2083dc615655",
+      "bytes": 1382,
+      "immutable": true
+    },
+    {
+      "role": "toolchain-version",
+      "path": "toolchain-versions.json",
+      "sha256": "52c94e18ba162914c9eeccc832b6cf908d7c7ee76eb11021b7b68cc16442b129",
+      "bytes": 561,
+      "immutable": true
+    }
+  ],
+  "corpora": [
+    {
+      "kind": "development",
+      "digest": "sha256:7ea052bf88314fd98b69312ae398560f2fb932d58dde3790d3a05e70b08df49c",
+      "path": "routes/java-to-csharp/corpus/development"
+    },
+    {
+      "kind": "holdout",
+      "digest": "sha256:e559fae998365f7e4df7cb00462e5141d963f48434c3197c37f121e8a1046932",
+      "path": "routes/java-to-csharp/corpus/holdout",
+      "independent": true,
+      "authoring_access": false
+    },
+    {
+      "kind": "representative",
+      "digest": "sha256:c931174c6251ce09410010b3d2b2488882e74857193f7e135727d7cc55c8b604",
+      "path": "routes/java-to-csharp/corpus/real-repository",
+      "independent": true,
+      "authoring_access": false
+    }
+  ],
+  "verification_status": "pending-independent-verifier"
+}

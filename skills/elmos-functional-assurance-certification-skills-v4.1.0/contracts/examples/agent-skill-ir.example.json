@@ -1,0 +1,27 @@
+{
+  "name": "repository-modernization",
+  "description": "Modernize a repository under proof-driven controls",
+  "triggers": [
+    "modernize this repository"
+  ],
+  "instructions": [
+    "freeze revision",
+    "build semantic evidence",
+    "transform and verify"
+  ],
+  "tools": [
+    "git",
+    "compiler"
+  ],
+  "resources": [
+    "references/architecture.md"
+  ],
+  "authority": {
+    "network": "deny",
+    "filesystem": "workspace-only"
+  },
+  "tests": [
+    "positive-trigger",
+    "negative-trigger"
+  ]
+}

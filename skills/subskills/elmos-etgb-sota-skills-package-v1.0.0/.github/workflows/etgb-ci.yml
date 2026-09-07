@@ -1,0 +1,48 @@
+name: ETGB
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .[dev]
+      - run: etgb validate
+      - run: etgb coverage
+      - run: etgb run --profile smoke --output reports/smoke-results.jsonl
+      - run: etgb score reports/smoke-results.jsonl --output reports/smoke-score.json
+      - run: pytest -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: etgb-evidence
+          path: reports/
+
+  pr-affected-matrix:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: package-integrity
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .[dev]
+      - run: etgb plan --changed-from origin/${{ github.base_ref }} --output reports/pr-plan.json
+      - run: etgb run --plan reports/pr-plan.json --output reports/pr-results.jsonl --allow-unavailable
+      - uses: actions/upload-artifact@v4
+        with:
+          name: etgb-pr-evidence
+          path: reports/

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Constrained Repair Loop"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $constrained-repair-loop to execute this ELMOS Runtime Skill with fail-closed evidence."

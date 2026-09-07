@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/precision-migration-b01-44/external-engineering-cases.schema.json",
+  "title": "Precision Migration External Workflow Engineering Cases",
+  "type": "object",
+  "required": ["schema_version", "namespace", "suite_key", "profile_registry_digest", "skill_count", "case_count", "per_skill_case_count", "evidence_class", "production_eligible", "external_stage_effect", "case_categories", "cases", "suite_digest"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "namespace": { "const": "precision-migration-b01-44" },
+    "suite_key": { "const": "precision-migration-external-engineering-v1" },
+    "profile_registry_digest": { "$ref": "#/$defs/digest" },
+    "skill_count": { "const": 557 },
+    "case_count": { "const": 2785 },
+    "per_skill_case_count": { "const": 5 },
+    "evidence_class": { "const": "LOCAL_ENGINEERING_SIMULATION" },
+    "production_eligible": { "const": false },
+    "external_stage_effect": { "const": "NONE" },
+    "case_categories": { "const": ["positive", "integration", "negative", "holdout", "representative"] },
+    "cases": {
+      "type": "array",
+      "minItems": 2785,
+      "maxItems": 2785,
+      "items": {
+        "type": "object",
+        "required": ["case_id", "skill", "batch", "risk_tier", "profile_digest", "handler_id", "execution_kind", "qualification_suite", "test_type", "engineering_stage", "external_stage", "fixture_role", "partition", "fixture_binding_digest", "expected_result", "evidence_class", "production_eligible", "case_digest"],
+        "properties": {
+          "case_id": { "type": "string", "pattern": "^PM-EXT-ENG-[0-9]{4}$" },
+          "skill": { "type": "string", "pattern": "^pm-b[0-9]{2}-" },
+          "batch": { "type": "integer", "minimum": 1, "maximum": 44 },
+          "risk_tier": { "enum": ["P0", "P1"] },
+          "profile_digest": { "$ref": "#/$defs/digest" },
+          "handler_id": { "type": "string", "minLength": 1 },
+          "execution_kind": { "enum": ["NATIVE_TOOLCHAIN", "DOMAIN_RUNTIME", "REPOSITORY_RUNTIME", "EVIDENCE_RUNTIME", "CUTOVER_RUNTIME"] },
+          "qualification_suite": { "enum": ["exact-domain", "b41-evidence", "specialized-runtime"] },
+          "test_type": { "enum": ["positive", "integration", "negative", "holdout", "representative"] },
+          "engineering_stage": { "enum": ["source_fixture_execution", "target_integration_fixture_execution", "negative_fail_closed_execution", "holdout_fixture_execution", "representative_fixture_execution"] },
+          "external_stage": {
+            "oneOf": [
+              { "enum": ["native_source_execution", "native_target_execution", "independent_holdout", "representative_customer_workload"] },
+              { "type": "null" }
+            ]
+          },
+          "fixture_role": { "enum": ["development", "integration", "negative", "holdout", "representative"] },
+          "partition": { "enum": ["development-source", "development-target-integration", "adversarial-negative", "local-holdout", "engineering-representative"] },
+          "fixture_binding_digest": { "$ref": "#/$defs/digest" },
+          "expected_result": { "const": "PASS" },
+          "evidence_class": { "const": "LOCAL_ENGINEERING_SIMULATION" },
+          "production_eligible": { "const": false },
+          "case_digest": { "$ref": "#/$defs/digest" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "suite_digest": { "$ref": "#/$defs/digest" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

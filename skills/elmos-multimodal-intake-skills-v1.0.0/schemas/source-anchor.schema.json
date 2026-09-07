@@ -1,0 +1,381 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/source-anchor.schema.json",
+  "title": "Elmos SourceAnchor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "anchor_id",
+    "asset_id",
+    "package_version_id",
+    "anchor_type",
+    "locator",
+    "content_hash",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "anchor_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "package_version_id": {
+      "type": "string"
+    },
+    "anchor_type": {
+      "enum": [
+        "pdf_region",
+        "word_part",
+        "audio_time",
+        "image_region",
+        "text_range",
+        "code_range",
+        "code_symbol",
+        "table_region",
+        "diagram_element",
+        "tool_run",
+        "test_run"
+      ]
+    },
+    "locator": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/pdfRegion"
+        },
+        {
+          "$ref": "#/$defs/wordPart"
+        },
+        {
+          "$ref": "#/$defs/audioTime"
+        },
+        {
+          "$ref": "#/$defs/imageRegion"
+        },
+        {
+          "$ref": "#/$defs/textRange"
+        },
+        {
+          "$ref": "#/$defs/codeRange"
+        },
+        {
+          "$ref": "#/$defs/codeSymbol"
+        },
+        {
+          "$ref": "#/$defs/genericLocator"
+        }
+      ]
+    },
+    "content_hash": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "VALID",
+        "MIGRATED",
+        "INVALID",
+        "DELETED",
+        "INACCESSIBLE"
+      ]
+    },
+    "superseded_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "pdfRegion": {
+      "type": "object",
+      "required": [
+        "kind",
+        "page",
+        "bbox"
+      ],
+      "properties": {
+        "kind": {
+          "const": "pdf_region"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wordPart": {
+      "type": "object",
+      "required": [
+        "kind",
+        "part"
+      ],
+      "properties": {
+        "kind": {
+          "const": "word_part"
+        },
+        "part": {
+          "type": "string"
+        },
+        "paragraph_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "table_cell": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "audioTime": {
+      "type": "object",
+      "required": [
+        "kind",
+        "start_ms",
+        "end_ms"
+      ],
+      "properties": {
+        "kind": {
+          "const": "audio_time"
+        },
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "speaker": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "imageRegion": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "image_region"
+        },
+        "bbox": {
+          "$ref": "#/$defs/bbox"
+        },
+        "polygon": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "bbox"
+          ]
+        },
+        {
+          "required": [
+            "polygon"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "textRange": {
+      "type": "object",
+      "required": [
+        "kind",
+        "start_line",
+        "end_line"
+      ],
+      "properties": {
+        "kind": {
+          "const": "text_range"
+        },
+        "start_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start_byte": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "end_byte": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "encoding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "codeRange": {
+      "type": "object",
+      "required": [
+        "kind",
+        "relative_path",
+        "start_line",
+        "end_line"
+      ],
+      "properties": {
+        "kind": {
+          "const": "code_range"
+        },
+        "relative_path": {
+          "type": "string"
+        },
+        "start_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start_column": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "end_column": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "codeSymbol": {
+      "type": "object",
+      "required": [
+        "kind",
+        "relative_path",
+        "symbol_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "code_symbol"
+        },
+        "relative_path": {
+          "type": "string"
+        },
+        "symbol_id": {
+          "type": "string"
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "genericLocator": {
+      "type": "object",
+      "required": [
+        "kind",
+        "reference_id"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "table_region",
+            "diagram_element",
+            "tool_run",
+            "test_run"
+          ]
+        },
+        "reference_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 561: system prompt instruction and configuration governor"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $system-prompt-instruction-and-configuration-governor to evaluate this capability with evidence."

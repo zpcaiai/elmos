@@ -1,0 +1,105 @@
+{
+  "profile_key": "web-console-next16-react19-wechat-v1-target",
+  "version": "2026-08-30.1",
+  "owner": "elmos-client-modernization-maintainers",
+  "framework": "wechat-native-miniapp-candidate",
+  "versions": [
+    "wechat-base-library-3.9.1"
+  ],
+  "language": "javascript",
+  "language_versions": [
+    "ecmascript-2022"
+  ],
+  "runtime": "wechat-miniapp-runtime-candidate",
+  "runtime_versions": [
+    "3.9.1"
+  ],
+  "build_tool": "wechat-devtools-2.01.2510290",
+  "package_manager": "none-native-project",
+  "router": [
+    "app-json-native-pages-v1"
+  ],
+  "rendering_strategy": {
+    "mode": "native-wxml-no-webview",
+    "status": "LOCAL_GENERATED"
+  },
+  "state_strategy": {
+    "provider": "component-data-setData-with-typed-plain-decoder",
+    "cleanup": "detached-abort-and-epoch"
+  },
+  "form_strategy": {
+    "provider": "native-input-bindinput",
+    "validation": "fail-closed-before-effects"
+  },
+  "styling_strategy": {
+    "mode": "native-wxss-plus-css-module-token-map",
+    "unsupported": "explicit-manual-review"
+  },
+  "design_system_strategy": {
+    "mode": "web-console-wechat-token-adapter-v1"
+  },
+  "api_client_strategy": {
+    "provider": "cancellable-wx-request",
+    "base_url": "explicit-runtime-property",
+    "undeclared_network": "denied"
+  },
+  "auth_strategy": {
+    "mode": "storage-backed-session-candidate",
+    "server_authority": "not-in-client"
+  },
+  "i18n_strategy": {
+    "provider": "source-label-copy-candidate",
+    "locales": [
+      "zh-CN",
+      "en-US"
+    ]
+  },
+  "accessibility_profile": {
+    "standard": "native-control-and-source-contract-candidate",
+    "manual_review": "NOT_RUN"
+  },
+  "browser_matrix": [
+    "wechat-devtools-renderer-NOT_RUN"
+  ],
+  "device_profiles": [
+    "wechat-devtools-emulator-NOT_RUN",
+    "wechat-physical-device-NOT_RUN"
+  ],
+  "test_profiles": [
+    "real-wxml-parser-local",
+    "wechat-devtools-2.01.2510290-NOT_RUN",
+    "physical-device-p0-NOT_RUN"
+  ],
+  "provision": {
+    "commands": [
+      "/Applications/wechatwebdevtools.app/Contents/MacOS/cli open --project client-packs/web-console-next16-react19-wechat-v1/target-project"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "official compile plus catalog P0 journey; NOT_RUN until evidence is attached"
+    ]
+  },
+  "security": {
+    "credential_policy": "no app secret key token or production credential",
+    "network": "explicit apiBaseUrl and platform domain allowlist required",
+    "forbidden_effects": [
+      "upload",
+      "review",
+      "release",
+      "payment",
+      "refund"
+    ]
+  },
+  "lifecycle": {
+    "support_until": "not-established-experimental-pack",
+    "upgrade_policy": "new exact tuple and evidence required for any source target or toolchain change"
+  },
+  "authorization": {
+    "official_build": true,
+    "preview": false,
+    "upload": false,
+    "review": false,
+    "release": false
+  }
+}

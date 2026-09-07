@@ -1,0 +1,4 @@
+interface:
+  display_name: "B103 Immutable Audit Ledger"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b103-immutable-audit-ledger to execute this ELMOS product-closure Skill with fail-closed evidence."

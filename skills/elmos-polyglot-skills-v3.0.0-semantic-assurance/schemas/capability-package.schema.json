@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/capability-package.schema.json",
+  "title": "ELMOS Capability Package",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "elmos.capability-package/v1"
+    },
+    "kind": {
+      "const": "CapabilityPackage"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "readiness"
+      ],
+      "properties": {
+        "readiness": {
+          "const": "not-run"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "technologyRegistry",
+        "skillManifest",
+        "routeRegistry",
+        "routeMatrix",
+        "entrySkills",
+        "readinessPolicy"
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "elmos-7plus1-commercial-software-factory"
+  short_description: "Route the Elmos 7+1 commercial Skill set"
+  default_prompt: "Use $elmos-7plus1-commercial-software-factory to route the exact P00-P07 package DAG while preserving NOT_RUN evidence and NOT_CERTIFIED status."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 41: Knowledge Freshness Versioning"
+  short_description: "Run evidence-bound Batch 41 knowledge freshness versioning work"
+  default_prompt: "Use $b41-knowledge-freshness-versioning to implement and verify this capability with fail-closed evidence."

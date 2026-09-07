@@ -1,0 +1,34 @@
+python3 tooling/validate_project_synthesis_integration.py
+OK: 170 Project Synthesis skills, 17 schemas, Batch 46-60 runtime integration
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked pytest
+.....                                                                    [100%]
+5 passed in 0.13s
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
+All checks passed!
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked mypy src
+Success: no issues found in 10 source files
+/opt/homebrew/bin/uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
+{
+  "build_and_analysis_count": 7,
+  "external_certification_status": "NOT_RUN",
+  "generated_file_count": 60,
+  "production_delivery_status": "NOT_RUN",
+  "startup_probes": [
+    {
+      "port": 8081,
+      "response": "{\"status\":\"UP\",\"service\":\"work-order-service\"}",
+      "status": "PASSED"
+    },
+    {
+      "port": 8082,
+      "response": "{\"status\":\"UP\",\"service\":\"work-order-service\"}",
+      "status": "PASSED"
+    },
+    {
+      "port": 8083,
+      "response": "{\"status\":\"UP\",\"service\":\"work-order-service\"}",
+      "status": "PASSED"
+    }
+  ],
+  "status": "PASSED"
+}

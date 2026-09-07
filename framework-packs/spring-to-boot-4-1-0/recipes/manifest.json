@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-to-boot-4-1-0",
+  "rewrite_spring": "6.35.0",
+  "rewrite_maven_plugin": "6.44.0",
+  "recipe_config": "recipes/spring-to-boot-4.1.0.yml",
+  "mvc_recipe_config": "recipes/spring-framework-mvc-to-boot-4.1.0.yml",
+  "recipes": [
+    "io.elmos.openrewrite.SpringBoot1_5ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot2_0To2_6ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot2_7ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot3_0To3_4ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot3_5ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot4_0ToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot1_5GradleToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot2xGradleToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot3xGradleToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringBoot4_0GradleToBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringFrameworkMvcToSpringBoot4_1_0Java21",
+    "io.elmos.openrewrite.SpringFrameworkCoreToSpringBoot4_1_0Java21"
+  ],
+  "execution_status": "NOT_RUN",
+  "deterministic": true,
+  "exact_source_binding": true,
+  "exact_target_binding": true,
+  "regex_as_semantic_core": false,
+  "manual_obligation_policy": "fail-closed"
+}

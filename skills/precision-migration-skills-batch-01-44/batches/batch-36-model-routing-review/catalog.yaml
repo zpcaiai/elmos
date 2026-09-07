@@ -1,0 +1,25 @@
+batch: 36
+slug: model-routing-review
+title: "模型路由与异构审查"
+phase: "J 模型与Agent执行系统"
+skills:
+  - name: model-capability-registry
+    description: "登记模型版本、上下文、工具能力、部署方式、成本和各方向实测指标。"
+  - name: task-risk-scoring
+    description: "根据动态语义、并发、事务、平台、测试缺口和影响面计算任务风险。"
+  - name: language-pair-model-ranking
+    description: "按具体语言/框架/数据库方向排名模型，而非依赖通用榜单。"
+  - name: cost-aware-model-routing
+    description: "在发布门槛不变的前提下最小化每个验收模块的模型与计算成本。"
+  - name: private-model-routing
+    description: "在数据策略、内网、国产化和硬件约束下选择客户私有模型。"
+  - name: byok-provider-adapter
+    description: "支持客户自带 OpenAI、Anthropic、Gemini、国产或 OpenAI兼容模型凭证。"
+  - name: heterogeneous-model-review
+    description: "由不同供应商模型独立生成测试、攻击假设和审查高风险实现。"
+  - name: stronger-model-escalation
+    description: "当修复轮数、证明失败或风险超阈值时自动升级更强模型或人工。"
+  - name: model-output-calibration
+    description: "用客观构建、测试、差分和历史数据校准模型置信表达。"
+  - name: cost-per-accepted-module
+    description: "统计每个通过全部门禁模块的 Token、计算、时间和人工成本。"

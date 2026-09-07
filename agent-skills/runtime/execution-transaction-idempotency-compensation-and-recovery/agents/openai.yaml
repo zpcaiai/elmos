@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Batch 30 Skill 012"
+  short_description: "Run ELMOS Product Batch 30 governance safely"
+  default_prompt: "Use $execution-transaction-idempotency-compensation-and-recovery to implement its evidence-bound ELMOS Product Batch 30 contract."

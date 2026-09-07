@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Modernization Runtime"
+  short_description: "Run Java modernization in an isolated workspace"
+  default_prompt: "Use $java-modernization-runtime only inside an authorized ELMOS customer workspace."

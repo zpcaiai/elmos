@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "journey_id": "real-spring-upgrade-lifecycle",
+  "route": "/spring",
+  "priority": "P0",
+  "preconditions": [
+    "Java Engine capability endpoint is reachable",
+    "Rootless Runner and separate verifier report configured"
+  ],
+  "steps": [
+    "enter approved HTTPS Git URL and exact ref",
+    "optionally bind a full 40-character commit SHA",
+    "submit one idempotent migration request",
+    "observe immutable Commit and Snapshot digest",
+    "observe exact Boot/Java/Maven fingerprint and FCM artifact",
+    "observe OpenRewrite, source and target tests, bounded repair and independent validation",
+    "download only after independent PASS",
+    "start only after independent PASS",
+    "observe health path and redacted logs",
+    "stop or retry from an eligible terminal state"
+  ],
+  "negative_assertions": [
+    "unconfigured Runner disables submission",
+    "failed independent validation exposes no download or start action",
+    "NOT_RUN is never rendered as READY",
+    "runtime start cannot precede independent validation",
+    "logs never display recognized token, password, authorization or secret values"
+  ],
+  "execution_status": "NOT_RUN",
+  "evidence_refs": []
+}

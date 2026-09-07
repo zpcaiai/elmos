@@ -1,0 +1,7 @@
+# Example instance for batch-02: assessment-request
+portfolio_id: example
+record_id: example
+requested_depth: inventory
+schema_version: 1.0.0
+scope: example
+tenant_id: example

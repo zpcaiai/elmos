@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosModelSelection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "smart",
+        "manual"
+      ]
+    },
+    "selected_model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "optimization_profile": {
+      "type": "string",
+      "enum": [
+        "cost_performance",
+        "lowest_cost",
+        "max_quality",
+        "fastest"
+      ],
+      "default": "cost_performance"
+    },
+    "fallback_policy": {
+      "type": "string",
+      "enum": [
+        "strict",
+        "smart_within_allowlist"
+      ],
+      "default": "strict"
+    },
+    "verification_policy": {
+      "type": "string",
+      "enum": [
+        "system_required_verifiers",
+        "selected_model_only"
+      ],
+      "default": "system_required_verifiers"
+    },
+    "selection_source": {
+      "type": "string",
+      "enum": [
+        "ui",
+        "api",
+        "cli",
+        "resume"
+      ],
+      "default": "ui"
+    },
+    "locked_by_user": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "manual"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "selected_model"
+        ]
+      },
+      "else": {
+        "properties": {
+          "selected_model": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

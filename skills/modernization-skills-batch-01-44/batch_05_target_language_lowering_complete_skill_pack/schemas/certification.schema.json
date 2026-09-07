@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-05:certification",
+  "title": "Batch 05 Certification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "certificate_id",
+    "batch",
+    "status",
+    "scope",
+    "input_digests",
+    "evidence_refs",
+    "issued_at",
+    "expires_at",
+    "limitations"
+  ],
+  "properties": {
+    "certificate_id": {
+      "type": "string"
+    },
+    "batch": {
+      "const": 5
+    },
+    "status": {
+      "enum": [
+        "certified",
+        "limited",
+        "experimental",
+        "blocked",
+        "stale",
+        "revoked"
+      ]
+    },
+    "scope": {
+      "type": "string"
+    },
+    "input_digests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "signature": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

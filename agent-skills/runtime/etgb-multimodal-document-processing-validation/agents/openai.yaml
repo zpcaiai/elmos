@@ -1,0 +1,6 @@
+interface:
+  display_name: "ETGB Multimodal Document Processing Validation"
+  short_description: "Run ETGB full product assurance with evidence controls"
+  default_prompt: "Use $etgb-multimodal-document-processing-validation to run this ETGB capability with fail-closed evidence."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "dependency and build repair agent"
+  short_description: "Run a bounded Batch 8 repair workflow"
+  default_prompt: "Use $dependency-and-build-repair-agent to perform this Batch 8 repair step."

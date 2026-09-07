@@ -1,0 +1,21 @@
+batch: 2
+slug: modernization-assessment
+title: "应用现代化自动评估"
+phase: "A 市场、评估与转换决策"
+skills:
+  - name: repository-modernization-assessment
+    description: "对源仓库执行端到端现代化评估，覆盖架构、代码、依赖、数据、安全、测试、运维和团队适配。"
+  - name: application-architecture-recovery
+    description: "从静态代码、配置、部署文件和运行 Trace 中恢复应用模块、边界、调用、数据与部署架构。"
+  - name: modernization-readiness-score
+    description: "从可转换性、测试、可观测性、依赖、风险和组织准备度计算可解释的现代化就绪评分。"
+  - name: modernization-blocker-discovery
+    description: "发现反射、动态加载、原生库、私有框架、平台 API、隐式事务和未观测行为等阻断项。"
+  - name: technical-debt-inventory
+    description: "生成版本、框架、依赖、安全、架构、测试和运维技术债清单，并按风险和收益排序。"
+  - name: modernization-option-comparator
+    description: "比较保留、升级、重新平台化、重构、重写、包装和退役等现代化路径。"
+  - name: representative-slice-pilot
+    description: "自动选择代表性语义切片执行试转换，以校准正确率、修复轮数、成本和风险。"
+  - name: assessment-report-generator
+    description: "输出管理层摘要、技术评估、风险登记、路线图和可审计证据索引。"

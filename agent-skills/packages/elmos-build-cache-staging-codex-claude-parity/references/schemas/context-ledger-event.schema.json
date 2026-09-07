@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/context-ledger-event.schema.json",
+  "title": "Context Ledger Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "stream_id",
+    "sequence",
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "payload_digest",
+    "previous_event_digest",
+    "event_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "stream_id": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "enum": [
+        "SNAPSHOT_BOUND",
+        "FILE_READ",
+        "SYMBOL_READ",
+        "SUMMARY_WRITTEN",
+        "CONTENT_CHANGED",
+        "CONTEXT_STALE",
+        "CONTENT_REREAD",
+        "TOOL_OBSERVED",
+        "VALIDATION_OBSERVED",
+        "CONTEXT_CHECKPOINT",
+        "COMPACTION_COMPLETED"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "repository_snapshot_digest": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "subject_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payload_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "previous_event_digest": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "event_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "supersedes_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tenant_scope": {
+      "type": "string"
+    },
+    "branch_lineage": {
+      "type": "string"
+    }
+  }
+}

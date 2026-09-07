@@ -1,0 +1,4 @@
+interface:
+  display_name: "B33 Serverless Event Runtime"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b33-serverless-event-runtime to execute this ELMOS Runtime Skill with fail-closed evidence."

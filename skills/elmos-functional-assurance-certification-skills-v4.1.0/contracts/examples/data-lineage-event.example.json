@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "data-lineage-event-example",
+  "status": "READY",
+  "content_hash": "a4de476d9c9134e017c4a940f479213ad5b2e0cb1ecba5d502b1b58171aa5c26",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

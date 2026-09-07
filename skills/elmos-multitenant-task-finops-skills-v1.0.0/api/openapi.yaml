@@ -1,0 +1,919 @@
+openapi: 3.1.0
+info:
+  title: Elmos Multi-Tenant Task Control & FinOps API
+  version: 1.0.0
+  description: Reference contract. Tenant/account authorization is derived from verified
+    identity and membership; client tenant selection is never sufficient authorization.
+servers:
+- url: /api/v1
+security:
+- bearerAuth: []
+paths:
+  /tasks:
+    post:
+      operationId: createTask
+      summary: Persist and admit or queue a root task
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      - name: X-Request-Id
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task persisted and admitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskAdmission'
+        '202':
+          description: Task persisted and waiting for a slot or another durable gate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskAdmission'
+        '409':
+          description: Idempotency key conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      operationId: listTasks
+      summary: List authorized tasks
+      parameters:
+      - name: state
+        in: query
+        schema:
+          type: string
+      - name: project_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
+      responses:
+        '200':
+          description: Task page
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskSummary'
+                  next_cursor:
+                    type:
+                    - string
+                    - 'null'
+                  as_of:
+                    type: string
+                    format: date-time
+  /tasks/{taskId}:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTask
+      summary: Get current task/run/progress summary
+      responses:
+        '200':
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+        '404':
+          description: Not found in authorized scope
+  /tasks/{taskId}/pause:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    post:
+      operationId: pauseTask
+      summary: Idempotently request pause
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Pause accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+  /tasks/{taskId}/resume:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    post:
+      operationId: resumeTask
+      summary: Request compatible resume and reacquire admission
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Resume accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+  /tasks/{taskId}/cancel:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    post:
+      operationId: cancelTask
+      summary: Idempotently request cancellation
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Cancel accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+  /tasks/{taskId}/retry:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    post:
+      operationId: retryTask
+      summary: Create an allowed retry/new run
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Retry accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlResponse'
+  /tasks/{taskId}/events:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTaskEvents
+      summary: Replay durable ordered events
+      parameters:
+      - name: after_sequence
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+      responses:
+        '200':
+          description: Event page
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - items
+                - watermark
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskEvent'
+                  watermark:
+                    type: integer
+                  has_more:
+                    type: boolean
+  /tasks/{taskId}/stream:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: streamTask
+      summary: SSE task progress with Last-Event-ID replay
+      parameters:
+      - name: Last-Event-ID
+        in: header
+        schema:
+          type: string
+      responses:
+        '200':
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /tasks/{taskId}/nodes:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTaskNodes
+      summary: Get node and attempt history
+      responses:
+        '200':
+          description: Get node and attempt history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskNode'
+  /tasks/{taskId}/checkpoints:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTaskCheckpoints
+      summary: Get authorized checkpoint metadata
+      responses:
+        '200':
+          description: Get authorized checkpoint metadata
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CheckpointSummary'
+  /tasks/{taskId}/artifacts:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTaskArtifacts
+      summary: Get versioned task artifacts
+      responses:
+        '200':
+          description: Get versioned task artifacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtifactSummary'
+  /tasks/{taskId}/financial-summary:
+    parameters:
+    - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTaskFinancialSummary
+      summary: Get authorized task cost, revenue, profit, and margin
+      responses:
+        '200':
+          description: Financial summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialSummary'
+  /me/task-concurrency:
+    get:
+      operationId: getMyTaskConcurrency
+      summary: Get the authenticated account's global three-slot status
+      responses:
+        '200':
+          description: Concurrency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConcurrencySummary'
+  /tenants/{tenantId}/runtime-capacity:
+    parameters:
+    - name: tenantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    get:
+      operationId: getTenantRuntimeCapacity
+      summary: Get authorized tenant quota/capacity
+      responses:
+        '200':
+          description: Capacity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantCapacity'
+  /analytics/task-operations:
+    get:
+      operationId: getTaskOperationalAnalytics
+      summary: Operational task analytics
+      parameters:
+      - $ref: '#/components/parameters/AsOf'
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Operational metrics
+          content:
+            application/json:
+              schema:
+                type: object
+  /analytics/task-financials:
+    get:
+      operationId: getTaskFinancialAnalytics
+      summary: Cost/revenue/margin analytics
+      parameters:
+      - $ref: '#/components/parameters/AsOf'
+      - name: basis
+        in: query
+        schema:
+          enum:
+          - POSTED
+          - FINAL
+          - RECOGNIZED
+          - COLLECTED
+      - name: currency
+        in: query
+        schema:
+          type: string
+          pattern: ^[A-Z]{3}$
+      responses:
+        '200':
+          description: Financial metrics
+          content:
+            application/json:
+              schema:
+                type: object
+  /internal/usage-events:
+    post:
+      operationId: recordUsageEvent
+      summary: Internal idempotent usage ingestion
+      security:
+      - serviceAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsageEvent'
+      responses:
+        '202':
+          description: Accepted
+        '409':
+          description: Conflicting idempotency
+  /internal/revenue-entries:
+    post:
+      operationId: recordRevenueEntry
+      summary: Authorized billing/finance revenue ingestion
+      security:
+      - serviceAuth: []
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevenueEntry'
+      responses:
+        '202':
+          description: Accepted
+        '409':
+          description: Conflicting idempotency
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    serviceAuth:
+      type: mutualTLS
+  parameters:
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    AsOf:
+      name: as_of
+      in: query
+      schema:
+        type: string
+        format: date-time
+  schemas:
+    TaskState:
+      type: string
+      enum:
+      - CREATED
+      - WAITING_FOR_SLOT
+      - ADMITTED
+      - STARTING
+      - RUNNING
+      - PAUSE_REQUESTED
+      - PAUSING
+      - PAUSED
+      - RETRY_WAIT
+      - CANCEL_REQUESTED
+      - CANCELLING
+      - UNKNOWN_RESULT
+      - RECONCILING
+      - MANUAL_RECOVERY
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+    TaskCreate:
+      type: object
+      additionalProperties: false
+      required:
+      - tenant_id
+      - task_type
+      - title
+      - priority
+      - workload_class
+      - input
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        project_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        task_type:
+          type: string
+        title:
+          type: string
+        priority:
+          enum:
+          - LOW
+          - NORMAL
+          - HIGH
+          - URGENT
+        workload_class:
+          type: string
+        input:
+          type: object
+        input_artifact_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        budget:
+          type: object
+          properties:
+            max_cost_amount:
+              type: string
+            currency:
+              type: string
+              pattern: ^[A-Z]{3}$
+    TaskAdmission:
+      type: object
+      required:
+      - task_id
+      - state
+      - active_slots
+      - maximum_slots
+      - queued_count
+      - admission_reasons
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/TaskState'
+        active_slots:
+          type: integer
+          minimum: 0
+          maximum: 3
+        maximum_slots:
+          const: 3
+        queued_count:
+          type: integer
+          minimum: 0
+        queue_position:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        admission_reasons:
+          type: array
+          items:
+            type: string
+        links:
+          type: object
+    TaskSummary:
+      type: object
+      required:
+      - task_id
+      - tenant_id
+      - task_type
+      - title
+      - state
+      - created_at
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        project_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        task_type:
+          type: string
+        title:
+          type: string
+        state:
+          $ref: '#/components/schemas/TaskState'
+        progress:
+          type: number
+          minimum: 0
+          maximum: 1
+        current_node_key:
+          type:
+          - string
+          - 'null'
+        created_at:
+          type: string
+          format: date-time
+    TaskDetail:
+      allOf:
+      - $ref: '#/components/schemas/TaskSummary'
+      - type: object
+        properties:
+          run_id:
+            type:
+            - string
+            - 'null'
+            format: uuid
+          elapsed_ms:
+            type: integer
+          eta_p50_ms:
+            type:
+            - integer
+            - 'null'
+          eta_p90_ms:
+            type:
+            - integer
+            - 'null'
+          cost_status:
+            type:
+            - string
+            - 'null'
+          artifact_count:
+            type: integer
+    ControlResponse:
+      type: object
+      required:
+      - task_id
+      - state
+      - control_request_id
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        state:
+          $ref: '#/components/schemas/TaskState'
+        control_request_id:
+          type: string
+          format: uuid
+        message:
+          type: string
+    TaskEvent:
+      type: object
+      required:
+      - event_id
+      - transition_id
+      - task_id
+      - task_run_id
+      - sequence_no
+      - event_type
+      - occurred_at
+      - payload
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        transition_id:
+          type: string
+        task_id:
+          type: string
+          format: uuid
+        task_run_id:
+          type: string
+          format: uuid
+        sequence_no:
+          type: integer
+          minimum: 1
+        event_type:
+          type: string
+        node_key:
+          type:
+          - string
+          - 'null'
+        occurred_at:
+          type: string
+          format: date-time
+        payload:
+          type: object
+    TaskNode:
+      type: object
+      properties:
+        node_key:
+          type: string
+        state:
+          type: string
+        progress:
+          type: number
+        attempt_no:
+          type: integer
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        finished_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        last_heartbeat_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    CheckpointSummary:
+      type: object
+      properties:
+        checkpoint_id:
+          type: string
+          format: uuid
+        checkpoint_no:
+          type: integer
+        node_key:
+          type:
+          - string
+          - 'null'
+        state_sha256:
+          type: string
+        compatible:
+          type:
+          - boolean
+          - 'null'
+        created_at:
+          type: string
+          format: date-time
+    ArtifactSummary:
+      type: object
+      properties:
+        artifact_id:
+          type: string
+          format: uuid
+        artifact_role:
+          type: string
+        artifact_type:
+          type: string
+        version_no:
+          type: integer
+        media_type:
+          type: string
+        object_size_bytes:
+          type: integer
+        integrity_status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    ConcurrencySummary:
+      type: object
+      required:
+      - account_id
+      - active_slots
+      - maximum_slots
+      - queued_count
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        active_slots:
+          type: integer
+          minimum: 0
+          maximum: 3
+        maximum_slots:
+          const: 3
+        occupied:
+          type: array
+          items:
+            type: object
+        queued_count:
+          type: integer
+          minimum: 0
+    TenantCapacity:
+      type: object
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        active_tasks:
+          type: integer
+        max_active_tasks:
+          type: integer
+        used_concurrency_units:
+          type: number
+        max_concurrency_units:
+          type: number
+        queued_tasks:
+          type: integer
+        budget_status:
+          type: string
+        provider_gates:
+          type: array
+          items:
+            type: string
+    UsageEvent:
+      type: object
+      required:
+      - tenant_id
+      - account_id
+      - task_id
+      - task_run_id
+      - provider
+      - sku
+      - usage_type
+      - unit
+      - quantity
+      - price_book_version
+      - unit_price
+      - base_currency
+      - base_cost
+      - occurred_at
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        account_id:
+          type: string
+          format: uuid
+        task_id:
+          type: string
+          format: uuid
+        task_run_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+        sku:
+          type: string
+        usage_type:
+          type: string
+        unit:
+          type: string
+        quantity:
+          type: number
+        price_book_version:
+          type: string
+        unit_price:
+          type: string
+        base_currency:
+          type: string
+        base_cost:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+    RevenueEntry:
+      type: object
+      required:
+      - tenant_id
+      - kind
+      - billing_mode
+      - amount
+      - currency
+      - base_currency
+      - base_amount
+      - policy_version
+      - occurred_at
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        task_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        kind:
+          type: string
+        billing_mode:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+        base_currency:
+          type: string
+        base_amount:
+          type: string
+        policy_version:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+    FinancialSummary:
+      type: object
+      required:
+      - task_id
+      - reporting_currency
+      - as_of
+      - cost
+      - revenue
+      - gross_profit
+      - gross_margin
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        reporting_currency:
+          type: string
+        as_of:
+          type: string
+          format: date-time
+        cost:
+          type: object
+        revenue:
+          type: object
+        gross_profit:
+          type: string
+        gross_margin:
+          type:
+          - string
+          - 'null'
+        reconciliation_status:
+          type: string
+    Problem:
+      type: object
+      required:
+      - title
+      - status
+      - code
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        code:
+          type: string
+        detail:
+          type: string
+        task_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        trace_id:
+          type:
+          - string
+          - 'null'
+        retryable:
+          type: boolean
+        next_action:
+          type:
+          - string
+          - 'null'

@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/staged-file.schema.json",
+  "title": "ELMOS Staged File",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "staged_file_id",
+    "tenant_id",
+    "project_id",
+    "run_id",
+    "node_id",
+    "attempt",
+    "logical_path",
+    "file_class",
+    "status",
+    "lease_epoch",
+    "version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "staged_file_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "logical_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_class": {
+      "enum": [
+        "SCRATCH",
+        "STAGED_INTERMEDIATE",
+        "SEALED_ARTIFACT",
+        "PUBLISH_CANDIDATE",
+        "QUARANTINED"
+      ]
+    },
+    "status": {
+      "enum": [
+        "RESERVED",
+        "WRITING",
+        "SEALED",
+        "CAS_PROMOTED",
+        "TREE_INCLUDED",
+        "PUBLISHED",
+        "ABORTED",
+        "QUARANTINED"
+      ]
+    },
+    "lease_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lease_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "media_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact_kind": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expected_size": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "actual_size": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "action_key": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifact_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_map_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "validation_level": {
+      "enum": [
+        "UNVERIFIED",
+        "COMPILE_VERIFIED",
+        "TEST_VERIFIED",
+        "BEHAVIOR_VERIFIED",
+        "PRODUCTION_CERTIFIED",
+        "QUARANTINED"
+      ]
+    },
+    "secret_scan_status": {
+      "enum": [
+        "NOT_RUN",
+        "PASS",
+        "FAIL",
+        "ERROR"
+      ]
+    },
+    "quarantine_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timestamps": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

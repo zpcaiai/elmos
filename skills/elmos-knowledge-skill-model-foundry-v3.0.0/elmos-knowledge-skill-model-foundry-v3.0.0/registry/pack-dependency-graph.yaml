@@ -1,0 +1,132 @@
+apiVersion: elmos.ai/v1
+kind: PackDependencyGraph
+metadata:
+  version: 3.0.0
+spec:
+  commonDependencies:
+  - typed-skill-contract
+  - evidence-contract
+  - policy-contract
+  - skill-transaction-and-rollback
+  - tenant-policy-aware-retrieval
+  packs:
+  - pack: 17-repository-execution-os
+    dependsOnSkills:
+    - repository-incremental-ingestion
+    - build-and-dependency-graph
+    - durable-task-checkpoint-memory
+  - pack: 18-java-spring-enterprise-modernization
+    dependsOnSkills:
+    - spring-legacy-inventory-and-version-graph
+    - spring-shadow-differential-golden-route
+    - multi-language-ast-extraction
+  - pack: 19-cross-language-semantic-conversion
+    dependsOnSkills:
+    - cross-language-semantic-ir-compiler
+    - cross-language-repository-equivalence
+    - semantic-ir-reconciliation
+  - pack: 20-sql-database-modernization
+    dependsOnSkills:
+    - sql-dialect-parser-and-semantic-ir
+    - sql-schema-data-result-differential
+    - database-schema-and-query-graph
+  - pack: 21-project-generation-product-engineering
+    dependsOnSkills:
+    - project-requirement-to-architecture
+    - project-test-deploy-doc-certification
+    - release-bundle-contract
+  - pack: 22-frontend-mobile-miniapp-modernization
+    dependsOnSkills:
+    - frontend-component-state-semantic-ir
+    - frontend-visual-accessibility-differential
+    - multimodal-artifact-ingestion
+  - pack: 23-repository-refactoring-technical-debt
+    dependsOnSkills:
+    - semantic-diff-and-impact-analysis
+    - test-to-code-evidence-graph
+    - proof-carrying-skill
+  - pack: 24-api-event-integration-modernization
+    dependsOnSkills:
+    - api-and-event-contract-graph
+    - api-contract-ingestion
+    - semantic-behavior-equivalence
+  - pack: 25-data-engineering-lakehouse-analytics
+    dependsOnSkills:
+    - database-metadata-ingestion
+    - openlineage-compatible-emission
+    - data-residency-aware-routing
+  - pack: 26-cloud-native-devops-platform-engineering
+    dependsOnSkills:
+    - deployment-topology-graph
+    - artifact-signing-and-verification
+    - release-shadow-canary-auto-rollback
+  - pack: 27-test-quality-assurance-factory
+    dependsOnSkills:
+    - test-to-code-evidence-graph
+    - deterministic-grader-framework
+    - e0-e5-certification-engine
+  - pack: 28-security-compliance-supply-chain
+    dependsOnSkills:
+    - security-policy-graph
+    - least-privilege-tool-authorization
+    - tamper-evident-audit-log
+  - pack: 29-performance-reliability-cost-engineering
+    dependsOnSkills:
+    - runtime-static-correlation
+    - quality-cost-pareto-analysis
+    - chaos-soak-backup-restore-certification
+  - pack: 30-architecture-documentation-ide
+    dependsOnSkills:
+    - architecture-recovery
+    - citation-and-source-binding
+    - semantic-diff-and-impact-analysis
+  - pack: 31-ai-agent-rag-ml-engineering
+    dependsOnSkills:
+    - model-inference-gateway
+    - hybrid-code-knowledge-retrieval
+    - repository-training-environment
+  - pack: 32-legacy-mainframe-enterprise-modernization
+    dependsOnSkills:
+    - artifact-normalization
+    - semantic-ir-reconciliation
+    - differential-testing
+  - pack: 33-industrial-iot-edge-robotics
+    dependsOnSkills:
+    - multimodal-artifact-ingestion
+    - runtime-static-correlation
+    - formal-invariant-synthesis
+  - pack: 34-language-runtime-adapters
+    dependsOnSkills:
+    - multi-language-ast-extraction
+    - build-and-dependency-graph
+    - compatibility-matrix-manager
+  - pack: 35-database-engine-adapters
+    dependsOnSkills:
+    - database-metadata-ingestion
+    - sql-dialect-parser-and-semantic-ir
+    - compatibility-matrix-manager
+  - pack: 36-framework-runtime-adapters
+    dependsOnSkills:
+    - configuration-semantics-graph
+    - build-and-dependency-graph
+    - compatibility-matrix-manager
+  - pack: 37-cloud-platform-adapters
+    dependsOnSkills:
+    - deployment-topology-graph
+    - data-residency-aware-routing
+    - compatibility-matrix-manager
+  - pack: 38-golden-route-customer-delivery
+    dependsOnSkills:
+    - customer-acceptance-report
+    - golden-route-production-certifier
+    - audit-and-customer-evidence-export
+  - pack: 39-product-commercialization-marketplace
+    dependsOnSkills:
+    - feature-entitlement-and-license
+    - usage-billing-reconciliation
+    - commercial-margin-and-unit-economics
+  - pack: 40-regulated-industry-assurance
+    dependsOnSkills:
+    - audit-readiness-package
+    - risk-based-human-approval-gates
+    - recertification-trigger-engine

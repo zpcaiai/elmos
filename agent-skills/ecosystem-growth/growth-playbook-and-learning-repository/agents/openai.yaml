@@ -1,0 +1,5 @@
+interface:
+  display_name: "Growth Playbook And Learning Repository"
+  short_description: "Authoritative Batch 14 Skill 459 workflow"
+  default_prompt: "Use $growth-playbook-and-learning-repository to execute its evidence-bound Batch 14 workflow."
+

@@ -1,0 +1,852 @@
+{
+  "capabilities": [
+    {
+      "action": "root-route",
+      "mode": "local",
+      "required_inputs": [
+        "target_skill_or_public_method"
+      ],
+      "skill_name": "elmos-7plus1-commercial-software-factory"
+    },
+    {
+      "action": "compile-workflow",
+      "mode": "local",
+      "required_inputs": [
+        "nodes"
+      ],
+      "skill_name": "elmos-software-factory-master"
+    },
+    {
+      "action": "resolve-package",
+      "mode": "local",
+      "required_inputs": [
+        "package_id"
+      ],
+      "skill_name": "elmos-repository-system-of-record"
+    },
+    {
+      "action": "compile-workflow",
+      "mode": "local",
+      "required_inputs": [
+        "nodes"
+      ],
+      "skill_name": "elmos-workflow-contract-compiler"
+    },
+    {
+      "action": "resolve-package",
+      "mode": "local",
+      "required_inputs": [
+        "package_id"
+      ],
+      "skill_name": "elmos-package-dependency-governor"
+    },
+    {
+      "action": "compile-workflow",
+      "mode": "local",
+      "required_inputs": [
+        "nodes",
+        "invariants"
+      ],
+      "skill_name": "elmos-architecture-invariant-linter"
+    },
+    {
+      "action": "plan-job",
+      "mode": "local",
+      "required_inputs": [
+        "job",
+        "budget_micros"
+      ],
+      "skill_name": "elmos-commercial-control-plane"
+    },
+    {
+      "action": "certify-release",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "evidence_bundle"
+      ],
+      "skill_name": "elmos-release-certification"
+    },
+    {
+      "action": "publish-config",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "config_revision"
+      ],
+      "skill_name": "elmos-documentation-gardener"
+    },
+    {
+      "action": "poll-upstream",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "upstream_ref"
+      ],
+      "skill_name": "elmos-upstream-change-monitor"
+    },
+    {
+      "action": "start-session",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "execution_contract"
+      ],
+      "skill_name": "elmos-harness-runtime-platform"
+    },
+    {
+      "action": "adapter-contract",
+      "mode": "local",
+      "required_inputs": [
+        "requested_permissions"
+      ],
+      "skill_name": "elmos-harness-adapter-sdk"
+    },
+    {
+      "action": "append-session",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "event"
+      ],
+      "skill_name": "elmos-event-sourced-session-runtime"
+    },
+    {
+      "action": "resume-session",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "session_id"
+      ],
+      "skill_name": "elmos-context-epoch-manager"
+    },
+    {
+      "action": "execute-tool",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "tool_call"
+      ],
+      "skill_name": "elmos-tool-runtime"
+    },
+    {
+      "action": "resolve-task",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "task_id",
+        "output"
+      ],
+      "skill_name": "elmos-async-task-runtime"
+    },
+    {
+      "action": "spawn-agent",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "prompt",
+        "limits"
+      ],
+      "skill_name": "elmos-continuable-subagent-manager"
+    },
+    {
+      "action": "permission-decision",
+      "mode": "local",
+      "required_inputs": [
+        "requested_permissions"
+      ],
+      "skill_name": "elmos-permission-policy-engine"
+    },
+    {
+      "action": "permission-decision",
+      "mode": "local",
+      "required_inputs": [
+        "requested_permissions"
+      ],
+      "skill_name": "elmos-approval-gate"
+    },
+    {
+      "action": "launch-sandbox",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "argv",
+        "sandbox_mode"
+      ],
+      "skill_name": "elmos-sandbox-runtime"
+    },
+    {
+      "action": "invoke-lsp",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "lsp_request"
+      ],
+      "skill_name": "elmos-lsp-capability-seam"
+    },
+    {
+      "action": "resume-session",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "session_id"
+      ],
+      "skill_name": "elmos-compaction-and-resume"
+    },
+    {
+      "action": "serve-api",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "api_request"
+      ],
+      "skill_name": "elmos-headless-runtime-api"
+    },
+    {
+      "action": "runtime-readiness",
+      "mode": "local",
+      "required_inputs": [
+        "requested_permissions",
+        "sandbox_mode"
+      ],
+      "skill_name": "elmos-readiness-dry-run"
+    },
+    {
+      "action": "scan-repository",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "repository_snapshot"
+      ],
+      "skill_name": "elmos-repository-intelligence-semantic-ir"
+    },
+    {
+      "action": "scan-repository",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "repository_snapshot"
+      ],
+      "skill_name": "elmos-repository-inventory-scanner"
+    },
+    {
+      "action": "parse-ast",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "inventory"
+      ],
+      "skill_name": "elmos-language-framework-detector"
+    },
+    {
+      "action": "parse-ast",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "inventory"
+      ],
+      "skill_name": "elmos-ast-symbol-indexer"
+    },
+    {
+      "action": "invoke-lsp",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "lsp_request"
+      ],
+      "skill_name": "elmos-lsp-semantic-navigator"
+    },
+    {
+      "action": "build-graph",
+      "mode": "local",
+      "required_inputs": [
+        "inventory",
+        "edges"
+      ],
+      "skill_name": "elmos-program-graph-builder"
+    },
+    {
+      "action": "build-graph",
+      "mode": "local",
+      "required_inputs": [
+        "inventory",
+        "edges"
+      ],
+      "skill_name": "elmos-platform-graph-builder"
+    },
+    {
+      "action": "ingest-runtime-trace",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "trace_ref"
+      ],
+      "skill_name": "elmos-runtime-trace-ingestor"
+    },
+    {
+      "action": "compile-semantic-ir",
+      "mode": "local",
+      "required_inputs": [
+        "inventory"
+      ],
+      "skill_name": "elmos-semantic-ir-builder"
+    },
+    {
+      "action": "discover-capabilities",
+      "mode": "local",
+      "required_inputs": [
+        "capabilities",
+        "unknowns"
+      ],
+      "skill_name": "elmos-capability-discovery-ledger"
+    },
+    {
+      "action": "compile-semantic-ir",
+      "mode": "local",
+      "required_inputs": [
+        "inventory"
+      ],
+      "skill_name": "elmos-incremental-analysis-cache"
+    },
+    {
+      "action": "compile-semantic-ir",
+      "mode": "local",
+      "required_inputs": [
+        "inventory"
+      ],
+      "skill_name": "elmos-provenance-confidence-engine"
+    },
+    {
+      "action": "query-repository",
+      "mode": "local",
+      "required_inputs": [
+        "inventory",
+        "query"
+      ],
+      "skill_name": "elmos-repository-query-service"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements"
+      ],
+      "skill_name": "elmos-project-generation-transformation-engine"
+    },
+    {
+      "action": "expand-requirements",
+      "mode": "local",
+      "required_inputs": [
+        "requirements"
+      ],
+      "skill_name": "elmos-requirement-expander"
+    },
+    {
+      "action": "design-architecture",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ],
+      "skill_name": "elmos-project-archetype-engine"
+    },
+    {
+      "action": "design-architecture",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ],
+      "skill_name": "elmos-architecture-synthesizer"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements"
+      ],
+      "skill_name": "elmos-implementation-dag-planner"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "rules"
+      ],
+      "skill_name": "elmos-transformation-rule-engine"
+    },
+    {
+      "action": "evaluate-gap",
+      "mode": "local",
+      "required_inputs": [
+        "requirements"
+      ],
+      "skill_name": "elmos-mutation-exception-engine"
+    },
+    {
+      "action": "emit-source",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "target_ir"
+      ],
+      "skill_name": "elmos-multi-language-emitter"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ],
+      "skill_name": "elmos-framework-platform-adapter"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ],
+      "skill_name": "elmos-data-integration-transformer"
+    },
+    {
+      "action": "plan-transformation",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "target_profile"
+      ],
+      "skill_name": "elmos-frontend-miniapp-transformer"
+    },
+    {
+      "action": "emit-source",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "target_ir"
+      ],
+      "skill_name": "elmos-infrastructure-operations-generator"
+    },
+    {
+      "action": "plan-migration",
+      "mode": "local",
+      "required_inputs": [
+        "requirements",
+        "rollback"
+      ],
+      "skill_name": "elmos-migration-controller"
+    },
+    {
+      "action": "reconcile-tasks",
+      "mode": "local",
+      "required_inputs": [
+        "nodes"
+      ],
+      "skill_name": "elmos-agent-orchestration-software-factory"
+    },
+    {
+      "action": "call-tracker",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "tracker_cursor"
+      ],
+      "skill_name": "elmos-workflow-tracker-adapter"
+    },
+    {
+      "action": "reconcile-tasks",
+      "mode": "local",
+      "required_inputs": [
+        "nodes"
+      ],
+      "skill_name": "elmos-reconciliation-scheduler"
+    },
+    {
+      "action": "dispatch-plan",
+      "mode": "local",
+      "required_inputs": [
+        "nodes",
+        "capacity"
+      ],
+      "skill_name": "elmos-task-dag-orchestrator"
+    },
+    {
+      "action": "mutate-worktree",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "source_revision"
+      ],
+      "skill_name": "elmos-workspace-worktree-manager"
+    },
+    {
+      "action": "compose-agent",
+      "mode": "local",
+      "required_inputs": [
+        "roles"
+      ],
+      "skill_name": "elmos-specialized-agent-registry"
+    },
+    {
+      "action": "spawn-agent",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "task"
+      ],
+      "skill_name": "elmos-continuable-collaboration-manager"
+    },
+    {
+      "action": "dispatch-plan",
+      "mode": "local",
+      "required_inputs": [
+        "nodes",
+        "capacity"
+      ],
+      "skill_name": "elmos-admission-concurrency-controller"
+    },
+    {
+      "action": "reconcile-tasks",
+      "mode": "local",
+      "required_inputs": [
+        "nodes"
+      ],
+      "skill_name": "elmos-retry-stall-doomloop-controller"
+    },
+    {
+      "action": "write-journal",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "journal_event"
+      ],
+      "skill_name": "elmos-workpad-progress-journal"
+    },
+    {
+      "action": "review-sweep",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "review_ref"
+      ],
+      "skill_name": "elmos-review-feedback-coordinator"
+    },
+    {
+      "action": "assemble-proof",
+      "mode": "local",
+      "required_inputs": [
+        "evidence_refs"
+      ],
+      "skill_name": "elmos-proof-of-work-assembler"
+    },
+    {
+      "action": "human-notify",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "handoff"
+      ],
+      "skill_name": "elmos-human-review-handoff"
+    },
+    {
+      "action": "evaluate-gate",
+      "mode": "local",
+      "required_inputs": [
+        "claims"
+      ],
+      "skill_name": "elmos-conversion-reliability-verification-harness"
+    },
+    {
+      "action": "evaluate-coverage",
+      "mode": "local",
+      "required_inputs": [
+        "claims"
+      ],
+      "skill_name": "elmos-requirement-coverage-ledger"
+    },
+    {
+      "action": "evaluate-coverage",
+      "mode": "local",
+      "required_inputs": [
+        "claims"
+      ],
+      "skill_name": "elmos-capability-coverage-ledger"
+    },
+    {
+      "action": "evaluate-gate",
+      "mode": "local",
+      "required_inputs": [
+        "claims"
+      ],
+      "skill_name": "elmos-mechanical-completion-gate"
+    },
+    {
+      "action": "plan-verification",
+      "mode": "local",
+      "required_inputs": [
+        "claims",
+        "changes"
+      ],
+      "skill_name": "elmos-verification-planner"
+    },
+    {
+      "action": "invoke-compiler",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "build_request"
+      ],
+      "skill_name": "elmos-compiler-static-pipeline"
+    },
+    {
+      "action": "run-external-test",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "test_request"
+      ],
+      "skill_name": "elmos-contract-integration-pipeline"
+    },
+    {
+      "action": "run-runtime",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "scenario_set"
+      ],
+      "skill_name": "elmos-differential-runtime"
+    },
+    {
+      "action": "run-external-test",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "generator_profile"
+      ],
+      "skill_name": "elmos-generative-testing"
+    },
+    {
+      "action": "run-browser",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "journey"
+      ],
+      "skill_name": "elmos-ui-multimodal-verifier"
+    },
+    {
+      "action": "run-external-test",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "workload"
+      ],
+      "skill_name": "elmos-nonfunctional-verifier"
+    },
+    {
+      "action": "plan-repair",
+      "mode": "local",
+      "required_inputs": [
+        "failures",
+        "budget_micros"
+      ],
+      "skill_name": "elmos-diagnosis-repair-loop"
+    },
+    {
+      "action": "certify-external",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "evidence_bundle"
+      ],
+      "skill_name": "elmos-evidence-certification-engine"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ],
+      "skill_name": "elmos-intelligent-model-router"
+    },
+    {
+      "action": "refresh-catalog",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "provider"
+      ],
+      "skill_name": "elmos-model-provider-catalog"
+    },
+    {
+      "action": "classify-task",
+      "mode": "local",
+      "required_inputs": [
+        "task"
+      ],
+      "skill_name": "elmos-task-classifier"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ],
+      "skill_name": "elmos-route-constraint-engine"
+    },
+    {
+      "action": "refresh-catalog",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "provider"
+      ],
+      "skill_name": "elmos-benchmark-availability-gate"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates"
+      ],
+      "skill_name": "elmos-historical-taskfit-scorer"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ],
+      "skill_name": "elmos-multi-objective-router"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates"
+      ],
+      "skill_name": "elmos-fallback-circuitbreaker-hedging"
+    },
+    {
+      "action": "classify-task",
+      "mode": "local",
+      "required_inputs": [
+        "task"
+      ],
+      "skill_name": "elmos-long-context-completeness-auditor"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ],
+      "skill_name": "elmos-multimodal-route"
+    },
+    {
+      "action": "forecast-cost",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "usage"
+      ],
+      "skill_name": "elmos-cost-token-eta-engine"
+    },
+    {
+      "action": "route-plan",
+      "mode": "local",
+      "required_inputs": [
+        "candidates",
+        "data_classes"
+      ],
+      "skill_name": "elmos-privacy-data-policy-broker"
+    },
+    {
+      "action": "record-feedback",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "outcome"
+      ],
+      "skill_name": "elmos-route-observability"
+    },
+    {
+      "action": "query-knowledge",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-transformation-learning-evolution"
+    },
+    {
+      "action": "query-knowledge",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-transformation-knowledge-base"
+    },
+    {
+      "action": "query-knowledge",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-project-archetype-knowledge-base"
+    },
+    {
+      "action": "rank-repairs",
+      "mode": "local",
+      "required_inputs": [
+        "entries",
+        "failure_signature"
+      ],
+      "skill_name": "elmos-failure-repair-corpus"
+    },
+    {
+      "action": "evaluate-promotion",
+      "mode": "local",
+      "required_inputs": [
+        "entries",
+        "candidate"
+      ],
+      "skill_name": "elmos-rule-promotion-governance"
+    },
+    {
+      "action": "external-benchmark",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "corpus_version"
+      ],
+      "skill_name": "elmos-benchmark-corpus"
+    },
+    {
+      "action": "query-knowledge",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-evidence-corpus"
+    },
+    {
+      "action": "rank-repairs",
+      "mode": "local",
+      "required_inputs": [
+        "entries",
+        "failure_signature"
+      ],
+      "skill_name": "elmos-repair-retrieval-ranker"
+    },
+    {
+      "action": "external-benchmark",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "corpus_version"
+      ],
+      "skill_name": "elmos-drift-regression-detector"
+    },
+    {
+      "action": "plan-learning",
+      "mode": "local",
+      "required_inputs": [
+        "entries",
+        "value_score"
+      ],
+      "skill_name": "elmos-active-learning-queue"
+    },
+    {
+      "action": "train-model",
+      "mode": "requires_adapter",
+      "required_inputs": [
+        "training_request"
+      ],
+      "skill_name": "elmos-specialized-model-training"
+    },
+    {
+      "action": "query-knowledge",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-tenant-ip-isolation"
+    },
+    {
+      "action": "evaluate-promotion",
+      "mode": "local",
+      "required_inputs": [
+        "entries"
+      ],
+      "skill_name": "elmos-knowledge-quality-auditor"
+    }
+  ],
+  "schema_version": "1.0"
+}

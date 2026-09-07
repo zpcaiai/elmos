@@ -1,0 +1,11 @@
+{
+  "route": "route-id",
+  "targetLevel": "E5",
+  "requiredSemanticSkills": [],
+  "obligations": [],
+  "corpora": [],
+  "runtimeLabs": [],
+  "formalMethods": [],
+  "stressMethods": [],
+  "status": "not-run"
+}

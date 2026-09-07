@@ -1,0 +1,4 @@
+interface:
+  display_name: "Django Modernization"
+  short_description: "Upgrade Django incrementally with behavior gates"
+  default_prompt: "Use $django-modernization-engine to plan this Django upgrade safely."

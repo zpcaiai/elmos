@@ -1,0 +1,4 @@
+interface:
+  display_name: "Source Target Dual Runtime Controller"
+  short_description: "Run this Batch 9 behavioral capability"
+  default_prompt: "Use $source-target-dual-runtime-controller to perform this Batch 9 behavioral-equivalence task."

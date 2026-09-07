@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Data Migration History Archive And Reconciliation"
+  short_description: "Govern evidence-bound enterprise suite modernization"
+  default_prompt: "Use $suite-data-migration-history-archive-and-reconciliation to govern this enterprise suite modernization task with fail-closed evidence."

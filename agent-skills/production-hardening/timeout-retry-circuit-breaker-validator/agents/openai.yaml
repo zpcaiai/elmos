@@ -1,0 +1,4 @@
+interface:
+  display_name: "Timeout Retry Circuit Breaker Validator"
+  short_description: "Run this Batch 10 hardening capability"
+  default_prompt: "Use $timeout-retry-circuit-breaker-validator to perform this Batch 10 production-hardening task."

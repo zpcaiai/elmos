@@ -1,0 +1,71 @@
+apiVersion: elmos.ai/v1
+kind: ProofCarryingSkill
+metadata:
+  name: episodic-memory-store
+  version: 2.0.0
+  pack: 04-memory-experience-flywheel
+  priority: P0
+  owner: TBD
+spec:
+  description: 保存一次任务的输入、环境、步骤、失败、修复、结果和证据。
+  kernel: K4 Memory and Experience Kernel
+  riskClass: high
+  exposure: atomic-registry-only
+  preconditions:
+  - tenant.authorized == true
+  - task.contract != null
+  - release.versionPinned == true
+  inputs:
+  - name: agent trace
+    required: true
+  - name: tool event
+    required: true
+  - name: patch
+    required: true
+  - name: test result
+    required: true
+  - name: human feedback
+    required: true
+  outputs:
+  - name: experience episode
+    contentAddressed: true
+  - name: memory record
+    contentAddressed: true
+  - name: failure signature
+    contentAddressed: true
+  - name: repair pattern
+    contentAddressed: true
+  workflow:
+  - authorize
+  - snapshot
+  - plan
+  - execute
+  - verify
+  - emit-evidence
+  - commit-or-rollback
+  tools:
+    allowed:
+    - trace.capture
+    - episode.write
+    - memory.query
+    - sandbox.replay
+    - diff.analyze
+    defaultDeny: true
+  evidence:
+    requiredGates:
+    - episode-complete
+    - tenant-isolated
+    - outcome-verified
+    - retention-policy-applied
+    minimumLevel: E3
+  rollback:
+    required: true
+    strategy: restore-checkpoint-and-compensate-side-effects
+  learning:
+    captureTrajectory: true
+    globalTrainingEligible: false
+    tenantAdapterEligible: explicit-opt-in
+  telemetry:
+    emitTrace: true
+    emitCost: true
+    emitWallClock: true

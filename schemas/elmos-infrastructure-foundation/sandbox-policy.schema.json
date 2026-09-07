@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/sandbox-policy.schema.json",
+  "title": "Sandbox Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "policy_id",
+    "tier",
+    "filesystem",
+    "network",
+    "resources",
+    "secrets",
+    "outputs",
+    "audit"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ]
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_read_only",
+        "writable_paths",
+        "host_mounts_allowed"
+      ],
+      "properties": {
+        "root_read_only": {
+          "type": "boolean"
+        },
+        "writable_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "host_mounts_allowed": {
+          "type": "boolean"
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_deny",
+        "allow"
+      ],
+      "properties": {
+        "default_deny": {
+          "type": "boolean"
+        },
+        "allow": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "host",
+              "port",
+              "purpose"
+            ],
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "port": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "purpose": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "deny_cloud_metadata": {
+          "type": "boolean"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpu_millis",
+        "memory_mb",
+        "disk_mb",
+        "pids",
+        "wall_seconds"
+      ],
+      "properties": {
+        "cpu_millis": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "memory_mb": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "disk_mb": {
+          "type": "integer",
+          "minimum": 16
+        },
+        "pids": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "wall_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "short_lived",
+        "redact_logs",
+        "scan_outputs"
+      ],
+      "properties": {
+        "short_lived": {
+          "type": "boolean"
+        },
+        "redact_logs": {
+          "type": "boolean"
+        },
+        "scan_outputs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared_only",
+        "max_bytes"
+      ],
+      "properties": {
+        "declared_only": {
+          "type": "boolean"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_denials",
+        "record_egress",
+        "record_cleanup"
+      ],
+      "properties": {
+        "record_denials": {
+          "type": "boolean"
+        },
+        "record_egress": {
+          "type": "boolean"
+        },
+        "record_cleanup": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

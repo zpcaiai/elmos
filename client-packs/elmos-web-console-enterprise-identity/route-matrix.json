@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-web-console-enterprise-identity",
+  "tuples": [
+    {
+      "source_stack": "nextjs-app-router",
+      "source_version": "16.2.12",
+      "target_stack": "nextjs-app-router",
+      "target_version": "16.2.12",
+      "status": "experimental",
+      "evidence_refs": []
+    }
+  ],
+  "recertification_triggers": [
+    "issuer-or-client-change",
+    "claim-schema-change",
+    "cookie-or-session-format-change",
+    "resource-server-version-change"
+  ]
+}

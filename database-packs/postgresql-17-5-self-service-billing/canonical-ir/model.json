@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "source_snapshot_digest": "sha256:72b6feffafb61e94ce343bafc9c709b8f6121dd975cb816be511d7ac30282899",
+  "objects": [
+    {
+      "id": "table:self_service_pricing_plan_versions",
+      "kind": "table",
+      "logical_name": "self_service_pricing_plan_versions",
+      "dependencies": [],
+      "semantics": {
+        "columns": [
+          {
+            "name": "catalog_version",
+            "type": "unicode-text",
+            "nullable": false
+          },
+          {
+            "name": "plan_id",
+            "type": "unicode-text",
+            "nullable": false
+          },
+          {
+            "name": "currency",
+            "type": "char-3",
+            "nullable": false
+          },
+          {
+            "name": "price_minor",
+            "type": "signed-64",
+            "nullable": false
+          },
+          {
+            "name": "token_limit",
+            "type": "signed-64",
+            "nullable": false
+          },
+          {
+            "name": "credit_limit",
+            "type": "signed-64",
+            "nullable": false
+          }
+        ],
+        "primary_key": [
+          "catalog_version",
+          "plan_id"
+        ]
+      },
+      "source_ref": "source-snapshots/ddl/source.sql"
+    },
+    {
+      "id": "table:subscriptions",
+      "kind": "table",
+      "logical_name": "subscriptions",
+      "dependencies": [
+        "table:self_service_pricing_plan_versions"
+      ],
+      "semantics": {
+        "columns": [
+          {
+            "name": "tenant_id",
+            "type": "unicode-text",
+            "nullable": false
+          },
+          {
+            "name": "catalog_version",
+            "type": "unicode-text",
+            "nullable": true
+          },
+          {
+            "name": "plan_id",
+            "type": "unicode-text",
+            "nullable": true
+          },
+          {
+            "name": "status",
+            "type": "unicode-text",
+            "nullable": false
+          }
+        ],
+        "primary_key": [
+          "tenant_id"
+        ]
+      },
+      "source_ref": "source-snapshots/ddl/source.sql"
+    }
+  ],
+  "queries": [
+    {
+      "id": "query:active-subscriptions",
+      "kind": "select",
+      "logical_name": "active_subscriptions",
+      "dependencies": [
+        "table:subscriptions"
+      ],
+      "semantics": {
+        "ordering": [
+          "tenant_id ASC"
+        ],
+        "parameterized": true,
+        "tenant_scoped": true
+      },
+      "source_ref": "corpus/development/query.sql"
+    }
+  ],
+  "pipelines": [],
+  "unsupported_extensions": []
+}

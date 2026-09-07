@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wcf To Corewcf Grpc Rest Migrator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $wcf-to-corewcf-grpc-rest-migrator to execute this ELMOS Runtime Skill with fail-closed evidence."

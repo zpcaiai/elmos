@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Utility Customer Data Quality Dedup Reconciliation And Certification"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $utility-customer-data-quality-dedup-reconciliation-and-d63832cb to implement its fail-closed ELMOS Product B53 contract."

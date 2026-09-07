@@ -1,0 +1,72 @@
+{
+  "contract": {
+    "id": "B107-S04",
+    "batch": 107,
+    "name": "dual-version-api-replay",
+    "dependencies": [
+      "B107-S01",
+      "B107-S03"
+    ],
+    "inputs": [
+      "baseline endpoint",
+      "candidate endpoint",
+      "scenario corpus"
+    ],
+    "outputs": [
+      "DualReplayResult",
+      "response deltas",
+      "state deltas"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/http/DualReplayService.java",
+        "private-runner/internal/replay/",
+        "fixtures/http-scenarios/"
+      ],
+      "interfaces": [
+        "POST /api/validations/dual-replay",
+        "event dual-replay.completed"
+      ],
+      "data": [
+        "replay_scenario",
+        "replay_observation",
+        "response_delta"
+      ]
+    },
+    "workflow": [
+      "\u4e3a\u4e24\u7aef\u521b\u5efa\u7b49\u4ef7\u9694\u79bb\u6570\u636e\u96c6",
+      "\u6807\u51c6\u5316\u65f6\u95f4\u3001\u968f\u673aID\u7b49\u53ef\u53d8\u5b57\u6bb5",
+      "\u6309\u76f8\u540c\u987a\u5e8f\u53d1\u9001\u8bf7\u6c42",
+      "\u6bd4\u8f83\u72b6\u6001\u7801\u3001Header\u3001Body Schema\u548c\u9519\u8bef\u8bed\u4e49",
+      "\u67e5\u8be2\u6216\u8c03\u7528\u89c2\u5bdf\u70b9\u6bd4\u8f83\u526f\u4f5c\u7528",
+      "\u5bf9\u4e0d\u53ef\u6bd4\u8f83\u9879\u6807UNKNOWN\u5e76\u4fdd\u7559\u8bc1\u636e"
+    ],
+    "tests": [
+      "\u76f8\u540c\u4e1a\u52a1\u4f46\u968f\u673aID\u53ef\u901a\u8fc7\u6807\u51c6\u5316",
+      "\u72b6\u6001\u7801\u53d8\u5316\u88ab\u53d1\u73b0",
+      "\u9519\u8befBody\u5b57\u6bb5\u4e22\u5931\u88ab\u53d1\u73b0",
+      "\u987a\u5e8f\u76f8\u5173\u573a\u666f\u53ef\u590d\u73b0",
+      "\u57fa\u7ebf\u5931\u8d25\u6309known-failure\u5904\u7406"
+    ],
+    "evidence": [
+      "dual-replay-result.json",
+      "response-deltas.json",
+      "state-deltas.json",
+      "scenario-transcript.json"
+    ],
+    "definition_of_done": [
+      "\u8bf7\u6c42\u8f93\u5165\u76f8\u540c",
+      "\u53ef\u53d8\u5b57\u6bb5\u89c4\u5219\u663e\u5f0f",
+      "\u526f\u4f5c\u7528\u6709Oracle",
+      "UNKNOWN\u4e0d\u9690\u85cf",
+      "\u7ed3\u679c\u53ef\u91cd\u653e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:3f1f1ae173251b9ccd4bee2aa8789e755adbae715d65200f918182be0cc2da04",
+  "compiledVersion": 1
+}

@@ -1,0 +1,70 @@
+{
+  "contract": {
+    "id": "B107-S06",
+    "batch": 107,
+    "name": "newman-runtime-regression-runner",
+    "dependencies": [
+      "B107-S05"
+    ],
+    "inputs": [
+      "Postman collection/environment",
+      "baseline/candidate endpoints"
+    ],
+    "outputs": [
+      "NewmanBeforeAfter",
+      "assertion delta",
+      "HTML/JSON reports"
+    ],
+    "implementation": {
+      "modules": [
+        "validation/postman/NewmanRunnerService.java",
+        "private-runner/internal/newman/",
+        "images/newman/"
+      ],
+      "interfaces": [
+        "POST /api/validations/newman",
+        "event newman.completed"
+      ],
+      "data": [
+        "newman_run",
+        "newman_assertion",
+        "newman_delta"
+      ]
+    },
+    "workflow": [
+      "\u9a8c\u8bc1\u96c6\u5408\u811a\u672cPolicy\u548cSecret\u5f15\u7528",
+      "\u5206\u522b\u6ce8\u5165\u57fa\u7ebf/\u5019\u9009base URL",
+      "\u8fd0\u884c\u56fa\u5b9a\u7248\u672cNewman",
+      "\u4fdd\u5b58CLI/JSON/JUnit\u62a5\u544a",
+      "\u6bd4\u8f83\u8bf7\u6c42\u3001\u65ad\u8a00\u3001\u5931\u8d25\u548cP95",
+      "\u751f\u6210\u5931\u8d25\u5b9a\u4f4d\u548c\u91cd\u653e\u547d\u4ee4"
+    ],
+    "tests": [
+      "\u6076\u610fpre-request\u811a\u672c\u6309Policy\u963b\u65ad",
+      "\u5019\u9009\u65b0\u589e\u5931\u8d25\u88ab\u53d1\u73b0",
+      "\u73af\u5883Secret\u4e0d\u8fdb\u5165\u62a5\u544a",
+      "\u968f\u673a\u6570\u636e\u901a\u8fc7seed\u63a7\u5236",
+      "\u8d85\u65f6/\u7f51\u7edc\u5931\u8d25\u5206\u7c7b"
+    ],
+    "evidence": [
+      "newman-before.json",
+      "newman-after.json",
+      "newman-delta.json",
+      "newman-report.html"
+    ],
+    "definition_of_done": [
+      "\u56fa\u5b9aNewman\u7248\u672c",
+      "\u540c\u4e00Collection\u548cseed",
+      "0\u65b0\u589e\u5931\u8d25",
+      "Secret\u8131\u654f",
+      "\u62a5\u544a\u8fdb\u5165\u8bc1\u636e"
+    ],
+    "risk_controls": [
+      "\u9ed8\u8ba4\u62d2\u7edd\u4e0d\u5b8c\u6574\u8f93\u5165",
+      "\u6240\u6709\u8de8\u79df\u6237\u8bbf\u95ee\u5fc5\u987b\u7531\u670d\u52a1\u7aef\u8eab\u4efd\u89e3\u6790",
+      "\u5931\u8d25\u4e0d\u5f97\u901a\u8fc7\u5220\u9664\u6d4b\u8bd5\u3001\u8df3\u8fc7\u95e8\u7981\u6216\u4f2a\u9020\u8bc1\u636e\u4fee\u590d"
+    ]
+  },
+  "canonicalSha256": "sha256:eef24eb20fe7540812680339eb0da823fbc171953b9e82c5800d7b4d46fb891b",
+  "compiledVersion": 1
+}

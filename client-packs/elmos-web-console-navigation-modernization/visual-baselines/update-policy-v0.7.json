@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "status": "POLICY_ONLY",
+  "baseline_update": "OWNER_APPROVAL_REQUIRED_BEFORE_CAPTURE",
+  "automatic_update_after_failure": false,
+  "unapproved_masks": 0,
+  "unapproved_tolerance_changes": 0,
+  "required_dimensions": [
+    "route",
+    "state",
+    "viewport",
+    "theme",
+    "locale",
+    "browser"
+  ],
+  "approved_baselines": [],
+  "execution_status": "NOT_RUN"
+}

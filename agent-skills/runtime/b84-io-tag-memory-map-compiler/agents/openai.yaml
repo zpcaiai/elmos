@@ -1,0 +1,4 @@
+interface:
+  display_name: "B84 Io Tag Memory Map Compiler"
+  short_description: "Run this ELMOS language-pack Skill with evidence"
+  default_prompt: "Use $b84-io-tag-memory-map-compiler to execute this ELMOS Language Pack Skill with fail-closed evidence."

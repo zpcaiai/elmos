@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 492: people and organization analytics manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $people-and-organization-analytics-manager to evaluate this capability with evidence."

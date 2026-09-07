@@ -1,0 +1,67 @@
+{
+  "approvals": [],
+  "budgets": {
+    "max_fuzz_seconds": 600,
+    "max_mutants": 500,
+    "max_schedules": 0,
+    "max_solver_seconds": 1800,
+    "max_wall_time_minutes": 180
+  },
+  "claims": [
+    {
+      "claim_id": "claim.route-equivalence",
+      "criticality": "P0",
+      "description": "Every directed route preserves the exact declared L0 semantics for its executed local corpora, with unresolved assumptions explicit.",
+      "required_oracles": [
+        "oracle.canonical-ir",
+        "oracle.source-runtime",
+        "oracle.target-runtime"
+      ],
+      "required_techniques": [
+        "formal-route-campaign",
+        "target-relift",
+        "semantic-chunk-mapping",
+        "differential-execution",
+        "smt"
+      ]
+    },
+    {
+      "claim_id": "claim.fail-closed-governance",
+      "criticality": "P0",
+      "description": "Unknown, bounded, axiom-only, missing, tampered, or unreplayed evidence cannot become proof or certification.",
+      "required_oracles": [
+        "oracle.canonical-ir",
+        "oracle.route-gate"
+      ],
+      "required_techniques": [
+        "mutation",
+        "counterexample-replay",
+        "evidence-integrity"
+      ]
+    }
+  ],
+  "profile_key": "polyglot-30-route-formal-equivalence-v1-profile-v1",
+  "risk_tier": "P0",
+  "schema_version": 1,
+  "stop_conditions": [
+    "counterexample",
+    "solver-unknown-or-timeout",
+    "bounded-required-proof",
+    "artifact-digest-drift",
+    "missing-route-or-obligation",
+    "oracle-conflict"
+  ],
+  "techniques": [
+    "formal-route-campaign",
+    "target-relift",
+    "semantic-chunk-mapping",
+    "differential-execution",
+    "smt",
+    "property",
+    "metamorphic",
+    "mutation",
+    "counterexample-replay",
+    "evidence-integrity"
+  ],
+  "version": 1
+}

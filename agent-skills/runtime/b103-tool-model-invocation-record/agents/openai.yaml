@@ -1,0 +1,4 @@
+interface:
+  display_name: "B103 Tool Model Invocation Record"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b103-tool-model-invocation-record to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deterministic Naming and File Allocation"
+  short_description: "Run this FRT frontend Skill with evidence controls"
+  default_prompt: "Use $frt-0706-deterministic-naming-and-file-allocation to run FRT-0706 through the governed FRT runtime with exact scope and fail-closed evidence."

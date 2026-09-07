@@ -1,0 +1,135 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Composite Modernization Control API
+  version: 1.0.0
+  description: System-level, evaluate-only control contract above the Java, .NET and Python language engines.
+paths:
+  /api/v1/composite/capabilities:
+    get:
+      operationId: getCompositeCapabilities
+      responses:
+        '200':
+          description: System-orchestration capabilities and prohibited operations
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Capabilities' }
+  /api/v1/composite/traffic/evaluate:
+    post:
+      operationId: evaluateProgressiveTraffic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TrafficStageRequest' }
+      responses:
+        '200':
+          description: Fail-closed promotion evaluation; it does not mutate a traffic provider
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PromotionDecision' }
+        '400': { $ref: '#/components/responses/Rejected' }
+  /api/v1/composite/decommission/evaluate:
+    post:
+      operationId: evaluateLegacyDecommission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DecommissionEvidence' }
+      responses:
+        '200':
+          description: Fail-closed decommission decision; it performs no deletion
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DecommissionDecision' }
+        '400': { $ref: '#/components/responses/Rejected' }
+components:
+  responses:
+    Rejected:
+      description: Invalid or incomplete composite request
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [errorCode, message, retryable]
+            properties:
+              errorCode: { type: string }
+              message: { type: string }
+              retryable: { type: boolean }
+  schemas:
+    Capabilities:
+      type: object
+      required: [languageEngines, responsibilities, prohibitedActions, lifecycle, evidenceLayers]
+      properties:
+        languageEngines:
+          type: array
+          items: { enum: [JAVA, DOTNET, PYTHON] }
+        responsibilities: { type: array, items: { type: string } }
+        prohibitedActions: { type: array, items: { type: string } }
+        lifecycle: { type: array, items: { type: string } }
+        evidenceLayers: { type: array, items: { type: string } }
+    GateEvidence:
+      type: object
+      required: [providerHealthy, availabilityPassed, errorRatePassed, latencyPassed, businessInvariantPassed, dataConsistencyPassed, contractPassed, securityPassed, messageLagPassed, cdcLagPassed, retryIdempotencyPassed, sessionCompatible, unknownConsumersPresent, rollbackVerified, writeOwnershipChange, irreversibleOperation, evidenceRefs]
+      properties:
+        providerHealthy: { type: boolean }
+        availabilityPassed: { type: boolean }
+        errorRatePassed: { type: boolean }
+        latencyPassed: { type: boolean }
+        businessInvariantPassed: { type: boolean }
+        dataConsistencyPassed: { type: boolean }
+        contractPassed: { type: boolean }
+        securityPassed: { type: boolean }
+        messageLagPassed: { type: boolean }
+        cdcLagPassed: { type: boolean }
+        retryIdempotencyPassed: { type: boolean }
+        sessionCompatible: { type: boolean }
+        unknownConsumersPresent: { type: boolean }
+        rollbackVerified: { type: boolean }
+        writeOwnershipChange: { type: boolean }
+        irreversibleOperation: { type: boolean }
+        evidenceRefs: { type: array, items: { type: string }, minItems: 1 }
+    TrafficStageRequest:
+      type: object
+      required: [provider, currentStage, requestedStage, cohort, gates, humanApproved]
+      properties:
+        provider: { enum: [KUBERNETES_GATEWAY, SERVICE_MESH, API_GATEWAY, LOAD_BALANCER, DNS, FEATURE_FLAG, APPLICATION_ROUTER, MESSAGE_ROUTER] }
+        currentStage: { type: string }
+        requestedStage: { type: string }
+        cohort: { type: string }
+        gates: { $ref: '#/components/schemas/GateEvidence' }
+        humanApproved: { type: boolean }
+    PromotionDecision:
+      type: object
+      required: [decision, effectiveStage, blockers, automatic]
+      properties:
+        decision: { enum: [PROMOTE, HOLD, PAUSE, ROLLBACK, HUMAN_REVIEW] }
+        effectiveStage: { type: string }
+        blockers: { type: array, items: { type: string } }
+        automatic: { type: boolean }
+    DecommissionEvidence:
+      type: object
+      required: [legacyTrafficZero, legacyConsumersZero, legacyDatabaseWritesZero, legacyBatchAccessZero, credentialRevocationPlanned, dataArchived, legalHoldChecked, auditRetentionConfirmed, evidencePackComplete, assetOwnerApproved, costConfirmed, cmdbUpdated, stabilityHoldCompleted, evidenceRefs]
+      properties:
+        legacyTrafficZero: { type: boolean }
+        legacyConsumersZero: { type: boolean }
+        legacyDatabaseWritesZero: { type: boolean }
+        legacyBatchAccessZero: { type: boolean }
+        credentialRevocationPlanned: { type: boolean }
+        dataArchived: { type: boolean }
+        legalHoldChecked: { type: boolean }
+        auditRetentionConfirmed: { type: boolean }
+        evidencePackComplete: { type: boolean }
+        assetOwnerApproved: { type: boolean }
+        costConfirmed: { type: boolean }
+        cmdbUpdated: { type: boolean }
+        stabilityHoldCompleted: { type: boolean }
+        evidenceRefs: { type: array, items: { type: string }, minItems: 1 }
+    DecommissionDecision:
+      type: object
+      required: [allowed, blockers, state, permittedActions]
+      properties:
+        allowed: { type: boolean }
+        blockers: { type: array, items: { type: string } }
+        state: { type: string }
+        permittedActions: { type: array, items: { type: string } }

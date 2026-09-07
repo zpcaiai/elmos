@@ -1,0 +1,9 @@
+{
+  "policyId": "policyId-fixture",
+  "trigger": {},
+  "action": {},
+  "automationLevel": "automationLevel-fixture",
+  "maximumBlastRadius": {},
+  "verification": {},
+  "rollback": {}
+}

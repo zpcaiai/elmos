@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 45: Deployment Matrix Certification"
+  short_description: "Run evidence-bound Batch 45 deployment matrix certification work"
+  default_prompt: "Use $b45-deployment-matrix-certification to implement and verify this capability with fail-closed evidence."

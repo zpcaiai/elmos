@@ -1,0 +1,2591 @@
+{
+  "package": "elmos-polyglot-skills-v3.0.0-semantic-assurance",
+  "fileCount": 517,
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 73,
+      "sha256": "d7978817ab69d289801bfe6ee1c0e22b425ad3501d4de5c2e85751c4d9f443d1"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 2174,
+      "sha256": "760a555f27b92863e7add018add9b8a3b62075ea753deef39cacf832da894ba6"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 582,
+      "sha256": "3d19fcca80050caf0a5863bba1d348910bd9dfb114c42cfcd8ebf2968560c562"
+    },
+    {
+      "path": "CLAUDE.md",
+      "size": 810,
+      "sha256": "2cb4f89622f84f131efee8fff6ee0eb9a0fd98209fe4316f0256fed8ee24eae5"
+    },
+    {
+      "path": "CODEX.md",
+      "size": 837,
+      "sha256": "a9c8c264faf1a12e8bdca759b2f2beb4858b5db6b6a2583ac60f368e0e6c384f"
+    },
+    {
+      "path": "LICENSE",
+      "size": 1075,
+      "sha256": "b0c49d0a0904a754945327dec56541052698fa01fffdccdd1692da5c30271835"
+    },
+    {
+      "path": "Makefile",
+      "size": 375,
+      "sha256": "9cb28bcdb8c2692142db3131e5f114534c3f9138887b53bc8746e2b1de195941"
+    },
+    {
+      "path": "NOTICE",
+      "size": 284,
+      "sha256": "db901ad7366050d8e67fa5ba371ddd3570b219c392fa4270ff715fb6afbe0aad"
+    },
+    {
+      "path": "README.md",
+      "size": 3493,
+      "sha256": "cd78f976e3b0422fe71df37ba1bd8a516264a9d9828d31c487c645e4e9214058"
+    },
+    {
+      "path": "SECURITY.md",
+      "size": 756,
+      "sha256": "a7016a0dc558d630ba3d811f5f3a0be2487b4d19e75e817aaf52ac1a7b7848d8"
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "size": 26433,
+      "sha256": "c7b16b667b301e83ef9fe94aa7ed83d2f1d73bd51063657a58a3baa2f7bf60d9"
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "size": 2621,
+      "sha256": "6805325751b7a4a1631abc6cc0e6c28bc34186c102a1b715a33e43d33e1deab4"
+    },
+    {
+      "path": "VERSION",
+      "size": 6,
+      "sha256": "2985be8b28d3ade858e8d8fb4bc22f565b1bf6020dff982dce141f7721b9999c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abap-to-java-golden-route/SKILL.md",
+      "size": 8841,
+      "sha256": "263dd36c3eae46bd26769d919a87b1747822b52fcb0769e87d492c361a939678"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abi-calling-convention-semantics/SKILL.md",
+      "size": 8804,
+      "sha256": "e0d3622f7807793824637ffcede615e0730255c2fd237c863c08cc5fb6e7c447"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abl-openedge-to-java-golden-route/SKILL.md",
+      "size": 8814,
+      "sha256": "4a6895c396661225708135a058a3631217f80b2cf95cd527666805db5c2dd187"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-abstract-interpretation-invariant-engine/SKILL.md",
+      "size": 8911,
+      "sha256": "5b41f1acddad7ed9a9fd51fce71ba1e174701f96a9f66f7e3f6d5bb2fe892e7c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-actor-channel-mailbox-semantics/SKILL.md",
+      "size": 8853,
+      "sha256": "19e6729fe2b8f6716e15651e129a0a5b2309f287f3a7bf3b6d7b361f9b0c1798"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ada-spark-to-rust-golden-route/SKILL.md",
+      "size": 8879,
+      "sha256": "4026dfc686b5b869f45e272111bd53a355b58dd6ad8a32f6a451ef938fcb6349"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-abap/SKILL.md",
+      "size": 8688,
+      "sha256": "1e7277e1725e7431244d328cd80e96dbd6523dcccde1904b26328b30a2fc82e2"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-abl/SKILL.md",
+      "size": 8752,
+      "sha256": "2f0daf9eb9c97854b5a215553294476045d580cd5bfbb4282d3e520a6aebf87e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-ada-spark/SKILL.md",
+      "size": 8770,
+      "sha256": "38d70283d83cd4f448df034a7edc16fecfd9f855ee98a9e533e6da0c79131fa0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-c/SKILL.md",
+      "size": 8667,
+      "sha256": "933edd89f47857aff1de869dd68c7ac8bb5de3d921935b65d25f0fbb3d81a00a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-cics-bms/SKILL.md",
+      "size": 8668,
+      "sha256": "2a48c92c5155b1bf0e81ae997acd9984229ac28500c00cb08af56563ef642d31"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-cobol/SKILL.md",
+      "size": 8806,
+      "sha256": "14066f2100f185bef3d5fd0b3771c6dcf4729b2c4da2ba2f3fe4a72ce687e016"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-cobol-copybook/SKILL.md",
+      "size": 8771,
+      "sha256": "0f9cb3b9d536cdcd6852680e383721852cff4b3f9dfec0c804e83e90be9a017f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-cpp/SKILL.md",
+      "size": 8804,
+      "sha256": "ff9777f46af6defaddf2a90d7d3361b04ea00834c5e06c262ea3e32d7d881ecd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-csharp/SKILL.md",
+      "size": 8873,
+      "sha256": "9089d8597ec6a903a142eae6902cb60f4bc125014d48b744bca24040285dbc73"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-flutter/SKILL.md",
+      "size": 9091,
+      "sha256": "d606b5a37f0c060271d4c090bb26ed2aece8655d6444a1d9c9afcdfd852bcda8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-fortran/SKILL.md",
+      "size": 8777,
+      "sha256": "df1d755514c32caa40095fb48116310e3d73f82696bfb8405cfb192a4f5db194"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-go/SKILL.md",
+      "size": 8637,
+      "sha256": "29b513b3228613b543b4c718dcc67c7425b6d6d38ef27a33186f244cd33c2315"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-ibmi-cl/SKILL.md",
+      "size": 8702,
+      "sha256": "b5d6bc42a0a3156fa0a931145db8a50b67d549aa179d1b530b0ebd52ded07301"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-ibmi-dds/SKILL.md",
+      "size": 8669,
+      "sha256": "66693b9c277700424c796ae0b7fb413cce903816039b712c7b08643a74531088"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-ims-mfs/SKILL.md",
+      "size": 8653,
+      "sha256": "0f2607bc1e24f4a100d231aee93bdf64cc58c6cd476b4ca635efce1c808e1b8e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-java/SKILL.md",
+      "size": 9076,
+      "sha256": "a51c58a2700efb609eacecb748c6482aaaebe02b8b716db3d5c8e7be67266e39"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-javascript/SKILL.md",
+      "size": 8907,
+      "sha256": "01fd835f3f687fdfdd5de6342163daf39e33e0f414038ae6f1217e89de30202f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-jcl/SKILL.md",
+      "size": 8610,
+      "sha256": "2d841a15fc2c7822fd0f1e76d51a93817ee8cbf91a6710229034bf0533c8dd68"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-kotlin/SKILL.md",
+      "size": 8806,
+      "sha256": "2c2f1feca48d5ca3aa92c47c0ef80b77070093983d91a3fdc9857db4a35f2bfa"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-legacy-sql-routines/SKILL.md",
+      "size": 8927,
+      "sha256": "d7e4953b274d6a29d411e5ac567d9bdf26a9de391b071811718646fe24d310c0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-natural/SKILL.md",
+      "size": 8746,
+      "sha256": "649ab090386195bf4157a0f8190e9ed2722986c864da2e725f7b2a7ac0eb65a4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-object-pascal/SKILL.md",
+      "size": 8901,
+      "sha256": "5ae3ee7ebafb06a7ef7149e2443cfdfb37030bff024d872f8c0e09deb536a58a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-objective-c/SKILL.md",
+      "size": 8790,
+      "sha256": "1a35c308c01b30d7fe39f73a11519aaa759cfa813056e31c108521f05b93719e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-php/SKILL.md",
+      "size": 8757,
+      "sha256": "acd17757a29036b3f27a4b62162538080137644ebaf758f87cf3197c72129499"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-pli/SKILL.md",
+      "size": 8716,
+      "sha256": "f9de779a83fc4398e20d7b22463733a80c9e2f9348c86afdee4bc090c4ae3c06"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-powerscript/SKILL.md",
+      "size": 8877,
+      "sha256": "bcbb0801fb1b902bfa0e9da4a8a41067ec054bfb6912f3a12acf43214e6ddb78"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-python/SKILL.md",
+      "size": 8755,
+      "sha256": "3e024941ffca3625b2154a659c883c577c4f5bc64e3a3b117c20d041ed58c77d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-react/SKILL.md",
+      "size": 8789,
+      "sha256": "4a59b6ea8e4b5e6cac952b6f8d92c34af77ece825a6c81c7e5262caad302d211"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-rexx/SKILL.md",
+      "size": 8654,
+      "sha256": "ca23d4d6ebba8ba5f232bf9493fce996dc78a51cb74186c49b6fb843be5f2cae"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-rpg/SKILL.md",
+      "size": 8743,
+      "sha256": "1cefb68a3553106b82872da2d5ddd51c8878b86bca41ae3a09d3048cd3f4a097"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-rust/SKILL.md",
+      "size": 8696,
+      "sha256": "18f63942c76637de72567c7bf86cb8dce96bb5b7ae4c7b672ca4b155dcb3224e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-swift/SKILL.md",
+      "size": 8804,
+      "sha256": "8ef36c5bfa47c298ac6f37555c761414cf60da9eacce3ff0b229ba7b5fec2f7f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-typescript/SKILL.md",
+      "size": 8763,
+      "sha256": "74f3da2a8bb2c9de553789302278e31092b8f833111671eae5619719e43f3d6b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-vb6/SKILL.md",
+      "size": 8758,
+      "sha256": "e6cfa3f355e171666f4479b67590f5ecc8d5961dbf33e67e5582be430572fd40"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-vbscript/SKILL.md",
+      "size": 8773,
+      "sha256": "3305498f306c2271e23eab13c7ae0fb5425dbc2d842e901efd5494bfc80b026e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adapter-xbase/SKILL.md",
+      "size": 8771,
+      "sha256": "fe7451b4e4abba08958f460cf2feb1c467cbb776a64b48998ab7ef0296e7f387"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-adversarial-edge-case-corpus/SKILL.md",
+      "size": 8783,
+      "sha256": "88b397662b1df92554fcedeea910498cf0a5df07bd1cc2a6ef6421d41832d2b7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-alias-points-to-analysis/SKILL.md",
+      "size": 8849,
+      "sha256": "c83179a7313a5b1830ec4b7ecf3c820b201ac3a1fe7c92946cf98637a3b15f68"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-annotation-attribute-reflection-modeler/SKILL.md",
+      "size": 8918,
+      "sha256": "083ff22ef6e1d13a59ab78a67e61ebee3894d449795dd7c8e14a6aa7f7845803"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-api-contract-behavior-equivalence/SKILL.md",
+      "size": 8900,
+      "sha256": "0fa1c3f100dec90a5e2617e80d8d8f8c8955c73a953d5ae232407e9dec9b2644"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-api-contract-migrator/SKILL.md",
+      "size": 7081,
+      "sha256": "d6d238d9d6ee024f29c627d29ff3e2f34931524b74385b2e3f1991a0b6541892"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-api-contract-miner/SKILL.md",
+      "size": 7143,
+      "sha256": "9a5787435578013706efc753f03030c6af2aae84567d3f056443130881140af8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-async-await-task-semantics/SKILL.md",
+      "size": 8874,
+      "sha256": "3cacef48b2c803f2de999df36194b773eb58a967e2de5fcf469c10c3815a73a8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-atomic-memory-order-semantics/SKILL.md",
+      "size": 8777,
+      "sha256": "d117d7e8f2a2f2fc96cfedf46e9480cd8422e952cd687d6b7508bf54bddd37cc"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-batch-job-ir-builder/SKILL.md",
+      "size": 7620,
+      "sha256": "3ece5811f05cb99325006bf8060c68191011211ba7daa45416002a58367eb62e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-batch-order-restart-validator/SKILL.md",
+      "size": 7812,
+      "sha256": "1b341bcfb95f05f230ff9e0ac91ae8291ad7fd2f6adf608c75ea3c9d9d1914b9"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-batch-scheduler-migrator/SKILL.md",
+      "size": 7950,
+      "sha256": "9971c418b15a7d61590aa3206e8341dfda99b9b12508d37cb161819b605a6622"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-behavior-contract-miner/SKILL.md",
+      "size": 7184,
+      "sha256": "c8283f424e106e0ed203ae106aab14b52ce9191cccbe17f5d4d13b599cfc46a4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-behavior-equivalence-verdict-aggregator/SKILL.md",
+      "size": 9541,
+      "sha256": "99aabdd4bb69bad557e75f707daa8f8e936bb108a8ba389a64e0e4e0d34ee04f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-binary-record-wire-layout-semantics/SKILL.md",
+      "size": 8961,
+      "sha256": "6f8b735545ba707bfade632f77013a99063407a97b9a21e0db3f2ed9dae8f10a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bounded-agent-patch-executor/SKILL.md",
+      "size": 7190,
+      "sha256": "c339d5a722a02264a8482fd8acbb74b3e53065537ec6853353974755234c63db"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bounded-model-checking-equivalence/SKILL.md",
+      "size": 8817,
+      "sha256": "2c9c2cb955d45ffb99da3672bff2cf102795060e115e5385fe12f7a9c78ef2ae"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-browser-js-wasm-runtime-lab/SKILL.md",
+      "size": 8778,
+      "sha256": "2e8c2ec62114faa2d71c90d0c4d02c98e06dc1618e69868c5766c1c9065d6868"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bug-regression-corpus/SKILL.md",
+      "size": 8716,
+      "sha256": "65d9c5a302573939913e82c9983b8c9d142fc26cec7fbaadb786c94c295c4d47"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-bug-seed-feedback-loop/SKILL.md",
+      "size": 8850,
+      "sha256": "74cd1500d819e560adf1262cda6d4f1aa37d88c087fd7144d4c7c5028cfe62e8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-build-config-remapper/SKILL.md",
+      "size": 6914,
+      "sha256": "8332a37cd6f28cef2815c7ec16a0e1a75a85f33f26fb7875a75e8703a3aaf93c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-build-toolchain-discovery/SKILL.md",
+      "size": 7102,
+      "sha256": "ee0dea026a4b72b148be7ee06aa8e75f57f6d0e14824f8c43d9aa0d15dc5c8dd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-business-rule-ir-builder/SKILL.md",
+      "size": 7696,
+      "sha256": "0eb5807a10be1c5d429292e96bb7593ab713cadaea530044b9c057e80b3aa6cb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-byte-record-layout-validator/SKILL.md",
+      "size": 7808,
+      "sha256": "6bdaf0abe84238dacd1aa223654a2b7e623727b5810e06ce664fc67f75f9d1db"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-c-memory-safety-migrator/SKILL.md",
+      "size": 7958,
+      "sha256": "a6b5088c37f913144b46485353bf3266b77149ed2719371ce417cb75fc3a210a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-c-to-cpp-modernization-route/SKILL.md",
+      "size": 8811,
+      "sha256": "5388caa5c4594c98b37ac2e36d1086580c7c2449aaa6c61c0a79f51a12cb0e07"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-c-to-rust-golden-route/SKILL.md",
+      "size": 8811,
+      "sha256": "56b63668b116945ce4b851415ef796059aeec465d06d542cf9e38fa5e95f2a0e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-canonical-type-algebra/SKILL.md",
+      "size": 8768,
+      "sha256": "db60b16e3f523a5feb0150518919fc8f63de602cf5f5a91d7a1ffe1956849286"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-certification-corpus-readiness-gate/SKILL.md",
+      "size": 9270,
+      "sha256": "8d25690188f366c618cdd25fe81a4863ee4b312d23425c46814e0fbada51911b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cfg-equivalence-builder/SKILL.md",
+      "size": 8697,
+      "sha256": "c9efc4dde872eeca43b64be9387a2a664cd9c773bc5517b00318d38d49f82d71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-character-encoding-transcoder/SKILL.md",
+      "size": 7950,
+      "sha256": "f907474caef43c8d66e148f8eb33a440eedc5919ee3a8dec58fb0170dcf95600"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-closure-capture-lambda-semantics/SKILL.md",
+      "size": 8767,
+      "sha256": "39444e6eb1d26434dc67e8e058ccb67b922e51b8fb0471f7ee0565758387da03"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cobol-in-place-modernization-route/SKILL.md",
+      "size": 8897,
+      "sha256": "65cb7fd300c58f2932aca0bcdd7f7cdd82c46ff993fce8fb89454c6aa600b651"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-coexistence-strangler-planner/SKILL.md",
+      "size": 7764,
+      "sha256": "905d04f66346d7d5ce22bd8c68245e37442ecc0f06564af43853de0fe28527ad"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-collection-order-mutability-semantics/SKILL.md",
+      "size": 8820,
+      "sha256": "67cd92dd0200a20b3fc33a5ca73bc182079c5e1d590d638bc1e517a51f37da0b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-com-activex-ole-migrator/SKILL.md",
+      "size": 7964,
+      "sha256": "a8735a5a63008acb2a6f6b4f6c34040f11ef47e14dd1540ab8eece9597cab43c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-comments-directives-trivia-provenance/SKILL.md",
+      "size": 8974,
+      "sha256": "aaa58713dfbb0b890b7f105b744eb6a576d74b6a0b12dd10c1ea49409259b977"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-compile-test-repair-loop/SKILL.md",
+      "size": 6924,
+      "sha256": "d761850889999081859fe488e577735134b9f0937abcfad3a6f6342062baf157"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-compiler-matrix-nversion-oracle/SKILL.md",
+      "size": 8877,
+      "sha256": "cbad172db6d4ab26f1fc93aa1fe2c6623e7591533f510eebdfff7699d1a7d43e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-compiler-runtime-version-matrix/SKILL.md",
+      "size": 8817,
+      "sha256": "92474487fb46e3453f8d5fb6868ad110164b34f6bd684548fbc71f4b43f9cb69"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-concurrency-semantics-migrator/SKILL.md",
+      "size": 7186,
+      "sha256": "3001257b785ea83757cf0b674ed84273f36fbdec0f9e858243b4f8f2c9379c8b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-contract-invariant-inference/SKILL.md",
+      "size": 8947,
+      "sha256": "b5dda29c61eb25270c83f4d18f2644cd0407a0ccae15349a34625b611ba7b4ab"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-contract-test-generator/SKILL.md",
+      "size": 7072,
+      "sha256": "dca489fba5717ec1acf20836b8248cc4e51807d83928173afaae73513da95f18"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-control-data-effect-equivalence-gate/SKILL.md",
+      "size": 9325,
+      "sha256": "3ad00e246dd5802ca38b32f1de07e29464836121f9eb2163786eeaf6691c25c1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-corpus-drift-freshness-manager/SKILL.md",
+      "size": 8883,
+      "sha256": "d3dd5e09dcdcf674d5856859ec86a0e5b44f4cdc454723875c5e123f4d80637b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-coverage-guided-differential-fuzzer/SKILL.md",
+      "size": 8899,
+      "sha256": "4b49eaaa55fd1f73217a1bea5845b01c663d1fc053813efcf005c940cee71e50"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cross-language-memory-model/SKILL.md",
+      "size": 8807,
+      "sha256": "2f4092117c93cad5e0e101658593412dabf7d2bb6ca134da06f5de6cec038465"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-cross-runtime-trace-alignment/SKILL.md",
+      "size": 8859,
+      "sha256": "4a0e144fb59060fa1bcaf2ad8b2f76ed3abb0167474c578f09bb47b97118176b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-data-access-transaction-migrator/SKILL.md",
+      "size": 7221,
+      "sha256": "cb526c4777e2bc79fe2521793c758d5d7e767736aea37064b5ff566004623971"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-data-contract-miner/SKILL.md",
+      "size": 7226,
+      "sha256": "9a9b14ca4434f61fcdce63a70a3646197143fdea5bf61e10bc71cef2a01490ec"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-data-equivalence-validator/SKILL.md",
+      "size": 7149,
+      "sha256": "1c48e4452b07b76b247ab74717a73c0eb40fe33175d04abbc0c49bb3da37c1cf"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-database-message-runtime-lab/SKILL.md",
+      "size": 8811,
+      "sha256": "e817da776fdafa0c347703cf53e4248850fbe850e3138aa9df72158c0002157e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-database-state-equivalence/SKILL.md",
+      "size": 8894,
+      "sha256": "9327a2bebe9aa767e460ae134d57fce144eedce618c2a72f3b39b9a470cb375c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-datetime-timezone-calendar-semantics/SKILL.md",
+      "size": 8831,
+      "sha256": "b4567891885d52505229ee4ae0b95942a93d6bb7b839af5df0afd920ee990002"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-decimal-arithmetic-preserver/SKILL.md",
+      "size": 7982,
+      "sha256": "00fcf101e0e44133ae679c28791faa89f4e716b334c1ed3244d337fdfe80d946"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-decimal-financial-equivalence-validator/SKILL.md",
+      "size": 7858,
+      "sha256": "82cd3ae0d62c787c167eb5d83aa6f1b9b7e7564b94685db2aca24415697075d3"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-decimal-money-arithmetic-semantics/SKILL.md",
+      "size": 8807,
+      "sha256": "a2a69df85e2163e09d14422e3a124f73c17c84984e663a89e32e1d6db8846fca"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-delivery-pr-handoff/SKILL.md",
+      "size": 7002,
+      "sha256": "f113970fc5d73001e24c8d50f423a982fafd6669a6058c9c298131908aed998c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-delphi-to-csharp-golden-route/SKILL.md",
+      "size": 8899,
+      "sha256": "3c4dea504c14c81b071a8f19e9ea0b23bdac6207ec6fc0d2b1937dde71497bf7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dependency-callgraph-analyzer/SKILL.md",
+      "size": 7123,
+      "sha256": "18099bef4dc36201ce1f57741237bbfe17acd6db5188ad41732c2410f8ed0721"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dependency-package-remapper/SKILL.md",
+      "size": 7148,
+      "sha256": "1f4061fb5e2e2d45871aac9b15b7d8f2cbb1471f46c6cba3f01762af346a785d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-deployment-runtime-migrator/SKILL.md",
+      "size": 6961,
+      "sha256": "d9ba2abfc8a3ddfa3715e5a283a2e2718c6a327482c5eed4285ce29a5ee86074"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-desktop-ui-migrator/SKILL.md",
+      "size": 7884,
+      "sha256": "9bd7855aac04b8e1676640f150586bc62214aee207dcd69c350a49cbc8f13913"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-deterministic-codemod-executor/SKILL.md",
+      "size": 6970,
+      "sha256": "4a9258ddd53e0cf118b3eeca5fb265c3afa910a0c780f81c7cb192f268aaf908"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-deterministic-replay-oracle/SKILL.md",
+      "size": 8904,
+      "sha256": "4d554257b3ee75fbf7092d2d0efc719558ed41a226a4a8ad451e50fd4fe2cf71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dialect-version-detector/SKILL.md",
+      "size": 8845,
+      "sha256": "ae5bbf970e1cc16250604f9dec2718cab67db9288b9a061a17361936cd5b067d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dialect-version-fixture-matrix/SKILL.md",
+      "size": 8793,
+      "sha256": "2d37cb68d30804d1ec9f52ac8133b57863337b86aca7c6a3bf265911da4125fb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-differential-behavior-validator/SKILL.md",
+      "size": 7125,
+      "sha256": "652af97d385f9ee3dbed759bddf3970820bb33501282aff42f60e03335ef7efe"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dual-run-shadow-reconciliation-validator/SKILL.md",
+      "size": 7896,
+      "sha256": "b9d7a849dc08fd2b2279ca182b971744d8f6bd4fef23848287c91006a08f8c0c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-dynamic-language-shape-inference/SKILL.md",
+      "size": 8860,
+      "sha256": "890e9194450f82b3bf0b6453f55c5b842afbab318a9bccce7b93bd24ec176c81"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-embedded-sql-routine-migrator/SKILL.md",
+      "size": 8010,
+      "sha256": "1384c5b7afc3575014104253ed64ad42106c6557bc379a9d23ecd251564e02a0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-enterprise-4gl-ir-builder/SKILL.md",
+      "size": 7676,
+      "sha256": "9da33f36aa329031b3a0654cfbbcafd3ba0f8a950c914c78da8b386a80e6aaec"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-enum-variant-sumtype-semantics/SKILL.md",
+      "size": 8820,
+      "sha256": "73a4a091afb95295a99d517c9224cc19429764081c059f875931ec59bfdee145"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-equivalent-mutant-classifier/SKILL.md",
+      "size": 8864,
+      "sha256": "65114826b0231631b30945fbfc67c5f5cf3a30a6797fd4734dd7360b09b82998"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-error-nullability-migrator/SKILL.md",
+      "size": 7137,
+      "sha256": "a71829975b3e18d84266da96399208f671dd79bb42423053afe28ec7e251d2aa"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-exception-effect-type-semantics/SKILL.md",
+      "size": 8809,
+      "sha256": "78d4ef0dc25971d3165a1eb24236482210644ad80bdc72b930de7119d3d8ea48"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-exception-unwind-equivalence/SKILL.md",
+      "size": 8830,
+      "sha256": "5a95618bf8599239ad3a4dcaf022b843fd59a6d396fa41416f13a76673ad665f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-failure-reducer-minimizer/SKILL.md",
+      "size": 8847,
+      "sha256": "92e956139c5872526d8a5337956eb26690bd453023a0156bf54807cb121a0f3c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ffi-marshalling-semantics/SKILL.md",
+      "size": 8888,
+      "sha256": "036f6c180e831759b29c06f17bd3ed66b15a220a662e14886d502075033a4670"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-file-network-sideeffect-equivalence/SKILL.md",
+      "size": 8850,
+      "sha256": "12cf2b925aff1afdc4cab191f01e319602ae7202a33c3b6d5e0aba41c9c22b93"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fixed-format-source-normalizer/SKILL.md",
+      "size": 7766,
+      "sha256": "56ffe92c07f0c9b978f0b5e5d0370b1c0aface446beacfe46e7ff1bc7297ef27"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fixture-corpus-governance/SKILL.md",
+      "size": 8757,
+      "sha256": "320b1b26ae7e64adb751c74605d3b327429b27f26e8c5f085994d41ecb50b6b0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fixture-minimizer-deduplicator/SKILL.md",
+      "size": 8817,
+      "sha256": "a8b452df7417edaeef86200a8a64eef951ff8106015b774981dddc12b2db6363"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-flaky-nondeterminism-classifier/SKILL.md",
+      "size": 8925,
+      "sha256": "7b82d0447d69abda4d3745d2a3204cc39f9492d76bbdccfd0a861d60afbc5a91"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-floating-point-equivalence-controller/SKILL.md",
+      "size": 8070,
+      "sha256": "0db61f87edb42085b93d842a9f6025b544bf4a6e36f51c3427d4c16d2a1c217a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-formal-assurance-gate/SKILL.md",
+      "size": 9330,
+      "sha256": "c5401158f31c54b3aefa44a16ef5e00747174b02c7930f508aeb08dffa54de65"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-formal-semantics-contract/SKILL.md",
+      "size": 8932,
+      "sha256": "f8b8ae072e972ef75edb6795fd88dc2e4d89843d66c8ed73c0ce9f6c10da5239"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fortran-to-cpp-golden-route/SKILL.md",
+      "size": 8784,
+      "sha256": "8c1516733c4a263c19fe905f420a732914799da1e8c13b9e69ed50c6316b4a20"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-fortran-to-python-numerical-route/SKILL.md",
+      "size": 8975,
+      "sha256": "9a5011313829ef7d7c8c4ced500e4a19fe01ee3a0b7c61e761a59508cddac2e0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-framework-ir-builder/SKILL.md",
+      "size": 7116,
+      "sha256": "7a96047cc6f6049e39f9b38eef87c756f2ec0295e2ca007d75d5d4bb4a71beb5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-frontend-consistency-gate/SKILL.md",
+      "size": 9154,
+      "sha256": "09d1f3eebad6d40134c4b84c2dbcf2ac76422740382ce621b56c30c5ba7f2088"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-frontend-ui-migrator/SKILL.md",
+      "size": 7092,
+      "sha256": "71c75c333a4d9044aa9f4a18a7fe46abdc7e31d059e13c9bbba4c42a842b12a5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-full-project-generator/SKILL.md",
+      "size": 8261,
+      "sha256": "e7eb7a6833df0a2e6a4845c0042c489f65210dcff9b612c818e86d6eb27db939"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generated-program-corpus/SKILL.md",
+      "size": 8735,
+      "sha256": "4e82ad0c9d4a9f648b7ebd4347a3412b0d9bddb5735c14072f3da1d348783584"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generic-template-specialization-modeler/SKILL.md",
+      "size": 8902,
+      "sha256": "90b3e3935197a6f84b2ec6f82dae04e56a4d0fef4b36bce52d3bd3b9c25b4e17"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-generics-variance-erasure-semantics/SKILL.md",
+      "size": 8888,
+      "sha256": "1c632b022e1b66e85b23419a1d00771a88c8e44648977641914114e4eef8998b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-golden-master-recorder/SKILL.md",
+      "size": 7022,
+      "sha256": "ba4f9788a2f62d7f009907e472c95cfe092acdbed593e5ae8155d7edcd1b6d1e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-golden-route-repository-fixtures/SKILL.md",
+      "size": 8943,
+      "sha256": "5e566d2882c9a5970e78575096aad1c9fa23614c6ff23063f135b8522c2d009b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-based-semantic-fuzzer/SKILL.md",
+      "size": 8840,
+      "sha256": "1caf374dba6eec5dbbb8d6c124dd809384ba308e9156d4c8b5db8903b578e798"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-feature-coverage/SKILL.md",
+      "size": 8866,
+      "sha256": "2a9f713edb71b56306e681714cbfecb8eca69a0bfc85476fbcf584e86463fb66"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-grammar-spec-ingestor/SKILL.md",
+      "size": 8866,
+      "sha256": "696a813f943ee4afadd6dbdb9763c12105de85a9c0b7976d3f1b787ed16fa8bd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-hermetic-toolchain-image-builder/SKILL.md",
+      "size": 8837,
+      "sha256": "af88123936efe2e3c8d23e02dc67668cb06a8517549420b6ddfee454596f77f5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ibmi-native-runtime-lab/SKILL.md",
+      "size": 8725,
+      "sha256": "7fda7ec56b316bf8d315e4e035ba18a47f97bfcd699b19b78cedbb931735b916"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-db2i-migrator/SKILL.md",
+      "size": 7898,
+      "sha256": "68a42ba20058c848641d334e3359f02842c1dc82fa7432a1cdfb42e35c61dede"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-to-csharp-golden-route/SKILL.md",
+      "size": 8838,
+      "sha256": "9d2e617dc303fcb706e3e99cb7769a7264a91fc237052d42b486c9411c250263"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ibmi-rpg-to-java-golden-route/SKILL.md",
+      "size": 8815,
+      "sha256": "9c17967608408766ae9acb0f089353fa89cab9f3f7bc3c09cefbc5777d12cbef"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ieee754-floating-point-semantics/SKILL.md",
+      "size": 8788,
+      "sha256": "e1d9849cf68a7459eea8adf639ff487772b7a7452f03fe87f115562ef9117238"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-immutable-repository-snapshot/SKILL.md",
+      "size": 7008,
+      "sha256": "d3e20171a4bc31140c560f6c760ad6dbf6d91740d1bfbc972d40e6147de76446"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-indexed-file-data-validator/SKILL.md",
+      "size": 7800,
+      "sha256": "cbef33972d3852c96022f088d086ce81c72d3cf439042165172d3cdb4dbc16e1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-indexed-file-database-migrator/SKILL.md",
+      "size": 8010,
+      "sha256": "fe1b175be7ed3d2e638a925d83ac59c0defc1d4b8ce892746258f7b879a2ecd4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-indexed-file-state-ir-builder/SKILL.md",
+      "size": 7656,
+      "sha256": "64a7af751cc85fb1fe907ed3f6b31ae495681f04222be8f97389a5848a1c838e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-input-domain-partitioner/SKILL.md",
+      "size": 8807,
+      "sha256": "97a6ee6c5d62810e5800ce6e26194859cf90a056ecba18df088e5f5c57d1c68b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-integer-ub-language-lawyer/SKILL.md",
+      "size": 8847,
+      "sha256": "a50993e407735485a92b50d8df6985e8591ff2d8062caad1c58ab961f61a5c38"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-interprocedural-callgraph-resolver/SKILL.md",
+      "size": 8950,
+      "sha256": "d3e790de27648925f3f87f9988d8dee5caf456df656dabe697d87faba9dcff67"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-io-environment-observable-semantics/SKILL.md",
+      "size": 8863,
+      "sha256": "303df43d571d563032107881014b0ef1de21cc07aa69d6093a4eaf007c50f615"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-iterator-generator-coroutine-semantics/SKILL.md",
+      "size": 8951,
+      "sha256": "2e15050ac21c78c9dcc53d9d317dfec711504eaf1ddf2f25f50207ed8b93fce4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-language-spec-conformance-mapper/SKILL.md",
+      "size": 8827,
+      "sha256": "c02eaf2d2f023597025a34370f2320a610a7234e1a6e1dd2909557b74ee743e6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-build-runtime-discovery/SKILL.md",
+      "size": 7874,
+      "sha256": "e4a275c998fc136fdfb65fd0e9abd6d1cbf5e3a802d4ed120192180f0045935b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-business-pattern-corpus/SKILL.md",
+      "size": 8774,
+      "sha256": "f671e25d0aa65a4189efb51e67b054c159d842880065894458de0460eb3ad734"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-control-flow-ir-builder/SKILL.md",
+      "size": 7740,
+      "sha256": "df8bebbc683a005eda4c41c7ef1239b233d6b0d3d959f31d3a052f1f6801231e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-dependency-runtime-graph/SKILL.md",
+      "size": 7778,
+      "sha256": "f336b5e7fc6d9d3f9dce4b79f1f069eed6229f0bc5b658f6bda67c9b32bec63c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-messaging-migrator/SKILL.md",
+      "size": 7948,
+      "sha256": "c4c6b43d1dbc84d488725f3eb9409d01062a440efc62afd3cd59731b477ab319"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-p0-orchestrator/SKILL.md",
+      "size": 7722,
+      "sha256": "ce2a26ffdf946e720b0f8389cd2380863ecb230ab9e6647cfcd6b0edaaf8617e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-performance-capacity-validator/SKILL.md",
+      "size": 7858,
+      "sha256": "a1c4cd31d3d6c396bea2b245a9ef3415953cd9ae7085df840b4be427dbf3334d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-production-certification-gate/SKILL.md",
+      "size": 7900,
+      "sha256": "fb4c05f69c705ac48078e8cdfbd5996c7876dc41a215bf2593a499dd0b789196"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-legacy-repository-archeologist/SKILL.md",
+      "size": 7767,
+      "sha256": "76bd26fa482a21d55456355f0f728657634a266d12e1e555f6f34e5b54478b63"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lexical-layout-fidelity-engine/SKILL.md",
+      "size": 8924,
+      "sha256": "677eb8fa19f92b5b82b3a150c16400291cdedea526e07a0535ea0a0120e593d0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lifetime-ownership-borrow-semantics/SKILL.md",
+      "size": 8855,
+      "sha256": "f4167f5d2e8397048bbc7317e29af8bb618a3303ee96a4180db6842ebcc1a29a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-llvm-ir-refinement-checker/SKILL.md",
+      "size": 8960,
+      "sha256": "f793c4a90bb4b2e67407adbd1535d15f39c4b83a542dd6522334bb58cc69baba"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lock-condition-semaphore-semantics/SKILL.md",
+      "size": 8801,
+      "sha256": "dce1fff5aaeb724a416b673c91c39cc209c78b4b98d9242070a0b1f140e5b108"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-long-task-checkpoint-recovery/SKILL.md",
+      "size": 7074,
+      "sha256": "2790fcd7f63dacfb1cdb212d9d0a9aba95d8e89d383cf05814205d01ac477129"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-lossless-cst-builder/SKILL.md",
+      "size": 8773,
+      "sha256": "0bfe4ca52cf470af5a2a4888a28c7ffa0d1fe3c7e0ae7836deb9de8c77689220"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mainframe-cobol-to-csharp-golden-route/SKILL.md",
+      "size": 8903,
+      "sha256": "1ebb6d5105d3e4eb00702da062fe3ec166408ffad8b39af683b01fbbbdcc85c4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mainframe-cobol-to-java-golden-route/SKILL.md",
+      "size": 8882,
+      "sha256": "7a62800546f2debec81227783c6b421adb536a4dce9159d42d4dff81874a3b1e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mainframe-native-runtime-lab/SKILL.md",
+      "size": 8764,
+      "sha256": "d59fa7c9f9569a2740a5b0839cc3a8fa2292e39b3fb31ad114c6c0584be4ea00"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mainframe-security-migrator/SKILL.md",
+      "size": 7962,
+      "sha256": "2224a1d072d0a598560045d1d2500a32aa00fc2302c39a4aaa84d3c085fdf782"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-memory-safety-regression-validator/SKILL.md",
+      "size": 7824,
+      "sha256": "2f4a6005764298868f45d596bb6ddd1c02a296d38a2aeccd3886f2e6c2939bd1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-message-event-equivalence/SKILL.md",
+      "size": 8706,
+      "sha256": "0dc09054702adb23bb59fc8aab581c60225974e770a6b5a405852d1e1e773ea0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-metamorphic-transformation-tester/SKILL.md",
+      "size": 8880,
+      "sha256": "0a452e0ca285a9a91efb7bbd806c74263916ec42c2c39902b17bde4c99334bab"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-metaprogramming-runtime-codegen-semantics/SKILL.md",
+      "size": 8954,
+      "sha256": "f43a3af176dec47207bbe6101c3e4769930807494ec710071f42d9fe10e23657"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-migration-dag-builder/SKILL.md",
+      "size": 7022,
+      "sha256": "bc61e9d07a5ddae599fbcd73e94c545a827a760ce32637c944f7a689e78fe3aa"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-migration-route-planner/SKILL.md",
+      "size": 7213,
+      "sha256": "5ea411b38d548c5432160e3b635bbd5c2f7dc0d3e18c118e32325581c19fe84e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mobile-native-runtime-lab/SKILL.md",
+      "size": 8809,
+      "sha256": "6a2e26e4874d4f1befb5c7ac0fe6325d1bbbebfcc26654a7c5098b374f8672f7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mobile-ui-migrator/SKILL.md",
+      "size": 7197,
+      "sha256": "77bb10fc4deab6c98e39ff2343ac9789f8816f773a12060b276ce4077459174f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-multi-oracle-differential-executor/SKILL.md",
+      "size": 8978,
+      "sha256": "8f10d79ad19ff725f9c5ca0c45945481ea87750ce9c27845acaf3477a0900f0c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-multi-source-repository-discovery/SKILL.md",
+      "size": 7180,
+      "sha256": "3d235c14978ff0049efbd2fd9e2b0639b69a327547c625fc59d921a8231fd2b7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-mutation-test-controller/SKILL.md",
+      "size": 6920,
+      "sha256": "265f33591d75da510b08d07a7422decd1572dfa6c7c73ec6dea8578bc0996bb9"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-abi-behavior-validator/SKILL.md",
+      "size": 7804,
+      "sha256": "c7e875bc67128c8442da76b9eff163d3079ec4cd8fb5b383749646e5fd7c67d1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-abi-ffi-migrator/SKILL.md",
+      "size": 7940,
+      "sha256": "b0ec96af2ecc742958bbba8269c515ce5b403488dbb3f142dea71684fc0347d3"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-abi-ir-builder/SKILL.md",
+      "size": 7630,
+      "sha256": "27c9c79781a1fedf436f33419217f25dc4b3056d224aaa0439c0d4a6bfc3e4f1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-ast-cross-checker/SKILL.md",
+      "size": 8858,
+      "sha256": "58b071c82f4d99d22cda8fb8a3f9059ccbb1df34e4d9e3c5fdfb3f9db3bbbc09"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-runtime-lab-evidence-attestor/SKILL.md",
+      "size": 9434,
+      "sha256": "84a3b14bdc0f5d5c038087342fb4160735ed4aceabf30a8efcc35e8336299de1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-native-ub-sanitizer-orchestrator/SKILL.md",
+      "size": 9028,
+      "sha256": "c5f828b5ccac1593c0455cc43b9be64c24015aeef2f1a0acdef82265b915841a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-natural-adabas-migrator/SKILL.md",
+      "size": 7892,
+      "sha256": "485921a0de87b29cc2386d6f910f84dc11227cca54c78c495530776b4f00a028"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-natural-adabas-to-java-golden-route/SKILL.md",
+      "size": 8896,
+      "sha256": "3240a0d05a7f9853306b5feda60bae4588d0f631116c9d6a434258ec2cdc3416"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-nominal-structural-subtyping-mapper/SKILL.md",
+      "size": 8866,
+      "sha256": "8c90d0b9a77e2897cc10134f07e3e1c473c02046b82cbc58cb0b3ede3b7c8168"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-nullability-optionality-semantics/SKILL.md",
+      "size": 8783,
+      "sha256": "a93a708d071c916fbbcd32f99f7fa8745ebb3fe5e0bd7696832a8208848eb36c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-numeric-type-range-overflow/SKILL.md",
+      "size": 8762,
+      "sha256": "905ae400dcfc9c9fbde40ccde731f319ec66aebe6b66b53336a664fb03cef52c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-numerical-ir-builder/SKILL.md",
+      "size": 7670,
+      "sha256": "6b70817a3e9066fff4b48d462d3c4fa2395cd42af83cec0662709dbccd4e9750"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-numerical-kernel-migrator/SKILL.md",
+      "size": 7992,
+      "sha256": "125d23bf8adb73043ed74fb3de11c5a6eb781d87a1a2552f4bc915bc32d1516e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-numerical-tolerance-validator/SKILL.md",
+      "size": 7830,
+      "sha256": "08d5bb8f7e4a3b308316d0de77a25db5bf6b728629b5c6d605339d6960344953"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-object-layout-vtable-semantics/SKILL.md",
+      "size": 8780,
+      "sha256": "d3f08be779e80fca18acfeb3ac111f3ae7027a1b30a4af786586e10f34d55b97"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-observability-logging-migrator/SKILL.md",
+      "size": 6926,
+      "sha256": "799b3a076733a3d2e1f47ff3f567940cb1230133b9dbad7e46b52606e74e6c2b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-observable-behavior-specification/SKILL.md",
+      "size": 8886,
+      "sha256": "a7ae2eb44c6a6ac8cdda8a4778e46fa7655245c712798a74779c8395d2453a3d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-openedge-abl-migrator/SKILL.md",
+      "size": 7906,
+      "sha256": "78433358b3dd1cae432e0a2e652b10fc2cc20d7dbea968d54b4816751d353ea6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-os-arch-libc-matrix/SKILL.md",
+      "size": 8756,
+      "sha256": "e4adc6447f25f61c7f2e551500482afb9e31721b641d713703bbaa29c13a5fce"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-overload-dispatch-resolver/SKILL.md",
+      "size": 8813,
+      "sha256": "84d13f7bf9f4c30dd613d9e1474c764eadad6d98e3151412c11effc55de38fe5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-parse-error-recovery-validator/SKILL.md",
+      "size": 8842,
+      "sha256": "50c7ac05abd96ce896d568147b884a7827e4dcd3e98a53928619c9fe6a31a179"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-parser-ast-conformance-validator/SKILL.md",
+      "size": 7810,
+      "sha256": "74eda7772c193d6ddfb2b7409652ff3b18121980feb11e1b6caf3aa78c2363b1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-performance-complexity-equivalence/SKILL.md",
+      "size": 8871,
+      "sha256": "7eed0793c20da5aede727265c62c6cf724697d9ecab4b1e099fbb4dad9396bd5"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-performance-equivalence-validator/SKILL.md",
+      "size": 7105,
+      "sha256": "b606d265e3a7f01cab6389d6920ac0075479ad48ce60cdab15b10e4cf9718f15"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-pli-to-csharp-golden-route/SKILL.md",
+      "size": 8791,
+      "sha256": "8d06e9815e838995053ffec911343069c27e9aae0e62302d325ddcd82534ad86"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-pli-to-java-golden-route/SKILL.md",
+      "size": 8751,
+      "sha256": "5cda13fe9432fe2d7dfc1c5f3d2bc7ae95b3343adee93470e1494617799f9f97"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-pointer-layout-endianness-semantics/SKILL.md",
+      "size": 8891,
+      "sha256": "2c00b3c44747b7d60114b7ca3552ec042da7063a37d795eb7de2fd4fb74ef562"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-polyglot-modernization-orchestrator/SKILL.md",
+      "size": 7502,
+      "sha256": "42ef4ddb6d77b888a6ba12fff65423fcc223fca4a2491babc89ebde56ea25c37"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-powerbuilder-datawindow-migrator/SKILL.md",
+      "size": 7982,
+      "sha256": "a4e532ea6fe0d9c172b14734ad7ba6e208a2ccfb932b4c6f37d3e9da3eaae67c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-powerbuilder-to-csharp-react-golden-route/SKILL.md",
+      "size": 9049,
+      "sha256": "b3ba6dd8c9a1438fa164e0a15693bd8fb352eb95b389d06fa4f80cace04537d1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-preprocessor-macro-expansion-modeler/SKILL.md",
+      "size": 8971,
+      "sha256": "4aee358041aa1c47d872f4e600de6c701c4ba9048c30a33908b0bd59ad5a6a71"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-production-readiness-gate/SKILL.md",
+      "size": 6988,
+      "sha256": "f6d41b2ad4f4464eb176ded623c79708f381785ec115e1c7e29dbb1aeb3e756a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-program-dependence-graph-analyzer/SKILL.md",
+      "size": 8871,
+      "sha256": "121d169e3daf8af013ed77d56702e1db3513f51a8528ebf3b0971ca6d76aff24"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-project-ir-builder/SKILL.md",
+      "size": 6872,
+      "sha256": "056e92add7313cfca574a1a31100f182e9909a3876fa4a945d16a465db36c042"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-cache-invalidation/SKILL.md",
+      "size": 8772,
+      "sha256": "9887006af94c5a0362bdf4a092b3a3f3f260a3ae4ed38af96712074506dd738a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-counterexample-replayer/SKILL.md",
+      "size": 8994,
+      "sha256": "7adc5d82596041d0c99e0779adb58848858b65eca93613655f41af0c87a03d2f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-proof-obligation-generator/SKILL.md",
+      "size": 8908,
+      "sha256": "e6e3010ba60cd03dbe55e402c47400114a3d692d0d0bae12e5a6177d3c5bf907"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-property-based-cross-language-tester/SKILL.md",
+      "size": 8910,
+      "sha256": "8f69379513111a3452f8072f8ace91f0f113510ddc154614dd5c0e95dd29ac65"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-property-test-generator/SKILL.md",
+      "size": 6940,
+      "sha256": "fcdd1270423f93ae20600fd2dd9a46fccb1ca3ecbc40ebefaeed804ecadcb767"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-public-api-binary-compatibility/SKILL.md",
+      "size": 8923,
+      "sha256": "6fe91ca1c0b60fabea781bb638fa8529bf76d21682a24cf193d362f2bfbcf409"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-public-fixture-license-provenance/SKILL.md",
+      "size": 8819,
+      "sha256": "c2dcdb5527f5a70911ac05e8b270187eac5ff5ce277e9bbacc1a378132c23e3f"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-record-layout-ir-builder/SKILL.md",
+      "size": 7678,
+      "sha256": "5bf82da6da277cbdcb9678adc45f70e7f42dbc85c6e3734797aada0adfa5d829"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-record-layout-mapper/SKILL.md",
+      "size": 7900,
+      "sha256": "294164368a955ab7214de145635b1d2a6930560749971ff05889081a78fba6ff"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-refinement-range-contract-semantics/SKILL.md",
+      "size": 8877,
+      "sha256": "a8273cb5be31f15d0cc602049c4b4e1b691a0a3f92c85ae91bba5b92c143bbb1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-reflection-dynamic-dispatch-semantics/SKILL.md",
+      "size": 8966,
+      "sha256": "11841bbcd1d1d07ed1b5fcd1ed28dd0bafa6c1ec52e364bba81a3a94bde99e56"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-report-printer-migrator/SKILL.md",
+      "size": 7934,
+      "sha256": "c3c0032d0f42cf89934d9ef1a9c7dbde6cc4c888be00f00e87eb7ccaf2abf29e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-resource-lifetime-finalization/SKILL.md",
+      "size": 8826,
+      "sha256": "54ea32a499cad56445fa0cf0344de4403865a4ce6a50c6a11bfaf5a3bc4f5fe8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-rollback-dual-run-planner/SKILL.md",
+      "size": 6946,
+      "sha256": "b96ad6ddca3d9dd556df3535f2cee72f24d250caea92291900c1128768c1d889"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-rpg-in-place-modernization-route/SKILL.md",
+      "size": 8863,
+      "sha256": "1eab198548a26381b4f9ace8036cd0f0e390a6fbe73172226ecdf4cd9da98878"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-runtime-edge-semantics-gate/SKILL.md",
+      "size": 9435,
+      "sha256": "05bfd269ac0dd70ae2b8ec654d8453aa026b30c41adb761ea1f9251c69f13bbc"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-runtime-topology-correlator/SKILL.md",
+      "size": 7107,
+      "sha256": "04e30fe7b6927c590be93d26707fcebb6bcac594a069e5e4aed8d9e2babb08de"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-rust-to-ada-spark-assurance-route/SKILL.md",
+      "size": 8939,
+      "sha256": "aceb503349c9fca9b5f4551101f2c0503b13d7976b5615dfdedaee323f7d4b7b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-safety-contract-ir-builder/SKILL.md",
+      "size": 7704,
+      "sha256": "84059a7c285b3f9d21d7af3e4529e0a46dc0368bc1ae5124801e9195aecd8bbf"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-safety-contract-proof-validator/SKILL.md",
+      "size": 7824,
+      "sha256": "766951cf0e1e7d12dc1272e093c17553318cdaf3bc576561b75a0bea46ae843b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-safety-realtime-migrator/SKILL.md",
+      "size": 7942,
+      "sha256": "59c667f8f327cfebf3d46f795d688785311ff4b19a9494f618a6aa7404f00efb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sandbox-environment-builder/SKILL.md",
+      "size": 7020,
+      "sha256": "390e6d940b60c7b64f173f14d182437c80d180a09202671505a23a5feeddf58e"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sap-abap-runtime-lab/SKILL.md",
+      "size": 8668,
+      "sha256": "280a23ca7213f47a711099203706eb5c65a40e389ad99001451c817a1a0aa226"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sap-business-object-migrator/SKILL.md",
+      "size": 7984,
+      "sha256": "4b5d01c8e7f9e7eddfea07bad51995e105dfc70ddc81f55f473b19d25264e3cb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-scientific-hpc-runtime-lab/SKILL.md",
+      "size": 8828,
+      "sha256": "df8c6ae982df86b74e926c4d13d3d1b9a65926035ba3f0ac1ac2c7731a60aec4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-scope-authorization-controller/SKILL.md",
+      "size": 7126,
+      "sha256": "e7941e42ac60e48516317a8be382bf70001043baf79c17316b6d1a280a030bce"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-scope-resolution-engine/SKILL.md",
+      "size": 8737,
+      "sha256": "1ee5b1a3b1e3a75c68e8b06c28d9c8ecbb299020a43cbbc8055a0a9660f02a9a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-screen-workflow-ir-builder/SKILL.md",
+      "size": 7688,
+      "sha256": "d0729d4c2a46c8f0851363f3802d3cddb0f7238fd643a8b3f9d7749861f78f80"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-security-authority-equivalence-validator/SKILL.md",
+      "size": 7860,
+      "sha256": "f67949573097b42906f1eff56bc0314fbc7fa14310c00cb12459717bb7023585"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-security-identity-migrator/SKILL.md",
+      "size": 7131,
+      "sha256": "ae551db99477a7c1eb520d1a6880943de49b88501a8199969f9311e716832d5a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-security-policy-equivalence/SKILL.md",
+      "size": 8832,
+      "sha256": "290421b740d1f532691535133b5707c96d846ebdca7fb180a00ba2806ba2d3ee"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-security-supply-chain-validator/SKILL.md",
+      "size": 7099,
+      "sha256": "a402de7beeb7dc597344d2ec0ea943a3af29003995de87ba3396823cc6d386b1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-feature-coverage/SKILL.md",
+      "size": 8780,
+      "sha256": "e78125622b4375a875b3b3f5e145063608cfad4e69454ab7aff0bddeef090257"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-golden-master-capture/SKILL.md",
+      "size": 8779,
+      "sha256": "996a5974325f4115fd25ec41de04ba4ed29680c70a8071b3830410bb2dd74db1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-ir-builder/SKILL.md",
+      "size": 7072,
+      "sha256": "7467e1994fc851144b05700da86db4544e98672dd308fe1595b55aa45540776d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-loss-risk-estimator/SKILL.md",
+      "size": 7816,
+      "sha256": "8923e1b279d454a4cb1573b29b562405903326810ad3ff314ef5d625eebf2908"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-mutation-testing/SKILL.md",
+      "size": 8804,
+      "sha256": "e14ed33eeb43d327a6cf826f04eacb2a84de14f2645e686b9b39461be0a2daec"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-refinement-counterexample/SKILL.md",
+      "size": 8971,
+      "sha256": "709039637694f437548ac0978ad2244495f99b5b9ff67cf92fc07a3f3b2423b7"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-semantic-stress-certification-gate/SKILL.md",
+      "size": 9404,
+      "sha256": "dbec752adf7d072e64db568d40a5e579a9b6ff0121468b03ec2f78576e7cb6e4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-serialization-schema-type-semantics/SKILL.md",
+      "size": 8846,
+      "sha256": "316f5a3509bc65c7e1d8a9f115d9f33780cb5b6c430d15944c6d86451fcaaba4"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-serialization-timezone-migrator/SKILL.md",
+      "size": 7058,
+      "sha256": "4209459f6640a17cfe0739ab8d1cd35aed6c8a07bfa6045a749e3b74b556d584"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-side-effect-footprint-model/SKILL.md",
+      "size": 8848,
+      "sha256": "03f0a9af271189716acbfbe23cbc7de862f581679a43fb5fb20f504bee2e69ce"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-smt-equivalence-prover/SKILL.md",
+      "size": 8709,
+      "sha256": "faef47077a97e37951fcdc7e4d797acc410f3ef497d787ef14aca3461b078358"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-source-encoding-normalizer/SKILL.md",
+      "size": 7764,
+      "sha256": "72077707d0c921cf5bc0d474f34fa33ee023d7b8efd3a652bc887ca042451d84"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-source-roundtrip-preserver/SKILL.md",
+      "size": 8817,
+      "sha256": "dc2579aa505fa589e487c0d549630e28300b74468a3cf668e078e3dc376503d6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-spring-legacy-modernizer/SKILL.md",
+      "size": 8569,
+      "sha256": "fb15a04e5f1bda567964c7e43468bee7485b93091a90c85278eccefb790ef9c0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sql-null-collation-isolation-semantics/SKILL.md",
+      "size": 9003,
+      "sha256": "69f2e485f1e7feac94347b55b6e8b86d5441fe6d2fb471bebdf68b795448b0b8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-sql-result-equivalence-validator/SKILL.md",
+      "size": 7824,
+      "sha256": "f138d59a8caa4008e8c0482f121ba0414deb170ff3ad6b9bd1ccd800c606ff95"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ssa-dataflow-lowering/SKILL.md",
+      "size": 8709,
+      "sha256": "fff4f841414fb7f0b68ea3c5f60e2b155eda9c1026cc9323b7d11d84b55c5e02"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-state-snapshot-equivalence/SKILL.md",
+      "size": 8793,
+      "sha256": "523015a30066ba833778e3584756dd6b8479a22d91d910ff8c9da71c6ef671a8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-string-char-codepoint-semantics/SKILL.md",
+      "size": 8781,
+      "sha256": "467cd2e2c201dd81a12b98a43257c8fb1db2fe0dd9491124a166cfd896de205a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-symbol-table-builder/SKILL.md",
+      "size": 8729,
+      "sha256": "8eae9652758b926a084214b7ba00d61646e81d6e9050eacb0a1bd26fe9a63915"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-symbolic-execution-equivalence/SKILL.md",
+      "size": 8812,
+      "sha256": "d060171674f0d3a226869409b5f68e1e27936d14b075a4b2e0c8c50c3ace7d2c"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-target-fitness-route-scorer/SKILL.md",
+      "size": 7744,
+      "sha256": "6a3253c6ae4083244053102f5936a42efebdb56263cb70588f94efd08ccba9b8"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-target-profile-designer/SKILL.md",
+      "size": 7086,
+      "sha256": "fb8801da2514230600bb82138890411ba80f667884c0f9c2a78636d6d3034399"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-terminal-screen-ui-migrator/SKILL.md",
+      "size": 7976,
+      "sha256": "41955985ab5f8ce04790b33a76bbde532ba5766ef378d60d9217b70492c46394"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-text-encoding-collation-locale-semantics/SKILL.md",
+      "size": 8902,
+      "sha256": "f0ac1c24a4bd20be87221656de9d1fba23ca39bc4baa0c09830b192dc915187d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-thread-scheduler-determinism-lab/SKILL.md",
+      "size": 9028,
+      "sha256": "f510e51ec91ab3fc201661938716a507255e27849eb836f74d166881e36c22a0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-time-randomness-nondeterminism-semantics/SKILL.md",
+      "size": 8952,
+      "sha256": "4535ccb96344b2889281ec2582502b846665b24db9c36da6a4e2677281346adb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-toolchain-provisioner/SKILL.md",
+      "size": 6955,
+      "sha256": "9676639f732975686a9ba8184e121dd8e5d81464863115970af5edfc9654ab1a"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-transaction-commit-rollback-validator/SKILL.md",
+      "size": 7864,
+      "sha256": "5e757536468e1bc0ae8dd0fd608498ad31447152aa804dfd2e820c48381b04d6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-transaction-ir-builder/SKILL.md",
+      "size": 7666,
+      "sha256": "88b50d331c24aa6941832cee358b7cc2895d95aa44681e3618deb656a7a2901d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-transaction-monitor-migrator/SKILL.md",
+      "size": 7974,
+      "sha256": "2a3ac6189cfb8b40a794eaed9a331334cc5608c8d49c3f56d91aceb1ba9b4d12"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-transformation-rule-dsl-author/SKILL.md",
+      "size": 7018,
+      "sha256": "b292d290c8ac6cf2ae4fc688b16b606ebba3d2c9e391f119f966b6b8f92b6b7d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-translation-validation-planner/SKILL.md",
+      "size": 8848,
+      "sha256": "a644517aa56e82df14503c3f5fcf594d814db9d1c7bd6e707ca6932020538ac6"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-trusted-runner-policy-controller/SKILL.md",
+      "size": 7069,
+      "sha256": "4bd43f856af373462a3aa5ce805da5f86394accde77472ccb4b18fb3883317eb"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-type-semantic-loss-gate/SKILL.md",
+      "size": 9603,
+      "sha256": "b61260e95f1f9d5ccf23822ac0a4b48722d477ddacdba34a9f9bc4da602cb540"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ui-interaction-equivalence/SKILL.md",
+      "size": 8811,
+      "sha256": "d70f220784ec973726ab3fd27a9ce783d3b493d9b9c6b04f23db00d208ec7dbd"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-ui-workflow-equivalence-validator/SKILL.md",
+      "size": 7828,
+      "sha256": "5cfd079ef06095247f1238f49402364f95b1056f0495ff0281e8b42e47ee9f80"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-undefined-behavior-filter/SKILL.md",
+      "size": 8854,
+      "sha256": "5dd23edc97ac488286ff12c76580f0d1cf411f5bf088838233a3a5f0273dd15b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-unified-evidence-packager/SKILL.md",
+      "size": 6897,
+      "sha256": "9cea7d5916a5577178d045d0275ec1cbc9e313b7bbc49f94ded55a4bf84e68e9"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-vb6-to-csharp-golden-route/SKILL.md",
+      "size": 8860,
+      "sha256": "0313ca243bd4ca8277fcf5e4549b2b970f2870641b30bde16151df1c76deb6b0"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-vbscript-to-csharp-golden-route/SKILL.md",
+      "size": 8895,
+      "sha256": "7bf212a218bfa4c56bf6d627c8a25877a14efeaba35d4d3160e565b0cc09839d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-verified-lowering-route/SKILL.md",
+      "size": 8791,
+      "sha256": "9040de6927f1b00c2ec3d9da900560e08b501483dbb50e3b5fcbaf81de524c9b"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-wasm-portable-semantics-oracle/SKILL.md",
+      "size": 8950,
+      "sha256": "2ac5e61270f169007d2209a5ff66e6609273220bd0d3f03911d4390420e6ffdf"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-windows-legacy-runtime-lab/SKILL.md",
+      "size": 8744,
+      "sha256": "1b636b73a641953fdced6e2530aedbd28e25d1fe258a84831b953aceac59269d"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-xbase-dbf-index-migrator/SKILL.md",
+      "size": 7914,
+      "sha256": "22b6ee86864bb7b976ac91e83f9df0dfce3be5662a3eac12119de931c6c4dbf1"
+    },
+    {
+      "path": "agent-skills/runtime/elmos-xbase-foxpro-to-csharp-golden-route/SKILL.md",
+      "size": 8935,
+      "sha256": "73ba675400faad3b225bbceb9754c5a1ca8386e216c90ec9461c2b441a66c61a"
+    },
+    {
+      "path": "capability-package.json",
+      "size": 1610,
+      "sha256": "c6abbe7c7a58ff43bacbe055a104576388911c500a5c90eef83ada63ac096282"
+    },
+    {
+      "path": "capability-package.yaml",
+      "size": 401,
+      "sha256": "0590fc885e924b2b7f172dde6ce527306bc41730519eae1f3ca6ba8e313198fe"
+    },
+    {
+      "path": "certification-corpus/README.md",
+      "size": 313,
+      "sha256": "c2236e8da1adbbd2624fea68dcb3102a8e92a84713059a4cd033acb58e197584"
+    },
+    {
+      "path": "certification-corpus/corpus-registry.json",
+      "size": 15815,
+      "sha256": "bc0babfaab791c9a166c36abd931f909caeb8a1c777bd73dcfaacf67ee198cfb"
+    },
+    {
+      "path": "docs/acceptance-tests.md",
+      "size": 1272,
+      "sha256": "ccee9756d3b4b369f8adaae0bd299ff4df119d68ab87b4f28a577465f6bb052c"
+    },
+    {
+      "path": "docs/architecture.md",
+      "size": 3322,
+      "sha256": "7fe3a6f4f86d7ece477796bd861523c115fe16b26a38ea712f042e412d968f0e"
+    },
+    {
+      "path": "docs/artifact-layout.md",
+      "size": 562,
+      "sha256": "09a87efa6f9fb73b4e13ad8eeb2c1d56ac18fe747b769c3221027dd88fb2439c"
+    },
+    {
+      "path": "docs/codex-claude-usage.md",
+      "size": 1222,
+      "sha256": "06abdd22607591c1af8a0aa4ceb3aa11c28d7fb02ba513be81a16320e4e2ab29"
+    },
+    {
+      "path": "docs/full-project-generator.md",
+      "size": 1326,
+      "sha256": "857eabbf1d064667e8ceb1921dea91a9a1c6d574993e52613996949cd781b965"
+    },
+    {
+      "path": "docs/implementation-roadmap.md",
+      "size": 1454,
+      "sha256": "410faf48309dca79ebadceec3d257927a8888ac42d2e5ba7240905fade7ab60c"
+    },
+    {
+      "path": "docs/limitations.md",
+      "size": 943,
+      "sha256": "c516a9a9fdad43bc8e00eadb6acaeab926ad686cb32c655e27b2648b7c0504f0"
+    },
+    {
+      "path": "docs/route-development-guide.md",
+      "size": 1391,
+      "sha256": "73c7d8720bd26680688998633962ff1cc6570efe09702b981f9124d1d0459193"
+    },
+    {
+      "path": "docs/security-model.md",
+      "size": 1047,
+      "sha256": "bdea72124fa5332df8ed6c449f0e76c6748aee19243372222e056da1aa20ec10"
+    },
+    {
+      "path": "docs/semantic-ir-design.md",
+      "size": 2199,
+      "sha256": "c9aeb228af04a8f0ecd702931dd22500b953f4784e90810882ebc27ba56d7cad"
+    },
+    {
+      "path": "docs/spring-modernizer.md",
+      "size": 1436,
+      "sha256": "510610d02a1b73fe0ae1f6fd825864c213dd15133550275de9c11a5b6fc728e0"
+    },
+    {
+      "path": "docs/technology-support-matrix.md",
+      "size": 2475,
+      "sha256": "645b97fe862a2b09d21411a630ace9ef7f4176c20086396b0ae609cba14bd1d3"
+    },
+    {
+      "path": "docs/trusted-runner.md",
+      "size": 1405,
+      "sha256": "b571695c2b0ab57610bc96c8a2bbfcc677b366a91d1428d749ec12e8c4b1216d"
+    },
+    {
+      "path": "docs/validation-certification.md",
+      "size": 1246,
+      "sha256": "850773fd68e68242dff1e0c26b4c89223f3009cbd7036085c1908e157c9aaf43"
+    },
+    {
+      "path": "examples/README.md",
+      "size": 382,
+      "sha256": "c6001ec7392a869652be912b943bf344e864461aca29b25e598265e36079f8d1"
+    },
+    {
+      "path": "examples/behavior-contract.json",
+      "size": 1099,
+      "sha256": "99a149dbab9becb49261efbfe02782cb020589460010d2bee24177f4fad6620b"
+    },
+    {
+      "path": "examples/java-spring-to-csharp-job.yaml",
+      "size": 729,
+      "sha256": "d1b5f9aa05377e059777764c13b0cf6cf0a746e90b1922627709b2bc4a76fa71"
+    },
+    {
+      "path": "examples/project-generation-spec.yaml",
+      "size": 1624,
+      "sha256": "32cc8916d8e6fa375a1a9003666dd412b8e2a60b6eaea35a25a41f471d7160e0"
+    },
+    {
+      "path": "examples/spring-modernization-job.yaml",
+      "size": 696,
+      "sha256": "965fc3acb3a02b68a43bf9b0c5e57a475e2a9da1b8cb930e477b73bfe0a7eaa4"
+    },
+    {
+      "path": "examples/target-profile.yaml",
+      "size": 748,
+      "sha256": "a55a6864ebd018ea42cb790e6001fab8c9534a86b35653f2d01b9ddebdf65d2d"
+    },
+    {
+      "path": "install.sh",
+      "size": 1617,
+      "sha256": "73ab4e52af08ec0945e303f4488947a3800d802169eef2750243be20ede1ec26"
+    },
+    {
+      "path": "legacy-p0/SKILL_INDEX.md",
+      "size": 20419,
+      "sha256": "39fc2a415e72e1bc9349762b50dd915553461aa299802dfc7486d4ba798e3e98"
+    },
+    {
+      "path": "legacy-p0/base-compatibility.json",
+      "size": 847,
+      "sha256": "7ae8ba7699147dffd19d262c86bb1f6b3094c90fed70c18887b31f514ad2a848"
+    },
+    {
+      "path": "legacy-p0/docs/architecture.md",
+      "size": 625,
+      "sha256": "b6f5eec83f281d1893390f2e993a7c7b9d5b72c0911fa293ce7e7d29b04e82b7"
+    },
+    {
+      "path": "legacy-p0/docs/commercial-production-gates.md",
+      "size": 575,
+      "sha256": "f13d1574a877b588f87c3b2d09b799126fddb7e1b1589acad550195a6e64585d"
+    },
+    {
+      "path": "legacy-p0/docs/route-policy.md",
+      "size": 308,
+      "sha256": "27a029564cb08c17b6d3e68363377b040bf6ed5e29a9b80b41a6efbd55522ba8"
+    },
+    {
+      "path": "legacy-p0/examples/c-to-rust-job.yaml",
+      "size": 270,
+      "sha256": "cd17a92a3254c564c486d61696832ed1b429d5fc4eb79e374a107ade230cf650"
+    },
+    {
+      "path": "legacy-p0/examples/cobol-to-java-job.yaml",
+      "size": 441,
+      "sha256": "becab92a611f95d1401a9bf8e386a9620db315165b523c40c50446573a02db22"
+    },
+    {
+      "path": "legacy-p0/manifest.json",
+      "size": 82557,
+      "sha256": "e0eaa8b6cc8f922ed549940fc86bb73f1eb18266d7afd1860c7fa8d02a01ba4d"
+    },
+    {
+      "path": "legacy-p0/p0-mutual-route-matrix.csv",
+      "size": 8451,
+      "sha256": "0caf1a8d8f63deeaad5b67ae2afd24e99f4431197793c2a59fde4f3f755bcd96"
+    },
+    {
+      "path": "legacy-p0/policies/cutover-policy.yaml",
+      "size": 171,
+      "sha256": "8ec48283854d31d73c992ab270d667fed5ca25819c721320260213f278cc5735"
+    },
+    {
+      "path": "legacy-p0/policies/decimal-data-policy.yaml",
+      "size": 178,
+      "sha256": "62fa06e629612676da503fcc9af54cfdda67e43ac8444771ee7ef64bf0d9fb80"
+    },
+    {
+      "path": "legacy-p0/policies/legacy-conversion-policy.yaml",
+      "size": 202,
+      "sha256": "10fb3b35467b52017928751760072285fbbff1db2dc1bf91fa60fa4863cf00aa"
+    },
+    {
+      "path": "legacy-p0/policies/legacy-runtime-policy.yaml",
+      "size": 212,
+      "sha256": "8420a3603d39caff11c722290d5921fca9cc6747c7bce8da3c8181af12c2827a"
+    },
+    {
+      "path": "legacy-p0/policies/safety-numerical-policy.yaml",
+      "size": 163,
+      "sha256": "93ab5330975432316007ef118428502188b7140d72ab1245890e5fc6093a53c7"
+    },
+    {
+      "path": "legacy-p0/references/legacy-semantic-loss-taxonomy.md",
+      "size": 317,
+      "sha256": "c5f0a21fa32a47c893cf3eabbe993d223954a100cdf91da418972264e404fc37"
+    },
+    {
+      "path": "legacy-p0/references/p0-adapter-contract.md",
+      "size": 345,
+      "sha256": "9ee74c385238994a642ecf44f6e6d86eac737b20f02a1a7112e0d1ead6b88064"
+    },
+    {
+      "path": "legacy-p0/route-matrix.csv",
+      "size": 95853,
+      "sha256": "6c360fd79e079cb30df66a770999abfac5e8bd977aad715153c86d2341ec36cb"
+    },
+    {
+      "path": "legacy-p0/route-registry.json",
+      "size": 6447,
+      "sha256": "9c95eacb59b482a9e6b52343fc75fbc2b5d7766eaaf608c46cd3e0b6f0ae1c1f"
+    },
+    {
+      "path": "legacy-p0/route-registry.yaml",
+      "size": 4821,
+      "sha256": "af7874e2ccc7dd8736f6ba6c78da0608086670adffd9e6c8993a48c3c13f2348"
+    },
+    {
+      "path": "legacy-p0/schemas/batch-job-ir.schema.json",
+      "size": 360,
+      "sha256": "d66807c9c60c98dc03bdcf558b15a2bbffd85f5c1cdabfa650043d535eed3914"
+    },
+    {
+      "path": "legacy-p0/schemas/business-rule-ir.schema.json",
+      "size": 326,
+      "sha256": "519f1c001836f8d9c62d814c57ef511dd24c15353d88059e25dfae5a49c4a490"
+    },
+    {
+      "path": "legacy-p0/schemas/legacy-evidence.schema.json",
+      "size": 470,
+      "sha256": "3c422e15be70d43be051c852b75bbe96cac10057098aa7e3d0a8e8cafccb1a5f"
+    },
+    {
+      "path": "legacy-p0/schemas/legacy-repository-ir.schema.json",
+      "size": 476,
+      "sha256": "92bd509fb59c8262e1f4fe362f6202d4969e3a1fc751c7dc0fa62ab418bdee35"
+    },
+    {
+      "path": "legacy-p0/schemas/native-abi-ir.schema.json",
+      "size": 376,
+      "sha256": "fd3c8aae9a6a6b55ec8f346c0d1a5f226a686f1b0b56a324cfbd8927846a8dbf"
+    },
+    {
+      "path": "legacy-p0/schemas/numerical-ir.schema.json",
+      "size": 406,
+      "sha256": "9c146566d9b707f8910ea4ba6770d13efe509755c6cc4b6830f7a542ee573b42"
+    },
+    {
+      "path": "legacy-p0/schemas/record-layout-ir.schema.json",
+      "size": 418,
+      "sha256": "5912d1c2eb2770ba1ea2079557cf4b7127c7488284a19980182500d80095f41c"
+    },
+    {
+      "path": "legacy-p0/schemas/safety-contract-ir.schema.json",
+      "size": 408,
+      "sha256": "bb669fa99416ef6c01ee578c22cef40e31387f060c2deb23a855d58b9cffc8ce"
+    },
+    {
+      "path": "legacy-p0/schemas/screen-workflow-ir.schema.json",
+      "size": 378,
+      "sha256": "c801092193c0f343ba0eb05552a022194ace3a8562f5bcbd0ce0b7ef79c102e1"
+    },
+    {
+      "path": "legacy-p0/schemas/semantic-loss-register.schema.json",
+      "size": 368,
+      "sha256": "a3105252d8096f50c09957b7b64762e698ad8a1d5fb3dd0b571fefa26c795538"
+    },
+    {
+      "path": "legacy-p0/schemas/skill-bundle.schema.json",
+      "size": 2563,
+      "sha256": "d2ff962318c977d405b744da253863fd697d76e70715cca1dfb5a8d465a03941"
+    },
+    {
+      "path": "legacy-p0/schemas/target-fitness.schema.json",
+      "size": 360,
+      "sha256": "90f24693846233038a1337bb7c67f1a2f2af3b96481a3f80fc3ab4d48c7c8a7c"
+    },
+    {
+      "path": "legacy-p0/schemas/transaction-ir.schema.json",
+      "size": 406,
+      "sha256": "9c09ff8efc0a4c1fe68d1c27846acf3e5fa09a258eecbeee67ba6a3f043749aa"
+    },
+    {
+      "path": "legacy-p0/technology-registry.json",
+      "size": 20259,
+      "sha256": "0146ed464618e178a9253e036c4831e14fb3a038458b27120f4f5334bd39020f"
+    },
+    {
+      "path": "legacy-p0/technology-registry.yaml",
+      "size": 13817,
+      "sha256": "9ea7d09286e8a946ecd41b18a6c829703c454a678eefe4f03002b1199d55f445"
+    },
+    {
+      "path": "legacy-p0/templates/legacy-migration-job.yaml",
+      "size": 441,
+      "sha256": "becab92a611f95d1401a9bf8e386a9620db315165b523c40c50446573a02db22"
+    },
+    {
+      "path": "manifest.json",
+      "size": 241343,
+      "sha256": "3f5d3a190d7ac92f8be445c4b5b90a84d7b4ea1521f0d8be0ea3edc8502fd976"
+    },
+    {
+      "path": "native-runtime-lab/lab-registry.json",
+      "size": 1397,
+      "sha256": "d7653340059c5d529123710e815026ba8c4a518103a167420ae4c1510961d859"
+    },
+    {
+      "path": "p0-mutual-route-matrix.csv",
+      "size": 8451,
+      "sha256": "0caf1a8d8f63deeaad5b67ae2afd24e99f4431197793c2a59fde4f3f755bcd96"
+    },
+    {
+      "path": "policies/agent-patch-policy.yaml",
+      "size": 493,
+      "sha256": "57e80ff544059eca23e5c0576c4361e4e9b381246454ecd28caa3ba3dcfaf02b"
+    },
+    {
+      "path": "policies/corpus-governance-policy.yaml",
+      "size": 291,
+      "sha256": "545cc2e980649c2686bf6e8486eea90fd4d0c62739c39029122e8173e0513690"
+    },
+    {
+      "path": "policies/e0-e5-policy-v3.yaml",
+      "size": 549,
+      "sha256": "e9e444eeb5a049eedd80afd50533071a4650d99ab7264c02b4f6b2ad8411c6cc"
+    },
+    {
+      "path": "policies/evidence-freshness-policy.yaml",
+      "size": 378,
+      "sha256": "f46df47822741313b4408d5f8dd0ff35767c97aa6d77a92eafc6a7fdd71fdecb"
+    },
+    {
+      "path": "policies/formal-assurance-policy.yaml",
+      "size": 271,
+      "sha256": "b802a6d36e3d1003edd8c7f1aa388395ce38b71cc1671d00c7a85eda2dbe209a"
+    },
+    {
+      "path": "policies/native-lab-policy.yaml",
+      "size": 254,
+      "sha256": "4931f6fe52605aff100bae695da817b8c9acccde730b9127649f69d370a1320d"
+    },
+    {
+      "path": "policies/nondeterminism-policy.yaml",
+      "size": 271,
+      "sha256": "5077153e7694a28ac94a3461f5af1e3fc6c87fa951ef51a1e11d2f7874cef994"
+    },
+    {
+      "path": "policies/readiness-policy.yaml",
+      "size": 635,
+      "sha256": "06b06bde419b141b3733c0f3b1068e3910196d19d7ee1cea77645d7147b97c07"
+    },
+    {
+      "path": "policies/runner-policy.yaml",
+      "size": 733,
+      "sha256": "fee243ee3608255fa4a615271f8776e67cd9e45cd5ec9aaba75c02e7ff9a209e"
+    },
+    {
+      "path": "policies/semantic-equivalence-policy.yaml",
+      "size": 400,
+      "sha256": "d44b919327fd37d9f6205139a65d722f9a114b41dbf9cc7866bff3a61f90aecc"
+    },
+    {
+      "path": "policies/undefined-behavior-policy.yaml",
+      "size": 360,
+      "sha256": "e0eeb298777df6e710ca37b9e2c7cf031b5102afd5b89ba38def8b0cbe0bd63e"
+    },
+    {
+      "path": "pyproject.toml",
+      "size": 224,
+      "sha256": "ac5e784896dadbd4ca89041c866323428a1df45ad592be9b24a5f567c51c6e0e"
+    },
+    {
+      "path": "references/adapter-contract.md",
+      "size": 693,
+      "sha256": "7a8711861f0f620c16b26887e25b842eede0c2b94504a68736c113b01196cf36"
+    },
+    {
+      "path": "references/differential-fuzzing-strategy.md",
+      "size": 412,
+      "sha256": "71aefb1f4718dea2d3db18a9cfaf6ed0cf45f13d13d78b9e39c2aa98d3be72ed"
+    },
+    {
+      "path": "references/e0-e5-certification-standard-v3.md",
+      "size": 978,
+      "sha256": "3ec8a0ba00a3cf10c783ffe9d950d60217fe8af2b7e3f136ef95aa4aa4be67d8"
+    },
+    {
+      "path": "references/evidence-taxonomy.md",
+      "size": 602,
+      "sha256": "52978d6950bcea26f58ad263332b728c23416f0996ce5b32de7556550455f294"
+    },
+    {
+      "path": "references/external-methods-catalog.md",
+      "size": 2680,
+      "sha256": "040124c132d638455969887dd97c2f1e1a36a9d2e4475c70c30143f2299cff90"
+    },
+    {
+      "path": "references/external-methods-notes.md",
+      "size": 740,
+      "sha256": "041943616e59ee9de06b4f2b335ccafa58d87ccf40479f0896dc6714a8b1d7bb"
+    },
+    {
+      "path": "references/fixture-corpus-standard.md",
+      "size": 406,
+      "sha256": "3375e7aa2faa2c48e0c0b08280158b218bbaf72fd3161aab888d7f68027af620"
+    },
+    {
+      "path": "references/formal-assurance-ladder.md",
+      "size": 396,
+      "sha256": "5722b215c8a4104cdf18ceb4b0ba8f7507b27f8f3af87a8f37c551a0b10ea93b"
+    },
+    {
+      "path": "references/framework-capability-model.md",
+      "size": 694,
+      "sha256": "2f0c71ab4b4aa9c074193b5775e4b6c72e4a1a7ea0b7c67ea5fc46e0489b9f63"
+    },
+    {
+      "path": "references/frontend-fidelity-standard.md",
+      "size": 342,
+      "sha256": "35533dab9dada470cf55100498058686a862c33b1f59ebf17a96476bebec1ddf"
+    },
+    {
+      "path": "references/language-spec-source-matrix.md",
+      "size": 1455,
+      "sha256": "f14edc4a13d2a92b14a2a8f05a81cb6208e1796f952ce2e8e8486db242237014"
+    },
+    {
+      "path": "references/native-runtime-lab-standard.md",
+      "size": 354,
+      "sha256": "64cce26df90761ce5a7890d2f40902beec1a8c7bd4d30deda9d23768e335d9fd"
+    },
+    {
+      "path": "references/observable-behavior-model.md",
+      "size": 394,
+      "sha256": "750da34e96589ea8450ac6fae3f8b55f3fbbdbc7ccfd534daa7fd52377120919"
+    },
+    {
+      "path": "references/route-certification-evidence-model.md",
+      "size": 420,
+      "sha256": "e722372fa974039efbdca022ee87c39374e0e7ca2ed09a9f1e6e84412e09e461"
+    },
+    {
+      "path": "references/runtime-semantic-obligation-catalog.md",
+      "size": 364,
+      "sha256": "ed8bbdd3bdedb31951f0b4f89baefda9c06bedfd6a1bd02a811c4ddcf6627ed5"
+    },
+    {
+      "path": "references/semantic-loss-taxonomy-v3.md",
+      "size": 422,
+      "sha256": "a326693d720a7091874eb7d39dbf30e91f322c7ab353e8b9e09787fa0b4f51bc"
+    },
+    {
+      "path": "references/semantic-loss-taxonomy.md",
+      "size": 607,
+      "sha256": "7c019ae6f54c7fd9410c53b3cd0b6374db318364162e8e1354a5ec18eaa2fb79"
+    },
+    {
+      "path": "references/semantic-preservation-contract.md",
+      "size": 681,
+      "sha256": "7f04703e834da1cb260fadeac9b0dab281417c9c45ee0b45ce96b95c6c0568ed"
+    },
+    {
+      "path": "references/status-semantics.md",
+      "size": 508,
+      "sha256": "fe1816b2a1371da971bb3219f0d97fb962635c84a6e2f58289dcb8437243eae7"
+    },
+    {
+      "path": "references/transformation-rule-dsl.md",
+      "size": 615,
+      "sha256": "fa0c6da4e73a60b7e2db853571d0d083562249d8b11f4b8ef21a0b5945078109"
+    },
+    {
+      "path": "references/type-semantics-crosswalk.md",
+      "size": 371,
+      "sha256": "bb213773005ea90f6e5817473a47cc0e138e0e5f8c119102c63913108a584443"
+    },
+    {
+      "path": "repository-surface-registry.json",
+      "size": 6259,
+      "sha256": "b28858683d9da2eb53db85ae9cf03d52af3596238c6f85c45584f405e8dd030e"
+    },
+    {
+      "path": "repository-surface-registry.yaml",
+      "size": 4235,
+      "sha256": "ddd4b30cce97f210a2518e41542d9186f042d4ddbdf82286e9b77e6fd87580ed"
+    },
+    {
+      "path": "route-certification-registry.json",
+      "size": 38213,
+      "sha256": "a9cb7fdc9b3d4c33dafe358774ad4740079a6ccf2543a18e5451c0ad869f58af"
+    },
+    {
+      "path": "route-matrix.csv",
+      "size": 95853,
+      "sha256": "6c360fd79e079cb30df66a770999abfac5e8bd977aad715153c86d2341ec36cb"
+    },
+    {
+      "path": "route-profiles/route-abap-to-java.yaml",
+      "size": 1468,
+      "sha256": "f0d534e03273d8c5b64a7b4f3b067accf7abbe890d0787625ee66037e60ae16c"
+    },
+    {
+      "path": "route-profiles/route-abl-openedge-to-java.yaml",
+      "size": 1448,
+      "sha256": "278c65a215a7dd76ec24a977bd725669ee9076cf68580b76d494d22a531ecfac"
+    },
+    {
+      "path": "route-profiles/route-ada-spark-to-rust.yaml",
+      "size": 1479,
+      "sha256": "df4fdd417c51a8103610c3a982744a14be61dbcd8a0a1472be6d8d98cbb92a93"
+    },
+    {
+      "path": "route-profiles/route-c-to-cpp-modernization.yaml",
+      "size": 1457,
+      "sha256": "b792f2705732438e5a7846ec3f4555a5e522afa47136beb3fde974aa32bed02a"
+    },
+    {
+      "path": "route-profiles/route-c-to-rust.yaml",
+      "size": 1459,
+      "sha256": "6b36d65f1c79931c99f85e79d61b3d3e1284e76593e06dfa24f032935faf6848"
+    },
+    {
+      "path": "route-profiles/route-cobol-in-place-modernization.yaml",
+      "size": 1486,
+      "sha256": "db0c442d8169279f763d11028be3264da730c1c13166c22f7037a64b663d98e4"
+    },
+    {
+      "path": "route-profiles/route-cpp-to-rust.yaml",
+      "size": 1642,
+      "sha256": "18e5f9949af96d1fb6f18cbf3d6ba56c33c2ba91e7c44c34e66e80c4c7a094ba"
+    },
+    {
+      "path": "route-profiles/route-csharp-aspnet-core-to-java-spring.yaml",
+      "size": 1753,
+      "sha256": "72d80c40ac4abde3b5fe4fcbb94f1026ad67ddb94dd5918861f630b290e150d3"
+    },
+    {
+      "path": "route-profiles/route-delphi-to-csharp.yaml",
+      "size": 1493,
+      "sha256": "be96f9771963909d62d3418deef022b54746abc276a173dd8de3e49c026f49bb"
+    },
+    {
+      "path": "route-profiles/route-fortran-to-cpp.yaml",
+      "size": 1449,
+      "sha256": "7ca723175cfc788927811bc86a2d890566110518af419f1c9b1d88195c370113"
+    },
+    {
+      "path": "route-profiles/route-fortran-to-python-numerical.yaml",
+      "size": 1518,
+      "sha256": "527acbe44c8f9ecfef454af0008d52a4b8f0f43cab886ac2f93021325eacd50c"
+    },
+    {
+      "path": "route-profiles/route-go-to-rust.yaml",
+      "size": 1646,
+      "sha256": "9c587e5c323a6196618ba94c2cb721e242eeca141e26f29b18e662540993dfcf"
+    },
+    {
+      "path": "route-profiles/route-ibmi-rpg-to-csharp.yaml",
+      "size": 1460,
+      "sha256": "5dedf1ff0a48abf1030e0d748d2c158d54536eca9cc25d663ce08b6ed6312df7"
+    },
+    {
+      "path": "route-profiles/route-ibmi-rpg-to-java.yaml",
+      "size": 1453,
+      "sha256": "8136a2f45cf3d5e062fd40ff45304603af18a6cfe0d226e528c597e769befd62"
+    },
+    {
+      "path": "route-profiles/route-java-android-to-flutter.yaml",
+      "size": 1704,
+      "sha256": "559628b895e8e7bd6a5b32df0b6820f0b3eb286febe12b8d68b0637435c86db5"
+    },
+    {
+      "path": "route-profiles/route-java-spring-to-csharp-aspnet-core.yaml",
+      "size": 1838,
+      "sha256": "969beab879b962479d22da80af52ab07152960010a98cbbd8f8cbee97a6140c8"
+    },
+    {
+      "path": "route-profiles/route-java-to-kotlin.yaml",
+      "size": 1618,
+      "sha256": "673eb67aa283ae4e0451c86a38a497052c69425d96fbfc059b2899dcef92ebfa"
+    },
+    {
+      "path": "route-profiles/route-javascript-to-typescript.yaml",
+      "size": 1649,
+      "sha256": "d65a26700bc5d0633eb7a9e4845022cea6f08cf9a4eb41496bc3af90e03e7b43"
+    },
+    {
+      "path": "route-profiles/route-kotlin-android-to-flutter.yaml",
+      "size": 1683,
+      "sha256": "f516f9cb8944e42230df11810f0f9e9d0150efff0409b31599ff1f403bb2a921"
+    },
+    {
+      "path": "route-profiles/route-kotlin-to-java.yaml",
+      "size": 1585,
+      "sha256": "d4121c548ddef993054814a779f409d1e07d2fb4f8701f2eca99e70f8d5477c4"
+    },
+    {
+      "path": "route-profiles/route-mainframe-cobol-to-csharp.yaml",
+      "size": 1475,
+      "sha256": "e009a64af65812541c4f51abc13209388f2ac7901b15d14a9d17ecdcb245d20a"
+    },
+    {
+      "path": "route-profiles/route-mainframe-cobol-to-java.yaml",
+      "size": 1468,
+      "sha256": "b308bd4af1ff41989e2eea000cb7ab3b36cdb9b6c270595597c35e607c463f00"
+    },
+    {
+      "path": "route-profiles/route-natural-adabas-to-java.yaml",
+      "size": 1476,
+      "sha256": "27ce5e3912b483b2b24882425976393e269a4fc1acaba3dfb17fa89e6c5fa7ad"
+    },
+    {
+      "path": "route-profiles/route-objective-c-to-swift.yaml",
+      "size": 1691,
+      "sha256": "92f42d7bc029c0f89e33de72773182cf2090ba90170088eb487f76cd52e857e3"
+    },
+    {
+      "path": "route-profiles/route-php-laravel-to-python-fastapi.yaml",
+      "size": 1647,
+      "sha256": "748a1273faa4fdf41e0c38bac2fd6f588765304654d84adb240ec7ebfda4c22b"
+    },
+    {
+      "path": "route-profiles/route-php-laravel-to-typescript-nest.yaml",
+      "size": 1635,
+      "sha256": "2f2d35711a611fb7bf5ea6e26e1021f03fce345d3f18a00a58bb9e591d1557e3"
+    },
+    {
+      "path": "route-profiles/route-pli-to-csharp.yaml",
+      "size": 1451,
+      "sha256": "ce6a31f835334e28caa82e0fa040470917d48556f34fe13d6a9167a8310ca422"
+    },
+    {
+      "path": "route-profiles/route-pli-to-java.yaml",
+      "size": 1439,
+      "sha256": "859bc1a2d113ff5281ea5ecbe7e392124a6b7ea2ea58fe063f23ef1f93f19e51"
+    },
+    {
+      "path": "route-profiles/route-powerbuilder-to-csharp-react.yaml",
+      "size": 1525,
+      "sha256": "31ef62a62ae8f41fae51c5538b372881fc1a8f5c647fcc0d85fb49b92a14f8de"
+    },
+    {
+      "path": "route-profiles/route-python-django-to-typescript-nest.yaml",
+      "size": 1677,
+      "sha256": "c102ba39adc4ad2f710d4643c2b917e3f7d66d0ad78b038b60fa1357a2b676ac"
+    },
+    {
+      "path": "route-profiles/route-python-fastapi-to-go.yaml",
+      "size": 1627,
+      "sha256": "64023578cd71871c86ee3148644c4d782d1719a855fe0648a8a0b088ef783858"
+    },
+    {
+      "path": "route-profiles/route-react-to-flutter.yaml",
+      "size": 1694,
+      "sha256": "cd0389b421b9eb3678af316bd99b078b74773acb9dd4d041efb926e10a8fe9b6"
+    },
+    {
+      "path": "route-profiles/route-rpg-in-place-modernization.yaml",
+      "size": 1474,
+      "sha256": "13416c36530825ddc0a566076e80b919bf05f87e6663f8a54a2191f4612d9135"
+    },
+    {
+      "path": "route-profiles/route-rust-to-ada-spark-assurance.yaml",
+      "size": 1502,
+      "sha256": "062e527ce69028edc70def7d4812dfc94e1cda73448a7ca5c9e6ee0b3ecf4421"
+    },
+    {
+      "path": "route-profiles/route-rust-to-cpp.yaml",
+      "size": 1568,
+      "sha256": "e912da0f384dafeecbd14d5ac01312a58dfe56f165df668d8d27cfbdba9854ed"
+    },
+    {
+      "path": "route-profiles/route-spring-in-place-modernization.yaml",
+      "size": 1719,
+      "sha256": "a7bac41aea5bca37546a5cc51a48a3e63ec22299fd1f16273351c1610fc3cd07"
+    },
+    {
+      "path": "route-profiles/route-swift-uikit-to-flutter.yaml",
+      "size": 1670,
+      "sha256": "face0a6e9ec0483b5154f3c5eca18cb69f124f4a0927ed5ce9678b856b107456"
+    },
+    {
+      "path": "route-profiles/route-vb6-to-csharp.yaml",
+      "size": 1474,
+      "sha256": "716a19b47865c0bac944494702641d0cfd2df2c0515a913a936135d8a9bdf680"
+    },
+    {
+      "path": "route-profiles/route-vbscript-to-csharp.yaml",
+      "size": 1484,
+      "sha256": "28e837ccb98ac4a537bdc55f13312a6ad8c5fa0aa2aec17a6a1276083c977ee2"
+    },
+    {
+      "path": "route-profiles/route-xbase-foxpro-to-csharp.yaml",
+      "size": 1489,
+      "sha256": "e60e50ba6e7f70c6dfb54cbe4d992037b1afe274da03f5b4b8d86dca2118e87e"
+    },
+    {
+      "path": "route-registry.json",
+      "size": 11160,
+      "sha256": "c1ba02b18ebc052ba344b938e4794cf4d48154614b39f0b57c857d11fc44eea9"
+    },
+    {
+      "path": "route-registry.yaml",
+      "size": 8275,
+      "sha256": "52a93b021e530225a5d8c1b113310c43612b640474b1d3275603545fd4e98f64"
+    },
+    {
+      "path": "schemas/behavior-contract.schema.json",
+      "size": 1139,
+      "sha256": "d572a30dcd7f16eec589aa10d31cc4112c383f1c677afa9da2ec5485a24b0cb0"
+    },
+    {
+      "path": "schemas/behavior-oracle.schema.json",
+      "size": 730,
+      "sha256": "b1f814e4d2632bface43792624ff7e146b2f5cbb7ac8a56c209e8cf53e8b6df8"
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "size": 876,
+      "sha256": "1955cdeaebe1b0b31aaa55eaa074cb53847025605c2f184c1cf529198472cad4"
+    },
+    {
+      "path": "schemas/certification-run.schema.json",
+      "size": 845,
+      "sha256": "65733ab71b5aa559f8a81e5e4c42f58f6fdbc3c242bdd0ea17279ad56f271cb2"
+    },
+    {
+      "path": "schemas/conformance-mapping.schema.json",
+      "size": 853,
+      "sha256": "b3bf617a3e9ce568135872c05ecf3cbd01bd2d7372dbefa66e85c21ab2965fd5"
+    },
+    {
+      "path": "schemas/counterexample.schema.json",
+      "size": 638,
+      "sha256": "22061c3570e6bd01d1f55ca5bc0f17c5b1f71860fc49896528c61de8ebf71136"
+    },
+    {
+      "path": "schemas/coverage-metric.schema.json",
+      "size": 657,
+      "sha256": "b2c42014fdd9028de70ee63e467d964aae8f2311ad5b52ad73786090a9235925"
+    },
+    {
+      "path": "schemas/differential-result.schema.json",
+      "size": 766,
+      "sha256": "2255bbf3334c511e8c07a6fa894748a6703db6958db77182cac4b757e59db573"
+    },
+    {
+      "path": "schemas/evidence.schema.json",
+      "size": 1532,
+      "sha256": "4ac8160815d83b0886b30262af54041e0c7a7fbcf2578482fae0fb7f610e6906"
+    },
+    {
+      "path": "schemas/fixture-manifest.schema.json",
+      "size": 788,
+      "sha256": "89c8720a6df6828f9559d56a140824bc03f8f31fe23b1aaad38e278c55f19fa8"
+    },
+    {
+      "path": "schemas/framework-ir.schema.json",
+      "size": 1261,
+      "sha256": "e208530dc44ada0e8bc5da1fde2a25a68c8b12cad843aa780d3173ba27ab6e56"
+    },
+    {
+      "path": "schemas/migration-job.schema.json",
+      "size": 1009,
+      "sha256": "8fd698b6704111125f2486f252f7bd3a52b85d26f6a2ab9dd6321b25b7f4ad6e"
+    },
+    {
+      "path": "schemas/migration-plan.schema.json",
+      "size": 1126,
+      "sha256": "f293200991c73c7bdf616aacf5c56332d9c3f6f7abd89979a3c4c62926d10195"
+    },
+    {
+      "path": "schemas/project-ir.schema.json",
+      "size": 2675,
+      "sha256": "dd9038aa4c083cf43c1427fff1b9765d8b80b14529d3876a786794a94385e581"
+    },
+    {
+      "path": "schemas/proof-obligation.schema.json",
+      "size": 805,
+      "sha256": "20eae399afd8a1a5789d106efe723a87b3feb49e1cfcf495f22e7eb7e355a3a1"
+    },
+    {
+      "path": "schemas/readiness-certificate.schema.json",
+      "size": 1344,
+      "sha256": "d78a63ca217a6201d0eed5948a5b87020ff93912d0ab81f8220da0758b0c44dc"
+    },
+    {
+      "path": "schemas/repository-snapshot.schema.json",
+      "size": 1393,
+      "sha256": "dc4de29fd0f84cf64d0a600d298fbbaff7a30ae6aa240201c35a263b409acc0c"
+    },
+    {
+      "path": "schemas/route-profile.schema.json",
+      "size": 2136,
+      "sha256": "24f0877f48bfc1e77561361c182ba1dda36d727c7f9d2330869a51d9d39fceb0"
+    },
+    {
+      "path": "schemas/route-registry.schema.json",
+      "size": 476,
+      "sha256": "82bb560d53f5fc3afe89c146e84b3073487f90ddd71ff445bb42a704e2ae0ca0"
+    },
+    {
+      "path": "schemas/runtime-lab-profile.schema.json",
+      "size": 691,
+      "sha256": "791d45d2dbf74b9c453dfec9deafee95c0b154956b364f357f248f20ef5d0f4e"
+    },
+    {
+      "path": "schemas/semantic-ir.schema.json",
+      "size": 1506,
+      "sha256": "d40bd3cdf3f5e7ee96aff44abd817cc9b20fbee4ff45635efaa0f6c0b11b51d9"
+    },
+    {
+      "path": "schemas/semantic-obligation.schema.json",
+      "size": 1179,
+      "sha256": "b9a1f7b577e7c50370983b5050b5d8f5efb6d0091708fffc38edc1272a77bcd9"
+    },
+    {
+      "path": "schemas/skill-bundle.schema.json",
+      "size": 2639,
+      "sha256": "c650aa38f7ffbb90fd24d746cedce06575d6059da559c9c494224faa82155fff"
+    },
+    {
+      "path": "schemas/target-profile.schema.json",
+      "size": 1131,
+      "sha256": "f677a47dcf51d888652eb105de4f18b365a721aee0308b88f02e6a885dfb8e2d"
+    },
+    {
+      "path": "schemas/technology-registry.schema.json",
+      "size": 2684,
+      "sha256": "a92fd34bce9d8fb1ec95cbf02132b90eb5fe55272862737f744323b6cefb8d4f"
+    },
+    {
+      "path": "scripts/build_release.py",
+      "size": 3892,
+      "sha256": "128c3b32ad127ab36e5fa91719308f1e44e7619b5899445c22f25874ef57392f"
+    },
+    {
+      "path": "scripts/check_semantic_obligations.py",
+      "size": 435,
+      "sha256": "25004d5329dab25bfa3f5291079a95ef7f3b905419d48d88a133677f4853da88"
+    },
+    {
+      "path": "scripts/compare_observables.py",
+      "size": 930,
+      "sha256": "0d81e8c0c9e7a037e15afa4135da574985583dd322edde9674f445d002a63b9b"
+    },
+    {
+      "path": "scripts/corpus_score.py",
+      "size": 362,
+      "sha256": "99a86dcad4b47e52b1db43bb68abc1241a44042f767a27e0672d528e30cf6f8e"
+    },
+    {
+      "path": "scripts/elmos_skills.py",
+      "size": 9074,
+      "sha256": "2d903e8cf24b3d4893970ceaddb1cd63f4367a9d89831a390ab5c17419ebe95b"
+    },
+    {
+      "path": "scripts/generate_route_certification_plan.py",
+      "size": 736,
+      "sha256": "7e97787c3ef5bcffd0f8a8b4ef42c8ed8138c0ce08111ecdcd16f841c1caa61e"
+    },
+    {
+      "path": "scripts/new_fixture.py",
+      "size": 610,
+      "sha256": "f4ba8b3c08ff35ed06407bd389485634b005c06f3eb8257f8853b9943d5e7f26"
+    },
+    {
+      "path": "scripts/validate_archive.py",
+      "size": 2510,
+      "sha256": "881af723cba77a252e467da7e242325ec2fbbd9d0384533f3e657cef9f4ab358"
+    },
+    {
+      "path": "scripts/validate_bundle.py",
+      "size": 15416,
+      "sha256": "e71d5d7d0f154e9e03d1e56b45a86a4b29d66cbe3ee1e10c339622fa330c5580"
+    },
+    {
+      "path": "scripts/validate_bundle_v2.py",
+      "size": 2767,
+      "sha256": "c3493114075cc3de4c56a6bf2ec16c8788d13ffce060296949a0f9978b973b44"
+    },
+    {
+      "path": "scripts/validate_bundle_v3.py",
+      "size": 3905,
+      "sha256": "bbfb2855a6b85c6861bf7f4c6b26447f545e0b791c75f04be2de5463e4210b3d"
+    },
+    {
+      "path": "technology-registry.json",
+      "size": 21265,
+      "sha256": "310c7e3facf36075b99e4a8c9054d4f8dab0e262c4fcfa0725c4a6256c211374"
+    },
+    {
+      "path": "technology-registry.yaml",
+      "size": 13711,
+      "sha256": "adf5975c0b1c6dd79f61763958965515a80f8abdef932babd9a47137e9067aee"
+    },
+    {
+      "path": "templates/adapter-manifest.yaml",
+      "size": 369,
+      "sha256": "3a5ed4c874c5fccbd2273b04b8ed841d5fa0037e87ea03e74ba89ebb69c898e0"
+    },
+    {
+      "path": "templates/adr.md",
+      "size": 295,
+      "sha256": "a9ff0f270d50ff0e9c844fc246d68b92192dd9a87fec0e2ce18687254a08421d"
+    },
+    {
+      "path": "templates/behavior-oracle.json",
+      "size": 191,
+      "sha256": "c5e654151f8f5e878ac820b65282a89b8917709193218475b6d2ef24471de593"
+    },
+    {
+      "path": "templates/completion-report.md",
+      "size": 908,
+      "sha256": "a0e8581e2152c627c5d966caa2c30d3956041b2b5809c07603d49b1c67cb14ca"
+    },
+    {
+      "path": "templates/counterexample.json",
+      "size": 218,
+      "sha256": "0fc0e40f330f2d75f620cbf741064c347a4f62c05dc2569b424ac58508ca930c"
+    },
+    {
+      "path": "templates/evidence-index.json",
+      "size": 196,
+      "sha256": "ed958bb0a2a664b19b579abe335b217ed5f247271771f29ec73f8c6c32576343"
+    },
+    {
+      "path": "templates/fixture-manifest.json",
+      "size": 425,
+      "sha256": "75fb16611981d324a2401ad395f83bf260f146433fd46e1988acba277e36f317"
+    },
+    {
+      "path": "templates/migration-job.yaml",
+      "size": 877,
+      "sha256": "7277689eb81940383dd9cfbef73c536820cbb1f8a3a879ea0e2b7bd8789048b7"
+    },
+    {
+      "path": "templates/migration-node.yaml",
+      "size": 322,
+      "sha256": "92022f6c9539326d6871c64a3bf37a28c74b900f086e42ae97ea70454eae8f8b"
+    },
+    {
+      "path": "templates/policy.yaml",
+      "size": 733,
+      "sha256": "fee243ee3608255fa4a615271f8776e67cd9e45cd5ec9aaba75c02e7ff9a209e"
+    },
+    {
+      "path": "templates/project-generation-spec.yaml",
+      "size": 770,
+      "sha256": "f2f86294bf1282cf5ceac0d326cb05b7c538b0fd7d0cb780bc189ad1ec7263e4"
+    },
+    {
+      "path": "templates/proof-obligation.json",
+      "size": 202,
+      "sha256": "156965154b1f572a70c0986838abc4763d0ebbeeab89944aaa601fd60c27c2bc"
+    },
+    {
+      "path": "templates/route-certification-plan.json",
+      "size": 209,
+      "sha256": "54811590dc5c027f41de698d41810c53b03d6e240c20814198f6101a71123520"
+    },
+    {
+      "path": "templates/route-profile.yaml",
+      "size": 694,
+      "sha256": "e5f3c1cf46b068775189b8ef07fba303c3a7e21fbe6eab9fef467f83e21ea358"
+    },
+    {
+      "path": "templates/runtime-lab-profile.json",
+      "size": 160,
+      "sha256": "023e365e4bd046e6f6fd1cb706f402020b0e03e94ef2b5bb5fcfafe9699b1ba8"
+    },
+    {
+      "path": "templates/semantic-obligation.json",
+      "size": 280,
+      "sha256": "e215cdab276283568c5cbd410a9fa5e525929e27de6fcec4f26a98735d44428c"
+    },
+    {
+      "path": "templates/spring-modernization-spec.yaml",
+      "size": 658,
+      "sha256": "2e4a287780c7c3a005c5f21704e0223d7201297a83fa3906a32daac3d3e94c7e"
+    },
+    {
+      "path": "templates/target-profile.yaml",
+      "size": 731,
+      "sha256": "70c1ce1eb01f4c5f05f01d237692c030f3088fd37d459392fd3bb402c0ec222d"
+    },
+    {
+      "path": "tests/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/test_bundle.py",
+      "size": 3871,
+      "sha256": "e7bcb44c35679499c5d21fcf9a39b5e1cc30993cd50630e55e729940eb5f15d4"
+    },
+    {
+      "path": "tests-v2/test_v2.py",
+      "size": 901,
+      "sha256": "720c88c6962d5dcb60a0ea16c86045f6a539bb874e1b6c86700c9fe06da4969f"
+    },
+    {
+      "path": "tests-v3/test_v3.py",
+      "size": 2230,
+      "sha256": "a569d45f9d832fa466dc5c065e5b0e2f50214dc6106e1d68fc2658dcd1c58946"
+    },
+    {
+      "path": "uninstall.sh",
+      "size": 571,
+      "sha256": "ee175761277c0f16c48ed2ea2d9829ba35130723e5a4160fc991b79c41e92037"
+    },
+    {
+      "path": "validate.sh",
+      "size": 307,
+      "sha256": "6133eefc252af0140fa09c8a2591caf27a496cfdc6b92be2cdd0660b5861678e"
+    }
+  ]
+}

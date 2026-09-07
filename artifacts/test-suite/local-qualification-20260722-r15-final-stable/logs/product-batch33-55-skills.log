@@ -1,0 +1,40 @@
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/validate_product_batch33_55_integration.py
+{
+  "official_skill_validation": {
+    "valid": 1107,
+    "failed": 0
+  },
+  "prior_product_runtime_skills_validated": 339,
+  "prior_source_package_archives": "NOT_REVALIDATED",
+  "batch40_55_skill_counts": {
+    "40": 48,
+    "41": 48,
+    "42": 48,
+    "43": 48,
+    "44": 48,
+    "45": 48,
+    "46": 48,
+    "47": 48,
+    "48": 48,
+    "49": 48,
+    "50": 48,
+    "51": 48,
+    "52": 48,
+    "53": 48,
+    "54": 48,
+    "55": 48
+  },
+  "batch40_55_subbatch_count": 48,
+  "batch40_55_complete_pack_skills": 768,
+  "batch40_55_normalized_names": 456,
+  "provenance": {
+    "approved-conversation-design": 16,
+    "generated-planning-edition": 752
+  },
+  "superseded_prior_records": 0,
+  "canonical_product_skills": 1107,
+  "runtime_skill_total": 1647,
+  "external_execution_evidence": "NOT_RUN"
+}
+/opt/homebrew/bin/uv run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check
+{'skill_root': '/Users/stephen/DevProjects/AIProjects/elmos/agent-skills/runtime', 'skills': 1647, 'interfaces_updated': 0, 'interfaces_valid': 1647}

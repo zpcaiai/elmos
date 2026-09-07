@@ -1,0 +1,25 @@
+{
+  "route_key": "java-to-python",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 773,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.py",
+      "sha256": "sha256:4f03efd77189cd4f860237b81acec501d99d4a3ffc0843a1e669317cb07c44ff"
+    },
+    {
+      "bytes": 684,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.py",
+      "sha256": "sha256:6f0fdf933fc45e479bea458c7ba3f9353c9e5c7848367182a1d7963604365ebf"
+    },
+    {
+      "bytes": 768,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.py",
+      "sha256": "sha256:8a38076f8034d99d5ba9d5c8914762a2dbc922b900ac30b5ff7deff4e60b31ff"
+    }
+  ]
+}

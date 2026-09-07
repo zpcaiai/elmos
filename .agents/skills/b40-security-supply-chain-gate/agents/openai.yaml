@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Security Supply Chain Gate"
+  short_description: "Run evidence-bound Batch 40 security supply chain gate work"
+  default_prompt: "Use $b40-security-supply-chain-gate to implement and verify this capability with fail-closed evidence."

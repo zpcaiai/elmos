@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B20: Cutover And Rollback Plan"
+  short_description: "Run Precision Migration B20 with evidence controls"
+  default_prompt: "Use $pm-b20-cutover-and-rollback-plan to execute this Precision Migration contract with fail-closed evidence."

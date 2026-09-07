@@ -1,0 +1,1 @@
+{"ruleId":"credit-limit","ruleType":"ELIGIBILITY","inputs":["customer.balance"],"conditions":["balance <= limit"],"outputs":["approved"],"sideEffects":["DB2:DECISION_LOG"],"confidence":0.78,"evidenceRefs":["source://PAYMENT1/MAIN"],"authority":"CANDIDATE"}

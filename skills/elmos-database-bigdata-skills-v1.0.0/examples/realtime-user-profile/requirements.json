@@ -1,0 +1,126 @@
+{
+  "project_id": "demo-realtime-user-profile",
+  "tenant_id": "tenant-demo-a",
+  "business_goal": "在 5 秒内合并交易、行为和 CRM 变化，生成可查询的 Customer 360 与实时分群。",
+  "project_types": [
+    "realtime-user-profile",
+    "realtime-analytics"
+  ],
+  "sources": [
+    {
+      "id": "orders",
+      "kind": "relational-database",
+      "technology": "PostgreSQL",
+      "estimated_volume_gb": 450,
+      "change_mode": "cdc",
+      "owner": "commerce"
+    },
+    {
+      "id": "crm",
+      "kind": "relational-database",
+      "technology": "MySQL",
+      "estimated_volume_gb": 180,
+      "change_mode": "cdc",
+      "owner": "sales"
+    },
+    {
+      "id": "web-events",
+      "kind": "event-stream",
+      "technology": "Kafka",
+      "estimated_volume_gb": 1200,
+      "change_mode": "stream",
+      "owner": "growth"
+    },
+    {
+      "id": "mobile-events",
+      "kind": "event-stream",
+      "technology": "Kafka",
+      "estimated_volume_gb": 900,
+      "change_mode": "stream",
+      "owner": "growth"
+    }
+  ],
+  "consumers": [
+    {
+      "id": "profile-api",
+      "kind": "online-api",
+      "freshness_ms": 5000,
+      "query_pattern": "point lookup by tenant and user",
+      "owner": "product"
+    },
+    {
+      "id": "segment-dashboard",
+      "kind": "bi-dashboard",
+      "freshness_ms": 15000,
+      "query_pattern": "filter and aggregate segments",
+      "owner": "marketing"
+    },
+    {
+      "id": "analyst-sql",
+      "kind": "interactive-sql",
+      "freshness_ms": 60000,
+      "query_pattern": "ad hoc analytical queries",
+      "owner": "data"
+    }
+  ],
+  "data_characteristics": {
+    "volume_tb": 2.73,
+    "growth_tb_per_month": 0.45,
+    "peak_events_per_second": 85000,
+    "average_event_bytes": 1250,
+    "variety": [
+      "structured",
+      "semi-structured"
+    ],
+    "retention_days": 400,
+    "late_data_max_seconds": 7200,
+    "skew_risk": "high"
+  },
+  "slo": {
+    "p95_read_ms": 8,
+    "p95_write_ms": 100,
+    "freshness_ms": 5000,
+    "availability_percent": 99.95,
+    "rpo_seconds": 30,
+    "rto_seconds": 900
+  },
+  "consistency": {
+    "model": "mixed",
+    "transactions": "single-database",
+    "ordering_scope": "tenant_id + user_id",
+    "delivery_semantics": "exactly-once-required"
+  },
+  "security": {
+    "classification": [
+      "PII",
+      "behavioral"
+    ],
+    "contains_pii": true,
+    "data_residency": [
+      "CN"
+    ],
+    "tenant_isolation": "schema-per-tenant",
+    "audit_required": true
+  },
+  "constraints": {
+    "deployment": [
+      "private-cloud"
+    ],
+    "budget_tier": "medium",
+    "operations_maturity": "high",
+    "preferred_open_source": true,
+    "must_have": [
+      "open-source",
+      "strict-reconciliation",
+      "federated-query"
+    ],
+    "forbidden": []
+  },
+  "assumptions": [
+    {
+      "statement": "Kafka 保留期足以覆盖最长回放窗口。",
+      "confidence": 0.72,
+      "validation": "验证 broker 存储与回放压测。"
+    }
+  ]
+}

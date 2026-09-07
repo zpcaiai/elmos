@@ -1,0 +1,4 @@
+interface:
+  display_name: "B104 Product Certification Board Gate"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b104-product-certification-board-gate to execute this ELMOS product-closure Skill with fail-closed evidence."

@@ -1,0 +1,18 @@
+[
+  {
+    "query": "为 Elmos 规划并执行 14-human-governance-operations 相关生产能力，必须给出证据和回滚。",
+    "should_trigger": true
+  },
+  {
+    "query": "这个任务涉及 建立专家复核、责任分配、例外管理、反馈质量和人机协同的可审计治理机制。，请选择合适技能。",
+    "should_trigger": true
+  },
+  {
+    "query": "解释一个普通编程概念，不需要访问仓库或执行工具。",
+    "should_trigger": false
+  },
+  {
+    "query": "只改写下面一句中文，使其更通顺。",
+    "should_trigger": false
+  }
+]

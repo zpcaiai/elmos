@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/domain-executor-registry.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "namespace", "executor_count", "entries"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "namespace": {"const": "repository-migration-platform-b01-38"},
+    "executor_count": {"const": 38},
+    "entries": {
+      "type": "array",
+      "minItems": 38,
+      "maxItems": 38,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["batch", "executor_id", "handler", "skill", "implementation", "allowed_corpora", "requires_actual_toolchain", "requires_raw_evidence", "repository_commands_allowed", "status_boundary"],
+        "properties": {
+          "batch": {"type": "integer", "minimum": 1, "maximum": 38},
+          "executor_id": {"type": "string", "minLength": 1},
+          "handler": {"type": "string", "minLength": 1},
+          "skill": {"type": "string", "minLength": 1},
+          "implementation": {"const": "typed-native-result-validator"},
+          "allowed_corpora": {"type": "array", "minItems": 5, "maxItems": 5},
+          "requires_actual_toolchain": {"const": true},
+          "requires_raw_evidence": {"const": true},
+          "repository_commands_allowed": {"const": false},
+          "status_boundary": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

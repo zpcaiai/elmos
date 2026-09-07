@@ -1,0 +1,4 @@
+interface:
+  display_name: "Desktop Client Modernizer"
+  short_description: "Assess desktop UI and native integration risk"
+  default_prompt: "Use $desktop-client-modernization-engine to inventory desktop UI, IPC, device, storage, packaging, update, and signing constraints."

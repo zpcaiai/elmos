@@ -1,0 +1,4 @@
+interface:
+  display_name: "Baseline Build Test"
+  short_description: "Record sandboxed pre-migration build evidence"
+  default_prompt: "Use $baseline-build-test to establish a source baseline bound to this snapshot."

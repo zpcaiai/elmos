@@ -1,0 +1,203 @@
+schema_version: '1.0'
+matrix_id: ETGB-XCUT-1
+business_lines:
+- spring-modernization
+- cross-language
+- project-generation
+- sql-conversion
+variants:
+- fault-before-commit
+- fault-after-side-effect
+scenarios:
+- id: network-interruption-and-resume
+  title: network interruption and resume
+  priority: P0
+- id: worker-process-crash-and-resume
+  title: worker process crash and resume
+  priority: P0
+- id: host-reboot-recovery
+  title: host reboot recovery
+  priority: P0
+- id: database-failover
+  title: database failover
+  priority: P0
+- id: message-duplicate-delivery
+  title: message duplicate delivery
+  priority: P0
+- id: message-reordering
+  title: message reordering
+  priority: P0
+- id: partial-artifact-upload
+  title: partial artifact upload
+  priority: P0
+- id: disk-full
+  title: disk full
+  priority: P0
+- id: out-of-memory-kill
+  title: out of memory kill
+  priority: P0
+- id: cpu-throttling
+  title: CPU throttling
+  priority: P0
+- id: dependency-registry-unavailable
+  title: dependency registry unavailable
+  priority: P0
+- id: rate-limit-response
+  title: rate limit response
+  priority: P0
+- id: model-timeout
+  title: model timeout
+  priority: P0
+- id: model-malformed-output
+  title: model malformed output
+  priority: P0
+- id: tool-timeout
+  title: tool timeout
+  priority: P0
+- id: tool-permission-denial
+  title: tool permission denial
+  priority: P0
+- id: sandbox-escape-attempt
+  title: sandbox escape attempt
+  priority: P0
+- id: symlink-traversal-attempt
+  title: symlink traversal attempt
+  priority: P0
+- id: zip-bomb-input
+  title: zip bomb input
+  priority: P0
+- id: path-traversal-archive
+  title: path traversal archive
+  priority: P0
+- id: prompt-injection-in-source-comment
+  title: prompt injection in source comment
+  priority: P0
+- id: prompt-injection-in-readme
+  title: prompt injection in README
+  priority: P0
+- id: secret-in-source-tree
+  title: secret in source tree
+  priority: P0
+- id: pii-in-test-fixture
+  title: PII in test fixture
+  priority: P0
+- id: malicious-build-script
+  title: malicious build script
+  priority: P0
+- id: dependency-confusion
+  title: dependency confusion
+  priority: P0
+- id: typosquatted-package
+  title: typosquatted package
+  priority: P0
+- id: unsigned-binary-dependency
+  title: unsigned binary dependency
+  priority: P0
+- id: non-deterministic-build
+  title: non deterministic build
+  priority: P0
+- id: clock-skew
+  title: clock skew
+  priority: P0
+- id: timezone-change
+  title: timezone change
+  priority: P0
+- id: locale-change
+  title: locale change
+  priority: P0
+- id: random-seed-change
+  title: random seed change
+  priority: P0
+- id: concurrent-same-task
+  title: concurrent same task
+  priority: P0
+- id: cancel-at-every-phase-boundary
+  title: cancel at every phase boundary
+  priority: P0
+- id: pause-and-resume-at-every-phase-boundary
+  title: pause and resume at every phase boundary
+  priority: P0
+- id: idempotent-retry-after-side-effect
+  title: idempotent retry after side effect
+  priority: P0
+- id: rollback-after-failed-validation
+  title: rollback after failed validation
+  priority: P0
+- id: cost-budget-exceeded
+  title: cost budget exceeded
+  priority: P0
+- id: token-budget-exceeded
+  title: token budget exceeded
+  priority: P0
+- id: wall-clock-budget-exceeded
+  title: wall clock budget exceeded
+  priority: P0
+- id: context-truncation
+  title: context truncation
+  priority: P0
+- id: cache-poisoning
+  title: cache poisoning
+  priority: P1
+- id: stale-cache-reuse
+  title: stale cache reuse
+  priority: P1
+- id: cross-tenant-artifact-access
+  title: cross tenant artifact access
+  priority: P1
+- id: cross-tenant-cache-leakage
+  title: cross tenant cache leakage
+  priority: P1
+- id: audit-log-tampering
+  title: audit log tampering
+  priority: P1
+- id: evidence-artifact-loss
+  title: evidence artifact loss
+  priority: P1
+- id: flaky-test-detection
+  title: flaky test detection
+  priority: P1
+- id: test-pollution-between-cases
+  title: test pollution between cases
+  priority: P1
+- id: license-policy-violation
+  title: license policy violation
+  priority: P1
+- id: unsupported-feature-silent-success
+  title: unsupported feature silent success
+  priority: P1
+- id: manual-approval-bypass
+  title: manual approval bypass
+  priority: P1
+- id: model-version-drift
+  title: model version drift
+  priority: P1
+- id: skill-version-drift
+  title: skill version drift
+  priority: P1
+- id: corpus-commit-drift
+  title: corpus commit drift
+  priority: P1
+- id: hidden-test-leakage
+  title: hidden test leakage
+  priority: P1
+- id: benchmark-memorization-probe
+  title: benchmark memorization probe
+  priority: P1
+- id: telemetry-outage
+  title: telemetry outage
+  priority: P2
+- id: metrics-cardinality-explosion
+  title: metrics cardinality explosion
+  priority: P2
+- id: log-secret-redaction
+  title: log secret redaction
+  priority: P2
+- id: parallel-task-fairness
+  title: parallel task fairness
+  priority: P2
+- id: priority-inversion
+  title: priority inversion
+  priority: P2
+- id: quota-enforcement
+  title: quota enforcement
+  priority: P2

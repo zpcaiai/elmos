@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/commercial-loop/operations-economics-evidence.schema.json",
+  "title": "B13-F Operations and Economics Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_run_id",
+    "platform_business_version",
+    "status",
+    "pipeline_data_quality_passed",
+    "delivery_cost_visibility",
+    "project_margin_visibility",
+    "untracked_project_cost_events",
+    "usage_value_linkage_passed",
+    "commercial_audit_coverage",
+    "conflicting_metric_definitions",
+    "critical_risks_without_owner",
+    "forecast_backtesting_passed",
+    "system_of_record_reconciliation_passed",
+    "customer_concentration_measured",
+    "authority_id",
+    "observed_at",
+    "evidence_refs"
+  ],
+  "properties": {
+    "assessment_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_business_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "PASSED"
+    },
+    "pipeline_data_quality_passed": {
+      "const": true
+    },
+    "delivery_cost_visibility": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "project_margin_visibility": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "untracked_project_cost_events": {
+      "const": 0
+    },
+    "usage_value_linkage_passed": {
+      "const": true
+    },
+    "commercial_audit_coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "conflicting_metric_definitions": {
+      "const": 0
+    },
+    "critical_risks_without_owner": {
+      "const": 0
+    },
+    "forecast_backtesting_passed": {
+      "const": true
+    },
+    "system_of_record_reconciliation_passed": {
+      "const": true
+    },
+    "customer_concentration_measured": {
+      "const": true
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
+

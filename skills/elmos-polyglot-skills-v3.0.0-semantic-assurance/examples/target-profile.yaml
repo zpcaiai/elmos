@@ -1,0 +1,30 @@
+schemaVersion: elmos.target-profile/v1
+profileId: demo-aspnet-target
+technologies:
+  - id: csharp
+    version: "approved-LTS"
+    role: application
+architecture:
+  style: modular-monolith
+  modules: [orders, identity, notifications]
+  apiStyle: rest
+  dataAccess: ef-core-explicit
+  deployment: containers
+semanticPolicies:
+  nullability: enabled-and-explicit
+  errorModel: typed-domain-errors
+  asyncCancellation: required-at-boundaries
+  timezone: UTC-at-boundaries
+  decimals: decimal-for-money
+  collectionOrdering: explicit
+  serializationDefaults: forbidden
+nonFunctionalBudgets:
+  - metric: api.latency.p95
+    operator: lte
+    value: 250
+    unit: ms
+  - metric: error.rate
+    operator: lte
+    value: 0.005
+    unit: ratio
+decisions: []

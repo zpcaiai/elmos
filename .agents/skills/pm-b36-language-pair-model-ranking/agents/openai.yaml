@@ -1,0 +1,4 @@
+interface:
+  display_name: "Precision Migration B36: Language Pair Model Ranking"
+  short_description: "Run Precision Migration B36 with evidence controls"
+  default_prompt: "Use $pm-b36-language-pair-model-ranking to execute this Precision Migration contract with fail-closed evidence."

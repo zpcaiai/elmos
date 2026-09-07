@@ -1,0 +1,5 @@
+interface:
+  display_name: "Regional Legal Privacy And Product Compliance Manager"
+  short_description: "Authoritative Batch 14 Skill 448 workflow"
+  default_prompt: "Use $regional-legal-privacy-and-product-compliance-manager to execute its evidence-bound Batch 14 workflow."
+

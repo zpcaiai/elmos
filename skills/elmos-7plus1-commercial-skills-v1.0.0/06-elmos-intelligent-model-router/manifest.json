@@ -1,0 +1,94 @@
+{
+  "package_id": "P06",
+  "name": "elmos-intelligent-model-router",
+  "version": "1.0.0",
+  "phase": "Phase 2（质量/成本/隐私优化）",
+  "dependencies": [
+    "P00",
+    "P01",
+    "P05"
+  ],
+  "capabilities": [
+    {
+      "id": "P06-C01",
+      "name": "Model/Provider Catalog",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C02",
+      "name": "Task Classifier",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C03",
+      "name": "Hard Constraint Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C04",
+      "name": "Benchmark & Availability Gate",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C05",
+      "name": "Historical Task-Fit Store",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C06",
+      "name": "Multi-objective Scorer",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C07",
+      "name": "Routing Execution Plane",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C08",
+      "name": "Long-context Audit Router",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C09",
+      "name": "Multimodal Router",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C10",
+      "name": "Cost/Token/ETA Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C11",
+      "name": "Privacy & Data Policy Broker",
+      "maturity": "design"
+    },
+    {
+      "id": "P06-C12",
+      "name": "Route Observability",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenRouter Go SDK",
+    "OpenRouter TypeScript SDK",
+    "OpenRouter Python SDK",
+    "OpenRouter Skills",
+    "OpenRouter TypeScript Agent"
+  ],
+  "subskills": [
+    "model-provider-catalog",
+    "task-classifier",
+    "route-constraint-engine",
+    "benchmark-availability-gate",
+    "historical-taskfit-scorer",
+    "multi-objective-router",
+    "fallback-circuitbreaker-hedging",
+    "long-context-completeness-auditor",
+    "multimodal-route",
+    "cost-token-eta-engine",
+    "privacy-data-policy-broker",
+    "route-observability"
+  ]
+}

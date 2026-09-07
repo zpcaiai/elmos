@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "experimentId": "shadow-orders-01",
+  "requestId": "request-01",
+  "tenantId": "org-fixture",
+  "status": "REGRESSION",
+  "primaryResultUnaffected": true,
+  "canEnterCanary": false,
+  "differences": ["BUSINESS_TOTAL_DIFFERENCE"],
+  "evidenceRefs": ["evidence:primary:01", "evidence:shadow:01"]
+}

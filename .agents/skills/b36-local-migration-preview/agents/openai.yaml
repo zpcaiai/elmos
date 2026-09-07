@@ -1,0 +1,4 @@
+interface:
+  display_name: "B36 Local Preview"
+  short_description: "Produce deterministic no-write migration previews"
+  default_prompt: "Use $b36-local-migration-preview to create an isolated, deterministic, and replayable local preview."

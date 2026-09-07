@@ -1,0 +1,95 @@
+{
+  "apiVersion": "frt.openai.dev/v1alpha1",
+  "kind": "GenerationBatchManifest",
+  "metadata": {
+    "id": "G17",
+    "slug": "mobile-triangle-six-directions",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31"
+  },
+  "spec": {
+    "title": "小程序、ArkUI、Flutter Mobile Triangle六条有向路径与30路径收口",
+    "transitionFrom": "三类移动平台能力和前24条路径",
+    "transitionTo": "补齐六条移动方向并完成全部30条有向转换路径认证",
+    "certificateFamily": "TR",
+    "skills": [
+      {
+        "id": "FRT-1700",
+        "name": "Mobile Triangle Route Orchestrator",
+        "path": "skills/frt-1700-mobile-triangle-route-orchestrator/SKILL.md"
+      },
+      {
+        "id": "FRT-1701",
+        "name": "Mini Program to ArkUI Route Pack",
+        "path": "skills/frt-1701-mini-program-to-arkui-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1702",
+        "name": "ArkUI to Mini Program Route Pack",
+        "path": "skills/frt-1702-arkui-to-mini-program-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1703",
+        "name": "Mini Program to Flutter Route Pack",
+        "path": "skills/frt-1703-mini-program-to-flutter-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1704",
+        "name": "Flutter to Mini Program Route Pack",
+        "path": "skills/frt-1704-flutter-to-mini-program-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1705",
+        "name": "ArkUI to Flutter Route Pack",
+        "path": "skills/frt-1705-arkui-to-flutter-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1706",
+        "name": "Flutter to ArkUI Route Pack",
+        "path": "skills/frt-1706-flutter-to-arkui-route-pack/SKILL.md"
+      },
+      {
+        "id": "FRT-1707",
+        "name": "Mobile Capability Normalizer",
+        "path": "skills/frt-1707-mobile-capability-normalizer/SKILL.md"
+      },
+      {
+        "id": "FRT-1708",
+        "name": "Mobile Navigation and Lifecycle Mapper",
+        "path": "skills/frt-1708-mobile-navigation-and-lifecycle-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1709",
+        "name": "Native Bridge and Device Mapper",
+        "path": "skills/frt-1709-native-bridge-and-device-mapper/SKILL.md"
+      },
+      {
+        "id": "FRT-1710",
+        "name": "Mobile Device Matrix Validator",
+        "path": "skills/frt-1710-mobile-device-matrix-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-1711",
+        "name": "Triangle Path Equivalence Validator",
+        "path": "skills/frt-1711-triangle-path-equivalence-validator/SKILL.md"
+      },
+      {
+        "id": "FRT-1712",
+        "name": "Thirty-Path Coverage Registry",
+        "path": "skills/frt-1712-thirty-path-coverage-registry/SKILL.md"
+      },
+      {
+        "id": "FRT-1713",
+        "name": "Thirty-Path Certification",
+        "path": "skills/frt-1713-thirty-path-certification/SKILL.md"
+      }
+    ],
+    "gates": [
+      "30条方向均有版本化Pack和Corpus",
+      "六条移动路径关键Journey通过",
+      "直接/间接路径Critical语义一致",
+      "设备能力和Unsupported状态完整",
+      "30路径无未披露Critical Gap"
+    ]
+  }
+}

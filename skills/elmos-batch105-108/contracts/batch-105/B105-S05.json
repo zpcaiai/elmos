@@ -1,0 +1,70 @@
+{
+  "id": "B105-S05",
+  "batch": 105,
+  "name": "spring-boot-staged-upgrade-planner",
+  "dependencies": [
+    "B105-S03",
+    "B105-S04"
+  ],
+  "inputs": [
+    "BaselineEvidenceBundle",
+    "JavaUpgradeAnalysis",
+    "target Spring Boot version"
+  ],
+  "outputs": [
+    "MigrationPlanDAG",
+    "stage gates",
+    "rollback plan"
+  ],
+  "implementation": {
+    "modules": [
+      "engines/java/.../spring/SpringBootUpgradePlanner.java",
+      "services/control-plane/.../plans/MigrationPlanService.java",
+      "apps/web/src/features/migration-plan/"
+    ],
+    "interfaces": [
+      "POST /api/projects/{id}/plans/spring-boot",
+      "GET /api/plans/{id}",
+      "event plan.generated"
+    ],
+    "data": [
+      "migration_plan",
+      "migration_stage",
+      "stage_gate",
+      "rollback_point"
+    ]
+  },
+  "workflow": [
+    "检测当前Boot/Spring/Security/Hibernate/Springdoc版本",
+    "解析目标版本的Java与生态约束",
+    "插入Boot 2.7桥接阶段和Java升级阶段",
+    "按Jakarta、Security、ORM、配置、API拆分风险",
+    "为每阶段定义输入、命令、测试、证据和回滚SHA",
+    "验证DAG无环并生成可审批计划"
+  ],
+  "tests": [
+    "2.6→3.5计划包含2.7桥接",
+    "已在2.7的项目不重复插入阶段",
+    "目标版本不兼容JDK时拒绝",
+    "计划依赖环被检测",
+    "每阶段有回滚点"
+  ],
+  "evidence": [
+    "migration-plan.json",
+    "migration-plan.md",
+    "dependency-dag.svg",
+    "approval-record.json"
+  ],
+  "definition_of_done": [
+    "DAG无环",
+    "每阶段有独立Gate",
+    "目标版本与JDK兼容",
+    "包含API/数据/安全风险",
+    "未经审批不得执行"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

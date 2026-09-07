@@ -1,0 +1,67 @@
+{
+  "id": "B105-S16",
+  "batch": 105,
+  "name": "modernization-demo-route-certifier",
+  "dependencies": [
+    "B105-S15"
+  ],
+  "inputs": [
+    "GoldenJourneyPackage",
+    "independent runner",
+    "certification policy"
+  ],
+  "outputs": [
+    "RouteCertificate",
+    "benchmark result",
+    "recertification date"
+  ],
+  "implementation": {
+    "modules": [
+      "certification/routes/ModernizationRouteCertifier.java",
+      "certification/fixtures/modernization/",
+      "policies/route-certification.yaml"
+    ],
+    "interfaces": [
+      "POST /api/certifications/routes",
+      "event route.certified"
+    ],
+    "data": [
+      "route_certificate",
+      "route_benchmark",
+      "recertification_schedule"
+    ]
+  },
+  "workflow": [
+    "在独立Runner解析Journey",
+    "从冻结基线重放关键阶段",
+    "验证测试、证据和可重复性",
+    "运行伪造/缺失/过期负面候选",
+    "计算耗时、成本和成功率",
+    "签发REJECTED/PARTIAL/ENGINEERING_READY/DEMO_READY/CUSTOMER_READY"
+  ],
+  "tests": [
+    "独立重放失败拒绝",
+    "原Runner自产证据不能替代独立验证",
+    "伪造PASS候选被拒绝",
+    "证据过期触发重新认证",
+    "成功候选签名可验证"
+  ],
+  "evidence": [
+    "route-certificate.json",
+    "independent-replay.json",
+    "negative-gate-results.json",
+    "benchmark.json"
+  ],
+  "definition_of_done": [
+    "独立验证完成",
+    "负面测试通过",
+    "证书绑定版本和摘要",
+    "有到期/再认证日期",
+    "最高等级有完整证据"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

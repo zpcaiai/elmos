@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 490: succession and key person risk manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $succession-and-key-person-risk-manager to evaluate this capability with evidence."

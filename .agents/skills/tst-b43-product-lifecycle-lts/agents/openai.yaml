@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tst B43 Product Lifecycle Lts"
+  short_description: "Run Batch 38-45 strict evidence validation"
+  default_prompt: "Use $tst-b43-product-lifecycle-lts to run its exact Batch 38-45 cases with fail-closed evidence."

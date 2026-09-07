@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Multirepo Pr Merge Order"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-multirepo-pr-merge-order to execute this ELMOS Runtime Skill with fail-closed evidence."

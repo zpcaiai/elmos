@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 573: third party ai provider and supply chain risk manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $third-party-ai-provider-and-supply-chain-risk-manager to evaluate this capability with evidence."

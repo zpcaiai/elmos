@@ -1,0 +1,16 @@
+{
+  "apiVersion": "elmos.ai/v3alpha1",
+  "kind": "SloErrorBudgetResult",
+  "metadata": {
+    "id": "slo-error-budget-result-example",
+    "version": "4.0.0",
+    "revisionSetId": "rev-example"
+  },
+  "spec": {
+    "service": "example-service",
+    "slo": {},
+    "window": "example-window",
+    "budgetRemaining": 0.99,
+    "releaseDecision": "example-releaseDecision"
+  }
+}

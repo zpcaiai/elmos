@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B39: Accounts Receivable Payment Allocation Refund Dispute And Dunning"
+  short_description: "Run ELMOS Product B39 contract with fail-closed evidence"
+  default_prompt: "Use $accounts-receivable-payment-allocation-refund-dispute-a-d05210b5 to implement its fail-closed ELMOS Product B39 contract."

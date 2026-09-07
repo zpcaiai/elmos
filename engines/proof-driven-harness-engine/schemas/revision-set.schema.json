@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.ai/proof-harness/v3/revision-set.schema.json",
+  "title": "Immutable execution revision set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["revisionSetId", "tenantId", "projectId", "goalId", "source", "baseline", "requirements", "policy", "workflow", "modelRoute", "toolchain", "environment", "domainPack", "createdAt"],
+  "properties": {
+    "revisionSetId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "tenantId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "projectId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "goalId": {"type": "string", "minLength": 1, "maxLength": 160},
+    "source": {"$ref": "#/$defs/digest"},
+    "baseline": {"$ref": "#/$defs/digest"},
+    "requirements": {"$ref": "#/$defs/digest"},
+    "policy": {"$ref": "#/$defs/digest"},
+    "workflow": {"$ref": "#/$defs/digest"},
+    "modelRoute": {"$ref": "#/$defs/digest"},
+    "toolchain": {"$ref": "#/$defs/digest"},
+    "environment": {"$ref": "#/$defs/digest"},
+    "domainPack": {"$ref": "#/$defs/digest"},
+    "createdAt": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+}

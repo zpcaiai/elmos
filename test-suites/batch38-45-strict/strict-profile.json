@@ -1,0 +1,38 @@
+{
+  "profile_id": "batch38-45-strict-v2",
+  "description": "Conservative M38-M45 production qualification profile with immutable evidence and external certification authority.",
+  "thresholds": {
+    "p0_pass_rate": 1.0,
+    "p1_pass_rate": 1.0,
+    "p2_pass_rate": 0.98,
+    "evidence_trace_coverage": 0.99,
+    "p95_latency_regression_max": 0.05,
+    "p99_latency_regression_max": 0.1,
+    "unit_cost_regression_max": 0.08,
+    "required_design_partner_organizations": 2,
+    "required_independent_reviews": 1,
+    "required_domain_gates": 8,
+    "max_evidence_age_days": 30
+  },
+  "zero_tolerance": [
+    "cross_tenant_access",
+    "data_loss",
+    "unauthorized_public_egress",
+    "signature_bypass",
+    "critical_security_finding",
+    "critical_unknown",
+    "kill_switch_failure",
+    "billing_unreconciled",
+    "test_integrity_violation",
+    "evidence_tamper",
+    "stale_mandatory_evidence",
+    "unreplayed_critical_failure"
+  ],
+  "waiver_policy": {
+    "p0_allowed": false,
+    "p1_allowed": false,
+    "p2_allowed": true,
+    "maximum_days": 30,
+    "independent_approval_required": true
+  }
+}

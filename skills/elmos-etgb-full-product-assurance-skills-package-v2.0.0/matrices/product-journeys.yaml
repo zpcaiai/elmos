@@ -1,0 +1,177 @@
+schema_version: '2.0'
+matrix_id: ETGB-JOURNEYS-2.0
+personas:
+- individual-developer
+- enterprise-architect
+- tenant-admin
+- finance-admin
+- support-operator
+variants:
+- happy-path
+- recoverable-failure
+- security-negative
+journeys:
+- id: register-verify-login-create-organization
+  title: Register Verify Login Create Organization
+  priority: P0
+  level: L3
+- id: invite-member-assign-role-and-revoke
+  title: Invite Member Assign Role And Revoke
+  priority: P0
+  level: L3
+- id: top-up-credit-create-project-upload-repository-run-and-download
+  title: Top Up Credit Create Project Upload Repository Run And Download
+  priority: P0
+  level: L3
+- id: connect-private-github-repository-and-revoke-token
+  title: Connect Private Github Repository And Revoke Token
+  priority: P0
+  level: L3
+- id: archive-upload-analysis-and-project-intelligence-report
+  title: Archive Upload Analysis And Project Intelligence Report
+  priority: P0
+  level: L3
+- id: spring-modernization-estimate-run-pause-resume-certify
+  title: Spring Modernization Estimate Run Pause Resume Certify
+  priority: P0
+  level: L3
+- id: cross-language-conversion-with-hidden-tests-and-artifact-delivery
+  title: Cross Language Conversion With Hidden Tests And Artifact Delivery
+  priority: P0
+  level: L3
+- id: multilingual-project-generation-payment-run-and-deploy
+  title: Multilingual Project Generation Payment Run And Deploy
+  priority: P0
+  level: L3
+- id: sql-routine-conversion-dual-database-validation-and-report
+  title: Sql Routine Conversion Dual Database Validation And Report
+  priority: P0
+  level: L3
+- id: ambiguous-requirement-safe-assumption-and-approval
+  title: Ambiguous Requirement Safe Assumption And Approval
+  priority: P0
+  level: L3
+- id: repo-webhook-change-incremental-analysis-impact-test-plan-pr
+  title: Repo Webhook Change Incremental Analysis Impact Test Plan Pr
+  priority: P0
+  level: L3
+- id: online-debug-build-breakpoint-record-replay-and-fix
+  title: Online Debug Build Breakpoint Record Replay And Fix
+  priority: P0
+  level: L3
+- id: generate-architecture-diagrams-docs-ppt-and-human-lock
+  title: Generate Architecture Diagrams Docs Ppt And Human Lock
+  priority: P0
+  level: L3
+- id: project-search-qa-with-evidence-and-access-control
+  title: Project Search Qa With Evidence And Access Control
+  priority: P0
+  level: L3
+- id: create-rag-knowledge-base-query-citation-update-delete
+  title: Create Rag Knowledge Base Query Citation Update Delete
+  priority: P0
+  level: L3
+- id: agent-tool-call-human-approval-and-compensation
+  title: Agent Tool Call Human Approval And Compensation
+  priority: P0
+  level: L3
+- id: model-provider-timeout-fallback-cost-and-trace
+  title: Model Provider Timeout Fallback Cost And Trace
+  priority: P0
+  level: L3
+- id: cache-hit-then-prompt-model-change-invalidation
+  title: Cache Hit Then Prompt Model Change Invalidation
+  priority: P0
+  level: L3
+- id: three-concurrent-task-limit-and-fair-queue
+  title: Three Concurrent Task Limit And Fair Queue
+  priority: P0
+  level: L3
+- id: worker-crash-checkpoint-resume-no-double-charge
+  title: Worker Crash Checkpoint Resume No Double Charge
+  priority: P0
+  level: L3
+- id: cancel-after-provider-usage-and-credit-reconciliation
+  title: Cancel After Provider Usage And Credit Reconciliation
+  priority: P0
+  level: L3
+- id: payment-webhook-duplicate-late-success-refund
+  title: Payment Webhook Duplicate Late Success Refund
+  priority: P0
+  level: L3
+- id: subscription-upgrade-proration-entitlement-and-downgrade
+  title: Subscription Upgrade Proration Entitlement And Downgrade
+  priority: P0
+  level: L3
+- id: low-credit-pause-topup-resume
+  title: Low Credit Pause Topup Resume
+  priority: P0
+  level: L3
+- id: admin-support-safe-impersonation-diagnostic-refund
+  title: Admin Support Safe Impersonation Diagnostic Refund
+  priority: P0
+  level: L3
+- id: tenant-export-delete-and-index-cache-purge
+  title: Tenant Export Delete And Index Cache Purge
+  priority: P1
+  level: L3
+- id: connector-github-jira-slack-end-to-end
+  title: Connector Github Jira Slack End To End
+  priority: P1
+  level: L3
+- id: private-cloud-install-upgrade-rollback-and-uninstall
+  title: Private Cloud Install Upgrade Rollback And Uninstall
+  priority: P1
+  level: L3
+- id: air-gapped-install-with-offline-model-and-dependencies
+  title: Air Gapped Install With Offline Model And Dependencies
+  priority: P1
+  level: L3
+- id: multi-region-failover-and-evidence
+  title: Multi Region Failover And Evidence
+  priority: P1
+  level: L3
+- id: security-incident-detect-contain-notify-regression
+  title: Security Incident Detect Contain Notify Regression
+  priority: P1
+  level: L3
+- id: malicious-repository-prompt-injection-and-build-script-defense
+  title: Malicious Repository Prompt Injection And Build Script Defense
+  priority: P1
+  level: L3
+- id: hidden-test-read-attempt-denied-and-audited
+  title: Hidden Test Read Attempt Denied And Audited
+  priority: P1
+  level: L3
+- id: dify-import-to-langgraph-convert-native-conformance
+  title: Dify Import To Langgraph Convert Native Conformance
+  priority: P1
+  level: L3
+- id: spring-ai-project-generate-test-deploy-certify
+  title: Spring Ai Project Generate Test Deploy Certify
+  priority: P1
+  level: L3
+- id: bigdata-streaming-project-generate-late-data-checkpoint-recover
+  title: Bigdata Streaming Project Generate Late Data Checkpoint Recover
+  priority: P1
+  level: L4
+- id: one-million-loc-sharded-run-failure-resume
+  title: One Million Loc Sharded Run Failure Resume
+  priority: P1
+  level: L4
+- id: customer-golden-holdout-repeatability-and-signoff
+  title: Customer Golden Holdout Repeatability And Signoff
+  priority: P1
+  level: L4
+- id: api-sdk-cli-webhook-cross-channel-consistency
+  title: Api Sdk Cli Webhook Cross Channel Consistency
+  priority: P1
+  level: L4
+- id: wcag-keyboard-screenreader-multilingual-critical-flow
+  title: Wcag Keyboard Screenreader Multilingual Critical Flow
+  priority: P1
+  level: L4
+- id: billing-ledger-provider-settlement-reconciliation-zero-delta
+  title: Billing Ledger Provider Settlement Reconciliation Zero Delta
+  priority: P1
+  level: L4

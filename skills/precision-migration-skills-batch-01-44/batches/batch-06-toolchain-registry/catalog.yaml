@@ -1,0 +1,25 @@
+batch: 6
+slug: toolchain-registry
+title: "编译器、Runtime与工具链注册中心"
+phase: "B 源码理解与可信执行底座"
+skills:
+  - name: toolchain-manifest-detector
+    description: "从仓库和锁文件推断语言、版本、框架、构建系统、平台和工具链需求。"
+  - name: compiler-version-resolver
+    description: "解析源与目标编译器版本，并处理兼容范围、废弃特性和交叉编译约束。"
+  - name: runtime-version-resolver
+    description: "选择与项目和目标部署一致的 Runtime、解释器、虚拟机和系统库版本。"
+  - name: package-manager-adapter
+    description: "统一 Maven、Gradle、NuGet、npm、pnpm、Cargo、pip、Go Modules 等包管理操作。"
+  - name: build-command-generator
+    description: "根据仓库结构和工具链生成可复现的解析、构建、打包和产物定位命令。"
+  - name: test-runner-adapter
+    description: "统一发现、选择、执行和解析不同语言及框架测试运行器。"
+  - name: compiler-diagnostic-normalizer
+    description: "将编译、链接、类型、Lint 和构建诊断规范化为结构化问题。"
+  - name: runtime-environment-provisioner
+    description: "按任务创建 Linux、Windows、macOS、浏览器、移动端或证明环境。"
+  - name: toolchain-reproducibility-certificate
+    description: "记录镜像摘要、工具版本、依赖锁、环境摘要和命令，签发可复现证据。"
+  - name: platform-worker-router
+    description: "将任务路由到 OCI、VM、macOS、设备、数据库、浏览器或 Proof Worker。"

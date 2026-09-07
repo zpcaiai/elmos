@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 22 011"
+  short_description: "Run Batch 22 runtime contract safely"
+  default_prompt: "Use $self-service-resource-environment-and-access-broker to apply its fail-closed ELMOS runtime contract."

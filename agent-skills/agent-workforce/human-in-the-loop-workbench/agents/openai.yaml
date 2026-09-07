@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 555: human in the loop workbench"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $human-in-the-loop-workbench to evaluate this capability with evidence."

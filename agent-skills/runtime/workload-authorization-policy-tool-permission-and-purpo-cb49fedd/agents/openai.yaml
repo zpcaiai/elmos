@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B34: Workload Authorization Policy Tool Permission And Purpose Binding"
+  short_description: "Run ELMOS Product B34 contract with fail-closed evidence"
+  default_prompt: "Use $workload-authorization-policy-tool-permission-and-purpo-cb49fedd to implement its fail-closed ELMOS Product B34 contract."

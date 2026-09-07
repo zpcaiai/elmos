@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","runner":"BUSINESS_PROCESS_VALIDATION","rootless":true,"network":"ALLOWLIST_REQUIRED","productionCredentials":false,"syntheticCompanyRequired":true,"externalVirtualizationRequired":true,"negativePermissionTestsRequired":true,"autoDestroy":true}

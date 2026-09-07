@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.io/contracts/production-hardening/environment-calibration.schema.json",
+  "title": "Performance environment calibration",
+  "type": "object",
+  "required": [
+    "service_id",
+    "artifact_id",
+    "environment_hash",
+    "valid",
+    "repeated_run_variance",
+    "warmup_excluded",
+    "autoscaling_disabled",
+    "generator_saturated",
+    "source_resources_comparable",
+    "data_volume_comparable",
+    "production_resource_accessed",
+    "secret_material_observed",
+    "evidence_refs"
+  ],
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environment_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "repeated_run_variance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "warmup_excluded": {
+      "type": "boolean"
+    },
+    "autoscaling_disabled": {
+      "type": "boolean"
+    },
+    "generator_saturated": {
+      "type": "boolean"
+    },
+    "source_resources_comparable": {
+      "type": "boolean"
+    },
+    "data_volume_comparable": {
+      "type": "boolean"
+    },
+    "production_resource_accessed": {
+      "const": false
+    },
+    "secret_material_observed": {
+      "const": false
+    },
+    "noise_signals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    }
+  }
+}
+

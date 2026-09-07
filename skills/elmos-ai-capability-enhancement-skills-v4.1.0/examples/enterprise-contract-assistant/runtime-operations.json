@@ -1,0 +1,26 @@
+{
+  "durability": {
+    "eventSourced": true,
+    "checkpoints": true,
+    "pauseResumeCancel": true,
+    "timeTravel": true
+  },
+  "workers": {
+    "lease": true,
+    "fencing": true,
+    "idempotency": true,
+    "maxConcurrencyPerAccount": 3
+  },
+  "observability": {
+    "otel": true,
+    "logs": true,
+    "metrics": true,
+    "traces": true
+  },
+  "finops": {
+    "token": true,
+    "compute": true,
+    "storage": true,
+    "machineEta": true
+  }
+}

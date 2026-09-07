@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS SaaS、私有化与离线部署"
+  short_description: "Guide SaaS、私有化与离线部署 with evidence controls"
+  default_prompt: "Use $elmos-deployment-private-cloud as guidance for SaaS、私有化与离线部署 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

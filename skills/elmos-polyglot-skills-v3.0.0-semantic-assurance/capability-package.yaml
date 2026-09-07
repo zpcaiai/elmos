@@ -1,0 +1,12 @@
+schemaVersion: elmos.capability-package/v1
+kind: CapabilityPackage
+metadata:
+  name: elmos-polyglot-skills
+  version: 3.0.0
+  readiness: not-run
+spec:
+  skillManifest: manifest.json
+  routeRegistry: route-registry.json
+  routeCertificationRegistry: route-certification-registry.json
+  corpusRegistry: certification-corpus/corpus-registry.json
+  nativeLabRegistry: native-runtime-lab/lab-registry.json

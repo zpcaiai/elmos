@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 499: rolling forecast and reforecast manager"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $rolling-forecast-and-reforecast-manager to evaluate this capability with evidence."

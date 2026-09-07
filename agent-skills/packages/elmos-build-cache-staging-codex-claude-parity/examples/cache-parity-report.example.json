@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.2.0",
+  "report_id": "parity-example-001",
+  "subject": {
+    "source_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "config_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "corpus_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "provider_profile_digests": [
+      "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    ],
+    "platform_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "thresholds": {
+    "stable_turn_cached_token_reuse_min": 0.9,
+    "unexpected_full_prefix_miss_max": 0.02,
+    "exact_rerun_weighted_reuse_min": 0.99,
+    "small_edit_weighted_reuse_min": 0.9,
+    "unnecessary_invalidation_max": 0.05,
+    "environment_snapshot_hit_min": 0.95,
+    "warm_start_p95_reduction_min": 0.8,
+    "restart_artifact_reuse_min": 0.999,
+    "stable_followup_wall_clock_saved_min": 0.7,
+    "model_input_cost_saved_min": 0.8,
+    "false_hits_max": 0
+  },
+  "metrics": {
+    "stable_turn_cached_token_reuse": 0.93,
+    "unexpected_full_prefix_miss": 0.01,
+    "exact_rerun_weighted_reuse": 0.995,
+    "small_edit_weighted_reuse": 0.92,
+    "unnecessary_invalidation": 0.03,
+    "environment_snapshot_hit": 0.97,
+    "warm_start_p95_reduction": 0.84,
+    "restart_artifact_reuse": 0.9995,
+    "stable_followup_wall_clock_saved": 0.74,
+    "model_input_cost_saved": 0.83
+  },
+  "scenario_results": [
+    {
+      "scenario_id": "STABLE_10_TURN",
+      "cohort": "java-spring-to-csharp-aspnet",
+      "passed": true,
+      "metrics": {
+        "cached_token_reuse": 0.93
+      },
+      "failures": []
+    },
+    {
+      "scenario_id": "EXACT_RERUN",
+      "cohort": "java-spring-to-csharp-aspnet",
+      "passed": true,
+      "metrics": {
+        "weighted_reuse": 0.995
+      },
+      "failures": []
+    }
+  ],
+  "mandatory_pass": true,
+  "false_hits": 0,
+  "cross_tenant_hits": 0,
+  "corrupt_executions": 0,
+  "generated_at": "2026-08-20T00:00:00Z",
+  "limitations": [
+    "Illustrative package fixture; not an ELMOS production result."
+  ]
+}

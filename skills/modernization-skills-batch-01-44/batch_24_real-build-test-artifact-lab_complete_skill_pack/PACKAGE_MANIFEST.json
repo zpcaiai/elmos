@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "package_id": "batch-24-real-build-test-artifact-lab-complete-skill-pack",
+  "batch": 24,
+  "title": "Real Build, Test, Package and Artifact Execution Lab",
+  "version": "1.0.0",
+  "generated_at": "2026-07-31T00:00:00Z",
+  "skill_count": 16,
+  "skills": [
+    "b24-real-build-test-artifact-lab-orchestrator",
+    "b24-real-build-test-artifact-lab-domain-model",
+    "b24-real-build-test-artifact-lab-discovery-inventory",
+    "b24-real-build-test-artifact-lab-capability-planning",
+    "b24-real-build-test-artifact-lab-deterministic-engine",
+    "b24-real-build-test-artifact-lab-adapter-provider",
+    "b24-real-build-test-artifact-lab-workflow-runtime",
+    "b24-real-build-test-artifact-lab-lineage-reconciliation",
+    "b24-real-build-test-artifact-lab-security-policy",
+    "b24-real-build-test-artifact-lab-human-approval",
+    "b24-real-build-test-artifact-lab-observability-economics",
+    "b24-real-build-test-artifact-lab-corpus-benchmark",
+    "b24-real-build-test-artifact-lab-failure-recovery",
+    "b24-real-build-test-artifact-lab-integration-api",
+    "b24-real-build-test-artifact-lab-lifecycle-recertification",
+    "b24-real-build-test-artifact-lab-certification-gate"
+  ],
+  "upstream_batch": 23,
+  "files": [
+    {
+      "path": "BATCH23_COMPATIBILITY.md",
+      "sha256": "4ff5812ad56f06e6d4b9f152cae37025216c9b57e2f7be9fe07b44bbece5b536",
+      "size": 2043
+    },
+    {
+      "path": "CODEX_IMPLEMENTATION_PROMPT.md",
+      "sha256": "1c03e1cde1212f51f9fef51e0ba0f1c6f3773747e620b3e037d2f28a467bead0",
+      "size": 2251
+    },
+    {
+      "path": "IMPLEMENTATION_CHECKLIST.md",
+      "sha256": "3747ff599b0905634649eb003fe0ee18cfa28233e67d5de1e07474647b7e8e78",
+      "size": 1706
+    },
+    {
+      "path": "README.md",
+      "sha256": "a0ba8e4fcb3ab2067caf88c53b630822fbe449abe1ad9072238698cdf465ad3f",
+      "size": 1099
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "de10346f20d19b2ed3596cfbe1ba055023454c43c9c574617b234b7066ba5363",
+      "size": 3485
+    },
+    {
+      "path": "SKILL_INDEX.md",
+      "sha256": "51f9fd1ae86cd95ca2352a78aafbe64ea0fbe8a17e7a13c0ee0d8f56bc68cd21",
+      "size": 3069
+    },
+    {
+      "path": "VALIDATION_REPORT.md",
+      "sha256": "c7709d6553a5a1a15eacd5839dad770e2dfca01b352b55d6b8ec15af2f705fc0",
+      "size": 572
+    },
+    {
+      "path": "examples/certificate.example.json",
+      "sha256": "f990d86ead14384f6283f75845ec329b4badd48eda9ca9600fb17788d359063c",
+      "size": 452
+    },
+    {
+      "path": "examples/invocation.example.json",
+      "sha256": "07867aacb5a66c153956b482ac0f4a95ed8bc5fc3bc788209e8502d07d19ba61",
+      "size": 286
+    },
+    {
+      "path": "install.sh",
+      "sha256": "cdaf3fdf0c010dd9e0fe29b4a92cd723ff35dd0617eaf14bb5f57e757bc2fa02",
+      "size": 305
+    },
+    {
+      "path": "policies/agent-boundary.yaml",
+      "sha256": "79adc8830adec220835b49067d29b50a3a1578f146a65e7d5b70a6d19ba09ab2",
+      "size": 150
+    },
+    {
+      "path": "policies/certification.yaml",
+      "sha256": "17f50ef51eb5cbf800b3b4990bfb399d4aed9c751cb7f440bee4a4d88ebf02ea",
+      "size": 182
+    },
+    {
+      "path": "policies/default-deny.yaml",
+      "sha256": "25c6a03403de8832018b82bfa5d9dd516d8f5136ba4974c85d40bdf8972f9366",
+      "size": 105
+    },
+    {
+      "path": "policies/evidence-first.yaml",
+      "sha256": "50408543ffa45cfea3461cd57bdabf39f9bdd422fc5b41cdfef4d3c679a058c2",
+      "size": 156
+    },
+    {
+      "path": "policies/human-approval.yaml",
+      "sha256": "d9a6b11cfe402c569440e95b1aa2377387e222a32b693c83fc278ddb1fd4482f",
+      "size": 143
+    },
+    {
+      "path": "schemas/batch-input.schema.json",
+      "sha256": "0aa5f3ff147fd3c43a00ed6fee94a504262648ae99f1385c4b15052f1bb13061",
+      "size": 731
+    },
+    {
+      "path": "schemas/batch-output.schema.json",
+      "sha256": "5d3fb072a95144732c6753d131ca3d2f68cca3b9aeceee8ffa01c4d016a73d96",
+      "size": 832
+    },
+    {
+      "path": "schemas/capability-package.schema.json",
+      "sha256": "4c880a28ca19fc0dcaa169ea030750b63f2f4d68bbfea3d4fb847667296265ae",
+      "size": 1133
+    },
+    {
+      "path": "schemas/certification.schema.json",
+      "sha256": "9016c1ed6b12ea5796d561ffbdc5818bd5a6d717648bee03c253b96cbaa524e1",
+      "size": 1281
+    },
+    {
+      "path": "schemas/evidence-ref.schema.json",
+      "sha256": "bb18e11648f8cc825df5bde66df53b8b490b9662a699654a983cbde6e099c9e4",
+      "size": 996
+    },
+    {
+      "path": "schemas/workflow-run.schema.json",
+      "sha256": "3437de2ea3ac6b0cdca4a8cd9f8621f2c15cd32aefca2b1413ef1c124dc1cb16",
+      "size": 848
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-adapter-provider/SKILL.md",
+      "sha256": "d3a74befa62a114984486853861ad647c72ca2e6d88660faa2e29716bcc61d6d",
+      "size": 3812
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-capability-planning/SKILL.md",
+      "sha256": "70e7f4e80428e0fc265d1af1af8238ca296d17e9a88be08189dd34928fb583b4",
+      "size": 3714
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-certification-gate/SKILL.md",
+      "sha256": "c8a83cf7da618930700b8d1f58c7fb7c02d527ce9a3d48df9fb3ac11b770c0af",
+      "size": 3843
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-corpus-benchmark/SKILL.md",
+      "sha256": "e3eff57c34753dc1d358291dcddb0b50c8634a506687939a1e862fb3dd134d76",
+      "size": 3753
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-deterministic-engine/SKILL.md",
+      "sha256": "540ce9cae1e87c58e1b1feb8ef5acea0c169f3ca5424cd1ceecb0a133c56dc50",
+      "size": 3730
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-discovery-inventory/SKILL.md",
+      "sha256": "36af50ca9c04b70748e09d7c3ed55c590d932e2e10eca1ad4ad012a2b261f91c",
+      "size": 3757
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-domain-model/SKILL.md",
+      "sha256": "a27b4b5182f39e8917270911a6aee208d13e220faf36272ccb5501f119b31ad3",
+      "size": 3784
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-failure-recovery/SKILL.md",
+      "sha256": "2df6eb7aa3c2d10593d1d4b9affbb9223f95cd053bc74ccd4f0aee82fe99d2cd",
+      "size": 3761
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-human-approval/SKILL.md",
+      "sha256": "ed91b5cab7122c427ddde764dfcf60f48f998d7c35dcb5458a2f392889ebc683",
+      "size": 3746
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-integration-api/SKILL.md",
+      "sha256": "77beeb012bd297e001d39810e4a93ba260572d5313355847715622ebbb89976e",
+      "size": 3731
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-lifecycle-recertification/SKILL.md",
+      "sha256": "ee2731f44ec99a39a4bba2505a15e54492d2ccea1cfa878724f698b50881c97d",
+      "size": 3821
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-lineage-reconciliation/SKILL.md",
+      "sha256": "134e92669e05b3e9146ec0b1f3e4b1082d0eb053dbf7d4837847066d41d77977",
+      "size": 3772
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-observability-economics/SKILL.md",
+      "sha256": "3ffa56239b5b7aa5623bfd1f2cbc16e7ab648fe450f370f1e3b0c06733ed23ad",
+      "size": 3787
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-orchestrator/SKILL.md",
+      "sha256": "d93afcf72a923f2708e25026fbc02da2607b2657b2c6e4b38968216caba97229",
+      "size": 3809
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-security-policy/SKILL.md",
+      "sha256": "7571b42d1740dc00794257501ddc6ad61ede8f51efb3000a136ba9f2ffdb5334",
+      "size": 3766
+    },
+    {
+      "path": "skills/b24-real-build-test-artifact-lab-workflow-runtime/SKILL.md",
+      "sha256": "adc7b137598de492d7ab36fc2947f7a553882064f5a4582ca7b06d7bea3987b0",
+      "size": 3775
+    },
+    {
+      "path": "tests/README.md",
+      "sha256": "1d8837c54d74816bd199ca1e76a39dd219fd83fc244a47a04bf88f8c7f15ea6d",
+      "size": 318
+    },
+    {
+      "path": "tests/test_catalog.json",
+      "sha256": "dfa7fc18afefea87f4a818872177a0152990798d4eecc2e7864b06ca771d3102",
+      "size": 1930
+    },
+    {
+      "path": "tools/validate_package.py",
+      "sha256": "1d0e2d5d5005b7602e810d0a54ae8e33f6145cab3d21bf348d7fefcfa8fb3023",
+      "size": 1519
+    },
+    {
+      "path": "validate.sh",
+      "sha256": "a1afca2d69d8fa3d11c820c8381b06b6449e31b289196b3cdc4156de471dd6c4",
+      "size": 72
+    }
+  ],
+  "validation": {
+    "static": "passed",
+    "runtime": "not-executed"
+  },
+  "trust_boundary": "Static package validation is not production certification."
+}

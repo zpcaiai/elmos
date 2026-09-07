@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product B53: Utility Customer Workflow Orchestration Assignment Escalation And Recovery"
+  short_description: "Run ELMOS Product B53 contract with fail-closed evidence"
+  default_prompt: "Use $utility-customer-workflow-orchestration-assignment-esca-b852c797 to implement its fail-closed ELMOS Product B53 contract."

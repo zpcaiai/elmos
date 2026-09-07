@@ -1,0 +1,62 @@
+{
+  "id": "B108-S13",
+  "batch": 108,
+  "name": "required-check-policy-generator",
+  "dependencies": [
+    "B108-S12"
+  ],
+  "inputs": [
+    "repository protection settings",
+    "project risk profile"
+  ],
+  "outputs": [
+    "RequiredCheckPolicy",
+    "SCM configuration plan"
+  ],
+  "implementation": {
+    "modules": [
+      "integrations/scm/RequiredCheckPolicyService.java",
+      "policies/required-checks/"
+    ],
+    "interfaces": [
+      "POST /api/repositories/{id}/required-check-policies",
+      "event required-check-policy.generated"
+    ],
+    "data": [
+      "required_check_policy",
+      "branch_protection_plan"
+    ]
+  },
+  "workflow": [
+    "根据项目类型选择必需Checks",
+    "映射每个Check到唯一Gate和证据",
+    "设置超时、重新运行和stale规则",
+    "生成GitHub/GitLab配置计划",
+    "检测可绕过设置和管理员豁免",
+    "应用前要求明确批准并回读验证"
+  ],
+  "tests": [
+    "有页面项目要求browser check",
+    "无页面API项目不误加页面门禁",
+    "管理员绕过风险提示",
+    "stale head SHA check无效",
+    "配置回读一致"
+  ],
+  "evidence": [
+    "required-check-policy.json",
+    "branch-protection-plan.json",
+    "configuration-verification.json"
+  ],
+  "definition_of_done": [
+    "每个Check有权威Producer",
+    "与风险匹配",
+    "stale保护",
+    "绕过受控",
+    "SCM回读通过"
+  ],
+  "risk_controls": [
+    "默认拒绝不完整输入",
+    "所有跨租户访问必须由服务端身份解析",
+    "失败不得通过删除测试、跳过门禁或伪造证据修复"
+  ]
+}

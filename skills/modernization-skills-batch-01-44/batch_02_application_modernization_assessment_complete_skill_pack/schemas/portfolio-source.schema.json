@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:batch-02:portfolio-source",
+  "title": "PortfolioSource",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "content_digest",
+    "locator",
+    "record_id",
+    "schema_version",
+    "scope",
+    "source_kind"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_kind": {
+      "enum": [
+        "git",
+        "artifact",
+        "binary",
+        "document",
+        "runtime-export"
+      ]
+    },
+    "locator": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "access_grant_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

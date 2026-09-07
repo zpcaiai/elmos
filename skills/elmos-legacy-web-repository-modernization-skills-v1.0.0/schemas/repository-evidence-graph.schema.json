@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/repository-evidence-graph.schema.json",
+  "title": "Repository Evidence Graph",
+  "type": "object",
+  "required": [
+    "graphVersion",
+    "repositorySnapshotId",
+    "nodes",
+    "edges",
+    "coverage"
+  ],
+  "properties": {
+    "graphVersion": {
+      "type": "string"
+    },
+    "repositorySnapshotId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environmentClass": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "totalFacts",
+        "confirmedFacts",
+        "inferredFacts",
+        "unknownFacts"
+      ],
+      "properties": {
+        "totalFacts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confirmedFacts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inferredFacts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknownFacts": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "sourceLocator": {
+      "type": "object",
+      "required": [
+        "kind",
+        "uri",
+        "digest"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "source",
+            "config",
+            "build",
+            "runtime",
+            "test",
+            "trace",
+            "db",
+            "effect",
+            "decision",
+            "binary"
+          ]
+        },
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string"
+        },
+        "lineStart": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lineEnd": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "environment": {
+          "type": "string"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extractor": {
+          "type": "string"
+        },
+        "extractorVersion": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "label",
+        "status",
+        "confidence",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "repository",
+            "module",
+            "file",
+            "symbol",
+            "config",
+            "route",
+            "pipeline-step",
+            "state",
+            "view",
+            "security",
+            "transaction",
+            "side-effect",
+            "runtime-event",
+            "test",
+            "decision",
+            "unknown"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "inferred",
+            "unknown",
+            "conflicted",
+            "deprecated"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "attributes": {
+          "type": "object"
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceLocator"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "id",
+        "from",
+        "to",
+        "type",
+        "status",
+        "confidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "contains",
+            "declares",
+            "configures",
+            "overrides",
+            "calls",
+            "handles",
+            "precedes",
+            "short-circuits",
+            "reads",
+            "writes",
+            "emits",
+            "observed-as",
+            "derived-from",
+            "conflicts-with",
+            "mapped-to",
+            "verified-by"
+          ]
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "inferred",
+            "unknown",
+            "conflicted"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "attributes": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

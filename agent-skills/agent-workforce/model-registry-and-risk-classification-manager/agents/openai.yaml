@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 559: model registry and risk classification manager"
+  short_description: "Operate authoritative Batch 16 capability"
+  default_prompt: "Use $model-registry-and-risk-classification-manager to evaluate this capability with evidence."

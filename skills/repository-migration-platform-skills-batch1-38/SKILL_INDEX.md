@@ -1,0 +1,42 @@
+# Skill Index
+
+- **Batch 01** — [Migration Constitution与Source Executable Specification](batches/BATCH_01_SOURCE_EXECUTABLE_SPECIFICATION.md) — `b01-source-executable-specification`
+- **Batch 02** — [Differential Execution Harness与Deterministic Environment](batches/BATCH_02_DIFFERENTIAL_EXECUTION_HARNESS.md) — `b02-differential-execution-harness`
+- **Batch 03** — [10-Language Semantic Frontend与Unified Semantic IR](batches/BATCH_03_SEMANTIC_FRONTENDS_UNIFIED_IR.md) — `b03-semantic-frontends-unified-ir`
+- **Batch 04** — [90 Directional Semantic Rule、Mutation、Test与Certification Packs](batches/BATCH_04_DIRECTIONAL_SEMANTIC_RULE_PACKS.md) — `b04-directional-semantic-rule-packs`
+- **Batch 05** — [Framework Adapter与Framework Combination Matrix](batches/BATCH_05_FRAMEWORK_ADAPTER_MATRIX.md) — `b05-framework-adapter-matrix`
+- **Batch 06** — [Dependency、Native、License与Supply-Chain Graph](batches/BATCH_06_DEPENDENCY_SUPPLY_CHAIN_GRAPH.md) — `b06-dependency-supply-chain-graph`
+- **Batch 07** — [Database、Cache、Search、Object Storage与Messaging Migration](batches/BATCH_07_DATA_MESSAGING_MIGRATION.md) — `b07-data-messaging-migration`
+- **Batch 08** — [API、RPC、Serialization、Schema、Gateway与Service Mesh Migration](batches/BATCH_08_API_GATEWAY_MESH_MIGRATION.md) — `b08-api-gateway-mesh-migration`
+- **Batch 09** — [Concurrency、Async、Memory、Lifetime与Native Semantics](batches/BATCH_09_CONCURRENCY_MEMORY_NATIVE_SEMANTICS.md) — `b09-concurrency-memory-native-semantics`
+- **Batch 10** — [Test Generation、Mutation、Fuzz、Property、Concurrency与Fault Platform](batches/BATCH_10_TEST_MUTATION_FUZZ_PLATFORM.md) — `b10-test-mutation-fuzz-platform`
+- **Batch 11** — [Domain Packs与Full-Stack Journey Verification](batches/BATCH_11_DOMAIN_JOURNEY_VERIFICATION.md) — `b11-domain-journey-verification`
+- **Batch 12** — [Shadow、Strangler、Canary、Rollback与E1–E5](batches/BATCH_12_PRODUCTION_MIGRATION_RUNTIME.md) — `b12-production-migration-runtime`
+- **Batch 13** — [Evidence Graph、独立裁判、红队与持续认证](batches/BATCH_13_EVIDENCE_GRAPH_CERTIFICATION.md) — `b13-evidence-graph-certification`
+- **Batch 14** — [Formal Verification与Proof-Carrying Migration](batches/BATCH_14_FORMAL_PROOF_CARRYING_MIGRATION.md) — `b14-formal-proof-carrying-migration`
+- **Batch 15** — [Counterexample-Guided Repair与自演进验证](batches/BATCH_15_COUNTEREXAMPLE_GUIDED_REPAIR.md) — `b15-counterexample-guided-repair`
+- **Batch 16** — [Target Architecture Search与Migration Planning](batches/BATCH_16_ARCHITECTURE_SEARCH_PLANNING.md) — `b16-architecture-search-planning`
+- **Batch 17** — [Migration Execution OS](batches/BATCH_17_MIGRATION_EXECUTION_OS.md) — `b17-migration-execution-os`
+- **Batch 18** — [Complete Project Generation Standard](batches/BATCH_18_COMPLETE_PROJECT_GENERATION.md) — `b18-complete-project-generation`
+- **Batch 19** — [90路径Executable Generator Packs](batches/BATCH_19_EXECUTABLE_GENERATOR_PACKS.md) — `b19-executable-generator-packs`
+- **Batch 20** — [Skill SDK、Runtime、Registry与产品化封装](batches/BATCH_20_SKILL_PRODUCTIZATION.md) — `b20-skill-productization`
+- **Batch 21** — [System Capability Closure Registry](batches/BATCH_21_CAPABILITY_CLOSURE_REGISTRY.md) — `b21-capability-closure-registry`
+- **Batch 22** — [Business-Line Functional Closure Packs](batches/BATCH_22_BUSINESS_LINE_CLOSURE.md) — `b22-business-line-closure`
+- **Batch 23** — [Cross-Business Journey、Saga与逻辑闭环](batches/BATCH_23_CROSS_BUSINESS_JOURNEY_CLOSURE.md) — `b23-cross-business-journey-closure`
+- **Batch 24** — [End-to-End Data Flow、Lineage与Completeness](batches/BATCH_24_DATA_LINEAGE_COMPLETENESS.md) — `b24-data-lineage-completeness`
+- **Batch 25** — [Data Quality、Reconciliation与Accounting Integrity](batches/BATCH_25_DATA_QUALITY_RECONCILIATION.md) — `b25-data-quality-reconciliation`
+- **Batch 26** — [Management Console与Control Plane Functional Closure](batches/BATCH_26_ADMIN_CONTROL_PLANE_CLOSURE.md) — `b26-admin-control-plane-closure`
+- **Batch 27** — [Identity、Authorization、Approval与Audit Closure](batches/BATCH_27_IDENTITY_AUTHORIZATION_AUDIT.md) — `b27-identity-authorization-audit`
+- **Batch 28** — [Functional Usability与Operational Usability](batches/BATCH_28_FUNCTIONAL_OPERATIONAL_USABILITY.md) — `b28-functional-operational-usability`
+- **Batch 29** — [System-Wide Regression与Change Impact Assurance](batches/BATCH_29_SYSTEM_REGRESSION_ASSURANCE.md) — `b29-system-regression-assurance`
+- **Batch 30** — [High Availability、Resilience与Disaster Recovery](batches/BATCH_30_HA_RESILIENCE_DR.md) — `b30-ha-resilience-dr`
+- **Batch 31** — [Concurrency、Idempotency与Transaction Correctness](batches/BATCH_31_CONCURRENCY_TRANSACTION_CORRECTNESS.md) — `b31-concurrency-transaction-correctness`
+- **Batch 32** — [Performance、Capacity、Scalability与Cost Assurance](batches/BATCH_32_PERFORMANCE_CAPACITY_COST.md) — `b32-performance-capacity-cost`
+- **Batch 33** — [Migration Security与Data Protection Assurance](batches/BATCH_33_MIGRATION_SECURITY_DATA_PROTECTION.md) — `b33-migration-security-data-protection`
+- **Batch 34** — [External Integration与Provider Reliability Closure](batches/BATCH_34_PROVIDER_RELIABILITY_CLOSURE.md) — `b34-provider-reliability-closure`
+- **Batch 35** — [Release、Go-Live与Production Acceptance](batches/BATCH_35_GO_LIVE_PRODUCTION_ACCEPTANCE.md) — `b35-go-live-production-acceptance`
+- **Batch 36** — [Production Operations、Support与Service Management](batches/BATCH_36_PRODUCTION_OPERATIONS_SUPPORT.md) — `b36-production-operations-support`
+- **Batch 37** — [Post-Migration Stabilization与Source Retirement Closure](batches/BATCH_37_SOURCE_RETIREMENT_CLOSURE.md) — `b37-source-retirement-closure`
+- **Batch 38** — [Final System Assurance与SA1–SA5 Certification](batches/BATCH_38_FINAL_SYSTEM_ASSURANCE.md) — `b38-final-system-assurance`
+
+- **Master** — `repository-migration-platform-batch1-38-master`

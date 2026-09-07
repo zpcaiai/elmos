@@ -1,0 +1,4 @@
+interface:
+  display_name: "contract-assumption-dependency-and-exclusion-registry"
+  short_description: "Run this Batch 13 commercial capability"
+  default_prompt: "Use $contract-assumption-dependency-and-exclusion-registry to evaluate this Batch 13 commercial capability with evidence."

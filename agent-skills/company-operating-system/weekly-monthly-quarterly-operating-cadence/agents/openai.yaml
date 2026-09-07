@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 474: weekly monthly quarterly operating cadence"
+  short_description: "Operate authoritative Batch 15 capability"
+  default_prompt: "Use $weekly-monthly-quarterly-operating-cadence to evaluate this capability with evidence."

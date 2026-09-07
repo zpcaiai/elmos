@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 42: Agent Migration Factory"
+  short_description: "Run evidence-bound Batch 42 agent migration factory work"
+  default_prompt: "Use $b42-agent-migration-factory to implement and verify this capability with fail-closed evidence."

@@ -1,0 +1,67 @@
+{
+  "BATCH": 43,
+  "TITLE": "产品版本、兼容与LTS生命周期",
+  "PACK_TYPE": "product-lifecycle",
+  "SKILL_COUNT": 20,
+  "SKILL_NAMES": [
+    "b43-product-version-lifecycle-factory",
+    "b43-product-protocol-artifact-versioning",
+    "b43-public-api-compatibility",
+    "b43-event-schema-compatibility",
+    "b43-sdk-compatibility",
+    "b43-runner-protocol-compatibility",
+    "b43-psp-uir-schema-compatibility",
+    "b43-recipe-pack-extension-compatibility",
+    "b43-database-migration-compatibility-policy",
+    "b43-lts-stable-preview-experimental-channels",
+    "b43-support-lifecycle-eol-policy",
+    "b43-deprecation-removal-process",
+    "b43-customer-upgrade-readiness",
+    "b43-automated-upgrade-migration-tooling",
+    "b43-feature-flag-progressive-enablement",
+    "b43-rolling-upgrade-mixed-version",
+    "b43-security-fix-backport",
+    "b43-full-version-compatibility-test-matrix",
+    "b43-changelog-release-note-migration-guide",
+    "b43-product-lifecycle-certification-gate"
+  ],
+  "METRICS": {
+    "versioned_surface_coverage": 1.0,
+    "compatibility_matrix_pass_rate": 1.0,
+    "upgrade_pass_rate": 1.0,
+    "rollback_pass_rate": 1.0,
+    "mixed_version_pass_rate": 1.0,
+    "backport_validation_rate": 1.0,
+    "deprecation_owner_coverage": 1.0,
+    "migration_guide_accuracy_rate": 1.0,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "unannounced_breaking_changes",
+    "unsupported_version_promotions",
+    "irreversible_upgrade_without_approval",
+    "runner_protocol_safety_regressions",
+    "schema_data_loss",
+    "expired_feature_flags",
+    "unpatched_supported_critical_vulnerabilities",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "version-policy",
+    "compatibility-matrix",
+    "release-channel",
+    "deprecation-record",
+    "upgrade-plan",
+    "support-policy"
+  ],
+  "REQUIRED_BATCHES": [
+    29,
+    30,
+    31,
+    32,
+    33,
+    37,
+    38,
+    40
+  ]
+}

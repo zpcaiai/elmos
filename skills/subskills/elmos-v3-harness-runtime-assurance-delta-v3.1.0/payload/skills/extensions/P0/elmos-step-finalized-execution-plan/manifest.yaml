@@ -1,0 +1,63 @@
+apiVersion: elmos.ai/v3delta1
+kind: KernelExtensionSkill
+metadata:
+  id: ELMOS-V3D-002
+  name: elmos-step-finalized-execution-plan
+  version: 3.1.0
+  priority: P0
+  labels:
+    routable: 'false'
+    architecture: eight-kernel
+    commercialTier: production
+spec:
+  summary: 每个模型采样 Step 在模型选择后冻结独立的模型快照、Tool surface、模式、环境、权限与执行能力。
+  ownerKernels:
+  - K7
+  - K4
+  extends:
+  - elmos-harness-runtime-kernel
+  - elmos-agentic-reasoning-kernel
+  dependencies:
+  - name: elmos-harness-runtime-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-agentic-reasoning-kernel
+    version: '>=3.0.0 <4.0.0'
+    kind: base-routable-owner
+  - name: elmos-environment-attachment-authority
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  - name: elmos-harness-transport-version-negotiation
+    version: '>=3.1.0 <4.0.0'
+    kind: kernel-extension
+  components:
+  - CandidatePlanBuilder
+  - ExecutionPlanFinalizer
+  - ActivePlanStore
+  - FallbackIsolationGuard
+  - PlanHashVerifier
+  invariants:
+  - Step = modelSnapshot + environmentSnapshot + authoritySnapshot + finalizedCapabilities + lifecycle + committedEffects
+  - candidate plan namespaces are isolated until atomic activation
+  - one step has one authoritative execution_plan_hash
+  - capability exposure is never inferred from a session-global ToolRegistry
+  upstreamEvidence:
+  - openai/codex#41195
+  - openai/codex#36357
+  runtime:
+    durable: true
+    multiTenant: true
+    idempotencyRequired: true
+    outboxRequired: true
+    environmentAuthorityRequired: true
+    proofObligationAware: true
+    failMode: fail-closed
+  security:
+    llmAuthoritativeOracle: DENY
+    selfCertification: DENY
+    authorityWidening: DENY
+    providerTypesInCore: DENY
+  lifecycle:
+    initial: CANDIDATE
+    activationGate: DELTA_TARGET_CONFORMANCE
+    immutableVersions: true

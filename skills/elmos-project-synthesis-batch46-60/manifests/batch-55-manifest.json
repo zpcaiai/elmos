@@ -1,0 +1,169 @@
+{
+  "batch": 55,
+  "title": "C# / .NET Project Pack",
+  "skills": [
+    {
+      "id": "PG101",
+      "name": "dotnet-aspnet-core-api-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG056",
+        "PG057",
+        "PG058",
+        "PG064",
+        "PG076"
+      ],
+      "path": "skills/batch-55/PG101-dotnet-aspnet-core-api-profile.md",
+      "summary": "certified ASP.NET Core API profile with hosting, contracts, security, observability, tests and deployment"
+    },
+    {
+      "id": "PG102",
+      "name": "dotnet-mvc-blazor-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG050",
+        "PG057",
+        "PG064",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG102-dotnet-mvc-blazor-profile.md",
+      "summary": "MVC, Razor Pages and Blazor profile with UI/session/state/accessibility and server authorization boundaries"
+    },
+    {
+      "id": "PG103",
+      "name": "dotnet-worker-console-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG038",
+        "PG053",
+        "PG057",
+        "PG064"
+      ],
+      "path": "skills/batch-55/PG103-dotnet-worker-console-profile.md",
+      "summary": "Generic Host worker, console, batch and scheduler lifecycle with cancellation, checkpoint and exit semantics"
+    },
+    {
+      "id": "PG104",
+      "name": "dotnet-modular-monolith-profile",
+      "batch": 55,
+      "depends_on": [
+        "PG045",
+        "PG054",
+        "PG064",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG104-dotnet-modular-monolith-profile.md",
+      "summary": "enforceable .NET project/assembly module boundaries, contracts and architecture tests"
+    },
+    {
+      "id": "PG105",
+      "name": "dotnet-domain-application-layer-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG035",
+        "PG037",
+        "PG067",
+        "PG072",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG105-dotnet-domain-application-layer-generator.md",
+      "summary": "framework-independent C# domain/application projects with records, aggregates, handlers, ports and explicit outcomes"
+    },
+    {
+      "id": "PG106",
+      "name": "dotnet-minimal-api-controller-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG039",
+        "PG040",
+        "PG041",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG106-dotnet-minimal-api-controller-generator.md",
+      "summary": "ASP.NET controllers/minimal APIs, DTOs, validation, ProblemDetails, auth and OpenAPI alignment"
+    },
+    {
+      "id": "PG107",
+      "name": "dotnet-ef-core-persistence-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG035",
+        "PG047",
+        "PG101",
+        "PG113"
+      ],
+      "path": "skills/batch-55/PG107-dotnet-ef-core-persistence-generator.md",
+      "summary": "EF Core contexts, mappings, repositories, query filters, concurrency and real database tests"
+    },
+    {
+      "id": "PG108",
+      "name": "dotnet-identity-authz-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG041",
+        "PG050",
+        "PG062",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG108-dotnet-identity-authz-generator.md",
+      "summary": "ASP.NET authentication, claims/tenant mapping, fallback authorization, data protection and security tests"
+    },
+    {
+      "id": "PG109",
+      "name": "dotnet-messaging-background-service-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG048",
+        "PG049",
+        "PG103",
+        "PG117",
+        "PG122"
+      ],
+      "path": "skills/batch-55/PG109-dotnet-messaging-background-service-generator.md",
+      "summary": "message producers/consumers and BackgroundService generation with cancellation, outbox and idempotency"
+    },
+    {
+      "id": "PG110",
+      "name": "dotnet-solution-project-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG058",
+        "PG061",
+        "PG063",
+        "PG101"
+      ],
+      "path": "skills/batch-55/PG110-dotnet-solution-project-generator.md",
+      "summary": "solution/project files, central package management, nullable/analyzer policy, locked restore and publish configuration"
+    },
+    {
+      "id": "PG111",
+      "name": "dotnet-xunit-fixture-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG028",
+        "PG042",
+        "PG104",
+        "PG105",
+        "PG106",
+        "PG107",
+        "PG108",
+        "PG109"
+      ],
+      "path": "skills/batch-55/PG111-dotnet-xunit-fixture-generator.md",
+      "summary": "xUnit fixtures, WebApplicationFactory, Testcontainers and traced unit/integration/architecture/security tests"
+    },
+    {
+      "id": "PG112",
+      "name": "dotnet-container-deployment-generator",
+      "batch": 55,
+      "depends_on": [
+        "PG053",
+        "PG062",
+        "PG070",
+        "PG110"
+      ],
+      "path": "skills/batch-55/PG112-dotnet-container-deployment-generator.md",
+      "summary": "non-root .NET images, publish mode, Compose/Kubernetes, probes and trimming/AOT compatibility policy"
+    }
+  ]
+}

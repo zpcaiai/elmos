@@ -1,0 +1,4 @@
+interface:
+  display_name: "artifact-decision-and-execution-provenance"
+  short_description: "Run this Batch 12 enterprise capability"
+  default_prompt: "Use $artifact-decision-and-execution-provenance to evaluate this enterprise platform capability with evidence."

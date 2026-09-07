@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 40: Independent Security Assessment"
+  short_description: "Run evidence-bound Batch 40 independent security assessment work"
+  default_prompt: "Use $b40-independent-security-assessment to implement and verify this capability with fail-closed evidence."

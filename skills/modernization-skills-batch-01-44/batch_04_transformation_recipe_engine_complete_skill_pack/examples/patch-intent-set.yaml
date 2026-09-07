@@ -1,0 +1,9 @@
+# Example instance for batch-04: patch-intent-set
+intent_id: example
+operation: insert
+payload_digest: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+record_id: example
+reversible: false
+schema_version: 1.0.0
+scope: example
+target_node: example

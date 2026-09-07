@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Build Contract And Behavior Validator"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $dotnet-build-contract-and-behavior-validator to execute this ELMOS Runtime Skill with fail-closed evidence."

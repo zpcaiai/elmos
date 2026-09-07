@@ -1,0 +1,29 @@
+batch: 5
+slug: repository-semantic-recovery
+title: "仓库发现与语义资产恢复"
+phase: "B 源码理解与可信执行底座"
+skills:
+  - name: repository-inventory-scanner
+    description: "盘点源码、模块、资源、配置、脚本、生成代码、数据库对象、测试和部署资产。"
+  - name: build-system-detector
+    description: "识别单仓或多仓构建系统、模块关系、版本约束、插件和构建入口。"
+  - name: dependency-and-plugin-discovery
+    description: "解析直接与传递依赖、插件、许可证、原生扩展和运行时加载依赖。"
+  - name: symbol-and-type-indexer
+    description: "建立跨文件符号、类型、引用、泛型实例化和源码位置索引。"
+  - name: call-graph-builder
+    description: "构建静态与动态融合的调用图，并标记反射、RPC、消息和插件边。"
+  - name: data-flow-graph-builder
+    description: "构建跨函数和跨模块数据流、污点流和关键业务数据传播图。"
+  - name: effect-and-side-effect-discovery
+    description: "发现数据库、缓存、文件、消息、网络、时间、随机数和外部调用副作用。"
+  - name: database-access-discovery
+    description: "识别 ORM、原生 SQL、存储过程、事务、锁、迁移和数据库对象依赖。"
+  - name: external-service-discovery
+    description: "识别 HTTP、RPC、消息、SDK、设备和云服务集成及其契约。"
+  - name: runtime-trace-fusion
+    description: "将生产或测试 Trace 与静态图融合，恢复真实路径、动态类型、调用频率和反射行为。"
+  - name: semantic-slice-extractor
+    description: "围绕入口、业务能力或风险点提取最小可转换和可验证语义切片。"
+  - name: business-rule-extractor
+    description: "从代码、测试、文档、数据约束和 Trace 中提取业务规则、不变量和例外。"

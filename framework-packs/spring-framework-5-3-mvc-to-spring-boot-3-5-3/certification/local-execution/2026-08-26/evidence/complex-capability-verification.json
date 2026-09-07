@@ -1,0 +1,33 @@
+{
+  "blockers" : [ ],
+  "certification_eligible" : false,
+  "certification_status" : "NOT_CERTIFIED",
+  "conditional_activation" : {
+    "status" : "NO_UNRESOLVED_CONDITIONS_OBSERVED",
+    "unresolved_capabilities" : [ ]
+  },
+  "critical_capabilities" : [ ],
+  "customer_evidence" : "NOT_RUN",
+  "evidence_refs" : [ "evidence/source-test-summary.json", "evidence/target-test-summary.json", "evidence/test-parity.json", "elmos/spring-capability-tests.json" ],
+  "independent_verification" : "NOT_RUN",
+  "kind" : "elmos.spring-complex-capability-verification",
+  "manifest" : {
+    "path" : "elmos/spring-capability-tests.json",
+    "status" : "NOT_REQUIRED"
+  },
+  "production_evidence" : "NOT_RUN",
+  "required_domains" : [ ],
+  "required_invariants" : { },
+  "schema_version" : "1.0",
+  "scope" : "LOCAL_ENGINEERING_ONLY",
+  "status" : "NOT_APPLICABLE",
+  "test_identity" : {
+    "exact_match" : false,
+    "source_count" : 6,
+    "source_sha256" : "45b27bdd8720a9dd3cb548adacb5f6e894abac57a271a8114e2c8cae2c437628",
+    "source_skipped" : 0,
+    "target_count" : 9,
+    "target_sha256" : "51217bd3d1d913a424b0a722508230c590275cabc0c50fc1d237b84467689440",
+    "target_skipped" : 0
+  }
+}

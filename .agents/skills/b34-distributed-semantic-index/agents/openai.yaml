@@ -1,0 +1,4 @@
+interface:
+  display_name: "B34 Distributed Semantic Index"
+  short_description: "Run this ELMOS Runtime Skill with evidence controls"
+  default_prompt: "Use $b34-distributed-semantic-index to execute this ELMOS Runtime Skill with fail-closed evidence."

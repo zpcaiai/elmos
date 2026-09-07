@@ -1,0 +1,32 @@
+{
+  "all_bindings_require": [
+    "path",
+    "role",
+    "sha256",
+    "byte_size"
+  ],
+  "base_source_version": "3.0.0",
+  "composite_version": "3.1.0",
+  "delta_source_version": "3.1.0",
+  "kind": "elmos.batch35.exact-repository-binding-contract",
+  "required_roles": [
+    "source",
+    "source-delta",
+    "test",
+    "environment",
+    "delta-acceptance-traceability"
+  ],
+  "required_test_totals": {
+    "failed": 0,
+    "passed": 485,
+    "tests": 485
+  },
+  "role_semantics": {
+    "delta-acceptance-traceability": "repository-owned static 13x8 mapping; never independent execution evidence",
+    "environment": "exact content-addressed local environment record bytes",
+    "source": "exact source ZIP bytes",
+    "source-delta": "exact runtime-assurance delta ZIP bytes",
+    "test": "Batch35 target slot containing exact canonical engine-tree inventory bytes"
+  },
+  "schema_version": 1
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "tenant_id": "tenant-example",
+  "revision_set_id": "rev-example",
+  "artifact_id": "federated-retrieval-route-example",
+  "status": "READY",
+  "content_hash": "2f2f8c3649ff9467800dad9cf08ab6dc9ec83f93f3b0316890a8428d891b11d8",
+  "evidence_refs": [
+    "evidence://example/native-run"
+  ],
+  "nodes": [
+    {
+      "id": "N1"
+    }
+  ],
+  "edges": [],
+  "semantic_gaps": []
+}

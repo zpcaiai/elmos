@@ -1,0 +1,4 @@
+interface:
+  display_name: "B71 Rust Test Property Fuzz Generator"
+  short_description: "Run this ELMOS project Skill with evidence controls"
+  default_prompt: "Use $b71-rust-test-property-fuzz-generator to execute this ELMOS project Skill with fail-closed evidence."

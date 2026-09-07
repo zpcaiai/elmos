@@ -1,0 +1,13 @@
+<view class="shell" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <slot />
+  <view class="source-labels">
+    <text class="source-label">/api/pricing</text>
+    <text class="source-label">/commercialization</text>
+    <text class="source-label">/月，比连续月付节省 ¥258.00</text>
+    <text class="source-label">14 天</text>
+    <text class="source-label">14 天总额</text>
+    <text class="source-label">BILLING GUARDRAILS</text>
+  </view>
+</view>

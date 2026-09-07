@@ -1,0 +1,24 @@
+{
+  "name": "formal-jquery",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "26.0.0"
+  },
+  "packageManager": "npm@11.12.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "jquery": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/jquery": "4.0.1",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "expectations": [
+    {
+      "text": "The target is selected from the versioned policy and compatibility matrix rather than asserted as universally correct.",
+      "passed": true,
+      "evidence": "The target is Java 21 with an organization-approved Spring Boot line; the JAVA, SPRING_BOOT, and JAKARTA decisions all carry matrixVersion=elmos-matrix-2026-07 and explicit rationales."
+    },
+    {
+      "text": "The plan contains a topologically valid nine-step dependency DAG and migration waves.",
+      "passed": true,
+      "evidence": "Steps S01-S09 form a forward-only dependency graph and are scheduled across eight waves, with S05/S06 parallelized in wave 5."
+    },
+    {
+      "text": "The plan contains optimistic, likely, and pessimistic person-day and person-month estimates.",
+      "passed": true,
+      "evidence": "Every step and totalEffort include minimum/likely/maximum estimates; the total is 43/90/180 person-days and 2.2/4.5/9.0 person-months."
+    },
+    {
+      "text": "Unknown build, source, or vulnerability evidence creates blocking approval gates and prevents execution authorization.",
+      "passed": true,
+      "evidence": "The vulnerability evidence gate is blocking, plan status is BLOCKED, blockingReasons includes VULNERABILITY_EVIDENCE_INCOMPLETE, and automation rationale explicitly states that the score does not authorize unattended migration."
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "execution_metrics": {"tool_calls": {"HTTP": 1}, "total_tool_calls": 1, "total_steps": 1, "errors_encountered": 0, "output_chars": 10251, "transcript_chars": 0},
+  "timing": {"executor_duration_seconds": 0.3, "grader_duration_seconds": 0.0, "total_duration_seconds": 0.3},
+  "claims": [
+    {"claim": "The plan has a deterministic nine-step DAG.", "type": "factual", "verified": true, "evidence": "Counted steps S01 through S09 and checked that all dependsOn references point to earlier steps."},
+    {"claim": "The plan does not authorize execution.", "type": "evidence-boundary", "verified": true, "evidence": "status=BLOCKED and all five approval gates are blocking."}
+  ],
+  "user_notes_summary": {"uncertainties": ["The effort estimate remains LOW confidence until approved build and dependency evidence is attached."], "needs_review": ["Organization approvers must clear the blocking gates before execution."], "workarounds": []}
+}

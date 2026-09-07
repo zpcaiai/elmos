@@ -1,0 +1,22 @@
+schema_version: '1.0'
+classes:
+  - name: repository-analysis-small
+    concurrency_units: 1
+    worker_pool: cpu-standard
+    max_parallel_nodes: 4
+    timeout_seconds: 1800
+  - name: repository-conversion-large
+    concurrency_units: 12
+    worker_pool: cpu-high-memory
+    max_parallel_nodes: 16
+    timeout_seconds: 43200
+  - name: model-heavy-generation
+    concurrency_units: 6
+    worker_pool: model-gateway
+    max_parallel_nodes: 8
+    timeout_seconds: 14400
+  - name: gpu-validation
+    concurrency_units: 20
+    worker_pool: gpu
+    max_parallel_nodes: 2
+    timeout_seconds: 21600

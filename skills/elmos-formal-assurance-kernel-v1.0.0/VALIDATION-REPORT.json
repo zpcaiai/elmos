@@ -1,0 +1,136 @@
+{
+  "packageId": "elmos-formal-assurance-kernel-v1.0.0",
+  "generatedAt": "2026-08-27T00:00:00Z",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "required-root-files",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "yaml-parse",
+      "result": "PASS",
+      "detail": "238 plain YAML files; "
+    },
+    {
+      "name": "helm-template-contracts",
+      "result": "PASS",
+      "detail": "6 templates; "
+    },
+    {
+      "name": "json-parse",
+      "result": "PASS",
+      "detail": "37 files; "
+    },
+    {
+      "name": "skill-contracts",
+      "result": "PASS",
+      "detail": "60 skills, 300 files; "
+    },
+    {
+      "name": "skill-dependency-dag",
+      "result": "PASS",
+      "detail": "60 nodes"
+    },
+    {
+      "name": "skill-priority-domain",
+      "result": "PASS",
+      "detail": "priority={'P0': 48, 'P1': 10, 'P2': 2}, domain={'project-generation': 9, 'core': 10, 'platform': 11, 'cross-language': 10, 'sql-conversion': 10, 'spring-modernization': 10}"
+    },
+    {
+      "name": "json-schema-meta-validation",
+      "result": "PASS",
+      "detail": "17 schemas; "
+    },
+    {
+      "name": "contract-examples",
+      "result": "PASS",
+      "detail": "16 examples; "
+    },
+    {
+      "name": "verifier-adapters",
+      "result": "PASS",
+      "detail": "17 adapters; "
+    },
+    {
+      "name": "workflows",
+      "result": "PASS",
+      "detail": "10 workflows; "
+    },
+    {
+      "name": "install-profiles",
+      "result": "PASS",
+      "detail": "7 profiles; "
+    },
+    {
+      "name": "golden-routes",
+      "result": "PASS",
+      "detail": "5 routes; "
+    },
+    {
+      "name": "postgres-migrations",
+      "result": "PASS",
+      "detail": "4 ordered migrations"
+    },
+    {
+      "name": "rego-policy-contracts",
+      "result": "PASS",
+      "detail": "6 modules, 6 tests (OPA execution is external)"
+    },
+    {
+      "name": "package-manifest-counts",
+      "result": "PASS",
+      "detail": "{'skills': 60, 'perSkillFiles': 300, 'jsonSchemas': 17, 'schemaExamples': 16, 'postgresMigrations': 4, 'openApiContracts': 4, 'asyncApiContracts': 1, 'regoModules': 6, 'regoTests': 6, 'verifierAdapters': 17, 'workflows': 10, 'goldenRoutes': 5, 'installProfiles': 7}"
+    },
+    {
+      "name": "generated-catalog",
+      "result": "PASS",
+      "detail": "registry=60, index=60, skills=60"
+    },
+    {
+      "name": "local-markdown-links",
+      "result": "PASS",
+      "detail": "0 broken; "
+    },
+    {
+      "name": "python-compile",
+      "result": "PASS",
+      "detail": "reference kernel and scripts"
+    },
+    {
+      "name": "reference-kernel-tests",
+      "result": "PASS",
+      "detail": "40 tests; "
+    },
+    {
+      "name": "reference-kernel-demo",
+      "result": "PASS",
+      "detail": "{   \"proved\": \"ALLOW\",   \"boundedForA2\": \"DENY\",   \"honesty\": \"bounded result remains bounded and is denied for an A2 obligation\" }"
+    },
+    {
+      "name": "installer-roundtrip",
+      "result": "PASS",
+      "detail": "installed 212 files; manifest: /tmp/tmp84srht1_/elmos/.elmos/formal-assurance-install-manifest.json\n removed 212, restored 0, preserved modified 0"
+    }
+  ],
+  "warnings": [
+    "18 release-time digest placeholders remain by design"
+  ],
+  "errors": [],
+  "actualCounts": {
+    "skills": 60,
+    "perSkillFiles": 300,
+    "jsonSchemas": 17,
+    "schemaExamples": 16,
+    "postgresMigrations": 4,
+    "openApiContracts": 4,
+    "asyncApiContracts": 1,
+    "regoModules": 6,
+    "regoTests": 6,
+    "verifierAdapters": 17,
+    "workflows": 10,
+    "goldenRoutes": 5,
+    "installProfiles": 7
+  }
+}

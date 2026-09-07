@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Repository Orchestrator"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-repository-orchestrator to perform its bounded repository workflow with provenance and fail-closed evidence."

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/model-route-decision/1.0",
+  "title": "Model Route Decision",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "task_profile",
+    "policy_revision",
+    "candidates",
+    "selected"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string"
+    },
+    "task_profile": {
+      "type": "object"
+    },
+    "policy_revision": {
+      "type": "string"
+    },
+    "catalog_revision": {
+      "type": "string"
+    },
+    "hard_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "model",
+          "provider",
+          "eligible",
+          "reasons"
+        ],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "score": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "selected": {
+      "type": "object",
+      "required": [
+        "model",
+        "provider"
+      ]
+    },
+    "fallbacks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "forecast": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

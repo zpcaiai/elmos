@@ -1,0 +1,4 @@
+interface:
+  display_name: "Batch 25 002"
+  short_description: "Run Batch 25 runtime contract safely"
+  default_prompt: "Use $service-cmdb-configuration-asset-and-ownership-discovery to apply its fail-closed ELMOS runtime contract."

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "pack_key": "build-cache-tenant-isolation-v1-2",
+  "metrics": {
+    "commands_executed": 1,
+    "commands_passed": 1,
+    "structure_validation": "PASS",
+    "development_status": "NOT_RUN",
+    "negative_status": "NOT_RUN",
+    "holdout_status": "NOT_RUN",
+    "representative_workload_status": "NOT_RUN",
+    "independent_review_status": "NOT_RUN"
+  },
+  "zero_tolerance": {
+    "cross_tenant_reads": "NOT_RUN",
+    "cross_tenant_writes": "NOT_RUN",
+    "denied_action_side_effects": "NOT_RUN",
+    "untrusted_evidence_authorizations": "NOT_RUN",
+    "surviving_critical_mutants": "NOT_RUN"
+  },
+  "evidence_refs": [
+    "artifacts/source-artifact.json",
+    "artifacts/target-artifact.json",
+    "environment/local-validation-environment.json",
+    "security/principal-resource-action-matrix.json",
+    "coverage/skill-wiring-audit.json",
+    "certification/local-test-manifest.json",
+    "certification/raw/pack-structure.txt"
+  ],
+  "notes": [
+    "Source and target manifests are exact byte-bound local artifacts.",
+    "Static call-chain audit is engineering analysis, not runtime security evidence.",
+    "Only the narrow Batch 35 pack structure validator was executed.",
+    "No runtime test, holdout, representative, mutation, external, or production result is claimed."
+  ]
+}

@@ -1,0 +1,10 @@
+gates:
+  - {name: build, required: true, result: PASS}
+  - {name: source_tests, required: true, result: PASS}
+  - {name: critical_invariants, required: true, result: PASS}
+  - {name: unexplained_differences_zero, required: true, result: PASS}
+  - {name: concurrency_and_fault, required: true, result: PASS}
+  - {name: proof_or_approved_runtime_evidence, required: true, result: PASS}
+decision: CANARY_ONLY
+unresolved: []
+approvals: []

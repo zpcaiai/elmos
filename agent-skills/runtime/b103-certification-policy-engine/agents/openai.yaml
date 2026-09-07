@@ -1,0 +1,4 @@
+interface:
+  display_name: "B103 Certification Policy Engine"
+  short_description: "Run this ELMOS product-closure Skill safely"
+  default_prompt: "Use $b103-certification-policy-engine to execute this ELMOS product-closure Skill with fail-closed evidence."

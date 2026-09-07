@@ -1,0 +1,23 @@
+[
+  {
+    "args": [
+      true,
+      true
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      true,
+      false
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      false,
+      false
+    ],
+    "expected": false
+  }
+]

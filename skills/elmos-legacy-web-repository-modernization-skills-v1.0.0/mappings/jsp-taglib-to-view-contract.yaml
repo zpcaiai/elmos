@@ -1,0 +1,96 @@
+mappingVersion: 1.0.0
+defaultStrategy: preserve
+artifacts:
+- source: JSP page
+  targetPreserve: JSP under WAR
+  targetModernize:
+  - Thymeleaf
+  - React
+  - Vue
+  contract:
+  - path
+  - model/request/session reads
+  - content type
+  - encoding
+- source: static include directive
+  targetPreserve: same include
+  contract:
+  - compile-time composition
+- source: jsp:include
+  targetPreserve: runtime include
+  contract:
+  - request attributes
+  - response composition
+  - dispatcher filters
+- source: jsp:forward
+  targetPreserve: forward
+  contract:
+  - request attributes
+  - response commit
+- source: JSTL c:if/c:forEach
+  targetModernize: template conditional/loop
+  contract:
+  - EL resolution
+  - null/truthiness
+  - iteration order
+- source: fmt/message
+  targetModernize: MessageSource/template i18n
+  contract:
+  - bundle
+  - locale fallback
+  - arguments
+- source: Struts1 html/form tags
+  targetPreserve: legacy taglib initially
+  targetModernize: HTML form + Spring binding
+  contract:
+  - field names
+  - errors
+  - URL/session encoding
+- source: Struts1 bean/logic tags
+  targetPreserve: legacy taglib initially
+  targetModernize: JSTL/template
+  contract:
+  - scope/property lookup
+- source: Struts2 tags
+  targetPreserve: compatibility view layer
+  targetModernize: explicit model/template
+  contract:
+  - ValueStack/OGNL
+  - URL/action mapping
+  - validation errors
+- source: custom TagSupport/BodyTagSupport/SimpleTag
+  targetPreserve: tag library
+  targetModernize: component/helper/service
+  contract:
+  - lifecycle
+  - body
+  - scope
+  - side effects
+- source: TLD function
+  targetModernize: template function/static helper
+  contract:
+  - signature
+  - null/error behavior
+- source: Tiles definition
+  targetPreserve: Tiles-compatible composition
+  targetModernize: layout/template component
+  contract:
+  - inheritance
+  - put-attribute
+  - dynamic values
+- source: scriptlet
+  targetPreserve: temporary
+  targetModernize: controller/service/view helper
+  contract:
+  - state/effects/output order
+- source: page/request/session/applicationScope
+  targetModernize: explicit model/scoped state
+  contract:
+  - lookup precedence
+  - mutation
+- source: errorPage/isErrorPage
+  targetModernize: error view/controller
+  contract:
+  - exception/status/request attributes
+activeViewRule: Any view/tag with state mutation or external side effect is a semantic component and must be migrated
+  with explicit tests before template replacement.

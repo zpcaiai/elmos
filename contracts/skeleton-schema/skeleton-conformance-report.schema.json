@@ -1,0 +1,4 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://elmos.dev/schemas/skeleton/v1/conformance.schema.json","title":"Skeleton Conformance","type":"object","required":["batch","status","targetRepositoryId","modules","coverage","buildBaseline","openObligations","blockingErrors","eligibleForBatch5"],
+  "properties":{"batch":{"const":4},"status":{"enum":["passed","passed_with_restrictions","blocked","failed"]},"targetRepositoryId":{"type":"string"},"modules":{"type":"array"},"coverage":{"type":"object"},"buildBaseline":{"type":"object"},"openObligations":{"type":"array"},"blockingErrors":{"type":"array"},"eligibleForBatch5":{"type":"boolean"}},"additionalProperties":false
+}
