@@ -4734,11 +4734,31 @@ def _php_tree_identity() -> dict[str, object]:
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
     if identity != expected:
+        try:
+            raw_receipt = json.loads(
+                (_EXPECTED_PHP_ROOT / "INSTALL_RECEIPT.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            normalized_receipt = json.loads(
+                _normalized_php_install_receipt(
+                    raw_receipt,
+                    "EXACT_TOOLCHAIN_PHP_INSTALL_RECEIPT_INVALID",
+                )
+            )
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise RouteError("EXACT_TOOLCHAIN_PHP_INSTALL_RECEIPT_INVALID") from error
         raise RouteError(
             "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected="
             + json.dumps(expected, sort_keys=True, separators=(",", ":"))
             + ":observed="
             + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+            + ":normalized_install_receipt="
+            + json.dumps(
+                normalized_receipt,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
         )
     return {
         **identity,

@@ -704,6 +704,7 @@ preflight_exact_route_toolchain() {
   ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
   ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
   ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX="${HOMEBREW_PREFIX}" \
+  ELMOS_HOMEBREW_ROUTE_PROFILE_ID="${HOMEBREW_ROUTE_PROFILE_ID}" \
   PYTHONDONTWRITEBYTECODE=1 \
     python3 -I -B - "${REPOSITORY_ROOT}" "${language}" <<'PY'
 from pathlib import Path
@@ -711,7 +712,7 @@ import sys
 
 repository = Path(sys.argv[1]).resolve(strict=True)
 language = sys.argv[2]
-if language not in {"javascript", "typescript"}:
+if language not in {"javascript", "typescript", "php"}:
     raise SystemExit(f"unsupported exact toolchain preflight: {language}")
 sys.path.insert(0, str(repository / "engines" / "polyglot-route-engine" / "src"))
 
@@ -1029,6 +1030,10 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # tree, executed the exact runtimes, and observed stable pre/post identities.
   preflight_exact_route_toolchain javascript
   preflight_exact_route_toolchain typescript
+  # Validate PHP before the hour-long route matrix. A fresh Homebrew install
+  # can expose receipt-schema drift even when the bottle payload is unchanged;
+  # the exact selector reports the normalized receipt once and fails closed.
+  preflight_exact_route_toolchain php
 fi
 
 {
