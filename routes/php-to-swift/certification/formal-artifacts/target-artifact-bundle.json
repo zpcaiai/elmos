@@ -1,0 +1,25 @@
+{
+  "route_key": "php-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 168,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:efb2bf71857170fa1b6762c4c4130637807da180e8eda321c3950eb9dc18feaf"
+    },
+    {
+      "bytes": 207,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:2fd0cedb647e38b2effc3340991665293b7a7b89c250c38563f30d4e97644349"
+    },
+    {
+      "bytes": 157,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:1cdd7b4b5f6cf9980b74080741d8d8789ee7e32447e194482c65a2d8b3455b90"
+    }
+  ]
+}
