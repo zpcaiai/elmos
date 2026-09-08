@@ -11,9 +11,9 @@
     "certification/artifacts/module/artifact-manifest.json"
   ],
   "formal_equivalence": {
-    "bytes": 298731,
+    "bytes": 298733,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:211e8a8866d4d4aa0c9fdfec1f668db8ac76ca70de86811ce9d53d131bfb8b0e"
+    "sha256": "sha256:93c7a855a5da551051c41149b2277c35004457d4279e7ab0907926e75bbf0b2a"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
@@ -21,7 +21,7 @@
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T06:14:11.309299+00:00",
+  "issued_at": "2026-09-08T13:08:51.109214+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -33,7 +33,7 @@
   "module_equivalence": {
     "bytes": 212624,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:96b359d56866b0db41373a9b17167cdcc030ad0be86d351e8308058c8d9d1c96"
+    "sha256": "sha256:3c4fdfbb89ef5e3c35f396a2b41a3182015fad922f51bcd869472175c0587abf"
   },
   "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "swift-to-cpp",
