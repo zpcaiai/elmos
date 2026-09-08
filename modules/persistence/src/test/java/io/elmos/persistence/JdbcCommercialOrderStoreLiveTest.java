@@ -2,6 +2,7 @@ package io.elmos.persistence;
 
 import io.elmos.commercial.CommercialOrderPort;
 import io.elmos.commercial.SelfServiceBillingPort;
+import io.elmos.commercial.WalletPort;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -219,6 +221,45 @@ class JdbcCommercialOrderStoreLiveTest {
                 entitlementHold.reservationId()));
         assertEquals("AVAILABLE", inTenant(organization, "select status "
                 + "from project_generation_entitlements where source_order_id = ?", oneTimeOrder));
+    }
+
+    @Test
+    void recoversProviderUnknownOrdersWithoutReopeningLateOrTerminalOrders() {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-recovery-" + suffix;
+        insertOrganization(organization);
+
+        String commercialOrder = createOrder(
+                organization, "actor-a", "recovery-order-" + suffix,
+                "elmos-credit-500", null, "recovery-order-idem-" + suffix);
+        assertEquals("RECONCILIATION_REQUIRED", orders.markOrderPreparationFailed(
+                organization, "actor-a", commercialOrder, true,
+                "CHECKOUT_PREPARE_OUTCOME_UNKNOWN"));
+        fulfill(organization, commercialOrder, "recovery-provider-" + suffix);
+        var recovered = orders.findOrder(organization, commercialOrder).orElseThrow();
+        assertEquals("FULFILLED", recovered.status());
+        assertNull(recovered.failureCode());
+
+        WalletPort wallet = new JdbcWalletStore(
+                admin, new TransactionTemplate(new DataSourceTransactionManager(adminDataSource)));
+        String topupOrder = "recovery-topup-" + suffix;
+        assertEquals(topupOrder, wallet.createTopupOrder(
+                topupOrder, organization, "actor-a", new BigDecimal("1000"),
+                "ALIPAY", topupOrder, "recovery-topup-idem-" + suffix, 1800));
+        assertEquals("PENDING_PAYMENT", wallet.markTopupAwaitingPayment(
+                organization, topupOrder, "actor-a"));
+        assertEquals("RECONCILIATION_REQUIRED", wallet.markTopupPreparationFailed(
+                organization, topupOrder, "actor-a", true,
+                "CHECKOUT_PREPARE_OUTCOME_UNKNOWN"));
+        var directory = wallet.findTopupByOutTradeNo(topupOrder).orElseThrow();
+        assertEquals("ALIPAY", directory.provider());
+        assertEquals("RECONCILIATION_REQUIRED", directory.status());
+        wallet.creditTopup(organization, topupOrder, "recovery-topup-provider-" + suffix,
+                "payment-callback");
+        assertEquals("CREDITED", wallet.findTopupOrder(
+                organization, topupOrder).orElseThrow().status());
+        assertThrows(WalletPort.WalletStateException.class, () -> wallet.markTopupAwaitingPayment(
+                organization, "missing-topup-" + suffix, "actor-a"));
     }
 
     @Test
