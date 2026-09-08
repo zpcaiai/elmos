@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-dm8",
+  "capabilities": [
+    {
+      "id": "schema",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "types",
+      "domain": "types",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "constraints-indexes-partitions",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "generators",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "views",
+      "domain": "schema",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "routines-triggers",
+      "domain": "routines",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "queries",
+      "domain": "queries",
+      "status": "experimental",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "One bounded parameterized PostgreSQL 17.5 SELECT is parsed, emitted through the exact DM8 Oracle-compatible adapter, and reparsed locally; neither database engine nor result equivalence was executed.",
+      "evidence_refs": [
+        "certification/local-postgresql-dm8-query-evidence.json"
+      ],
+      "strategy": "typed-canonical-ir-to-exact-dm8-adapter",
+      "restrictions": [
+        "LOCAL_EMITTED_ONLY",
+        "SOURCE_EXECUTION_NOT_RUN",
+        "TARGET_EXECUTION_NOT_RUN",
+        "RESULT_EQUIVALENCE_NOT_RUN"
+      ]
+    },
+    {
+      "id": "transactions-locking",
+      "domain": "transactions",
+      "status": "blocked",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Exact PostgreSQL and DM8 isolation, locking, deadlock, savepoint, and failure-boundary workloads require authorized real engines.",
+      "evidence_refs": [],
+      "strategy": "real-engine-differential-workload",
+      "restrictions": [
+        "NOT_RUN_EXTERNAL_ENGINES_REQUIRED"
+      ]
+    },
+    {
+      "id": "orm-contract",
+      "domain": "application",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "etl-elt-discovery",
+      "domain": "pipelines",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "data-pipelines",
+      "domain": "pipelines",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "data-quality",
+      "domain": "data",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "contracts-lineage",
+      "domain": "governance",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "warehouse-lakehouse",
+      "domain": "analytics",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "backfill-cdc",
+      "domain": "migration",
+      "status": "detected-only",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Not yet implemented or certified.",
+      "evidence_refs": [],
+      "strategy": "discover",
+      "restrictions": []
+    },
+    {
+      "id": "reconciliation-cutover",
+      "domain": "migration",
+      "status": "blocked",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "No authorized DM8 target, migrated dataset, CDC position, reconciliation result, cutover approval, or rollback drill exists.",
+      "evidence_refs": [],
+      "strategy": "detail-level-reconciliation-before-cutover",
+      "restrictions": [
+        "NOT_RUN_NO_AUTHORIZED_TARGET",
+        "PRODUCTION_WRITES_PROHIBITED"
+      ]
+    },
+    {
+      "id": "performance",
+      "domain": "performance",
+      "status": "blocked",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "The independent representative p95 <= 75 ms DM8 workload has not run on the exact target tuple.",
+      "evidence_refs": [],
+      "strategy": "independent-holdout-plan-and-latency-comparison",
+      "restrictions": [
+        "NOT_RUN_EXTERNAL_DM8_REQUIRED"
+      ]
+    },
+    {
+      "id": "security-grants",
+      "domain": "security",
+      "status": "blocked",
+      "owner": "ELMOS ChinaDB Adapter Maintainers",
+      "reason": "Roles, grants, row filtering, audit, encryption, and least-privilege equivalence require an authorized target and independent review.",
+      "evidence_refs": [],
+      "strategy": "exact-security-contract-replay",
+      "restrictions": [
+        "NOT_RUN_EXTERNAL_DM8_REQUIRED",
+        "INDEPENDENT_REVIEW_NOT_RUN"
+      ]
+    }
+  ]
+}

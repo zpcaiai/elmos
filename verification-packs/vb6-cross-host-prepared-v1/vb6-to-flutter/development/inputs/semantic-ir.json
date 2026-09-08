@@ -1,0 +1,121 @@
+{
+  "analyzer": "elmos-vb6-bounded-parser",
+  "analyzer_version": "1.0.0;dialect=visual-basic-6.0;profile=typed-pure-module-v1",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 109,
+                "file": "pricing.bas",
+                "start_byte": 101
+              },
+              "value": "subtotal"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 114,
+                "file": "pricing.bas",
+                "start_byte": 112
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 114,
+              "file": "pricing.bas",
+              "start_byte": 101
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 175,
+            "file": "pricing.bas",
+            "start_byte": 94
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 142,
+                  "file": "pricing.bas",
+                  "start_byte": 140
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 142,
+                "file": "pricing.bas",
+                "start_byte": 120
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 200,
+                "file": "pricing.bas",
+                "start_byte": 192
+              },
+              "value": "subtotal"
+            },
+            "operator": "+",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 206,
+                "file": "pricing.bas",
+                "start_byte": 203
+              },
+              "value": "tax"
+            },
+            "source_span": {
+              "end_byte": 206,
+              "file": "pricing.bas",
+              "start_byte": 192
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 206,
+            "file": "pricing.bas",
+            "start_byte": 176
+          }
+        }
+      ],
+      "name": "calculate",
+      "parameters": [
+        {
+          "name": "subtotal",
+          "type": "integer"
+        },
+        {
+          "name": "tax",
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 219,
+        "file": "pricing.bas",
+        "start_byte": 17
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "pricing.bas",
+  "source_language": "vb6"
+}

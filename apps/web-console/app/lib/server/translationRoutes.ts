@@ -50,12 +50,8 @@ const ACTIVE_TRANSLATION_LANGUAGE_IDS = [
   "kotlin",
   "react",
   "flutter",
+  "vb6",
 ] as const satisfies readonly TranslationLanguageId[];
-const RESEARCH_ONLY_LANGUAGE_IDS = new Set<TranslationLanguageId>([
-  "kotlin",
-  "react",
-  "flutter",
-]);
 const ACTIVE_ROUTE_COUNT = ACTIVE_TRANSLATION_LANGUAGE_IDS.length
   * (ACTIVE_TRANSLATION_LANGUAGE_IDS.length - 1);
 const LOCAL_EXECUTION_STATUSES = ["PASSED_LOCAL", "NOT_RUN", "FAILED"] as const;
@@ -145,6 +141,14 @@ const V3_RESEARCH_CAPABILITY_KEYS = [
 ] as const;
 const V3_ROUTE_SET = "kotlin-react-flutter-completion-66";
 const V3_LOCAL_EXECUTION_REASON = "V3_ROUTE_CAMPAIGN_NOT_RUN";
+const VB6_ROUTE_SET = "vb6-completion-26";
+const VB6_LOCAL_EXECUTION_REASON = "VB6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN";
+const VB6_RESEARCH_DECLARED_SCOPE = "VB6_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN";
+const VB6_RESEARCH_EVIDENCE_NOTES = [
+  "The typed pure VB6 standard-module analyzer and emitter are bounded local engineering handlers.",
+  "VB6 forms, class modules, COM/ActiveX, ADO, error handling, ByRef and implicit Variant remain unsupported.",
+  "Visual Basic 6.0 SP6 compiler/runtime, repository, independent and external evidence remain NOT_RUN.",
+] as const;
 
 type LocalExecutionStatus = (typeof LOCAL_EXECUTION_STATUSES)[number];
 type ModuleExecutionStatus = (typeof MODULE_EXECUTION_STATUSES)[number];
@@ -823,7 +827,7 @@ function assertLanguagesMatchCatalog(root: string, inventory: RouteInventory): v
   ) {
     fail(
       "TRANSLATION_ACTIVE_LANGUAGE_SET_DRIFT",
-      "Web 类型目录与 inventory.languages 必须精确绑定 13 个活动语言标识。",
+      "Web 类型目录与 inventory.languages 必须精确绑定 14 个活动语言标识。",
     );
   }
   for (const id of catalog) {
@@ -846,7 +850,7 @@ function assertLanguagesMatchCatalog(root: string, inventory: RouteInventory): v
   if (!sameExactStringSet(exposed, ACTIVE_TRANSLATION_LANGUAGE_IDS)) {
     fail(
       "TRANSLATION_CONSOLE_LANGUAGE_SET_DRIFT",
-      "console_exposed_languages 必须精确暴露 13 个活动语言标识。",
+      "console_exposed_languages 必须精确暴露 14 个活动语言标识。",
     );
   }
   for (const language of translationLanguages) {
@@ -917,8 +921,16 @@ function assertVersionMetadataMatchesInventory(
 }
 
 function isV3ResearchRoute(route: InventoryRoute): boolean {
-  return RESEARCH_ONLY_LANGUAGE_IDS.has(route.source as TranslationLanguageId)
-    || RESEARCH_ONLY_LANGUAGE_IDS.has(route.target as TranslationLanguageId);
+  return ["kotlin", "react", "flutter"].includes(route.source)
+    || ["kotlin", "react", "flutter"].includes(route.target);
+}
+
+function isVb6ResearchRoute(route: InventoryRoute): boolean {
+  return route.source === "vb6" || route.target === "vb6";
+}
+
+function isPreparationOnlyResearchRoute(route: InventoryRoute): boolean {
+  return isV3ResearchRoute(route) || isVb6ResearchRoute(route);
 }
 
 function assertExactRoutePack(
@@ -977,7 +989,7 @@ function assertExactRoutePack(
       `路线 ${route.route_key} 的 Route Pack 未绑定同一方向和状态。`,
     );
   }
-  const researchOnly = isV3ResearchRoute(route);
+  const researchOnly = isPreparationOnlyResearchRoute(route);
   if (researchOnly && status !== "research") {
     fail(
       "TRANSLATION_ROUTE_RESEARCH_BOUNDARY_VIOLATED",
@@ -996,8 +1008,8 @@ function assertExactRoutePack(
     if (
       !isRecord(profiles)
       || !hasExactKeys(profiles, ["semantic_profile", "target_profile"])
-      || profiles.semantic_profile !== ""
-      || profiles.target_profile !== ""
+      || profiles.semantic_profile !== (isVb6ResearchRoute(route) ? "typed-pure-module-v1" : "")
+      || profiles.target_profile !== (isVb6ResearchRoute(route) ? "vb6-long32-pure-module-v1" : "")
       || !Array.isArray(value.framework_profiles)
       || value.framework_profiles.length !== 0
       || !isRecord(paths)
@@ -1093,7 +1105,9 @@ function assertExactV3ResearchCertification(
     || value.route_version !== V3_RESEARCH_ROUTE_VERSION
     || value.status !== "research"
     || value.certification_decision !== "NOT_CERTIFIED"
-    || value.declared_scope !== V3_RESEARCH_DECLARED_SCOPE
+    || value.declared_scope !== (
+      isVb6ResearchRoute(route) ? VB6_RESEARCH_DECLARED_SCOPE : V3_RESEARCH_DECLARED_SCOPE
+    )
     || value.issued_at !== V3_RESEARCH_ISSUED_AT
     || value.next_review_at !== V3_RESEARCH_NEXT_REVIEW_AT
     || evidenceRefs.length !== 0
@@ -1150,13 +1164,18 @@ function assertExactV3ResearchSupportMatrix(
   const seen = new Set<string>();
   value.capabilities.forEach((capability, index) => {
     const expected = V3_RESEARCH_SUPPORT_CAPABILITIES[index];
+    const vb6 = isVb6ResearchRoute(route);
+    const expectedStatus = vb6 && ["type-system", "numeric"].includes(expected[0])
+      ? "experimental"
+      : expected[1];
     if (
       !isRecord(capability)
       || !hasExactKeys(capability, V3_RESEARCH_CAPABILITY_KEYS)
       || capability.id !== expected[0]
-      || capability.status !== expected[1]
+      || capability.status !== expectedStatus
       || capability.strategy !== expected[2]
-      || capability.reason !== expected[3]
+      || (!vb6 && capability.reason !== expected[3])
+      || (vb6 && (typeof capability.reason !== "string" || capability.reason.length === 0))
       || !Array.isArray(capability.evidence_refs)
       || capability.evidence_refs.length !== 0
       || seen.has(expected[0])
@@ -1227,7 +1246,8 @@ function assertExactV3ResearchEvidence(
     || value.critical_behavior_regressions !== null
     || value.test_integrity_violations !== null
     || notes.length !== V3_RESEARCH_EVIDENCE_NOTES.length
-    || V3_RESEARCH_EVIDENCE_NOTES.some((note, index) => notes[index] !== note)
+    || (isVb6ResearchRoute(route) ? VB6_RESEARCH_EVIDENCE_NOTES : V3_RESEARCH_EVIDENCE_NOTES)
+      .some((note, index) => notes[index] !== note)
   ) {
     fail(
       "TRANSLATION_ROUTE_V3_EVIDENCE_CONTRACT_INVALID",
@@ -1370,7 +1390,7 @@ function assertRoutePacksExist(root: string, inventory: RouteInventory): void {
         label: `路线 ${route.route_key} 的 certification.json`,
         maxBytes: MAX_ROUTE_CERTIFICATION_BYTES,
       });
-      if (isV3ResearchRoute(route)) {
+      if (isPreparationOnlyResearchRoute(route)) {
         supportRaw = readStableRegularFile(routeRoot, support, {
           unsafeCode: "TRANSLATION_ROUTE_V3_SUPPORT_FILE_UNSAFE",
           changedCode: "TRANSLATION_ROUTE_V3_SUPPORT_FILE_CHANGED",
@@ -1392,7 +1412,7 @@ function assertRoutePacksExist(root: string, inventory: RouteInventory): void {
       );
     }
     assertExactRoutePack(root, packRaw, route, inventory);
-    if (isV3ResearchRoute(route)) {
+    if (isPreparationOnlyResearchRoute(route)) {
       if (supportRaw === null || evidenceRaw === null) {
         fail(
           "TRANSLATION_ROUTE_V3_DOCUMENT_SET_INCOMPLETE",
@@ -1423,7 +1443,7 @@ function assertCountsAreConsistent(inventory: RouteInventory): void {
   if (inventory.route_count !== ACTIVE_ROUTE_COUNT) {
     fail(
       "TRANSLATION_ROUTE_MATRIX_SIZE_INVALID",
-      `活动路线必须精确覆盖 13×12=${ACTIVE_ROUTE_COUNT} 个方向。`,
+      `活动路线必须精确覆盖 14×13=${ACTIVE_ROUTE_COUNT} 个方向。`,
     );
   }
   if (inventory.route_count !== inventory.routes.length) {
@@ -1487,13 +1507,15 @@ function assertCountsAreConsistent(inventory: RouteInventory): void {
         `路线 ${route.route_key} 的语言版本与 languages 映射不一致。`,
       );
     }
-    const researchOnly = isV3ResearchRoute(route);
+    const researchOnly = isPreparationOnlyResearchRoute(route);
     if (
       researchOnly
       && (
         route.status !== "research"
-        || route.route_set !== V3_ROUTE_SET
-        || route.local_execution_reason !== V3_LOCAL_EXECUTION_REASON
+        || route.route_set !== (isVb6ResearchRoute(route) ? VB6_ROUTE_SET : V3_ROUTE_SET)
+        || route.local_execution_reason !== (
+          isVb6ResearchRoute(route) ? VB6_LOCAL_EXECUTION_REASON : V3_LOCAL_EXECUTION_REASON
+        )
         || route.local_execution_status !== "NOT_RUN"
         || route.module_execution_status !== "NOT_APPLICABLE"
         || route.repository_execution_status !== "NOT_RUN"
@@ -1548,7 +1570,7 @@ function assertCountsAreConsistent(inventory: RouteInventory): void {
   if (seen.size !== expected.size || [...expected].some((routeKey) => !seen.has(routeKey))) {
     fail(
       "TRANSLATION_ROUTE_MATRIX_INCOMPLETE",
-      "routes 必须精确包含 13 个活动语言的全部 156 个有向排列。",
+      "routes 必须精确包含 14 个活动语言的全部 182 个有向排列。",
     );
   }
 }
@@ -1683,7 +1705,7 @@ function readTranslationCapabilityForAudience(
     independentVerificationEvidence: inventory.independent_verification_evidence,
     externalExecutionEvidence: inventory.external_certification_evidence,
     // Individual route certification is directional and cannot certify the
-    // complete 13-language product surface. Schema 1.4 has no independently
+    // complete 14-language product surface. Schema 1.4 has no independently
     // verified full-matrix gate receipt, so the aggregate must remain closed.
     certificationStatus: "NOT_CERTIFIED",
     note: `${inventory.route_count} 条有向路线的状态直接来自 ${ROUTE_INVENTORY_RELATIVE_PATH} 与同级 Route Pack：`
@@ -1693,7 +1715,7 @@ function readTranslationCapabilityForAudience(
       + "片段级本地通过不会放行整库任务；整库受控 Runner 只接受 repositoryExecutionStatus=PASSED 的路线，"
       + "并以只读源码和独立行为用例逐单元执行；任何跳过或失败保持 PARTIAL，"
       + "本地归档不会改变独立验证与外部认证状态；单条 certified 路线仅计数，"
-      + "没有独立的完整 156 路线矩阵门禁时，全局状态始终为 NOT_CERTIFIED。",
+      + "没有独立的完整 182 路线矩阵门禁时，全局状态始终为 NOT_CERTIFIED。",
   };
 }
 
