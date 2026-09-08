@@ -3056,6 +3056,10 @@ if (formSubmissionAttemptObserved([fakeSubmitElement], scenarioId, true)) {{
     def test_playwright_helper_and_repository_dependencies_are_digest_bound(
         self,
     ) -> None:
+        self.assertEqual(
+            runner.sha256_bytes(runner.WEB_CONSOLE_PACKAGE_PATH.read_bytes()),
+            runner.LOCKED_WEB_CONSOLE_PACKAGE_SHA256,
+        )
         closure = runner.playwright_implementation_closure()
         self.assertEqual(
             closure["identities"]["workspace_lock"]["sha256"],
