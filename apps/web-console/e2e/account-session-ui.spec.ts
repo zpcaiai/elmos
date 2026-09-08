@@ -49,7 +49,12 @@ test("anonymous user login entries perform a document navigation", async ({ page
     exact: true,
   });
   await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  await sidebarAdminLogin.click();
+  // Next's development indicator occupies the lower-left corner where this
+  // sidebar link is rendered. Activate the real link through its keyboard
+  // contract so development-only chrome cannot intercept the pointer event.
+  await sidebarAdminLogin.focus();
+  await expect(sidebarAdminLogin).toBeFocused();
+  await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
