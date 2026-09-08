@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "protocolVersion", "kind", "idempotencyKey", "scope", "scopeDigest", "targetId", "adapterId", "qualificationInputDigest", "exactTuple", "exactTupleDigest", "disposableEnvironment", "environmentDigest", "vendorTools", "vendorToolDigests", "allowedOperations", "inputArtifactDigests", "authorizationEnvelope", "authorizationEnvelopeDigest", "safety", "externalExecution", "certification", "requestDigest"],
+  "required": ["schemaVersion", "protocolVersion", "kind", "idempotencyKey", "scope", "scopeDigest", "targetId", "adapterId", "qualificationInputDigest", "exactTuple", "exactTupleDigest", "disposableEnvironment", "environmentDigest", "vendorTools", "vendorToolDigests", "allowedOperations", "inputArtifactDigests", "authorizationEnvelope", "authorizationEnvelopeDigest", "performanceContract", "safety", "externalExecution", "certification", "requestDigest"],
   "properties": {
     "schemaVersion": {"const": "1.0"},
-    "protocolVersion": {"const": "1.1.0"},
+    "protocolVersion": {"const": "1.2.0"},
     "kind": {"const": "CHINADB_VENDOR_EXECUTION_REQUEST"},
     "idempotencyKey": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "scope": {"type": "object"},
@@ -48,6 +48,22 @@
     },
     "authorizationEnvelope": {"type": "object"},
     "authorizationEnvelopeDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "performanceContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runnerClass", "isolation", "measurementClock", "sloP95Milliseconds", "maximumMeasurementAttempts", "warmupCountPerQuery", "sampleCountPerQuery", "maximumNormalizedOneMinuteLoad", "invalidEnvironmentState"],
+      "properties": {
+        "runnerClass": {"const": "DEDICATED"},
+        "isolation": {"const": "EXCLUSIVE_SINGLE_QUALIFICATION"},
+        "measurementClock": {"const": "MONOTONIC_HIGH_RESOLUTION"},
+        "sloP95Milliseconds": {"const": 75.0},
+        "maximumMeasurementAttempts": {"const": 2},
+        "warmupCountPerQuery": {"const": 5},
+        "sampleCountPerQuery": {"const": 40},
+        "maximumNormalizedOneMinuteLoad": {"const": 1.0},
+        "invalidEnvironmentState": {"const": "NOT_RUN_ENVIRONMENT_INVALID"}
+      }
+    },
     "safety": {
       "type": "object",
       "additionalProperties": false,

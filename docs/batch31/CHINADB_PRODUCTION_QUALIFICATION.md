@@ -54,16 +54,23 @@ exact commercial capability-snapshot digest. A capability registry or protocol
 change therefore invalidates earlier authorizations and every downstream
 receipt instead of replaying evidence across a recertification boundary.
 
-Protocol `1.1.0` also requires two exact, role-specific digest sets in every
+Protocol `1.2.0` requires two exact, role-specific digest sets in every
 execution receipt. Artifact identity covers the source snapshot/catalog/data/
 workload, target snapshot/release, canonical IR, transformation, compatibility
 runtime, runner/toolchain, four physically separated corpora, data fixture,
 query plan, target SQL candidate, acceptance profile, and gate result. Runtime
 evidence separately covers version/capability probes, render/apply/introspection,
 schema/type, query/routine, transaction, reconciliation, performance, security,
-backup/restore, CDC, rollback, cleanup, and the raw evidence manifest. Missing,
-extra, malformed, or aliased digest roles fail closed. The requirements command
-returns both exact field lists for authorized external tooling.
+backup/restore, CDC, rollback, cleanup, and the raw evidence manifest. It also
+requires a structured dedicated Runner summary: exclusive single-qualification
+isolation, a verified host attestation, a monotonic high-resolution clock, five
+warmups and 40 timed samples per query, normalized one-minute load no greater
+than 1.0, at most two measurement attempts, and source and target p95 no greater
+than the unchanged 75 ms SLO. An invalid or overloaded environment stays
+`NOT_RUN_ENVIRONMENT_INVALID`; a signed Boolean `PASSED` cannot replace these
+measurements. Missing, extra, malformed, or aliased digest roles fail closed.
+The requirements command returns both exact field lists and the performance
+contract for authorized external tooling.
 
 ## Exact input required for every target
 
@@ -99,6 +106,25 @@ uv run elmos-sql-transpiler commercial-production-template \
   --implementer-organization-id IMPLEMENTER_ORG \
   --output /tmp/chinadb-production-request.json
 ```
+
+Populate the DM8 pilot slot from an operator-created, schema-valid input. The
+merge is target-slot create-only: it rejects replacement of an existing tuple,
+environment, tool set, verifier, or receipt. The input contains opaque secret
+references, never credential values:
+
+```bash
+uv run elmos-sql-transpiler commercial-production-target-input-merge \
+  /tmp/chinadb-production-request.json \
+  /approved/dm8-production-target-input.json \
+  --output /tmp/chinadb-production-request-dm8.json
+```
+
+Validate the input file against
+`schemas/batch31/chinadb-production-target-input.schema.json`. The merge also
+runs the runtime validators and will not create its output unless the exact DM8
+tuple, unexpired disposable environment, complete vendor-operation coverage,
+and independent verifier are valid. The other 12 target slots remain explicitly
+`BLOCKED_INPUT` until the DM8 pilot and performance gate have passed.
 
 Run the local blocker ledger without a trust store. Exit status `3` is
 expected while the production definition of done is incomplete:
@@ -141,6 +167,14 @@ references only. Creating it performs no external call and leaves
 `externalExecution = NOT_RUN`; the signed execution receipt remains the sole
 way to advance that state.
 
+DM8 is the enforced first target. A Vendor Runner handoff for any of the other
+12 targets is rejected until DM8 has a complete authorization, external
+execution, independent verification, and certification chain. Because protocol
+1.2.0 makes the dedicated Runner 75 ms summary mandatory in the DM8 execution
+receipt, this also enforces the rollout order `DM8 -> dedicated 75 ms gate ->
+remaining 12 targets`; callers cannot bypass it by requesting another target
+directly.
+
 The internal read-only planning endpoints are:
 
 - `GET /internal/v1/chinadb-production/requirements`
@@ -161,6 +195,7 @@ traffic, writes production data, or issues a certificate.
 - `schemas/batch31/chinadb-production-qualification-request.schema.json`
 - `schemas/batch31/chinadb-production-trust-store.schema.json`
 - `schemas/batch31/chinadb-production-qualification-result.schema.json`
+- `schemas/batch31/chinadb-production-target-input.schema.json`
 - `schemas/batch31/chinadb-vendor-execution-request.schema.json`
 - `engines/database-data-engine/sql-transpiler/examples/chinadb-production-qualification-draft.json`
 

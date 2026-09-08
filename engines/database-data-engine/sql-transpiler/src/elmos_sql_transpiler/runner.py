@@ -4,6 +4,7 @@ import json
 import math
 import os
 import platform
+import re
 import shutil
 import socket
 import sqlite3
@@ -43,6 +44,8 @@ _PERFORMANCE_ITERATIONS = 40
 _PERFORMANCE_MAX_ATTEMPTS = 2
 _QUERY_P95_SLO_MS = 75.0
 _PERFORMANCE_MAX_NORMALIZED_LOAD = 1.0
+_PERFORMANCE_RUNNER_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+~-]{0,255}$")
+_SHA256_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 _FIXTURE_SIZE = 2_000
 _POSTGRES_ROOT = Path("/opt/homebrew/opt/postgresql@17/bin")
 _POSTGRES_CANDIDATE_DIRS = (
@@ -1010,6 +1013,11 @@ def _measure_performance_attempt(
 
 def _performance_environment_evidence() -> dict[str, Any]:
     opt_in = os.environ.get("ELMOS_PERFORMANCE_QUALIFICATION") == "1"
+    runner_class = os.environ.get("ELMOS_PERFORMANCE_RUNNER_CLASS")
+    runner_id = os.environ.get("ELMOS_PERFORMANCE_RUNNER_ID")
+    runner_attestation_digest = os.environ.get(
+        "ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST"
+    )
     cpu_count = max(1, os.cpu_count() or 1)
     load_averages = list(os.getloadavg()) if hasattr(os, "getloadavg") else []
     raw_threshold = os.environ.get(
@@ -1025,6 +1033,15 @@ def _performance_environment_evidence() -> dict[str, Any]:
     reasons: list[str] = []
     if not opt_in:
         reasons.append("EXPLICIT_PERFORMANCE_QUALIFICATION_NOT_ENABLED")
+    if runner_class != "DEDICATED":
+        reasons.append("DEDICATED_PERFORMANCE_RUNNER_REQUIRED")
+    if runner_id is None or _PERFORMANCE_RUNNER_ID.fullmatch(runner_id) is None:
+        reasons.append("DEDICATED_RUNNER_ID_REQUIRED")
+    if (
+        runner_attestation_digest is None
+        or _SHA256_DIGEST.fullmatch(runner_attestation_digest) is None
+    ):
+        reasons.append("DEDICATED_RUNNER_ATTESTATION_DIGEST_REQUIRED")
     if not threshold_valid:
         reasons.append("INVALID_NORMALIZED_LOAD_THRESHOLD")
     if normalized_one_minute is None:
@@ -1035,6 +1052,9 @@ def _performance_environment_evidence() -> dict[str, Any]:
     return {
         "state": "QUALIFIED" if qualified else "INVALID",
         "explicitOptIn": opt_in,
+        "runnerClass": runner_class,
+        "runnerId": runner_id,
+        "runnerAttestationDigest": runner_attestation_digest,
         "logicalCpuCount": cpu_count,
         "loadAverages": [round(value, 6) for value in load_averages],
         "normalizedOneMinuteLoad": normalized_one_minute,

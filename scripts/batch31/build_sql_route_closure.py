@@ -15,6 +15,32 @@ TERMINAL_STATES = (
     "MANUAL_RUNTIME_VERIFIED",
     "APPROVED_TIME_BOUNDED_WAIVER",
 )
+P0_BLOCKERS = frozenset(
+    {
+        "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
+        "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
+        "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
+        "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
+    }
+)
+P1_BLOCKERS = frozenset(
+    {
+        "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
+        "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_DDL_INDEX_EXPRESSION_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_DDL_INDEX_PREDICATE_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_SCHEMA_UNSUPPORTED_TARGET",
+    }
+)
+
+
+def _priority(reason: str) -> str:
+    if reason in P0_BLOCKERS:
+        return "P0"
+    if reason in P1_BLOCKERS:
+        return "P1"
+    return "P2"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -96,6 +122,7 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
                     "workstreamId": f"route-{target}-{reason.lower().replace('_', '-')}",
                     "target": target,
                     "blockerCode": reason,
+                    "priority": _priority(reason),
                     "routeCellCount": count,
                     "status": "OPEN",
                     "requiredClosure": [
@@ -106,6 +133,18 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
                     ],
                 }
             )
+
+    workstreams.sort(
+        key=lambda item: (
+            {"P0": 0, "P1": 1, "P2": 2}[str(item["priority"])],
+            -int(item["routeCellCount"]),
+            str(item["target"]),
+            str(item["blockerCode"]),
+        )
+    )
+    p0_cells = sum(
+        int(item["routeCellCount"]) for item in workstreams if item["priority"] == "P0"
+    )
 
     return {
         "schemaVersion": "1.0",
@@ -161,6 +200,49 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
             for target in TARGETS
         },
         "manualBacklogByReason": dict(manual_by_reason.most_common()),
+        "executionSequence": [
+            {
+                "order": 1,
+                "phase": "HIGH_PRIORITY_SEMANTIC_WORKSTREAMS",
+                "state": "OPEN" if p0_cells else "PASSED",
+                "openRouteCells": p0_cells,
+                "completionRule": "all P0 workstreams have zero blocked route cells",
+            },
+            {
+                "order": 2,
+                "phase": "DM8_END_TO_END_PILOT",
+                "state": "BLOCKED_EXTERNAL_INPUT",
+                "targetIds": ["dm8"],
+                "completionRule": "DM8 reaches PRODUCTION_DEFINITION_OF_DONE",
+            },
+            {
+                "order": 3,
+                "phase": "DEDICATED_RUNNER_75MS",
+                "state": "NOT_RUN_ENVIRONMENT_INVALID",
+                "targetIds": ["dm8"],
+                "completionRule": "signed protocol 1.2.0 performance summary passes 75 ms p95",
+            },
+            {
+                "order": 4,
+                "phase": "REPLICATE_REMAINING_TARGETS",
+                "state": "BLOCKED_BY_DM8",
+                "targetIds": [
+                    "kingbasees",
+                    "opengauss",
+                    "tidb",
+                    "gbase-8s",
+                    "gbase-8c",
+                    "gbase-8a",
+                    "highgo-hgdb",
+                    "oceanbase-oracle",
+                    "oceanbase-mysql",
+                    "gaussdb-oracle",
+                    "gaussdb-m",
+                    "goldendb",
+                ],
+                "completionRule": "each exact target independently reaches production done",
+            },
+        ],
         "workstreams": workstreams,
     }
 

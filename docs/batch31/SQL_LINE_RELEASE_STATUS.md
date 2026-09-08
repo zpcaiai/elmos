@@ -28,6 +28,11 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
   their four target outcomes. The derived closure plan accounts for all 5,208
   route cells: 2,673 are syntax-emittable and 2,535 remain blocked across 33
   target/blocker workstreams. Runtime-verified cells remain zero.
+- The derived closure plan now assigns every blocker workstream to P0/P1/P2 and
+  encodes the required rollout sequence. P0 contains 2,177 blocked route cells:
+  JSONB, trigger, RLS, and privilege semantics. These remain open; target-side
+  shims are not counted as equivalence without exact implementation and real
+  engine evidence.
 - Batch 31 pack validation executes formal JSON Schemas. Certification status
   is derived from evidence, role separation, lifecycle state, and content
   digests. A self-reported `certified` value cannot promote a pack.
@@ -66,9 +71,18 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
   organizations, credentials, and approvals and cannot be manufactured by a
   repository change.
 - Performance qualification retains the exact 75 ms p95 SLO and at most two
-  bounded attempts. A host must explicitly opt in and pass normalized-load
+  bounded attempts. A host must explicitly opt in, identify itself as a
+  dedicated Runner, provide an attestation digest, and pass normalized-load
   preflight; otherwise the timing state is `NOT_RUN_ENVIRONMENT_INVALID` and
-  the release gate remains closed.
+  the release gate remains closed. Ordinary hosted CI no longer opts into the
+  performance claim; `.github/workflows/sql-performance-qualification.yml`
+  targets only the protected `elmos-sql-perf-dedicated` self-hosted Runner.
+- ChinaDB qualification protocol 1.2.0 rejects a signed execution receipt unless
+  its structured performance summary proves exclusive isolation, verified
+  Runner attestation, five warmups, 40 samples per query, at most two attempts,
+  normalized load at or below 1.0, and source/target p95 at or below 75 ms.
+  Non-DM8 execution handoffs are rejected until DM8 reaches the full production
+  definition of done, preventing premature fan-out to the remaining 12 targets.
 
 ## Release commands
 

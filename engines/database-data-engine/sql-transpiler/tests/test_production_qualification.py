@@ -21,6 +21,7 @@ from elmos_sql_transpiler.production_qualification import (
     REQUIRED_EXTERNAL_OPERATIONS,
     TRUST_DOMAIN,
     evaluate_production_qualification,
+    merge_target_qualification_input,
     parse_production_qualification_json,
     parse_production_trust_store_json,
     prepare_vendor_execution_request,
@@ -211,6 +212,24 @@ def _sign_all_receipts(
                 field: _role_digest(target_id, f"evidence:{field}")
                 for field in REQUIRED_EXECUTION_EVIDENCE_DIGESTS
             },
+            "performanceSummary": {
+                "runnerClass": "DEDICATED",
+                "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+                "measurementClock": "MONOTONIC_HIGH_RESOLUTION",
+                "runnerAttestationDigest": _role_digest(
+                    target_id, "evidence:dedicated-runner-attestation"
+                ),
+                "runnerAttestationVerified": True,
+                "sloP95Milliseconds": 75.0,
+                "maximumMeasurementAttempts": 2,
+                "measurementAttemptCount": 1,
+                "warmupCountPerQuery": 5,
+                "sampleCountPerQuery": 40,
+                "queryCount": 6,
+                "normalizedOneMinuteLoad": 0.25,
+                "maximumObservedSourceP95Milliseconds": 20.0,
+                "maximumObservedTargetP95Milliseconds": 25.0,
+            },
             "executedAt": "2026-08-28T10:00:00Z",
             "checks": {
                 "capabilityProbe": "PASSED",
@@ -365,6 +384,33 @@ def test_vendor_execution_request_requires_verified_authorization() -> None:
         )
 
 
+def test_dm8_target_input_merge_populates_only_the_empty_pilot_slot() -> None:
+    draft = _draft()
+    complete, _, _ = _complete_inputs()
+    source = complete["targets"][0]
+    target_input = {
+        field: deepcopy(source[field])
+        for field in (
+            "targetId",
+            "exactTuple",
+            "disposableEnvironment",
+            "vendorTools",
+            "independentVerifier",
+        )
+    }
+
+    merged = merge_target_qualification_input(draft, target_input, now=NOW)
+    result = evaluate_production_qualification(merged, now=NOW)
+
+    assert result["summary"]["inputCompleteTargetCount"] == 1
+    assert result["targets"][0]["targetId"] == "dm8"
+    assert result["targets"][0]["state"] == "BLOCKED_TRUST"
+    assert {item["state"] for item in result["targets"][1:]} == {"BLOCKED_INPUT"}
+    assert all(value is None for value in merged["targets"][0]["receipts"].values())
+    with pytest.raises(ValueError, match="replacement is prohibited"):
+        merge_target_qualification_input(merged, target_input, now=NOW)
+
+
 def test_vendor_execution_request_is_exact_idempotent_and_secret_free() -> None:
     request, trust_store, keys = _complete_inputs()
     _authorize_target(request, trust_store, keys)
@@ -390,6 +436,17 @@ def test_vendor_execution_request_is_exact_idempotent_and_secret_free() -> None:
     assert first["kind"] == "CHINADB_VENDOR_EXECUTION_REQUEST"
     assert first["allowedOperations"] == list(REQUIRED_EXTERNAL_OPERATIONS)
     assert first["inputArtifactDigests"] == artifacts
+    assert first["performanceContract"] == {
+        "runnerClass": "DEDICATED",
+        "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+        "measurementClock": "MONOTONIC_HIGH_RESOLUTION",
+        "sloP95Milliseconds": 75.0,
+        "maximumMeasurementAttempts": 2,
+        "warmupCountPerQuery": 5,
+        "sampleCountPerQuery": 40,
+        "maximumNormalizedOneMinuteLoad": 1.0,
+        "invalidEnvironmentState": "NOT_RUN_ENVIRONMENT_INVALID",
+    }
     assert first["safety"] == {
         "productionData": False,
         "writeScope": "DISPOSABLE_ONLY",
@@ -399,6 +456,36 @@ def test_vendor_execution_request_is_exact_idempotent_and_secret_free() -> None:
     }
     assert first["externalExecution"] == "NOT_RUN"
     assert "password" not in json.dumps(first).casefold()
+
+
+def test_remaining_targets_cannot_execute_before_dm8_pilot_and_75ms_gate() -> None:
+    request, trust_store, keys = _complete_inputs()
+    _authorize_target(request, trust_store, keys, target_index=1)
+    artifacts = {
+        field: _role_digest("kingbasees", f"input:{field}")
+        for field in REQUIRED_EXECUTION_INPUT_DIGESTS
+    }
+    with pytest.raises(ValueError, match="DM8 must reach PRODUCTION_DEFINITION_OF_DONE"):
+        prepare_vendor_execution_request(
+            request,
+            trust_store=trust_store,
+            target_id="kingbasees",
+            input_artifact_digests=artifacts,
+            now=NOW,
+        )
+
+    _sign_all_receipts(request, trust_store, keys)
+    request["targets"][1]["receipts"]["execution"] = None
+    request["targets"][1]["receipts"]["independentVerification"] = None
+    request["targets"][1]["receipts"]["certification"] = None
+    handoff = prepare_vendor_execution_request(
+        request,
+        trust_store=trust_store,
+        target_id="kingbasees",
+        input_artifact_digests=artifacts,
+        now=NOW,
+    )
+    assert handoff["targetId"] == "kingbasees"
 
 
 def test_complete_inputs_without_trust_do_not_manufacture_authority() -> None:
@@ -488,6 +575,40 @@ def test_tampered_execution_receipt_fails_one_target_without_hiding_partial_stat
     assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
     assert result["targets"][0]["externalExecution"] == "NOT_RUN"
     assert result["targets"][0]["blockers"][0]["code"] == "EXECUTION_RECEIPT_INVALID"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("runnerClass", "SHARED"),
+        ("runnerAttestationVerified", False),
+        ("sloP95Milliseconds", 76.0),
+        ("measurementAttemptCount", 3),
+        ("sampleCountPerQuery", 39),
+        ("normalizedOneMinuteLoad", 1.01),
+        ("maximumObservedTargetP95Milliseconds", 75.001),
+    ),
+)
+def test_execution_receipt_enforces_dedicated_runner_75ms_contract(
+    field: str,
+    value: object,
+) -> None:
+    request, trust_store, keys = _complete_inputs()
+    _sign_all_receipts(request, trust_store, keys)
+    execution = request["targets"][0]["receipts"]["execution"]
+    payload = deepcopy(execution["payload"])
+    payload["performanceSummary"][field] = value
+    request["targets"][0]["receipts"]["execution"] = signed_envelope(
+        key_id="executor-key",
+        private_key=keys["executor-key"],
+        payload=payload,
+    )
+
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+
+    assert result["summary"]["productionDefinitionOfDoneCount"] == 12
+    assert result["targets"][0]["state"] == "BLOCKED_EVIDENCE"
+    assert result["targets"][0]["blockers"][-1]["code"] == "EXECUTION_RECEIPT_INVALID"
 
 
 @pytest.mark.parametrize(
@@ -614,6 +735,8 @@ def test_cli_materializes_create_only_requirements_template_and_blocked_plan(
 ) -> None:
     requirements_path = tmp_path / "requirements.json"
     template_path = tmp_path / "template.json"
+    target_input_path = tmp_path / "dm8-target-input.json"
+    merged_path = tmp_path / "dm8-request.json"
     plan_path = tmp_path / "plan.json"
     assert main(["commercial-production-requirements", "--output", str(requirements_path)]) == 0
     assert (
@@ -634,6 +757,39 @@ def test_cli_materializes_create_only_requirements_template_and_blocked_plan(
         )
         == 0
     )
+    complete_for_input, _, _ = _complete_inputs()
+    target_input_path.write_text(
+        json.dumps(
+            {
+                field: complete_for_input["targets"][0][field]
+                for field in (
+                    "targetId",
+                    "exactTuple",
+                    "disposableEnvironment",
+                    "vendorTools",
+                    "independentVerifier",
+                )
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert (
+        main(
+            [
+                "commercial-production-target-input-merge",
+                str(template_path),
+                str(target_input_path),
+                "--output",
+                str(merged_path),
+            ]
+        )
+        == 0
+    )
+    merged_plan = evaluate_production_qualification(
+        json.loads(merged_path.read_text(encoding="utf-8")),
+        now=NOW,
+    )
+    assert merged_plan["summary"]["inputCompleteTargetCount"] == 1
     assert (
         main(
             [

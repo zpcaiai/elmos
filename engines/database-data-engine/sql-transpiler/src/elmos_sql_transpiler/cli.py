@@ -12,6 +12,7 @@ from .materialize import materialize
 from .models import ParameterContract, TranspileRequest
 from .production_qualification import (
     evaluate_production_qualification,
+    merge_target_qualification_input,
     parse_production_qualification_json,
     parse_production_trust_store_json,
     prepare_vendor_execution_request,
@@ -99,6 +100,11 @@ def _parser() -> argparse.ArgumentParser:
     production_template_parser.add_argument("--actor-id", required=True)
     production_template_parser.add_argument("--implementer-organization-id", required=True)
     production_template_parser.add_argument("--output", type=Path)
+
+    target_input_parser = subparsers.add_parser("commercial-production-target-input-merge")
+    target_input_parser.add_argument("request", type=Path)
+    target_input_parser.add_argument("target_input", type=Path)
+    target_input_parser.add_argument("--output", type=Path, required=True)
 
     production_plan_parser = subparsers.add_parser("commercial-production-plan")
     production_plan_parser.add_argument("request", type=Path)
@@ -199,6 +205,16 @@ def main(argv: list[str] | None = None) -> int:
                 args.output,
                 _json(draft) + "\n",
                 label="commercial production template",
+            )
+            return 0
+        if args.command == "commercial-production-target-input-merge":
+            qualification_request = parse_production_qualification_json(args.request.read_bytes())
+            target_input = parse_production_qualification_json(args.target_input.read_bytes())
+            merged = merge_target_qualification_input(qualification_request, target_input)
+            _create_only_output(
+                args.output,
+                _json(merged) + "\n",
+                label="commercial production target-input merge",
             )
             return 0
         if args.command == "commercial-production-plan":
