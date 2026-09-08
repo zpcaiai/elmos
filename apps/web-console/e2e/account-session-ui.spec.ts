@@ -1,49 +1,65 @@
 import { expect, test } from "@playwright/test";
 
-test("anonymous user login entries perform a document navigation", async ({ page }) => {
-  await page.goto("/");
-
-  const topLogin = page.locator("header").getByRole("link", {
+const anonymousEntryJourneys = [
+  {
+    label: "top user login",
+    surface: "header",
     name: "用户登录",
     exact: true,
-  });
-  await expect(topLogin).toHaveAttribute("href", "/login?returnTo=%2F");
-  await topLogin.click();
-  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
-  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-
-  await page.goto("/");
-  const topAdminLogin = page.locator("header").getByRole("link", {
+    href: "/login?returnTo=%2F",
+    target: /\/login\?returnTo=%2F$/,
+    heading: "用户登录",
+  },
+  {
+    label: "top administrator login",
+    surface: "header",
     name: "管理员登录",
     exact: true,
-  });
-  await expect(topAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  await topAdminLogin.click();
-  await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
-  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
-  await page.goto("/");
-
-  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
-    await page.getByRole("button", { name: "打开导航" }).click();
-    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
-  }
-  const sidebarLogin = page.locator("aside").getByRole("link", {
+    href: "/admin/login?returnTo=%2Fadmin",
+    target: /\/admin\/login\?returnTo=%2Fadmin$/,
+    heading: "管理员登录",
+  },
+  {
+    label: "sidebar user login",
+    surface: "aside",
     name: /用户登录/,
-  });
-  await expect(sidebarLogin).toHaveAttribute("href", "/login?returnTo=%2F");
-  await sidebarLogin.click();
-  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
-  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-
-  const sidebarAdminLogin = page.locator("aside").getByRole("link", {
+    exact: false,
+    href: "/login?returnTo=%2F",
+    target: /\/login\?returnTo=%2F$/,
+    heading: "用户登录",
+  },
+  {
+    label: "sidebar administrator login",
+    surface: "aside",
     name: "管理员登录",
     exact: true,
+    href: "/admin/login?returnTo=%2Fadmin",
+    target: /\/admin\/login\?returnTo=%2Fadmin$/,
+    heading: "管理员登录",
+  },
+] as const;
+
+for (const journey of anonymousEntryJourneys) {
+  test(`anonymous ${journey.label} performs a document navigation`, async ({ page }) => {
+    await page.goto("/");
+    if (
+      journey.surface === "aside" &&
+      (page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900
+    ) {
+      await page.getByRole("button", { name: "打开导航" }).click();
+      await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
+    }
+
+    const entry = page.locator(journey.surface).getByRole("link", {
+      name: journey.name,
+      exact: journey.exact,
+    });
+    await expect(entry).toHaveAttribute("href", journey.href);
+    await entry.click();
+    await expect(page).toHaveURL(journey.target);
+    await expect(page.getByRole("heading", { name: journey.heading })).toBeVisible();
   });
-  await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  await sidebarAdminLogin.click();
-  await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
-  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
-});
+}
 
 test("account session discovery represents anonymous state without a console-level 401", async ({
   request,
