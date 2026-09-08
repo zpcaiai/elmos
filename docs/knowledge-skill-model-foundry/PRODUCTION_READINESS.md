@@ -15,6 +15,20 @@ local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
 - request-bound, expiring, one-time adapter permits and trusted policy checks;
 - host-owned external Broker routes with exact operation/effect matching,
   verifier-bound provider receipts and complete declared-output enforcement;
+- a shell-free production command Broker that allowlists every route, pins the
+  provider executable and complete route configuration by SHA-256, passes only
+  explicitly inherited environment variables, bounds time/output, kills timed
+  out process groups, and treats every drift, malformed response, nonzero exit
+  or unreconciled outcome as failure with unknown effects;
+- typed training and deployment requests that bind provider/version,
+  environment, configuration and exact input/output artifact digests, plus
+  external receipt verification that requires a distinct executor, reconciled
+  outcome, complete outputs, canonical digest and host-supplied signature
+  verifier;
+- independent-acceptance and certification request/receipt protocols that bind
+  provider, training and deployment evidence, holdout corpus, required gates,
+  implementation/catalog/policy digests, separated producer/executor/verifier/
+  authority identities, revocation, validity interval and trust epoch;
 - exact permit-request and execution entry points for all 14 golden pipelines;
 - durable transitions, checkpoints, audit/evidence and outbox reconciliation;
 - private immutable artifact storage;
@@ -39,8 +53,8 @@ provider execution or production persistence qualification.
   enabled RLS policies);
 - OPA bundle compilation and enforcement;
 - secret broker, KMS/HSM signing and revocation;
-- real language, database, framework, cloud and model adapters with exact
-  version matrices;
+- installed real language, database, framework, cloud and model provider
+  commands with exact version matrices and trusted signature keys;
 - native builds, databases, browser/device journeys, model training/serving,
   shadow/canary, rollback, long soak, chaos and disaster recovery;
 - independent corpora, verifier, customer acceptance, legal approval and
@@ -49,6 +63,13 @@ provider execution or production persistence qualification.
 The 66 local handlers and 1,244 native program/host route bindings do not clear any item in
 this external-gate list. Their
 receipts are bounded, self-attested engineering evidence only.
+
+The repository now implements the reusable external execution and evidence
+verification boundary in `elmos_foundry.external_assurance`. It does not ship a
+provider credential, provider executable, training cluster, deployment account,
+independent holdout result, verifier key or certification-authority decision.
+Consequently provider, training, deployment and independent evidence remain
+`NOT_RUN`, and the package remains `NOT_CERTIFIED` in this checkout.
 
 The archive license explicitly asks for company-approved legal text before
 distribution and supplies no trusted signature, SBOM or provenance
