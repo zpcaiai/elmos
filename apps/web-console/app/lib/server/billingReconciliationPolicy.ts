@@ -9,9 +9,9 @@ const idempotencyKeyPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/;
 export const reconciliationBodyLimitBytes = 4_096;
 
 export type FinancialAdminCandidate = {
-  role: string;
-  authentication: string;
-  accessToken?: unknown;
+  role: "VIEWER" | "OPERATOR" | "APPROVER";
+  authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
+  accessToken?: string;
 };
 
 export type FinancialAdminPrincipal = FinancialAdminCandidate & {
@@ -57,7 +57,7 @@ export function requireFinancialOidcAdmin(
       "财务对账只接受已验证的管理员企业账户会话。",
     );
   }
-  const actualRank = roleRank[principal.role as keyof typeof roleRank];
+  const actualRank = roleRank[principal.role];
   if (!actualRank || actualRank < roleRank[requiredRole]) {
     throw new BillingReconciliationPolicyError(
       403,
