@@ -136,6 +136,7 @@ _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
 _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
 _SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
 _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
@@ -759,6 +760,29 @@ _SWIFT_ANALYZER_FAILURE: tuple[str, str, str] | None = None
 _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
+        "SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TYPE_MISMATCH",
+        "SWIFT_CONDITION_MUST_BE_BOOLEAN",
+        "SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_EXPLICIT_TYPE_REQUIRED",
+        "SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_FOR_CLOSED_RANGE_REJECTED",
+        "SWIFT_FOR_DOWNTO_REJECTED",
+        "SWIFT_FOR_NON_POSITIVE_STEP_REJECTED",
+        "SWIFT_FOR_CONDITION_NON_MONOTONIC",
+        "SWIFT_FOR_VARIABLE_REQUIRED",
+        "SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "SWIFT_BREAK_OUTSIDE_LOOP",
+        "SWIFT_CONTINUE_OUTSIDE_LOOP",
+        "SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LOCAL_INITIALIZER_REQUIRED",
+        "SWIFT_LOCAL_NAME_REQUIRED",
+        "SWIFT_UNDECLARED_VARIABLE",
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
@@ -887,11 +911,15 @@ def _canonical_digest(value: object) -> str:
 def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     try:
         package = package.absolute()
-        package_identity = _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        package_identity = _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        )
     except OSError as error:
         raise RouteError("SWIFT_ANALYZER_INPUT_MISSING") from error
     sources = package / "Sources"
-    sources_identity = _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    sources_identity = _stable_secure_directory_chain_identity(
+        _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    )
 
     def discover() -> list[Path]:
         candidates = [
@@ -943,8 +971,14 @@ def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     if [item.relative_to(package).as_posix() for item in discover()] != [item["path"] for item in files]:
         raise RouteError("SWIFT_ANALYZER_INPUT_SET_CHANGED")
     if (
-        _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED") != package_identity
-        or _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED") != sources_identity
+        _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED")
+        )
+        != package_identity
+        or _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED")
+        )
+        != sources_identity
     ):
         raise RouteError("SWIFT_ANALYZER_INPUT_DIRECTORY_CHANGED")
     try:
@@ -2974,8 +3008,30 @@ def _run_swift_build_step(
     except OSError as error:
         raise RouteError(failure + ":process") from error
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
+    communication_deadline = time.monotonic() + effective_timeout
+    pending_input = input_text
     try:
-        stdout, stderr = process.communicate(input=input_text, timeout=effective_timeout)
+        while True:
+            remaining = communication_deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(command, effective_timeout)
+            try:
+                stdout, stderr = process.communicate(
+                    input=pending_input,
+                    timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
+                )
+                break
+            except subprocess.TimeoutExpired:
+                # communicate() waits for inherited stdout/stderr pipes even
+                # after the session leader exits.  SwiftPM compiler helpers
+                # have exhibited exactly that leak, which otherwise consumes
+                # the full one-hour cold-build timeout.  Poll the pinned leader
+                # so a completed leader with live pipe holders enters the same
+                # bounded, identity-checked process-tree cleanup as a timeout.
+                pending_input = None
+                poll = getattr(process, "poll", None)
+                if not callable(poll) or poll() is not None:
+                    raise
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -5588,6 +5644,12 @@ def _run_trusted_swift_analyzer(
         if _verify_swift_execution_seal(binary, receipt) != before:
             raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION") from error
         wrapped = str(error)
+        prefix = f"NATIVE_ANALYZER_FAILED:{binary}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix):]
+            for reason in allowed_domain_errors:
+                if candidate == reason or candidate.startswith(f"{reason}:"):
+                    raise RouteError(candidate) from error
         for reason in allowed_domain_errors:
             if wrapped == f"NATIVE_ANALYZER_FAILED:{binary}:{reason}":
                 raise RouteError(reason) from error
