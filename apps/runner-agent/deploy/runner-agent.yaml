@@ -15,6 +15,17 @@
 # Fleet-wide maxUnavailable belongs to the external per-node provisioner.
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elmos-runner-agent
+  namespace: elmos
+data:
+  control-plane-base-url: https://REPLACE_WITH_CONTROL_PLANE_ENDPOINT
+  runner-node-id: REPLACE_WITH_STABLE_RUNNER_NODE_ID
+  runner-pool-id: REPLACE_WITH_RUNNER_POOL_ID
+  image-allowlist-version: REPLACE_WITH_ALLOWLIST_VERSION
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: elmos-runner-agent
@@ -75,11 +86,14 @@ spec:
             capabilities: { drop: ["ALL"] }
           env:
             - name: ELMOS_CONTROL_PLANE_BASE_URL
-              value: https://control.elmos.internal
+              valueFrom:
+                configMapKeyRef: { name: elmos-runner-agent, key: control-plane-base-url }
             - name: ELMOS_RUNNER_NODE_ID
-              value: REPLACE_WITH_STABLE_RUNNER_NODE_ID
+              valueFrom:
+                configMapKeyRef: { name: elmos-runner-agent, key: runner-node-id }
             - name: ELMOS_RUNNER_POOL_ID
-              value: pool-shared
+              valueFrom:
+                configMapKeyRef: { name: elmos-runner-agent, key: runner-pool-id }
             - name: ELMOS_RUNNER_CAPABILITIES
               value: "generation:multi"
             - name: ELMOS_RUNNER_MAX_CONCURRENCY
@@ -91,7 +105,8 @@ spec:
             - name: ELMOS_RUNNER_CONTAINER_ENGINE
               value: /usr/bin/podman
             - name: ELMOS_RUNNER_IMAGE_ALLOWLIST_VERSION
-              value: allow-2026-07-28
+              valueFrom:
+                configMapKeyRef: { name: elmos-runner-agent, key: image-allowlist-version }
             - name: ELMOS_ENVIRONMENT
               value: production
             # File-backed so the token never appears in the pod's environment.
