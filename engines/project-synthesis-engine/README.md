@@ -27,9 +27,10 @@ here would misrepresent this engine's architecture rather than describe it.
 
 - Python 3.12–3.14
 - `uv` 0.11.16 or a compatible locked runner
-- the exact native toolchain for every target you intend to verify: Java 21,
-  Python 3.12, .NET SDK 10.0.301, Node 26.0.0 with pnpm 10.12.4, Go 1.25.0,
-  Kotlin 2.2.20 on JVM 21 with Gradle 8.14.3, PHP 8.4.12, or Rust 1.89.0
+- the exact native toolchain for every target you intend to verify: OpenJDK
+  21.0.11 with Maven 3.9.10, CPython 3.12.12 with uv 0.11.16, .NET SDK
+  10.0.301, Node.js 26.0.0 with pnpm 10.12.4, Go 1.25.0, Kotlin 2.2.20 on
+  OpenJDK 21.0.11 with Gradle 8.14.3, PHP 8.4.12, or rustc/cargo 1.89.0
 
 On Darwin arm64, the four non-default exact toolchains can be installed from
 checksum-verified upstream distributions and immediately accepted with:
@@ -253,6 +254,11 @@ and its human-readable chart projection:
   framework, build-tool, and provider declarations. Native transitive resolution
   initially remains `NOT_RUN` and `complete=false`; this graph is not presented
   as a resolved SBOM.
+- `requirements/dependency-sbom.cdx.json` is a CycloneDX 1.6 inventory. It
+  records transitive inventory, native artifact integrity, and relationship
+  status separately. Missing locks or valid package hashes stay `INCOMPLETE`.
+  Relationships are currently `INCOMPLETE_FLATTENED`; the file does not claim a
+  complete dependency graph.
 - `requirements/project-insights.json` combines those graphs with approved-input
   semantic traceability, per-target exact-toolchain/build/startup evidence, a
   complete selected-target pair matrix, and separate completion denominators.
@@ -322,6 +328,45 @@ The cache makes repeated identical generation resilient to transient index
 failures; the first unseen `pyproject.toml` still requires a pre-warmed cache or
 authorized package-index access, so this is not a claim of arbitrary offline
 execution.
+
+After native builds, hash the Maven/Gradle cache artifacts actually used, then
+emit the release inputs explicitly:
+
+```bash
+uv run elmos-project-synthesis collect-native-artifact-hashes \
+  --workspace generated/order-service
+
+uv run elmos-project-synthesis supply-chain \
+  --workspace generated/order-service \
+  --verification verification.json \
+  --sbom release/dependency-sbom.cdx.json \
+  --release-manifest release/release-manifest.json \
+  --source-repository /absolute/path/to/clean/source-repository
+
+uv run elmos-project-synthesis verify-release-signature \
+  --release-manifest release/release-manifest.json \
+  --signature release/release-signature.json \
+  --trust-root release/release-trust-root.json
+```
+
+The collector performs no download and writes local self-attested hash evidence;
+missing or ambiguous artifacts fail closed. The supply-chain command never
+signs. Missing inventory or integrity, a summary-only/non-passing/wrong-
+workspace verification receipt, a dirty revision, and a missing signature all
+remain explicit blockers. It requires exact toolchain, build/test, startup, and
+PostgreSQL integration results for every selected target. The verifier accepts only an
+active, time-bounded Ed25519 key in the supplied trust root. Even a valid
+signature yields only `READY_FOR_EXTERNAL_GATE`; production delivery and
+certification remain `NOT_RUN` / `NOT_CERTIFIED`.
+
+The P0 PostgreSQL version `17.5` is scoped to the pinned disposable local
+container. A managed provider must supply its own exact observed-version
+receipt; an observation such as Neon `17.11` is neither interchangeable with
+the local 17.5 runtime nor migration-write or production-certification
+evidence. The 2026-09-04 operator report has no raw provider receipt and records
+one Better Auth `OKP`/`EdDSA` JWK; that is `ALGORITHM_MISMATCH` against the
+frozen `RSA`/`RS256` OIDC profile and keeps managed OIDC `BLOCKED`. Local JWT
+HS256 is an independent profile.
 
 Every local production-profile path is replayable separately, or as the full
 16-case matrix:

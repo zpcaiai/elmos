@@ -20,6 +20,13 @@ from .models import (
     SUPPORTED_PROJECT_KINDS,
     RequestValidationError,
 )
+from .supply_chain import (
+    ARTIFACT_HASH_EVIDENCE_PATH,
+    build_release_manifest,
+    build_workspace_sbom,
+    collect_native_artifact_hash_evidence,
+    verify_release_signature,
+)
 from .verification import runtime_commands, verify_workspace
 from .workspace import COMPATIBLE_MANIFEST_VERSIONS, WorkspaceConflictError, generate_workspace
 
@@ -196,6 +203,8 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
             if not required_paths <= archived_paths:
                 raise ValueError("GENERATION_MANIFEST_REQUIRED_FILES_MISSING")
             derived_lockfiles = [
+                root / ".elmos" / "dependencies" / "artifact-hashes.json",
+                root / ".elmos" / "dependencies" / "java-dependency-tree.json",
                 root / "python" / "uv.lock",
                 root / "typescript" / "pnpm-lock.yaml",
                 root / "kotlin" / "gradle.lockfile",
@@ -398,6 +407,38 @@ def _parser() -> argparse.ArgumentParser:
     extract_archive.add_argument("--archive", type=Path, required=True)
     extract_archive.add_argument("--expected-sha256", required=True)
     extract_archive.add_argument("--output", type=Path, required=True)
+    supply_chain = subparsers.add_parser(
+        "supply-chain",
+        help="Emit a transitive dependency SBOM and unsigned fail-closed release manifest",
+    )
+    supply_chain.add_argument("--workspace", type=Path, required=True)
+    supply_chain.add_argument("--verification", type=Path)
+    supply_chain.add_argument("--sbom", type=Path, required=True)
+    supply_chain.add_argument("--release-manifest", type=Path, required=True)
+    supply_chain.add_argument(
+        "--source-repository",
+        type=Path,
+        required=True,
+        help="Exact Git repository whose real HEAD, tree, and clean status are observed",
+    )
+    artifact_hashes = subparsers.add_parser(
+        "collect-native-artifact-hashes",
+        help="Hash resolved Maven/Gradle artifacts already present in local native caches",
+    )
+    artifact_hashes.add_argument("--workspace", type=Path, required=True)
+    artifact_hashes.add_argument("--maven-repository", type=Path)
+    artifact_hashes.add_argument("--gradle-cache", type=Path)
+    signature = subparsers.add_parser(
+        "verify-release-signature",
+        help="Verify an Ed25519 release signature against an explicit trust root",
+    )
+    signature.add_argument("--release-manifest", type=Path, required=True)
+    signature.add_argument("--signature", type=Path, required=True)
+    signature.add_argument("--trust-root", type=Path, required=True)
+    signature.add_argument("--workspace", type=Path, required=True)
+    signature.add_argument("--sbom", type=Path, required=True)
+    signature.add_argument("--verification", type=Path, required=True)
+    signature.add_argument("--source-repository", type=Path, required=True)
     return parser
 
 
@@ -456,13 +497,72 @@ def main(argv: list[str] | None = None) -> int:
                 "workspace": str(args.workspace.resolve(strict=True)),
                 "runtime_plan": runtime_commands(args.workspace),
             }
-        else:
+        elif args.command == "extract-publish-archive":
             result = _extract_publish_archive(
                 args.archive,
                 args.output,
                 args.expected_sha256,
             )
+        elif args.command == "supply-chain":
+            sbom = build_workspace_sbom(args.workspace)
+            release_manifest = build_release_manifest(
+                args.workspace,
+                sbom=sbom,
+                verification=args.verification,
+                source_repository=args.source_repository,
+            )
+            _write_json(args.sbom, sbom)
+            _write_json(args.release_manifest, release_manifest)
+            result = {
+                "status": "GENERATED",
+                "sbom": {
+                    "path": str(args.sbom.resolve()),
+                    "sha256": hashlib.sha256(args.sbom.read_bytes()).hexdigest(),
+                    "transitive_inventory_status": release_manifest["transitive_dependency_sbom"][
+                        "transitive_inventory_status"
+                    ],
+                    "artifact_integrity_status": release_manifest["transitive_dependency_sbom"][
+                        "artifact_integrity_status"
+                    ],
+                },
+                "release_manifest": {
+                    "path": str(args.release_manifest.resolve()),
+                    "sha256": hashlib.sha256(args.release_manifest.read_bytes()).hexdigest(),
+                    "decision": release_manifest["decision"],
+                },
+                "production_delivery_status": "NOT_RUN",
+                "external_certification_status": "NOT_RUN",
+            }
+        elif args.command == "collect-native-artifact-hashes":
+            artifact_evidence = collect_native_artifact_hash_evidence(
+                args.workspace,
+                maven_repository=args.maven_repository,
+                gradle_cache=args.gradle_cache,
+            )
+            artifact_path = args.workspace.resolve(strict=True) / ARTIFACT_HASH_EVIDENCE_PATH
+            _write_json(artifact_path, artifact_evidence)
+            result = {
+                "status": "COLLECTED",
+                "path": str(artifact_path),
+                "sha256": hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+                "artifact_count": len(artifact_evidence["artifacts"]),
+                "evidence_class": "LOCAL_ENGINEERING_SELF_ATTESTED",
+                "external_evidence_status": "NOT_RUN",
+                "certification_status": "NOT_CERTIFIED",
+            }
+        else:
+            result = verify_release_signature(
+                args.release_manifest,
+                args.signature,
+                args.trust_root,
+                workspace=args.workspace,
+                sbom_path=args.sbom,
+                verification_path=args.verification,
+                source_repository=args.source_repository,
+            )
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+        if args.command == "supply-chain" and result["release_manifest"]["decision"] != "AWAITING_TRUSTED_SIGNATURE":
+            return 2
         return 0 if result.get("status") != "FAILED" else 1
     except (
         OSError,

@@ -4,6 +4,7 @@ import re
 import unittest
 from pathlib import Path
 
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -20,13 +21,57 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
     def test_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
         job = _job(self.workflow, "project-synthesis", "project-synthesis-acceptance")
         rust = job.index("- name: Set up Rust 1.89.0")
-        native = job.index("- name: Build native dependency solver")
+        native = job.index("- name: Build locked native dependency solver")
         tests = job.index("- name: Verify Project Synthesis")
 
         self.assertLess(rust, native)
         self.assertLess(native, tests)
         self.assertIn("cargo build --locked --release", job)
         self.assertIn("--manifest-path native/rust-core/Cargo.toml", job)
+
+    def test_native_solver_locked_graph_is_fully_repository_vendored(self) -> None:
+        native_root = ROOT / "native/rust-core"
+        manifest = tomllib.loads((native_root / "Cargo.toml").read_text(encoding="utf-8"))
+        lock = tomllib.loads((native_root / "Cargo.lock").read_text(encoding="utf-8"))
+        expected = {
+            "itoa": "itoa-1.0.18",
+            "memchr": "memchr-2.8.3",
+            "proc-macro2": "proc-macro2-1.0.107",
+            "quote": "quote-1.0.47",
+            "ryu": "ryu-1.0.23",
+            "serde": "serde-1.0.219",
+            "serde_derive": "serde_derive-1.0.219",
+            "serde_json": "serde_json-1.0.143",
+            "syn": "syn-2.0.119",
+            "unicode-ident": "unicode-ident-1.0.24",
+        }
+        patches = manifest["patch"]["crates-io"]
+        locked = {package["name"]: package for package in lock["package"]}
+
+        for name, directory in expected.items():
+            with self.subTest(crate=name):
+                self.assertEqual(
+                    patches[name]["path"],
+                    f"../../engines/polyglot-route-engine/native/rust/vendor/{directory}",
+                )
+                self.assertNotIn("source", locked[name])
+                self.assertNotIn("checksum", locked[name])
+
+    def test_local_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        target = makefile.split("project-synthesis:\n", 1)[1].split(
+            "toolchains-validate:\n", 1
+        )[0]
+        native = target.index(
+            "$(CARGO) build --locked --release --offline "
+            "--manifest-path native/rust-core/Cargo.toml"
+        )
+        tests = target.index(
+            "$(UV) --directory engines/project-synthesis-engine run --locked pytest"
+        )
+
+        self.assertIn("CARGO ?= cargo", makefile)
+        self.assertLess(native, tests)
 
     def test_spring_route_job_fetches_the_qualification_commit_history(self) -> None:
         job = _job(self.workflow, "spring-golden-route-engine", "external-gate-intake")
@@ -80,8 +125,12 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         )
         for job in jobs:
             with self.subTest(job=job.splitlines()[1].strip()):
+                polyglot_sync = job.index(
+                    "uv --directory engines/polyglot-route-engine sync --locked --no-dev"
+                )
                 runtime = job.index("- name: Set up exact ChinaDB preflight runtime")
                 check = job.index("pnpm --dir apps/web-console check")
+                self.assertLess(polyglot_sync, check)
                 self.assertLess(runtime, check)
                 self.assertIn('python-version: "3.14.6"', job)
                 self.assertIn(

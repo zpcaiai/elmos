@@ -11,6 +11,48 @@ from elmos_polyglot_route import native, toolchains
 from elmos_polyglot_route.models import RouteError
 
 
+def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> None:
+    local = toolchains._HOMEBREW_ROUTE_LOCAL_PROFILE
+    legacy = toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE
+    current = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    shared_dotnet_closure_fields = (
+        "dotnet_muxer_sha256",
+        "dotnet_muxer_bytes",
+        "dotnet_sdk_tree_sha256",
+        "dotnet_sdk_tree_bytes",
+        "dotnet_hostfxr_tree_sha256",
+        "dotnet_hostfxr_tree_bytes",
+        "dotnet_runtime_tree_sha256",
+        "dotnet_runtime_tree_bytes",
+        "dotnet_reference_pack_tree_sha256",
+        "dotnet_reference_pack_tree_bytes",
+        "dotnet_apphost_pack_tree_sha256",
+        "dotnet_apphost_pack_tree_bytes",
+        "dotnet_hostfxr_sha256",
+        "dotnet_hostpolicy_sha256",
+    )
+
+    assert legacy.profile_id == "github-macos26-20260728.0273.1"
+    assert current.profile_id == "github-macos26-20260831.0337.3"
+    assert tuple(getattr(legacy, field) for field in shared_dotnet_closure_fields) == tuple(
+        getattr(current, field) for field in shared_dotnet_closure_fields
+    )
+    assert (local.php_tree_sha256, local.php_tree_bytes) == (
+        "927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177",
+        129_937_259,
+    )
+    assert (legacy.php_tree_sha256, legacy.php_tree_bytes) == (
+        "741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
+        129_949_464,
+    )
+    assert (current.php_tree_sha256, current.php_tree_bytes) == (
+        "0d4e4ce28b2e8a7715fc93ea8dc5d095a3400d781056a574555fcbf927d2f9a0",
+        129_937_253,
+    )
+    assert current.php_tree_sha256 != legacy.php_tree_sha256
+    assert local.dotnet_muxer_sha256 != legacy.dotnet_muxer_sha256
+
+
 def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
     legacy = toolchains._select_apple_route_host_profile(
         image_version="20260728.0273.1",

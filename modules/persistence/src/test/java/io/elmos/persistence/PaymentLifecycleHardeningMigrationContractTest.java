@@ -32,9 +32,13 @@ class PaymentLifecycleHardeningMigrationContractTest {
                 "encode is a PostgreSQL built-in in pg_catalog, not a pgcrypto function");
         for (String source : new String[]{
                 "payment_checkout_sessions", "wallet_topup_orders", "commercial_orders"}) {
+            assertTrue(sql.contains("ALTER TABLE " + source + " NO FORCE ROW LEVEL SECURITY"));
             assertTrue(sql.contains("ALTER TABLE " + source + " FORCE ROW LEVEL SECURITY"));
             assertTrue(sql.contains("'" + source + "'"));
         }
+        assertTrue(sql.contains("ELMOS_PAYMENT_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
+        assertTrue(sql.contains("ELMOS_WALLET_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
+        assertTrue(sql.contains("ELMOS_COMMERCIAL_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
         assertTrue(sql.contains("% FORCE ROW LEVEL SECURITY was not restored"));
     }
 
@@ -48,6 +52,9 @@ class PaymentLifecycleHardeningMigrationContractTest {
         assertTrue(sql.contains("'REFUNDED', 'RECONCILIATION_REQUIRED'"));
         assertTrue(sql.contains("elmos_wallet_mark_topup_prepare_failed"));
         assertTrue(sql.contains("'PAID', 'PENDING_PAYMENT', 'CREATED', 'RECONCILIATION_REQUIRED'"));
+        assertTrue(sql.contains("v_order.failure_code IS DISTINCT FROM "
+                + "'CHECKOUT_PREPARE_OUTCOME_UNKNOWN'"));
+        assertTrue(sql.contains("failure_code = 'PAYMENT_AFTER_LOCAL_EXPIRY'"));
     }
 
     @Test
@@ -70,6 +77,7 @@ class PaymentLifecycleHardeningMigrationContractTest {
         assertTrue(sql.contains("expires_at <= now()"));
         assertTrue(sql.contains("SET status = 'EXPIRED'"));
         assertTrue(sql.contains("balance = balance - v_expired"));
+        assertTrue(sql.contains("v_lot.available + v_allocation.quantity"));
         assertTrue(sql.contains("reserved = reserved - v_res.requested_credits"));
         assertTrue(sql.contains("REVOKE ALL ON FUNCTION "
                 + "elmos_commercial_expire_generation_reservations(integer) FROM PUBLIC"));

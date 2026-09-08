@@ -15,17 +15,52 @@ ALTER TABLE wallet_topup_orders NO FORCE ROW LEVEL SECURITY;
 ALTER TABLE commercial_orders NO FORCE ROW LEVEL SECURITY;
 
 UPDATE payment_order_directory d
-   SET provider = s.provider
+ SET provider = s.provider
   FROM payment_checkout_sessions s
- WHERE s.checkout_session_id = d.checkout_session_id;
+ WHERE s.checkout_session_id = d.checkout_session_id
+   AND s.organization_id = d.organization_id;
 UPDATE wallet_topup_order_directory d
-   SET provider = s.provider
+ SET provider = s.provider
   FROM wallet_topup_orders s
- WHERE s.out_trade_no = d.out_trade_no;
+ WHERE s.out_trade_no = d.out_trade_no
+   AND s.organization_id = d.organization_id;
 UPDATE commercial_order_directory d
    SET provider = s.provider
   FROM commercial_orders s
- WHERE s.out_trade_no = d.out_trade_no;
+ WHERE s.out_trade_no = d.out_trade_no
+   AND s.organization_id = d.organization_id;
+
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM payment_checkout_sessions s
+        LEFT JOIN payment_order_directory d
+          ON d.checkout_session_id = s.checkout_session_id
+         AND d.organization_id = s.organization_id
+        WHERE d.checkout_session_id IS NULL OR d.provider IS DISTINCT FROM s.provider
+    ) THEN
+        RAISE EXCEPTION 'ELMOS_PAYMENT_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM wallet_topup_orders s
+        LEFT JOIN wallet_topup_order_directory d
+          ON d.out_trade_no = s.out_trade_no
+         AND d.organization_id = s.organization_id
+        WHERE d.out_trade_no IS NULL OR d.provider IS DISTINCT FROM s.provider
+    ) THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM commercial_orders s
+        LEFT JOIN commercial_order_directory d
+          ON d.out_trade_no = s.out_trade_no
+         AND d.organization_id = s.organization_id
+        WHERE d.out_trade_no IS NULL OR d.provider IS DISTINCT FROM s.provider
+    ) THEN
+        RAISE EXCEPTION 'ELMOS_COMMERCIAL_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE';
+    END IF;
+END
+$$;
 
 ALTER TABLE payment_checkout_sessions FORCE ROW LEVEL SECURITY;
 ALTER TABLE wallet_topup_orders FORCE ROW LEVEL SECURITY;
@@ -220,36 +255,54 @@ CREATE OR REPLACE FUNCTION elmos_wallet_credit_topup(
     p_provider_txn_ref varchar, p_actor_id varchar
 ) RETURNS varchar
 LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public AS $$
+SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE
     v_previous text;
-    v_order wallet_topup_orders%ROWTYPE;
+    v_order public.wallet_topup_orders%ROWTYPE;
     v_entry_id varchar(96);
 BEGIN
-    v_previous := elmos_wallet_bind_tenant(p_organization_id);
-    SELECT * INTO v_order FROM wallet_topup_orders
+    v_previous := public.elmos_wallet_bind_tenant(p_organization_id);
+    SELECT * INTO v_order FROM public.wallet_topup_orders
      WHERE topup_order_id = p_topup_order_id AND organization_id = p_organization_id
      FOR UPDATE;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_UNKNOWN'; END IF;
     IF v_order.status = 'CREDITED' THEN
-        PERFORM set_config('app.organization_id', v_previous, true);
+        PERFORM pg_catalog.set_config('app.organization_id', v_previous, true);
         RETURN v_order.credited_entry_ref;
+    END IF;
+    IF v_order.status = 'RECONCILIATION_REQUIRED'
+       AND v_order.failure_code IS DISTINCT FROM 'CHECKOUT_PREPARE_OUTCOME_UNKNOWN' THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_NOT_CREDITABLE';
     END IF;
     IF v_order.status NOT IN (
         'PAID', 'PENDING_PAYMENT', 'CREATED', 'RECONCILIATION_REQUIRED') THEN
         RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_NOT_CREDITABLE';
     END IF;
-    v_entry_id := elmos_wallet_post_entry(
+    IF v_order.expires_at <= now()
+       AND v_order.status IN ('CREATED', 'PENDING_PAYMENT', 'RECONCILIATION_REQUIRED') THEN
+        UPDATE public.wallet_topup_orders
+           SET status = 'RECONCILIATION_REQUIRED',
+               provider_txn_ref = p_provider_txn_ref,
+               paid_at = coalesce(paid_at, now()),
+               failure_code = 'PAYMENT_AFTER_LOCAL_EXPIRY'
+         WHERE topup_order_id = p_topup_order_id
+           AND organization_id = p_organization_id;
+        PERFORM pg_catalog.set_config('app.organization_id', v_previous, true);
+        RETURN p_topup_order_id;
+    END IF;
+    v_entry_id := public.elmos_wallet_post_entry(
         v_order.organization_id, 'CREDIT', v_order.amount_minor, 'TOPUP_SETTLED',
         'TOPUP_ORDER', v_order.topup_order_id, p_actor_id,
         'topup:' || v_order.provider || ':' || v_order.out_trade_no, NULL, NULL);
-    UPDATE wallet_topup_orders
+    UPDATE public.wallet_topup_orders
        SET status = 'CREDITED',
            provider_txn_ref = coalesce(p_provider_txn_ref, provider_txn_ref),
            paid_at = coalesce(paid_at, now()), credited_at = now(),
-           credited_entry_ref = v_entry_id
-     WHERE topup_order_id = p_topup_order_id;
-    PERFORM set_config('app.organization_id', v_previous, true);
+           credited_entry_ref = v_entry_id,
+           failure_code = NULL
+     WHERE topup_order_id = p_topup_order_id
+       AND organization_id = p_organization_id;
+    PERFORM pg_catalog.set_config('app.organization_id', v_previous, true);
     RETURN v_entry_id;
 END;
 $$;
@@ -398,24 +451,32 @@ BEGIN
                  ORDER BY lot_id FOR UPDATE
             LOOP
                 v_allocated := v_allocated + v_allocation.quantity;
-                UPDATE public.commercial_credit_lots
-                   SET reserved = reserved - v_allocation.quantity,
-                       available = available + CASE WHEN expires_at > now()
-                           THEN v_allocation.quantity ELSE 0 END,
-                       consumed = consumed + CASE WHEN expires_at <= now()
-                           THEN v_allocation.quantity ELSE 0 END,
-                       status = CASE
-                           WHEN expires_at <= now()
-                                AND reserved - v_allocation.quantity = 0 THEN 'EXPIRED'
-                           ELSE status END,
-                       updated_at = now()
+                SELECT * INTO v_lot FROM public.commercial_credit_lots
                  WHERE lot_id = v_allocation.lot_id
                    AND organization_id = v_org
-                   AND reserved >= v_allocation.quantity;
-                IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_CREDIT_LOT_DRIFT'; END IF;
-                IF (SELECT expires_at <= now() FROM public.commercial_credit_lots
-                     WHERE lot_id = v_allocation.lot_id) THEN
-                    v_expired := v_expired + v_allocation.quantity;
+                 FOR UPDATE;
+                IF NOT FOUND OR v_lot.reserved < v_allocation.quantity THEN
+                    RAISE EXCEPTION 'ELMOS_CREDIT_LOT_DRIFT';
+                END IF;
+                IF v_lot.expires_at <= now() THEN
+                    -- The lot TTL applies to both the held slice and any
+                    -- unreserved remainder. Retaining that remainder would
+                    -- leave account.balance above the authoritative lot sum.
+                    v_expired := v_expired + v_lot.available + v_allocation.quantity;
+                    UPDATE public.commercial_credit_lots
+                       SET available = 0,
+                           reserved = reserved - v_allocation.quantity,
+                           consumed = consumed + v_lot.available + v_allocation.quantity,
+                           status = CASE WHEN reserved - v_allocation.quantity = 0
+                                         THEN 'EXPIRED' ELSE status END,
+                           updated_at = now()
+                     WHERE lot_id = v_allocation.lot_id AND organization_id = v_org;
+                ELSE
+                    UPDATE public.commercial_credit_lots
+                       SET reserved = reserved - v_allocation.quantity,
+                           available = available + v_allocation.quantity,
+                           updated_at = now()
+                     WHERE lot_id = v_allocation.lot_id AND organization_id = v_org;
                 END IF;
             END LOOP;
             IF v_allocated <> v_res.requested_credits THEN

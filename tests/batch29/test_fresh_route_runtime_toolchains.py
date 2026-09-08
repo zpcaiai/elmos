@@ -358,6 +358,19 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert "ada-url brotli" not in installer
 
 
+def test_ci_node_profiles_bind_the_current_openssl_bottle_identity() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert installer.count(
+        'NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"'
+    ) == 2
+    assert installer.count(
+        'NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"'
+    ) == 2
+    assert "a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71" not in installer
+    assert "ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca" not in installer
+
+
 def test_ci_ada_url_abi_link_rejects_drift_and_cellar_escape(tmp_path: Path) -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
     start = installer.index("verify_pinned_ada_url_abi_link() {")
@@ -502,6 +515,15 @@ def test_ci_java_profiles_never_mutate_or_inject_a_homebrew_signature() -> None:
     assert '"${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python"' in installer
     assert 'ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}"' in installer
     assert 'ELMOS_JAVA21_DISTRIBUTION=temurin' in installer
+    assert (
+        '"20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"'
+    ) in installer
+    assert (
+        '"20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"'
+    ) in installer
+    assert 'case "${TEMURIN_HOST_BINDING}" in' in installer
     assert homebrew_install in installer
     assert all(
         marker not in installer

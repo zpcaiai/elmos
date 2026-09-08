@@ -205,6 +205,29 @@ class JdbcCommercialOrderStoreLiveTest {
                 + "from commercial_credit_reservations where reservation_id = ?",
                 creditHold.reservationId()));
 
+        String expiredLotOrganization = "commercial-expired-lot-" + suffix;
+        insertOrganization(expiredLotOrganization);
+        String expiredLotOrder = createOrder(
+                expiredLotOrganization, "actor-a", "expired-lot-credit-" + suffix,
+                "elmos-credit-500", null, "expired-lot-credit-idem-" + suffix);
+        fulfill(expiredLotOrganization, expiredLotOrder, "expired-lot-provider-" + suffix);
+        var expiredLotHold = orders.reserveGeneration(
+                "expired-lot-res-" + suffix, expiredLotOrganization, "actor-a",
+                "project-expired-lot", "job-expired-lot", new BigDecimal("60"),
+                "expired-lot-res-idem-" + suffix, 600);
+        admin.sql("update commercial_credit_reservations "
+                        + "set expires_at = now() - interval '1 second' where reservation_id = ?")
+                .param(expiredLotHold.reservationId()).update();
+        admin.sql("update commercial_credit_lots "
+                        + "set expires_at = now() - interval '1 second' where source_order_id = ?")
+                .param(expiredLotOrder).update();
+
+        assertBalance(expiredLotOrganization, "0", "0", "0");
+        assertEquals("EXPIRED", inTenant(expiredLotOrganization, "select status "
+                + "from commercial_credit_lots where source_order_id = ?", expiredLotOrder));
+        assertEquals("500", inTenant(expiredLotOrganization, "select consumed::text "
+                + "from commercial_credit_lots where source_order_id = ?", expiredLotOrder));
+
         String oneTimeOrder = createOrder(organization, "actor-a", "expiry-once-" + suffix,
                 "elmos-project-generation-once", "project-once", "expiry-once-idem-" + suffix);
         fulfill(organization, oneTimeOrder, "expiry-once-provider-" + suffix);
@@ -256,6 +279,40 @@ class JdbcCommercialOrderStoreLiveTest {
         assertEquals("RECONCILIATION_REQUIRED", directory.status());
         wallet.creditTopup(organization, topupOrder, "recovery-topup-provider-" + suffix,
                 "payment-callback");
+        assertEquals("CREDITED", wallet.findTopupOrder(
+                organization, topupOrder).orElseThrow().status());
+        assertEquals(new BigDecimal("1000"), wallet.balance(organization).balanceMinor());
+
+        String otherReconciliation = "other-reconciliation-topup-" + suffix;
+        wallet.createTopupOrder(otherReconciliation, organization, "actor-a",
+                new BigDecimal("1000"), "ALIPAY", otherReconciliation,
+                "other-reconciliation-idem-" + suffix, 1800);
+        wallet.markTopupAwaitingPayment(organization, otherReconciliation, "actor-a");
+        wallet.markTopupPreparationFailed(organization, otherReconciliation, "actor-a", true,
+                "MANUAL_RECONCILIATION_REQUIRED");
+        assertThrows(WalletPort.WalletStateException.class, () -> wallet.creditTopup(
+                organization, otherReconciliation, "other-reconciliation-provider-" + suffix,
+                "payment-callback"));
+
+        String lateTopup = "late-topup-" + suffix;
+        wallet.createTopupOrder(lateTopup, organization, "actor-a", new BigDecimal("1000"),
+                "ALIPAY", lateTopup, "late-topup-idem-" + suffix, 1800);
+        wallet.markTopupAwaitingPayment(organization, lateTopup, "actor-a");
+        admin.sql("update wallet_topup_orders "
+                        + "set created_at = now() - interval '2 seconds', "
+                        + "expires_at = now() - interval '1 second' where topup_order_id = ?")
+                .param(lateTopup).update();
+        wallet.creditTopup(organization, lateTopup, "late-topup-provider-" + suffix,
+                "payment-callback");
+        assertEquals("RECONCILIATION_REQUIRED", wallet.findTopupOrder(
+                organization, lateTopup).orElseThrow().status());
+        assertEquals("PAYMENT_AFTER_LOCAL_EXPIRY", admin.sql(
+                        "select failure_code from wallet_topup_orders where topup_order_id = ?")
+                .param(lateTopup).query(String.class).single());
+        assertEquals(new BigDecimal("1000"), wallet.balance(organization).balanceMinor());
+
+        assertEquals("CREDITED", wallet.markTopupAwaitingPayment(
+                organization, topupOrder, "actor-a"));
         assertEquals("CREDITED", wallet.findTopupOrder(
                 organization, topupOrder).orElseThrow().status());
         assertThrows(WalletPort.WalletStateException.class, () -> wallet.markTopupAwaitingPayment(

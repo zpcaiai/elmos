@@ -42,6 +42,7 @@ ignore = ["S101"]
 # request text reaches them. The rule fires on the enclosing multiline literal,
 # which cannot carry an inline noqa.
 "src/elmos_project_synthesis/production_runtime.py" = ["S608"]
+"tests/**" = ["S603", "S607"]
 
 [tool.mypy]
 python_version = "3.12"

@@ -1,5 +1,6 @@
--- Align the PostgreSQL subscription catalog with the immutable application
--- catalog introduced alongside commercial Credit and one-time products in V83.
+-- Align the append-only database catalog and its subscription entry points with
+-- contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json version 2026-09-08.1.
+-- Prior catalog rows remain immutable historical snapshots.
 
 INSERT INTO self_service_pricing_plan_versions (
     catalog_version, plan_id, currency, price_minor, billing_period, allowance_window,
@@ -7,13 +8,13 @@ INSERT INTO self_service_pricing_plan_versions (
     artifact_retention_days, effective_from, source_ref, status
 ) VALUES
     ('2026-09-08.1', 'elmos-free-trial', 'CNY', 0, 'TRIAL', 'TRIAL_TERM',
-     2000000, 60, 1, 1, 7, '2026-09-08T00:00:00Z',
+     2000000, 60, 1, 1, 7, '2026-07-28T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT'),
     ('2026-09-08.1', 'elmos-pro-monthly', 'CNY', 12900, 'MONTH', 'MONTHLY',
-     20000000, 600, 10, 3, 30, '2026-09-08T00:00:00Z',
+     20000000, 600, 10, 3, 30, '2026-07-28T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT'),
     ('2026-09-08.1', 'elmos-pro-annual', 'CNY', 129000, 'YEAR', 'MONTHLY',
-     25000000, 750, 25, 5, 90, '2026-09-08T00:00:00Z',
+     25000000, 750, 25, 5, 90, '2026-07-28T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT');
 
 CREATE OR REPLACE FUNCTION elmos_activate_subscription_period(

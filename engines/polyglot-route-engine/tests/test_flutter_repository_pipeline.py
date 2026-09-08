@@ -119,7 +119,7 @@ def test_flutter_source_repository_runs_two_files_and_closes_to_python(
         tmp_path / "output",
     )
 
-    assert report["status"] == "COMPLETE"
+    assert report["status"] == "COMPLETE", report
     assert report["repository_complete"] is True
     assert report["repository_execution_status"] == "PASSED_LOCAL"
     assert report["work_unit_count"] == 2
