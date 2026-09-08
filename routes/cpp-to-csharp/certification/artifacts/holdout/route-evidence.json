@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:79a212510431ef4bc0a6e5327778ca5a73f9c97c762985e0d6afe906bb1256ce",
+    "artifact_sha256": "sha256:beedbb613a12970351db7c3ccd773726c37acdd52b86742a454d8f6da21a8e2d",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:91cc87b76876f26416bb40fd558a8a0f707a3a73babdd4e9e984f7474334c105",
+    "formal_input_digest": "sha256:067da5ff3853b2a7c232e25e0bf5f1d1e3a9c15592ae1f3fc9fff1b07b3474a1",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:91cc87b76876f26416bb40fd558a8a0f707a3a73babdd4e9e984f7474334c105",
+    "formal_input_sha256": "sha256:067da5ff3853b2a7c232e25e0bf5f1d1e3a9c15592ae1f3fc9fff1b07b3474a1",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:91cc87b76876f26416bb40fd558a8a0f707a3a73babdd4e9e984f7474334c105",
+        "formal_input_sha256": "sha256:067da5ff3853b2a7c232e25e0bf5f1d1e3a9c15592ae1f3fc9fff1b07b3474a1",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:44edf009ce202285a151c8e85087d2c005fd3e41458a3b5b9349c138d4efb5d2",
+        "sha256": "sha256:e2c0a79be556e1863e767707c8cc3adc66a724085b44e9135686f07b972b800f",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:91cc87b76876f26416bb40fd558a8a0f707a3a73babdd4e9e984f7474334c105",
+        "formal_input_sha256": "sha256:067da5ff3853b2a7c232e25e0bf5f1d1e3a9c15592ae1f3fc9fff1b07b3474a1",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:5f0b42eb6a150faff34a582a94ac8168163644774acd074698efdcc1c36634ab",
+        "sha256": "sha256:c35f2ac751f6f000faea8f9d8b2f9dd0d144a1066d4260af09eea4bbd11e2f4a",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:44edf009ce202285a151c8e85087d2c005fd3e41458a3b5b9349c138d4efb5d2",
+    "solver_input_digest": "sha256:e2c0a79be556e1863e767707c8cc3adc66a724085b44e9135686f07b972b800f",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:e3cf6064f660e174d70e2832e5641afbe306150836d04ea6365b6d19fdfbef02",
+    "artifact_sha256": "sha256:991299d6de553446aa0b6e4601eae6c1e11f919c5fcee8ba7fecc6231cdb548b",
     "status": "PASSED"
   },
   "limitations": [
@@ -221,7 +221,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-yf7p74iw/holdout/RouteHarness.csproj (in 36 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-yf7p74iw/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.60\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-irba6dox/holdout/RouteHarness.csproj (in 76 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-irba6dox/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.10\n"
       },
       {
         "command": [

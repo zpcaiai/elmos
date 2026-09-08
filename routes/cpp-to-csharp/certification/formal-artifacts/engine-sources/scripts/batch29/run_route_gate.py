@@ -24,6 +24,7 @@ from route_sets import (
     NODEJS_EXACT_ROUTE_KEYS,
     SPECIALIZED_ROUTE_KEYS,
     V3_EXACT_ROUTE_KEYS,
+    VB6_EXACT_ROUTE_KEYS,
     split_route_key,
 )
 from validate_route import (
@@ -35,6 +36,7 @@ from validate_route import (
     validate_nodejs_negative_evidence,
     validate_specialized_negative_evidence,
     validate_v3_research_route_contract,
+    validate_vb6_prepared_route_outputs,
 )
 from validate_route import (
     main as validate_route_main,
@@ -189,7 +191,7 @@ def main() -> int:
     source, target = split_route_key(str(route_key))
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
-    v3 = route_key in V3_EXACT_ROUTE_KEYS
+    v3 = route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}
     module_route = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
     if (
         manifest.get("source", {}).get("language") != source
@@ -213,6 +215,8 @@ def main() -> int:
             certification,
             failures,
         )
+        if route_key in VB6_EXACT_ROUTE_KEYS:
+            validate_vb6_prepared_route_outputs(route, failures)
         status = str(manifest.get("status", "")).lower()
         if str(certification.get("status", "")).lower() != status:
             failures.append("route and certification statuses must match")
