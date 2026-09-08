@@ -11,9 +11,9 @@
     "certification/artifacts/module/artifact-manifest.json"
   ],
   "formal_equivalence": {
-    "bytes": 298387,
+    "bytes": 298389,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:5f5839309e24df4d2aea6605c60b942ebddb7069d2c8c6b054d7cd73fdeabc73"
+    "sha256": "sha256:578e5a6a4a808f2555b148494ee26881bda9474db077a0514863e18df986d09c"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
@@ -21,7 +21,7 @@
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T07:47:35.162882+00:00",
+  "issued_at": "2026-09-08T12:42:18.497965+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,

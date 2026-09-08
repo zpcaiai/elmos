@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -79,22 +81,22 @@
     {
       "bytes": 3193,
       "path": "formal-composition.json",
-      "sha256": "sha256:1af8ffbd44930fe351467e46e6cc7f54ccdb7572b1e7253fc9efaf876a561948"
+      "sha256": "sha256:8276f4aee2e32c9c6a1fef6d6c1600e1bf160c5e6476a49ab667db888589f84c"
     },
     {
       "bytes": 1930,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:918a4f9a8a31bc4ccddfca31ddca37e3f356095b526a3f1a4253994a2621529c"
+      "sha256": "sha256:1bb7d860258b61d4a6bfdc00c7d0241db16a9e58ab16f935cf641e9b65ec4d3f"
     },
     {
-      "bytes": 12693,
+      "bytes": 12694,
       "path": "formal-input.json",
-      "sha256": "sha256:5744b3e5f4c11ced3d72d9d29c3390587f73fd80ea6aefe450a7ce60522bfda5"
+      "sha256": "sha256:d56fe231f3888f912478b4ad586206d44bb90d1e0480eb9185f0d61c7d7acab4"
     },
     {
       "bytes": 2535,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:741a336f11b63ad16b2a77f16e9e255dffbb0561526bc1442530dfd3a5bb95b1"
+      "sha256": "sha256:8bdad930a5675ce93bcf0db12b4a518be48f295fa82aebed1937226bfe2334a8"
     },
     {
       "bytes": 2811,
@@ -114,12 +116,12 @@
     {
       "bytes": 3646,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:e397646773244483888c591be8fa057c76daaeda9e63f5ed8f085a5957eb1588"
+      "sha256": "sha256:1b77799495b38970c7fd49a7d9a08e7b46836bc076fad570663123881e3287e1"
     },
     {
       "bytes": 10780,
       "path": "route-evidence.json",
-      "sha256": "sha256:d888a9f17ebc59dcc522e948c4743497dcc5d2e7a6f2f144aba13c9c7e5f2a7a"
+      "sha256": "sha256:2d6a2a3b536f1181e82801d45f08b800c204c933386b1475f2cb58ff4b5a57d3"
     },
     {
       "bytes": 309,
@@ -160,5 +162,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "cpp-to-java",
   "schema_version": 1,
-  "total_bytes": 64109
+  "total_bytes": 64110
 }
