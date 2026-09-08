@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:ad4471c468685cc8946c3cf2b152511f146374e02d2d9c6be3172eb9b1b7a68f
-; formal-input-sha256: sha256:ad4471c468685cc8946c3cf2b152511f146374e02d2d9c6be3172eb9b1b7a68f
+; formal_input_digest: sha256:f3e8d6160057d7803aa10315076166b452189e0c4cd3a36c0c95322e9462b4e5
+; formal-input-sha256: sha256:f3e8d6160057d7803aa10315076166b452189e0c4cd3a36c0c95322e9462b4e5
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -22,23 +22,23 @@
 (assert
  (= source_maximum target_maximum))
 (assert
- (let (($x175 (bvsgt source_value source_maximum)))
- (let ((?x97 (ite $x175 0 0)))
- (let ((?x67 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1694 (and (distinct ?x67 0) true)))
- (let (($x90 (bvslt source_value source_minimum)))
- (let ((?x11 (ite $x90 0 (ite $x1694 ?x67 ?x97))))
- (let ((?x92 (ite $x1694 ?x67 ?x11)))
- (= ?x92 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
- (let (($x175 (bvsgt source_value source_maximum)))
- (let ((?x97 (ite $x175 0 0)))
- (let ((?x67 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1694 (and (distinct ?x67 0) true)))
- (let (($x90 (bvslt source_value source_minimum)))
- (let ((?x11 (ite $x90 0 (ite $x1694 ?x67 ?x97))))
- (let ((?x92 (ite $x1694 ?x67 ?x11)))
- (= ?x92 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
  false)
 (check-sat)

@@ -1,34 +1,41 @@
 {
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
+  "evidence_format": 2,
   "evidence_refs": [
     "certification/local-development-evidence.json",
     "certification/local-holdout-evidence.json",
     "certification/local-representative-evidence.json",
-    "certification/local-negative-evidence.json",
-    "certification/module-equivalence.json"
+    "certification/formal-equivalence.json",
+    "certification/module-equivalence.json",
+    "certification/artifacts/module/artifact-manifest.json"
   ],
+  "formal_equivalence": {
+    "bytes": 298374,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:779c814452797bf76658e769d09d9000898be514ec0d1c5569036d3ec77329d6"
+  },
   "gate_results": {
     "external_execution": "NOT_RUN",
     "independent_verification": "NOT_RUN",
-    "local_execution": "NOT_RUN",
-    "module_execution": "NOT_RUN"
+    "local_execution": "PASSED",
+    "module_execution": "PASSED"
   },
-  "issued_at": "2026-08-09T00:00:00+00:00",
+  "issued_at": "2026-09-08T04:48:41.928203+00:00",
   "metrics": {
-    "build_green_rate": 0.0,
+    "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 0.0,
+    "first_build_pass_rate": 1.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 0.0,
-    "source_map_coverage": 0.0
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
   },
   "module_equivalence": {
-    "bytes": 1782,
+    "bytes": 211018,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:1d4c5b5b9e061577d64ac4048b34b6c7a99c25efc333006ee39b61513243fcf3"
+    "sha256": "sha256:ab60b7c3e27ac9f868e3c36698d4006a011b5a00a41289a24e554f0d79c3b6f1"
   },
-  "next_review_at": "2026-11-09T00:00:00+00:00",
+  "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "cpp-to-objc",
   "route_version": "1.0.0",
   "schema_version": 1,

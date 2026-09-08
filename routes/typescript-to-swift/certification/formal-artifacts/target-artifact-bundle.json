@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 187,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:e831d1473b67b4e932a37794affb2c389a30a6cef97fe28dbb5e3bbeb6adc857"
+    },
+    {
+      "bytes": 226,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:6afe410a696f8c6e532d7ecb938fbbc5c0350a8db2432492fe914acfa1865314"
+    },
+    {
+      "bytes": 168,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:d8b662ce445f7aadfc3630469de1bdd1264c18821681bd3a49f629dde4ed0a97"
+    }
+  ]
+}

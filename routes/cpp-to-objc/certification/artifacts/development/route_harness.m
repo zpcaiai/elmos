@@ -31,15 +31,15 @@ static __attribute__((unused)) NSString *ElmosHarnessHexUTF8(NSString *value) {
 
 int main() {
     @autoreleasepool {
-        long long actual_0 = calculate(100, 20);
+        long long actual_0 = elmos_fn_ad6f2ef7e718c693(100, 20);
         long long expected_0 = 120;
         if (actual_0 != expected_0) return 1;
         printf("ELMOS_OBSERVATION\t0\ti64-dec\t%lld\n", actual_0);
-        long long actual_1 = calculate(-1, 5);
+        long long actual_1 = elmos_fn_ad6f2ef7e718c693(-1, 5);
         long long expected_1 = 0;
         if (actual_1 != expected_1) return 2;
         printf("ELMOS_OBSERVATION\t1\ti64-dec\t%lld\n", actual_1);
-        long long actual_2 = calculate(7, -2);
+        long long actual_2 = elmos_fn_ad6f2ef7e718c693(7, -2);
         long long expected_2 = 5;
         if (actual_2 != expected_2) return 3;
         printf("ELMOS_OBSERVATION\t2\ti64-dec\t%lld\n", actual_2);

@@ -303,8 +303,12 @@ def _statements(
     record_defs: dict[str, RecordDefinition] | None = None,
     function_names: set[str] | None = None,
     emitted_target: bool = False,
+    known_variables: set[str] | None = None,
+    parameter_names: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
+    known = set(known_variables) if known_variables is not None else set()
+    params = set(parameter_names) if parameter_names is not None else set()
     for node in nodes:
         if isinstance(node, ast.Return) and node.value is not None:
             result.append(
@@ -336,6 +340,8 @@ def _statements(
                         record_defs=record_defs,
                         function_names=function_names,
                         emitted_target=emitted_target,
+                        known_variables=set(known),
+                        parameter_names=params,
                     ),
                     "else": _statements(
                         node.orelse,
@@ -343,6 +349,8 @@ def _statements(
                         record_defs=record_defs,
                         function_names=function_names,
                         emitted_target=emitted_target,
+                        known_variables=set(known),
+                        parameter_names=params,
                     ),
                 }
             )
@@ -366,6 +374,7 @@ def _statements(
             declared = _type(node.annotation, record_names)
             if not declared:
                 raise RouteError(f"PYTHON_UNSUPPORTED_LOCAL_TYPE:{ast.unparse(node.annotation)}")
+            known.add(node.target.id)
             result.append(
                 {
                     "kind": "let",
@@ -399,6 +408,8 @@ def _statements(
                         record_defs=record_defs,
                         function_names=function_names,
                         emitted_target=emitted_target,
+                        known_variables=set(known),
+                        parameter_names=params,
                     ),
                 }
             )
@@ -466,6 +477,8 @@ def _statements(
                 )
             else:
                 raise RouteError(f"PYTHON_RANGE_ARITY_INVALID:{len(args)}")
+            loop_known = set(known)
+            loop_known.add(node.target.id)
             for_dict: dict[str, Any] = {
                 "kind": "for",
                 "name": node.target.id,
@@ -478,6 +491,8 @@ def _statements(
                     record_defs=record_defs,
                     function_names=function_names,
                     emitted_target=emitted_target,
+                    known_variables=loop_known,
+                    parameter_names=params,
                 ),
             }
             if step is not None:
@@ -488,11 +503,61 @@ def _statements(
         elif isinstance(node, ast.Continue):
             result.append({"kind": "continue"})
         elif isinstance(node, ast.Assign):
-            # Named apart from the generic rejection so the message says what
-            # to do: annotate it. `PYTHON_UNSUPPORTED_STATEMENT:Assign` would
-            # have read as "assignment is not supported at all", which stopped
-            # being true here.
-            raise RouteError("PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+            if not (len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)):
+                raise RouteError("PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            target_name = node.targets[0].id
+            if target_name in params:
+                raise RouteError(f"PYTHON_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}")
+            if target_name not in known:
+                raise RouteError("PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+            result.append(
+                {
+                    "kind": "assign",
+                    "name": target_name,
+                    "expression": _expression(
+                        node.value,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        function_names=function_names,
+                        emitted_target=emitted_target,
+                    ),
+                }
+            )
+        elif isinstance(node, ast.AugAssign):
+            if not isinstance(node.target, ast.Name):
+                raise RouteError("PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            target_name = node.target.id
+            if target_name in params:
+                raise RouteError(f"PYTHON_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}")
+            if target_name not in known:
+                raise RouteError("PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+            operator = {
+                ast.Add: "+",
+                ast.Sub: "-",
+                ast.Mult: "*",
+                ast.Div: "/",
+                ast.Mod: "%",
+            }.get(type(node.op))
+            if not operator:
+                raise RouteError(f"PYTHON_UNSUPPORTED_AUG_ASSIGN_OP:{type(node.op).__name__}")
+            result.append(
+                {
+                    "kind": "assign",
+                    "name": target_name,
+                    "expression": {
+                        "kind": "binary",
+                        "operator": operator,
+                        "left": {"kind": "name", "value": target_name},
+                        "right": _expression(
+                            node.value,
+                            record_names=record_names,
+                            record_defs=record_defs,
+                            function_names=function_names,
+                            emitted_target=emitted_target,
+                        ),
+                    },
+                }
+            )
         else:
             raise RouteError(f"PYTHON_UNSUPPORTED_STATEMENT:{type(node).__name__}")
     return result
@@ -750,6 +815,8 @@ def _parse_function(
             record_defs=record_defs,
             function_names=function_names,
             emitted_target=emitted_target,
+            known_variables=set(),
+            parameter_names={item["name"] for item in parameters},
         ),
     }
     if documentation is not None:

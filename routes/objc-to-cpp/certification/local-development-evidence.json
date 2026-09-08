@@ -1,11 +1,292 @@
 {
-  "behavior_pass_rate": 0.0,
+  "artifact_manifest": {
+    "bytes": 4380,
+    "path": "certification/artifacts/development/artifact-manifest.json",
+    "sha256": "sha256:67008bb888a94484298439be2ab18ec584cd619c166a4f880afb5adf4e52fe78"
+  },
+  "artifact_root": "certification/artifacts/development",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
   "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:f2de473b10aceeae92ba8d27a0f9cc020049fc60e10d749ed1a568402c91c60a",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
   "corpus": "development",
-  "critical_unknown_semantics": 1,
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:3391c57efc9f5c50d794cd3205b4407158a9ebfa46a19dd175984a6dbf8d11ec",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
+    "formal_input_digest": "sha256:87ebd6e7f7604883e9258b00c68701b3ce146481e8366127d2abd7934ddebaaa",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:87ebd6e7f7604883e9258b00c68701b3ce146481e8366127d2abd7934ddebaaa",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:87ebd6e7f7604883e9258b00c68701b3ce146481e8366127d2abd7934ddebaaa",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:9ef922b018cbb6645ffb30019a9404e1e72789a4c91ded9cd1eb722be4af2319",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:87ebd6e7f7604883e9258b00c68701b3ce146481e8366127d2abd7934ddebaaa",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:45c8000a23b24f05b8388c6f2685c8e793d2dbc9ae74f1754272464846d1a2c8",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:9ef922b018cbb6645ffb30019a9404e1e72789a4c91ded9cd1eb722be4af2319",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:f3a7a2be5b383eb62ceac2f956e9cf0c6b9f11c86d09b7ffdee08828e27e0e08",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:14efe4c5b1d5f147062bf98d2b9a9f5cc1660d6c534f64061e449657a10a2307",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:60be21527c6f726ca8a8016b9169222ae9b33ceaa4063e23505ea34bce092f8a",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:30545c25445d8ecd3e48134768fb2ce32c3d866154ce79ef9d7cf76686c5646a",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_63308dfca677c22c",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.m",
+      "source_sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:aa94e9b9e75859454ebda2a007f8dc81843330d0112a2c55ee3c0fbfd76f09e6"
+  },
   "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:accebb91c6b824bc4d3481299bd24fa2b8fcba9c09f419df9bfeb9ff6e89c632",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "objc-to-cpp",
-  "schema_version": 1,
-  "source_map_coverage": 0.0,
-  "status": "NOT_RUN"
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:6fa7f5c151a3e33135b7ed72448d28a74f0bca15b5b45c78f75cf8796fc72fca",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:f3a7a2be5b383eb62ceac2f956e9cf0c6b9f11c86d09b7ffdee08828e27e0e08"
+  },
+  "semantic_ir_sha256": "sha256:6fa7f5c151a3e33135b7ed72448d28a74f0bca15b5b45c78f75cf8796fc72fca",
+  "source": {
+    "analyzer": "clang AST (JSON)",
+    "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "function_name": "calculate",
+    "language": "objc",
+    "path": "pricing.m",
+    "sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.m",
+    "artifact_sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "-x",
+          "objective-c",
+          "-std=c17",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-fobjc-arc",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-framework",
+          "Foundation",
+          "-o",
+          "source_harness",
+          "source_harness.m"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "objc",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "objc",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c17/objc-arc/Foundation/Apple-runtime"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_63308dfca677c22c",
+    "language": "cpp",
+    "path": "migrated.cpp",
+    "sha256": "sha256:8a922f98b976d2ed79490eab1e9a2bfd1661bfc5217aa19a5518007d520a7dcc"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "-std=c++20",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "route_harness",
+          "route_harness.cpp"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "cpp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "cpp",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c++20"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  }
 }

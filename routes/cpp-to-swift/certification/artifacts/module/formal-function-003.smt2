@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:6235499600b650d349da6b2cb3baf5a3f1c1f32d59f5d60811591878b8480a0e
-; formal-input-sha256: sha256:6235499600b650d349da6b2cb3baf5a3f1c1f32d59f5d60811591878b8480a0e
+; formal_input_digest: sha256:b8a189e0478dfe49c998a79e5130c1e8fcc6ec773476f7ac655d0f5da62973cb
+; formal-input-sha256: sha256:b8a189e0478dfe49c998a79e5130c1e8fcc6ec773476f7ac655d0f5da62973cb
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -46,23 +46,23 @@
 (assert
  (not (fp.isInfinite target_maximum)))
 (assert
- (let (($x693 (fp.gt source_value source_maximum)))
- (let ((?x83 (ite $x693 0 0)))
- (let ((?x178 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1187 (and (distinct ?x178 0) true)))
- (let (($x51 (fp.lt source_value source_minimum)))
- (let ((?x18 (ite $x51 0 (ite $x1187 ?x178 ?x83))))
- (let ((?x1653 (ite $x1187 ?x178 ?x18)))
- (= ?x1653 0)))))))))
+ (let (($x13 (fp.gt source_value source_maximum)))
+ (let ((?x32 (ite $x13 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x28 (fp.lt source_value source_minimum)))
+ (let ((?x8 (ite $x28 0 (ite $x16 ?x73 ?x32))))
+ (let ((?x158 (ite $x16 ?x73 ?x8)))
+ (= ?x158 0)))))))))
 (assert
- (let (($x693 (fp.gt source_value source_maximum)))
- (let ((?x83 (ite $x693 0 0)))
- (let ((?x178 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1187 (and (distinct ?x178 0) true)))
- (let (($x51 (fp.lt source_value source_minimum)))
- (let ((?x18 (ite $x51 0 (ite $x1187 ?x178 ?x83))))
- (let ((?x1653 (ite $x1187 ?x178 ?x18)))
- (= ?x1653 0)))))))))
+ (let (($x13 (fp.gt source_value source_maximum)))
+ (let ((?x32 (ite $x13 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x28 (fp.lt source_value source_minimum)))
+ (let ((?x8 (ite $x28 0 (ite $x16 ?x73 ?x32))))
+ (let ((?x158 (ite $x16 ?x73 ?x8)))
+ (= ?x158 0)))))))))
 (assert
  false)
 (check-sat)

@@ -126,6 +126,140 @@ def _synthetic_java_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -
     )
 
 
+def _synthetic_go_toolchain() -> ExactToolchain:
+    return ExactToolchain(
+        language="go",
+        version="go1.25.0",
+        executable="/fixed/go",
+        profile=("test-profile",),
+        executable_sha256="c" * 64,
+    )
+
+
+def _synthetic_rust_toolchain() -> ExactToolchain:
+    return ExactToolchain(
+        language="rust",
+        version="rustc 1.89.0",
+        executable="/fixed/rustc",
+        auxiliary="/fixed/cargo",
+        profile=("test-profile",),
+        executable_sha256="d" * 64,
+        auxiliary_sha256="e" * 64,
+    )
+
+
+@pytest.mark.parametrize("go_suffix", ["", "\nexit status 2"])
+def test_trusted_go_analyzer_promotes_exact_requested_missing_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    go_suffix: str,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    source = tmp_path / "sample.go"
+    source.write_text("package sample\n", encoding="utf-8")
+    reason = "FUNCTION_NOT_FOUND:missing"
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda helper, executable: {})
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, environment_overrides: (_ for _ in ()).throw(
+            RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}{go_suffix}")
+        ),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_go_analyzer(toolchain, helper, [str(source), "missing"])
+
+    assert str(captured.value) == reason
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "FUNCTION_NOT_FOUND:different",
+        "FUNCTION_NOT_FOUND:missing:suffix",
+        "FUNCTION_NOT_FOUND:missing\nextra-output",
+        "NATIVE_ANALYZER_FAILED:/forged/go:FUNCTION_NOT_FOUND:missing",
+    ],
+)
+def test_trusted_go_analyzer_does_not_promote_near_multiline_or_forged_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stderr: str,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    source = tmp_path / "sample.go"
+    source.write_text("package sample\n", encoding="utf-8")
+    wrapped = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{stderr}"
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda helper, executable: {})
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, environment_overrides: (_ for _ in ()).throw(RouteError(wrapped)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_go_analyzer(toolchain, helper, [str(source), "missing"])
+
+    assert str(captured.value) == wrapped
+
+
+def test_trusted_rust_analyzer_promotes_exact_requested_missing_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchain = _synthetic_rust_toolchain()
+    package = ENGINE_ROOT / "native" / "rust"
+    source = tmp_path / "sample.rs"
+    source.write_text("fn sample() {}\n", encoding="utf-8")
+    reason = "FUNCTION_NOT_FOUND:missing"
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, **kwargs: (_ for _ in ()).throw(
+            RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.auxiliary}:{reason}")
+        ),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_rust_analyzer(toolchain, package, [str(source), "missing"])
+
+    assert str(captured.value) == reason
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "FUNCTION_NOT_FOUND:different",
+        "FUNCTION_NOT_FOUND:missing:suffix",
+        "FUNCTION_NOT_FOUND:missing\nextra-output",
+        "NATIVE_ANALYZER_FAILED:/forged/cargo:FUNCTION_NOT_FOUND:missing",
+    ],
+)
+def test_trusted_rust_analyzer_does_not_promote_near_multiline_or_forged_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stderr: str,
+) -> None:
+    toolchain = _synthetic_rust_toolchain()
+    package = ENGINE_ROOT / "native" / "rust"
+    source = tmp_path / "sample.rs"
+    source.write_text("fn sample() {}\n", encoding="utf-8")
+    wrapped = f"NATIVE_ANALYZER_FAILED:{toolchain.auxiliary}:{stderr}"
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, **kwargs: (_ for _ in ()).throw(RouteError(wrapped)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_rust_analyzer(toolchain, package, [str(source), "missing"])
+
+    assert str(captured.value) == wrapped
+
+
 def _trusted_java_test_input(tmp_path: Path) -> tuple[Path, list[str]]:
     source = tmp_path / "Narrow.java"
     source.write_text(

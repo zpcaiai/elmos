@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0
-; formal-input-sha256: sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0
+; formal_input_digest: sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80
+; formal-input-sha256: sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -22,23 +22,23 @@
 (assert
  (= source_maximum target_maximum))
 (assert
- (let (($x4989 (bvsgt source_value source_maximum)))
- (let ((?x2963 (ite $x4989 0 0)))
- (let ((?x41 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x680 (and (distinct ?x41 0) true)))
- (let (($x4570 (bvslt source_value source_minimum)))
- (let ((?x77 (ite $x4570 0 (ite $x680 ?x41 ?x2963))))
- (let ((?x1413 (ite $x680 ?x41 ?x77)))
- (= ?x1413 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
- (let (($x4989 (bvsgt source_value source_maximum)))
- (let ((?x2963 (ite $x4989 0 0)))
- (let ((?x41 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x680 (and (distinct ?x41 0) true)))
- (let (($x4570 (bvslt source_value source_minimum)))
- (let ((?x77 (ite $x4570 0 (ite $x680 ?x41 ?x2963))))
- (let ((?x1413 (ite $x680 ?x41 ?x77)))
- (= ?x1413 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
  false)
 (check-sat)

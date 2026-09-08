@@ -1,0 +1,25 @@
+{
+  "route_key": "rust-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 596,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:232ce2e95ac5c8f28f2feeb3acb7dab7c8055aafab035ff4ecc36004217558e4"
+    },
+    {
+      "bytes": 416,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:ed8394962bb8982066c55b51ae16d3055f10ed07b06858e5693c64144a8c0425"
+    },
+    {
+      "bytes": 622,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:b8f64c8c0857cc57c13a0d183730f77dcfa77daaad379a5e5196496a4ab9b35d"
+    }
+  ]
+}
