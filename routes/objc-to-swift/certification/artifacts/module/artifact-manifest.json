@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -66,77 +68,77 @@
     {
       "bytes": 2558,
       "path": "formal-function-000-input.json",
-      "sha256": "sha256:cb1d736781caf454313113199b9e4bc68cd671b0a66661fd51b1b8ad0b36fc88"
+      "sha256": "sha256:90b0adca4730fda50ea41f8c9d586e6ece455877d637d46613b0893e4c056a69"
     },
     {
       "bytes": 2420,
       "path": "formal-function-000-result.json",
-      "sha256": "sha256:da21333115f36dd62f233a03b7c2a188a3a5f987c5c7b65932c2ecdef72199aa"
+      "sha256": "sha256:e3de6e9d5345bee7acfa4510add77467c352bf6ec696df30b15a370031f3b52c"
     },
     {
       "bytes": 1275,
       "path": "formal-function-000.smt2",
-      "sha256": "sha256:e62414c2962943ea1acf64b50a66fae1f5004c28659631ae58f08e8d97397c4b"
+      "sha256": "sha256:6f4dcc898fac09dd2bd4eb2f87c296ed0d2a7fb4c9f1785d04401e6020b4f9cb"
     },
     {
       "bytes": 3024,
       "path": "formal-function-001-input.json",
-      "sha256": "sha256:bc4035cecf413a5620b994b983476931dcd07a13e573cc546c04bc41172e742f"
+      "sha256": "sha256:89f913d59e8e6d092d5cb4b630a5ff0c301d54ef116f76c92ec59d3f88a3bb7b"
     },
     {
       "bytes": 2429,
       "path": "formal-function-001-result.json",
-      "sha256": "sha256:8e93c3523e3cc83c2180eb0e8e348219aec1d010ba667c095eafc7c31a1d7907"
+      "sha256": "sha256:2abf09a2775fb7866e7b8341fab0f5120c208c669c4f853a7346784178f4fe08"
     },
     {
       "bytes": 1985,
       "path": "formal-function-001.smt2",
-      "sha256": "sha256:6da81fe7d23ae242069c4648956add79a4388bb86a58550fecc2a1a9b54f04c4"
+      "sha256": "sha256:b1aa5815521437243220ad6933f8aa84c06913d4ddcb270831572be1eaadf4c9"
     },
     {
       "bytes": 3498,
       "path": "formal-function-002-input.json",
-      "sha256": "sha256:4e36c2a387b4a26db9098563cde5ef0968b0d22dc9012f01b76550019349c22c"
+      "sha256": "sha256:046e24bf08e4aa91a9b500106c5bb34babc88c64c63dcc3e233f97703d885a8f"
     },
     {
       "bytes": 2456,
       "path": "formal-function-002-result.json",
-      "sha256": "sha256:b0e6c7a787042be9d5bf1553eea6d5456f4e2f8246f82dae7733691123532b2a"
+      "sha256": "sha256:a9d323abb10793cc71818084cdcd6b47957715c2e2630180d7fcf7f625428abc"
     },
     {
       "bytes": 1873,
       "path": "formal-function-002.smt2",
-      "sha256": "sha256:268895b9c573a0b5832a502ab1a1629f9a4663485a1a6868f377d8aa307b0d86"
+      "sha256": "sha256:875e6dcbabca18f3491537b6d54a2efea5e2f9c4077d1cc664ff827ef1a3db63"
     },
     {
       "bytes": 3507,
       "path": "formal-function-003-input.json",
-      "sha256": "sha256:39b7be2f3b820bccd3c452561cd98c3a3075937fb7e7051d7d240500691b5e04"
+      "sha256": "sha256:9e48a47a7fab642ef8fdb488301c018482aa58240e7d6fe1ce86b05384e5fef7"
     },
     {
       "bytes": 2740,
       "path": "formal-function-003-result.json",
-      "sha256": "sha256:364ea913ab2e0b4186b7c14afcb14e0dbcfcbd1ba7b92680ede150d7503a9929"
+      "sha256": "sha256:7049c07fefe67ba9322d09b07fbaad5789f8b7f0a4ca6720e348161729cadf1d"
     },
     {
       "bytes": 2551,
       "path": "formal-function-003.smt2",
-      "sha256": "sha256:8c6237c3757ae5170ddc449cf7803994188f3e54f4df7aa9c90297ad94665067"
+      "sha256": "sha256:c6c24d305d960e8728f289a1641066d748d6b47218eb8d5ee54536268f7778cd"
     },
     {
       "bytes": 2580,
       "path": "formal-function-004-input.json",
-      "sha256": "sha256:e86fb45456fa2c1a5df1b3a1f4843250681d73181246c9a94d7b926c0ec5e9ee"
+      "sha256": "sha256:12e3c4ce4dac300a586de0fe88ad952806e451474f5b4d38c5e5314389822b83"
     },
     {
       "bytes": 2426,
       "path": "formal-function-004-result.json",
-      "sha256": "sha256:d001258541f0fae2e094971d20f9b485dad199fb0204b709da5c5a529615e2e3"
+      "sha256": "sha256:ecabd594aa3313e7c2b831cb08b4a6449b3dbe0338c5c84c21d34df2f7f5277b"
     },
     {
       "bytes": 1771,
       "path": "formal-function-004.smt2",
-      "sha256": "sha256:ef3e4cb218e6a6cabaab2b19449320ee06314cc65e3f49056fdbaeb579651474"
+      "sha256": "sha256:20bf67d014a629c4de8954a675d8f8165d9f0b97e15e5248540814a9e28cb439"
     },
     {
       "bytes": 9331,
@@ -156,7 +158,7 @@
     {
       "bytes": 3640,
       "path": "module-formal-input.json",
-      "sha256": "sha256:c24938d1a63a20f90a1e03bf8f88e9eaf52a346d16933c110ba73f67d95cbc00"
+      "sha256": "sha256:39b91e02dee88bf033751b0b706ae38f1c44e77f8cd82861d6300160f5915db1"
     },
     {
       "bytes": 731,
@@ -236,7 +238,7 @@
     {
       "bytes": 43209,
       "path": "target-module-inventory.json",
-      "sha256": "sha256:d61557ad8d9e0f1412a3b82cc254dbd18c6a29d1a4dbe97610b30f92c9f469ca"
+      "sha256": "sha256:bee423806592aeab6c992da53e61f64676adcbbe7a5f62987a9167cbad0aaf41"
     },
     {
       "bytes": 1881,
@@ -246,7 +248,7 @@
     {
       "bytes": 7793,
       "path": "target-module-semantic-ir.json",
-      "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
+      "sha256": "sha256:85f908b362b37e63ada9409dd44c5d8f0e10cbddbbffc0ff003822397977f2b9"
     },
     {
       "bytes": 8953,
@@ -306,22 +308,22 @@
     {
       "bytes": 7793,
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
+      "sha256": "sha256:85f908b362b37e63ada9409dd44c5d8f0e10cbddbbffc0ff003822397977f2b9"
     },
     {
       "bytes": 7879,
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:f66057c66c1b42ceda7af7f8091c6c0910c413391f92382d443a1704bad87623"
+      "sha256": "sha256:bcffb7798ae2fff1439411ff5e0674171180fe48a3928eac073e9488c1cb126c"
     },
     {
       "bytes": 196014,
       "path": "typed-pure-module-equivalence.json",
-      "sha256": "sha256:ed7d81b6f9c519afd03ee7928e38d67fec2cc8824c9e7a7e130b1a30ea32b326"
+      "sha256": "sha256:26efe614a00bc5b29ec0cca07857a5378d6a9b91b1b0660ccfdff40cbd57cff5"
     },
     {
       "bytes": 10395,
       "path": "whole-file-module-closure.json",
-      "sha256": "sha256:5aff22c1477275ca1e4edc4f61db28a2a31948d07488e2bd83abc84c0e986735"
+      "sha256": "sha256:eb32195caf829da5eda1b49613a53ad3f07d205d760ff4e9bdf0204f4fa0d7ec"
     }
   ],
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",

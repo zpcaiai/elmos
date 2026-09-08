@@ -11,9 +11,9 @@
     "certification/artifacts/module/artifact-manifest.json"
   ],
   "formal_equivalence": {
-    "bytes": 298739,
+    "bytes": 298741,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:d2519dd8f5557754500ac530a1ade4d9f65d84e706b7357d259ac7286cf8bff7"
+    "sha256": "sha256:f33432734c8b450d750dc13072a732085f113b4c7b375c3d042e6a63917adad5"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
@@ -21,7 +21,7 @@
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T07:19:21.556536+00:00",
+  "issued_at": "2026-09-08T13:52:21.915144+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -33,7 +33,7 @@
   "module_equivalence": {
     "bytes": 197693,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:b86b61cab10d130d7af90db62d8999b261933f3fffa6a60de42c2cb0794a6ea1"
+    "sha256": "sha256:7a2ee6bdc20617969f25198529a19285a5336cc1c9373753a44ab9619e06a261"
   },
   "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "objc-to-swift",
