@@ -56,9 +56,32 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
 #: until their governed host binding is injected.
 EXTERNAL_TOOLCHAIN_LANGUAGES: tuple[Language, ...] = ("vb6",)
 
+#: Exact language set exercised by the hosted whole-repository CI campaign.
+#: VB6 remains a supported route identity with repository-owned preparation
+#: surfaces, but its compile/run side requires the separately governed Windows
+#: VB6 SP6 cross-host campaign.  Keeping this tuple explicit prevents adding a
+#: declared language from silently expanding an evidence scope that was filed
+#: for the frozen pre-VB6 13-language / 156-direction matrix.
+HOSTED_REPOSITORY_MATRIX_LANGUAGES: tuple[Language, ...] = (
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "go",
+    "rust",
+    "cpp",
+    "objc",
+    "swift",
+    "php",
+    "kotlin",
+    "react",
+    "flutter",
+)
+
 #: Languages exercised by the standard local repository execution matrix.
-#: This distinction prevents catalog support from being mistaken for locally
-#: available native execution.
+#: This derived boundary is checked against the explicit hosted matrix so a
+#: catalog-only external toolchain cannot silently enter a local execution
+#: shard and a hosted campaign cannot silently lose a locally runnable route.
 LOCAL_EXECUTION_LANGUAGES: tuple[Language, ...] = tuple(
     language
     for language in SUPPORTED_LANGUAGES

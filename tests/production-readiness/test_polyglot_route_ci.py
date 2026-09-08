@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _local_execution_languages() -> tuple[str, ...]:
+def _hosted_repository_matrix_languages() -> tuple[str, ...]:
     models_path = (
         ROOT
         / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
@@ -23,22 +23,36 @@ def _local_execution_languages() -> tuple[str, ...]:
         if (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id
-            in {"SUPPORTED_LANGUAGES", "EXTERNAL_TOOLCHAIN_LANGUAGES"}
+            and node.target.id in {
+                "SUPPORTED_LANGUAGES",
+                "EXTERNAL_TOOLCHAIN_LANGUAGES",
+                "HOSTED_REPOSITORY_MATRIX_LANGUAGES",
+            }
         ):
             value = ast.literal_eval(node.value)
             if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
                 tuples[node.target.id] = value
-    if set(tuples) != {"SUPPORTED_LANGUAGES", "EXTERNAL_TOOLCHAIN_LANGUAGES"}:
+    expected_names = {
+        "SUPPORTED_LANGUAGES",
+        "EXTERNAL_TOOLCHAIN_LANGUAGES",
+        "HOSTED_REPOSITORY_MATRIX_LANGUAGES",
+    }
+    if set(tuples) != expected_names:
         raise AssertionError("route language lifecycle literals were not found")
     external = set(tuples["EXTERNAL_TOOLCHAIN_LANGUAGES"])
     if not external.issubset(tuples["SUPPORTED_LANGUAGES"]):
         raise AssertionError("external toolchain languages must be supported")
-    return tuple(
+    local_execution = tuple(
         language
         for language in tuples["SUPPORTED_LANGUAGES"]
         if language not in external
     )
+    hosted = tuples["HOSTED_REPOSITORY_MATRIX_LANGUAGES"]
+    if hosted != local_execution:
+        raise AssertionError(
+            "hosted repository matrix must equal supported languages minus external toolchains"
+        )
+    return hosted
 
 
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
@@ -773,7 +787,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(configured_sources, _local_execution_languages())
+        self.assertEqual(configured_sources, _hosted_repository_matrix_languages())
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests
@@ -788,7 +802,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             route_matrix_job,
         )
         self.assertIn(
-            'if source not in SUPPORTED_LANGUAGES:',
+            'if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:',
             route_matrix_job,
         )
         self.assertNotIn("-k", route_matrix_job)
