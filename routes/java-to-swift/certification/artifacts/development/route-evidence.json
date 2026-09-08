@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:6a0dc85b5f1256593f97127bf070f1e8b28570edfdc9c2cbf1c43a03096cc001",
+    "artifact_sha256": "sha256:da6f33cfad47b56688c4573f1672a535e214ed52953a99eeabcd762184e68419",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:e4dd721098689f26514bc8788be21e4aff79d7fe44e1a8fc910d3422a9bb1148",
+    "formal_input_digest": "sha256:a46474eb55f34c148eddbaa20a946e00169b93bf2c4ddad4b7ccc34d38f33f6b",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:e4dd721098689f26514bc8788be21e4aff79d7fe44e1a8fc910d3422a9bb1148",
+    "formal_input_sha256": "sha256:a46474eb55f34c148eddbaa20a946e00169b93bf2c4ddad4b7ccc34d38f33f6b",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:e4dd721098689f26514bc8788be21e4aff79d7fe44e1a8fc910d3422a9bb1148",
+        "formal_input_sha256": "sha256:a46474eb55f34c148eddbaa20a946e00169b93bf2c4ddad4b7ccc34d38f33f6b",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:6a6177022efa17a435bb487c7644ae19528413b6480906fccd572ddc46f0e6c7",
+        "sha256": "sha256:d9ca501ca0cc9a3152768d72ad17e1f841dbde4a3014e9bd2df9bd28396850c9",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:e4dd721098689f26514bc8788be21e4aff79d7fe44e1a8fc910d3422a9bb1148",
+        "formal_input_sha256": "sha256:a46474eb55f34c148eddbaa20a946e00169b93bf2c4ddad4b7ccc34d38f33f6b",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:784c5eb3b04a5694e16bedb93c8947d0c7bf0431b92c8a9e11e0e44e17d34d4a",
+        "sha256": "sha256:84e7fee0a1e5c45563962b7e7b4b2abe4760825c777fc544b7c31f891d2f38f5",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:6a6177022efa17a435bb487c7644ae19528413b6480906fccd572ddc46f0e6c7",
+    "solver_input_digest": "sha256:d9ca501ca0cc9a3152768d72ad17e1f841dbde4a3014e9bd2df9bd28396850c9",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,7 +66,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:0cdd4fba5540f771431057572bdc29924032ecb2eeb365fd4ecd9512acb6dd93",
+      "sha256": "sha256:e343686e5ae286826a58df5754144a17b92baf8e74775b1166c3bb4c0915b31b",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -75,7 +75,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:f4e6970a20b16f95a725b0a6b2a1b04eac2decb4d697ae69346bdcd9641f4864",
+      "sha256": "sha256:ef70886e13d5be6d97b2ecaa0f0da78f92a0fc7f69dc366725e678a8d9475f6c",
       "status": "PASSED"
     },
     "renamed": true,
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:04216af9928f45a24bd5da35a4eddbefd6810c6c8822f63be1de45e4e4f97cf6",
+    "artifact_sha256": "sha256:9edc4e7f6c1aba14b83bcdea57e90fba5a8d3f58782e845de17959ea8668c462",
     "status": "PASSED"
   },
   "limitations": [
@@ -118,7 +118,7 @@
     "source_ir_sha256": "sha256:2d801ab894f004ef9a3bacbf1f79c5253cbf2e826519549dde651479668ad0bc",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:0cdd4fba5540f771431057572bdc29924032ecb2eeb365fd4ecd9512acb6dd93"
+    "target_ir_sha256": "sha256:e343686e5ae286826a58df5754144a17b92baf8e74775b1166c3bb4c0915b31b"
   },
   "semantic_ir_sha256": "sha256:2d801ab894f004ef9a3bacbf1f79c5253cbf2e826519549dde651479668ad0bc",
   "source": {
