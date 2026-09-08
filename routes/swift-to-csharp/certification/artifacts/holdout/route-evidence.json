@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:b4dfb07b43e1868a7849ac73ba51ef251372940d64ef7dfec97606e4eadce299",
+    "artifact_sha256": "sha256:dbf26272526bf83d15ffabbe888f095772cc72f55ad19c1dd3a6cbdc2af2e758",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:b331a8809b7a224e43c5e222539d6ec35152999ccf4a65089a5fadaf4f2527ca",
+    "formal_input_digest": "sha256:f2cdca569a27be0f702f39aaf1b2e62e3ff58727b5018707bc922177de91177f",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:b331a8809b7a224e43c5e222539d6ec35152999ccf4a65089a5fadaf4f2527ca",
+    "formal_input_sha256": "sha256:f2cdca569a27be0f702f39aaf1b2e62e3ff58727b5018707bc922177de91177f",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:b331a8809b7a224e43c5e222539d6ec35152999ccf4a65089a5fadaf4f2527ca",
+        "formal_input_sha256": "sha256:f2cdca569a27be0f702f39aaf1b2e62e3ff58727b5018707bc922177de91177f",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:53ba8b1e05fe1c9b0e1fec3cfdbb6b9fe857635939ffb6e83b14c1d217aa4b89",
+        "sha256": "sha256:20a3dd01d695757b71f18384af8d145397d6fe410c16d1c5586aea29c1914e48",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:b331a8809b7a224e43c5e222539d6ec35152999ccf4a65089a5fadaf4f2527ca",
+        "formal_input_sha256": "sha256:f2cdca569a27be0f702f39aaf1b2e62e3ff58727b5018707bc922177de91177f",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:d4cd7e6fab051c9f2e3cc1a9590ceb09aa13ca595de8df67f7164f0170c63422",
+        "sha256": "sha256:e71bf196eade5107c1a9e01827612660d764d55d7e1f5ccf791af5f690fff598",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:53ba8b1e05fe1c9b0e1fec3cfdbb6b9fe857635939ffb6e83b14c1d217aa4b89",
+    "solver_input_digest": "sha256:20a3dd01d695757b71f18384af8d145397d6fe410c16d1c5586aea29c1914e48",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -70,7 +70,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:c3cbea472cbfe0e18a8fc067af8c9364e6b96bf43799df1405223058e460119c",
+    "plan_sha256": "sha256:0e3992c5d3850ba85f592cebe7743ee8793fa7864720df7081e4263542bc5f61",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:9b9be00d5edbc01a1a96ee9ee6e793dadabdb59e5f6799cc4670227fb427cf78",
     "raw_target_relift": {
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:82fd2782b864812948333c7a40d72bdd4737ae8bded480fc68efa40c411166eb",
+    "artifact_sha256": "sha256:06a8ad210b96fa88196bdc10d5de16d208827be8b95ead3f5377f2c9d1e37e3a",
     "status": "PASSED"
   },
   "limitations": [
@@ -115,15 +115,15 @@
     "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+    "source_ir_sha256": "sha256:7a657a3a1d0d5011c0bec706c2b6947394621eda9252f93a1c2da9bb6a296001",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:8b999ca00e2682357be2ba621fa7bab452aa71503a888b30d60e3e74fd8f8774"
   },
-  "semantic_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+  "semantic_ir_sha256": "sha256:7a657a3a1d0d5011c0bec706c2b6947394621eda9252f93a1c2da9bb6a296001",
   "source": {
     "analyzer": "SwiftSyntax",
-    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6faba783c284b0781cfdf720cb7011d92b4f1198422182c4169236a7ada809cb;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f76a02fcde7685ae91897f2a1d1686ea4b59940210bb73884f4097672fecfa6f;binary=sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
     "function_name": "clamp",
     "language": "swift",
     "path": "clamp.swift",
@@ -222,7 +222,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-to-csharp-vjwuivvm/holdout/RouteHarness.csproj (in 51 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-to-csharp-vjwuivvm/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.82\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-to-csharp-v8rqnkov/holdout/RouteHarness.csproj (in 34 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-to-csharp-v8rqnkov/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.53\n"
       },
       {
         "command": [
