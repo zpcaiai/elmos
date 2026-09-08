@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-to-dm8",
+  "source_snapshot_digest": "sha256:44e3cc0b0607cd24201a4b313d145e0257bf883bc9751f5957fd7e64ceb53a17",
+  "objects": [
+    {
+      "id": "table:orders",
+      "kind": "table",
+      "logical_name": "orders",
+      "source_ref": "corpus/development/queries/postgresql-orders-page.json",
+      "semantics": {
+        "columns": [
+          {"name": "id", "type": "signed-64", "nullable": false},
+          {"name": "tenant_id", "type": "unicode-text", "nullable": false},
+          {"name": "amount_cents", "type": "signed-64", "nullable": false, "minimum": 0, "money_unit": "minor-unit"},
+          {"name": "created_at", "type": "instant", "nullable": false, "timezone": "UTC"}
+        ],
+        "primary_key": ["id"],
+        "declared_for_query_contract_only": true
+      },
+      "dependencies": []
+    }
+  ],
+  "queries": [
+    {
+      "id": "query:postgresql-orders-page",
+      "kind": "select",
+      "logical_name": "postgresql_orders_page",
+      "source_ref": "corpus/development/queries/postgresql-orders-page.json",
+      "semantics": {
+        "parameterized": true,
+        "tenant_scoped": true,
+        "ordering": ["created_at DESC"],
+        "pagination_limit": 10,
+        "target_adapter": "dm8",
+        "target_compatibility_mode": "oracle-compatible-explicit",
+        "local_evidence_ref": "certification/local-postgresql-dm8-query-evidence.json",
+        "external_execution": "NOT_RUN"
+      },
+      "dependencies": ["table:orders"]
+    }
+  ],
+  "pipelines": [],
+  "unsupported_extensions": []
+}

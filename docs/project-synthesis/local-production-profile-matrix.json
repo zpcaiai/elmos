@@ -14,8 +14,8 @@
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 56,
-      "generation_manifest_sha256": "70d34c7ae704f0900e99e7d4fae1ca79f5d22fe22b921b375b0e5d2a036fb0af",
+      "generated_file_count": 67,
+      "generation_manifest_sha256": "687f7c35b9d3839138202679972b22350ac52ff95e084bf848d709a44e56699f",
       "language": "java",
       "production_delivery_status": "NOT_RUN",
       "request_sha256": "310189f4432d3a355b4cbe73bdb406af70f568775479a245250cc4e7258de4a4",
@@ -38,8 +38,8 @@
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 56,
-      "generation_manifest_sha256": "a86ba0ac4bff42f915ddef2d3c6cd0f33c4d52b8a334fe58aa0749304522c9ef",
+      "generated_file_count": 67,
+      "generation_manifest_sha256": "2cca2702d77c20943c4cce1358645927fe792b515906e32ecc0fe455fb01d110",
       "language": "java",
       "production_delivery_status": "NOT_RUN",
       "request_sha256": "27d3592d2d291ee7b87ccb28c3246ae42fa22bde5f01b39c462850cdbd0f071e",
@@ -47,7 +47,7 @@
       "startup_probes": [
         {
           "integration_status": "PASSED",
-          "response": "{\"service\":\"enterprise-orders-java-oidc\",\"status\":\"UP\"}",
+          "response": "{\"status\":\"UP\",\"service\":\"enterprise-orders-java-oidc\"}",
           "status": "PASSED"
         }
       ],
@@ -62,8 +62,8 @@
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 48,
-      "generation_manifest_sha256": "c1ac95b47e104869d3179945e9478fed374ccd0c9838f9fb7409a3736d635017",
+      "generated_file_count": 59,
+      "generation_manifest_sha256": "6cee7bc6a4650ca2ca35d5d531b2d13b0b8ce1bc70ffde3d0a307f1a08f4be0a",
       "language": "python",
       "production_delivery_status": "NOT_RUN",
       "request_sha256": "167838c728d29135de0e7c618cf1eb83758404c399a105ec627471e245b9c959",
@@ -86,8 +86,8 @@
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 48,
-      "generation_manifest_sha256": "7951f481a532fbd0fdcb453c55ad4a3262907460f702accfff0900544c5ad398",
+      "generated_file_count": 59,
+      "generation_manifest_sha256": "e80e34b702f0fd932ec3eaba593961fc9fe430c9afd37155f27d4e63e8a302fc",
       "language": "python",
       "production_delivery_status": "NOT_RUN",
       "request_sha256": "13d714bfd140291de8d5e6f1863534bda6ce4b0a1852443684dbcaf6598fcc8b",
@@ -102,19 +102,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "a43a30440335361782f7535c740662340631f642c496de748ff6ce74f32d01df",
+      "approved_payload_sha256": "5ce44e5682da06c0cc3a468557b8bba5c3ef6de428bf1ad956f60070f945de2c",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 51,
-      "generation_manifest_sha256": "dabd64aa0e90056142be82cda1e4140254133ea5d8ceb1a18d98b7aa3383cace",
+      "generated_file_count": 62,
+      "generation_manifest_sha256": "56a0df6149d88f6b772a77423bccd4828462d245651b14ac12376d658b248ff7",
       "language": "csharp",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "ff0b40ed65ba45b0937776e0894ceac8cec88b3b398a999aca23886d4da06200",
+      "request_sha256": "69f15bf68764d4d48eeca17bb51651eefc2af9ff990d66a6ca03a48e7a5fc0c9",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -126,19 +126,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "680ee29ef7044757280f0afe303a091bf621708d858e8c5ea30d5044d70d4cb0",
+      "approved_payload_sha256": "e908078985961eba19c4769a7b1fd78a8c077803a0aff1b18bb61d5e4c2e92c0",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 51,
-      "generation_manifest_sha256": "4469c3d697dbc7f18c826cf8d720f9d2e8cf1f911f0202ad4fb0740f0d0ef171",
+      "generated_file_count": 62,
+      "generation_manifest_sha256": "abb3235c4dc46fd01fb9f1c73cf0b05de0cc7c8bb0a6fb5a48359a62123126b4",
       "language": "csharp",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "40168c9331ec40ea93af67f70cab4ca857e15f936a30dd5c20fa60d8cca3a775",
+      "request_sha256": "ed6936dd7ffde5d53e62842cfdb55d8bdfb7518557ace75c63f771a274aba7dc",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -150,19 +150,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "9d30691bf8fdecc8458d6c5cd6143a53e330ce1ccd9db37fff21ec5c5efe835d",
+      "approved_payload_sha256": "6d1a9b962becd9304003b99f27316c2152919b951e7351dccaec2930c0d2544c",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 46,
-      "generation_manifest_sha256": "cf14edcc48857a959c83cd041560acd22bc3ff4ff4b2b491ce652a7adcedf164",
+      "generated_file_count": 57,
+      "generation_manifest_sha256": "c5816bc8da50ed23fd2ceadb300dae03c9a7c9a08c637fe5a2abe89e0dcbbe78",
       "language": "typescript",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "faf3316be7332b91d114f879cb0cb22a5dea5ef9a9531269d6d7fed438121d7b",
+      "request_sha256": "76086986b721441c5d3485669a79ab7b12e6c3d97c3e970a9d3b56fcce89a1a4",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -174,19 +174,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "e05197ee30dab88798cff172bb4f9a3a345e798e23d0fa651720af11b1998d11",
+      "approved_payload_sha256": "06781c9f160e55133e44d7e1fea7c2f8cc07e98c4f80f0511bc6b9d474d6664d",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 46,
-      "generation_manifest_sha256": "a66cecd3778cd15645e0ed43cd9bfece5d317bcf6f878e5ecedb1630c20566f1",
+      "generated_file_count": 57,
+      "generation_manifest_sha256": "ab392ddbd83f580506ed57c4c70b86957fc56496b3b23421bc7c091c8fd4d52b",
       "language": "typescript",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "18c68363d90cbd95121df7be16167df9c72d45be147535a6c60ff4c9e4beec7f",
+      "request_sha256": "983b4c6d339a1c67fe1c99e411086b118380ef588e7609a4c200b9c12b14ec3c",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -198,19 +198,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "4e581034d7dafac12901fa4fb517d76684f4ae1a316ea633aa75210678bc5d64",
+      "approved_payload_sha256": "f949158aab9839720a7395aee2c629b9a1cacd217341c94e212dfe7a2f9a968c",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 44,
-      "generation_manifest_sha256": "387e1d0b8dfbc915e7dc6cdb299336a14b4883b8a309dbb3869399f87f273ac5",
+      "generated_file_count": 55,
+      "generation_manifest_sha256": "b34d9c645a20f8ed86b051c053e4b6c869c818353b3e897dc74219aa27b9c348",
       "language": "go",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "c8a3c4c091bf19746831c2a5f485ce7d2c20f7f08d4b0dee19d2049b5c9b351f",
+      "request_sha256": "7bd273f5f4981bda622088ba18014f475cebd8549ddd9e21eff75df0e0ec0b85",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -222,19 +222,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "4f38ec74c7f862a1f84c97a8886a9473530a39266ac8a38fd79cfc179ea55bab",
+      "approved_payload_sha256": "871269de4886e591ae08d983f10fe9fc406d9dce71b14b7bc1455eda02267a95",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 44,
-      "generation_manifest_sha256": "5e6e42a0d74d8950bd5cc41f8c51aab72ec1708ab0ed0392a165979b0afad08c",
+      "generated_file_count": 55,
+      "generation_manifest_sha256": "c1d4731701cd0ff209b1c2643d6e88c7d1949e86004f1a0a9be44923e0dd9c1a",
       "language": "go",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "c54536b3b30c1cba451c778b17e9b86b75a898dc39d58fdadf448f253c97d319",
+      "request_sha256": "b82b1a703a3af0f7dce246f764a7f9e57a9dde52828fc8550b052760d0d88e2b",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -246,19 +246,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "dc38f95579a9540d639edf90469ade28d0047789309f795cd562537db5a6064d",
+      "approved_payload_sha256": "136d0cbcb4eab0da3e196f1e678462770c9102af8dbe77d185cbf3bf22c1e062",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 47,
-      "generation_manifest_sha256": "2c63e434f238269388f6f168eb4ab1296c2ccb53828ab92219dc0ae0d1fd1e63",
+      "generated_file_count": 58,
+      "generation_manifest_sha256": "52d940a25d20df1798d7b6c562bc01cc8b1f431b1b6d6b1110320845e5a254d7",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "e95c0be2b54edeb78aa68160bcf3f71d070acdfc82f282960b8695def3a4ab5f",
+      "request_sha256": "c2c279ac94c0b5df5fafc76a7f13fa3cdb60d95347c8148396979e8858693408",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -270,19 +270,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "daf0d6a7128b50a6b94380b37b710a24e5bfdf59391c1d43c702ffef0e803148",
+      "approved_payload_sha256": "617c6ffdf7de2386c0dfb6e55c8c0aa5fdd8c19a1cc8fa4906f388b8829733c0",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 47,
-      "generation_manifest_sha256": "049bb02d3e8478f1303dc158ee39f79365a1bbea573388280138f579e0e2349a",
+      "generated_file_count": 58,
+      "generation_manifest_sha256": "7dc490f35dd2d4a58076f9da36e114cd8673fd72ce664740ee5c15709d903aab",
       "language": "kotlin",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "c30590749c8abe7e12149423de6292538f7f1864c725e8d12d3c26bad1816db5",
+      "request_sha256": "385b32bf8941f5cde39bfa761b8bf07cd304a4293fd82473ca59b950e64ccc2e",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -294,19 +294,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "5fac48ecdcbaefd17d96774a674638538d59b221b87c17dd04432938f17bc2f8",
+      "approved_payload_sha256": "a0a812062a5cd1fc4fe1fa241fa1c6c4076a1ef42ef47fb643adf2146e8b2e67",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 44,
-      "generation_manifest_sha256": "54bfe7df5394307e4d151370bddea96e27605ad68f958d23f2376fd06f8f8988",
+      "generated_file_count": 56,
+      "generation_manifest_sha256": "177749671ca0509b8a703baee5df76133f6ef26693e18cfe9032056f0dd67e6d",
       "language": "php",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "2461a5f1343d63b3b7f4812bffa80654591f51b386961d8f3b7033882666e8fa",
+      "request_sha256": "3597a3ebf114c505f947eff416c8d3d5aeed8aa018041e55b4b38f99d53ac303",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -318,19 +318,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "3fff392e06f661bd7cad3e3603e7f023ef9fc1e49a7e26b704f9c71e4cfc162e",
+      "approved_payload_sha256": "62d4266a21a0113ceddd4d37e661a3913e7e4b8b32bb9a416c7ba22abb7ccf74",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 44,
-      "generation_manifest_sha256": "e36c7ea27ad2ad3a3c5288e5c4a9b9e2a3baaee95b92e648f4200dba677d4680",
+      "generated_file_count": 56,
+      "generation_manifest_sha256": "629e0792d296c480035ac4cb57943841fab4e37b4288d72734458fd689054e2f",
       "language": "php",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "90717344cf8e6868bb9e4c4522f9256610aef28ff960894152ea1066c4c2b870",
+      "request_sha256": "c5211ab2085d2f8412c8e23c22861a2dad78517463ba10cc4992ba844d448e24",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -342,19 +342,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "297fb9adcd00add527af11f3d50fe8eff0e9f9c4c692add151410429c732518a",
+      "approved_payload_sha256": "25392958d8b30d9a9c91a6939b24575a37702278cadca499f0b290ff2bc6f8d6",
       "auth_mode": "jwt",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 48,
-      "generation_manifest_sha256": "3087fc8b2b8f5c6cf7cdc040578f50ba7bc6f177042bcad84e42ab7f98372ba8",
+      "generated_file_count": 59,
+      "generation_manifest_sha256": "d7d55e6b9eba4dfd66f5988148eb43bacf64a485f21b2683647be4a7131c4c40",
       "language": "rust",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "4f7ea25bd3dc1bbdc4ebec7c31d2adfd819d7a9f700b201ebbf382067adf3d84",
+      "request_sha256": "69e0fa7db27634af884269b16c8bf16bec5951fe633ff75fa2f517937f5ef9c6",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -366,19 +366,19 @@
       "status": "PASSED"
     },
     {
-      "approved_payload_sha256": "99ad619053a62ec5dd8f346328b09e204c0abb8279f6fd384d0c988fffbde5be",
+      "approved_payload_sha256": "69ae5f57a4a075e910333b1c92f4c9c0f1ed4379bce1d2c9cfe1ef8beaa48aea",
       "auth_mode": "oidc",
       "cleanup_status": "PASSED",
-      "entity_shape": "single-entity",
+      "entity_shape": "multi-entity",
       "exact_toolchain_match": true,
       "exit_code": 0,
       "external_certification_status": "NOT_RUN",
       "failures": [],
-      "generated_file_count": 48,
-      "generation_manifest_sha256": "3c678516db9c25de3529e6aa4ed36fc61c155e7b8dcf878ff3bb56ee73bf2ca2",
+      "generated_file_count": 59,
+      "generation_manifest_sha256": "bf3e31a2aa28a64a6d8fce1b40c979ab222f3716331a2f2f8176b2e3a5d60efa",
       "language": "rust",
       "production_delivery_status": "NOT_RUN",
-      "request_sha256": "57bc5bf8f6e846696b023d896c8a7a9119c1ad455997316a36c953cbc11613d5",
+      "request_sha256": "4765cf130c423c4a5567b0f3fde4115c93a7010e3ed29e586f707130bd5913e5",
       "schema_version": "1.0.0",
       "startup_probes": [
         {
@@ -392,8 +392,8 @@
   ],
   "certification_status": "NOT_CERTIFIED",
   "environment": {
-    "platform": "macOS-26.5.2-arm64-arm-64bit",
-    "python": "3.12.9"
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.12.12"
   },
   "evidence_class": "LOCAL_ENGINEERING",
   "external_certification_status": "NOT_RUN",
@@ -410,7 +410,7 @@
     "php",
     "rust"
   ],
-  "observed_at": "2026-07-28T06:10:28+00:00",
+  "observed_at": "2026-09-08T04:35:42+00:00",
   "passed_count": 16,
   "production_delivery_status": "NOT_RUN",
   "replay": "uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py",

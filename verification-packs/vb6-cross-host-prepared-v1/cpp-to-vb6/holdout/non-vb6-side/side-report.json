@@ -1,0 +1,72 @@
+{
+  "artifact_path": "clamp.cpp",
+  "artifact_sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "-std=c++20",
+        "-isysroot",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-o",
+        "source_harness",
+        "source_harness.cpp"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "./source_harness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+    }
+  ],
+  "language": "cpp",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "10",
+      "status": "RETURNED",
+      "value": 10
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "7",
+      "status": "RETURNED",
+      "value": 7
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": null,
+    "auxiliary_sha256": null,
+    "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+    "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+    "language": "cpp",
+    "profile": [
+      "platform=Darwin/arm64",
+      "apple-host-profile=local-macos26-20260904",
+      "xcode=26.6/17F113",
+      "macosx-sdk=26.5",
+      "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "c++20"
+    ],
+    "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+  }
+}

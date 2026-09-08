@@ -83,6 +83,10 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     # so this spelling is the canonical 64-bit signed integer, and `float` is
     # binary64 on every build the probe accepts.
     "php": {"integer": "int", "number": "float", "boolean": "bool", "string": "string"},
+    # VB6 has no 64-bit integer scalar. The bounded target profile therefore
+    # uses Long and rejects literals/results outside the signed 32-bit domain;
+    # it must never be described as the full canonical int64 profile.
+    "vb6": {"integer": "Long", "number": "Double", "boolean": "Boolean", "string": "String"},
 }
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
@@ -757,6 +761,58 @@ _PHP_HELPERS: dict[str, str] = {
 }
 
 
+_VB6_HELPERS: dict[str, str] = {
+    "checked_add": (
+        "Private Function ElmosCheckedAdd(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) + CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedAdd\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedAdd = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_sub": (
+        "Private Function ElmosCheckedSub(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) - CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedSub\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedSub = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_mul": (
+        "Private Function ElmosCheckedMul(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) * CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedMul\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedMul = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_div": (
+        "Private Function ElmosCheckedDiv(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    If rightValue = 0 Then Err.Raise 11, \"ElmosCheckedDiv\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        "    If leftValue = -2147483648# And rightValue = -1 Then "
+        "Err.Raise 6, \"ElmosCheckedDiv\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedDiv = CLng(Fix(CDbl(leftValue) / CDbl(rightValue)))\n"
+        "End Function"
+    ),
+    "checked_mod": (
+        "Private Function ElmosCheckedMod(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim quotientValue As Long\n"
+        "    quotientValue = ElmosCheckedDiv(leftValue, rightValue)\n"
+        "    ElmosCheckedMod = CLng(CDbl(leftValue) - CDbl(quotientValue) * CDbl(rightValue))\n"
+        "End Function"
+    ),
+    "non_zero_double": (
+        "Private Function ElmosNonZero(ByVal value As Double) As Double\n"
+        "    If value = 0# Then Err.Raise 11, \"ElmosNonZero\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        "    ElmosNonZero = value\n"
+        "End Function"
+    ),
+}
+
+
 _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
     "kotlin": _KOTLIN_HELPERS,
@@ -772,6 +828,7 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "objc": _OBJC_HELPERS,
     "php": _PHP_HELPERS,
     "flutter": _DART_HELPERS,
+    "vb6": _VB6_HELPERS,
 }
 
 #: Deterministic emission order, so the same IR always produces byte-identical
@@ -970,6 +1027,12 @@ def _integer_literal(language: Language, value: int) -> str:
         # fails to compile -- a bug that only shows up once an integer literal
         # meets a checked-arithmetic call site.
         return f"{value}L"
+    if language == "vb6":
+        if not -(2**31) <= value <= 2**31 - 1:
+            raise RouteError(f"VB6_INTEGER_LITERAL_OUTSIDE_LONG_RANGE:{value}")
+        # VB parses -2147483648 as unary minus applied to an out-of-range
+        # positive literal.  A hexadecimal Long is the one exact spelling.
+        return "&H80000000" if value == -(2**31) else f"{value}&"
     if language == "flutter":
         return str(value)
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
@@ -1022,6 +1085,10 @@ def _string_literal(language: Language, value: str) -> str:
         # including a literal newline and raw UTF-8 -- stands for itself.
         escaped = value.replace("\\", "\\\\").replace("'", "\\'")
         return f"'{escaped}'"
+    if language == "vb6":
+        if any(ord(character) > 127 for character in value):
+            raise RouteError("VB6_NON_ASCII_STRING_REQUIRES_EXPLICIT_CODEPAGE_PROFILE")
+        return '"' + value.replace('"', '""') + '"'
     if language == "kotlin":
         # `$` opens a string template in Kotlin: `"a$b"` is a reference to `b`,
         # and `"a$"` alone is a compile error. Kotlin understands JSON's other
@@ -1044,7 +1111,7 @@ def _string_literal(language: Language, value: str) -> str:
 
 def _literal(language: Language, value: str | int | float | bool | None) -> str:
     if isinstance(value, bool):
-        if language == "python":
+        if language in {"python", "vb6"}:
             return "True" if value else "False"
         if language == "objc":
             return "YES" if value else "NO"
@@ -1063,7 +1130,8 @@ def _literal(language: Language, value: str | int | float | bool | None) -> str:
             raise RouteError(f"NON_FINITE_LITERAL_OUTSIDE_CERTIFIED_SUBSET:{value}")
         if language in {"typescript", "react", "javascript"} and value == 0.0 and math.copysign(1.0, value) < 0:
             raise RouteError(f"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED")
-        return repr(value)
+        rendered = repr(value)
+        return f"{rendered}#" if language == "vb6" else rendered
     raise RouteError("NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET")
 
 
@@ -1133,6 +1201,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "/": ("ElmosCheckedDiv", ("checked_div",)),
         "%": ("ElmosCheckedMod", ("checked_mod",)),
     },
+    "vb6": {
+        "+": ("ElmosCheckedAdd", ("checked_add",)),
+        "-": ("ElmosCheckedSub", ("checked_sub",)),
+        "*": ("ElmosCheckedMul", ("checked_mul",)),
+        "/": ("ElmosCheckedDiv", ("checked_div",)),
+        "%": ("ElmosCheckedMod", ("checked_div", "checked_mod")),
+    },
 }
 
 #: Rust spells the whole family natively; `checked_div`/`checked_rem` return
@@ -1161,6 +1236,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "objc": ("ElmosNonZero", "non_zero_double"),
     "php": ("elmos_non_zero_float", "non_zero_float"),
     "flutter": ("_elmosNonZero", "non_zero_double"),
+    "vb6": ("ElmosNonZero", "non_zero_double"),
 }
 
 
@@ -1340,6 +1416,19 @@ def _binary(
                     right = f"(float)({right})"
             rendered = {"==": "===", "!=": "!=="}[operator]
             return _group(language, f"{left} {rendered} {right}", top_level)
+
+    if language == "vb6":
+        if operator in {"&&", "||"}:
+            raise RouteError("VB6_SHORT_CIRCUIT_BOOLEAN_OUTSIDE_CERTIFIED_SUBSET")
+        if operator == "+" and left_type == right_type == "string":
+            context.normalization_rules.add("vb6.string.+.ampersand-concatenation")
+            return _group(language, f"{left} & {right}", top_level)
+        if operator == "%":
+            # Integer remainder returned above through ElmosCheckedMod. VB6's
+            # Mod coerces floating operands and is not canonical fmod.
+            raise RouteError("VB6_FLOAT_MODULO_OUTSIDE_CERTIFIED_SUBSET")
+        rendered = {"==": "=", "!=": "<>"}.get(operator, operator)
+        return _group(language, f"{left} {rendered} {right}", top_level)
 
     rendered = operator
     if language == "python":
@@ -1871,6 +1960,101 @@ def _signature(language: Language, function: Function, records: dict[str, Record
     return f"{return_type} {function.name}({parameters}) {{"
 
 
+def _vb6_statements(
+    context: _Context,
+    function_name: str,
+    statements: tuple[Statement, ...],
+    environment: dict[str, str],
+    indent: int,
+) -> list[str]:
+    """Render the exact structured subset admitted by the VB6 frontend."""
+
+    prefix = "    " * indent
+    lines: list[str] = []
+    for statement in statements:
+        if statement.kind == "let" and statement.expression is not None:
+            if statement.name is None or statement.declared_type is None:
+                raise RouteError("VB6_LET_INVALID")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}Dim {statement.name} As {_type('vb6', statement.declared_type)}")
+            lines.append(f"{prefix}{statement.name} = {value}")
+            environment[statement.name] = statement.declared_type
+            continue
+        if statement.kind == "assign" and statement.expression is not None:
+            if statement.name is None or statement.name not in environment:
+                raise RouteError("VB6_ASSIGNMENT_TARGET_INVALID")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}{statement.name} = {value}")
+            continue
+        if statement.kind == "return" and statement.expression is not None:
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}{function_name} = {value}")
+            lines.append(f"{prefix}Exit Function")
+            continue
+        if statement.kind == "if" and statement.condition is not None:
+            condition = _expression(context, statement.condition, environment, top_level=True)
+            lines.append(f"{prefix}If {condition} Then")
+            lines.extend(
+                _vb6_statements(
+                    context,
+                    function_name,
+                    statement.then_body,
+                    dict(environment),
+                    indent + 1,
+                )
+            )
+            if statement.else_body:
+                lines.append(f"{prefix}Else")
+                lines.extend(
+                    _vb6_statements(
+                        context,
+                        function_name,
+                        statement.else_body,
+                        dict(environment),
+                        indent + 1,
+                    )
+                )
+            lines.append(f"{prefix}End If")
+            continue
+        if statement.kind == "while" and statement.condition is not None:
+            condition = _expression(context, statement.condition, environment, top_level=True)
+            lines.append(f"{prefix}While {condition}")
+            lines.extend(
+                _vb6_statements(
+                    context,
+                    function_name,
+                    statement.body,
+                    dict(environment),
+                    indent + 1,
+                )
+            )
+            lines.append(f"{prefix}Wend")
+            continue
+        # Canonical for-loops are end-exclusive; VB6 For is end-inclusive and
+        # evaluating end-1 can itself overflow. Keep this semantic boundary
+        # explicit until a compatibility iterator is proven.
+        if statement.kind == "for":
+            raise RouteError("VB6_FOR_LOOP_LOWERING_OUTSIDE_CERTIFIED_SUBSET")
+        if statement.kind in {"break", "continue"}:
+            raise RouteError(f"VB6_LOOP_CONTROL_LOWERING_OUTSIDE_CERTIFIED_SUBSET:{statement.kind}")
+        raise RouteError(f"VB6_UNSUPPORTED_EMISSION_STATEMENT:{statement.kind}")
+    return lines
+
+
+def _vb6_function(context: _Context, function: Function) -> str:
+    environment = types.check_function(function, context.records, context.functions)
+    parameters = ", ".join(
+        f"ByVal {parameter.name} As {_type('vb6', parameter.type)}"
+        for parameter in function.parameters
+    )
+    lines = [
+        f"Public Function {function.name}({parameters}) As {_type('vb6', function.return_type)}"
+    ]
+    lines.extend(_vb6_statements(context, function.name, function.body, environment, 1))
+    lines.append("End Function")
+    return "\n".join(lines)
+
+
 def _function(context: _Context, function: Function) -> str:
     language = context.language
     environment = types.check_function(function, context.records, context.functions)
@@ -1943,6 +2127,13 @@ def emit(
         records={r.name: r for r in emitter_ir.records},
         functions={f.name: f for f in sorted_functions},
     )
+    if target == "vb6":
+        if emitter_ir.records:
+            raise RouteError("VB6_RECORD_LOWERING_OUTSIDE_CERTIFIED_SUBSET")
+        functions = "\n\n".join(_vb6_function(context, function) for function in sorted_functions)
+        helpers = _helper_sources(context)
+        body = "\n\n".join([functions, *helpers])
+        return _emitted_file(context, "migrated.bas", "Option Explicit\n\n" + body + "\n")
     records_defs = [_record_definition(context, record) for record in emitter_ir.records]
     records_str = "\n\n".join(records_defs)
     records_part = [records_str] if records_str else []
