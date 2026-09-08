@@ -1,28 +1,88 @@
 {
+  "artifact_manifests": {
+    "development": {
+      "bytes": 4381,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:19cec2893ec66128be95fc670e9efbe5e5234cad1d6e255f29270a310d4a9559"
+    },
+    "holdout": {
+      "bytes": 4376,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:3093aaa98cbc3cb9880d89bd990f0ac673f428a9d31eda94d52fb51e8e3469de"
+    },
+    "real-repository": {
+      "bytes": 4392,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:045ca9e0441c37b9ab4459fe39583cd57c746f7a11f54e62c2cd1509bad4ca11"
+    }
+  },
+  "artifact_refs": [
+    {
+      "bytes": 4381,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:19cec2893ec66128be95fc670e9efbe5e5234cad1d6e255f29270a310d4a9559"
+    },
+    {
+      "bytes": 4376,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:3093aaa98cbc3cb9880d89bd990f0ac673f428a9d31eda94d52fb51e8e3469de"
+    },
+    {
+      "bytes": 4392,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:045ca9e0441c37b9ab4459fe39583cd57c746f7a11f54e62c2cd1509bad4ca11"
+    },
+    {
+      "bytes": 10423,
+      "path": "certification/artifacts/module/artifact-manifest.json",
+      "sha256": "sha256:27a58c129a71f6407d5493f313e2ff3e9e61ddb90011df4dcde8d63f3c0cad19"
+    }
+  ],
   "critical_behavior_regressions": 0,
-  "critical_unknown_semantics": 1,
-  "execution_status": "NOT_RUN",
+  "critical_unknown_semantics": 0,
+  "evidenced_type_coverage": [
+    "integer",
+    "number",
+    "boolean"
+  ],
+  "execution_status": "PASSED_LOCAL",
+  "formal_equivalence": {
+    "bytes": 298740,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:87cea68f7b4b543ba86303b369caad2e6dfd51469298c25bd9a4ab4e145694e9"
+  },
+  "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
-    "build_green_rate": 0.0,
+    "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 0.0,
+    "first_build_pass_rate": 1.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 0.0,
-    "source_map_coverage": 0.0
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "module_artifact_manifest": {
+    "bytes": 10423,
+    "path": "certification/artifacts/module/artifact-manifest.json",
+    "sha256": "sha256:27a58c129a71f6407d5493f313e2ff3e9e61ddb90011df4dcde8d63f3c0cad19"
   },
   "module_equivalence": {
-    "bytes": 1786,
+    "bytes": 211606,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:1e334f02b569d9acaf902b7661a001726dde4dfc4164c955387906b8c218558d"
+    "sha256": "sha256:b0517ad9823c8915e1338ab6d833ef9024bae1e7ed725f6a7b781f459b5d2457"
   },
-  "module_execution_status": "NOT_RUN",
+  "module_execution_status": "PASSED_LOCAL",
   "negative_runs": [
     "certification/local-negative-evidence.json"
   ],
   "notes": [
-    "No local route or module behavior is claimed before native execution.",
-    "Independent, external, customer, and production evidence remain NOT_RUN."
+    "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
+    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
+    "The physically separate holdout and representative bounded fixture were not used to author route rules.",
+    "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN.",
+    "critical_unknown_semantics=0 is scoped only to canonical-finite-no-error-input-domain; string semantics and arithmetic-error-domain behavior remain blocked.",
+    "The typed-pure-module-v1 run composed at least three independently observed functions covering integer, finite-number, and boolean semantics with exact symbol/signature closure and byte-bound per-function proof artifacts."
   ],
+  "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
   "route_key": "swift-to-objc",
   "route_maturity": "LIMITED",
   "route_version": "1.0.0",

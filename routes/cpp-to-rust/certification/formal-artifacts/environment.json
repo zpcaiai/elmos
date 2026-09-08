@@ -1,0 +1,31 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 271520,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:1c3a1b9c3372f28f09f80bfeef470d37a7cf7ce76173222c5f6c871ac2783776"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
+  },
+  "route_key": "cpp-to-rust",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "C++20",
+    "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "arm64-apple-darwin25.6.0"
+  ],
+  "target_toolchain": [
+    "Rust 1.89.0",
+    "syn 2.0.119"
+  ]
+}

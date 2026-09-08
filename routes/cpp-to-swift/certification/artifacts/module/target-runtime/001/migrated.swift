@@ -1,15 +1,15 @@
-func both(_ left: Bool, _ right: Bool) -> Bool {
+func elmos_fn_20ffab8ae84c33b8(_ left: Bool, _ right: Bool) -> Bool {
     return (left && right)
 }
 
-func calculate(_ subtotal: Int64, _ tax: Int64) -> Int64 {
+func elmos_fn_0a5c7c536d88ba83(_ subtotal: Int64, _ tax: Int64) -> Int64 {
     if ((subtotal < Int64(0))) {
         return Int64(0)
     }
     return (subtotal + tax)
 }
 
-func clamp(_ value: Int64, _ minimum: Int64, _ maximum: Int64) -> Int64 {
+func elmos_fn_da0ad32edb107786(_ value: Int64, _ minimum: Int64, _ maximum: Int64) -> Int64 {
     if ((value < minimum)) {
         return minimum
     }
@@ -19,7 +19,7 @@ func clamp(_ value: Int64, _ minimum: Int64, _ maximum: Int64) -> Int64 {
     return value
 }
 
-func clampNumber(_ value: Double, _ minimum: Double, _ maximum: Double) -> Double {
+func elmos_fn_305d682d41f301b3(_ value: Double, _ minimum: Double, _ maximum: Double) -> Double {
     if ((value < minimum)) {
         return minimum
     }
@@ -29,6 +29,6 @@ func clampNumber(_ value: Double, _ minimum: Double, _ maximum: Double) -> Doubl
     return value
 }
 
-func difference(_ left: Int64, _ right: Int64) -> Int64 {
+func elmos_fn_b823d02cc5dd035c(_ left: Int64, _ right: Int64) -> Int64 {
     return (left - right)
 }

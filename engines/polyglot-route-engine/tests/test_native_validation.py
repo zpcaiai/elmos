@@ -126,6 +126,28 @@ def _synthetic_java_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -
     )
 
 
+def _synthetic_go_toolchain() -> ExactToolchain:
+    return ExactToolchain(
+        language="go",
+        version="go1.25.0",
+        executable="/fixed/go",
+        profile=("test-profile",),
+        executable_sha256="c" * 64,
+    )
+
+
+def _synthetic_rust_toolchain() -> ExactToolchain:
+    return ExactToolchain(
+        language="rust",
+        version="rustc 1.89.0",
+        executable="/fixed/rustc",
+        auxiliary="/fixed/cargo",
+        profile=("test-profile",),
+        executable_sha256="d" * 64,
+        auxiliary_sha256="e" * 64,
+    )
+
+
 def _trusted_java_test_input(tmp_path: Path) -> tuple[Path, list[str]]:
     source = tmp_path / "Narrow.java"
     source.write_text(

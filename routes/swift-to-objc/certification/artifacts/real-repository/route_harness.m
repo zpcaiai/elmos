@@ -31,19 +31,19 @@ static __attribute__((unused)) NSString *ElmosHarnessHexUTF8(NSString *value) {
 
 int main() {
     @autoreleasepool {
-        BOOL actual_0 = decision(YES, YES, NO);
+        BOOL actual_0 = elmos_fn_44fbf007165119cd(YES, YES, NO);
         BOOL expected_0 = YES;
         if (actual_0 != expected_0) return 1;
         printf("ELMOS_OBSERVATION\t0\tbool\t%s\n", actual_0 ? "true" : "false");
-        BOOL actual_1 = decision(YES, NO, NO);
+        BOOL actual_1 = elmos_fn_44fbf007165119cd(YES, NO, NO);
         BOOL expected_1 = NO;
         if (actual_1 != expected_1) return 2;
         printf("ELMOS_OBSERVATION\t1\tbool\t%s\n", actual_1 ? "true" : "false");
-        BOOL actual_2 = decision(NO, NO, YES);
+        BOOL actual_2 = elmos_fn_44fbf007165119cd(NO, NO, YES);
         BOOL expected_2 = YES;
         if (actual_2 != expected_2) return 3;
         printf("ELMOS_OBSERVATION\t2\tbool\t%s\n", actual_2 ? "true" : "false");
-        BOOL actual_3 = decision(NO, NO, NO);
+        BOOL actual_3 = elmos_fn_44fbf007165119cd(NO, NO, NO);
         BOOL expected_3 = NO;
         if (actual_3 != expected_3) return 4;
         printf("ELMOS_OBSERVATION\t3\tbool\t%s\n", actual_3 ? "true" : "false");

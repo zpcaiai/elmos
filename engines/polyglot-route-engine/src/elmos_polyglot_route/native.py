@@ -5845,7 +5845,11 @@ def _run(
     command: list[str],
     *,
     cwd: Path,
-    timeout: int = 120,
+    # Native source analysis accepts files up to the repository contract's
+    # two-megabyte ceiling. Keep its default deadline aligned with target
+    # validation so a valid near-limit source is not classified as NOT_RUN
+    # merely because analysis gets less time than the generated build.
+    timeout: int = 600,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
     environment_overrides: Mapping[str, str] | None = None,
@@ -7907,32 +7911,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                "--inventory",
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(

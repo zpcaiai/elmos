@@ -1,0 +1,25 @@
+{
+  "route_key": "java-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 168,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:5d4947b8216a83810cd533d2942148a80896e5925e2ec07f5fbc2a17078b8769"
+    },
+    {
+      "bytes": 207,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:47ae3ec31a17dcc3c5bcebbb1293e66aa69db91e7f70832e5506a5342b28d880"
+    },
+    {
+      "bytes": 157,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:196101691daab5ce90ab4a8703858d2fb41613d00c12d059fba326d55f7c8c22"
+    }
+  ]
+}

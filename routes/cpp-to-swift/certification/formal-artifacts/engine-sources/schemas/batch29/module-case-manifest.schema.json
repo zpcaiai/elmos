@@ -8,13 +8,26 @@
     "schema_version": {"const": "1.0.0"},
     "profile": {"const": "typed-pure-module-v1"},
     "composition": {
-      "const": {
-        "call_graph": [],
-        "global_state": "none",
-        "effects": "none",
-        "exceptions": "canonical-arithmetic-errors-only",
-        "input_domain": "canonical-finite-no-error-input-domain"
-      }
+      "oneOf": [
+        {
+          "const": {
+            "call_graph": [],
+            "global_state": "none",
+            "effects": "none",
+            "exceptions": "canonical-arithmetic-errors-only",
+            "input_domain": "canonical-finite-no-error-input-domain"
+          }
+        },
+        {
+          "const": {
+            "call_graph": [],
+            "global_state": "none",
+            "effects": "none",
+            "exceptions": "domain-guards-fail-closed-before-execution",
+            "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1"
+          }
+        }
+      ]
     },
     "functions": {
       "type": "array",
@@ -35,12 +48,12 @@
                   "required": ["name", "type"],
                   "properties": {
                     "name": {"type": "string", "minLength": 1},
-                    "type": {"enum": ["integer", "number", "boolean"]}
+                    "type": {"enum": ["integer", "number", "boolean", "string"]}
                   },
                   "additionalProperties": false
                 }
               },
-              "return_type": {"enum": ["integer", "number", "boolean"]}
+              "return_type": {"enum": ["integer", "number", "boolean", "string"]}
             },
             "additionalProperties": false
           },
@@ -62,5 +75,42 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "composition": {
+            "properties": {
+              "input_domain": {"const": "canonical-finite-no-error-input-domain"}
+            },
+            "required": ["input_domain"]
+          }
+        },
+        "required": ["composition"]
+      },
+      "then": {
+        "properties": {
+          "functions": {
+            "items": {
+              "properties": {
+                "signature": {
+                  "properties": {
+                    "parameters": {
+                      "items": {
+                        "properties": {
+                          "type": {"enum": ["integer", "number", "boolean"]}
+                        }
+                      }
+                    },
+                    "return_type": {"enum": ["integer", "number", "boolean"]}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "additionalProperties": false
 }

@@ -1,5 +1,6 @@
 {
   "input_domain": "typed-pure-function-v1-declared-domain",
+  "integer_semantics": "PROFILE_DEFINED",
   "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
   "out_of_domain_arithmetic_behavior": "profile-specific",
   "schema_version": 1,
