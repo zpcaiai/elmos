@@ -81,6 +81,11 @@ const catalog = {
 };
 
 test("Smart-first repository preflight consumes the server catalog and stays fail-closed", async ({ page }) => {
+  // A cold Next.js development compilation can consume most of the global
+  // 60-second test budget before this journey starts. Keep every assertion and
+  // fail-closed check intact while giving this single integration journey a
+  // bounded production-sized budget.
+  test.setTimeout(120_000);
   await installAdministratorSession(page);
   let submitted: Record<string, unknown> | null = null;
   const sideEffectRequests: string[] = [];
