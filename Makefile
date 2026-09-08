@@ -194,17 +194,23 @@ ai-capability-enhancement-skills:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-capability-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/ai-capability-enhancement -p 'test_*.py'
 	cd skills/elmos-ai-capability-enhancement-skills-v4.1.0 && PYTHONPATH=. $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests -p 'test_*.py'
 
-.PHONY: knowledge-skill-model-foundry-skills
+.PHONY: knowledge-skill-model-foundry-skills knowledge-skill-model-foundry-external-gate
 knowledge-skill-model-foundry-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/generate_foundry_native_semantics.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/report_foundry_readiness.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_knowledge_skill_model_foundry_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/qualify_knowledge_skill_model_foundry.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
-	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
-	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py tooling/run_foundry_external_qualification.py
+	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py tooling/run_foundry_external_qualification.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
+	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src:packages/pi-harness/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py tooling/run_foundry_external_qualification.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with-requirements engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/knowledge-skill-model-foundry-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with-requirements engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/knowledge-skill-model-foundry-skills -p 'test_*.py'
+
+knowledge-skill-model-foundry-external-gate:
+	@test -n "$(FOUNDRY_EXTERNAL_BUNDLE)" || (echo "FOUNDRY_EXTERNAL_BUNDLE is required" >&2; exit 2)
+	@test -n "$(FOUNDRY_EXTERNAL_TRUST_STORE)" || (echo "FOUNDRY_EXTERNAL_TRUST_STORE is required" >&2; exit 2)
+	@test -n "$(FOUNDRY_EXTERNAL_DECISION)" || (echo "FOUNDRY_EXTERNAL_DECISION is required" >&2; exit 2)
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src:packages/pi-harness/src $(UV) run --quiet --with 'cryptography>=45,<47' python tooling/run_foundry_external_qualification.py --bundle "$(FOUNDRY_EXTERNAL_BUNDLE)" --trust-store "$(FOUNDRY_EXTERNAL_TRUST_STORE)" --output "$(FOUNDRY_EXTERNAL_DECISION)"
 
 .PHONY: pricing-billing-skills
 pricing-billing-skills:

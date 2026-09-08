@@ -119,6 +119,21 @@ def _verify_signed_receipt(
     return actual
 
 
+def verify_signed_external_receipt(
+    document: Mapping[str, Any],
+    *,
+    verifier: SignatureVerifier,
+    authority_field: str,
+) -> str:
+    """Verify a canonical externally signed receipt without creating one."""
+
+    return _verify_signed_receipt(
+        document,
+        verifier=verifier,
+        authority_field=authority_field,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ProviderCommandRoute:
     """Exact process route installed by the production host."""
@@ -725,4 +740,5 @@ __all__ = [
     "evaluate_certification",
     "verify_external_run_receipt",
     "verify_independent_acceptance",
+    "verify_signed_external_receipt",
 ]

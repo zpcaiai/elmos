@@ -44,6 +44,10 @@ executable Python files remain inert input.
   protocols that verify complete digest-bound evidence chains, separated roles,
   reconciliation, revocation, expiry and external signatures without a local
   receipt issuer or self-certification fallback;
+- a verify-only external qualification command that consumes strict evidence
+  bundles and a role-scoped Ed25519 public trust store, enforces complete
+  cross-receipt scope/executor/authority bindings, and emits a digest-bound
+  private decision artifact;
 - authenticated scope, capability lease, exact idempotency, durable lifecycle,
   checkpoints, append-only audit/evidence, outbox reconciliation, and private
   content-addressed artifacts on the injected execution-control path;
@@ -72,3 +76,9 @@ remain exact and the recorded baseline is an existing ancestor of `HEAD`.
 Git checkouts must contain that history; a shallow checkout missing the baseline
 fails closed. Archive-only copies can check their content bindings without
 claiming verified Git ancestry.
+
+Real external evidence can be evaluated with the separately opt-in
+`make knowledge-skill-model-foundry-external-gate` target described in
+[EXTERNAL_QUALIFICATION.md](EXTERNAL_QUALIFICATION.md). The target fails closed
+when the evidence bundle, public trust store, output path, signature, role,
+scope, receipt chain, or certification decision is missing or invalid.
