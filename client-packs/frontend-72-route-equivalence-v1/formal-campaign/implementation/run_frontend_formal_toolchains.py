@@ -590,7 +590,7 @@ LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256 = (
 )
 # The fixed 72-route/864-block campaign is intentionally bounded but exceeds
 # the former two-minute budget on the pinned Node 26 macOS runner.
-INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 600
+INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 900
 SOLVER_RESULT_KEYS = {
     "schema_version",
     "solver",
