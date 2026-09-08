@@ -191,6 +191,7 @@ _CHECKED_ADD_SPELLING: dict[Language, str] = {
     "kotlin": "Math.addExact(a, b)",
     "flutter": "_elmosCheckedAdd(a, b)",
     "vb6": "ElmosCheckedAdd(a, b)",
+    "vcpp6": "ElmosCheckedAdd(a, b)",
 }
 
 
@@ -260,6 +261,7 @@ _FLOAT_DIVISION_GUARDS: dict[Language, str] = {
     "php": "elmos_non_zero_float($b)",
     "flutter": "_elmosNonZero(b)",
     "vb6": "ElmosNonZero(b)",
+    "vcpp6": "ElmosNonZero(b)",
 }
 
 

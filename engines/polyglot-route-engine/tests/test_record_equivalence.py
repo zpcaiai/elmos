@@ -147,13 +147,17 @@ def test_cross_emission_to_every_local_record_target(tmp_path: Path) -> None:
     )
 
     ir = analyze(java_file, "java", "origin")
-    for target in (language for language in ROUTED_LANGUAGES if language != "vb6"):
+    for target in (
+        language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}
+    ):
         result = emit(ir, target)
         assert len(result.content) > 0
         assert "Point" in result.content
 
     with pytest.raises(RouteError, match="VB6_RECORD_LOWERING_OUTSIDE_CERTIFIED_SUBSET"):
         emit(ir, "vb6")
+    with pytest.raises(RouteError, match="VCPP6_RECORD_LOWERING_OUTSIDE_BOUNDED_PROFILE"):
+        emit(ir, "vcpp6")
 
 
 def test_multiple_records_in_module(tmp_path: Path) -> None:

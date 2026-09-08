@@ -216,7 +216,7 @@ def test_real_format_parse_does_not_claim_unsupported_build_schema_semantics(tmp
     assert any(item["code"] == "BUILD_DESCRIPTOR_SEMANTIC_INDEX_NOT_RUN" for item in _diagnostics(graph))
 
 
-def test_fourteen_non_python_languages_are_classified_but_semantics_stay_not_run(
+def test_detectable_non_python_languages_are_classified_but_semantics_stay_not_run(
     tmp_path: Path,
 ) -> None:
     repository = tmp_path / "repository"
@@ -253,7 +253,12 @@ def test_fourteen_non_python_languages_are_classified_but_semantics_stay_not_run
     assert graph["repository_complete"] is False
     modules = [node for node in _nodes(graph) if node["kind"] == "module"]
     assert len(modules) == 14
-    assert {node["language"] for node in modules} == set(SUPPORTED_LANGUAGES) - {"python"}
+    # VCPP6 shares C/C++ extensions and requires an explicit semantic-discovery
+    # source-language binding; a content-only graph must not relabel modern C++.
+    assert {node["language"] for node in modules} == set(SUPPORTED_LANGUAGES) - {
+        "python",
+        "vcpp6",
+    }
     assert all(node["attributes"]["semantic_index_status"] == EvidenceStatus.NOT_RUN for node in modules)
     obligations = [item for item in _diagnostics(graph) if item["code"] == "COMPILER_SEMANTIC_INDEX_NOT_RUN"]
     assert len(obligations) == 14

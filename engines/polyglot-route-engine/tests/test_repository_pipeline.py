@@ -554,6 +554,7 @@ _CANDIDATE_DISCOVERY_CASES: dict[Language, tuple[str, list[str]]] = {
         "Total = value\nEnd Function\n",
         ["Total"],
     ),
+    "vcpp6": ("__int64 Total(__int64 value) { return value; }", ["Total"]),
 }
 
 
