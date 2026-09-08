@@ -1,17 +1,18 @@
-"""Authoritative directed route sets for the explicit fourteen-language matrix.
+"""Authoritative directed route sets for the explicit fifteen-language matrix.
 
 The original six-language matrix, exact-eight native profile, nine-language
 completion, Node.js expansion and PHP completion retain their immutable
 identities for provenance.  Kotlin, React and Flutter contribute exactly
 sixty-six new directed routes against the ten languages that remain active.
 Visual Basic 6.0 adds twenty-six bounded, preparation-only directions against
-that frozen thirteen-language active matrix.
+that frozen thirteen-language active matrix. Visual C++ 6.0 adds twenty-eight
+bounded directions against the frozen fourteen-language matrix.
 
 JavaScript is deprecated: its twenty directions leave the *active* matrix but
 stay declared, keep their packs under ``routes/``, and keep their provenance
 partitions at their recorded sizes.  ``COMPLETE_ROUTE_KEYS`` is therefore the
-active set (182) while ``ALL_DECLARED_ROUTE_KEYS`` is the set the provenance
-partitions must exactly cover (202).
+active set (210) while ``ALL_DECLARED_ROUTE_KEYS`` is the set the provenance
+partitions must exactly cover (230).
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ ELEVEN_LANGUAGE_MATRIX_LANGUAGES = (*TEN_LANGUAGE_MATRIX_LANGUAGES, *PHP_LANGUAG
 #: not independent-verification or certification evidence.
 V3_LANGUAGES = ("kotlin", "react", "flutter")
 VB6_LANGUAGES = ("vb6",)
+VCPP6_LANGUAGES = ("vcpp6",)
 
 #: Deprecated: still declared, no longer active.  Every javascript direction is
 #: excluded from ``COMPLETE_ROUTE_KEYS`` and rejected by ``split_route_key``.
@@ -49,7 +51,8 @@ THIRTEEN_LANGUAGE_MATRIX_LANGUAGES = (
     ),
     *V3_LANGUAGES,
 )
-SUPPORTED_ROUTE_LANGUAGES = (*THIRTEEN_LANGUAGE_MATRIX_LANGUAGES, *VB6_LANGUAGES)
+FOURTEEN_LANGUAGE_MATRIX_LANGUAGES = (*THIRTEEN_LANGUAGE_MATRIX_LANGUAGES, *VB6_LANGUAGES)
+SUPPORTED_ROUTE_LANGUAGES = (*FOURTEEN_LANGUAGE_MATRIX_LANGUAGES, *VCPP6_LANGUAGES)
 
 NINE_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
@@ -87,7 +90,15 @@ THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
     if source != target
 )
 
-#: The active matrix: 14 x 13 = 182. Contains no javascript direction.
+#: The active matrix before VC++6: 14 x 13 = 182. Frozen for provenance.
+FOURTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
+    f"{source}-to-{target}"
+    for source in FOURTEEN_LANGUAGE_MATRIX_LANGUAGES
+    for target in FOURTEEN_LANGUAGE_MATRIX_LANGUAGES
+    if source != target
+)
+
+#: The active matrix: 15 x 14 = 210. Contains no javascript direction.
 COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
     for source in SUPPORTED_ROUTE_LANGUAGES
@@ -185,8 +196,17 @@ V3_EXACT_ROUTE_KEYS = tuple(
 #: compiler/runtime campaign before any route may be promoted or certified.
 VB6_EXACT_ROUTE_KEYS = tuple(
     route_key
-    for route_key in COMPLETE_ROUTE_KEYS
+    for route_key in FOURTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS
     if route_key not in set(THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS)
+)
+
+#: Exactly the 28 directions added by Visual C++ 6.0. These remain bounded
+#: preparation-only routes until the governed VC++6 SP6 toolchain campaign is
+#: independently executed and accepted by the certification gate.
+VCPP6_EXACT_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in COMPLETE_ROUTE_KEYS
+    if route_key not in set(FOURTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS)
 )
 
 # Direct CLI replay is narrower than declaration or route-set verification.
@@ -198,6 +218,7 @@ EXECUTABLE_DIRECT_ROUTE_KEYS = tuple(
     if route_key not in set(CORE_ROUTE_KEYS)
     and route_key not in set(V3_EXACT_ROUTE_KEYS)
     and route_key not in set(VB6_EXACT_ROUTE_KEYS)
+    and route_key not in set(VCPP6_EXACT_ROUTE_KEYS)
 )
 
 if len(CORE_ROUTE_KEYS) != 30:
@@ -208,10 +229,13 @@ if len(V3_EXACT_ROUTE_KEYS) != 66:
     raise RuntimeError("V3_ROUTE_COUNT_DRIFT")
 if len(VB6_EXACT_ROUTE_KEYS) != 26:
     raise RuntimeError("VB6_ROUTE_COUNT_DRIFT")
+if len(VCPP6_EXACT_ROUTE_KEYS) != 28:
+    raise RuntimeError("VCPP6_ROUTE_COUNT_DRIFT")
 _legacy_route_keys = set(CORE_ROUTE_KEYS)
 _direct_route_keys = set(EXECUTABLE_DIRECT_ROUTE_KEYS)
 _v3_route_keys = set(V3_EXACT_ROUTE_KEYS)
 _vb6_route_keys = set(VB6_EXACT_ROUTE_KEYS)
+_vcpp6_route_keys = set(VCPP6_EXACT_ROUTE_KEYS)
 if (
     _legacy_route_keys & _direct_route_keys
     or _legacy_route_keys & _v3_route_keys
@@ -219,10 +243,14 @@ if (
     or _direct_route_keys & _v3_route_keys
     or _direct_route_keys & _vb6_route_keys
     or _v3_route_keys & _vb6_route_keys
+    or _legacy_route_keys & _vcpp6_route_keys
+    or _direct_route_keys & _vcpp6_route_keys
+    or _v3_route_keys & _vcpp6_route_keys
+    or _vb6_route_keys & _vcpp6_route_keys
 ):
     raise RuntimeError("ACTIVE_ROUTE_EXECUTION_PARTITIONS_OVERLAP")
 if (
-    _legacy_route_keys | _direct_route_keys | _v3_route_keys | _vb6_route_keys
+    _legacy_route_keys | _direct_route_keys | _v3_route_keys | _vb6_route_keys | _vcpp6_route_keys
 ) != set(COMPLETE_ROUTE_KEYS):
     raise RuntimeError("ACTIVE_ROUTE_EXECUTION_PARTITIONS_INCOMPLETE")
 
@@ -240,6 +268,7 @@ ROUTE_PROVENANCE_PARTITIONS = {
     "php-php85-completion-20": PHP_EXACT_ROUTE_KEYS,
     "kotlin-react-flutter-completion-66": V3_EXACT_ROUTE_KEYS,
     "vb6-completion-26": VB6_EXACT_ROUTE_KEYS,
+    "vcpp6-completion-28": VCPP6_EXACT_ROUTE_KEYS,
 }
 
 #: The partitions that own an *active* direction.  A deprecated partition still
@@ -303,7 +332,8 @@ EXACT_ROUTE_SETS = {
     # 156 to "eleven-language-complete-110".
     "eleven-language-complete-110": ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     "thirteen-language-complete-156": THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
-    "fourteen-language-complete-182": COMPLETE_ROUTE_KEYS,
+    "fourteen-language-complete-182": FOURTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    "fifteen-language-complete-210": COMPLETE_ROUTE_KEYS,
 }
 
 # CLI mutation surfaces intentionally do not expose historical sets, mixed
@@ -325,8 +355,10 @@ PREPARABLE_ROUTE_SETS = {
     **EXECUTABLE_ROUTE_SETS,
     "kotlin-react-flutter-completion-66": V3_EXACT_ROUTE_KEYS,
     "vb6-completion-26": VB6_EXACT_ROUTE_KEYS,
+    "vcpp6-completion-28": VCPP6_EXACT_ROUTE_KEYS,
     "thirteen-language-complete-156": THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
-    "fourteen-language-complete-182": COMPLETE_ROUTE_KEYS,
+    "fourteen-language-complete-182": FOURTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    "fifteen-language-complete-210": COMPLETE_ROUTE_KEYS,
 }
 
 # Read-only verification accepts every immutable provenance/view set plus the
@@ -355,6 +387,8 @@ def provenance_route_set(route_key: str) -> str:
         return "kotlin-react-flutter-completion-66"
     if route_key in VB6_EXACT_ROUTE_KEYS:
         return "vb6-completion-26"
+    if route_key in VCPP6_EXACT_ROUTE_KEYS:
+        return "vcpp6-completion-28"
     raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
 
 
@@ -386,6 +420,8 @@ def split_executable_route_key(route_key: str) -> tuple[str, str]:
         raise ValueError(f"V3_ROUTE_RESEARCH_NOT_EXECUTABLE:{route_key}")
     if route_key in VB6_EXACT_ROUTE_KEYS:
         raise ValueError(f"VB6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE:{route_key}")
+    if route_key in VCPP6_EXACT_ROUTE_KEYS:
+        raise ValueError(f"VCPP6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE:{route_key}")
     source, target = split_route_key(route_key)
     if route_key in CORE_ROUTE_KEYS:
         raise ValueError(

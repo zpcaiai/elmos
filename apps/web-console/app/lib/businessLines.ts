@@ -29,11 +29,12 @@ export const translationLanguages: TranslationLanguage[] = [
   { id: "react", label: "React / TSX", compiler: "TypeScript 5.9.2 Compiler API", runtime: "React 19.2.7 / Node.js 26.0.0", enginePath: "engines/polyglot-route-engine/native/react/analyzer.mjs" },
   { id: "flutter", label: "Flutter / Dart", compiler: "Dart analyzer 10.1.0", runtime: "Flutter 3.44.1 / Dart 3.12.1", enginePath: "engines/polyglot-route-engine/native/dart/analyzer.dart" },
   { id: "vb6", label: "Visual Basic 6.0", compiler: "Visual Basic 6.0 SP6 dialect / ELMOS bounded parser", runtime: "vendor runtime NOT_RUN / Windows x86", enginePath: "engines/polyglot-route-engine/src/elmos_polyglot_route/vb6_analyzer.py" },
+  { id: "vcpp6", label: "Visual C++ 6.0", compiler: "Microsoft Visual C++ 6.0 SP6 source dialect / C++98-era typed-pure-module-v1 bounded parser/emitter", runtime: "vendor compiler/linker/runtime NOT_RUN / Windows x86", enginePath: "engines/polyglot-route-engine/src/elmos_polyglot_route/vcpp6_analyzer.py" },
 ];
 
 /**
  * Offline/editorial fallback only. The live console exposure list is read from
- * routes/inventory.json; these fourteen IDs mirror the checked-in active matrix.
+ * routes/inventory.json; these fifteen IDs mirror the checked-in active matrix.
  * Every fallback route remains NOT_RUN and cannot authorize execution.
  */
 export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
@@ -51,6 +52,7 @@ export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
   "react",
   "flutter",
   "vb6",
+  "vcpp6",
 ]);
 
 export const consoleTranslationLanguages = translationLanguages.filter((language) =>
@@ -89,6 +91,7 @@ const sourceHazards: Record<TranslationLanguageId, string[]> = {
   react: ["JSX、组件生命周期、Hooks 与 effects", "props/state 闭包、事件与异步渲染", "当前仅支持显式类型的纯 TSX 函数"],
   flutter: ["Widget 树、BuildContext 与生命周期", "async、平台通道、插件与设备 API", "当前仅支持显式类型的纯 Dart 函数"],
   vb6: ["ByRef、Variant、默认属性与隐式强制转换", "窗体/控件事件、COM/ActiveX、ADO/Access 与 Win32 API", "当前仅支持 Option Explicit 的纯标准模块子集"],
+  vcpp6: ["指针、引用、对象所有权与 C++98 未定义行为", "MFC、ATL、COM、Win32 句柄、模板与异常", "当前仅支持无副作用的 C++98 纯模块子集"],
 };
 
 const targetHazards: Record<TranslationLanguageId, string[]> = {
@@ -106,6 +109,7 @@ const targetHazards: Record<TranslationLanguageId, string[]> = {
   react: ["目标仅接收显式类型的纯函数，不把 JSX 当普通表达式降级", "组件、Hooks、effects、DOM 与渲染语义保持不支持"],
   flutter: ["目标仅接收显式类型的纯 Dart 函数，不伪造 Widget 等价", "Widget、插件、平台通道、设备与渲染语义保持不支持"],
   vb6: ["目标整数限定为 32 位 Long，并使用显式检查助手", "窗体、类模块、COM、错误处理与 Windows 原生运行保持不支持"],
+  vcpp6: ["目标限定为 C++98 纯模块并显式检查整数边界", "MFC、ATL、COM、Win32、指针、引用、模板、异常与对象所有权保持不支持"],
 };
 
 export function translationHazards(

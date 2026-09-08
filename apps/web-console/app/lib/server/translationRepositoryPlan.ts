@@ -35,6 +35,8 @@ const ACTIVE_LANGUAGE_IDS = [
   "kotlin",
   "react",
   "flutter",
+  "vb6",
+  "vcpp6",
 ] as const satisfies readonly TranslationLanguageId[];
 const REPOSITORY_INVENTORY_LANGUAGE_IDS = [
   ...ACTIVE_LANGUAGE_IDS,
@@ -244,7 +246,7 @@ export function validateRepositoryPlan(
   if (raw.language_lifecycle !== "ACTIVE") {
     fail(
       "PLAN_LANGUAGE_LIFECYCLE_INVALID",
-      "Web 仓库入口只接受 13 个活动语言的 ACTIVE 生命周期，不重放已废弃 JavaScript 路线。",
+      "Web 仓库入口只接受 15 个活动语言的 ACTIVE 生命周期，不重放已废弃 JavaScript 路线。",
     );
   }
   if (route.localExecution !== "PASSED") {
@@ -312,7 +314,7 @@ export function validateRepositoryPlan(
   ) {
     fail(
       "PLAN_LANGUAGE_COUNT_KEY_SET_INVALID",
-      "language_counts 必须精确包含 13 个活动语言与只读历史 JavaScript 键。",
+      "language_counts 必须精确包含 15 个活动语言与只读历史 JavaScript 键。",
     );
   }
   for (const language of REPOSITORY_INVENTORY_LANGUAGE_IDS) {
