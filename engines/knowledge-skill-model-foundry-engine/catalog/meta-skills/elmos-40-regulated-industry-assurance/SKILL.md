@@ -1,11 +1,11 @@
 ---
 name: elmos-40-regulated-industry-assurance
-description: Route the 40-regulated-industry-assurance capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 40-regulated-industry-assurance capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 40-regulated-industry-assurance
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: a6260ac9017d5b29f305f7bbb4992ebfa204b780050f1c68912398bd69367aeb

@@ -1,11 +1,11 @@
 ---
 name: elmos-20-sql-database-modernization
-description: Route the 20-sql-database-modernization capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 20-sql-database-modernization capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 20-sql-database-modernization
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 19d92eec8c594caa59e932848908e08c6c48446ced65c53627dc5cdd9a6a2b39

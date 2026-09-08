@@ -1,11 +1,11 @@
-"""Universal Typed 7-Stage Semantic Contract Program Interpreter.
+"""Seven-stage wrapper for exact provider-free semantic handlers.
 
 This module provides a deterministic, fail-closed runtime that executes any
 Foundry Skill through its exact declared 7-stage lifecycle:
 1. authorize: tenant scope, lease, policy, and tool allowlist checks
 2. snapshot: immutable input digest, workspace binding, and checkpointing
 3. plan: input validation against declared contracts and preconditions
-4. execute: domain semantic handler or bounded typed semantic synthesis
+4. execute: exact allowlisted domain semantic handler
 5. verify: postconditions, invariant evaluation, and gate obligations
 6. emit-evidence: self-attested execution evidence collection
 7. commit-or-rollback: atomic receipt recording or compensation on failure
@@ -38,7 +38,7 @@ class StageResult:
 
 
 class SemanticProgramRunner:
-    """Deterministic, fail-closed 7-stage workflow interpreter for Skill contracts."""
+    """Wrap exact local handlers without synthesizing missing semantics."""
 
     def __init__(
         self,
@@ -243,37 +243,15 @@ class SemanticProgramRunner:
     ) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
         skill_name = str(skill["name"])
 
-        # If an exact domain handler is registered, invoke it directly
-        if skill_name in self.local_handlers:
-            result = self.local_handlers[skill_name](skill_name, payload, scope, invocation_id)
-            outputs = result.get("outputs", {})
-            return {"handler_type": "EXACT_DOMAIN_HANDLER", "skill_name": skill_name}, outputs
-
-        # Otherwise, synthesize deterministic typed outputs strictly matching declared outputs
-        declared_outputs = tuple(str(out) for out in skill.get("outputs", ()))
-        synthesized_outputs: dict[str, Any] = {}
-        for out_name in declared_outputs:
-            out_doc = {
-                "schema_version": f"elmos.foundry.contract.{skill_name}.v1",
-                "skill_name": skill_name,
-                "output_name": out_name,
-                "tenant_id": scope.tenant_id,
-                "project_id": scope.project_id,
-                "invocation_id": invocation_id,
-                "input_digest": canonical_digest(payload),
-                "pack": str(skill.get("pack", "unknown")),
-                "risk_class": str(skill.get("risk_class", "medium")),
-                "effects_authorized": False,
-                "external_evidence_status": EXTERNAL_EVIDENCE_STATUS,
-                "certification_status": CERTIFICATION_STATUS,
-            }
-            out_doc["content_digest"] = canonical_digest(out_doc)
-            synthesized_outputs[out_name] = out_doc
-
-        return {
-            "handler_type": "TYPED_CONTRACT_SYNTHESIS",
-            "outputs_produced": len(synthesized_outputs),
-        }, synthesized_outputs
+        handler = self.local_handlers.get(skill_name)
+        if handler is None:
+            raise KernelSecurityError(
+                f"runtime has no exact local semantic handler for {skill_name}; "
+                "use its native Broker route"
+            )
+        result = handler(skill_name, payload, scope, invocation_id)
+        outputs = result.get("outputs", {})
+        return {"handler_type": "EXACT_DOMAIN_HANDLER", "skill_name": skill_name}, outputs
 
     def _stage_verify(
         self, skill: Mapping[str, Any], outputs: Mapping[str, Any]

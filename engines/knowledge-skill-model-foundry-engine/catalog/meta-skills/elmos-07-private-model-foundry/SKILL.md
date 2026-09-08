@@ -1,11 +1,11 @@
 ---
 name: elmos-07-private-model-foundry
-description: Route the 07-private-model-foundry capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 07-private-model-foundry capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 07-private-model-foundry
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 5de17a6be0ebd49c57296d54ecb38c6f19cc09ecaabd090003a42d1863731b09

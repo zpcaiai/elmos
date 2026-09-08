@@ -196,7 +196,7 @@ class SkillCatalogAndMetaTests(unittest.TestCase):
                 ).update(
                     {"capability_state": "PREPARE_ONLY", "semantic_handler_binding": "UNBOUND"}
                 ),
-                "exact local semantic registry",
+                "unsupported capability state",
             ),
             (
                 lambda raw: raw["atomic_skills"][0]["source_bindings"]["skill_contract"].update(
