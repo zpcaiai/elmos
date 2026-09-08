@@ -177,7 +177,7 @@ class VercelDeploymentWaiterTests(unittest.TestCase):
                     "https://preview-a1b2.vercel.app",
                 )
 
-    def test_workflow_binds_checkout_probe_and_paths_to_exact_sha(self) -> None:
+    def test_workflow_binds_checkout_and_probe_to_exact_sha(self) -> None:
         workflow = (ROOT / ".github/workflows/vercel-deployment-smoke.yml").read_text(
             encoding="utf-8"
         )
@@ -186,7 +186,8 @@ class VercelDeploymentWaiterTests(unittest.TestCase):
         self.assertIn("ELMOS_DEPLOYMENT_SHA", workflow)
         self.assertIn("ELMOS_VERCEL_EXPECTED_COMMIT_SHA", workflow)
         self.assertIn('ref: "${{ env.ELMOS_DEPLOYMENT_SHA }}"', workflow)
-        self.assertIn('".vercelignore"', workflow)
+        trigger_block = workflow.split("permissions:", 1)[0]
+        self.assertNotIn("paths:", trigger_block)
         self.assertNotIn("deployment_url:", workflow)
         self.assertIn(
             'ELMOS_PRODUCTION_SMOKE_URL: ${{ vars.ELMOS_VERCEL_SMOKE_URL',

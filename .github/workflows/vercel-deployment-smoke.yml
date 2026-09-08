@@ -3,46 +3,8 @@ name: Vercel deployment smoke
 on:
   push:
     branches: [main]
-    paths:
-      - ".vercelignore"
-      - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/**"
-      - "routes/inventory.json"
-      - "routes/*/route.json"
-      - "routes/*/support-matrix.json"
-      - "routes/*/certification/certification.json"
-      - "routes/*/certification/evidence.json"
-      - "pom.xml"
-      - "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json"
-      - "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj"
-      - "engines/frontend-client-engine/src/polyglot.ts"
-      - "engines/polyglot-route-engine/native/**"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py"
-      - "scripts/operations/wait_for_vercel_deployment.py"
-      - ".github/workflows/vercel-deployment-smoke.yml"
   pull_request:
     branches: [main]
-    paths:
-      - ".vercelignore"
-      - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/**"
-      - "routes/inventory.json"
-      - "routes/*/route.json"
-      - "routes/*/support-matrix.json"
-      - "routes/*/certification/certification.json"
-      - "routes/*/certification/evidence.json"
-      - "pom.xml"
-      - "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json"
-      - "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj"
-      - "engines/frontend-client-engine/src/polyglot.ts"
-      - "engines/polyglot-route-engine/native/**"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
-      - "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py"
-      - "scripts/operations/wait_for_vercel_deployment.py"
-      - ".github/workflows/vercel-deployment-smoke.yml"
   workflow_dispatch:
 
 permissions:
