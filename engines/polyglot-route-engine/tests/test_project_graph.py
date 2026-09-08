@@ -216,7 +216,7 @@ def test_real_format_parse_does_not_claim_unsupported_build_schema_semantics(tmp
     assert any(item["code"] == "BUILD_DESCRIPTOR_SEMANTIC_INDEX_NOT_RUN" for item in _diagnostics(graph))
 
 
-def test_thirteen_non_python_languages_are_classified_but_semantics_stay_not_run(
+def test_fourteen_non_python_languages_are_classified_but_semantics_stay_not_run(
     tmp_path: Path,
 ) -> None:
     repository = tmp_path / "repository"
@@ -235,6 +235,10 @@ def test_thirteen_non_python_languages_are_classified_but_semantics_stay_not_run
         "sample.ts": "export function sample(): void {}",
         "sample.tsx": "export function sample(): void {}",
         "sample.dart": "void sample() {}",
+        "sample.bas": (
+            "Option Explicit\nPublic Function Sample() As Long\n"
+            "Sample = 0\nEnd Function\n"
+        ),
     }
     for filename, content in sources.items():
         (repository / filename).write_text(content, encoding="utf-8")
@@ -248,16 +252,16 @@ def test_thirteen_non_python_languages_are_classified_but_semantics_stay_not_run
     assert set(graph["supported_languages"]) == set(SUPPORTED_LANGUAGES)
     assert graph["repository_complete"] is False
     modules = [node for node in _nodes(graph) if node["kind"] == "module"]
-    assert len(modules) == 13
+    assert len(modules) == 14
     assert {node["language"] for node in modules} == set(SUPPORTED_LANGUAGES) - {"python"}
     assert all(node["attributes"]["semantic_index_status"] == EvidenceStatus.NOT_RUN for node in modules)
     obligations = [item for item in _diagnostics(graph) if item["code"] == "COMPILER_SEMANTIC_INDEX_NOT_RUN"]
-    assert len(obligations) == 13
+    assert len(obligations) == 14
     assert {item["verification_status"] for item in obligations} == {EvidenceStatus.NOT_RUN}
     other_languages = graph["indexers"]["other_languages"]
     assert other_languages["status"] == EvidenceStatus.NOT_RUN
     assert other_languages["module_inventory_count"] == 0
-    assert other_languages["required_module_inventory_count"] == 13
+    assert other_languages["required_module_inventory_count"] == 14
     assert other_languages["inventory_coverage_complete"] is False
 
 
