@@ -6,7 +6,7 @@ on:
     paths:
       - ".vercelignore"
       - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json"
+      - "contracts/pricing-catalog-schema/**"
       - "routes/inventory.json"
       - "routes/*/route.json"
       - "routes/*/support-matrix.json"
@@ -27,7 +27,7 @@ on:
     paths:
       - ".vercelignore"
       - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json"
+      - "contracts/pricing-catalog-schema/**"
       - "routes/inventory.json"
       - "routes/*/route.json"
       - "routes/*/support-matrix.json"
@@ -58,7 +58,7 @@ jobs:
   smoke:
     name: Vercel deployment surface smoke
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     env:
       ELMOS_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       ELMOS_VERCEL_EXPECTED_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -77,6 +77,7 @@ jobs:
           --repository "${GITHUB_REPOSITORY}"
           --sha "${ELMOS_DEPLOYMENT_SHA}"
           --github-env "${GITHUB_ENV}"
+          --timeout-seconds 1800
           --production-url "${ELMOS_PRODUCTION_SMOKE_URL}"
 
       - name: Set up Node.js 22
