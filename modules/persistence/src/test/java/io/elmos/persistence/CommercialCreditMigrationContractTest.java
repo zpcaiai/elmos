@@ -12,7 +12,7 @@ class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
     private static final Path DIGEST_TRIGGER_REPAIR = Path.of(
-            "src/main/resources/db/migration/V85__elmpay_digest_trigger_catalog_hashing.sql");
+            "src/main/resources/db/migration/V86__elmpay_digest_trigger_catalog_hashing.sql");
     private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
             "../../scripts/commercial/configure_billing_runtime_role.sh");
 
