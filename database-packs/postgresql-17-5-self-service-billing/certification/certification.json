@@ -11,10 +11,10 @@
       "edition": "community",
       "dialect": "postgresql",
       "driver_versions": [
-        "UNSET"
+        "postgresql-jdbc-42.7.7"
       ],
-      "charset": "UNSET",
-      "collation": "UNSET",
+      "charset": "UTF8",
+      "collation": "C",
       "timezone": "UTC",
       "extensions": []
     },
@@ -26,10 +26,10 @@
       "edition": "neon-managed",
       "dialect": "postgresql",
       "driver_versions": [
-        "UNSET"
+        "postgresql-jdbc-42.7.7"
       ],
-      "charset": "UNSET",
-      "collation": "UNSET",
+      "charset": "UTF8",
+      "collation": "C",
       "timezone": "UTC",
       "extensions": []
     }
@@ -37,5 +37,7 @@
   "metrics": {},
   "restrictions": [],
   "evidence_refs": [],
+  "evidence_digests": {},
+  "external_certification": "NOT_RUN",
   "approved_by": []
 }

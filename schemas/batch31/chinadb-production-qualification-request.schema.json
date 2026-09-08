@@ -394,6 +394,7 @@
         "vendorToolDigests",
         "artifactDigests",
         "evidenceDigests",
+        "performanceSummary",
         "executedAt",
         "checks",
         "criticalUnknowns",
@@ -420,11 +421,48 @@
         },
         "artifactDigests": { "$ref": "#/$defs/artifactDigests" },
         "evidenceDigests": { "$ref": "#/$defs/evidenceDigests" },
+        "performanceSummary": { "$ref": "#/$defs/performanceSummary" },
         "executedAt": { "$ref": "#/$defs/timestamp" },
         "checks": { "$ref": "#/$defs/executionChecks" },
         "criticalUnknowns": { "const": 0 },
         "criticalDifferences": { "const": 0 },
         "testIntegrityViolations": { "const": 0 }
+      }
+    },
+    "performanceSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runnerClass",
+        "isolation",
+        "measurementClock",
+        "runnerAttestationDigest",
+        "runnerAttestationVerified",
+        "sloP95Milliseconds",
+        "maximumMeasurementAttempts",
+        "measurementAttemptCount",
+        "warmupCountPerQuery",
+        "sampleCountPerQuery",
+        "queryCount",
+        "normalizedOneMinuteLoad",
+        "maximumObservedSourceP95Milliseconds",
+        "maximumObservedTargetP95Milliseconds"
+      ],
+      "properties": {
+        "runnerClass": { "const": "DEDICATED" },
+        "isolation": { "const": "EXCLUSIVE_SINGLE_QUALIFICATION" },
+        "measurementClock": { "const": "MONOTONIC_HIGH_RESOLUTION" },
+        "runnerAttestationDigest": { "$ref": "#/$defs/digest" },
+        "runnerAttestationVerified": { "const": true },
+        "sloP95Milliseconds": { "const": 75.0 },
+        "maximumMeasurementAttempts": { "const": 2 },
+        "measurementAttemptCount": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "warmupCountPerQuery": { "const": 5 },
+        "sampleCountPerQuery": { "const": 40 },
+        "queryCount": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "normalizedOneMinuteLoad": { "type": "number", "minimum": 0, "maximum": 1.0 },
+        "maximumObservedSourceP95Milliseconds": { "type": "number", "minimum": 0, "maximum": 75.0 },
+        "maximumObservedTargetP95Milliseconds": { "type": "number", "minimum": 0, "maximum": 75.0 }
       }
     },
     "verificationPayload": {

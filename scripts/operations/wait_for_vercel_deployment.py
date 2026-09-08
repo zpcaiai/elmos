@@ -75,6 +75,7 @@ def wait_for_deployment(
     timeout_seconds: float,
     poll_seconds: float,
     production_url: str | None = None,
+    required_environment: str | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
 ) -> str:
@@ -94,6 +95,14 @@ def wait_for_deployment(
                 and item.get("task") == "deploy"
                 and isinstance(item.get("creator"), dict)
                 and item["creator"].get("login") == "vercel[bot]"
+                and (
+                    required_environment is None
+                    or (
+                        isinstance(item.get("environment"), str)
+                        and item["environment"].casefold()
+                        == required_environment.casefold()
+                    )
+                )
             ),
             key=lambda item: str(item.get("created_at", "")),
             reverse=True,
@@ -157,6 +166,11 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--poll-seconds", type=float, default=10)
     parser.add_argument("--production-url")
+    parser.add_argument(
+        "--required-environment",
+        choices=("Production", "Preview"),
+        help="accept only the exact SHA's Vercel Production or Preview deployment",
+    )
     return parser.parse_args()
 
 
@@ -179,6 +193,7 @@ def main() -> int:
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
         production_url=args.production_url,
+        required_environment=args.required_environment,
     )
     with args.github_env.open("a", encoding="utf-8") as output:
         output.write(f"ELMOS_E2E_BASE_URL={url}\n")

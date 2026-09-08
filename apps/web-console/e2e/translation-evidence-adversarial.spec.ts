@@ -83,6 +83,7 @@ const activeLanguageIds = [
   "react",
   "flutter",
   "vb6",
+  "vcpp6",
 ] as const satisfies readonly TranslationLanguageId[];
 
 const legacyConsoleLanguageIds = [
@@ -99,6 +100,7 @@ const researchOnlyLanguageIds = new Set<TranslationLanguageId>([
   "react",
   "flutter",
   "vb6",
+  "vcpp6",
 ]);
 
 const targetEmitterPath =
@@ -119,6 +121,7 @@ const inventoryVersions: Record<TranslationLanguageId, string> = {
   swift: "Swift 6.3.3 / arm64-apple-macosx26.0",
   typescript: "5.9.2 / Node 26.0.0",
   vb6: "Visual Basic 6.0 SP6 dialect / vendor runtime NOT_RUN",
+  vcpp6: "Visual C++ 6.0 SP6 dialect / vendor runtime NOT_RUN",
 };
 
 const exactInventoryVersions: Record<TranslationLanguageId, string[]> = {
@@ -167,6 +170,11 @@ const exactInventoryVersions: Record<TranslationLanguageId, string[]> = {
     "typed-pure-module-v1 bounded parser/emitter",
     "vendor compiler/runtime NOT_RUN",
   ],
+  vcpp6: [
+    "Microsoft Visual C++ 6.0 SP6 source dialect",
+    "C++98-era typed-pure-module-v1 bounded parser/emitter",
+    "vendor compiler/linker/runtime NOT_RUN",
+  ],
 };
 
 const activePairs = activeLanguageIds.flatMap((source) =>
@@ -194,9 +202,11 @@ const v3ResearchCertification = (routeKey: string) => ({
   route_version: "0.1.0",
   status: "research",
   certification_decision: "NOT_CERTIFIED",
-  declared_scope: routeKey.includes("vb6")
-    ? "VB6_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN"
-    : "NO_ROUTE_PROFILE_ADMITTED",
+  declared_scope: routeKey.includes("vcpp6")
+    ? "VCPP6_CPP98_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN"
+    : routeKey.includes("vb6")
+      ? "VB6_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN"
+      : "NO_ROUTE_PROFILE_ADMITTED",
   gate_results: {
     local_execution: "NOT_RUN",
     external_execution: "NOT_RUN",
@@ -238,7 +248,13 @@ const v3ResearchEvidence = (routeKey: string) => ({
   critical_unknown_semantics: null,
   critical_behavior_regressions: null,
   test_integrity_violations: null,
-  notes: routeKey.includes("vb6")
+  notes: routeKey.includes("vcpp6")
+    ? [
+      "The typed pure VC++6 C++98-era analyzer and emitter are bounded local engineering handlers.",
+      "MFC, ATL, COM, Win32 handles, pointers, references, templates, exceptions and object ownership remain unsupported.",
+      "Microsoft Visual C++ 6.0 SP6 compiler/linker/runtime, repository, independent and external evidence remain NOT_RUN.",
+    ]
+    : routeKey.includes("vb6")
     ? [
       "The typed pure VB6 standard-module analyzer and emitter are bounded local engineering handlers.",
       "VB6 forms, class modules, COM/ActiveX, ADO, error handling, ByRef and implicit Variant remain unsupported.",
@@ -268,7 +284,8 @@ const v3ResearchSupportMatrix = (routeKey: string) => ({
     ["interop", "blocked", "retain-runtime-or-sidecar", "Interop requires an explicit boundary plan and independently verified runtime evidence; neither has been admitted."],
   ].map(([id, status, strategy, reason]) => ({
     id,
-    status: routeKey.includes("vb6") && id === "numeric" ? "experimental" : status,
+    status: (routeKey.includes("vb6") || routeKey.includes("vcpp6"))
+      && ["type-system", "numeric"].includes(id) ? "experimental" : status,
     strategy,
     reason,
     evidence_refs: [],
@@ -354,6 +371,7 @@ function inventoryRoute(
   source: TranslationLanguageId,
   target: TranslationLanguageId,
 ): FixtureRoute {
+  const vcpp6 = source === "vcpp6" || target === "vcpp6";
   const vb6 = source === "vb6" || target === "vb6";
   const research = researchOnlyLanguageIds.has(source) || researchOnlyLanguageIds.has(target);
   return {
@@ -363,11 +381,14 @@ function inventoryRoute(
     source_version: inventoryVersions[source],
     target_version: inventoryVersions[target],
     status: research ? "research" as const : "limited" as const,
-    route_set: vb6
-      ? "vb6-completion-26"
+    route_set: vcpp6
+      ? "vcpp6-completion-28"
+      : vb6 ? "vb6-completion-26"
       : research ? "kotlin-react-flutter-completion-66" : "fixture-active-route-set",
     local_execution_reason: research
-      ? vb6 ? "VB6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN" : "V3_ROUTE_CAMPAIGN_NOT_RUN"
+      ? vcpp6
+        ? "VCPP6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN"
+        : vb6 ? "VB6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN" : "V3_ROUTE_CAMPAIGN_NOT_RUN"
       : "FIXTURE_LOCAL_EXECUTION_PASSED",
     local_execution_status: research ? "NOT_RUN" as const : "PASSED_LOCAL" as const,
     module_execution_status: "NOT_APPLICABLE",
@@ -387,7 +408,7 @@ function fixtureInventory(
 ) {
   const count = (status: string) => routes.filter((route) => route.status === status).length;
   return {
-    schema_version: "1.4.0",
+    schema_version: "1.5.0",
     semantic_profile: "typed-pure-function-v1",
     console_exposed_languages: [...exposedLanguages],
     deprecated_languages: ["javascript"],
@@ -447,10 +468,13 @@ function routePack(route: FixtureRoute) {
     },
     profiles: {
       semantic_profile: route.status === "research"
-        ? route.route_key.includes("vb6") ? "typed-pure-module-v1" : ""
+        ? route.route_key.includes("vb6") || route.route_key.includes("vcpp6")
+          ? "typed-pure-module-v1" : ""
         : "typed-pure-function-v1",
       target_profile: route.status === "research"
-        ? route.route_key.includes("vb6") ? "vb6-long32-pure-module-v1" : ""
+        ? route.route_key.includes("vcpp6")
+          ? "vcpp6-cpp98-pure-module-v1"
+          : route.route_key.includes("vb6") ? "vb6-long32-pure-module-v1" : ""
         : `${route.target}-native-compiler`,
     },
     framework_profiles: [],
@@ -617,16 +641,16 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
     }
   });
 
-  test("有效证据仅在精确 14 语言/182 路线矩阵中读取", async () => {
+  test("有效证据仅在精确 15 语言/210 路线矩阵中读取", async () => {
     const fixture = await routeContractFixture(repositoryEvidence());
     try {
       process.env.ELMOS_REPOSITORY_ROOT = fixture.root;
       const consoleCapability = readTranslationCapability();
       const executionCapability = readTranslationExecutionCapability();
       expect(consoleCapability.languages.map((language) => language.id)).toEqual(activeLanguageIds);
-      expect(consoleCapability.routes).toHaveLength(182);
-      expect(consoleCapability.routePackageCount).toBe(182);
-      expect(executionCapability.languages).toHaveLength(14);
+      expect(consoleCapability.routes).toHaveLength(210);
+      expect(consoleCapability.routePackageCount).toBe(210);
+      expect(executionCapability.languages).toHaveLength(15);
       expect(executionCapability.routes.find((route) => route.id === "python-to-typescript"))
         .toMatchObject({
         repositoryExecutionStatus: "PASSED",
@@ -641,7 +665,7 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
     }
   });
 
-  test("单条 route certified 只增加计数，不会认证完整 182 路线产品面", async () => {
+  test("单条 route certified 只增加计数，不会认证完整 210 路线产品面", async () => {
     const fixture = await routeContractFixture(repositoryEvidence(), { certifiedRoute: true });
     try {
       process.env.ELMOS_REPOSITORY_ROOT = fixture.root;
@@ -966,7 +990,7 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
     });
   }
 
-  test("真实与 fixture 均精确公开 14 语言/182 路线，research 与整库门禁保持关闭", async () => {
+  test("真实与 fixture 均精确公开 15 语言/210 路线，research 与整库门禁保持关闭", async () => {
     const actualContainer = await mkdtemp(path.join(tmpdir(), "elmos-web-actual-matrix-"));
     const actualFixture = {
       container: actualContainer,
@@ -984,8 +1008,8 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
       process.env.ELMOS_REPOSITORY_ROOT = actualFixture.root;
       const actualCapability = readTranslationCapability();
       expect(actualCapability.languages.map((language) => language.id)).toEqual(activeLanguageIds);
-      expect(actualCapability.routes).toHaveLength(182);
-      expect(new Set(actualCapability.routes.map((route) => route.id))).toHaveProperty("size", 182);
+      expect(actualCapability.routes).toHaveLength(210);
+      expect(new Set(actualCapability.routes.map((route) => route.id))).toHaveProperty("size", 210);
       expect(actualCapability.repositoryExecutableRouteCount).toBe(0);
       expect(actualCapability.repositoryExecutionEvidence).toBe("NOT_RUN");
       const actualResearchRoute = actualCapability.routes.find(
@@ -1018,9 +1042,9 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
       process.env.ELMOS_REPOSITORY_ROOT = fixture.root;
       const capability = readTranslationCapability();
       expect(capability.languages.map((language) => language.id)).toEqual(activeLanguageIds);
-      expect(capability.routes).toHaveLength(182);
-      expect(new Set(capability.routes.map((route) => route.id))).toHaveProperty("size", 182);
-      expect(capability.routes.filter((route) => route.status === "RESEARCH")).toHaveLength(92);
+      expect(capability.routes).toHaveLength(210);
+      expect(new Set(capability.routes.map((route) => route.id))).toHaveProperty("size", 210);
+      expect(capability.routes.filter((route) => route.status === "RESEARCH")).toHaveLength(120);
       expect(capability.routes.filter((route) => route.status === "EXPERIMENTAL")).toHaveLength(0);
       expect(capability.routes.filter((route) => route.localExecution === "PASSED")).toHaveLength(90);
       expect(capability.routes.every((route) => route.repositoryExecutionStatus === "NOT_RUN"))
@@ -1030,6 +1054,11 @@ test.describe.serial("仓库路线证据描述符 fail closed", () => {
       expect(capability.routes.find((route) => route.id === "kotlin-to-react")?.skill)
         .toBe("b29-route-certification-gate");
       expect(capability.routes.find((route) => route.id === "vb6-to-java")).toMatchObject({
+        localExecution: "NOT_RUN",
+        repositoryExecutionStatus: "NOT_RUN",
+        status: "RESEARCH",
+      });
+      expect(capability.routes.find((route) => route.id === "vcpp6-to-java")).toMatchObject({
         localExecution: "NOT_RUN",
         repositoryExecutionStatus: "NOT_RUN",
         status: "RESEARCH",
@@ -1101,7 +1130,7 @@ function activeRepositoryPlan() {
   };
 }
 
-test("Repository plan 保留 ACTIVE 生命周期、14+1 语言计数与 JavaScript 排除证据", async () => {
+test("Repository plan 保留 ACTIVE 生命周期、15+1 语言计数与 JavaScript 排除证据", async () => {
   const fixture = await routeContractFixture(repositoryEvidence());
   const originalRoot = process.env.ELMOS_REPOSITORY_ROOT;
   try {

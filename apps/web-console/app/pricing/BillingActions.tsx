@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
-import type { PricingPlan } from "../lib/pricingCatalog";
+import type { CreditPack, OneTimeProduct, PricingPlan } from "../lib/pricingCatalog";
 import { renderQrSvg } from "../lib/qrCode";
 import { Icon } from "../components/Icon";
 import styles from "./BillingActions.module.css";
@@ -19,6 +19,8 @@ type TrialGrant = {
 };
 
 type PaymentProvider = "STRIPE_CHECKOUT" | "ALIPAY_CHECKOUT" | "WECHAT_PAY_NATIVE";
+type CommercialOrderStatus = "CREATED" | "PENDING_PAYMENT" | "PAID" | "FULFILLED"
+  | "EXPIRED" | "FAILED" | "RECONCILIATION_REQUIRED";
 
 // 结账响应有两种互斥形态，取决于目录里的 paymentProvider：
 //   跳转型（Stripe / 支付宝）→ checkoutUrl，浏览器跳过去付
@@ -201,6 +203,155 @@ export function PlanBillingAction({
           {trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至支付页或扫码完成支付"}
         </p>
       )}
+    </div>
+  );
+}
+
+export function ProductBillingAction({
+  product,
+  orderable,
+}: {
+  product: CreditPack | OneTimeProduct;
+  orderable: boolean;
+}) {
+  const key = useRef<string | null>(null);
+  const [projectId, setProjectId] = useState("");
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [qrSvg, setQrSvg] = useState<string | null>(null);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+  const oneTime = "operationKey" in product;
+
+  useEffect(() => {
+    if (!activeOrderId) return;
+    let stopped = false;
+    const check = async () => {
+      try {
+        const response = await fetch(
+          `/api/billing/orders/${encodeURIComponent(activeOrderId)}`,
+          { cache: "no-store", credentials: "same-origin" },
+        );
+        if (!response.ok || stopped) return;
+        const order = await json<{ status: CommercialOrderStatus }>(response);
+        if (stopped) return;
+        if (order.status === "FULFILLED") {
+          key.current = null;
+          setActiveOrderId(null);
+          setQrSvg(null);
+          setFailed(false);
+          setMessage(oneTime ? "付款已确认，项目生成权益已到账。" : "付款已确认，Credit 已到账。");
+          window.dispatchEvent(new Event("elmos:billing-changed"));
+        } else if (["FAILED", "EXPIRED", "RECONCILIATION_REQUIRED"].includes(order.status)) {
+          if (order.status !== "RECONCILIATION_REQUIRED") key.current = null;
+          setActiveOrderId(null);
+          setQrSvg(null);
+          setFailed(true);
+          setMessage(order.status === "RECONCILIATION_REQUIRED"
+            ? "支付结果需要人工对账，请勿重复付款。"
+            : order.status === "EXPIRED" ? "订单已过期，请重新发起购买。" : "订单未能完成，请重新发起购买。");
+          window.dispatchEvent(new Event("elmos:billing-changed"));
+        }
+      } catch {
+        // 查询失败不会改变订单事实；下一轮继续读取，绝不在浏览器里乐观入账。
+      }
+    };
+    void check();
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "hidden") void check();
+    }, 4_000);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, [activeOrderId, oneTime]);
+
+  const purchase = async () => {
+    setPending(true);
+    setFailed(false);
+    setMessage("");
+    setQrSvg(null);
+    try {
+      if (oneTime && !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(projectId)) {
+        throw new Error("请输入有效的项目标识（字母、数字、点、冒号、下划线或连字符）。");
+      }
+      const response = await fetch(
+        oneTime
+          ? "/api/billing/orders/project-generations"
+          : "/api/billing/orders/credit-packs",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey("product-order", key),
+          },
+          body: JSON.stringify({
+            sku: product.sku,
+            ...(oneTime ? { projectId } : {}),
+          }),
+        },
+      );
+      const payload = await json<{
+        order: { orderId: string };
+        paymentProvider: PaymentProvider;
+        checkoutUrl?: string;
+        qrCodeUrl?: string;
+      }>(response);
+      if (!response.ok) throw new Error(errorMessage(payload, "订单暂时无法创建。"));
+      if (!payload.order?.orderId) throw new Error("订单服务未返回可追踪的订单号。");
+      setActiveOrderId(payload.order.orderId);
+      window.dispatchEvent(new Event("elmos:billing-changed"));
+      if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
+        const code = payload.qrCodeUrl ?? "";
+        if (!code.startsWith("weixin://wxpay/bizpayurl?")) {
+          throw new Error("支付服务返回了无法识别的微信支付二维码内容。");
+        }
+        setQrSvg(renderQrSvg(code));
+        setMessage(`请用微信扫码完成支付；订单 ${payload.order.orderId} 将自动等待回调入账。`);
+        return;
+      }
+      const destination = new URL(payload.checkoutUrl ?? "");
+      if (destination.protocol !== "https:"
+        || !isTrustedCheckoutHost(payload.paymentProvider, destination.hostname)) {
+        throw new Error("支付服务返回了不受信任的结账地址。");
+      }
+      window.location.assign(destination.toString());
+    } catch (error) {
+      setFailed(true);
+      setMessage(error instanceof Error ? error.message : "订单暂时无法创建。");
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <div className={styles.actionStack}>
+      {oneTime && (
+        <label className={styles.projectField}>
+          项目标识
+          <input
+            value={projectId}
+            onChange={(event) => {
+              setProjectId(event.target.value.trim());
+              key.current = null;
+            }}
+            placeholder="例如 my-service"
+            disabled={!orderable || pending}
+          />
+        </label>
+      )}
+      <button className="button button-secondary" type="button"
+        disabled={!orderable || pending || activeOrderId !== null} onClick={purchase}>
+        {pending ? "正在创建订单…" : activeOrderId ? "等待支付确认…" : orderable ? "立即购买" : "等待开放"}
+      </button>
+      {qrSvg && <img className={styles.paymentQrCode}
+        src={`data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`}
+        alt="微信支付二维码" width={220} height={220} />}
+      <p className={failed ? styles.actionError : message ? styles.actionSuccess : styles.actionHint}
+        role={failed ? "alert" : "status"}>
+        {message || (orderable ? "支付成功后自动履约" : "需先完成目录发布门禁")}
+      </p>
     </div>
   );
 }

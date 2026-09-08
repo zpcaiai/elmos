@@ -13,17 +13,20 @@
     "status": "NOT_RUN"
   },
   "owner": "ELMOS Database Migration",
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
   "privacy": {
     "data": "synthetic",
     "production_data": false
   },
-  "reconciliation": {
-    "grain": "row",
-    "keys": [
-      "id"
-    ],
-    "required_difference_count": 0
-  },
+  "reconciliation": [
+    {
+      "grain": "row",
+      "keys": [
+        "id"
+      ],
+      "required_difference_count": 0
+    }
+  ],
   "rollback": {
     "strategy": "retain-source-and-drop-disposable-target"
   },
@@ -43,6 +46,7 @@
       "3.53.3"
     ]
   },
+  "status": "validated",
   "strategy": "offline-bounded-reference",
   "target": {
     "charset": "UTF8",

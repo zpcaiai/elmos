@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "source_snapshot_digest": "sha256:45adef90ec8b5b388946ccab58c6637acc091cd5e775bc8d84c5ae5947085edb",
+  "resources": [
+    {
+      "id": "resource.artifact-registry",
+      "kind": "registry",
+      "logical_name": "elmos-control-plane",
+      "provider_neutral_type": "container-registry",
+      "source_refs": [{"path": "apps/control-plane/Dockerfile"}],
+      "depends_on": [],
+      "properties": {"provider": "google-artifact-registry", "location": "asia-east1", "immutable_tags": true},
+      "lifecycle": {"create": "if-absent", "update": "deny-format-change", "delete": "manual-approval"},
+      "security": {"public_read": false, "encryption": "google-managed"},
+      "data_classification": "INTERNAL",
+      "obligations": ["image-digest-required"]
+    },
+    {
+      "id": "resource.runtime-service-account",
+      "kind": "workload-identity",
+      "logical_name": "elmos-control-plane-runtime",
+      "provider_neutral_type": "service-identity",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}],
+      "depends_on": [],
+      "properties": {"provider": "google-iam", "persistent_key": false},
+      "lifecycle": {"create": "if-absent", "delete": "manual-approval"},
+      "security": {"project_role": "none", "secret_access": "resource-level-only"},
+      "data_classification": "CONFIDENTIAL",
+      "obligations": ["least-privilege"]
+    },
+    {
+      "id": "resource.database-secrets",
+      "kind": "secrets",
+      "logical_name": "elmos-control-plane-database-secrets",
+      "provider_neutral_type": "versioned-secret-set",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "depends_on": ["resource.runtime-service-account"],
+      "properties": {"provider": "google-secret-manager", "count": 3, "input": "stdin", "replication": "automatic"},
+      "lifecycle": {"create": "if-absent", "rotate": "append-version", "delete": "manual-approval"},
+      "security": {"command_line_values": false, "receipt_values": false, "runtime_accessor": "resource.runtime-service-account"},
+      "data_classification": "SECRET",
+      "obligations": ["no-plaintext-artifact", "rotation-evidence-required"]
+    },
+    {
+      "id": "resource.container-image",
+      "kind": "artifact",
+      "logical_name": "elmos-control-plane-image",
+      "provider_neutral_type": "oci-image",
+      "source_refs": [{"path": "apps/control-plane/Dockerfile"}, {"path": "apps/control-plane/pom.xml"}],
+      "depends_on": ["resource.artifact-registry"],
+      "properties": {"platform": "linux/amd64", "tag": "exact-git-revision", "deployment_reference": "sha256-digest"},
+      "lifecycle": {"build": "clean-exact-revision", "promotion": "readiness-gated"},
+      "security": {"runtime_user": "10001:10001", "base_images": "sha256-pinned"},
+      "data_classification": "INTERNAL",
+      "obligations": ["sbom-and-signature-before-certification"]
+    },
+    {
+      "id": "resource.cloud-run-service",
+      "kind": "compute",
+      "logical_name": "elmos-control-plane",
+      "provider_neutral_type": "managed-stateless-http-service",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "depends_on": ["resource.container-image", "resource.runtime-service-account", "resource.database-secrets"],
+      "properties": {"provider": "google-cloud-run-v2", "project": "gen-lang-client-0684615336", "region": "asia-east1", "port": 8080, "min_instances": 0, "max_instances": 4},
+      "lifecycle": {"deploy": "immutable-revision", "rollback": "previous-revision-traffic", "delete": "manual-approval"},
+      "security": {"ingress": "public-required-by-vercel", "application_authentication": "descope-jwt", "anonymous_paths": ["/actuator/health/**"]},
+      "data_classification": "CONFIDENTIAL",
+      "obligations": ["p0-readiness", "negative-auth", "drift-cost-rollback-destroy-evidence"]
+    },
+    {
+      "id": "resource.vercel-binding",
+      "kind": "configuration",
+      "logical_name": "ELMOS_CONTROL_PLANE_BASE_URL",
+      "provider_neutral_type": "server-side-upstream-origin",
+      "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}, {"path": "deploy/cloud-run/control-plane/README.md"}],
+      "depends_on": ["resource.cloud-run-service"],
+      "properties": {"provider": "vercel", "project": "elmos", "scope": "production", "format": "https-origin-only"},
+      "lifecycle": {"set": "after-readiness", "rollback": "restore-previous-origin"},
+      "security": {"browser_exposed": false, "userinfo_path_query_fragment": false},
+      "data_classification": "INTERNAL",
+      "obligations": ["production-redeploy-and-smoke"]
+    }
+  ],
+  "modules": [{"id": "module.control-plane-deployer", "path": "scripts/deploy/control_plane_cloud_run.py", "version": "0.1.0"}],
+  "variables": [
+    {"name": "google_project", "value": "gen-lang-client-0684615336", "secret": false},
+    {"name": "google_region", "value": "asia-east1", "secret": false},
+    {"name": "vercel_environment_file", "value": "external-owner-only-path", "secret": true}
+  ],
+  "outputs": [
+    {"name": "service_url", "classification": "INTERNAL"},
+    {"name": "image_digest", "classification": "INTERNAL"},
+    {"name": "deployment_receipt", "classification": "INTERNAL_NO_SECRETS"}
+  ],
+  "policies": [
+    {"id": "policy.no-secret-output", "effect": "deny", "condition": "secret value appears in command, log, receipt, git, or image"},
+    {"id": "policy.exact-target", "effect": "deny", "condition": "project, region, service, repository, or revision differs from profile"},
+    {"id": "policy.public-ingress", "effect": "allow-with-obligation", "condition": "Vercel origin plus Spring JWT and anonymous health only"}
+  ],
+  "obligations": [
+    {"id": "obligation.external-provider", "status": "NOT_RUN"},
+    {"id": "obligation.independent-certification", "status": "NOT_CERTIFIED"}
+  ],
+  "source_map": [
+    {"node_id": "resource.artifact-registry", "source_refs": [{"path": "apps/control-plane/Dockerfile"}]},
+    {"node_id": "resource.runtime-service-account", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}]},
+    {"node_id": "resource.database-secrets", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "resource.container-image", "source_refs": [{"path": "apps/control-plane/Dockerfile"}, {"path": "apps/control-plane/pom.xml"}]},
+    {"node_id": "resource.cloud-run-service", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "resource.vercel-binding", "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}, {"path": "deploy/cloud-run/control-plane/README.md"}]}
+  ]
+}

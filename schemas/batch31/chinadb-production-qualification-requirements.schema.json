@@ -17,7 +17,7 @@
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
-    "protocolVersion": { "const": "1.1.0" },
+    "protocolVersion": { "const": "1.2.0" },
     "package": { "const": "chinadb-commercial-migration-skills" },
     "capabilitySnapshotDigest": { "$ref": "#/$defs/digest" },
     "targetCount": { "const": 13 },
@@ -28,6 +28,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
+        "allOf": [
+          {
+            "if": { "properties": { "targetId": { "const": "dm8" } }, "required": ["targetId"] },
+            "then": { "properties": { "rolloutPrerequisiteTargetId": { "type": "null" } } },
+            "else": { "properties": { "rolloutPrerequisiteTargetId": { "const": "dm8" } } }
+          }
+        ],
         "required": [
           "targetId",
           "label",
@@ -36,6 +43,8 @@
           "requiredEvidenceChain",
           "requiredArtifactDigests",
           "requiredEvidenceDigests",
+          "performanceContract",
+          "rolloutPrerequisiteTargetId",
           "currentState"
         ],
         "properties": {
@@ -99,6 +108,38 @@
               "rollbackDigest",
               "cleanupDigest",
               "rawEvidenceDigest"
+            ]
+          },
+          "performanceContract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "runnerClass",
+              "isolation",
+              "measurementClock",
+              "sloP95Milliseconds",
+              "maximumMeasurementAttempts",
+              "warmupCountPerQuery",
+              "sampleCountPerQuery",
+              "maximumNormalizedOneMinuteLoad",
+              "invalidEnvironmentState"
+            ],
+            "properties": {
+              "runnerClass": { "const": "DEDICATED" },
+              "isolation": { "const": "EXCLUSIVE_SINGLE_QUALIFICATION" },
+              "measurementClock": { "const": "MONOTONIC_HIGH_RESOLUTION" },
+              "sloP95Milliseconds": { "const": 75.0 },
+              "maximumMeasurementAttempts": { "const": 2 },
+              "warmupCountPerQuery": { "const": 5 },
+              "sampleCountPerQuery": { "const": 40 },
+              "maximumNormalizedOneMinuteLoad": { "const": 1.0 },
+              "invalidEnvironmentState": { "const": "NOT_RUN_ENVIRONMENT_INVALID" }
+            }
+          },
+          "rolloutPrerequisiteTargetId": {
+            "anyOf": [
+              { "type": "null" },
+              { "const": "dm8" }
             ]
           },
           "currentState": { "const": "BLOCKED_EXTERNAL_INPUT" }

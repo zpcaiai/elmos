@@ -1,0 +1,24 @@
+{
+  "admitted_statements": [
+    "local-declaration",
+    "assignment",
+    "if",
+    "while",
+    "break",
+    "continue",
+    "return"
+  ],
+  "certification_status": "NOT_CERTIFIED",
+  "effects": "BLOCKED",
+  "integer_semantics": "CHECKED_SIGNED_INT32",
+  "kind": "elmos.vendor-research-lowering-contract",
+  "number_semantics": "FINITE_BINARY64",
+  "route_key": "java-to-vb6",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-module-v1",
+  "source_language": "java",
+  "string_semantics": "ASCII_ONLY",
+  "target_language": "vb6",
+  "target_profile": "vb6-long32-pure-module-v1",
+  "vendor_runtime_status": "NOT_RUN"
+}

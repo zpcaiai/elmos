@@ -2,7 +2,9 @@ package io.elmos.commercialadapter;
 
 import io.elmos.commercialapi.BillingApiErrorAdvice;
 import io.elmos.commercialapi.BillingMetrics;
+import io.elmos.commercialapi.CommercialOrderController;
 import io.elmos.commercialapi.SelfServiceBillingController;
+import io.elmos.commercialapi.WalletTopupController;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +17,11 @@ import java.util.Map;
 /**
  * PostgreSQL-specific exception translation kept outside the public API package.
  */
-@RestControllerAdvice(assignableTypes = SelfServiceBillingController.class)
+@RestControllerAdvice(assignableTypes = {
+        SelfServiceBillingController.class,
+        WalletTopupController.class,
+        CommercialOrderController.class
+})
 public final class BillingDatabaseErrorAdvice {
     private static final Map<String, Integer> POSTGRES_DOMAIN_ERRORS = postgresDomainErrors();
     private final BillingMetrics metrics;

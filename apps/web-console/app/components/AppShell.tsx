@@ -107,6 +107,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const currentLabel = standalone
     ? (english ? standalone[2] : standalone[1])
     : navLabel(current);
+
+  useEffect(() => {
+    const skipLink = document.querySelector<HTMLAnchorElement>(".skip-link");
+    if (skipLink) {
+      skipLink.textContent = english ? "Skip to main content" : "跳到主要内容";
+    }
+  }, [english]);
+
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
     return commands
@@ -353,6 +361,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
                 <Icon name="chevron" size={16} />
               </a>
+              <a
+                className="profile-guest-admin"
+                href={`/admin/login?${new URLSearchParams({ returnTo: "/admin" })}`}
+                onClick={closeSidebar}
+              >
+                {english ? "Administrator sign in" : "管理员登录"}
+              </a>
             </>
           )}
         </div>
@@ -384,12 +399,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               {preferences.theme === "light" ? "☾" : "☀"}
             </button>
-            <button className="icon-button" aria-label="重新载入当前页面（会清除未保存输入）" onClick={reloadPage}><Icon name="refresh" size={18} /></button>
+            <button
+              className="icon-button"
+              aria-label={english ? "Reload current page (clears unsaved input)" : "重新载入当前页面（会清除未保存输入）"}
+              onClick={reloadPage}
+            >
+              <Icon name="refresh" size={18} />
+            </button>
             {account.status === "authenticated" ? (
               <button
                 className={`top-avatar ${hasAdminAccess ? "admin-avatar" : ""}`}
                 type="button"
-                aria-label="打开账户菜单"
+                aria-label={english ? "Open account menu" : "打开账户菜单"}
                 onClick={toggleTopProfileMenu}
               >
                 {account.principal?.displayName.slice(0, 1) ?? "企"}
@@ -401,6 +422,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
                 >
                   {english ? "User sign in" : "用户登录"}
+                </a>
+                <a
+                  className={`top-login-link top-admin-login-link ${pathname.startsWith("/admin") ? "active" : ""}`}
+                  href={`/admin/login?${new URLSearchParams({ returnTo: "/admin" })}`}
+                >
+                  {english ? "Admin sign in" : "管理员登录"}
                 </a>
               </div>
             )}

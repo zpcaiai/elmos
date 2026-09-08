@@ -927,6 +927,122 @@ def _cpp_harness(
     )
 
 
+def _vcpp6_literal(value: object, value_type: str) -> str:
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**63) <= value <= 2**63 - 1:
+            raise RouteError("VCPP6_CASE_INTEGER_OUTSIDE_INT64")
+        if value == -(2**63):
+            return "(-9223372036854775807i64 - 1i64)"
+        return f"{value}i64" if not -(2**31) <= value <= 2**31 - 1 else str(value)
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise RouteError("VCPP6_CASE_NUMBER_REQUIRED")
+        number = float(value)
+        if not math.isfinite(number):
+            raise RouteError("VCPP6_CASE_NONFINITE_NUMBER_OUTSIDE_BOUNDED_PROFILE")
+        if number == 0.0 and math.copysign(1.0, number) < 0:
+            return "-0.0"
+        rendered = repr(number)
+        return rendered if "." in rendered or "e" in rendered.lower() else rendered + ".0"
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("VCPP6_CASE_BOOLEAN_REQUIRED")
+        return "true" if value else "false"
+    if value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("VCPP6_CASE_STRING_REQUIRED")
+        if any(ord(character) > 127 for character in value):
+            raise RouteError("VCPP6_CASE_NON_ASCII_STRING_REQUIRES_EXPLICIT_CODEPAGE_PROFILE")
+        return json.dumps(value, ensure_ascii=True)
+    raise RouteError(f"VCPP6_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
+def _vcpp6_harness(
+    function: Function,
+    cases: list[dict[str, Any]],
+    *,
+    include_file: str = "migrated.cpp",
+) -> str:
+    """C++98-era harness accepted by Microsoft Visual C++ 6.0 SP6."""
+
+    native_type = {
+        "integer": "__int64",
+        "number": "double",
+        "boolean": "bool",
+        "string": "std::string",
+    }[function.return_type]
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        values = case.get("args")
+        if not isinstance(values, list) or len(values) != len(function.parameters):
+            raise RouteError("VCPP6_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(
+            _vcpp6_literal(value, parameter.type)
+            for value, parameter in zip(values, function.parameters, strict=True)
+        )
+        expected = _vcpp6_literal(_returned_case_value(case), function.return_type)
+        actual = f"actual_{index}"
+        expected_name = f"expected_{index}"
+        condition = (
+            f"!elmos_harness_same_fp64({actual}, {expected_name})"
+            if function.return_type == "number"
+            else f"{actual} != {expected_name}"
+        )
+        observation = {
+            "integer": f'printf("ELMOS_OBSERVATION\\t{index}\\ti64-dec\\t%I64d\\n", {actual});',
+            "number": f'elmos_harness_print_fp64({index}, {actual});',
+            "boolean": f'printf("ELMOS_OBSERVATION\\t{index}\\tbool\\t%s\\n", {actual} ? "true" : "false");',
+            "string": f'elmos_harness_print_string({index}, {actual});',
+        }[function.return_type]
+        checks.extend(
+            [
+                f"    const {native_type} {actual} = {function.name}({args});",
+                f"    const {native_type} {expected_name} = {expected};",
+                f"    if ({condition}) return {index + 1};",
+                "    " + observation,
+            ]
+        )
+    helpers = ""
+    if function.return_type == "number":
+        helpers = (
+            "static unsigned __int64 elmos_harness_fp64_bits(double value) {\n"
+            "    unsigned __int64 bits = 0;\n"
+            "    memcpy(&bits, &value, sizeof(bits));\n"
+            "    return bits;\n"
+            "}\n\n"
+            "static bool elmos_harness_same_fp64(double left, double right) {\n"
+            "    return elmos_harness_fp64_bits(left) == elmos_harness_fp64_bits(right);\n"
+            "}\n\n"
+            "static void elmos_harness_print_fp64(int index, double value) {\n"
+            "    const unsigned __int64 bits = elmos_harness_fp64_bits(value);\n"
+            "    const unsigned long high = (unsigned long)(bits >> 32);\n"
+            "    const unsigned long low = (unsigned long)(bits & 0xffffffffui64);\n"
+            '    printf("ELMOS_OBSERVATION\\t%d\\tfp64-hex\\t%08lx%08lx\\n", index, high, low);\n'
+            "}\n\n"
+        )
+    elif function.return_type == "string":
+        helpers = (
+            "static void elmos_harness_print_string(int index, const std::string &value) {\n"
+            '    static const char digits[] = "0123456789abcdef";\n'
+            '    printf("ELMOS_OBSERVATION\\t%d\\thex-utf8\\t", index);\n'
+            "    for (std::string::size_type offset = 0; offset < value.size(); ++offset) {\n"
+            "        const unsigned char byte = (unsigned char)value[offset];\n"
+            '        putchar(digits[byte >> 4]);\n'
+            '        putchar(digits[byte & 0x0f]);\n'
+            "    }\n"
+            "    putchar('\\n');\n"
+            "}\n\n"
+        )
+    return (
+        "#include <stdio.h>\n#include <string.h>\n#include <string>\n"
+        f'#include "{include_file}"\n\n'
+        + helpers
+        + "int main() {\n"
+        + "\n".join(checks)
+        + "\n    return 0;\n}\n"
+    )
+
+
 def _objc_harness(
     function: Function,
     cases: list[dict[str, Any]],
@@ -2084,6 +2200,23 @@ def validate_source(
             ],
             ["./source_harness"],
         ]
+    elif language == "vcpp6":
+        (output / "source_harness.cpp").write_text(
+            _vcpp6_harness(function, cases, include_file=source.name), encoding="ascii"
+        )
+        commands = [
+            [
+                toolchain.executable,
+                "/nologo",
+                "/GX",
+                "/W4",
+                "/WX",
+                "/MD",
+                "/Feelmos-route-harness.exe",
+                "source_harness.cpp",
+            ],
+            ["./elmos-route-harness.exe"],
+        ]
     elif language == "objc":
         (output / "source_harness.m").write_text(
             _objc_harness(function, cases, include_file=source.name), encoding="utf-8"
@@ -2321,6 +2454,23 @@ def validate(
                 "route_harness.cpp",
             ],
             ["./route_harness"],
+        ]
+    elif language == "vcpp6":
+        (output / "route_harness.cpp").write_text(
+            _vcpp6_harness(function, cases), encoding="ascii"
+        )
+        commands = [
+            [
+                toolchain.executable,
+                "/nologo",
+                "/GX",
+                "/W4",
+                "/WX",
+                "/MD",
+                "/Feelmos-route-harness.exe",
+                "route_harness.cpp",
+            ],
+            ["./elmos-route-harness.exe"],
         ]
     elif language == "objc":
         (output / "route_harness.m").write_text(_objc_harness(function, cases), encoding="utf-8")

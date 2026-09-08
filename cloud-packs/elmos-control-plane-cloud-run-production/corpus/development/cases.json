@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id": "dev-profile-validation", "command": "python scripts/deploy/control_plane_cloud_run.py validate"},
+    {"id": "dev-parser-tests", "command": "pytest -q tests/deploy/test_control_plane_cloud_run.py"}
+  ]
+}

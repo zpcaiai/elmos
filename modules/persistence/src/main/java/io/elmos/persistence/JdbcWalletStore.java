@@ -149,10 +149,12 @@ public final class JdbcWalletStore implements WalletPort {
     @Override
     public Optional<TopupDirectoryEntry> findTopupByOutTradeNo(String outTradeNo) {
         return call(() -> jdbc.sql("""
-                        SELECT out_trade_no, topup_order_id, organization_id, amount_minor, status
+                        SELECT out_trade_no, topup_order_id, organization_id,
+                               amount_minor, provider, status
                           FROM wallet_topup_order_directory
                          WHERE out_trade_no = ?
-                           AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED')
+                           AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED',
+                                          'RECONCILIATION_REQUIRED')
                         """)
                 .param(outTradeNo)
                 .query((ResultSet rs, int row) -> new TopupDirectoryEntry(
@@ -160,6 +162,7 @@ public final class JdbcWalletStore implements WalletPort {
                         rs.getString("topup_order_id"),
                         rs.getString("organization_id"),
                         rs.getBigDecimal("amount_minor"),
+                        rs.getString("provider"),
                         rs.getString("status")))
                 .optional());
     }
@@ -193,6 +196,24 @@ public final class JdbcWalletStore implements WalletPort {
                         "SELECT elmos_wallet_create_topup_order(?, ?, ?, ?, ?, ?, ?, ?)")
                 .params(topupOrderId, organizationId, actorId, amountMinor, provider,
                         outTradeNo, idempotencyKey, ttlSeconds)
+                .query(String.class).single());
+    }
+
+    @Override
+    public String markTopupAwaitingPayment(
+            String organizationId, String topupOrderId, String actorId) {
+        return call(() -> jdbc.sql("SELECT elmos_wallet_mark_topup_handoff(?, ?, ?)")
+                .params(organizationId, topupOrderId, actorId)
+                .query(String.class).single());
+    }
+
+    @Override
+    public String markTopupPreparationFailed(String organizationId, String topupOrderId,
+                                              String actorId, boolean outcomeUnknown,
+                                              String failureCode) {
+        return call(() -> jdbc.sql(
+                        "SELECT elmos_wallet_mark_topup_prepare_failed(?, ?, ?, ?, ?)")
+                .params(organizationId, topupOrderId, actorId, outcomeUnknown, failureCode)
                 .query(String.class).single());
     }
 

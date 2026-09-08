@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "inputs", "definitionOf100Percent", "current", "perTarget", "manualBacklogByReason", "executionSequence", "workstreams"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "kind": {"const": "elmos.batch31.sql-route-closure-plan"},
+    "inputs": {"type": "object"},
+    "definitionOf100Percent": {"type": "object"},
+    "current": {
+      "type": "object",
+      "required": ["frozenSourceUnits", "dispositionAccountedUnits", "dispositionCoverage", "admittedCandidateUnits", "commonFourTargetEmittableUnits", "commonFourTargetImplementationRate", "commonFourTargetOpenUnits", "targetRouteCells", "emittableRouteCells", "blockedRouteCells", "runtimeVerifiedRouteCells", "manualMigrationItems", "manualMigrationOpen", "sourceFormatReviewItems", "externalExecution", "independentVerification", "certification"],
+      "properties": {
+        "frozenSourceUnits": {"type": "integer", "minimum": 0},
+        "dispositionAccountedUnits": {"type": "integer", "minimum": 0},
+        "dispositionCoverage": {"const": 1.0},
+        "admittedCandidateUnits": {"type": "integer", "minimum": 0},
+        "commonFourTargetEmittableUnits": {"type": "integer", "minimum": 0},
+        "commonFourTargetImplementationRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "commonFourTargetOpenUnits": {"type": "integer", "minimum": 0},
+        "targetRouteCells": {"type": "integer", "minimum": 0},
+        "emittableRouteCells": {"type": "integer", "minimum": 0},
+        "blockedRouteCells": {"type": "integer", "minimum": 0},
+        "runtimeVerifiedRouteCells": {"const": 0},
+        "manualMigrationItems": {"type": "integer", "minimum": 0},
+        "manualMigrationOpen": {"type": "integer", "minimum": 0},
+        "sourceFormatReviewItems": {"type": "integer", "minimum": 0},
+        "externalExecution": {"const": "NOT_RUN"},
+        "independentVerification": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"}
+      },
+      "additionalProperties": false
+    },
+    "perTarget": {"type": "object"},
+    "manualBacklogByReason": {"type": "object"},
+    "executionSequence": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["order", "phase", "state", "completionRule"]
+      }
+    },
+    "workstreams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["workstreamId", "target", "blockerCode", "priority", "routeCellCount", "status", "requiredClosure"],
+        "properties": {
+          "priority": {"enum": ["P0", "P1", "P2"]}
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

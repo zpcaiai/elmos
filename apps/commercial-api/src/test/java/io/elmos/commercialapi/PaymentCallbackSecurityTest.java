@@ -75,6 +75,21 @@ class PaymentCallbackSecurityTest {
     }
 
     @Test
+    void elmPayCallbackIsReachableWithoutAuthentication() throws Exception {
+        mvc.perform(post("/commercial/v1/billing/callbacks/elmpay")
+                        .contentType("application/json")
+                        .header("X-Elmpay-Signature", "t=1793923200,v1=c2ln")
+                        .header("X-Elmpay-Event-Id", "event-1")
+                        .header("X-Elmpay-Event-Type", "payment_intent.captured")
+                        .header("X-Elmpay-Timestamp", "1793923200")
+                        .header("X-Elmpay-Key-Id", "key-1")
+                        .content("{}"))
+                .andExpect(result -> assertNotEquals(UNAUTHORIZED,
+                        result.getResponse().getStatus(),
+                        "ELMPay 回调路径必须被 Security 精确放行"));
+    }
+
+    @Test
     void otherBillingRoutesStillRequireAuthentication() throws Exception {
         // 放行范围没有扩大：计费主路径仍然 401
         mvc.perform(post("/commercial/v1/billing/usage/reservations")

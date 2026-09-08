@@ -119,7 +119,7 @@ public final class SpringWiringSelfTest {
     }
 
     /**
-     * 两个回调路径必须真的被建立映射。
+     * 三个回调路径必须真的被建立映射。
      *
      * <p>这条断言就是本轮抓到的那个 bug 的回归测试：
      * 把 {@code @RestController} 去掉，它会失败。
@@ -135,8 +135,10 @@ public final class SpringWiringSelfTest {
                     mapped.contains("/commercial/v1/billing/callbacks/alipay"));
             check("微信回调路径已建立映射",
                     mapped.contains("/commercial/v1/billing/callbacks/wechat"));
-            check("两个端点都限定 POST", mapped.contains("POST"));
-            check("恰好只映射这两个端点", mapping.getHandlerMethods().size() == 2);
+            check("ELMPay 回调路径已建立映射",
+                    mapped.contains("/commercial/v1/billing/callbacks/elmpay"));
+            check("三个端点都限定 POST", mapped.contains("POST"));
+            check("恰好只映射这三个端点", mapping.getHandlerMethods().size() == 3);
         }
     }
 

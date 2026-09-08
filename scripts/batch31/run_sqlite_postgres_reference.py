@@ -48,9 +48,16 @@ def digest(value: str) -> str:
     return "sha256:" + hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def file_digest(path: Path) -> str:
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def run(
@@ -81,7 +88,9 @@ def free_port() -> int:
         return int(handle.getsockname()[1])
 
 
-def postgres_rows(psql: Path, port: int, database: str, query: str, cwd: Path) -> list[list[str]]:
+def postgres_rows(
+    psql: Path, port: int, database: str, query: str, cwd: Path
+) -> list[list[str]]:
     completed = run(
         [
             str(psql),
@@ -162,7 +171,16 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
             "scope": {
                 "schemas": ["main"],
                 "objects": ["work_orders", "idx_work_orders_tenant_created"],
-                "workload_classes": ["typed-ddl", "tenant-query", "constraint-negative", "transaction-rollback"],
+                "workload_classes": [
+                    "typed-ddl",
+                    "tenant-query",
+                    "constraint-negative",
+                    "transaction-rollback",
+                    "offline-backfill",
+                    "offline-delete-delta",
+                    "cutover-rehearsal",
+                    "backup-restore",
+                ],
             },
             "paths": {
                 "fingerprint": "source-fingerprint",
@@ -182,10 +200,34 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
         },
     )
     capabilities = [
-        ("schema-type-constraint", "Deterministic typed DDL and constraint mapping."),
-        ("query-semantics", "Tenant-scoped query results are compared at row level."),
-        ("transaction-rollback", "Source and target rollback behavior is executed."),
-        ("backup-restore", "A disposable target backup is restored and reconciled."),
+        (
+            "schema-type-constraint",
+            "schema",
+            "typed-ir-lowering",
+            "Bounded work_orders fixture only.",
+            "Deterministic typed DDL and constraint mapping.",
+        ),
+        (
+            "query-semantics",
+            "queries",
+            "parameterized-differential-execution",
+            "Bounded tenant query workload only.",
+            "Tenant-scoped query results are compared at row level.",
+        ),
+        (
+            "transaction-rollback",
+            "transactions",
+            "dual-engine-rollback-replay",
+            "Single-transaction rollback fixture only.",
+            "Source and target rollback behavior is executed.",
+        ),
+        (
+            "backup-restore",
+            "migration",
+            "disposable-target-backup-restore",
+            "Local disposable target only.",
+            "A disposable target backup is restored and reconciled.",
+        ),
     ]
     write_json(
         pack / "support-matrix.json",
@@ -195,22 +237,29 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
             "capabilities": [
                 {
                     "id": identifier,
+                    "domain": domain,
                     "status": "experimental",
                     "owner": "ELMOS Database Migration",
-                    "reason": reason + " Local evidence passes; independent certification is NOT_RUN.",
+                    "reason": reason
+                    + " Local evidence passes; independent certification is NOT_RUN.",
                     "evidence_refs": ["certification/local-engine-evidence.json"],
+                    "strategy": strategy,
+                    "restrictions": [restriction],
                 }
-                for identifier, reason in capabilities
+                for identifier, domain, strategy, restriction, reason in capabilities
             ]
             + [
                 {
                     "id": "cdc-production-cutover",
+                    "domain": "migration",
                     "status": "blocked",
                     "owner": "ELMOS Database Migration",
                     "reason": (
                         "Requires an approved production workflow, source CDC capability, and accountable data owner."
                     ),
                     "evidence_refs": [],
+                    "strategy": "blocked-pending-approved-workflow",
+                    "restrictions": ["No production CDC or cutover authority."],
                 }
             ],
         },
@@ -220,7 +269,21 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
         {
             "schema_version": 1,
             "pack_key": pack.name,
-            "tuples": [{"source": source, "target": target, "status": "experimental"}],
+            "tuples": [
+                {
+                    "source": source,
+                    "target": target,
+                    "status": "experimental",
+                    "evidence_refs": ["certification/local-engine-evidence.json"],
+                    "restrictions": [
+                        "Synthetic offline workload only; independent verification is NOT_RUN."
+                    ],
+                }
+            ],
+            "recertification_triggers": [
+                "source or target engine version changes",
+                "driver, collation, timezone, IR, transformation, or corpus changes",
+            ],
         },
     )
     snapshot = digest(SOURCE_DDL + json.dumps(SEED_ROWS))
@@ -232,12 +295,26 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
             "snapshot_digest": snapshot,
             "coverage": 1.0,
             "discovery_mode": "disposable-synthetic-sqlite",
+            "engine_facts": {
+                "engine": "sqlite",
+                "version": sqlite_version,
+                "edition": "public-domain",
+            },
+            "object_counts": {"tables": 1, "indexes": 1, "rows": len(SEED_ROWS)},
+            "runtime_workload": {
+                "top_queries": ["query:tenant-orders"],
+                "plans": ["source-query-plan"],
+                "locks": ["transaction-rollback"],
+                "jobs": [],
+            },
+            "unknowns": [],
         },
     )
     write_json(
         pack / "source-fingerprint" / "evidence.json",
         {
             "schema_version": 1,
+            "pack_key": pack.name,
             "engine_version": sqlite_version,
             "objects": ["table:work_orders", "index:idx_work_orders_tenant_created"],
             "row_count": len(SEED_ROWS),
@@ -258,10 +335,29 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
                     "source_ref": "source-snapshots/ddl/source.sql",
                     "semantics": {
                         "columns": [
-                            {"name": "id", "type": "signed-64", "generated": True, "nullable": False},
-                            {"name": "tenant_id", "type": "unicode-text", "nullable": False},
-                            {"name": "amount_cents", "type": "signed-64", "nullable": False, "minimum": 0},
-                            {"name": "created_at", "type": "instant", "timezone": "UTC", "nullable": False},
+                            {
+                                "name": "id",
+                                "type": "signed-64",
+                                "generated": True,
+                                "nullable": False,
+                            },
+                            {
+                                "name": "tenant_id",
+                                "type": "unicode-text",
+                                "nullable": False,
+                            },
+                            {
+                                "name": "amount_cents",
+                                "type": "signed-64",
+                                "nullable": False,
+                                "minimum": 0,
+                            },
+                            {
+                                "name": "created_at",
+                                "type": "instant",
+                                "timezone": "UTC",
+                                "nullable": False,
+                            },
                         ],
                         "primary_key": ["id"],
                     },
@@ -272,7 +368,10 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
                     "kind": "index",
                     "logical_name": "idx_work_orders_tenant_created",
                     "source_ref": "source-snapshots/ddl/source.sql",
-                    "semantics": {"columns": ["tenant_id", "created_at"], "unique": False},
+                    "semantics": {
+                        "columns": ["tenant_id", "created_at"],
+                        "unique": False,
+                    },
                     "dependencies": ["table:work_orders"],
                 },
             ],
@@ -282,7 +381,11 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
                     "kind": "select",
                     "logical_name": "tenant_orders",
                     "source_ref": "corpus/development/query.sql",
-                    "semantics": {"parameterized": True, "ordering": ["id ASC"], "tenant_scoped": True},
+                    "semantics": {
+                        "parameterized": True,
+                        "ordering": ["id ASC"],
+                        "tenant_scoped": True,
+                    },
                     "dependencies": ["table:work_orders"],
                 }
             ],
@@ -298,25 +401,48 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
             "version": "1.0.0",
             "owner": "ELMOS Database Migration",
             **target,
-            "provision": {"commands": ["initdb", "pg_ctl start", "createdb"], "image_digests": []},
+            "provision": {
+                "commands": ["initdb", "pg_ctl start", "createdb"],
+                "image_digests": [],
+            },
             "health_check": {"query": "SELECT 1"},
-            "security": {"credential_mode": "ephemeral-local-trust", "tls": "not-applicable-loopback-disposable"},
-            "migration": {"ddl_strategy": "typed-create", "data_strategy": "bounded-bulk-load"},
-            "providers": {"filesystem": "temporary-directory", "network": "loopback-only"},
+            "security": {
+                "credential_mode": "ephemeral-local-trust",
+                "tls": "not-applicable-loopback-disposable",
+            },
+            "migration": {
+                "ddl_strategy": "typed-create",
+                "data_strategy": "bounded-bulk-load",
+            },
+            "providers": {
+                "filesystem": "temporary-directory",
+                "network": "loopback-only",
+            },
         },
     )
     write_json(
         pack / "migration" / "data-migration-plan.json",
         {
             "schema_version": 1,
+            "pack_key": pack.name,
             "owner": "ELMOS Database Migration",
+            "status": "validated",
             "strategy": "offline-bounded-reference",
             "source": source,
             "target": target,
-            "backfill": {"checkpoint": "primary-key", "batch_size": 1000, "idempotent": True},
-            "cdc": {"status": "NOT_RUN", "reason": "SQLite reference slice uses offline cutover."},
+            "backfill": {
+                "checkpoint": "primary-key",
+                "batch_size": 1000,
+                "idempotent": True,
+            },
+            "cdc": {
+                "status": "NOT_RUN",
+                "reason": "SQLite reference slice uses offline cutover.",
+            },
             "authority": {"before_cutover": "source", "after_cutover": "NOT_RUN"},
-            "reconciliation": {"grain": "row", "keys": ["id"], "required_difference_count": 0},
+            "reconciliation": [
+                {"grain": "row", "keys": ["id"], "required_difference_count": 0}
+            ],
             "rollback": {"strategy": "retain-source-and-drop-disposable-target"},
             "privacy": {"data": "synthetic", "production_data": False},
         },
@@ -325,15 +451,22 @@ def configure_pack(pack: Path, sqlite_version: str, postgres_version: str) -> No
         pack / "compatibility" / "manifest.json",
         {
             "schema_version": 1,
+            "pack_key": pack.name,
             "components": [],
             "lossy_mappings": [],
             "money_as_float": False,
         },
     )
-    (pack / "source-snapshots" / "ddl" / "source.sql").write_text(SOURCE_DDL + "\n", encoding="utf-8")
-    (pack / "transformations" / "schema" / "target.sql").write_text(TARGET_DDL + "\n", encoding="utf-8")
+    (pack / "source-snapshots" / "ddl" / "source.sql").write_text(
+        SOURCE_DDL + "\n", encoding="utf-8"
+    )
+    (pack / "transformations" / "schema" / "target.sql").write_text(
+        TARGET_DDL + "\n", encoding="utf-8"
+    )
     query = "SELECT id, tenant_id, amount_cents, created_at FROM work_orders WHERE tenant_id = :tenant_id ORDER BY id"
-    (pack / "corpus" / "development" / "query.sql").write_text(query + ";\n", encoding="utf-8")
+    (pack / "corpus" / "development" / "query.sql").write_text(
+        query + ";\n", encoding="utf-8"
+    )
     (pack / "corpus" / "holdout" / "negative-amount.sql").write_text(
         "INSERT INTO work_orders (tenant_id, amount_cents, created_at) VALUES ('tenant-a', -1, CURRENT_TIMESTAMP);\n",
         encoding="utf-8",
@@ -348,7 +481,9 @@ def execute(repo: Path) -> Path:
     sqlite_cli = Path("/opt/local/bin/sqlite3")
     pg_bin = Path("/opt/homebrew/opt/postgresql@17/bin")
     required = ["initdb", "pg_ctl", "createdb", "psql", "pg_dump"]
-    if not sqlite_cli.is_file() or not all((pg_bin / item).is_file() for item in required):
+    if not sqlite_cli.is_file() or not all(
+        (pg_bin / item).is_file() for item in required
+    ):
         raise RuntimeError("REQUIRED_LOCAL_DATABASE_TOOLCHAIN_MISSING")
     sqlite_version = sqlite3.sqlite_version
     postgres_version_output = run(
@@ -362,6 +497,9 @@ def execute(repo: Path) -> Path:
     route_name = f"sqlite-{sqlite_version.replace('.', '-')}-to-postgresql-{postgres_version.replace('.', '-')}"
     pack = repo / "database-packs" / route_name
     configure_pack(pack, sqlite_version, postgres_version)
+    pack_manifest = json.loads((pack / "pack.json").read_text(encoding="utf-8"))
+    source = pack_manifest["source"]
+    target = pack_manifest["target"]
 
     # PostgreSQL limits Unix-domain socket path length on macOS. A short, random
     # /tmp root keeps the disposable instance isolated without exceeding it.
@@ -395,14 +533,18 @@ def execute(repo: Path) -> Path:
         except sqlite3.IntegrityError:
             negative_source_passed = True
         connection.rollback()
-        before_rollback = connection.execute("SELECT COUNT(*) FROM work_orders").fetchone()[0]
+        before_rollback = connection.execute(
+            "SELECT COUNT(*) FROM work_orders"
+        ).fetchone()[0]
         connection.execute("BEGIN")
         connection.execute(
             "INSERT INTO work_orders (tenant_id, amount_cents, created_at) VALUES (?, ?, ?)",
             ("tenant-a", 10, "2026-07-26T05:00:00+00:00"),
         )
         connection.rollback()
-        after_rollback = connection.execute("SELECT COUNT(*) FROM work_orders").fetchone()[0]
+        after_rollback = connection.execute(
+            "SELECT COUNT(*) FROM work_orders"
+        ).fetchone()[0]
         source_plan = connection.execute(
             "EXPLAIN QUERY PLAN SELECT * FROM work_orders WHERE tenant_id = ? ORDER BY created_at",
             ("tenant-a",),
@@ -439,7 +581,14 @@ def execute(repo: Path) -> Path:
             )
             started = True
             run(
-                [str(pg_bin / "createdb"), "-h", "127.0.0.1", "-p", str(port), "elmos_target"],
+                [
+                    str(pg_bin / "createdb"),
+                    "-h",
+                    "127.0.0.1",
+                    "-p",
+                    str(port),
+                    "elmos_target",
+                ],
                 cwd=root,
             )
             psql = pg_bin / "psql"
@@ -480,6 +629,25 @@ def execute(repo: Path) -> Path:
                 cwd=root,
                 input_text=seed_buffer.getvalue(),
             )
+            initial_target_rows = postgres_rows(
+                psql,
+                port,
+                "elmos_target",
+                "SELECT id, tenant_id, amount_cents, "
+                "to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS') || '+00:00' "
+                "FROM work_orders ORDER BY id",
+                root,
+            )
+            # The reference SKU uses an offline cutover. Exercise the final
+            # delete delta after the initial load, then reopen the source via a
+            # read-only connection before target writer authority is tested.
+            delta_connection = sqlite3.connect(source_database)
+            delta_connection.execute("DELETE FROM work_orders WHERE id = ?", (3,))
+            delta_connection.commit()
+            final_source_rows = delta_connection.execute(
+                "SELECT id, tenant_id, amount_cents, created_at FROM work_orders ORDER BY id"
+            ).fetchall()
+            delta_connection.close()
             run(
                 [
                     str(psql),
@@ -493,8 +661,40 @@ def execute(repo: Path) -> Path:
                     "-v",
                     "ON_ERROR_STOP=1",
                     "-c",
-                    "SELECT setval(pg_get_serial_sequence('work_orders', 'id'), "
-                    "COALESCE(MAX(id), 1), true) FROM work_orders",
+                    "DELETE FROM work_orders WHERE id = 3",
+                ],
+                cwd=root,
+            )
+            source_read_only = sqlite3.connect(
+                f"file:{source_database}?mode=ro", uri=True
+            )
+            source_write_blocked = False
+            try:
+                source_read_only.execute(
+                    "INSERT INTO work_orders (tenant_id, amount_cents, created_at) VALUES (?, ?, ?)",
+                    ("tenant-a", 1, "2026-07-26T06:00:00+00:00"),
+                )
+            except sqlite3.OperationalError:
+                source_write_blocked = True
+            finally:
+                source_read_only.close()
+            run(
+                [
+                    str(psql),
+                    "-X",
+                    "-h",
+                    "127.0.0.1",
+                    "-p",
+                    str(port),
+                    "-d",
+                    "elmos_target",
+                    "-v",
+                    "ON_ERROR_STOP=1",
+                    "-c",
+                    (
+                        "SELECT setval(pg_get_serial_sequence('work_orders', 'id'), "
+                        "COALESCE(MAX(id), 1), true) FROM work_orders"
+                    ),
                 ],
                 cwd=root,
             )
@@ -529,8 +729,10 @@ def execute(repo: Path) -> Path:
                     "-v",
                     "ON_ERROR_STOP=1",
                     "-c",
-                    "INSERT INTO work_orders (tenant_id, amount_cents, created_at) "
-                    "VALUES ('tenant-a', -1, CURRENT_TIMESTAMP)",
+                    (
+                        "INSERT INTO work_orders (tenant_id, amount_cents, created_at) "
+                        "VALUES ('tenant-a', -1, CURRENT_TIMESTAMP)"
+                    ),
                 ],
                 cwd=root,
                 check=False,
@@ -549,9 +751,11 @@ def execute(repo: Path) -> Path:
                     "-v",
                     "ON_ERROR_STOP=1",
                     "-c",
-                    "BEGIN; INSERT INTO work_orders (tenant_id, amount_cents, created_at) "
-                    "VALUES ('tenant-a', 10, CURRENT_TIMESTAMP); ROLLBACK; "
-                    "SELECT COUNT(*) FROM work_orders;",
+                    (
+                        "BEGIN; INSERT INTO work_orders (tenant_id, amount_cents, created_at) "
+                        "VALUES ('tenant-a', 10, CURRENT_TIMESTAMP); ROLLBACK; "
+                        "SELECT COUNT(*) FROM work_orders;"
+                    ),
                 ],
                 cwd=root,
             )
@@ -592,7 +796,14 @@ def execute(repo: Path) -> Path:
             )
             dump.write_text(dump_result.stdout, encoding="utf-8")
             run(
-                [str(pg_bin / "createdb"), "-h", "127.0.0.1", "-p", str(port), "elmos_restore"],
+                [
+                    str(pg_bin / "createdb"),
+                    "-h",
+                    "127.0.0.1",
+                    "-p",
+                    str(port),
+                    "elmos_restore",
+                ],
                 cwd=root,
             )
             run(
@@ -623,12 +834,22 @@ def execute(repo: Path) -> Path:
         finally:
             if started or (data_directory / "postmaster.pid").is_file():
                 run(
-                    [str(pg_bin / "pg_ctl"), "-D", str(data_directory), "-m", "fast", "-w", "stop"],
+                    [
+                        str(pg_bin / "pg_ctl"),
+                        "-D",
+                        str(data_directory),
+                        "-m",
+                        "fast",
+                        "-w",
+                        "stop",
+                    ],
                     cwd=root,
                     check=False,
                 )
 
-        source_canonical = canonical_rows(source_rows)
+        initial_source_canonical = canonical_rows(source_rows)
+        initial_target_canonical = canonical_rows(initial_target_rows)
+        source_canonical = canonical_rows(final_source_rows)
         target_canonical = canonical_rows(target_rows)
         restored_canonical = canonical_rows(restored_rows)
         evidence = {
@@ -645,12 +866,30 @@ def execute(repo: Path) -> Path:
             "checks": {
                 "source_rows": source_canonical,
                 "target_rows": target_canonical,
+                "initial_backfill_reconciliation": initial_source_canonical
+                == initial_target_canonical,
+                "backfill_checkpoint": {
+                    "last_primary_key": 3,
+                    "rows_loaded": len(initial_target_canonical),
+                    "source_digest": digest(
+                        json.dumps(initial_source_canonical, separators=(",", ":"))
+                    ),
+                },
+                "offline_delete_delta_propagation": source_canonical == target_canonical
+                and len(initial_source_canonical) - len(source_canonical) == 1,
                 "row_level_reconciliation": source_canonical == target_canonical,
-                "tenant_query_reconciliation": len(source_tenant_rows) == len(target_tenant_rows) == 2,
+                "tenant_query_reconciliation": len(source_tenant_rows)
+                == len(target_tenant_rows)
+                == 2,
                 "source_negative_constraint": negative_source_passed,
                 "target_negative_constraint": negative_target.returncode != 0,
                 "source_transaction_rollback": before_rollback == after_rollback == 3,
-                "target_transaction_rollback": rollback_result.stdout.strip().endswith("3"),
+                "target_transaction_rollback": rollback_result.stdout.strip().endswith(
+                    "2"
+                ),
+                "source_read_only_session_rejects_write": source_write_blocked,
+                "offline_cutover_rehearsal": source_write_blocked
+                and source_canonical == target_canonical,
                 "backup_restore_reconciliation": target_canonical == restored_canonical,
                 "source_query_plan": [list(row) for row in source_plan],
                 "target_query_plan": target_plan,
@@ -668,10 +907,13 @@ def execute(repo: Path) -> Path:
                 "target_rows",
                 "source_query_plan",
                 "target_query_plan",
+                "backfill_checkpoint",
             }
         ):
             raise RuntimeError("DATABASE_REFERENCE_CHECK_FAILED")
         write_json(pack / "certification" / "local-engine-evidence.json", evidence)
+        local_evidence_ref = "certification/local-engine-evidence.json"
+        local_evidence_digest = file_digest(pack / local_evidence_ref)
         metrics = {
             "workload_fingerprint_coverage": 1.0,
             "canonical_ir_coverage": 1.0,
@@ -683,7 +925,9 @@ def execute(repo: Path) -> Path:
             "target_provision_pass_rate": 1.0,
             "representative_workload_pass_rate": 1.0,
             "source_map_coverage": 1.0,
-            "query_performance_slo_pass_rate": 1.0,
+            # This bounded reference exercises real plans but does not collect
+            # the 40-sample latency distribution required by the runtime gate.
+            "query_performance_slo_pass_rate": 0.0,
         }
         write_json(
             pack / "certification" / "evidence.json",
@@ -700,7 +944,21 @@ def execute(repo: Path) -> Path:
                 "critical_security_regressions": 0,
                 "destructive_unapproved_changes": 0,
                 "test_integrity_violations": 0,
-                "evidence_refs": ["certification/local-engine-evidence.json"],
+                "evidence_status": {
+                    "source_execution": "PASSED_LOCAL",
+                    "target_execution": "PASSED_LOCAL",
+                    "holdout": "PASSED_LOCAL",
+                    "representative_workload": "PASSED_LOCAL",
+                    "rollback": "PASSED_LOCAL",
+                    "security": "PASSED_LOCAL",
+                    "cdc": "NOT_APPLICABLE",
+                    "cutover": "PASSED_LOCAL",
+                    "independent_verification": "NOT_RUN",
+                    "external_certification": "NOT_RUN",
+                },
+                "evidence_refs": [local_evidence_ref],
+                "evidence_digests": {local_evidence_ref: local_evidence_digest},
+                "evidence_roles": {},
             },
         )
         write_json(
@@ -709,10 +967,18 @@ def execute(repo: Path) -> Path:
                 "schema_version": 1,
                 "pack_key": pack.name,
                 "status": "experimental",
+                "exact_tuple": {"source": source, "target": target},
                 "metrics": metrics,
-                "evidence_refs": ["certification/local-engine-evidence.json"],
+                "evidence_refs": [local_evidence_ref],
+                "evidence_digests": {local_evidence_ref: local_evidence_digest},
                 "external_certification": "NOT_RUN",
-                "limitations": ["Offline bounded workload only; CDC and production cutover are NOT_RUN."],
+                "limitations": [
+                    "Offline bounded workload only; online CDC and production cutover are NOT_RUN."
+                ],
+                "restrictions": [
+                    "Offline cutover was rehearsed locally; online CDC, production cutover, and independent verification are NOT_RUN."
+                ],
+                "approved_by": [],
             },
         )
         (pack / "certification" / "gate-report.md").write_text(
@@ -720,9 +986,12 @@ def execute(repo: Path) -> Path:
             "- Disposable source and target engines: `PASSED`\n"
             "- Typed DDL, constraints, queries, transactions: `PASSED`\n"
             "- Row-level reconciliation: `PASSED`\n"
+            "- Checkpointed backfill and offline delete delta: `PASSED`\n"
             "- Backup and restore: `PASSED`\n"
+            "- Query performance SLO: `NOT_RUN`\n"
             "- Cleanup: `PASSED`\n"
-            "- CDC and production cutover: `NOT_RUN`\n"
+            "- Offline cutover rehearsal: `PASSED_LOCAL`\n"
+            "- Online CDC and production cutover: `NOT_RUN`\n"
             "- Independent certification: `NOT_RUN`\n",
             encoding="utf-8",
         )
@@ -730,7 +999,8 @@ def execute(repo: Path) -> Path:
             f"# SQLite {sqlite_version} to PostgreSQL {postgres_version}\n\n"
             "Exact local disposable reference pack with typed canonical IR, real engine execution, "
             "row-level reconciliation, constraint and transaction negatives, query plans, backup, restore, "
-            "and cleanup. Production writes, CDC, cutover, and independent certification remain `NOT_RUN`.\n",
+            "checkpointed backfill, offline delete-delta and cutover rehearsal, and cleanup. Production writes, "
+            "online CDC, production cutover, and independent certification remain `NOT_RUN`.\n",
             encoding="utf-8",
         )
     return pack
@@ -742,10 +1012,23 @@ def main() -> int:
     args = parser.parse_args()
     repo = Path(args.repo_root).resolve()
     pack = execute(repo)
+    validator_python = ["uv", "run", "--quiet", "--with", "jsonschema", "python"]
     validators = [
-        ["python3", "scripts/batch31/validate_database_pack.py", str(pack)],
-        ["python3", "scripts/batch31/validate_canonical_ir.py", str(pack / "canonical-ir" / "model.json")],
-        ["python3", "scripts/batch31/run_database_gate.py", str(pack)],
+        [
+            *validator_python,
+            "scripts/batch31/validate_database_pack.py",
+            str(pack),
+        ],
+        [
+            *validator_python,
+            "scripts/batch31/validate_canonical_ir.py",
+            str(pack / "canonical-ir" / "model.json"),
+        ],
+        [
+            *validator_python,
+            "scripts/batch31/run_database_gate.py",
+            str(pack),
+        ],
     ]
     for command in validators:
         completed = run(command, cwd=repo, check=False)

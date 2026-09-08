@@ -87,19 +87,26 @@ def alert_key(alert: Mapping[str, Any]) -> dict[str, Any]:
 
 def classify(alert: Mapping[str, Any]) -> str | None:
     key = alert_key(alert)
+    manifest_path = key["manifest_path"]
     if (
         key["ecosystem"] == "npm"
         and key["package"] in EOL_PACKAGES
         and key["manifest_path"] in VUE2_COMPATIBILITY_MANIFESTS
     ):
         return "eol_compatibility"
-    if key["manifest_path"].startswith(IMMUTABLE_SOURCE_PREFIXES):
+    if manifest_path.startswith(IMMUTABLE_SOURCE_PREFIXES):
         return "immutable_source"
-    if key["manifest_path"].startswith(IMMUTABLE_CERTIFICATION_PREFIXES):
+    if (
+        manifest_path.startswith(IMMUTABLE_CERTIFICATION_PREFIXES)
+        or (
+            manifest_path.startswith("routes/")
+            and "/certification/formal-artifacts/" in manifest_path
+        )
+    ):
         return "immutable_certification_artifact"
     # Retain compatibility with older, already-issued exception registries.
     # New exceptions use the narrower rules above whenever possible.
-    if key["manifest_path"].startswith(IMMUTABLE_PREFIXES):
+    if manifest_path.startswith(IMMUTABLE_PREFIXES):
         return "immutable_evidence"
     return None
 
@@ -499,12 +506,26 @@ def main() -> int:
         action="store_true",
         help="dismiss only registry-listed eligible alerts",
     )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="replace the registry with the current open-alert inventory before applying",
+    )
     args = parser.parse_args()
     open_alerts = fetch_open_alerts(args.repo)
     snapshot_path = Path(args.snapshot)
     snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
     registry_path = Path(args.registry)
-    if registry_path.exists():
+    if args.refresh:
+        alerts = open_alerts
+        registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
+        validate_registry(registry, alerts, repo_root=args.repo_root)
+        registry_path.parent.mkdir(parents=True, exist_ok=True)
+        registry_path.write_text(
+            json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    elif registry_path.exists():
         registry = json.loads(registry_path.read_bytes())
         registered_numbers = {
             int(exception["alert_number"]) for exception in registry.get("exceptions", [])

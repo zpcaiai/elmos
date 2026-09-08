@@ -34,7 +34,7 @@ def quote_identifier(name: str, dialect: Dialect, *, force: bool | None = None) 
         return '"' + value.replace('"', '""') + '"'
     if dialect is Dialect.MYSQL:
         return "`" + value.replace("`", "``") + "`"
-    return "[" + value.replace(']', ']]') + "]"
+    return "[" + value.replace("]", "]]") + "]"
 
 
 def qualified_name(schema: str | None, name: str, dialect: Dialect) -> str:

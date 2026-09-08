@@ -1,0 +1,24 @@
+{
+  "admitted_statements": [
+    "local-declaration",
+    "assignment",
+    "if",
+    "while",
+    "break",
+    "continue",
+    "return"
+  ],
+  "certification_status": "NOT_CERTIFIED",
+  "effects": "BLOCKED",
+  "integer_semantics": "CHECKED_SIGNED_INT64",
+  "kind": "elmos.vendor-research-lowering-contract",
+  "number_semantics": "FINITE_BINARY64",
+  "route_key": "php-to-vcpp6",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-module-v1",
+  "source_language": "php",
+  "string_semantics": "ASCII_ONLY",
+  "target_language": "vcpp6",
+  "target_profile": "vcpp6-cpp98-pure-module-v1",
+  "vendor_runtime_status": "NOT_RUN"
+}
