@@ -732,10 +732,22 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
     "38adcf3b2e2f5f90f72fb559467495200b1ee8bb" \
     "Formula/p/python@3.14.rb" \
     "a658a88637d2d4668c7d98e0b32e3c38fc2e30695e614d061b7017b8d9b208b3"
+  install_pinned_formula \
+    "postgresql@17" "17.5" \
+    "c26b6a48e4695754b27b0c2b7ce5d2cfce1a53bb" \
+    "Formula/p/postgresql@17.rb" \
+    "869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55"
+  readonly postgres_bin="$(brew --prefix postgresql@17)/bin"
+  if [[ "$("${postgres_bin}/postgres" --version)" != "postgres (PostgreSQL) 17.5 (Homebrew)" ]]; then
+    printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
+    exit 3
+  fi
   {
     printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
     printf '%s\n' "$(brew --prefix python@3.14)/bin"
+    printf '%s\n' "${postgres_bin}"
   } >>"${GITHUB_PATH}"
+  printf 'POSTGRESQL_17_BIN=%s\n' "${postgres_bin}" >>"${GITHUB_ENV}"
   if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)" ]]; then
     printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2
     exit 3

@@ -1524,7 +1524,24 @@ def add_corpora(pack_root: Path, catalog: ArtifactCatalog) -> dict[str, Any]:
     return result
 
 
-def verify_engine_campaign_v2(repo_root: Path, engine_root: Path) -> dict[str, Any]:
+DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS = 900
+MINIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS = 30
+MAXIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS = 3_600
+
+
+def verify_engine_campaign_v2(
+    repo_root: Path,
+    engine_root: Path,
+    *,
+    timeout_seconds: int = DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    if (
+        isinstance(timeout_seconds, bool)
+        or not isinstance(timeout_seconds, int)
+        or timeout_seconds < MINIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS
+        or timeout_seconds > MAXIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS
+    ):
+        raise RuntimeError("V2_ENGINE_VERIFY_TIMEOUT_OUT_OF_RANGE")
     main_path = safe_source_file(
         engine_root,
         "frontend-interaction-formal-campaign.json",
@@ -1610,7 +1627,7 @@ def verify_engine_campaign_v2(repo_root: Path, engine_root: Path) -> dict[str, A
         cwd=repo_root,
         capture_output=True,
         text=True,
-        timeout=180,
+        timeout=timeout_seconds,
         check=False,
     )
     try:
@@ -7659,6 +7676,7 @@ def build_common_campaign_v2(
     external_evidence_path: Path | None = None,
     external_trust_store_path: Path | None = None,
     external_trust_root_path: Path | None = None,
+    engine_verify_timeout_seconds: int = DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS,
 ) -> Path:
     if any(
         path is not None
@@ -7669,7 +7687,11 @@ def build_common_campaign_v2(
         )
     ):
         raise RuntimeError("V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
-    engine = verify_engine_campaign_v2(repo_root, engine_root)
+    engine = verify_engine_campaign_v2(
+        repo_root,
+        engine_root,
+        timeout_seconds=engine_verify_timeout_seconds,
+    )
     exact = exact_profiles(
         repo_root / "schemas/batch32/frontend-formal-route-campaign.schema.json"
     )
@@ -8801,6 +8823,7 @@ def build_packs_v2(
     external_evidence_path: Path | None = None,
     external_trust_store_path: Path | None = None,
     external_trust_root_path: Path | None = None,
+    engine_verify_timeout_seconds: int = DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS,
 ) -> tuple[Path, Path]:
     if any(
         path is not None
@@ -8821,6 +8844,7 @@ def build_packs_v2(
         external_evidence_path,
         external_trust_store_path,
         external_trust_root_path,
+        engine_verify_timeout_seconds,
     )
     campaign = load_json(common_campaign)
     scope_digest = campaign["peer_binding"]["scope_digest"]
@@ -9063,8 +9087,23 @@ def main() -> int:
         ),
     )
     parser.add_argument("--node", default="node")
+    parser.add_argument(
+        "--engine-verify-timeout-seconds",
+        type=int,
+        default=DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS,
+        help=(
+            "bounded timeout for replaying the supplied v2 Node/Z3 engine "
+            "campaign (30-3600 seconds)"
+        ),
+    )
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
+    if not (
+        MINIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS
+        <= args.engine_verify_timeout_seconds
+        <= MAXIMUM_V2_ENGINE_VERIFY_TIMEOUT_SECONDS
+    ):
+        raise SystemExit("--engine-verify-timeout-seconds must be between 30 and 3600")
     external_arguments = (
         args.external_evidence,
         args.external_trust_store,
@@ -9160,6 +9199,7 @@ def main() -> int:
                     if args.external_trust_root is not None
                     else None
                 ),
+                args.engine_verify_timeout_seconds,
             )
         else:
             client_pack, verification_pack = build_packs(
