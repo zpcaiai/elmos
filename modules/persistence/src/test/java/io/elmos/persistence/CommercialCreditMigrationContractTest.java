@@ -103,7 +103,8 @@ class CommercialCreditMigrationContractTest {
                 "elmos_commercial_create_order", "elmos_commercial_fulfill_order",
                 "elmos_commercial_mark_order_handoff", "elmos_commercial_mark_order_prepare_failed",
                 "elmos_commercial_reserve_generation", "elmos_commercial_settle_generation",
-                "elmos_commercial_release_generation"}) {
+                "elmos_commercial_release_generation",
+                "elmos_commercial_expire_generation_reservations"}) {
             assertTrue(script.contains("'" + function + "'"),
                     function + " must be granted when the runtime role is created after Flyway");
         }

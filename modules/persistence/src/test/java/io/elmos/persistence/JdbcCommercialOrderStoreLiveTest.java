@@ -125,7 +125,7 @@ class JdbcCommercialOrderStoreLiveTest {
         assertEquals(organization, runtime.sql("select organization_id "
                         + "from commercial_order_directory where out_trade_no = ?")
                 .param(creditOrder).query(String.class).single());
-        assertEquals("ALIPAY_CHECKOUT", runtime.sql("select provider "
+        assertEquals("WECHAT_PAY_NATIVE", runtime.sql("select provider "
                         + "from commercial_order_directory where out_trade_no = ?")
                 .param(creditOrder).query(String.class).single());
 

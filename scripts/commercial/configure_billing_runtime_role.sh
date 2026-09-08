@@ -116,7 +116,8 @@ BEGIN
          'elmos_commercial_mark_order_prepare_failed',
          'elmos_commercial_reserve_generation',
          'elmos_commercial_settle_generation',
-         'elmos_commercial_release_generation'
+         'elmos_commercial_release_generation',
+         'elmos_commercial_expire_generation_reservations'
        )
   LOOP
     EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO %I', v_function.signature, '$runtime_role');

@@ -58,9 +58,7 @@ test("skip link moves keyboard focus to main content", async ({ page }) => {
 test("help remains usable at 200 percent zoom and mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/help");
-  await page.evaluate(() => {
-    document.documentElement.style.fontSize = "200%";
-  });
+  await page.addStyleTag({ content: "html { font-size: 200% !important; }" });
   await expect(page.getByRole("heading", { name: "帮助与就绪状态" })).toBeVisible();
   const overflow = await page.evaluate(() =>
     document.documentElement.scrollWidth - document.documentElement.clientWidth);
