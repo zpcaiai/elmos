@@ -6,6 +6,8 @@ import io.elmos.commercialadapter.payment.AlipayCallbackAdapter;
 import io.elmos.commercialadapter.payment.AlipayCheckoutGateway;
 import io.elmos.commercialadapter.payment.AlipaySignatureVerifier;
 import io.elmos.commercialadapter.payment.CallbackReplayGuard;
+import io.elmos.commercialadapter.payment.ElmPayCheckoutGateway;
+import io.elmos.commercialadapter.payment.ElmPayWebhookAdapter;
 import io.elmos.commercialadapter.payment.JdbcCallbackPorts;
 import io.elmos.commercialadapter.payment.JdbcOrderPorts;
 import io.elmos.commercialadapter.payment.PaymentCallbackPipeline;
@@ -18,6 +20,8 @@ import io.elmos.commercialadapter.payment.WechatPayNativeGateway;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyFactory;
+import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateFactory;
@@ -40,6 +45,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Base64;
+import java.util.UUID;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * 支付回调链路的 Spring 装配。
@@ -177,6 +186,7 @@ public class PaymentCallbackConfiguration {
     PaymentProviderRouter paymentProviderRouter(
             CallbackReplayGuard paymentCallbackReplayGuard,
             ObjectMapper objectMapper,
+            ObjectProvider<ElmPayCheckoutGateway> elmPayCheckoutGateway,
             @Value("${elmos.billing.alipay.app-id:}") String alipayAppId,
             @Value("${elmos.billing.alipay.public-key-file:}") String alipayPublicKeyFile,
             @Value("${elmos.billing.alipay.private-key-file:}") String alipayPrivateKeyFile,
@@ -243,7 +253,59 @@ public class PaymentCallbackConfiguration {
                     privateKeyFromPem(wechatPrivateKeyFile), transport));
         }
 
+        // ELMPay keeps the catalog's exact underlying channel identity. Registering last is an
+        // intentional, explicit override of only the checkout gateway; native callback adapters
+        // stay registered so in-flight direct-provider orders can still settle during cutover.
+        ElmPayCheckoutGateway elmPay = elmPayCheckoutGateway.getIfAvailable();
+        if (elmPay != null) {
+            router.register(elmPay);
+        }
+
         return router;
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "elmos.billing.elmpay.enabled", havingValue = "true")
+    ElmPayCheckoutGateway elmPayCheckoutGateway(
+            ObjectMapper objectMapper,
+            @Value("${elmos.billing.elmpay.base-url:}") String baseUrl,
+            @Value("${elmos.billing.elmpay.project-id:}") String projectId,
+            @Value("${elmos.billing.elmpay.api-token-file:}") String tokenFile,
+            @Value("${elmos.billing.elmpay.return-route-id:elmos-payment-complete}")
+                    String returnRouteId,
+            @Value("${elmos.billing.elmpay.allow-http-local-sandbox:false}") boolean allowHttp,
+            @Value("${elmos.billing.elmpay.tls-key-store-file:}") String keyStoreFile,
+            @Value("${elmos.billing.elmpay.tls-key-store-password-file:}")
+                    String keyStorePasswordFile,
+            @Value("${elmos.billing.elmpay.tls-trust-store-file:}") String trustStoreFile,
+            @Value("${elmos.billing.elmpay.tls-trust-store-password-file:}")
+                    String trustStorePasswordFile) {
+        var catalog = PricingPlanCatalog.chinaSelfServeDraft();
+        return new ElmPayCheckoutGateway(
+                PaymentProvider.parse(catalog.paymentProvider()), URI.create(required(baseUrl,
+                        "ELMPay base URL")), UUID.fromString(required(projectId,
+                        "ELMPay project ID")), returnRouteId, allowHttp,
+                Path.of(required(tokenFile, "ELMPay API token file")),
+                elmPayHttpClient(allowHttp, keyStoreFile, keyStorePasswordFile,
+                        trustStoreFile, trustStorePasswordFile), objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "elmos.billing.elmpay.enabled", havingValue = "true")
+    ElmPayWebhookAdapter elmPayWebhookAdapter(
+            CallbackReplayGuard paymentCallbackReplayGuard,
+            ObjectMapper objectMapper,
+            @Value("${elmos.billing.elmpay.tenant-id:}") String tenantId,
+            @Value("${elmos.billing.elmpay.project-id:}") String projectId,
+            @Value("${elmos.billing.elmpay.webhook-key-id:}") String keyId,
+            @Value("${elmos.billing.elmpay.webhook-secret-file:}") String secretFile) {
+        var catalog = PricingPlanCatalog.chinaSelfServeDraft();
+        return new ElmPayWebhookAdapter(PaymentProvider.parse(catalog.paymentProvider()),
+                UUID.fromString(required(tenantId, "ELMPay tenant ID")),
+                UUID.fromString(required(projectId, "ELMPay project ID")),
+                required(keyId, "ELMPay webhook key ID"),
+                Path.of(required(secretFile, "ELMPay webhook secret file")),
+                paymentCallbackReplayGuard, objectMapper);
     }
 
     // -----------------------------------------------------------------------
@@ -335,5 +397,54 @@ public class PaymentCallbackConfiguration {
         return pem.replaceAll("-----BEGIN [^-]+-----", "")
                 .replaceAll("-----END [^-]+-----", "")
                 .replaceAll("\\s", "");
+    }
+
+    private static HttpClient elmPayHttpClient(boolean allowHttp, String keyStoreFile,
+            String keyStorePasswordFile, String trustStoreFile, String trustStorePasswordFile) {
+        HttpClient.Builder builder = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5));
+        if (allowHttp && keyStoreFile.isBlank() && trustStoreFile.isBlank()) {
+            return builder.build();
+        }
+        String keyPath = required(keyStoreFile, "ELMPay TLS key store file");
+        String keyPasswordPath = required(keyStorePasswordFile,
+                "ELMPay TLS key store password file");
+        String trustPath = required(trustStoreFile, "ELMPay TLS trust store file");
+        String trustPasswordPath = required(trustStorePasswordFile,
+                "ELMPay TLS trust store password file");
+        char[] keyPassword = readPassword(keyPasswordPath);
+        char[] trustPassword = readPassword(trustPasswordPath);
+        try (var keyInput = Files.newInputStream(Path.of(keyPath));
+             var trustInput = Files.newInputStream(Path.of(trustPath))) {
+            KeyStore keys = KeyStore.getInstance("PKCS12");
+            keys.load(keyInput, keyPassword);
+            KeyManagerFactory keyManagers = KeyManagerFactory.getInstance(
+                    KeyManagerFactory.getDefaultAlgorithm());
+            keyManagers.init(keys, keyPassword);
+            KeyStore trust = KeyStore.getInstance("PKCS12");
+            trust.load(trustInput, trustPassword);
+            TrustManagerFactory trustManagers = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            trustManagers.init(trust);
+            SSLContext context = SSLContext.getInstance("TLSv1.3");
+            context.init(keyManagers.getKeyManagers(), trustManagers.getTrustManagers(), null);
+            return builder.sslContext(context).build();
+        } catch (Exception failure) {
+            throw new IllegalStateException("ELMPay mTLS 客户端材料装载失败", failure);
+        } finally {
+            java.util.Arrays.fill(keyPassword, '\0');
+            java.util.Arrays.fill(trustPassword, '\0');
+        }
+    }
+
+    private static char[] readPassword(String path) {
+        return readText(path).strip().toCharArray();
+    }
+
+    private static String required(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException(name + " 未配置");
+        }
+        return value.strip();
     }
 }
