@@ -1,0 +1,316 @@
+{
+  "blockers": [
+    {
+      "code": "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
+      "message": "Local emission does not consume an independently collected target capability snapshot; external execution and certification stay NOT_RUN.",
+      "severity": "WARNING",
+      "statementIndex": null
+    }
+  ],
+  "capabilitySnapshotDigest": "sha256:aec49d861260e473e806fa4648a72699363d818bff9740b94581879e5a12d85b",
+  "certification": "NOT_CERTIFIED",
+  "queryId": "postgresql-orders-page-to-dm8",
+  "routeId": "postgresql--to--dm8",
+  "schemaVersion": "1.0",
+  "sourceDigest": "sha256:44e3cc0b0607cd24201a4b313d145e0257bf883bc9751f5957fd7e64ceb53a17",
+  "sourceProfile": "postgresql-17.5",
+  "state": "LOCAL_EMITTED",
+  "statements": [
+    {
+      "index": 0,
+      "kind": "SELECT",
+      "obligations": [
+        "ORDERING_SEMANTICS",
+        "PAGINATION_SEMANTICS",
+        "PARAMETER_BINDING_CONTRACT"
+      ],
+      "sourceAst": [
+        {
+          "c": "sqlglot.expressions.query.Select"
+        },
+        {
+          "a": true,
+          "c": "sqlglot.expressions.core.Column",
+          "i": 0,
+          "k": "expressions"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 1,
+          "k": "this",
+          "m": {
+            "col": 9,
+            "end": 8,
+            "line": 1,
+            "start": 7
+          }
+        },
+        {
+          "i": 2,
+          "k": "this",
+          "v": "id"
+        },
+        {
+          "i": 2,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "a": true,
+          "c": "sqlglot.expressions.core.Column",
+          "i": 0,
+          "k": "expressions"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 5,
+          "k": "this",
+          "m": {
+            "col": 20,
+            "end": 19,
+            "line": 1,
+            "start": 11
+          }
+        },
+        {
+          "i": 6,
+          "k": "this",
+          "v": "tenant_id"
+        },
+        {
+          "i": 6,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "a": true,
+          "c": "sqlglot.expressions.core.Column",
+          "i": 0,
+          "k": "expressions"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 9,
+          "k": "this",
+          "m": {
+            "col": 34,
+            "end": 33,
+            "line": 1,
+            "start": 22
+          }
+        },
+        {
+          "i": 10,
+          "k": "this",
+          "v": "amount_cents"
+        },
+        {
+          "i": 10,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "a": true,
+          "c": "sqlglot.expressions.core.Column",
+          "i": 0,
+          "k": "expressions"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 13,
+          "k": "this",
+          "m": {
+            "col": 46,
+            "end": 45,
+            "line": 1,
+            "start": 36
+          }
+        },
+        {
+          "i": 14,
+          "k": "this",
+          "v": "created_at"
+        },
+        {
+          "i": 14,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "c": "sqlglot.expressions.query.Limit",
+          "i": 0,
+          "k": "limit"
+        },
+        {
+          "c": "sqlglot.expressions.core.Literal",
+          "i": 17,
+          "k": "expression",
+          "m": {
+            "col": 121,
+            "end": 120,
+            "line": 1,
+            "start": 119
+          }
+        },
+        {
+          "i": 18,
+          "k": "this",
+          "v": "10"
+        },
+        {
+          "i": 18,
+          "k": "is_string",
+          "v": false
+        },
+        {
+          "c": "sqlglot.expressions.query.From",
+          "i": 0,
+          "k": "from_"
+        },
+        {
+          "c": "sqlglot.expressions.query.Table",
+          "i": 21,
+          "k": "this"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 22,
+          "k": "this",
+          "m": {
+            "col": 58,
+            "end": 57,
+            "line": 1,
+            "start": 52
+          }
+        },
+        {
+          "i": 23,
+          "k": "this",
+          "v": "orders"
+        },
+        {
+          "i": 23,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "c": "sqlglot.expressions.query.Where",
+          "i": 0,
+          "k": "where"
+        },
+        {
+          "c": "sqlglot.expressions.core.EQ",
+          "i": 26,
+          "k": "this"
+        },
+        {
+          "c": "sqlglot.expressions.core.Column",
+          "i": 27,
+          "k": "this"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 28,
+          "k": "this",
+          "m": {
+            "col": 74,
+            "end": 73,
+            "line": 1,
+            "start": 65
+          }
+        },
+        {
+          "i": 29,
+          "k": "this",
+          "v": "tenant_id"
+        },
+        {
+          "i": 29,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "c": "sqlglot.expressions.core.Placeholder",
+          "i": 27,
+          "k": "expression"
+        },
+        {
+          "i": 32,
+          "k": "this",
+          "v": "tenant_id"
+        },
+        {
+          "c": "sqlglot.expressions.query.Order",
+          "i": 0,
+          "k": "order"
+        },
+        {
+          "a": true,
+          "c": "sqlglot.expressions.core.Ordered",
+          "i": 34,
+          "k": "expressions"
+        },
+        {
+          "c": "sqlglot.expressions.core.Column",
+          "i": 35,
+          "k": "this"
+        },
+        {
+          "c": "sqlglot.expressions.core.Identifier",
+          "i": 36,
+          "k": "this",
+          "m": {
+            "col": 107,
+            "end": 106,
+            "line": 1,
+            "start": 97
+          }
+        },
+        {
+          "i": 37,
+          "k": "this",
+          "v": "created_at"
+        },
+        {
+          "i": 37,
+          "k": "quoted",
+          "v": false
+        },
+        {
+          "i": 35,
+          "k": "desc",
+          "v": true
+        },
+        {
+          "i": 35,
+          "k": "nulls_first",
+          "v": true
+        }
+      ]
+    }
+  ],
+  "target": {
+    "adapterId": "chinadb.dm8.target-adapter.v1",
+    "charset": "UTF-8",
+    "collation": "BINARY",
+    "compatibilityMode": "oracle-compatible-explicit",
+    "driver": "dm-jdbc-8.1.3.140",
+    "edition": "enterprise",
+    "id": "dm8",
+    "implementationStatus": "LOCAL_ADAPTER",
+    "label": "DM8",
+    "timeZone": "Asia/Shanghai",
+    "version": "8.1.3.140"
+  },
+  "targetSql": "SELECT\n  id,\n  tenant_id,\n  amount_cents,\n  created_at\nFROM orders\nWHERE\n  tenant_id = :p1\nORDER BY\n  created_at DESC\nFETCH FIRST 10 ROWS ONLY;\n",
+  "verification": {
+    "externalExecution": "NOT_RUN",
+    "resultEquivalence": "NOT_RUN",
+    "sourceExecution": "NOT_RUN",
+    "sourceParse": "PASSED",
+    "targetAdapter": "PASSED",
+    "targetEmit": "PASSED",
+    "targetExecution": "NOT_RUN",
+    "targetReparse": "PASSED"
+  }
+}
