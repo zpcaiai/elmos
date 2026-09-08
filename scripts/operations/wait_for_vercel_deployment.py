@@ -86,7 +86,11 @@ def _latest_status(statuses: object) -> dict[str, Any] | None:
     return max(records, key=_record_order) if records else None
 
 
-def _newest_exact_vercel_deployment(deployments: object, sha: str) -> dict[str, Any] | None:
+def _newest_exact_vercel_deployment(
+    deployments: object,
+    sha: str,
+    required_environment: str | None = None,
+) -> dict[str, Any] | None:
     if not isinstance(deployments, list):
         raise DeploymentResolutionError("GITHUB_DEPLOYMENTS_INVALID")
     records = [
@@ -98,6 +102,14 @@ def _newest_exact_vercel_deployment(deployments: object, sha: str) -> dict[str, 
         and isinstance(item.get("creator"), dict)
         and item["creator"].get("login") == "vercel[bot]"
         and type(item.get("id")) is int
+        and (
+            required_environment is None
+            or (
+                isinstance(item.get("environment"), str)
+                and item["environment"].casefold()
+                == required_environment.casefold()
+            )
+        )
     ]
     return max(records, key=_record_order) if records else None
 
@@ -110,6 +122,7 @@ def wait_for_deployment(
     timeout_seconds: float,
     poll_seconds: float,
     production_url: str | None = None,
+    required_environment: str | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
 ) -> str:
@@ -119,6 +132,8 @@ def wait_for_deployment(
         raise DeploymentResolutionError("GITHUB_SHA_INVALID")
     if not 0 < timeout_seconds <= 1_800 or not 0 < poll_seconds <= 60:
         raise DeploymentResolutionError("DEPLOYMENT_WAIT_INTERVAL_INVALID")
+    if required_environment not in {None, "Production", "Preview"}:
+        raise DeploymentResolutionError("VERCEL_DEPLOYMENT_ENVIRONMENT_INVALID")
 
     deadline = monotonic() + timeout_seconds
     encoded_sha = urllib.parse.quote(sha, safe="")
@@ -126,6 +141,7 @@ def wait_for_deployment(
         deployment = _newest_exact_vercel_deployment(
             fetch_json(f"/repos/{repository}/deployments?sha={encoded_sha}&per_page=100"),
             sha,
+            required_environment,
         )
         if deployment is not None:
             deployment_id = int(deployment["id"])
@@ -234,6 +250,11 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--poll-seconds", type=float, default=10)
     parser.add_argument("--production-url")
+    parser.add_argument(
+        "--required-environment",
+        choices=("Production", "Preview"),
+        help="accept only the exact SHA's Vercel Production or Preview deployment",
+    )
     return parser.parse_args()
 
 
@@ -249,6 +270,7 @@ def main() -> int:
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
         production_url=args.production_url,
+        required_environment=args.required_environment,
     )
     _append_github_environment(args.github_env, url)
     print(f"Resolved exact Vercel deployment for {args.sha}: {url}")

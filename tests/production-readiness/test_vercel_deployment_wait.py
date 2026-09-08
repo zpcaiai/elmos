@@ -134,6 +134,45 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         )
         self.assertEqual(url, "https://elmos-preview.vercel.app")
 
+    def test_required_production_ignores_newer_successful_preview(self) -> None:
+        def fetch(path: str) -> Any:
+            if "statuses" in path:
+                return [{
+                    "state": "success",
+                    "created_at": "2026-09-08T11:16:00Z",
+                    "environment_url": "https://exact-sha.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
+                }]
+            return [
+                {
+                    "id": 42,
+                    "sha": "e" * 40,
+                    "task": "deploy",
+                    "environment": "Preview",
+                    "creator": {"login": "vercel[bot]"},
+                    "created_at": "2026-09-08T11:15:00Z",
+                },
+                {
+                    "id": 84,
+                    "sha": "e" * 40,
+                    "task": "deploy",
+                    "environment": "Production",
+                    "creator": {"login": "vercel[bot]"},
+                    "created_at": "2026-09-08T11:14:00Z",
+                },
+            ]
+
+        url = MODULE.wait_for_deployment(
+            "zpcaiai/elmos",
+            "e" * 40,
+            fetch_json=fetch,
+            timeout_seconds=60,
+            poll_seconds=5,
+            production_url="https://elmos-alpha.vercel.app",
+            required_environment="Production",
+        )
+        self.assertEqual(url, "https://elmos-alpha.vercel.app")
+
     def test_production_domain_is_validated_only_after_exact_deployment_succeeds(self) -> None:
         def fetch(path: str) -> Any:
             if "statuses" in path:
@@ -194,6 +233,8 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertEqual(1_800, MODULE.DEFAULT_TIMEOUT_SECONDS)
         self.assertIn("timeout-minutes: 45", workflow)
         self.assertIn("--timeout-seconds 1800", workflow)
+        self.assertIn('--required-environment "${ELMOS_DEPLOYMENT_ENVIRONMENT}"', workflow)
+        self.assertIn("github.event_name == 'pull_request' && 'Preview' || 'Production'", workflow)
         self.assertIn('--production-url "${ELMOS_PRODUCTION_SMOKE_URL}"', workflow)
         trigger_block = workflow.split("permissions:", 1)[0]
         self.assertIn("push:\n    branches: [main]", trigger_block)

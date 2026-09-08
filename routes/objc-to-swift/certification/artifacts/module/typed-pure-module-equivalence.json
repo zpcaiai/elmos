@@ -1,16 +1,34 @@
 {
   "artifact_refs": [
     {
+      "bytes": 9331,
+      "path": "identifier-plan.json",
+      "role": "identifier-plan",
+      "sha256": "sha256:af3f9810c294aa364c31744caf657b8b844416ca47bc9c21e932a0bf529b2a4a"
+    },
+    {
+      "bytes": 7879,
+      "path": "target-semantic-ir.raw.json",
+      "role": "raw-target-ir",
+      "sha256": "sha256:f66057c66c1b42ceda7af7f8091c6c0910c413391f92382d443a1704bad87623"
+    },
+    {
+      "bytes": 7793,
+      "path": "target-semantic-ir.normalized.json",
+      "role": "normalized-target-ir",
+      "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
+    },
+    {
       "bytes": 7545,
       "path": "source-module-semantic-ir.json",
       "role": "source-module-semantic-ir",
       "sha256": "sha256:0cb70c53d4459ebcce90471627413844100bf513c6f0ce2d5b9053394af12c06"
     },
     {
-      "bytes": 7791,
+      "bytes": 7793,
       "path": "target-module-semantic-ir.json",
       "role": "target-module-semantic-ir",
-      "sha256": "sha256:57d5fde8c8fc7c010755c0d66d1983cd1bd886f492b2c834d1d4ee3ba06aeafb"
+      "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
     },
     {
       "bytes": 1881,
@@ -31,10 +49,10 @@
       "sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1"
     },
     {
-      "bytes": 748,
+      "bytes": 834,
       "path": "migrated.swift",
       "role": "emitted-target-module-artifact",
-      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+      "sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c"
     },
     {
       "bytes": 2794,
@@ -43,10 +61,10 @@
       "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
     },
     {
-      "bytes": 1264,
+      "bytes": 3640,
       "path": "module-formal-input.json",
       "role": "module-formal-input",
-      "sha256": "sha256:bca276d0007d1bffc0177e3e9014b9f2884de670ecc33b84b94a6a3a264f5cba"
+      "sha256": "sha256:c24938d1a63a20f90a1e03bf8f88e9eaf52a346d16933c110ba73f67d95cbc00"
     },
     {
       "bytes": 2854,
@@ -55,118 +73,118 @@
       "sha256": "sha256:c200591bc03d9bc57bef004160ece16a430773e3802f7844ea5dab2ee9a393a8"
     },
     {
-      "bytes": 42768,
+      "bytes": 43209,
       "path": "target-module-inventory.json",
       "role": "target-module-inventory",
-      "sha256": "sha256:b05cd4c4f82d6bf3f0f28c572f8a425b2c302ceff3078ed7c5aa20050f402337"
+      "sha256": "sha256:d61557ad8d9e0f1412a3b82cc254dbd18c6a29d1a4dbe97610b30f92c9f469ca"
     },
     {
-      "bytes": 7688,
+      "bytes": 10395,
       "path": "whole-file-module-closure.json",
       "role": "whole-file-module-closure",
-      "sha256": "sha256:a487fa8392008ddaca34ee3260f8ad0a6c18c3fea15271301fbdbc5a270924b8"
+      "sha256": "sha256:5aff22c1477275ca1e4edc4f61db28a2a31948d07488e2bd83abc84c0e986735"
     },
     {
-      "bytes": 1365,
+      "bytes": 2558,
       "path": "formal-function-000-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:08ac6e0283213f6872e4efc04cee68ab88ffdadc7cb60308d9b724414edc4c04"
+      "sha256": "sha256:cb1d736781caf454313113199b9e4bc68cd671b0a66661fd51b1b8ad0b36fc88"
     },
     {
-      "bytes": 1291,
+      "bytes": 1275,
       "path": "formal-function-000.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:3713b9a6681b09cb835ffaa81cbd2606672965cf5147250a13462452f1d6b888"
+      "sha256": "sha256:e62414c2962943ea1acf64b50a66fae1f5004c28659631ae58f08e8d97397c4b"
     },
     {
       "bytes": 2420,
       "path": "formal-function-000-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:c42ae9b0df8f7c855ee243b0dc798d22ec7f5ff735f4223fcefe7d8fe4c0cc1a"
+      "sha256": "sha256:da21333115f36dd62f233a03b7c2a188a3a5f987c5c7b65932c2ecdef72199aa"
     },
     {
-      "bytes": 1822,
+      "bytes": 3024,
       "path": "formal-function-001-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:0687ecb74e7cccc3ebaa5366dcdc1e62d9b3024033aa4eb3a6289de53557c326"
+      "sha256": "sha256:bc4035cecf413a5620b994b983476931dcd07a13e573cc546c04bc41172e742f"
     },
     {
-      "bytes": 2037,
+      "bytes": 1985,
       "path": "formal-function-001.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:be44f32375a0718c511774e606a659c05104fc448e67d00ead44991490e0fefe"
+      "sha256": "sha256:6da81fe7d23ae242069c4648956add79a4388bb86a58550fecc2a1a9b54f04c4"
     },
     {
       "bytes": 2429,
       "path": "formal-function-001-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:a933cfaf7a9af555688d2a76e05d5a5535969094e22074c25286f81869c48f94"
+      "sha256": "sha256:8e93c3523e3cc83c2180eb0e8e348219aec1d010ba667c095eafc7c31a1d7907"
     },
     {
-      "bytes": 2221,
+      "bytes": 3498,
       "path": "formal-function-002-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:62a8fb2a2bb4d5c6dfa6c142ce62e68ff267039ac32349a772e1db4df847039b"
+      "sha256": "sha256:4e36c2a387b4a26db9098563cde5ef0968b0d22dc9012f01b76550019349c22c"
     },
     {
-      "bytes": 1921,
+      "bytes": 1873,
       "path": "formal-function-002.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:38058009deda6ee47e093609e41e33330135fc43707920f82ddfa8e325494f5d"
+      "sha256": "sha256:268895b9c573a0b5832a502ab1a1629f9a4663485a1a6868f377d8aa307b0d86"
     },
     {
       "bytes": 2456,
       "path": "formal-function-002-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:49ff22b222a14934cd7b7a18ea857ce92de3a0290c188ab940643d56bf16377d"
+      "sha256": "sha256:b0e6c7a787042be9d5bf1553eea6d5456f4e2f8246f82dae7733691123532b2a"
     },
     {
-      "bytes": 2227,
+      "bytes": 3507,
       "path": "formal-function-003-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:aa7785d32ee81beeea4b1107ffd4c5f7f1b7a176a26d031fc0068e4d10c004a6"
+      "sha256": "sha256:39b7be2f3b820bccd3c452561cd98c3a3075937fb7e7051d7d240500691b5e04"
     },
     {
-      "bytes": 2611,
+      "bytes": 2551,
       "path": "formal-function-003.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:d577fd99e9debf0a4837ea1af9d0ea2339d21208d615e57e520671c3e925b0f5"
+      "sha256": "sha256:8c6237c3757ae5170ddc449cf7803994188f3e54f4df7aa9c90297ad94665067"
     },
     {
       "bytes": 2740,
       "path": "formal-function-003-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:0cd103d6bfbcf94673a61069c8744a19ad067610107374ca4c7d559d1c776bc9"
+      "sha256": "sha256:364ea913ab2e0b4186b7c14afcb14e0dbcfcbd1ba7b92680ede150d7503a9929"
     },
     {
-      "bytes": 1381,
+      "bytes": 2580,
       "path": "formal-function-004-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:e6eae5c10c51f276a473b1b6ad68e8cbfebdd6f80e4e71130acfa72814d4ccd9"
+      "sha256": "sha256:e86fb45456fa2c1a5df1b3a1f4843250681d73181246c9a94d7b926c0ec5e9ee"
     },
     {
-      "bytes": 1821,
+      "bytes": 1771,
       "path": "formal-function-004.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:c1df394db4229ab4d5008d1a22a93d798793ab61c22ced56fe6cf9c722acce29"
+      "sha256": "sha256:ef3e4cb218e6a6cabaab2b19449320ee06314cc65e3f49056fdbaeb579651474"
     },
     {
       "bytes": 2426,
       "path": "formal-function-004-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:e99fc8a1909fa11d2b2cff7539628e90db626e7b40309b90db6f6ce356035d98"
+      "sha256": "sha256:d001258541f0fae2e094971d20f9b485dad199fb0204b709da5c5a529615e2e3"
     },
     {
-      "bytes": 8843,
+      "bytes": 9063,
       "path": "source-module-validation.json",
       "role": "source-module-validation",
-      "sha256": "sha256:32261f173b5523458d067050c60cd86a8fac86ca37b511d467be973dd0c30062"
+      "sha256": "sha256:e16f8bf6bc404139af0672f4bdd68d0ce49602c625dff1a927838b7d52a9b91e"
     },
     {
-      "bytes": 8733,
+      "bytes": 8953,
       "path": "target-module-validation.json",
       "role": "target-module-validation",
-      "sha256": "sha256:d8861fcf84feb684f3bc86c66780a0885fbb34abacd22840887d93d92d5784f1"
+      "sha256": "sha256:2be92fe5273d4cad790f8b68066af9b7f577d6c135cb264c86d4d381a9378950"
     }
   ],
   "certification_status": "NOT_CERTIFIED",
@@ -328,11 +346,11 @@
                 "start_byte": 668
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
-              "target_chunk_id": "sha256:95122211804ee49eab32ec2417c086f9cbacc2620902f9ba5b524a0a7d81cf84",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0",
+              "target_chunk_id": "sha256:4fd4289cb9203984e87568432064cddefd9257ab1b1a94892d74febed6901ed9",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 77,
+                "end_byte": 98,
                 "file": "migrated.swift",
                 "start_byte": 0
               }
@@ -349,13 +367,13 @@
                 "start_byte": 678
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:040afb60f45ec57f018da9b55977e5a9011dd14b998893258aa914156087e557",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:56af6219ffbf5427322ef490097ff9dfdc17c90d4a415cd981ce599fb633dd44",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 23,
+                "end_byte": 44,
                 "file": "migrated.swift",
-                "start_byte": 10
+                "start_byte": 31
               }
             },
             {
@@ -370,13 +388,13 @@
                 "start_byte": 689
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:5404ef521a80efa3359125ac7d0b894bb4461a893f82059fe22c58e56fa5c93a",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:6f3cce08cdc63cc77d3ebcefbb71dc8dbed851970d95e66310b92711e555a8cf",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 37,
+                "end_byte": 58,
                 "file": "migrated.swift",
-                "start_byte": 24
+                "start_byte": 45
               }
             },
             {
@@ -391,13 +409,13 @@
                 "start_byte": 707
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
-              "target_chunk_id": "sha256:b8e93060b2540a08a6f2c69688a929e0e044aad499e78373bf9a1c3e91623ab9",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0",
+              "target_chunk_id": "sha256:8a0b06c76676c65fd52f822914b4d3932b023c1e57c293d02326e958372cffdd",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 75,
+                "end_byte": 96,
                 "file": "migrated.swift",
-                "start_byte": 53
+                "start_byte": 74
               }
             },
             {
@@ -412,13 +430,13 @@
                 "start_byte": 714
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:107c87e2c7196a74ce9e9b04361a99a12f926145b39624be88c85fe83fac04d3",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:e3873e909cccca9ead8fefa57f10cbad01761ea036c004de5b45d54ab2cdf457",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 75,
+                "end_byte": 96,
                 "file": "migrated.swift",
-                "start_byte": 60
+                "start_byte": 81
               }
             },
             {
@@ -433,13 +451,13 @@
                 "start_byte": 714
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:13660268405325c0cd22315e3b97b85c097e822190ccfa9b6cae43a7bcc757cd",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:8959bfd3c8c727eacf8de5753271c5fe82e7ad3cf56799417be4503ae895e3d0",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 65,
+                "end_byte": 86,
                 "file": "migrated.swift",
-                "start_byte": 61
+                "start_byte": 82
               }
             },
             {
@@ -454,13 +472,13 @@
                 "start_byte": 722
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:9d648755691bcb493605ced3f74d2d77d7933121978d58669d97995fb4316c40",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:0f5908fb61b96e0327fa7d8841a6a5492eef41e3b0f87ec1cf3f1ac2de75c934",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 74,
+                "end_byte": 95,
                 "file": "migrated.swift",
-                "start_byte": 69
+                "start_byte": 90
               }
             }
           ],
@@ -489,8 +507,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 748,
-              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "artifact_byte_count": 834,
+              "artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
               "logical_file": "migrated.swift",
               "node_count": 7,
               "rules": [
@@ -537,13 +555,13 @@
           },
           "formal_input": {
             "path": "formal-function-000-input.json",
-            "sha256": "sha256:08ac6e0283213f6872e4efc04cee68ab88ffdadc7cb60308d9b724414edc4c04"
+            "sha256": "sha256:cb1d736781caf454313113199b9e4bc68cd671b0a66661fd51b1b8ad0b36fc88"
           },
-          "formal_input_digest": "sha256:08ac6e0283213f6872e4efc04cee68ab88ffdadc7cb60308d9b724414edc4c04",
+          "formal_input_digest": "sha256:cb1d736781caf454313113199b9e4bc68cd671b0a66661fd51b1b8ad0b36fc88",
           "formal_input_path": "formal-function-000-input.json",
-          "formal_input_sha256": "sha256:08ac6e0283213f6872e4efc04cee68ab88ffdadc7cb60308d9b724414edc4c04",
+          "formal_input_sha256": "sha256:cb1d736781caf454313113199b9e4bc68cd671b0a66661fd51b1b8ad0b36fc88",
           "formal_result_path": "formal-function-000-result.json",
-          "formal_result_sha256": "sha256:c42ae9b0df8f7c855ee243b0dc798d22ec7f5ff735f4223fcefe7d8fe4c0cc1a",
+          "formal_result_sha256": "sha256:da21333115f36dd62f233a03b7c2a188a3a5f987c5c7b65932c2ecdef72199aa",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
@@ -582,11 +600,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-000.smt2",
-            "sha256": "sha256:3713b9a6681b09cb835ffaa81cbd2606672965cf5147250a13462452f1d6b888"
+            "sha256": "sha256:e62414c2962943ea1acf64b50a66fae1f5004c28659631ae58f08e8d97397c4b"
           },
-          "solver_input_digest": "sha256:3713b9a6681b09cb835ffaa81cbd2606672965cf5147250a13462452f1d6b888",
+          "solver_input_digest": "sha256:e62414c2962943ea1acf64b50a66fae1f5004c28659631ae58f08e8d97397c4b",
           "solver_input_path": "formal-function-000.smt2",
-          "solver_input_sha256": "sha256:3713b9a6681b09cb835ffaa81cbd2606672965cf5147250a13462452f1d6b888",
+          "solver_input_sha256": "sha256:e62414c2962943ea1acf64b50a66fae1f5004c28659631ae58f08e8d97397c4b",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "both",
           "version": "4.16.0"
@@ -756,13 +774,13 @@
                 "start_byte": 35
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
-              "target_chunk_id": "sha256:b964e008d0be5e0717e97d83aa8056ceae7cc96f6017e46b0eab0d361af909f8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0",
+              "target_chunk_id": "sha256:473fd3c879c3f70b6795af2ace0b1cfc1cad66eba3ca845654ee36a70968af52",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 230,
+                "end_byte": 267,
                 "file": "migrated.swift",
-                "start_byte": 79
+                "start_byte": 100
               }
             },
             {
@@ -777,13 +795,13 @@
                 "start_byte": 55
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:58ce64d2540f9a76b3c9c50a9bd9ea96d55b3e3670cf7c06e337f794eed8dbf8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:d00cc80247936130692976d4f405734a58502308dc6a4806ab897e13d3743283",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 112,
+                "end_byte": 149,
                 "file": "migrated.swift",
-                "start_byte": 94
+                "start_byte": 131
               }
             },
             {
@@ -798,13 +816,13 @@
                 "start_byte": 75
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:d4295a04c70487a05fb4c340a33884c2c427909d4d096d138f148bbd0263571d",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:a2ea7da530760e1e5488ccc1c5785035d4d47cda9074f0f2361793209216fdeb",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 125,
+                "end_byte": 162,
                 "file": "migrated.swift",
-                "start_byte": 113
+                "start_byte": 150
               }
             },
             {
@@ -819,13 +837,13 @@
                 "start_byte": 96
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
-              "target_chunk_id": "sha256:1016884656035195af011a94ab98ff473f51ca2400257c72041e2a9666bf4040",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0",
+              "target_chunk_id": "sha256:4e8a807a8adefc9b5fea28205d964cb31f56279275f2fad63f983d781cebad5a",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 200,
+                "end_byte": 237,
                 "file": "migrated.swift",
-                "start_byte": 142
+                "start_byte": 179
               }
             },
             {
@@ -840,13 +858,13 @@
                 "start_byte": 100
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:abc209a1569b00d40f93533a61f0bbd354438e30cc41115d7949932e816440f7",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:4cdc589cd1b214ade258490e2c0fcb6c3e71c6af7a0dfa1b50abc44c56d8ceca",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 168,
+                "end_byte": 203,
                 "file": "migrated.swift",
-                "start_byte": 145
+                "start_byte": 184
               }
             },
             {
@@ -861,13 +879,13 @@
                 "start_byte": 100
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:84a355796ea8b74a0bd8f97c2079c71a56e2fcc684cbec3f3cb97408dc428b4e",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:27e37109ccd7b3e123573f341aaeb0b9400028f5d3bb5e4efcfb8834a0517c21",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 155,
+                "end_byte": 192,
                 "file": "migrated.swift",
-                "start_byte": 147
+                "start_byte": 184
               }
             },
             {
@@ -882,13 +900,13 @@
                 "start_byte": 111
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:6ab1bbc9fef12e5126a673a696f98155744784124cc8be91360cc44180b063e8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:34d9dd597267e55bd1a7a69144796c18d50709422ae5b36259fb365eb0020d29",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 166,
+                "end_byte": 203,
                 "file": "migrated.swift",
-                "start_byte": 158
+                "start_byte": 195
               }
             },
             {
@@ -903,13 +921,13 @@
                 "start_byte": 126
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:2b38c534f7ad76056c9bc949c8951a882b9212b7fe377da240ba77c135a16fed",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:f9a2f19cbaa10a289087e6f5bda05f072fba356ad6dea19850e4b4a4f2e539f8",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 194,
+                "end_byte": 231,
                 "file": "migrated.swift",
-                "start_byte": 179
+                "start_byte": 216
               }
             },
             {
@@ -924,13 +942,13 @@
                 "start_byte": 133
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:b8fff335578e329996c00df1bf735b2a6171ef13cb21c80b231a8eccf855e411",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:6564b9b059c735f38425ae58cb8f01e6ee6c73523d27abf807388533cbbc522a",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 194,
+                "end_byte": 231,
                 "file": "migrated.swift",
-                "start_byte": 186
+                "start_byte": 223
               }
             },
             {
@@ -945,13 +963,13 @@
                 "start_byte": 148
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
-              "target_chunk_id": "sha256:6f66bfedda63a7b03be73ab9e414796032d52d99af7c28c03ade14f9f300115a",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1",
+              "target_chunk_id": "sha256:ae87e2441bf8386ce63fbd7b13b1e4045baa0c3cef82081f3f200dd0dae84265",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 228,
+                "end_byte": 265,
                 "file": "migrated.swift",
-                "start_byte": 205
+                "start_byte": 242
               }
             },
             {
@@ -966,13 +984,13 @@
                 "start_byte": 155
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression",
-              "target_chunk_id": "sha256:ca6cc6c96178baebe06016889e9aaccfb2721eaf1aa8aeefc64fbd2adc70fe1e",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/expression",
+              "target_chunk_id": "sha256:fd523d32562e7ee33aae9745c1edf7f4f6b50e6225762a1d33bea005ff91b438",
               "target_semantic_pointer": "/functions/0/body/1/expression",
               "target_span": {
-                "end_byte": 228,
+                "end_byte": 265,
                 "file": "migrated.swift",
-                "start_byte": 212
+                "start_byte": 249
               }
             },
             {
@@ -987,13 +1005,13 @@
                 "start_byte": 155
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression/left",
-              "target_chunk_id": "sha256:020f16c139162728b3a32d267c95ec5bcd6e583e67eb68d75eb816eed6d24a79",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/expression/left",
+              "target_chunk_id": "sha256:852b52561f8c3ca4e5cdfe24dae2b66cc0118c3945225c083f863df1e83d6665",
               "target_semantic_pointer": "/functions/0/body/1/expression/left",
               "target_span": {
-                "end_byte": 221,
+                "end_byte": 258,
                 "file": "migrated.swift",
-                "start_byte": 213
+                "start_byte": 250
               }
             },
             {
@@ -1008,13 +1026,13 @@
                 "start_byte": 166
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression/right",
-              "target_chunk_id": "sha256:010431936c39cb8a62493bb675fdaaf1ff2874694814d1724247e088eb539472",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/expression/right",
+              "target_chunk_id": "sha256:c154c4df2565a9371affa55f51118a2421e8dfb9338e490d41acb10d30ad0512",
               "target_semantic_pointer": "/functions/0/body/1/expression/right",
               "target_span": {
-                "end_byte": 227,
+                "end_byte": 264,
                 "file": "migrated.swift",
-                "start_byte": 224
+                "start_byte": 261
               }
             }
           ],
@@ -1043,8 +1061,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 748,
-              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "artifact_byte_count": 834,
+              "artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
               "logical_file": "migrated.swift",
               "node_count": 13,
               "rules": [
@@ -1091,13 +1109,13 @@
           },
           "formal_input": {
             "path": "formal-function-001-input.json",
-            "sha256": "sha256:0687ecb74e7cccc3ebaa5366dcdc1e62d9b3024033aa4eb3a6289de53557c326"
+            "sha256": "sha256:bc4035cecf413a5620b994b983476931dcd07a13e573cc546c04bc41172e742f"
           },
-          "formal_input_digest": "sha256:0687ecb74e7cccc3ebaa5366dcdc1e62d9b3024033aa4eb3a6289de53557c326",
+          "formal_input_digest": "sha256:bc4035cecf413a5620b994b983476931dcd07a13e573cc546c04bc41172e742f",
           "formal_input_path": "formal-function-001-input.json",
-          "formal_input_sha256": "sha256:0687ecb74e7cccc3ebaa5366dcdc1e62d9b3024033aa4eb3a6289de53557c326",
+          "formal_input_sha256": "sha256:bc4035cecf413a5620b994b983476931dcd07a13e573cc546c04bc41172e742f",
           "formal_result_path": "formal-function-001-result.json",
-          "formal_result_sha256": "sha256:a933cfaf7a9af555688d2a76e05d5a5535969094e22074c25286f81869c48f94",
+          "formal_result_sha256": "sha256:8e93c3523e3cc83c2180eb0e8e348219aec1d010ba667c095eafc7c31a1d7907",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
@@ -1136,11 +1154,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-001.smt2",
-            "sha256": "sha256:be44f32375a0718c511774e606a659c05104fc448e67d00ead44991490e0fefe"
+            "sha256": "sha256:6da81fe7d23ae242069c4648956add79a4388bb86a58550fecc2a1a9b54f04c4"
           },
-          "solver_input_digest": "sha256:be44f32375a0718c511774e606a659c05104fc448e67d00ead44991490e0fefe",
+          "solver_input_digest": "sha256:6da81fe7d23ae242069c4648956add79a4388bb86a58550fecc2a1a9b54f04c4",
           "solver_input_path": "formal-function-001.smt2",
-          "solver_input_sha256": "sha256:be44f32375a0718c511774e606a659c05104fc448e67d00ead44991490e0fefe",
+          "solver_input_sha256": "sha256:6da81fe7d23ae242069c4648956add79a4388bb86a58550fecc2a1a9b54f04c4",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "calculate",
           "version": "4.16.0"
@@ -1335,13 +1353,13 @@
                 "start_byte": 174
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
-              "target_chunk_id": "sha256:d3edab8045e36410d12d78c5066a50e024fc150e29ece5e7a5a1480e370428de",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0",
+              "target_chunk_id": "sha256:2e67aacea308500feb33b1d228f3e2dd490c1b484d890c50478ff43a0742e84e",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 440,
+                "end_byte": 497,
                 "file": "migrated.swift",
-                "start_byte": 232
+                "start_byte": 269
               }
             },
             {
@@ -1356,13 +1374,13 @@
                 "start_byte": 190
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:029667d35ae5a47605de994c8b770006d79eebdf62205fde30e8cdfa1322841f",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:10d2dafc829eaec3d84a54654b03d414d14736e53eee432bed9a7b33c9ebfd5e",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 258,
+                "end_byte": 315,
                 "file": "migrated.swift",
-                "start_byte": 243
+                "start_byte": 300
               }
             },
             {
@@ -1377,13 +1395,13 @@
                 "start_byte": 207
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:686b8921b680690a02cb70d8fa7380dc7d80c742e9a493b186af240e2babac15",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:9eea84048dffcaa0c25ee0af68db6d6843f42a204c30f9c68e4b4247687c81cf",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 276,
+                "end_byte": 333,
                 "file": "migrated.swift",
-                "start_byte": 259
+                "start_byte": 316
               }
             },
             {
@@ -1398,13 +1416,13 @@
                 "start_byte": 226
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:c03d79bb6b4c60ce77a3361b398f202d9b9e7286e24964af60b0d2981e2c5ca0",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:315888ee96817c4366206d0adbd31e97e400f3efa4177320148ad6247bbf0ca1",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 293,
+                "end_byte": 350,
                 "file": "migrated.swift",
-                "start_byte": 277
+                "start_byte": 334
               }
             },
             {
@@ -1419,13 +1437,13 @@
                 "start_byte": 251
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
-              "target_chunk_id": "sha256:e88c7f4c5c171606f415bb8cfd2688ace7939cb292777a7846df9c66a2125dc8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0",
+              "target_chunk_id": "sha256:68bc7d556ea0e4ea62a8a0c24e75e55fad9116d08b2d37f7c2e1d9396dc6dbcd",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 363,
+                "end_byte": 420,
                 "file": "migrated.swift",
-                "start_byte": 310
+                "start_byte": 367
               }
             },
             {
@@ -1440,13 +1458,13 @@
                 "start_byte": 255
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:272bad30453ce895fea0ee5b67b8a76875848e6d296c1de14bf288be604402c7",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:a2932e2fdbf88307b2c5547c0913cb2725a85ca6f68887a3bd5d183742557fe5",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 332,
+                "end_byte": 387,
                 "file": "migrated.swift",
-                "start_byte": 313
+                "start_byte": 372
               }
             },
             {
@@ -1461,13 +1479,13 @@
                 "start_byte": 255
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:f771d8b817ab6ee69f6b750586d4776652c7c667b8aeaa275eef629d837b4af8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:7756c5c381afb8f1b5b2a5a3fbad06100f97198a1df94ac6d7d00c5c0caaa3dc",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 320,
+                "end_byte": 377,
                 "file": "migrated.swift",
-                "start_byte": 315
+                "start_byte": 372
               }
             },
             {
@@ -1482,13 +1500,13 @@
                 "start_byte": 263
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:94c50a4bf19b0aeedf21825fd875596f50c799639f4d1b25e01464ef0a13aa13",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:5bee1df66be8145ab67f1dfd9f892be7b9cd4a1bce3a4c3d6a292f24f9a524c7",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 330,
+                "end_byte": 387,
                 "file": "migrated.swift",
-                "start_byte": 323
+                "start_byte": 380
               }
             },
             {
@@ -1503,13 +1521,13 @@
                 "start_byte": 282
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:518a74d9cb7798e9ca63f5b42b5423904e500875cf9ec350aab1b0635fecaa30",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:5f1cd7c33fbe4267501baa4819f4df79c5cadae85b5c2b4de46cabf43dfec1bd",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 357,
+                "end_byte": 414,
                 "file": "migrated.swift",
-                "start_byte": 343
+                "start_byte": 400
               }
             },
             {
@@ -1524,13 +1542,13 @@
                 "start_byte": 289
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:d75c5da0dc69e8da9677ae2169809484997887559a1c6458b7c39293b9a5ad3c",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:14449340eb8b16e99c32d5ccc8fa9c1779b9e1e512473669d0c95d82a84b1efb",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 357,
+                "end_byte": 414,
                 "file": "migrated.swift",
-                "start_byte": 350
+                "start_byte": 407
               }
             },
             {
@@ -1545,13 +1563,13 @@
                 "start_byte": 308
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
-              "target_chunk_id": "sha256:a3a90f76cc53b5d4af497ffba1a85ba3c1ebca9a9ffdecba42f3274c76df8a63",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1",
+              "target_chunk_id": "sha256:d9adc1629d46e25e33d3392208d5972a300a1671be59dd16b01c57a803ffaf5b",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 421,
+                "end_byte": 478,
                 "file": "migrated.swift",
-                "start_byte": 368
+                "start_byte": 425
               }
             },
             {
@@ -1566,13 +1584,13 @@
                 "start_byte": 312
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:ae2829cd3df6f7a7117646d774b00166dfb6e97fcca60eca09b1ede0c94bab71",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:f08bb54e4548fbb34e61139501e3214bdda1340bece6841439dbb257a4835902",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 390,
+                "end_byte": 445,
                 "file": "migrated.swift",
-                "start_byte": 371
+                "start_byte": 430
               }
             },
             {
@@ -1587,13 +1605,13 @@
                 "start_byte": 312
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:ba69b418cf78dfc53c1b711a192afe2011b2925aa60802ede8d1d4c6894eabf2",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:f516e5ba5b9723b3f97909521a1f4aecfa207bf2a2be404898f385f5d718f79a",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 378,
+                "end_byte": 435,
                 "file": "migrated.swift",
-                "start_byte": 373
+                "start_byte": 430
               }
             },
             {
@@ -1608,13 +1626,13 @@
                 "start_byte": 320
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:0089b3f0ac7768e08777d8bf7e799c7dead68515796fbf6e104643c50d723a6f",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:446f6fcf145e17789acc7d241904b3de4b2ed9d033f8e381486d5d85c647eb3f",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 388,
+                "end_byte": 445,
                 "file": "migrated.swift",
-                "start_byte": 381
+                "start_byte": 438
               }
             },
             {
@@ -1629,13 +1647,13 @@
                 "start_byte": 339
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:a41902cdb8e8b4e004e04f08b90d200d50db1539440a3dbacebbc0c051492c44",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:eb86cef3d5a9f2ddeefb12abf13c4e37e3aab18893c4f6eac17484a5bd6d6b78",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 415,
+                "end_byte": 472,
                 "file": "migrated.swift",
-                "start_byte": 401
+                "start_byte": 458
               }
             },
             {
@@ -1650,13 +1668,13 @@
                 "start_byte": 346
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:1fcf34ede608c4ea5c853d7d5bcc60b6e83f88bc945154e77cf1a98b7db16c6e",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:96ddfd8e935a4042184b57ae155315e416d04f9db72dd4c5d3b8d31fab0547b1",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 415,
+                "end_byte": 472,
                 "file": "migrated.swift",
-                "start_byte": 408
+                "start_byte": 465
               }
             },
             {
@@ -1671,13 +1689,13 @@
                 "start_byte": 365
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2",
-              "target_chunk_id": "sha256:840134487d704cc358d8a0a84acd9af073f02b27f3aa83750f1becfac3563d4b",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/2",
+              "target_chunk_id": "sha256:f9d19352f1f794bd02296eb56c374e7902a0ed7c6196c5d7a62faa2d98693f32",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 438,
+                "end_byte": 495,
                 "file": "migrated.swift",
-                "start_byte": 426
+                "start_byte": 483
               }
             },
             {
@@ -1692,13 +1710,13 @@
                 "start_byte": 372
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:c899a45b910fde681316868ccc3a94b35d6c600995eb0d5f0373725b3bbe33d2",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:3177e02fa1c18e851292b3c15529fa454b0e98087652d7afa5be4b9e1379e29c",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 438,
+                "end_byte": 495,
                 "file": "migrated.swift",
-                "start_byte": 433
+                "start_byte": 490
               }
             }
           ],
@@ -1727,8 +1745,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 748,
-              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "artifact_byte_count": 834,
+              "artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
               "logical_file": "migrated.swift",
               "node_count": 18,
               "rules": [
@@ -1776,13 +1794,13 @@
           },
           "formal_input": {
             "path": "formal-function-002-input.json",
-            "sha256": "sha256:62a8fb2a2bb4d5c6dfa6c142ce62e68ff267039ac32349a772e1db4df847039b"
+            "sha256": "sha256:4e36c2a387b4a26db9098563cde5ef0968b0d22dc9012f01b76550019349c22c"
           },
-          "formal_input_digest": "sha256:62a8fb2a2bb4d5c6dfa6c142ce62e68ff267039ac32349a772e1db4df847039b",
+          "formal_input_digest": "sha256:4e36c2a387b4a26db9098563cde5ef0968b0d22dc9012f01b76550019349c22c",
           "formal_input_path": "formal-function-002-input.json",
-          "formal_input_sha256": "sha256:62a8fb2a2bb4d5c6dfa6c142ce62e68ff267039ac32349a772e1db4df847039b",
+          "formal_input_sha256": "sha256:4e36c2a387b4a26db9098563cde5ef0968b0d22dc9012f01b76550019349c22c",
           "formal_result_path": "formal-function-002-result.json",
-          "formal_result_sha256": "sha256:49ff22b222a14934cd7b7a18ea857ce92de3a0290c188ab940643d56bf16377d",
+          "formal_result_sha256": "sha256:b0e6c7a787042be9d5bf1553eea6d5456f4e2f8246f82dae7733691123532b2a",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
@@ -1821,11 +1839,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-002.smt2",
-            "sha256": "sha256:38058009deda6ee47e093609e41e33330135fc43707920f82ddfa8e325494f5d"
+            "sha256": "sha256:268895b9c573a0b5832a502ab1a1629f9a4663485a1a6868f377d8aa307b0d86"
           },
-          "solver_input_digest": "sha256:38058009deda6ee47e093609e41e33330135fc43707920f82ddfa8e325494f5d",
+          "solver_input_digest": "sha256:268895b9c573a0b5832a502ab1a1629f9a4663485a1a6868f377d8aa307b0d86",
           "solver_input_path": "formal-function-002.smt2",
-          "solver_input_sha256": "sha256:38058009deda6ee47e093609e41e33330135fc43707920f82ddfa8e325494f5d",
+          "solver_input_sha256": "sha256:268895b9c573a0b5832a502ab1a1629f9a4663485a1a6868f377d8aa307b0d86",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clamp",
           "version": "4.16.0"
@@ -2024,13 +2042,13 @@
                 "start_byte": 466
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
-              "target_chunk_id": "sha256:bd0853fb7fbf84946e267d0f31f7ff8a6e2df6dba01c1a872b0a741130e45841",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0",
+              "target_chunk_id": "sha256:e5ce046d34f368a25ff9d0c2425184767c7f02cf57f5cb48d65559f3d93ecd90",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 660,
+                "end_byte": 731,
                 "file": "migrated.swift",
-                "start_byte": 442
+                "start_byte": 499
               }
             },
             {
@@ -2045,13 +2063,13 @@
                 "start_byte": 485
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:b9c50ec28ac433eb9bc04489036886ea096b68d219b0237b4e4154c5334212fb",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:ca272f160a9c67296db73a1582acf10314e65ba5281a0ef891fec1de2aa70b56",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 475,
+                "end_byte": 546,
                 "file": "migrated.swift",
-                "start_byte": 459
+                "start_byte": 530
               }
             },
             {
@@ -2066,13 +2084,13 @@
                 "start_byte": 499
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:f987838e0bd67c947399b4da4ec86e7be7b0393e461705069ce1b30e90f4fc4e",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:28745fe3e1700c9d1d8da2a1ba443b62a93956d3a07d69c1bb480a3dca66c738",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 494,
+                "end_byte": 565,
                 "file": "migrated.swift",
-                "start_byte": 476
+                "start_byte": 547
               }
             },
             {
@@ -2087,13 +2105,13 @@
                 "start_byte": 515
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:835c63e87b8f8f6740ef439d3c4c017aa30112921d58516a754a2357611db560",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:8d0804769c8a10917e006445dcd372b4ba3d284cb0d48f16876b9f18945a6efb",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 512,
+                "end_byte": 583,
                 "file": "migrated.swift",
-                "start_byte": 495
+                "start_byte": 566
               }
             },
             {
@@ -2108,13 +2126,13 @@
                 "start_byte": 537
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
-              "target_chunk_id": "sha256:e88c7f4c5c171606f415bb8cfd2688ace7939cb292777a7846df9c66a2125dc8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0",
+              "target_chunk_id": "sha256:68bc7d556ea0e4ea62a8a0c24e75e55fad9116d08b2d37f7c2e1d9396dc6dbcd",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 583,
+                "end_byte": 654,
                 "file": "migrated.swift",
-                "start_byte": 530
+                "start_byte": 601
               }
             },
             {
@@ -2129,13 +2147,13 @@
                 "start_byte": 541
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:272bad30453ce895fea0ee5b67b8a76875848e6d296c1de14bf288be604402c7",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:a2932e2fdbf88307b2c5547c0913cb2725a85ca6f68887a3bd5d183742557fe5",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 552,
+                "end_byte": 621,
                 "file": "migrated.swift",
-                "start_byte": 533
+                "start_byte": 606
               }
             },
             {
@@ -2150,13 +2168,13 @@
                 "start_byte": 541
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:f771d8b817ab6ee69f6b750586d4776652c7c667b8aeaa275eef629d837b4af8",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:7756c5c381afb8f1b5b2a5a3fbad06100f97198a1df94ac6d7d00c5c0caaa3dc",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 540,
+                "end_byte": 611,
                 "file": "migrated.swift",
-                "start_byte": 535
+                "start_byte": 606
               }
             },
             {
@@ -2171,13 +2189,13 @@
                 "start_byte": 549
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:94c50a4bf19b0aeedf21825fd875596f50c799639f4d1b25e01464ef0a13aa13",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:5bee1df66be8145ab67f1dfd9f892be7b9cd4a1bce3a4c3d6a292f24f9a524c7",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 550,
+                "end_byte": 621,
                 "file": "migrated.swift",
-                "start_byte": 543
+                "start_byte": 614
               }
             },
             {
@@ -2192,13 +2210,13 @@
                 "start_byte": 568
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:518a74d9cb7798e9ca63f5b42b5423904e500875cf9ec350aab1b0635fecaa30",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:5f1cd7c33fbe4267501baa4819f4df79c5cadae85b5c2b4de46cabf43dfec1bd",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 577,
+                "end_byte": 648,
                 "file": "migrated.swift",
-                "start_byte": 563
+                "start_byte": 634
               }
             },
             {
@@ -2213,13 +2231,13 @@
                 "start_byte": 575
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:d75c5da0dc69e8da9677ae2169809484997887559a1c6458b7c39293b9a5ad3c",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:14449340eb8b16e99c32d5ccc8fa9c1779b9e1e512473669d0c95d82a84b1efb",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 577,
+                "end_byte": 648,
                 "file": "migrated.swift",
-                "start_byte": 570
+                "start_byte": 641
               }
             },
             {
@@ -2234,13 +2252,13 @@
                 "start_byte": 594
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
-              "target_chunk_id": "sha256:a3a90f76cc53b5d4af497ffba1a85ba3c1ebca9a9ffdecba42f3274c76df8a63",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1",
+              "target_chunk_id": "sha256:d9adc1629d46e25e33d3392208d5972a300a1671be59dd16b01c57a803ffaf5b",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 641,
+                "end_byte": 712,
                 "file": "migrated.swift",
-                "start_byte": 588
+                "start_byte": 659
               }
             },
             {
@@ -2255,13 +2273,13 @@
                 "start_byte": 598
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:ae2829cd3df6f7a7117646d774b00166dfb6e97fcca60eca09b1ede0c94bab71",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:f08bb54e4548fbb34e61139501e3214bdda1340bece6841439dbb257a4835902",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 610,
+                "end_byte": 679,
                 "file": "migrated.swift",
-                "start_byte": 591
+                "start_byte": 664
               }
             },
             {
@@ -2276,13 +2294,13 @@
                 "start_byte": 598
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:ba69b418cf78dfc53c1b711a192afe2011b2925aa60802ede8d1d4c6894eabf2",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:f516e5ba5b9723b3f97909521a1f4aecfa207bf2a2be404898f385f5d718f79a",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 598,
+                "end_byte": 669,
                 "file": "migrated.swift",
-                "start_byte": 593
+                "start_byte": 664
               }
             },
             {
@@ -2297,13 +2315,13 @@
                 "start_byte": 606
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:0089b3f0ac7768e08777d8bf7e799c7dead68515796fbf6e104643c50d723a6f",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:446f6fcf145e17789acc7d241904b3de4b2ed9d033f8e381486d5d85c647eb3f",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 608,
+                "end_byte": 679,
                 "file": "migrated.swift",
-                "start_byte": 601
+                "start_byte": 672
               }
             },
             {
@@ -2318,13 +2336,13 @@
                 "start_byte": 625
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:a41902cdb8e8b4e004e04f08b90d200d50db1539440a3dbacebbc0c051492c44",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:eb86cef3d5a9f2ddeefb12abf13c4e37e3aab18893c4f6eac17484a5bd6d6b78",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 635,
+                "end_byte": 706,
                 "file": "migrated.swift",
-                "start_byte": 621
+                "start_byte": 692
               }
             },
             {
@@ -2339,13 +2357,13 @@
                 "start_byte": 632
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:1fcf34ede608c4ea5c853d7d5bcc60b6e83f88bc945154e77cf1a98b7db16c6e",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:96ddfd8e935a4042184b57ae155315e416d04f9db72dd4c5d3b8d31fab0547b1",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 635,
+                "end_byte": 706,
                 "file": "migrated.swift",
-                "start_byte": 628
+                "start_byte": 699
               }
             },
             {
@@ -2360,13 +2378,13 @@
                 "start_byte": 651
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2",
-              "target_chunk_id": "sha256:840134487d704cc358d8a0a84acd9af073f02b27f3aa83750f1becfac3563d4b",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/2",
+              "target_chunk_id": "sha256:f9d19352f1f794bd02296eb56c374e7902a0ed7c6196c5d7a62faa2d98693f32",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 658,
+                "end_byte": 729,
                 "file": "migrated.swift",
-                "start_byte": 646
+                "start_byte": 717
               }
             },
             {
@@ -2381,13 +2399,13 @@
                 "start_byte": 658
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:c899a45b910fde681316868ccc3a94b35d6c600995eb0d5f0373725b3bbe33d2",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:3177e02fa1c18e851292b3c15529fa454b0e98087652d7afa5be4b9e1379e29c",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 658,
+                "end_byte": 729,
                 "file": "migrated.swift",
-                "start_byte": 653
+                "start_byte": 724
               }
             }
           ],
@@ -2416,8 +2434,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 748,
-              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "artifact_byte_count": 834,
+              "artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
               "logical_file": "migrated.swift",
               "node_count": 18,
               "rules": [
@@ -2471,13 +2489,13 @@
           },
           "formal_input": {
             "path": "formal-function-003-input.json",
-            "sha256": "sha256:aa7785d32ee81beeea4b1107ffd4c5f7f1b7a176a26d031fc0068e4d10c004a6"
+            "sha256": "sha256:39b7be2f3b820bccd3c452561cd98c3a3075937fb7e7051d7d240500691b5e04"
           },
-          "formal_input_digest": "sha256:aa7785d32ee81beeea4b1107ffd4c5f7f1b7a176a26d031fc0068e4d10c004a6",
+          "formal_input_digest": "sha256:39b7be2f3b820bccd3c452561cd98c3a3075937fb7e7051d7d240500691b5e04",
           "formal_input_path": "formal-function-003-input.json",
-          "formal_input_sha256": "sha256:aa7785d32ee81beeea4b1107ffd4c5f7f1b7a176a26d031fc0068e4d10c004a6",
+          "formal_input_sha256": "sha256:39b7be2f3b820bccd3c452561cd98c3a3075937fb7e7051d7d240500691b5e04",
           "formal_result_path": "formal-function-003-result.json",
-          "formal_result_sha256": "sha256:0cd103d6bfbcf94673a61069c8744a19ad067610107374ca4c7d559d1c776bc9",
+          "formal_result_sha256": "sha256:364ea913ab2e0b4186b7c14afcb14e0dbcfcbd1ba7b92680ede150d7503a9929",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
@@ -2516,11 +2534,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-003.smt2",
-            "sha256": "sha256:d577fd99e9debf0a4837ea1af9d0ea2339d21208d615e57e520671c3e925b0f5"
+            "sha256": "sha256:8c6237c3757ae5170ddc449cf7803994188f3e54f4df7aa9c90297ad94665067"
           },
-          "solver_input_digest": "sha256:d577fd99e9debf0a4837ea1af9d0ea2339d21208d615e57e520671c3e925b0f5",
+          "solver_input_digest": "sha256:8c6237c3757ae5170ddc449cf7803994188f3e54f4df7aa9c90297ad94665067",
           "solver_input_path": "formal-function-003.smt2",
-          "solver_input_sha256": "sha256:d577fd99e9debf0a4837ea1af9d0ea2339d21208d615e57e520671c3e925b0f5",
+          "solver_input_sha256": "sha256:8c6237c3757ae5170ddc449cf7803994188f3e54f4df7aa9c90297ad94665067",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clampNumber",
           "version": "4.16.0"
@@ -2694,13 +2712,13 @@
                 "start_byte": 382
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
-              "target_chunk_id": "sha256:294f75310524d9514833b1d1f14a311ad1cc809c762d2c25aece7874b24a9b9f",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0",
+              "target_chunk_id": "sha256:c3c8feebad5aa9a4469ed52b720648d7db4b941d5f188c450ab90872f608ff2e",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 747,
+                "end_byte": 833,
                 "file": "migrated.swift",
-                "start_byte": 662
+                "start_byte": 733
               }
             },
             {
@@ -2715,13 +2733,13 @@
                 "start_byte": 403
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:7fa96a372ab95712a12e1f7ffd2320d02a2c9ddb76769169512f326409530730",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:5a4698dd49a36286077b3cd3625951be05d001cf05576218264022f3da95a73a",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 692,
+                "end_byte": 778,
                 "file": "migrated.swift",
-                "start_byte": 678
+                "start_byte": 764
               }
             },
             {
@@ -2736,13 +2754,13 @@
                 "start_byte": 419
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:2d609edef7396c519a095f6744f690098755bc45cc472eebd9c842d9d4de6fa3",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:e283ecf7b661432ca61961a14dce3096c0166eda7e36d862b80f893655d89720",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 707,
+                "end_byte": 793,
                 "file": "migrated.swift",
-                "start_byte": 693
+                "start_byte": 779
               }
             },
             {
@@ -2757,13 +2775,13 @@
                 "start_byte": 442
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
-              "target_chunk_id": "sha256:b5ccfd4c15576f14512a522d55de8ae476833d67525a1d0e657437f901d2a3ab",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0",
+              "target_chunk_id": "sha256:2a3a377ab47b9b92c689821575a6924251da79f2530fd3d47e8cd45228804e75",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 745,
+                "end_byte": 831,
                 "file": "migrated.swift",
-                "start_byte": 724
+                "start_byte": 810
               }
             },
             {
@@ -2778,13 +2796,13 @@
                 "start_byte": 449
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:222bbe6348437007e98eee7ea10bbadb5b30524413e1ed143aaeb9b05082fffd",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:95fcba58f76e3dbc26f94cc89889692defc9245e893eede49662be1bfcb6ed18",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 745,
+                "end_byte": 831,
                 "file": "migrated.swift",
-                "start_byte": 731
+                "start_byte": 817
               }
             },
             {
@@ -2799,13 +2817,13 @@
                 "start_byte": 449
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:13660268405325c0cd22315e3b97b85c097e822190ccfa9b6cae43a7bcc757cd",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:8959bfd3c8c727eacf8de5753271c5fe82e7ad3cf56799417be4503ae895e3d0",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 736,
+                "end_byte": 822,
                 "file": "migrated.swift",
-                "start_byte": 732
+                "start_byte": 818
               }
             },
             {
@@ -2820,13 +2838,13 @@
                 "start_byte": 456
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:9d648755691bcb493605ced3f74d2d77d7933121978d58669d97995fb4316c40",
+              "target_artifact_pointer": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:0f5908fb61b96e0327fa7d8841a6a5492eef41e3b0f87ec1cf3f1ac2de75c934",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 744,
+                "end_byte": 830,
                 "file": "migrated.swift",
-                "start_byte": 739
+                "start_byte": 825
               }
             }
           ],
@@ -2855,8 +2873,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 748,
-              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "artifact_byte_count": 834,
+              "artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
               "logical_file": "migrated.swift",
               "node_count": 7,
               "rules": [
@@ -2903,13 +2921,13 @@
           },
           "formal_input": {
             "path": "formal-function-004-input.json",
-            "sha256": "sha256:e6eae5c10c51f276a473b1b6ad68e8cbfebdd6f80e4e71130acfa72814d4ccd9"
+            "sha256": "sha256:e86fb45456fa2c1a5df1b3a1f4843250681d73181246c9a94d7b926c0ec5e9ee"
           },
-          "formal_input_digest": "sha256:e6eae5c10c51f276a473b1b6ad68e8cbfebdd6f80e4e71130acfa72814d4ccd9",
+          "formal_input_digest": "sha256:e86fb45456fa2c1a5df1b3a1f4843250681d73181246c9a94d7b926c0ec5e9ee",
           "formal_input_path": "formal-function-004-input.json",
-          "formal_input_sha256": "sha256:e6eae5c10c51f276a473b1b6ad68e8cbfebdd6f80e4e71130acfa72814d4ccd9",
+          "formal_input_sha256": "sha256:e86fb45456fa2c1a5df1b3a1f4843250681d73181246c9a94d7b926c0ec5e9ee",
           "formal_result_path": "formal-function-004-result.json",
-          "formal_result_sha256": "sha256:e99fc8a1909fa11d2b2cff7539628e90db626e7b40309b90db6f6ce356035d98",
+          "formal_result_sha256": "sha256:d001258541f0fae2e094971d20f9b485dad199fb0204b709da5c5a529615e2e3",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
@@ -2948,11 +2966,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-004.smt2",
-            "sha256": "sha256:c1df394db4229ab4d5008d1a22a93d798793ab61c22ced56fe6cf9c722acce29"
+            "sha256": "sha256:ef3e4cb218e6a6cabaab2b19449320ee06314cc65e3f49056fdbaeb579651474"
           },
-          "solver_input_digest": "sha256:c1df394db4229ab4d5008d1a22a93d798793ab61c22ced56fe6cf9c722acce29",
+          "solver_input_digest": "sha256:ef3e4cb218e6a6cabaab2b19449320ee06314cc65e3f49056fdbaeb579651474",
           "solver_input_path": "formal-function-004.smt2",
-          "solver_input_sha256": "sha256:c1df394db4229ab4d5008d1a22a93d798793ab61c22ced56fe6cf9c722acce29",
+          "solver_input_sha256": "sha256:ef3e4cb218e6a6cabaab2b19449320ee06314cc65e3f49056fdbaeb579651474",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "difference",
           "version": "4.16.0"
@@ -2984,6 +3002,129 @@
       "symbol": "difference"
     }
   ],
+  "identifier_hygiene": {
+    "functions": [
+      {
+        "canonical_symbol": "both",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "boolean",
+            "raw_name": "left"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "boolean",
+            "raw_name": "right"
+          }
+        ],
+        "raw_symbol": "elmos_fn_9478c635de40ca2b"
+      },
+      {
+        "canonical_symbol": "calculate",
+        "parameters": [
+          {
+            "canonical_name": "subtotal",
+            "canonical_type": "integer",
+            "raw_name": "subtotal"
+          },
+          {
+            "canonical_name": "tax",
+            "canonical_type": "integer",
+            "raw_name": "tax"
+          }
+        ],
+        "raw_symbol": "elmos_fn_fb07beb31e78128c"
+      },
+      {
+        "canonical_symbol": "clamp",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "integer",
+            "raw_name": "value"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "integer",
+            "raw_name": "minimum"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "integer",
+            "raw_name": "maximum"
+          }
+        ],
+        "raw_symbol": "elmos_fn_275cfcd741bac769"
+      },
+      {
+        "canonical_symbol": "clampNumber",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "number",
+            "raw_name": "value"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "number",
+            "raw_name": "minimum"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "number",
+            "raw_name": "maximum"
+          }
+        ],
+        "raw_symbol": "elmos_fn_d25a1076e5f1fbd7"
+      },
+      {
+        "canonical_symbol": "difference",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "integer",
+            "raw_name": "left"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "integer",
+            "raw_name": "right"
+          }
+        ],
+        "raw_symbol": "elmos_fn_004d6bf9ce917ed8"
+      }
+    ],
+    "normalized_target_ir": {
+      "bytes": 7793,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
+    },
+    "plan": {
+      "bytes": 9331,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:af3f9810c294aa364c31744caf657b8b844416ca47bc9c21e932a0bf529b2a4a"
+    },
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
+    "raw_target_ir": {
+      "bytes": 7879,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:f66057c66c1b42ceda7af7f8091c6c0910c413391f92382d443a1704bad87623"
+    },
+    "renamed": true,
+    "status": "PASSED",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "equivalence_module.m",
+      "source_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:21030327794d879b3195ac32d873a1baa990427bef8121e79e3ee12046dbd102"
+  },
   "kind": "typed-pure-module-equivalence",
   "local_verification_status": "PASSED",
   "module_contract": {
@@ -3071,11 +3212,134 @@
         "status": "NOT_APPLICABLE"
       }
     },
-    "whole_file_closure_sha256": "sha256:a487fa8392008ddaca34ee3260f8ad0a6c18c3fea15271301fbdbc5a270924b8"
+    "whole_file_closure_sha256": "sha256:5aff22c1477275ca1e4edc4f61db28a2a31948d07488e2bd83abc84c0e986735"
   },
   "module_input": {
     "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
     "corpus_sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112",
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_9478c635de40ca2b"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "subtotal"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "tax"
+            }
+          ],
+          "raw_symbol": "elmos_fn_fb07beb31e78128c"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_275cfcd741bac769"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_d25a1076e5f1fbd7"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_004d6bf9ce917ed8"
+        }
+      ],
+      "normalized_target_ir": {
+        "bytes": 7793,
+        "path": "target-semantic-ir.normalized.json",
+        "sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912"
+      },
+      "plan": {
+        "bytes": 9331,
+        "path": "identifier-plan.json",
+        "sha256": "sha256:af3f9810c294aa364c31744caf657b8b844416ca47bc9c21e932a0bf529b2a4a"
+      },
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
+      "raw_target_ir": {
+        "bytes": 7879,
+        "path": "target-semantic-ir.raw.json",
+        "sha256": "sha256:f66057c66c1b42ceda7af7f8091c6c0910c413391f92382d443a1704bad87623"
+      },
+      "renamed": true,
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.m",
+        "source_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:21030327794d879b3195ac32d873a1baa990427bef8121e79e3ee12046dbd102"
+    },
     "input_domain": "canonical-finite-no-error-input-domain",
     "profile": "typed-pure-module-v1",
     "route": {
@@ -3088,15 +3352,15 @@
     "source_inventory_sha256": "sha256:c200591bc03d9bc57bef004160ece16a430773e3802f7844ea5dab2ee9a393a8",
     "source_logical_file": "equivalence_module.m",
     "source_semantic_ir_sha256": "sha256:0cb70c53d4459ebcce90471627413844100bf513c6f0ce2d5b9053394af12c06",
-    "target_artifact_byte_count": 748,
-    "target_artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
-    "target_inventory_byte_count": 42768,
-    "target_inventory_sha256": "sha256:b05cd4c4f82d6bf3f0f28c572f8a425b2c302ceff3078ed7c5aa20050f402337",
+    "target_artifact_byte_count": 834,
+    "target_artifact_sha256": "sha256:2c7618dc4790da0fd367546998c9fa84c9b5a2840847156898eaca094503119c",
+    "target_inventory_byte_count": 43209,
+    "target_inventory_sha256": "sha256:d61557ad8d9e0f1412a3b82cc254dbd18c6a29d1a4dbe97610b30f92c9f469ca",
     "target_logical_file": "migrated.swift",
-    "target_semantic_ir_sha256": "sha256:57d5fde8c8fc7c010755c0d66d1983cd1bd886f492b2c834d1d4ee3ba06aeafb",
-    "whole_file_closure_sha256": "sha256:a487fa8392008ddaca34ee3260f8ad0a6c18c3fea15271301fbdbc5a270924b8"
+    "target_semantic_ir_sha256": "sha256:d0331bc74fabeeb6098b5f894b7462dfc09c443928e846f119ef89e1c2e24912",
+    "whole_file_closure_sha256": "sha256:5aff22c1477275ca1e4edc4f61db28a2a31948d07488e2bd83abc84c0e986735"
   },
-  "module_input_sha256": "sha256:bca276d0007d1bffc0177e3e9014b9f2884de670ecc33b84b94a6a3a264f5cba",
+  "module_input_sha256": "sha256:c24938d1a63a20f90a1e03bf8f88e9eaf52a346d16933c110ba73f67d95cbc00",
   "profile": "typed-pure-module-v1",
   "route": {
     "route_key": "objc-to-swift",
@@ -3180,6 +3444,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3263,6 +3528,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3353,6 +3619,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3443,6 +3710,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3526,6 +3794,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3604,6 +3873,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3680,6 +3950,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3763,6 +4034,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3846,6 +4118,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3922,6 +4195,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3944,6 +4218,114 @@
     "blocked_declarations": {
       "source": [],
       "target": []
+    },
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_9478c635de40ca2b"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "subtotal"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "tax"
+            }
+          ],
+          "raw_symbol": "elmos_fn_fb07beb31e78128c"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_275cfcd741bac769"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "value"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "minimum"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "maximum"
+            }
+          ],
+          "raw_symbol": "elmos_fn_d25a1076e5f1fbd7"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "left"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "right"
+            }
+          ],
+          "raw_symbol": "elmos_fn_004d6bf9ce917ed8"
+        }
+      ],
+      "plan_sha256": "sha256:af3f9810c294aa364c31744caf657b8b844416ca47bc9c21e932a0bf529b2a4a",
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.m",
+        "source_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:21030327794d879b3195ac32d873a1baa990427bef8121e79e3ee12046dbd102"
     },
     "kind": "elmos.typed-pure-module-whole-file-closure",
     "manifest_symbols": [
@@ -3976,6 +4358,7 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "both",
@@ -3999,6 +4382,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "both",
         "source_span": {
           "end_byte": 730,
           "file": "equivalence_module.m",
@@ -4020,6 +4404,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "calculate",
@@ -4043,6 +4428,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "calculate",
         "source_span": {
           "end_byte": 172,
           "file": "equivalence_module.m",
@@ -4068,6 +4454,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "clamp",
@@ -4096,6 +4483,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "clamp",
         "source_span": {
           "end_byte": 380,
           "file": "equivalence_module.m",
@@ -4121,6 +4509,7 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "clampNumber",
@@ -4149,6 +4538,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "clampNumber",
         "source_span": {
           "end_byte": 666,
           "file": "equivalence_module.m",
@@ -4170,6 +4560,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
         "qualified_name": "difference",
@@ -4193,6 +4584,7 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "difference",
         "source_span": {
           "end_byte": 464,
           "file": "equivalence_module.m",
@@ -4218,8 +4610,8 @@
     },
     "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
     "target_helper_symbols": [],
-    "target_inventory_bytes": 42768,
-    "target_inventory_sha256": "sha256:b05cd4c4f82d6bf3f0f28c572f8a425b2c302ceff3078ed7c5aa20050f402337",
+    "target_inventory_bytes": 43209,
+    "target_inventory_sha256": "sha256:d61557ad8d9e0f1412a3b82cc254dbd18c6a29d1a4dbe97610b30f92c9f469ca",
     "target_profile_symbols": [
       {
         "canonical_signature": {
@@ -4235,9 +4627,10 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
-        "qualified_name": "both",
+        "qualified_name": "elmos_fn_9478c635de40ca2b",
         "raw_parameter_names": [
           "left",
           "right"
@@ -4257,8 +4650,9 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "elmos_fn_9478c635de40ca2b",
         "source_span": {
-          "end_byte": 77,
+          "end_byte": 98,
           "file": "migrated.swift",
           "start_byte": 0
         },
@@ -4278,9 +4672,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
-        "qualified_name": "calculate",
+        "qualified_name": "elmos_fn_fb07beb31e78128c",
         "raw_parameter_names": [
           "subtotal",
           "tax"
@@ -4300,10 +4695,11 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "elmos_fn_fb07beb31e78128c",
         "source_span": {
-          "end_byte": 230,
+          "end_byte": 267,
           "file": "migrated.swift",
-          "start_byte": 79
+          "start_byte": 100
         },
         "symbol": "calculate"
       },
@@ -4325,9 +4721,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
-        "qualified_name": "clamp",
+        "qualified_name": "elmos_fn_275cfcd741bac769",
         "raw_parameter_names": [
           "value",
           "minimum",
@@ -4352,10 +4749,11 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "elmos_fn_275cfcd741bac769",
         "source_span": {
-          "end_byte": 440,
+          "end_byte": 497,
           "file": "migrated.swift",
-          "start_byte": 232
+          "start_byte": 269
         },
         "symbol": "clamp"
       },
@@ -4377,9 +4775,10 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
-        "qualified_name": "clampNumber",
+        "qualified_name": "elmos_fn_d25a1076e5f1fbd7",
         "raw_parameter_names": [
           "value",
           "minimum",
@@ -4404,10 +4803,11 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "elmos_fn_d25a1076e5f1fbd7",
         "source_span": {
-          "end_byte": 660,
+          "end_byte": 731,
           "file": "migrated.swift",
-          "start_byte": 442
+          "start_byte": 499
         },
         "symbol": "clampNumber"
       },
@@ -4425,9 +4825,10 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
-        "qualified_name": "difference",
+        "qualified_name": "elmos_fn_004d6bf9ce917ed8",
         "raw_parameter_names": [
           "left",
           "right"
@@ -4447,10 +4848,11 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "elmos_fn_004d6bf9ce917ed8",
         "source_span": {
-          "end_byte": 747,
+          "end_byte": 833,
           "file": "migrated.swift",
-          "start_byte": 662
+          "start_byte": 733
         },
         "symbol": "difference"
       }

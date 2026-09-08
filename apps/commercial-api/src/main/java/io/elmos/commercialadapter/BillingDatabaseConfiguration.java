@@ -3,8 +3,10 @@ package io.elmos.commercialadapter;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.elmos.commercial.SelfServiceBillingPort;
+import io.elmos.commercial.CommercialOrderPort;
 import io.elmos.commercial.WalletPort;
 import io.elmos.persistence.JdbcSelfServiceBillingStore;
+import io.elmos.persistence.JdbcCommercialOrderStore;
 import io.elmos.persistence.JdbcWalletStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +80,15 @@ public class BillingDatabaseConfiguration {
                 commercialBillingJdbcClient,
                 commercialBillingTransactions
         );
+    }
+
+    @Bean
+    CommercialOrderPort commercialOrderPort(
+            JdbcClient commercialBillingJdbcClient,
+            TransactionTemplate commercialBillingTransactions
+    ) {
+        return new JdbcCommercialOrderStore(
+                commercialBillingJdbcClient, commercialBillingTransactions);
     }
 
     private static String requiredEnvironment(String name) {

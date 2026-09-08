@@ -100,7 +100,8 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
             String actorId,
             Instant fromInclusive,
             Instant toExclusive,
-            String bucket
+            String bucket,
+            boolean organizationScope
     ) {
         requireWindow(fromInclusive, toExclusive);
         String normalizedBucket = switch (Objects.requireNonNull(bucket, "bucket").toUpperCase(Locale.ROOT)) {
@@ -109,24 +110,63 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
             default -> throw new IllegalArgumentException("bucket must be HOUR or DAY");
         };
         String sql = """
-                select date_trunc('%s', l.occurred_at) bucket_start, l.meter_id,
-                       l.operation_key, coalesce(e.token_class, '') token_class, l.actor_id,
-                       coalesce(e.provider, '') provider,
-                       coalesce(sum(l.quantity) filter (where l.direction = 'DEBIT'), 0) debited,
-                       coalesce(sum(l.quantity) filter (where l.direction = 'CREDIT'), 0) credited
-                  from usage_ledger_entries l
-                  left join usage_events e on e.usage_event_id = l.usage_event_id
-                 where l.organization_id = :organization
-                   and l.meter_id is not null
-                   and l.occurred_at >= :from and l.occurred_at < :to
-                 group by bucket_start, l.meter_id, l.operation_key, coalesce(e.token_class, ''),
-                          l.actor_id, coalesce(e.provider, '')
-                 order by bucket_start, l.meter_id, token_class, l.actor_id
-                """.formatted(normalizedBucket);
-        return inTenant(organizationId, () -> jdbc.sql(sql)
+                with all_entries as (
+                    select l.occurred_at, l.meter_id, l.operation_key,
+                           coalesce(e.token_class, '') token_class, l.actor_id,
+                           coalesce(e.provider, '') provider, l.project_id, l.job_id, l.model,
+                           l.direction, l.quantity
+                      from usage_ledger_entries l
+                      left join usage_events e on e.usage_event_id = l.usage_event_id
+                     where l.organization_id = :organization
+                       %s
+                       and l.meter_id is not null
+                       and l.occurred_at >= :from and l.occurred_at < :to
+                    union all
+                    select tue.created_at, 'model-token-v1', 'model-inference', token.token_class,
+                           coalesce(account.external_subject, account.id::text), tue.provider,
+                           call.project_id::text, call.job_id::text, tue.model, 'DEBIT', token.quantity
+                      from billing.token_usage_events tue
+                      join ai_usage.model_calls call
+                        on call.tenant_id = tue.tenant_id and call.id = tue.model_call_id
+                      join identity.accounts account
+                        on account.tenant_id = call.tenant_id and account.id = call.account_id
+                      cross join lateral (values
+                          ('INPUT', tue.input_tokens::numeric),
+                          ('CACHE_READ', tue.cached_input_tokens::numeric),
+                          ('OUTPUT', tue.output_tokens::numeric),
+                          ('REASONING', tue.reasoning_tokens::numeric)
+                      ) token(token_class, quantity)
+                     where tue.tenant_id = public.current_tenant_id()
+                       %s
+                       and token.quantity > 0
+                       and tue.created_at >= :from and tue.created_at < :to
+                       and not exists (
+                           select 1 from usage_events local
+                            where local.organization_id = :organization
+                              and local.provider = tue.provider
+                              and local.provider_receipt_ref = tue.provider_usage_id
+                              and local.token_class = token.token_class)
+                )
+                select date_trunc('%s', occurred_at) bucket_start, meter_id,
+                       operation_key, token_class, actor_id, provider,
+                       project_id, job_id, model,
+                       coalesce(sum(quantity) filter (where direction = 'DEBIT'), 0) debited,
+                       coalesce(sum(quantity) filter (where direction = 'CREDIT'), 0) credited
+                  from all_entries
+                 group by bucket_start, meter_id, operation_key, token_class,
+                          actor_id, provider, project_id, job_id, model
+                 order by bucket_start, meter_id, token_class, actor_id
+                """.formatted(
+                organizationScope ? "" : "and l.actor_id = :actor",
+                organizationScope ? "" : "and coalesce(account.external_subject, account.id::text) = :actor",
+                normalizedBucket);
+        var spec = jdbc.sql(sql)
                 .param("organization", organizationId)
                 .param("from", offset(fromInclusive))
-                .param("to", offset(toExclusive))
+                .param("to", offset(toExclusive));
+        if (!organizationScope) spec = spec.param("actor", actorId);
+        var query = spec;
+        return inTenant(organizationId, () -> query
                 .query((rs, row) -> {
                     BigDecimal debit = rs.getBigDecimal("debited");
                     BigDecimal credit = rs.getBigDecimal("credited");
@@ -137,11 +177,37 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
                             nullable(rs.getString("token_class")),
                             rs.getString("actor_id"),
                             nullable(rs.getString("provider")),
+                            nullable(rs.getString("project_id")),
+                            nullable(rs.getString("job_id")),
+                            nullable(rs.getString("model")),
                             debit,
                             credit,
                             debit.subtract(credit)
                     );
                 }).list());
+    }
+
+    @Override
+    public UsageReservation reserveDetailed(
+            String organizationId, String actorId, String subscriptionId,
+            String reservationId, String idempotencyKey, String operationKey,
+            BigDecimal requestedTokens, BigDecimal requestedCredits, Instant expiresAt,
+            String projectId, String jobId, String model) {
+        return inTenant(organizationId, () -> jdbc.sql("""
+                select * from elmos_reserve_usage_v2(
+                    :reservation, :subscription, :actor, :idempotency, :operation,
+                    :tokens, :credits, :expires, :project, :job, :model)
+                """).param("reservation", reservationId)
+                .param("subscription", subscriptionId).param("actor", actorId)
+                .param("idempotency", idempotencyKey).param("operation", operationKey)
+                .param("tokens", integerQuantity(requestedTokens, "requestedTokens"))
+                .param("credits", integerQuantity(requestedCredits, "requestedCredits"))
+                .param("expires", offset(expiresAt)).param("project", projectId)
+                .param("job", jobId).param("model", model)
+                .query((rs, row) -> new UsageReservation(
+                        rs.getString("reservation_id"), rs.getString("decision"),
+                        rs.getBigDecimal("remaining_tokens"),
+                        rs.getBigDecimal("remaining_credits"))).single());
     }
 
     @Override
@@ -177,6 +243,77 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
     }
 
     @Override
+    public List<UsageEventDetail> usageEvents(
+            String organizationId, String actorId, Instant fromInclusive,
+            Instant toExclusive, int limit, int offsetValue, boolean organizationScope) {
+        requireWindow(fromInclusive, toExclusive);
+        if (limit < 1 || limit > 500 || offsetValue < 0) {
+            throw new IllegalArgumentException("invalid usage event page");
+        }
+        String actorClause = organizationScope ? "" : " and actor_id = :actor";
+        String productionActorClause = organizationScope ? ""
+                : " and coalesce(account.external_subject, account.id::text) = :actor";
+        var spec = jdbc.sql("""
+                with all_events as (
+                    select usage_event_id, occurred_at, recorded_at, actor_id,
+                           project_id, job_id, operation_key, meter_id, token_class,
+                           provider, model, provider_receipt_ref, quantity,
+                           reconciliation_status, provider_cost_currency, provider_cost_minor
+                      from usage_events
+                     where organization_id = :organization
+                       and occurred_at >= :from and occurred_at < :to%s
+                    union all
+                    select 'production:' || tue.id::text || ':' || token.token_class,
+                           tue.created_at, tue.created_at,
+                           coalesce(account.external_subject, account.id::text),
+                           call.project_id::text, call.job_id::text, 'model-inference',
+                           'model-token-v1', token.token_class, tue.provider, tue.model,
+                           tue.provider_usage_id, token.quantity, 'RECONCILED',
+                           null::char(3), null::numeric
+                      from billing.token_usage_events tue
+                      join ai_usage.model_calls call
+                        on call.tenant_id = tue.tenant_id and call.id = tue.model_call_id
+                      join identity.accounts account
+                        on account.tenant_id = call.tenant_id and account.id = call.account_id
+                      cross join lateral (values
+                          ('INPUT', tue.input_tokens::numeric),
+                          ('CACHE_READ', tue.cached_input_tokens::numeric),
+                          ('OUTPUT', tue.output_tokens::numeric),
+                          ('REASONING', tue.reasoning_tokens::numeric)
+                      ) token(token_class, quantity)
+                     where tue.tenant_id = public.current_tenant_id()%s
+                       and token.quantity > 0
+                       and tue.created_at >= :from and tue.created_at < :to
+                       and not exists (
+                           select 1 from usage_events local
+                            where local.organization_id = :organization
+                              and local.provider = tue.provider
+                              and local.provider_receipt_ref = tue.provider_usage_id
+                              and local.token_class = token.token_class)
+                )
+                select * from all_events
+                 order by occurred_at desc, usage_event_id desc
+                 limit :limit offset :offset
+                """.formatted(actorClause, productionActorClause)).param("organization", organizationId)
+                .param("from", offset(fromInclusive)).param("to", offset(toExclusive))
+                .param("limit", limit).param("offset", offsetValue);
+        if (!organizationScope) spec = spec.param("actor", actorId);
+        var query = spec;
+        return inTenant(organizationId, () -> query.query((rs, row) -> new UsageEventDetail(
+                rs.getString("usage_event_id"),
+                instant(rs.getObject("occurred_at", OffsetDateTime.class)),
+                instant(rs.getObject("recorded_at", OffsetDateTime.class)),
+                rs.getString("actor_id"), nullable(rs.getString("project_id")),
+                nullable(rs.getString("job_id")), rs.getString("operation_key"),
+                rs.getString("meter_id"), nullable(rs.getString("token_class")),
+                nullable(rs.getString("provider")), nullable(rs.getString("model")),
+                nullable(rs.getString("provider_receipt_ref")), rs.getBigDecimal("quantity"),
+                rs.getString("reconciliation_status"),
+                nullable(rs.getString("provider_cost_currency")),
+                rs.getBigDecimal("provider_cost_minor"))).list());
+    }
+
+    @Override
     public UsageSettlement settle(
             String organizationId,
             String actorId,
@@ -192,10 +329,10 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
             Instant occurredAt
     ) {
         return inTenant(organizationId, () -> jdbc.sql("""
-                select * from elmos_settle_usage(
-                    :reservation, :eventPrefix, :tokens, :credits, :tokenClass,
+                select * from elmos_settle_usage_v2(
+                    :actor, :reservation, :eventPrefix, :tokens, :credits, :tokenClass,
                     :provider, :receipt, :costCurrency, :costMinor, :occurred)
-                """).param("reservation", reservationId)
+                """).param("actor", actorId).param("reservation", reservationId)
                 .param("eventPrefix", eventPrefix)
                 .param("tokens", integerQuantity(actualTokens, "actualTokens"))
                 .param("credits", integerQuantity(actualCredits, "actualCredits"))
@@ -218,8 +355,9 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
     @Override
     public void release(String organizationId, String actorId, String reservationId, String reasonCode) {
         inTenant(organizationId, () -> {
-            jdbc.sql("select elmos_release_usage(:reservation, :reason)")
-                    .param("reservation", reservationId).param("reason", reasonCode).query().singleRow();
+            jdbc.sql("select elmos_release_usage_v2(:actor, :reservation, :reason)")
+                    .param("actor", actorId).param("reservation", reservationId)
+                    .param("reason", reasonCode).query().singleRow();
             return null;
         });
     }
@@ -1006,6 +1144,14 @@ public final class JdbcSelfServiceBillingStore implements SelfServiceBillingPort
     private void bindTenant(String organizationId) {
         jdbc.sql("select set_config('app.organization_id', :organization, true)")
                 .param("organization", organizationId).query(String.class).single();
+        String productionTenant = "";
+        try {
+            productionTenant = UUID.fromString(organizationId).toString();
+        } catch (IllegalArgumentException ignored) {
+            // The legacy commercial namespace permits non-UUID organization IDs.
+        }
+        jdbc.sql("select set_config('app.tenant_id', :tenant, true)")
+                .param("tenant", productionTenant).query(String.class).single();
     }
 
     private static QuotaMeasure measure(BigDecimal consumed, BigDecimal reserved, BigDecimal limit) {

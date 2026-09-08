@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 285,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:3518942254cba36e4204c8bc55ebe017ecd251ebccad73c951adb06fbb8039ed"
+    },
+    {
+      "bytes": 374,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:723008ee1aeafbd1fb1149f75ce79624996bb9fb801e26fa53a5b87ca1e9bc18"
+    },
+    {
+      "bytes": 311,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:3276617b5c2f500d2fb26bbf1a82f53849eca956d62dd21f369d02d0c11898ef"
+    }
+  ]
+}

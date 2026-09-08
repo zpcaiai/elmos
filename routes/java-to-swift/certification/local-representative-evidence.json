@@ -2,7 +2,7 @@
   "artifact_manifest": {
     "bytes": 4441,
     "path": "certification/artifacts/real-repository/artifact-manifest.json",
-    "sha256": "sha256:977b45ab9d1afee0af7af5f12915b03af481999a10c3857576539a7f5c263bd3"
+    "sha256": "sha256:6620406ee83062d343d74eb5ca96d4759b6cbc8ad65ecfdeb18d44d3e35e0d2e"
   },
   "artifact_root": "certification/artifacts/real-repository",
   "authorization": "local-engineering-validation",
@@ -21,7 +21,7 @@
   "certification_status": "NOT_CERTIFIED",
   "chunk_equivalence": {
     "artifact_path": "chunk-map.json",
-    "artifact_sha256": "sha256:9ca9303eeb7e805ce1ca2fdd896f6ecea3a923cb2b38f9d5a4b393e1e5e0f348",
+    "artifact_sha256": "sha256:8f3dbcda55aca09c2498d6bd6625facec983ebc7093a3e6066c1ecec58776193",
     "coverage": 1.0,
     "mapped_source_chunk_count": 13,
     "required_source_chunk_count": 13,
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:c45c4f316c2a6a67f59fa496b3ae703b52fc0f06f55c10fe83934ba89030c107",
+    "artifact_sha256": "sha256:129a5dd03ab5109afe61e70b0bc40f5cd2b6bc5b2e6c743a7bcd509714abdc9a",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:df8f491b9b9927bd674bc8eaf3da4c763a75b1dc13a74195c7b98b448143f494",
+    "formal_input_digest": "sha256:d807ac3a7086e4931ed38408a38a0554a27ef371689eb0177fe820543819377d",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:df8f491b9b9927bd674bc8eaf3da4c763a75b1dc13a74195c7b98b448143f494",
+    "formal_input_sha256": "sha256:d807ac3a7086e4931ed38408a38a0554a27ef371689eb0177fe820543819377d",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:df8f491b9b9927bd674bc8eaf3da4c763a75b1dc13a74195c7b98b448143f494",
+        "formal_input_sha256": "sha256:d807ac3a7086e4931ed38408a38a0554a27ef371689eb0177fe820543819377d",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:72349c71eabd37262f54c0534542b56568c737cbb729e45268039e516a03e7dd",
+        "sha256": "sha256:09227c40242ec7fce9222e574cef1343361886634380fc3be5b55d70f9bfbc18",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:df8f491b9b9927bd674bc8eaf3da4c763a75b1dc13a74195c7b98b448143f494",
+        "formal_input_sha256": "sha256:d807ac3a7086e4931ed38408a38a0554a27ef371689eb0177fe820543819377d",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:329cd32d4e19c2457a6514c1427f7cf3004ee1f8d51007f1396cac711593dcec",
+        "sha256": "sha256:068af48be26cc68969ac30f8dfc937016bbbfad0ec19520b85c8c287cc583527",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:72349c71eabd37262f54c0534542b56568c737cbb729e45268039e516a03e7dd",
+    "solver_input_digest": "sha256:09227c40242ec7fce9222e574cef1343361886634380fc3be5b55d70f9bfbc18",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -72,7 +72,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:a6a653c0d69a6da56efe3ef59fdb5763275ec69180f4b6b9825a1d0e184c658e",
+      "sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -81,7 +81,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:83a109e20d879b5fd8d4689d8ceb92a4c37c7a5c33b8ff3a121fe7ce49b65429",
+      "sha256": "sha256:9f3f7fe1fcc54a1faf04bdd246489412db8f030df26e3a7ed8f247c421894171",
       "status": "PASSED"
     },
     "renamed": true,
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:c2a9161536eaa5514bf6e2f3b57cd9dd8d01b9eca3bb8bc2832cac7e0c8a174e",
+    "artifact_sha256": "sha256:87d9334e20bfb73553444512c81c9ba5de67946ec48a513d537c7d9751c64a09",
     "status": "PASSED"
   },
   "limitations": [
@@ -124,7 +124,7 @@
     "source_ir_sha256": "sha256:73147408abd7acfa581d70af4c7704176759d60445d8956a5ad0a7af70d8166c",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:a6a653c0d69a6da56efe3ef59fdb5763275ec69180f4b6b9825a1d0e184c658e"
+    "target_ir_sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a"
   },
   "semantic_ir_sha256": "sha256:73147408abd7acfa581d70af4c7704176759d60445d8956a5ad0a7af70d8166c",
   "source": {

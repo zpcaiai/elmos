@@ -8,9 +8,9 @@ static long long ElmosCheckedAdd(long long left, long long right) {
     return result;
 }
 
-long long calculate(long long subtotal, long long tax) {
-    if ((subtotal < 0)) {
+long long elmos_fn_c21b31dfaff812b1(long long elmos_p000_a325e918ec218ba8, long long elmos_p001_6aa033bc748cafbd) {
+    if ((elmos_p000_a325e918ec218ba8 < 0)) {
         return 0;
     }
-    return ElmosCheckedAdd(subtotal, tax);
+    return ElmosCheckedAdd(elmos_p000_a325e918ec218ba8, elmos_p001_6aa033bc748cafbd);
 }

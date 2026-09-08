@@ -10,6 +10,24 @@
   width: 100%;
 }
 
+.projectField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.projectField input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+}
+
 .actionHint,
 .actionError,
 .actionSuccess {

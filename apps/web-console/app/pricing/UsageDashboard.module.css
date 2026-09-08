@@ -392,6 +392,48 @@
   text-align: right;
 }
 
+.detailTitle {
+  display: block;
+  margin: 0 0 8px;
+  color: #174f4d;
+  font-size: 11px;
+}
+
+.eventHead,
+.eventRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1.3fr 1fr .7fr .55fr .8fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 13px;
+}
+
+.eventHead {
+  background: #eaf3f0;
+  color: #587070;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.eventRow {
+  border-top: 1px solid #e3ece9;
+  color: #526969;
+  font-size: 9px;
+}
+
+.eventRow > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventRow strong {
+  color: #175d59;
+  text-align: right;
+}
+
 .emptyHistory {
   margin: 0;
   padding: 18px;
@@ -488,7 +530,9 @@
   }
 
   .historyHead,
-  .historyRow {
+  .historyRow,
+  .eventHead,
+  .eventRow {
     min-width: 560px;
   }
 

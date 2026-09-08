@@ -24,6 +24,7 @@ jobs:
     env:
       ELMOS_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       ELMOS_VERCEL_EXPECTED_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ELMOS_DEPLOYMENT_ENVIRONMENT: ${{ github.event_name == 'pull_request' && 'Preview' || 'Production' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -40,6 +41,7 @@ jobs:
           --sha "${ELMOS_DEPLOYMENT_SHA}"
           --github-env "${GITHUB_ENV}"
           --timeout-seconds 1800
+          --required-environment "${ELMOS_DEPLOYMENT_ENVIRONMENT}"
           --production-url "${ELMOS_PRODUCTION_SMOKE_URL}"
 
       - name: Set up Node.js 22

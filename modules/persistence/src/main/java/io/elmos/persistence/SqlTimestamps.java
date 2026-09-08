@@ -31,4 +31,9 @@ final class SqlTimestamps {
     static OffsetDateTime offset(Instant value) {
         return value == null ? null : value.atOffset(ZoneOffset.UTC);
     }
+
+    /** Null-tolerant reverse conversion for nullable database timestamps. */
+    static Instant instant(OffsetDateTime value) {
+        return value == null ? null : value.toInstant();
+    }
 }

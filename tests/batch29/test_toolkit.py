@@ -957,7 +957,7 @@ class ToolkitTests(unittest.TestCase):
             self.assertIsNone(validator._selected_swift_host_profile())
             selector.assert_not_called()
 
-    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+    def test_selected_swift_receipt_contract_binds_exact_host_profile(self) -> None:
         validator = load_route_validator()
         receipt = portable_swift_analyzer_receipt(validator)
         bind_swift_receipt_to_selected_host_profile(validator, receipt)
@@ -3726,6 +3726,7 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
+        self.assertIn(".php", runner.ARTIFACT_ALLOWED_SUFFIXES)
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
         self.assertEqual(runner.parse_route_key("java-to-php"), ("java", "php"))

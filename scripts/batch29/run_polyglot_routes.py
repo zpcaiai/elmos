@@ -246,19 +246,6 @@ if __name__ == "__main__":
     if fresh_runtime_exit is not None:
         raise SystemExit(fresh_runtime_exit)
 
-from elmos_polyglot_route.emitter import _SWIFT_HELPERS  # noqa: E402
-from elmos_polyglot_route.engine import migrate, migrate_module  # noqa: E402
-from elmos_polyglot_route.models import (  # noqa: E402
-    PENDING_ANALYZER_LANGUAGES,
-    PENDING_REPOSITORY_LANGUAGES,
-    Language,
-    RouteError,
-    SemanticIR,
-)
-from elmos_polyglot_route.native import (  # noqa: E402
-    swift_analyzer_build_receipt,
-)
-from elmos_polyglot_route.source_analyzer import analyze  # noqa: E402
 from route_sets import (  # noqa: E402
     ALL_DECLARED_ROUTE_KEYS,
     COMPLETE_ROUTE_KEYS,
@@ -294,6 +281,20 @@ from route_sets import (  # noqa: E402
     split_executable_route_key,
     split_route_key,
 )
+
+from elmos_polyglot_route.emitter import _SWIFT_HELPERS  # noqa: E402
+from elmos_polyglot_route.engine import migrate, migrate_module  # noqa: E402
+from elmos_polyglot_route.models import (  # noqa: E402
+    PENDING_ANALYZER_LANGUAGES,
+    PENDING_REPOSITORY_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+)
+from elmos_polyglot_route.native import (  # noqa: E402
+    swift_analyzer_build_receipt,
+)
+from elmos_polyglot_route.source_analyzer import analyze  # noqa: E402
 
 EXACT_ROUTE_SETS: dict[str, tuple[str, ...]] = {
     "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
@@ -1709,13 +1710,14 @@ def _capture_engine_sources(repo: Path, route: Path) -> tuple[Path, list[Path]]:
 
     engine = repo / "engines" / "polyglot-route-engine"
     engine_module_root = engine / "src" / "elmos_polyglot_route"
-    from elmos_polyglot_route.toolchains import (
-        python_source_archive_receipt,
-        typescript_compiler_capture_receipt,
-    )
     from fresh_route_runtime import (
         PYTHON_CAPTURED_ARCHIVE_RELATIVE,
         TYPESCRIPT_CAPTURED_ROOT_RELATIVE,
+    )
+
+    from elmos_polyglot_route.toolchains import (
+        python_source_archive_receipt,
+        typescript_compiler_capture_receipt,
     )
 
     python_receipt = python_source_archive_receipt()
@@ -5682,13 +5684,14 @@ def current_engine_source_binding(repo: Path, route_root: Path) -> tuple[bool, s
         return False, "ENGINE_SOURCE_MANIFEST_INVALID"
 
     try:
-        from elmos_polyglot_route.toolchains import (
-            python_source_archive_receipt,
-            typescript_compiler_capture_receipt,
-        )
         from fresh_route_runtime import (
             PYTHON_CAPTURED_ARCHIVE_RELATIVE,
             TYPESCRIPT_CAPTURED_ROOT_RELATIVE,
+        )
+
+        from elmos_polyglot_route.toolchains import (
+            python_source_archive_receipt,
+            typescript_compiler_capture_receipt,
         )
 
         python_receipt = python_source_archive_receipt()

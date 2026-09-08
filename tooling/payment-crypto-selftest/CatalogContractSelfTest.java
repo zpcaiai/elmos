@@ -20,6 +20,14 @@ public final class CatalogContractSelfTest {
             PricingPlanCatalog.requirePlan("elmos-pro-monthly").price().amount()));
         check("年付价 1290.00", new BigDecimal("1290.00").equals(
             PricingPlanCatalog.requirePlan("elmos-pro-annual").price().amount()));
+        check("Credit 包 500 个", new BigDecimal("500").equals(
+            PricingPlanCatalog.requireCreditPack("elmos-credit-500").credits()));
+        check("Credit 包价格 99.00", new BigDecimal("99.00").equals(
+            PricingPlanCatalog.requireCreditPack("elmos-credit-500").price().amount()));
+        check("单项目一次性价格 39.00", new BigDecimal("39.00").equals(
+            PricingPlanCatalog.requireOneTimeProduct("elmos-project-generation-once").price().amount()));
+        check("单项目最多 20 分钟", 20 == PricingPlanCatalog
+            .requireOneTimeProduct("elmos-project-generation-once").maxRunnerMinutes());
         check("paymentStatus 仍是 NOT_CONFIGURED", "NOT_CONFIGURED".equals(c.paymentStatus()));
         check("sellerLegalEntityStatus 仍是 NOT_CONFIGURED", "NOT_CONFIGURED".equals(c.sellerLegalEntityStatus()));
         boolean threw=false;

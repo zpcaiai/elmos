@@ -1,0 +1,164 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/swift-to-python/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "__pycache__/migrated.cpython-312.pyc",
+    "__pycache__/route_harness.cpython-312.pyc",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1555,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:8f00d386cca27cb85b77dc2d81c4a6d9371782ea49d03a4531b9f30734007b78"
+    },
+    {
+      "bytes": 11391,
+      "path": "chunk-map.json",
+      "sha256": "sha256:e34e4140e32d4a03424de61114d162b2b6c59b0ece3f4d7ce9c38a43182137ab"
+    },
+    {
+      "bytes": 3050,
+      "path": "formal-composition.json",
+      "sha256": "sha256:1809d0296aec93c712e174f68f376f1de05c55e39587dce24ce5acb99ac37bb8"
+    },
+    {
+      "bytes": 1010,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:1cbad5e0630779fb1961b7a67b5c64ae893bf42b228354b615727e05e5e1c74b"
+    },
+    {
+      "bytes": 12650,
+      "path": "formal-input.json",
+      "sha256": "sha256:bbb9d8fcf6e6f59c25196e2b7c3bf5eb01f500410422618f2bf64bc4e3d2ca0d"
+    },
+    {
+      "bytes": 2392,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:16e5237e8bc248a5fa7a815827bfaf94343ab16eba6b230b00513f666eb7a799"
+    },
+    {
+      "bytes": 2242,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:39c2d1c186945931a66bafe9afbb3e80498be41f24a7fa691bede90a0f6331a2"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 129,
+      "path": "inputs/difference.swift",
+      "sha256": "sha256:ba02cc7089e9cc48ed9fb8fb9aab0751d5b07fcb1f0cda186ba323ce201ac9cf"
+    },
+    {
+      "bytes": 4158,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:3d1d5f07a245cc430c47710864739c38161ff7daca473cdc3f457f76581ceeb0"
+    },
+    {
+      "bytes": 768,
+      "path": "migrated.py",
+      "sha256": "sha256:8a38076f8034d99d5ba9d5c8914762a2dbc922b900ac30b5ff7deff4e60b31ff"
+    },
+    {
+      "bytes": 12536,
+      "path": "route-evidence.json",
+      "sha256": "sha256:ae4d094d6b1ed5f809ad2ebfcbf1462eb1b09b4d5d9cc6041498f82cafa6a249"
+    },
+    {
+      "bytes": 755,
+      "path": "route_harness.py",
+      "sha256": "sha256:38124f32050f6cee4a7b9f3d0287755b8e46777466def9b0425ea9a3d304ffb2"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 2296,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:7f86cd60d28aa27f8db1699a26e07474c1381e52afb70ede7c89b35e7acc7da5"
+    },
+    {
+      "bytes": 129,
+      "path": "source-runtime/difference.swift",
+      "sha256": "sha256:ba02cc7089e9cc48ed9fb8fb9aab0751d5b07fcb1f0cda186ba323ce201ac9cf"
+    },
+    {
+      "bytes": 937,
+      "path": "source-runtime/main.swift",
+      "sha256": "sha256:2cac39819709d9101d551d7ab2a30f5a2e1aa00ec61b8c3564c80398016439a2"
+    },
+    {
+      "bytes": 2296,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:7f86cd60d28aa27f8db1699a26e07474c1381e52afb70ede7c89b35e7acc7da5"
+    },
+    {
+      "bytes": 662,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1a932e5cac6b238c54fe5aa4cb8d1d9f8c88774b1be747216dfbfbaad71792d6"
+    },
+    {
+      "bytes": 662,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:1a932e5cac6b238c54fe5aa4cb8d1d9f8c88774b1be747216dfbfbaad71792d6"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "swift-to-python",
+  "schema_version": 1,
+  "total_bytes": 60073
+}

@@ -1,0 +1,170 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/python-to-cpp/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/__pycache__/_elmos_source_module.cpython-312.pyc",
+    "source-runtime/__pycache__/difference.cpython-312.pyc",
+    "source-runtime/__pycache__/source_harness.cpython-312.pyc"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 21,
+  "files": [
+    {
+      "bytes": 1555,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:6e4df6f5852f4179e8352a014301de0abbcdd5de479e8d0cca1043cf3aab6975"
+    },
+    {
+      "bytes": 11200,
+      "path": "chunk-map.json",
+      "sha256": "sha256:56ce47c72b2856d91efc363d0561cb4a82628e0657599c4d46098758faf1cdf4"
+    },
+    {
+      "bytes": 3040,
+      "path": "formal-composition.json",
+      "sha256": "sha256:a9d036a9f6c2937147ca0c45fabed42e93b11f013bef2f82e5803f1c23fb1a78"
+    },
+    {
+      "bytes": 1010,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:bee1b27f9e529974d4277341f56b248f1689554d1aeb8d5d7c9e4a128a26c7d9"
+    },
+    {
+      "bytes": 12199,
+      "path": "formal-input.json",
+      "sha256": "sha256:d58848c983f06636dc886107dda727ce3b480c580831c9ea83af6dc9f4645c84"
+    },
+    {
+      "bytes": 2382,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:416d825af77e65ef429d81ca427584708e7386850b5d61ec0d38352eb1150cb4"
+    },
+    {
+      "bytes": 2683,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:eaa36068cfdbcca72f338cdbf49e221314736f6a4bc2b864f474664bbcf21fd7"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 108,
+      "path": "inputs/difference.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 3504,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:6d4adc54d564f032a0c519f9875f360fb58be3f57a25af09af06dd0af726506c"
+    },
+    {
+      "bytes": 622,
+      "path": "migrated.cpp",
+      "sha256": "sha256:bc242e8aa516b14f05a8a4ad9133d9c7b349b294ce2af3852604f54726687fff"
+    },
+    {
+      "bytes": 11684,
+      "path": "route-evidence.json",
+      "sha256": "sha256:49f6f353d81ff6fcc47c7fbae811d99a22a611b20f59495653de45551a354f97"
+    },
+    {
+      "bytes": 1915,
+      "path": "route_harness.cpp",
+      "sha256": "sha256:b06d7b52e54ff3b8f18a0fd65a10ea999f4fd0eddb235e0adeba9681dca5d9e7"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 664,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052"
+    },
+    {
+      "bytes": 108,
+      "path": "source-runtime/_elmos_source_module.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 108,
+      "path": "source-runtime/difference.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 803,
+      "path": "source-runtime/source_harness.py",
+      "sha256": "sha256:b2e702f4328f842cf222f2095d3ad0983b4e5740d74b380e4bcca448faa55923"
+    },
+    {
+      "bytes": 664,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052"
+    },
+    {
+      "bytes": 1615,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:bf00c1384c264fafb921ac4a8f5fccc8c960a5bda8fb99a6e596f1e647b266ab"
+    },
+    {
+      "bytes": 1765,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:0198eb70fbd7f4b5bd5baa85eba31715f50db32a771f9eec09a71aa4e5b2dbeb"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "python-to-cpp",
+  "schema_version": 1,
+  "total_bytes": 58084
+}
