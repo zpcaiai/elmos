@@ -1466,7 +1466,7 @@ function lift(Cursor $cursor, string $functionName, bool $emittedTarget): array
         }
     }
     if ($found === null) {
-        fail('PHP_FUNCTION_NOT_FOUND', $functionName);
+        fail('FUNCTION_NOT_FOUND', $functionName);
     }
     if ($found['body'] === []) {
         fail('PHP_FUNCTION_BODY_REQUIRED', $functionName);

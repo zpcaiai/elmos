@@ -91,8 +91,8 @@ _TYPESCRIPT_ANALYZER_SHA256 = "23361d1947109049e3b3d22424d0443046402a8e6a9e6e658
 _TYPESCRIPT_ANALYZER_BYTES = 69_262
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00"
-_PHP_ANALYZER_BYTES = 83852
+_PHP_ANALYZER_SHA256 = "a1b25481540d475bebca446ee596ac65b0f21cc9d08391910a11430aee50994a"
+_PHP_ANALYZER_BYTES = 83848
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -3030,8 +3030,18 @@ def _run_swift_build_step(
                 # bounded, identity-checked process-tree cleanup as a timeout.
                 pending_input = None
                 poll = getattr(process, "poll", None)
-                if not callable(poll) or poll() is not None:
+                if not callable(poll):
                     raise
+                if poll() is not None:
+                    # The leader may finish in the narrow interval between
+                    # communicate() timing out and poll(). Give its already
+                    # closed pipes one final bounded drain before treating an
+                    # exited leader as evidence of inherited live pipe holders.
+                    stdout, stderr = process.communicate(
+                        input=None,
+                        timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
+                    )
+                    break
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:

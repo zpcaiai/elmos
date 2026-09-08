@@ -89,6 +89,8 @@ REQUIRED_RUNTIME_CHANNELS = {
     "vue3": ("browser",),
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
+# Revalidating the full 72-route/864-block frozen pack takes longer than five
+# minutes on the pinned Node 26 macOS runner. Keep a finite fail-closed budget.
 SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 600
 FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS = 600
 LOCKED_NODE_IDENTITIES = (
@@ -2537,7 +2539,7 @@ process.stdout.write(JSON.stringify({mismatches}));
             ],
             capture_output=True,
             text=True,
-            timeout=180,
+            timeout=FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS,
             check=False,
         )
         result = json.loads(completed.stdout)
@@ -2834,6 +2836,9 @@ def validate_engine_verifier(
             cwd=pack,
             capture_output=True,
             text=True,
+            # The full 72-route/864-block verifier exceeds three minutes on
+            # the pinned Node 26 macOS runner. It remains fail-closed under a
+            # finite production-sized replay budget.
             timeout=FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS,
             check=False,
         )
@@ -8523,7 +8528,14 @@ def validate_campaign(
                 )
                 replay_result = json.loads(completed.stdout.strip().splitlines()[-1])
                 if completed.returncode or replay_result.get("status") != "valid":
-                    errors.append("v2 self-contained replay validation failed")
+                    replay_errors = replay_result.get("errors")
+                    errors.append(
+                        "v2 self-contained replay validation failed: "
+                        f"returncode={completed.returncode} "
+                        f"status={replay_result.get('status')} "
+                        f"errors={replay_errors!r} "
+                        f"stderr={completed.stderr.strip()[-4096:]!r}"
+                    )
             except Exception as exc:
                 errors.append(f"v2 self-contained replay execution failed: {exc}")
 
