@@ -95,8 +95,8 @@ description: "当上下文被装载、压缩、驱逐、切换模型、恢复任
 - Source contract SHA-256: `725b4480ab0c27002c70a7a958484c59a117ab70dd6c539a833d6e4ba08eefec`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_context_integrity_and_loss_detection`
 - Runtime phase: `context`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-source-anchor-and-provenance`, `$elmos-context-checkpoint-and-recovery`
 - Acceptance identities: `S40-01`, `S40-02`, `S40-03`, `S40-04`, `S40-05`, `S40-06`
 - Generated contract: `compiled-contract.json`

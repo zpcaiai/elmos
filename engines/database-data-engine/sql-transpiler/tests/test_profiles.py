@@ -39,6 +39,11 @@ def test_profiles_are_exact_and_capabilities_disclose_boundaries() -> None:
     assert value["certification"] == "NOT_CERTIFIED"
     assert any(item["state"] == "BLOCKED" for item in value["capabilities"])
     assert len(value["knownConditionalPairs"]) == 2
+    # The two formerly-blocked pairs are typed rewrites now; the catalog must
+    # not regress them back to BLOCKED nor launder them into silent aliases.
+    pairs = {item["feature"]: item["state"] for item in value["knownConditionalPairs"]}
+    assert pairs["GROUP_CONCAT_ORDER_BY"] == "TYPED_REWRITE"
+    assert pairs["ORACLE_TRUNC_DATETIME_FORMAT"] == "TYPED_REWRITE_ALLOW_LIST"
 
 
 def test_unknown_and_same_profile_routes_fail_closed() -> None:

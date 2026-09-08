@@ -81,8 +81,8 @@ description: "为所有提取、推断、需求和生成结果建立原始来源
 - Source contract SHA-256: `62c2921fefcdd7efd9fc51b4a1523c2253efca4a0bcd9f90e3652a4c662a9543`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_source_anchor_and_provenance`
 - Runtime phase: `normalization`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-unified-multimodal-content-ir`
 - Acceptance identities: `S13-01`, `S13-02`, `S13-03`, `S13-04`
 - Generated contract: `compiled-contract.json`

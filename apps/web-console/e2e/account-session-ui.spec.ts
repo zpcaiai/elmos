@@ -45,24 +45,19 @@ test("account session discovery represents anonymous state without a console-lev
   const userLoginForm = page.locator('form[action="/api/auth/login"]');
   await expect(userLoginForm).toHaveCount(1);
   await expect(userLoginForm.locator('input[name="loginMode"]')).toHaveCount(0);
+  // 用户登录页不携带管理员登录模式，也不提供任何管理员登录入口。
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "使用邮箱登录" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
-    "href",
-    "/admin/login",
-  );
   await expect(page.getByText(/服务端 API 均会拒绝操作/)).toBeVisible();
 });
 
-test("user login directs the platform administrator to the dedicated entry", async ({ page }) => {
+test("user login entry never offers the administrator entry", async ({ page }) => {
   await page.goto("/login?error=ADMIN_LOGIN_ENTRY_REQUIRED");
 
   await expect(page.locator(".auth-error")).toContainText(
-    "管理员账户必须从独立的管理员入口登录",
+    "该账户无法通过用户入口登录",
   );
-  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
-    "href",
-    "/admin/login",
-  );
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(0);
 });
 
 test("local test account establishes a development-only session", async ({ page }) => {

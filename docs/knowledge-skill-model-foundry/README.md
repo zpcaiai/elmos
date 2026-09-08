@@ -1,7 +1,7 @@
 # Knowledge-Skill-Model Foundry v3 integration
 
 This integration turns the pinned 16,007-entry ZIP into a typed control plane
-with 51 exact provider-free semantic handlers, 1,259 conservative catalog
+with 61 exact provider-free semantic handlers, 1,249 conservative catalog
 contracts with distinct host integration routes, and a separately gated
 external-effect boundary. It does not
 reinterpret the archive as trusted instructions and does not claim that its
@@ -28,10 +28,10 @@ executable Python files remain inert input.
 - deterministic compiled-contract v2 catalog binding all 7,860 authoritative
   per-Skill source documents, with 458 BASIC and 852 ENHANCED contracts;
 - 41 pack handlers and 1,310 explicit allowlisted atomic bindings;
-- 51 exact local semantic handlers covering contract/hash/graph, registry and
+- 61 exact local semantic handlers covering contract/hash/graph, registry and
   routing, trust and audit, normalization/provenance, durable experience replay,
   knowledge ingestion, dataset, evidence and serving controls;
-- 1,259 distinct source-digest-bound external adapter identities and privileged
+- 1,249 distinct source-digest-bound external adapter identities and privileged
   Broker operations, with no wildcard dispatcher and no execution fallback;
 - request-bound, policy-gated, durable and non-replayable Broker execution for
   external semantics; direct external Python callbacks are forbidden, route
@@ -48,8 +48,8 @@ executable Python files remain inert input.
 
 ## Status vocabulary
 
-`LOCAL` identifies one of the 51 exact repository-owned semantic handlers;
-`PREPARE_ONLY` remains the catalog semantic state for the 1,259 Skills whose
+`LOCAL` identifies one of the 61 exact repository-owned semantic handlers;
+`PREPARE_ONLY` remains the catalog semantic state for the 1,249 Skills whose
 native behavior is host-owned. `HOST_ROUTE_BOUND` means an exact route exists,
 not that its provider ran. `REQUIRES_ADAPTER` means the requested semantic or
 external effect did not run. `LOCAL_EXECUTED_SELF_ATTESTED` is local engineering

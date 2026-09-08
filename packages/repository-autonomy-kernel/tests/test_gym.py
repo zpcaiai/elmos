@@ -44,8 +44,12 @@ from elmos_autonomy_kernel.gym import (
 from elmos_autonomy_kernel.registry import dispatch
 
 #: The shipped spec package, which is where the three real golden routes live.
-_SPEC_PACKAGE = "/tmp/kernel/elmos-repository-autonomy-kernel-v2.0.0"  # noqa: S108
-SHIPPED_ROUTES = Path(_SPEC_PACKAGE) / "golden-routes"
+_PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+SHIPPED_ROUTES = (
+    _PACKAGE_ROOT / "golden-routes"
+    if (_PACKAGE_ROOT / "golden-routes").is_dir()
+    else Path("/tmp/kernel/elmos-repository-autonomy-kernel-v2.0.0/golden-routes")  # noqa: S108
+)
 FIXTURE = "sha256:" + "f" * 64
 TOOLCHAIN = "image:gym-builder-2026.01"
 GATES = ("baseline-build", "contract-equivalence")

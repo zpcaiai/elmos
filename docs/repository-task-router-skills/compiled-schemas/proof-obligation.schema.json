@@ -1,0 +1,49 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/proof-obligation.v2.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "type": "string"
+    },
+    "preferred_verifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scope": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "statement": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "NOT_RUN",
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "INCONCLUSIVE"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "statement",
+    "scope",
+    "preferred_verifier",
+    "status"
+  ],
+  "type": "object"
+}

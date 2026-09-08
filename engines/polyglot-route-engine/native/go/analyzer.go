@@ -216,7 +216,14 @@ func expression(expr ast.Expr, emittedTarget bool, records map[string]recordDef,
 // semantic reason.
 //
 // A nested `if` keeps its own Init check because the recursion re-enters here.
-func ifStatement(statement *ast.IfStmt, emittedTarget bool, records map[string]recordDef, functionNames map[string]bool) map[string]any {
+func ifStatement(
+	statement *ast.IfStmt,
+	emittedTarget bool,
+	records map[string]recordDef,
+	functionNames map[string]bool,
+	paramNames map[string]bool,
+	scopeVars map[string]bool,
+) map[string]any {
 	if statement.Init != nil {
 		fail("GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET")
 	}
@@ -224,20 +231,33 @@ func ifStatement(statement *ast.IfStmt, emittedTarget bool, records map[string]r
 	if statement.Else != nil {
 		switch alternative := statement.Else.(type) {
 		case *ast.BlockStmt:
-			elseBody = statements(alternative, emittedTarget, records, functionNames)
+			elseBody = statements(alternative, emittedTarget, records, functionNames, paramNames, scopeVars)
 		case *ast.IfStmt:
-			elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records, functionNames)}
+			elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records, functionNames, paramNames, scopeVars)}
 		default:
 			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", statement.Else))
 		}
 	}
 	return map[string]any{
-		"kind": "if", "condition": expression(statement.Cond, emittedTarget, records, functionNames),
-		"then": statements(statement.Body, emittedTarget, records, functionNames), "else": elseBody,
+		"kind":      "if",
+		"condition": expression(statement.Cond, emittedTarget, records, functionNames),
+		"then":      statements(statement.Body, emittedTarget, records, functionNames, paramNames, scopeVars),
+		"else":      elseBody,
 	}
 }
 
-func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]recordDef, functionNames map[string]bool) []map[string]any {
+func statements(
+	block *ast.BlockStmt,
+	emittedTarget bool,
+	records map[string]recordDef,
+	functionNames map[string]bool,
+	paramNames map[string]bool,
+	scopeVars map[string]bool,
+) []map[string]any {
+	currentScope := make(map[string]bool, len(scopeVars))
+	for k, v := range scopeVars {
+		currentScope[k] = v
+	}
 	result := make([]map[string]any, 0, len(block.List))
 	for _, raw := range block.List {
 		switch statement := raw.(type) {
@@ -247,7 +267,7 @@ func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]rec
 			}
 			result = append(result, map[string]any{"kind": "return", "expression": expression(statement.Results[0], emittedTarget, records, functionNames)})
 		case *ast.IfStmt:
-			result = append(result, ifStatement(statement, emittedTarget, records, functionNames))
+			result = append(result, ifStatement(statement, emittedTarget, records, functionNames, paramNames, currentScope))
 		case *ast.DeclStmt:
 			genDecl, ok := statement.Decl.(*ast.GenDecl)
 			if !ok || genDecl.Tok != token.VAR {
@@ -272,9 +292,11 @@ func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]rec
 			if valueSpec.Type == nil {
 				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
 			}
+			varName := valueSpec.Names[0].Name
+			currentScope[varName] = true
 			result = append(result, map[string]any{
 				"kind":       "let",
-				"name":       valueSpec.Names[0].Name,
+				"name":       varName,
 				"type":       canonicalType(valueSpec.Type, records),
 				"expression": expression(valueSpec.Values[0], emittedTarget, records, functionNames),
 			})
@@ -282,7 +304,82 @@ func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]rec
 			if statement.Tok == token.DEFINE {
 				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
 			}
-			fail("GO_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET")
+			if len(statement.Lhs) != 1 || len(statement.Rhs) != 1 {
+				fail("GO_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			ident, ok := statement.Lhs[0].(*ast.Ident)
+			if !ok {
+				fail("GO_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			targetName := ident.Name
+			if paramNames[targetName] {
+				fail("GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:" + targetName)
+			}
+			if !currentScope[targetName] {
+				fail("GO_ASSIGNMENT_TARGET_NOT_DECLARED:" + targetName)
+			}
+			var rhsExpr map[string]any
+			if statement.Tok == token.ASSIGN {
+				rhsExpr = expression(statement.Rhs[0], emittedTarget, records, functionNames)
+			} else {
+				var op string
+				switch statement.Tok {
+				case token.ADD_ASSIGN:
+					op = "+"
+				case token.SUB_ASSIGN:
+					op = "-"
+				case token.MUL_ASSIGN:
+					op = "*"
+				case token.QUO_ASSIGN:
+					op = "/"
+				case token.REM_ASSIGN:
+					op = "%"
+				default:
+					fail(fmt.Sprintf("GO_UNSUPPORTED_COMPOUND_ASSIGN_OPERATOR:%s", statement.Tok))
+				}
+				rhsExpr = map[string]any{
+					"kind":     "binary",
+					"operator": op,
+					"left":     map[string]any{"kind": "name", "value": targetName},
+					"right":    expression(statement.Rhs[0], emittedTarget, records, functionNames),
+				}
+			}
+			result = append(result, map[string]any{
+				"kind":       "assign",
+				"name":       targetName,
+				"expression": rhsExpr,
+			})
+		case *ast.IncDecStmt:
+			ident, ok := statement.X.(*ast.Ident)
+			if !ok {
+				fail("GO_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			targetName := ident.Name
+			if paramNames[targetName] {
+				fail("GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:" + targetName)
+			}
+			if !currentScope[targetName] {
+				fail("GO_ASSIGNMENT_TARGET_NOT_DECLARED:" + targetName)
+			}
+			var op string
+			switch statement.Tok {
+			case token.INC:
+				op = "+"
+			case token.DEC:
+				op = "-"
+			default:
+				fail(fmt.Sprintf("GO_UNSUPPORTED_INCDEC:%s", statement.Tok))
+			}
+			result = append(result, map[string]any{
+				"kind": "assign",
+				"name": targetName,
+				"expression": map[string]any{
+					"kind":     "binary",
+					"operator": op,
+					"left":     map[string]any{"kind": "name", "value": targetName},
+					"right":    map[string]any{"kind": "literal", "value": int64(1)},
+				},
+			})
 		case *ast.BranchStmt:
 			if statement.Label != nil {
 				fail("GO_LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET")
@@ -307,7 +404,7 @@ func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]rec
 				result = append(result, map[string]any{
 					"kind":      "while",
 					"condition": expression(statement.Cond, emittedTarget, records, functionNames),
-					"body":      statements(statement.Body, emittedTarget, records, functionNames),
+					"body":      statements(statement.Body, emittedTarget, records, functionNames, paramNames, currentScope),
 				})
 			} else if statement.Init != nil && statement.Cond != nil && statement.Post != nil {
 				assign, ok := statement.Init.(*ast.AssignStmt)
@@ -359,13 +456,18 @@ func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]rec
 					fail("GO_FOR_POST_NON_MONOTONIC")
 				}
 
+				loopVars := make(map[string]bool, len(currentScope)+1)
+				for k, v := range currentScope {
+					loopVars[k] = v
+				}
+				loopVars[varName] = true
 				forLoop := map[string]any{
 					"kind":  "for",
 					"name":  varName,
 					"type":  "integer",
 					"start": startExpr,
 					"end":   endExpr,
-					"body":  statements(statement.Body, emittedTarget, records, functionNames),
+					"body":  statements(statement.Body, emittedTarget, records, functionNames, paramNames, loopVars),
 				}
 				if stepExpr != nil {
 					forLoop["step"] = stepExpr
@@ -878,14 +980,19 @@ func parseSingleFunc(
 		fail("GO_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET")
 	}
 	parameters := []map[string]string{}
+	paramNames := make(map[string]bool)
+	knownVars := make(map[string]bool)
 	for _, field := range function.Type.Params.List {
 		if len(field.Names) != 1 {
 			fail("GO_ONE_NAME_PER_PARAMETER_REQUIRED")
 		}
+		pName := field.Names[0].Name
 		parameters = append(parameters, map[string]string{
-			"name": field.Names[0].Name,
+			"name": pName,
 			"type": canonicalType(field.Type, recordMap),
 		})
+		paramNames[pName] = true
+		knownVars[pName] = true
 	}
 	if function.Type.Results == nil || len(function.Type.Results.List) != 1 {
 		fail("GO_SINGLE_RETURN_TYPE_REQUIRED")
@@ -894,7 +1001,7 @@ func parseSingleFunc(
 		"name":        function.Name.Name,
 		"parameters":  parameters,
 		"return_type": canonicalType(function.Type.Results.List[0].Type, recordMap),
-		"body":        statements(function.Body, emittedTarget, recordMap, functionNames),
+		"body":        statements(function.Body, emittedTarget, recordMap, functionNames, paramNames, knownVars),
 	}
 }
 

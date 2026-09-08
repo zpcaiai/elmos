@@ -1,0 +1,665 @@
+schema_version: ao.v1
+tasks:
+- id: AO-T01
+  batch: B0
+  title: 核对真实owner和调用链
+  status: not_started
+  conditional: false
+  depends_on: []
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 读取实际源码/调用者/测试，填写端口路径与revision。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-001
+  - AO-AC-002
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T02
+  batch: B0
+  title: 冻结基线、范围和ADR
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T01
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 确定默认B0+B1、主目标、环境模型数据与冷暖策略。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-003
+  - AO-AC-004
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T03
+  batch: B0
+  title: 映射宿主授权与版本
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T01
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 复用身份、snapshot、lease、fence、Result Commit和K8。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-005
+  - AO-AC-006
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T04
+  batch: B0
+  title: 建立评测与contract集合
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T02
+  - AO-T03
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 包含exact/语义/跨语言/SQL/无答案、撤权、删档与注入。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-007
+  - AO-AC-008
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T05
+  batch: B1
+  title: 实现EvidenceContext薄接口
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T03
+  - AO-T04
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 复用现有检索、权限和源码读取，统一typed错误。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-009
+  - AO-AC-010
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T06
+  batch: B1
+  title: 精确与关键词快路径
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T05
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 路径/符号精确匹配，关键词查询有预算和安全分析器。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-011
+  - AO-AC-012
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T07
+  batch: B1
+  title: 证据打包与引用校验
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T06
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 模型tokenizer预算、CAS摘要、UTF8锚点与事实类别。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-013
+  - AO-AC-014
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T08
+  batch: B1
+  title: 缓存、撤权与tombstone
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T07
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 完整版本/权限key；命中鉴权，删除先同步拒读。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-015
+  - AO-AC-016
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T09
+  batch: B1
+  title: 真实解释入口及回滚
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T08
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 接一个现有前端或API消费者，真实E2E和feature flag。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-017
+  - AO-AC-018
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T10
+  batch: B2
+  title: 选择搜索后端
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 按实际设施负载比较ES/PG方案，记录版本许可ADR。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-019
+  - AO-AC-020
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T11
+  batch: B2
+  title: 语义单元及增量索引
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T10
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 复用parser/LSP/IR；key包含blob与依赖配置。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-021
+  - AO-AC-022
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T12
+  batch: B2
+  title: generation、outbox与对账
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T11
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 校验后CAS切换，消费去重/乱序/tombstone。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-023
+  - AO-AC-024
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T13
+  batch: B2
+  title: 混合召回和图扩展
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T12
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 逐lane授权过滤、按anchor去重RRF、图有界。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-025
+  - AO-AC-026
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T14
+  batch: B2
+  title: 重排对照与灰度
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T13
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 精确路径绕过rerank，冻结profile并按scope启用。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-027
+  - AO-AC-028
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T15
+  batch: B3
+  title: AgentSubflow宿主适配
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: refs-only状态、原网关与唯一费用账本。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-029
+  - AO-AC-030
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T16
+  batch: B3
+  title: 证据教学图
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T15
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 检索事实解释提问等待恢复，普通问答保留快路径。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-031
+  - AO-AC-032
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T17
+  batch: B3
+  title: 有界诊断与修复
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T15
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 先规则后最小候选，round/budget/no-progress约束。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-033
+  - AO-AC-034
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T18
+  batch: B3
+  title: 动作identity、unknown与围栏
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T17
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: intent绑定批准，稳定ID、receipt、提交与对账。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-035
+  - AO-AC-036
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T19
+  batch: B3
+  title: 原生恢复与版本资格
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T16
+  - AO-T18
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 真实持久checkpointer跨新进程测试及图升级方案。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-037
+  - AO-AC-038
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T20
+  batch: B4
+  title: Spring迁移规则和验证
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 版本/配置筛选规则，做真实业务行为切片。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-039
+  - AO-AC-040
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T21
+  batch: B4
+  title: 跨语言差分及教学
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  - AO-T17
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 消费原映射，先验业务检查点和边界输入。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-041
+  - AO-AC-042
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T22
+  batch: B4
+  title: 生成模板和经验筛选
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 合格模板带许可/依赖/前提/反例，生成运行manifest。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-043
+  - AO-AC-044
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T23
+  batch: B4
+  title: SQL原生差分
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 按dialect/version规则及实际源目标数据库验证。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-045
+  - AO-AC-046
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T24
+  batch: B5
+  title: Dify身份与许可
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 明确最终用户scope与service token映射，锁版本许可。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-047
+  - AO-AC-048
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T25
+  batch: B5
+  title: Dify外部知识适配
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T24
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 共享上下文、anchor、删除和归一化scoring profile。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-049
+  - AO-AC-050
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T26
+  batch: B5
+  title: 可选DSL和LangChain目标
+  status: not_started
+  conditional: true
+  depends_on:
+  - AO-T25
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 只实现选择的目标，网关/依赖/Secret与账本完整。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-051
+  - AO-AC-052
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T27
+  batch: B6
+  title: 真实E2E与配对评测
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T09
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 同模型环境版本scope，保留全部失败超时和费用。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-053
+  - AO-AC-054
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T28
+  batch: B6
+  title: 安全与故障注入
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T27
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 撤权/注入/泄漏/超时/取消/fence/unknown全路径。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-055
+  - AO-AC-056
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T29
+  batch: B6
+  title: 可回滚灰度和兼容
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T28
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 只读shadow→scope灰度，版本/flag兼容与回滚。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-057
+  - AO-AC-058
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate
+- id: AO-T30
+  batch: B6
+  title: 宿主独立审批
+  status: not_started
+  conditional: false
+  depends_on:
+  - AO-T29
+  inputs:
+  - approved host scope
+  - real source/revision mapping
+  - predecessor evidence
+  changes: 真实环境证据、签名与K8/原发布体系审查scope。
+  deliverables:
+  - actual diff or verified reuse
+  - host test logs/digests
+  - rollback
+  acceptance_ids:
+  - AO-AC-059
+  - AO-AC-060
+  host_test_command: null
+  rollback: feature flag / validated old read or graph/index route; keep evidence
+  time_reporting: measured machine wall-clock; approval wait separate

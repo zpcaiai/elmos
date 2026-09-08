@@ -1,0 +1,12 @@
+{
+  "schema_version": "ao.v1",
+  "run_ref": "run1",
+  "subflow": "evidence_tutor",
+  "graph_version": "1",
+  "scope_ref": "scope1",
+  "evidence_refs": [
+    "e1"
+  ],
+  "budget_ref": "b1",
+  "checkpoint_ref": null
+}

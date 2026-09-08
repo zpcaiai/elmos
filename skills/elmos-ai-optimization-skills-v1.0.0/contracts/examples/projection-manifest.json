@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.v1",
+  "tenant": "t",
+  "repository": "shop",
+  "snapshot": "s1",
+  "generation": "g1",
+  "expected_previous": null,
+  "state": "VALIDATED",
+  "expected_count": 2,
+  "actual_count": 2,
+  "toolchain_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "embedding_space": null
+}

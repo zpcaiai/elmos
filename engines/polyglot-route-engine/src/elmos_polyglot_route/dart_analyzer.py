@@ -30,8 +30,8 @@ from .toolchains import ExactToolchain, sanitized_subprocess_env
 
 ENGINE_ROOT = Path(__file__).resolve().parents[2]
 _HELPER = ENGINE_ROOT / "native" / "dart" / "analyzer.dart"
-_HELPER_SHA256 = "d0a577ad9a7baafb96ec09f58b42123ddbda57a0d70ee3ebf2bf242b1495c7df"
-_HELPER_BYTES = 26_676
+_HELPER_SHA256 = "5d11fb8ad05af9a680490b116c5c4c8f0b2635a275ec9e07c5ff878f6342e425"
+_HELPER_BYTES = 38_462
 _MAX_SOURCE_BYTES = 2_000_000
 
 _FLUTTER_VERSION = "3.44.1"

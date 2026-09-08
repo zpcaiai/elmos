@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:qualification-report",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "environment_kind": {
+      "type": "string",
+      "enum": [
+        "reference_only",
+        "actual_elmos"
+      ]
+    },
+    "host_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "enabled_features": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "failed",
+              "not_run",
+              "blocked"
+            ]
+          },
+          "artifact": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "artifact",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "production_qualified": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "environment_kind",
+    "host_revision",
+    "enabled_features",
+    "checks",
+    "production_qualified"
+  ],
+  "additionalProperties": false
+}

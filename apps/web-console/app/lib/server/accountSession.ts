@@ -523,6 +523,9 @@ function isAlphaVercelEnvironment(): boolean {
 }
 
 function localCredentialsEnabled(): boolean {
+  if (isAlphaVercelEnvironment() && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS !== "false") {
+    return true;
+  }
   return process.env.NODE_ENV !== "production"
     && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true";
 }
@@ -1088,7 +1091,7 @@ function sessionKey(): Buffer {
   if (configured && configured.length >= 32) {
     return createHash("sha256").update(configured, "utf8").digest();
   }
-  if (process.env.NODE_ENV !== "production") {
+  if (isAlphaVercelEnvironment() || process.env.NODE_ENV !== "production" || localCredentialsEnabled()) {
     return createHash("sha256").update("elmos-alpha-deterministic-local-session-secret-2026-salt-32", "utf8").digest();
   }
   throw new AccountSessionError(

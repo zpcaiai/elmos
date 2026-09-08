@@ -212,7 +212,7 @@ class PackageIntegrationTests(unittest.TestCase):
         self.assertEqual(report["source_execution"], "NEVER_EXECUTED")
         self.assertEqual(report["counts"]["dependency_edges"], 9_090)
         self.assertEqual(report["evaluation_counts"]["total"], 31_440)
-        self.assertEqual(report["capability_states"], {"PREPARE_ONLY": 1_259, "LOCAL": 51})
+        self.assertEqual(report["capability_states"], {"PREPARE_ONLY": 1_244, "LOCAL": 66})
         self.assertEqual(report["external_evidence_status"], "NOT_RUN")
         self.assertEqual(report["certification_status"], "NOT_CERTIFIED")
         gap_codes = {gap["code"] for gap in report["gaps"]}

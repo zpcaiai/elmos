@@ -937,24 +937,12 @@ _INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
     "rust": 300,
     "kotlin": 300,
     "csharp": 240,
-    # A cold Maven/Spring Boot integration run has to initialise the test
-    # application context while the generated runtime and its isolated
-    # PostgreSQL instance are already active.  The former 240 second bound was
-    # lower than an observed clean-worktree run on a loaded builder: the
-    # service answered its exact health contract, but Surefire was killed while
-    # starting ProductionIntegrationTest.  Keep the run bounded by the
-    # per-case 1,800 second matrix budget while giving the real integration
-    # scenario enough time to finish under cold-cache contention.
-    "java": 600,
+    "java": 240,
 }
 
 _HARNESS_STARTUP_TIMEOUT_SECONDS: dict[str, int] = {
-    # The production harness starts an isolated PostgreSQL instance before a
-    # no-daemon Gradle launch.  The ordinary in-memory Kotlin runtime already
-    # uses the probe's maximum bounded startup budget; keep the PostgreSQL
-    # profile consistent so a cold Gradle compiler does not prevent the health
-    # and integration checks from running.
     "kotlin": 300,
+    "rust": 300,
 }
 
 # Python declares its integration command inline in ``runtime_commands``
@@ -1078,43 +1066,25 @@ def _harness_runtime_plan(
         integration_environment[ENV_OIDC_JWKS_FILE] = str(state / "oidc-jwks.json")
         integration_environment[ENV_OIDC_PRIVATE_KEY_FILE] = str(state / "oidc-private-key.pem")
 
-    integration_command: list[str] | None = None
-    if integration is not None:
-        runner_name, runner_arguments = integration
-        runner = (
-            next((tool for tool in tools if Path(tool).name == runner_name), None)
-            if tools is not None
-            else None
-        ) or runner_name
-        integration_command = [runner, *runner_arguments]
-
     if blocking is not None:
-        blocked_plan: dict[str, Any] = {
+        return {
             "language": language,
             "cwd": str(workspace),
             "command": [interpreter or "python3", "scripts/local_runtime.py"],
             "environment": {"PORT": str(port), ENV_RUNTIME_STATE_DIR: str(state)},
             "providers": ["postgresql"],
             "port": port,
-            "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
             # A production profile owes integration evidence. Recording that
             # obligation here -- even on the blocked plan -- stops a probe that
             # merely answered /health from being reported as a pass.
             "requires_integration": True,
-            "integration_environment": integration_environment,
-            "integration_timeout_seconds": _INTEGRATION_TIMEOUT_SECONDS.get(language, 120),
             "execution_status": "NOT_RUN",
             "blocking_reason": blocking,
         }
-        # The plan must retain its exact integration contract even when the
-        # current host cannot execute it. This is declarative metadata only;
-        # execution_status remains NOT_RUN and the blocking reason remains
-        # authoritative, so a missing toolchain can never become a green run.
-        if integration_command is not None:
-            blocked_plan["integration_command"] = integration_command
-        return blocked_plan
 
-    assert interpreter is not None and tools is not None and integration_command is not None
+    assert interpreter is not None and tools is not None and integration is not None
+    runner_name, runner_arguments = integration
+    runner = next((tool for tool in tools if Path(tool).name == runner_name), None) or runner_name
     return {
         "language": language,
         "cwd": str(workspace),
@@ -1130,7 +1100,7 @@ def _harness_runtime_plan(
         "port": port,
         "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
         "requires_integration": True,
-        "integration_command": integration_command,
+        "integration_command": [runner, *runner_arguments],
         "integration_environment": integration_environment,
         # Compiled targets build their integration binary as part of this step.
         # On a cold cache that is comfortably slower than an interpreted test

@@ -79,6 +79,21 @@ LOCAL_SEMANTIC_SKILLS = frozenset(
         "repository-incremental-ingestion",
         "runtime-trace-ingestion",
         "source-freshness-and-expiry",
+        "contract-migration-manager",
+        "extension-sdk-and-codegen",
+        "archive-and-folder-ingestion",
+        "document-structure-ingestion",
+        "ingestion-quarantine-gate",
+        "multimodal-artifact-ingestion",
+        "symbol-and-reference-graph",
+        "call-graph-construction",
+        "control-flow-graph",
+        "semantic-diff-and-impact-analysis",
+        "skill-efficiency-evaluation",
+        "skill-output-evaluation",
+        "skill-process-evaluation",
+        "skill-robustness-evaluation",
+        "skill-trigger-evaluation",
     }
 )
 

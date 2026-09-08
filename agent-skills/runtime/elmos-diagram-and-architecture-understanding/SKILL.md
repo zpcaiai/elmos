@@ -82,8 +82,8 @@ description: "解析流程图、架构图、数据流图、UML、ER 图和手绘
 - Source contract SHA-256: `cfc58acb66fcb61c8d4f61166a165a5f01fe99e97c1c0a3e3c7ea9aefae2ec56`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_diagram_and_architecture_understanding`
 - Runtime phase: `content`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-image-ocr-and-preprocessing`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S08-01`, `S08-02`, `S08-03`, `S08-04`
 - Generated contract: `compiled-contract.json`

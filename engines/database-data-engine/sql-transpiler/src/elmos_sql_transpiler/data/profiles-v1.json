@@ -151,15 +151,15 @@
       "sourceProfile": "mysql-8.4.10-lts",
       "targetProfile": "sqlite-3.53.3",
       "feature": "GROUP_CONCAT_ORDER_BY",
-      "state": "BLOCKED",
-      "reason": "SQLite GROUP_CONCAT has no equivalent aggregate-local ORDER BY syntax."
+      "state": "TYPED_REWRITE",
+      "reason": "The aggregate ORDER BY is canonicalized in the typed AST and lowered into SQLite's native GROUP_CONCAT(expr, sep ORDER BY ...) form (rule core.lower-sqlite-group-concat-order). SQLite has supported aggregate ORDER BY since 3.44.0 and the pinned 3.53.3 host executes the emitted SQL with correct ordering, separator, and multi-term DESC semantics. GROUP_CONCAT(DISTINCT ... ORDER BY ...) remains fail-closed: SQLite DISTINCT aggregates take exactly one argument. Result equivalence against a real MySQL source stays NOT_RUN."
     },
     {
       "sourceProfile": "oracle-26ai-ee",
       "targetProfile": "mysql-8.4.10-lts",
       "feature": "ORACLE_TRUNC_DATETIME_FORMAT",
-      "state": "BLOCKED",
-      "reason": "The exact target emitter reports unsupported Oracle datetime TRUNC format semantics."
+      "state": "TYPED_REWRITE_ALLOW_LIST",
+      "reason": "Oracle TRUNC date formats are normalized to canonical units from an exact allow-list (YYYY/SYYYY/YEAR, MM/MON/MONTH, DD/DDD/J; rule core.normalize-oracle-trunc-format) before emission, so MySQL renders faithful month/year starts via STR_TO_DATE and day truncation via DATE(). Quarter, week, ISO-year, day-of-week, time-of-day, and single-argument (numeric-or-date ambiguous) TRUNC stay fail-closed. Numeric TRUNC(x, d) is typed separately and maps to TRUNCATE. Source/target execution stays NOT_RUN."
     }
   ],
   "extensions": [

@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:context-response",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "insufficient_evidence"
+      ]
+    },
+    "scope_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "acl_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deletion_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "lexical",
+        "hybrid"
+      ]
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "model_calls": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "embedding_calls": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "budget_unit": {
+      "type": "string",
+      "enum": [
+        "utf8_bytes",
+        "model_tokens"
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor": {
+            "type": "object",
+            "properties": {
+              "repository": {
+                "type": "string",
+                "minLength": 1
+              },
+              "snapshot": {
+                "type": "string",
+                "minLength": 1
+              },
+              "generation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blob_digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "start_byte": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end_byte": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "symbol": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "repository",
+              "snapshot",
+              "generation",
+              "path",
+              "blob_digest",
+              "start_byte",
+              "end_byte",
+              "symbol"
+            ],
+            "additionalProperties": false
+          },
+          "text": {
+            "type": "string"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "trust": {
+            "type": "string",
+            "enum": [
+              "source-data-not-instructions"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "anchor",
+          "text",
+          "truncated",
+          "trust"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "scope_digest",
+    "acl_epoch",
+    "deletion_epoch",
+    "route",
+    "methods",
+    "model_calls",
+    "embedding_calls",
+    "budget_unit",
+    "items",
+    "note"
+  ],
+  "additionalProperties": false
+}

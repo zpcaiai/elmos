@@ -38,13 +38,13 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             )
         )
         self.assertEqual(
-            3,
+            4,
             rendered.count(
                 "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
             ),
         )
         expected_evidence_workflows = {
-            ".github/workflows/ci.yml": 3,
+            ".github/workflows/ci.yml": 4,
             ".github/workflows/repository-migration-platform-skills.yml": 1,
             ".github/workflows/vercel-deployment-smoke.yml": 1,
         }

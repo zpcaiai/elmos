@@ -1,0 +1,57 @@
+name: full-repository-adaptive-cost-optimized-run
+version: 2.0.0
+steps:
+  - skill: elmos-model-selection-controller
+  - skill: elmos-requirement-normalizer
+  - skill: elmos-repo-intake
+  - skill: elmos-architecture-indexer
+  - skill: elmos-repository-intelligence-graph
+  - skill: elmos-implicit-requirement-miner
+  - skill: elmos-behavioral-scenario-graph
+  - skill: elmos-architecture-invariant-ledger
+  - skill: elmos-change-impact-analyzer
+  - when_uncertainty_high:
+      - skill: elmos-uncertainty-exploration-planner
+  - skill: elmos-baseline-golden-snapshotter
+  - skill: elmos-semantic-seam-detector
+  - skill: elmos-adaptive-hierarchical-planner
+  - refine_frontier:
+      - skill: elmos-task-decomposer
+      - skill: elmos-task-granularity-controller
+      - skill: elmos-atomicity-validator
+      - skill: elmos-contract-boundary-generator
+      - skill: elmos-proof-obligation-generator
+  - skill: elmos-task-dag-builder
+  - skill: elmos-integration-edge-planner
+  - skill: elmos-plan-graph-verifier
+  - foreach_ready_task:
+      - skill: elmos-complexity-estimator
+      - skill: elmos-risk-classifier
+      - skill: elmos-context-slicer
+      - skill: elmos-cost-performance-router
+  - skill: elmos-budget-planner
+  - skill: elmos-eta-estimator
+  - skill: elmos-critical-path-resource-scheduler
+  - execution_loop:
+      - skill: elmos-wave-scheduler
+      - per_task:
+          - skill: elmos-worktree-manager
+          - skill: elmos-worker-prompt-builder
+          - skill: elmos-worker-executor
+          - skill: elmos-deterministic-validator
+          - on_failure:
+              - skill: elmos-failure-classifier
+              - skill: elmos-retry-escalation-controller
+          - when_review_required:
+              - skill: elmos-patch-reviewer
+      - skill: elmos-integration-manager
+      - skill: elmos-semantic-conflict-detector
+      - skill: elmos-incremental-regression-gate
+      - on_replan_trigger:
+          - skill: elmos-dynamic-replanner
+          - skill: elmos-plan-diff-audit-journal
+          - skill: elmos-plan-graph-verifier
+          - skill: elmos-critical-path-resource-scheduler
+  - skill: elmos-repository-certifier
+  - skill: elmos-telemetry-learner
+  - skill: elmos-decomposition-telemetry-learner

@@ -11,7 +11,7 @@ metadata:
   normalized_namespace: "autonomous-qa-self-healing-v1"
   runtime_module: "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
   runtime_module_sha256: "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17"
-  runtime_authority_sha256: "sha256:b6437e80cab248e00ae3e8461dc7e59fecf8968399d85aff020f2a8f246c2b84"
+  runtime_authority_sha256: "sha256:3f08a114e06db9977e12d12656babdb84094bbccb09d1df0d11b644b0f2183ec"
   runtime_dispatcher: "dispatch_skill"
   runtime_skill_key: "30-checkpoint-resume-idempotency"
   runtime_handler: "execute_30_checkpoint_resume_idempotency"
