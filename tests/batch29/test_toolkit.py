@@ -4721,6 +4721,36 @@ print('\\n'.join(failures))
                 frozenset({expected}),
             )
 
+    def test_missing_symbol_negative_normalizes_only_exact_native_wrapper(self):
+        runner = load_polyglot_runner()
+        expected = runner.MISSING_SYMBOL_FAILURE
+        wrapped = f"NATIVE_ANALYZER_FAILED:/trusted/analyzer:{expected}"
+
+        self.assertEqual(
+            runner.missing_symbol_stable_route_error(expected, "go"), expected
+        )
+        self.assertEqual(
+            runner.missing_symbol_stable_route_error(wrapped, "go"), expected
+        )
+        go_wrapped = f"{wrapped}\nexit status 2"
+        self.assertEqual(
+            runner.missing_symbol_stable_route_error(go_wrapped, "rust"),
+            go_wrapped,
+        )
+        self.assertEqual(
+            runner.missing_symbol_stable_route_error(go_wrapped, "go"), expected
+        )
+        for rejected in (
+            f"NATIVE_ANALYZER_FAILED:relative/analyzer:{expected}",
+            f"NATIVE_ANALYZER_FAILED:/trusted/analyzer:{expected}:extra",
+            f"NATIVE_ANALYZER_FAILED:/trusted/analyzer:{expected}\nforged",
+            "NATIVE_ANALYZER_FAILED:/trusted/analyzer:SOURCE_PARSE_FAILED",
+        ):
+            self.assertEqual(
+                runner.missing_symbol_stable_route_error(rejected, "go"),
+                rejected,
+            )
+
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,
     ):
