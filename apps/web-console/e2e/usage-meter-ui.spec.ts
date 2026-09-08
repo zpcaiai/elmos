@@ -182,9 +182,10 @@ test.describe.serial("实时账户用量", () => {
       permissions: ["workspace:view", "admin:read", "usage:read"],
     });
     await page.goto("/pricing");
-    await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
-    await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(4);
-    for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {
+    const planSection = page.getByRole("region", { name: "选择适合当前阶段的计划" });
+    await expect(planSection.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
+    await expect(planSection.getByRole("button", { name: "等待开放" })).toHaveCount(2);
+    for (const button of await planSection.getByRole("button", { name: "等待开放" }).all()) {
       await expect(button).toBeDisabled();
     }
     await page.getByLabel("用量租户标识").fill(tenantId);

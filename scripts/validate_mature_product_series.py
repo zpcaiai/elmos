@@ -17,8 +17,6 @@ BATCHES = {
     # counts recorded by the provenance manifests under docs/. Later formal,
     # production-qualification, and evidence-protocol extensions are additive
     # members of the same batch namespaces and must be validated here too.
-    # The VC++6 cross-host campaign adds one exact governed toolchain-binding
-    # Schema while leaving the immutable Skill IDs unchanged.
     29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 14},
     30: {"skills": 20, "first_id": 1161, "last_id": 1180, "schemas": 15},
     31: {"skills": 22, "first_id": 1181, "last_id": 1202, "schemas": 27},
