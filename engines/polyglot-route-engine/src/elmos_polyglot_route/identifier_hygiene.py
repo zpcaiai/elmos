@@ -143,6 +143,17 @@ _CPP_RESERVED = _words(
     """
 )
 
+_VCPP6_RESERVED = _CPP_RESERVED | _words(
+    """
+    __asm __based __cdecl __declspec __except __fastcall __finally __inline
+    __int8 __int16 __int32 __int64 __leave __multiple_inheritance __single_inheritance
+    __stdcall __try __uuidof __virtual_inheritance _asm _based _cdecl _declspec
+    _except _fastcall _finally _inline _int8 _int16 _int32 _int64 _leave
+    _multiple_inheritance _single_inheritance _stdcall _try _uuidof
+    _virtual_inheritance
+    """
+)
+
 _OBJC_RESERVED = _words(
     """
     auto break case char const continue default do double else enum extern float
@@ -312,6 +323,15 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         elmos_harness_fp64 elmos_harness_hex_utf8 actual_0
         """
     ),
+    "vcpp6": _words(
+        """
+        main std migrated
+        ElmosCheckedAdd ElmosCheckedSub ElmosCheckedMul ElmosCheckedDiv
+        ElmosCheckedMod ElmosNonZero
+        elmos_harness_fp64_bits elmos_harness_same_fp64
+        elmos_harness_fp64 elmos_harness_hex_utf8 actual_0
+        """
+    ),
     "objc": _words(
         """
         main BOOL YES NO NSInteger NSUInteger int64_t uint64_t nil Nil
@@ -398,6 +418,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "go": _GO_RESERVED,
     "rust": _RUST_RESERVED,
     "cpp": _CPP_RESERVED,
+    "vcpp6": _VCPP6_RESERVED,
     "objc": _OBJC_RESERVED,
     "swift": _SWIFT_RESERVED,
     "php": _PHP_RESERVED,
@@ -416,6 +437,7 @@ _DIALECT: dict[Language, str] = {
     "go": "go-1.25.0",
     "rust": "rust-1.89.0-edition-2021",
     "cpp": "cpp-20-apple-clang-21.0.0",
+    "vcpp6": "visual-cpp-6.0-sp6-typed-pure-module-v1",
     "objc": "objective-c-c17-apple-clang-21.0.0",
     "swift": "swift-6.3.3",
     "php": _PHP_DIALECT,
@@ -426,6 +448,7 @@ _DIALECT: dict[Language, str] = {
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
     "cpp": (r"^__", r"^_[A-Z]"),
+    "vcpp6": (r"^__", r"^_[A-Z]"),
     "objc": (r"^__", r"^_[A-Z]"),
     # A leading underscore is library-private in Dart. Repository assembly
     # imports every generated function from ``lib/main.dart`` to force it into

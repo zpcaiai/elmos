@@ -87,6 +87,10 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     # uses Long and rejects literals/results outside the signed 32-bit domain;
     # it must never be described as the full canonical int64 profile.
     "vb6": {"integer": "Long", "number": "Double", "boolean": "Boolean", "string": "String"},
+    # Visual C++ 6.0 predates <cstdint>; its exact signed 64-bit scalar is
+    # ``__int64``. The bounded profile is deliberately C++98-era and excludes
+    # MFC, ATL, COM, Win32 handles, pointers, references and object ownership.
+    "vcpp6": {"integer": "__int64", "number": "double", "boolean": "bool", "string": "std::string"},
 }
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
@@ -101,6 +105,7 @@ _BRACE_LANGUAGES = frozenset(
         "go",
         "rust",
         "cpp",
+        "vcpp6",
         "objc",
         "swift",
         "php",
@@ -108,7 +113,7 @@ _BRACE_LANGUAGES = frozenset(
     }
 )
 _SEMICOLON_LANGUAGES = frozenset(
-    {"java", "csharp", "typescript", "react", "javascript", "rust", "cpp", "objc", "php", "flutter"}
+    {"java", "csharp", "typescript", "react", "javascript", "rust", "cpp", "vcpp6", "objc", "php", "flutter"}
 )
 
 #: Targets that place the function body inside a type declaration, so the
@@ -612,6 +617,74 @@ _CPP_HELPERS: dict[str, str] = {
 }
 
 
+#: Visual C++ 6.0 has no standard fixed-width integer header, no compiler
+#: overflow builtins and only the pre-standard ``i64`` literal suffix. Each
+#: guard proves the operation is in range before evaluating it, so no signed
+#: overflow is invoked merely while checking for overflow.
+_VCPP6_HELPERS: dict[str, str] = {
+    "checked_add": (
+        "static __int64 ElmosCheckedAdd(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if ((right > 0 && left > maximum - right) || (right < 0 && left < minimum - right)) {\n"
+        f'        throw "{_OVERFLOW_MESSAGE}";\n'
+        "    }\n"
+        "    return left + right;\n"
+        "}"
+    ),
+    "checked_sub": (
+        "static __int64 ElmosCheckedSub(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if ((right < 0 && left > maximum + right) || (right > 0 && left < minimum + right)) {\n"
+        f'        throw "{_OVERFLOW_MESSAGE}";\n'
+        "    }\n"
+        "    return left - right;\n"
+        "}"
+    ),
+    "checked_mul": (
+        "static __int64 ElmosCheckedMul(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if (left != 0 && right != 0) {\n"
+        "        if ((left == -1 && right == minimum) || (right == -1 && left == minimum)) {\n"
+        f'            throw "{_OVERFLOW_MESSAGE}";\n'
+        "        }\n"
+        "        if ((left > 0 && right > 0 && left > maximum / right) ||\n"
+        "            (left > 0 && right < 0 && right < minimum / left) ||\n"
+        "            (left < 0 && right > 0 && left < minimum / right) ||\n"
+        "            (left < 0 && right < 0 && left < maximum / right)) {\n"
+        f'            throw "{_OVERFLOW_MESSAGE}";\n'
+        "        }\n"
+        "    }\n"
+        "    return left * right;\n"
+        "}"
+    ),
+    "checked_div": (
+        "static __int64 ElmosCheckedDiv(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        f'    if (right == 0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        f'    if (left == minimum && right == -1) throw "{_OVERFLOW_MESSAGE}";\n'
+        "    return left / right;\n"
+        "}"
+    ),
+    "checked_mod": (
+        "static __int64 ElmosCheckedMod(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        f'    if (right == 0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        f'    if (left == minimum && right == -1) throw "{_OVERFLOW_MESSAGE}";\n'
+        "    return left % right;\n"
+        "}"
+    ),
+    "non_zero_double": (
+        "static double ElmosNonZero(double value) {\n"
+        f'    if (value == 0.0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        "    return value;\n"
+        "}"
+    ),
+}
+
+
 #: Objective-C is C for the scalar arithmetic, so it inherits the same
 #: undefined behaviour and needs the same guards; NSException is the failure
 #: mode that reaches the harness.
@@ -825,6 +898,7 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "rust": _RUST_HELPERS,
     "swift": _SWIFT_HELPERS,
     "cpp": _CPP_HELPERS,
+    "vcpp6": _VCPP6_HELPERS,
     "objc": _OBJC_HELPERS,
     "php": _PHP_HELPERS,
     "flutter": _DART_HELPERS,
@@ -1033,6 +1107,10 @@ def _integer_literal(language: Language, value: int) -> str:
         # VB parses -2147483648 as unary minus applied to an out-of-range
         # positive literal.  A hexadecimal Long is the one exact spelling.
         return "&H80000000" if value == -(2**31) else f"{value}&"
+    if language == "vcpp6":
+        if value == types.INTEGER_MIN:
+            return "(-9223372036854775807i64 - 1i64)"
+        return f"{value}i64" if not -(2**31) <= value <= 2**31 - 1 else str(value)
     if language == "flutter":
         return str(value)
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
@@ -1085,9 +1163,10 @@ def _string_literal(language: Language, value: str) -> str:
         # including a literal newline and raw UTF-8 -- stands for itself.
         escaped = value.replace("\\", "\\\\").replace("'", "\\'")
         return f"'{escaped}'"
-    if language == "vb6":
+    if language in {"vb6", "vcpp6"}:
         if any(ord(character) > 127 for character in value):
-            raise RouteError("VB6_NON_ASCII_STRING_REQUIRES_EXPLICIT_CODEPAGE_PROFILE")
+            raise RouteError(f"{language.upper()}_NON_ASCII_STRING_REQUIRES_EXPLICIT_CODEPAGE_PROFILE")
+    if language == "vb6":
         return '"' + value.replace('"', '""') + '"'
     if language == "kotlin":
         # `$` opens a string template in Kotlin: `"a$b"` is a reference to `b`,
@@ -1187,6 +1266,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "/": ("elmos_checked_div", ("checked_div",)),
         "%": ("elmos_checked_mod", ("checked_mod",)),
     },
+    "vcpp6": {
+        "+": ("ElmosCheckedAdd", ("checked_add",)),
+        "-": ("ElmosCheckedSub", ("checked_sub",)),
+        "*": ("ElmosCheckedMul", ("checked_mul",)),
+        "/": ("ElmosCheckedDiv", ("checked_div",)),
+        "%": ("ElmosCheckedMod", ("checked_mod",)),
+    },
     "php": {
         "+": ("elmos_checked_add", ("checked_add",)),
         "-": ("elmos_checked_sub", ("checked_sub",)),
@@ -1233,6 +1319,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "swift": ("elmosNonZero", "non_zero_double"),
     "kotlin": ("elmosNonZero", "non_zero_double"),
     "cpp": ("elmos_non_zero", "non_zero_double"),
+    "vcpp6": ("ElmosNonZero", "non_zero_double"),
     "objc": ("ElmosNonZero", "non_zero_double"),
     "php": ("elmos_non_zero_float", "non_zero_float"),
     "flutter": ("_elmosNonZero", "non_zero_double"),
@@ -1562,6 +1649,7 @@ _LET_SPELLING: dict[Language, str] = {
     "go": "var {name} {type} = {value}",
     "rust": "let {name}: {type} = {value}",
     "cpp": "const {type} {name} = {value}",
+    "vcpp6": "const {type} {name} = {value}",
     "objc": "const {type} {name} = {value}",
     "swift": "let {name}: {type} = {value}",
     "php": "{name} = {value}",
@@ -1578,6 +1666,7 @@ _MUTABLE_LET_SPELLING: dict[Language, str] = {
     "go": "var {name} {type} = {value}",
     "rust": "let mut {name}: {type} = {value}",
     "cpp": "{type} {name} = {value}",
+    "vcpp6": "{type} {name} = {value}",
     "objc": "{type} {name} = {value}",
     "swift": "var {name}: {type} = {value}",
     "php": "{name} = {value}",
@@ -2134,6 +2223,17 @@ def emit(
         helpers = _helper_sources(context)
         body = "\n\n".join([functions, *helpers])
         return _emitted_file(context, "migrated.bas", "Option Explicit\n\n" + body + "\n")
+    if target == "vcpp6":
+        if emitter_ir.records:
+            raise RouteError("VCPP6_RECORD_LOWERING_OUTSIDE_BOUNDED_PROFILE")
+        functions = "\n\n".join(_function(context, function) for function in sorted_functions)
+        helpers = _helper_sources(context)
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(
+            context,
+            "migrated.cpp",
+            "#include <limits.h>\n#include <string>\n\n" + body + "\n",
+        )
     records_defs = [_record_definition(context, record) for record in emitter_ir.records]
     records_str = "\n\n".join(records_defs)
     records_part = [records_str] if records_str else []

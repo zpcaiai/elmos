@@ -142,6 +142,7 @@ def _static_check_toolchain(
         ("react", "migrated.tsx", "tsconfig.json", True),
         ("flutter", "migrated.dart", "analyze", True),
         ("vb6", "migrated.bas", "elmos-static-check.vbp", False),
+        ("vcpp6", "migrated.cpp", "/W4", False),
     ],
 )
 def test_check_only_dispatches_every_repository_surface_to_its_exact_static_compiler(
