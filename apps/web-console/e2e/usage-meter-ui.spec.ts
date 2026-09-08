@@ -183,7 +183,7 @@ test.describe.serial("实时账户用量", () => {
     });
     await page.goto("/pricing");
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
-    await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);
+    await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(4);
     for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {
       await expect(button).toBeDisabled();
     }
