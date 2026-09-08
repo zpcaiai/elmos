@@ -821,6 +821,26 @@ def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
     )
 
 
+def test_ci_installer_retries_digest_bound_homebrew_metadata_via_exact_mirror() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    download = installer.split("download_verified() {", 1)[1].split(
+        "\n}\n", 1
+    )[0]
+
+    assert "--retry-all-errors" in download
+    assert "--retry-max-time 60" in download
+    assert 'if [[ "${observed}" == "${expected}" ]]' in download
+    assert "No digest-valid pinned source was available" in download
+    assert (
+        'https://cdn.jsdelivr.net/gh/Homebrew/homebrew-core@${commit}/${source_path}'
+        in installer
+    )
+    assert (
+        'https://cdn.jsdelivr.net/gh/Homebrew/homebrew-cask@${commit}/${source_path}'
+        in installer
+    )
+
+
 def test_full_ci_profile_hydrates_the_locked_csharp_analyzer_packages() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
     full_profile = installer.split('if [[ "${CI_PROFILE}" == "full" ]]; then', 1)[1]
