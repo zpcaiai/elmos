@@ -276,6 +276,28 @@ write_rust_wrapper() {
   chmod 0755 "${wrapper}"
 }
 
+seal_rust_sysroot() {
+  local target="$1"
+  local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
+  if [[ ! -d "${sysroot}" || -L "${sysroot}" ]]; then
+    printf 'Rust sysroot is missing or unsafe: %s\n' "${sysroot}" >&2
+    return 1
+  fi
+  if find "${sysroot}" -type l -print -quit | grep -q .; then
+    printf 'Rust sysroot contains an unsupported symbolic link: %s\n' "${sysroot}" >&2
+    return 1
+  fi
+
+  # rustup preserves archive modes, which may vary across hosted extraction
+  # paths even when every file byte is identical.  Seal the disposable copy to
+  # the same immutable mode profile consumed by the route engine before any
+  # wrapper can publish it.  The engine still hashes every path, mode and file
+  # byte, so this normalization cannot admit substituted toolchain content.
+  find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
+  find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
+  find "${sysroot}" -type d -exec chmod 0555 {} +
+}
+
 install_rust() {
   local target="${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}"
   if [[ -x "${target}/bin/rustc" && -x "${target}/bin/cargo" ]] \
@@ -300,6 +322,7 @@ install_rust() {
       --toolchain "${RUST_VERSION}" clippy rustfmt
     mv "${stage}" "${target}"
   fi
+  seal_rust_sysroot "${target}"
   # Wrapper semantics are part of the qualified route-toolchain identity. A
   # cached Rust payload can remain byte-identical while an older installer has
   # left stale wrappers behind, so refresh the three repository-owned launchers
