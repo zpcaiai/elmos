@@ -38,6 +38,10 @@ _EXTENSIONS: dict[str, Language] = {
     ".swift": "swift",
     ".php": "php",
     ".dart": "flutter",
+    ".bas": "vb6",
+    ".cls": "vb6",
+    ".frm": "vb6",
+    ".ctl": "vb6",
 }
 _IGNORED_DIRECTORIES = {
     ".git",
