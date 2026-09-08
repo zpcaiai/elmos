@@ -42,6 +42,17 @@ TRANSLATION_STUDIO = (
 )
 sys.path.insert(0, str(ROOT / "scripts" / "batch29"))
 
+from route_runtime_metadata import (  # noqa: E402
+    ENGINE_PATHS,
+    SHORT_VERSIONS,
+    V3_RESEARCH_ROUTE_VERSION,
+    VERSIONS,
+    route_execution_authorities_document,
+    support_matrix_markdown_bytes,
+    v3_research_certification_document,
+    v3_research_evidence_document,
+    v3_research_support_document,
+)
 from route_sets import (  # noqa: E402
     ALL_DECLARED_ROUTE_KEYS,
     COMPLETE_ROUTE_KEYS,
@@ -63,20 +74,12 @@ from route_sets import (  # noqa: E402
     SUPPORTED_ROUTE_LANGUAGES,
     TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     TEN_LANGUAGE_MATRIX_LANGUAGES,
+    THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    THIRTEEN_LANGUAGE_MATRIX_LANGUAGES,
     V3_EXACT_ROUTE_KEYS,
     V3_LANGUAGES,
+    VB6_EXACT_ROUTE_KEYS,
     provenance_route_set,
-)
-from route_runtime_metadata import (  # noqa: E402
-    ENGINE_PATHS,
-    SHORT_VERSIONS,
-    V3_RESEARCH_ROUTE_VERSION,
-    VERSIONS,
-    route_execution_authorities_document,
-    support_matrix_markdown_bytes,
-    v3_research_certification_document,
-    v3_research_evidence_document,
-    v3_research_support_document,
 )
 
 LOCAL_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "FAILED"}
@@ -290,7 +293,7 @@ def declared_engine_languages(name: str) -> tuple[str, ...]:
         match = re.search(rf"^{escaped}\s*=\s*\(([^)]*)\)", text, re.MULTILINE)
     require(match is not None, f"ENGINE_{name}_NOT_FOUND")
     assert match is not None
-    return tuple(re.findall(r'"([a-z]+)"', match.group(1)))
+    return tuple(re.findall(r'"([a-z0-9]+)"', match.group(1)))
 
 
 def engine_languages() -> tuple[str, ...]:
@@ -343,7 +346,7 @@ def console_languages() -> dict[str, dict[str, str]]:
     assert block is not None
     languages: dict[str, dict[str, str]] = {}
     pattern = re.compile(
-        r'\{ id: "(?P<id>[a-z]+)", label: "(?P<label>[^"]+)", compiler: "(?P<compiler>[^"]+)", '
+        r'\{ id: "(?P<id>[a-z0-9]+)", label: "(?P<label>[^"]+)", compiler: "(?P<compiler>[^"]+)", '
         r'runtime: "(?P<runtime>[^"]+)", enginePath: "(?P<engine_path>[^"]+)" \}'
     )
     for match in pattern.finditer(block.group(1)):
@@ -365,7 +368,7 @@ def console_exposed_languages() -> tuple[str, ...]:
     )
     require(block is not None, "CONSOLE_EXPOSED_LANGUAGE_BLOCK_NOT_FOUND")
     assert block is not None
-    return tuple(re.findall(r'"([a-z]+)"', block.group(1)))
+    return tuple(re.findall(r'"([a-z0-9]+)"', block.group(1)))
 
 
 def console_contract_languages() -> tuple[str, ...]:
@@ -377,7 +380,7 @@ def console_contract_languages() -> tuple[str, ...]:
     )
     require(block is not None, "CONSOLE_CONTRACT_LANGUAGE_TYPE_NOT_FOUND")
     assert block is not None
-    return tuple(re.findall(r'\|\s*"([a-z]+)"', block.group(1)))
+    return tuple(re.findall(r'\|\s*"([a-z0-9]+)"', block.group(1)))
 
 
 def console_runner_languages() -> tuple[str, ...]:
@@ -389,7 +392,7 @@ def console_runner_languages() -> tuple[str, ...]:
     )
     require(block is not None, "CONSOLE_RUNNER_LANGUAGE_SET_NOT_FOUND")
     assert block is not None
-    return tuple(re.findall(r'"([a-z]+)"', block.group(1)))
+    return tuple(re.findall(r'"([a-z0-9]+)"', block.group(1)))
 
 
 def require_exact_language_set(
@@ -486,14 +489,15 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         policy
         == {
             "mode": "complete-directed-matrix",
-            "cartesian_expansion": "EXPLICIT_THIRTEEN_LANGUAGE_MATRIX",
-            "complete_route_set": "thirteen-language-complete-156",
+            "cartesian_expansion": "EXPLICIT_FOURTEEN_LANGUAGE_MATRIX",
+            "complete_route_set": "fourteen-language-complete-182",
             "legacy_route_set": "legacy-complete-30",
             "specialized_route_set": "cpp-objc-swift-java-exact-8",
             "completion_route_set": "nine-language-completion-34",
             "nodejs_route_set": "javascript-node26-completion-18",
             "php_route_set": "php-php85-completion-20",
             "v3_route_set": "kotlin-react-flutter-completion-66",
+            "vb6_route_set": "vb6-completion-26",
             "deprecated_route_set": "javascript-node26-completion-18",
             "preserved_nine_language_route_set": "nine-language-complete-72",
             "preserved_ten_language_route_set": "ten-language-complete-90",
@@ -556,6 +560,8 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
             "eleven-language-complete-110",
             "kotlin-react-flutter-completion-66",
             "thirteen-language-complete-156",
+            "vb6-completion-26",
+            "fourteen-language-complete-182",
         },
         "ROUTE_SET_KEYS_DRIFT",
     )
@@ -568,7 +574,9 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     php_set = route_sets.get("php-php85-completion-20")
     eleven_complete_set = route_sets.get("eleven-language-complete-110")
     v3_set = route_sets.get("kotlin-react-flutter-completion-66")
-    complete_set = route_sets.get("thirteen-language-complete-156")
+    thirteen_complete_set = route_sets.get("thirteen-language-complete-156")
+    vb6_set = route_sets.get("vb6-completion-26")
+    complete_set = route_sets.get("fourteen-language-complete-182")
     require(isinstance(core_set, dict), "CORE_ROUTE_SET_INVALID")
     require(isinstance(specialized_set, dict), "SPECIALIZED_ROUTE_SET_INVALID")
     require(isinstance(completion_set, dict), "COMPLETION_ROUTE_SET_INVALID")
@@ -578,6 +586,8 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     require(isinstance(php_set, dict), "PHP_ROUTE_SET_INVALID")
     require(isinstance(eleven_complete_set, dict), "ELEVEN_COMPLETE_ROUTE_SET_INVALID")
     require(isinstance(v3_set, dict), "V3_ROUTE_SET_INVALID")
+    require(isinstance(thirteen_complete_set, dict), "THIRTEEN_COMPLETE_ROUTE_SET_INVALID")
+    require(isinstance(vb6_set, dict), "VB6_ROUTE_SET_INVALID")
     require(isinstance(complete_set, dict), "COMPLETE_ROUTE_SET_INVALID")
     assert (
         isinstance(core_set, dict)
@@ -589,6 +599,8 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         and isinstance(php_set, dict)
         and isinstance(eleven_complete_set, dict)
         and isinstance(v3_set, dict)
+        and isinstance(thirteen_complete_set, dict)
+        and isinstance(vb6_set, dict)
         and isinstance(complete_set, dict)
     )
     require(
@@ -632,6 +644,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     )
     nine_languages = list(NINE_LANGUAGE_MATRIX_LANGUAGES)
     active_languages = list(SUPPORTED_ROUTE_LANGUAGES)
+    thirteen_languages = list(THIRTEEN_LANGUAGE_MATRIX_LANGUAGES)
     ten_languages = list(TEN_LANGUAGE_MATRIX_LANGUAGES)
     eleven_languages = list(ELEVEN_LANGUAGE_MATRIX_LANGUAGES)
     require(
@@ -739,7 +752,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         v3_set.get("policy") == "exact-matrix-completion-set", "V3_ROUTE_POLICY_DRIFT"
     )
     require(
-        v3_set.get("languages") == active_languages, "V3_ROUTE_LANGUAGE_ORDER_DRIFT"
+        v3_set.get("languages") == thirteen_languages, "V3_ROUTE_LANGUAGE_ORDER_DRIFT"
     )
     require(v3_set.get("route_count") == 66, "V3_ROUTE_COUNT_DRIFT")
     require(
@@ -759,6 +772,32 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         "V3_PENDING_REPOSITORY_DRIFT",
     )
     require(
+        thirteen_complete_set.get("policy") == "complete-directed-permutation",
+        "THIRTEEN_COMPLETE_ROUTE_POLICY_DRIFT",
+    )
+    require(
+        thirteen_complete_set.get("languages") == thirteen_languages,
+        "THIRTEEN_COMPLETE_ROUTE_LANGUAGE_ORDER_DRIFT",
+    )
+    require(
+        thirteen_complete_set.get("route_count") == 156,
+        "THIRTEEN_COMPLETE_ROUTE_COUNT_DRIFT",
+    )
+    require(
+        thirteen_complete_set.get("route_keys")
+        == list(THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+        "THIRTEEN_COMPLETE_ROUTE_KEYS_DRIFT",
+    )
+    require(
+        vb6_set.get("policy") == "bounded-local-handlers-vendor-campaign-required",
+        "VB6_ROUTE_POLICY_DRIFT",
+    )
+    require(vb6_set.get("languages") == active_languages, "VB6_LANGUAGE_ORDER_DRIFT")
+    require(vb6_set.get("route_count") == 26, "VB6_ROUTE_COUNT_DRIFT")
+    require(vb6_set.get("route_keys") == list(VB6_EXACT_ROUTE_KEYS), "VB6_ROUTE_KEYS_DRIFT")
+    require(vb6_set.get("repository_status") == "LOCAL_PREPARE_ONLY", "VB6_REPOSITORY_STATUS_DRIFT")
+    require(vb6_set.get("vendor_runtime_status") == "NOT_RUN", "VB6_VENDOR_RUNTIME_STATUS_DRIFT")
+    require(
         complete_set.get("policy") == "complete-directed-permutation",
         "COMPLETE_ROUTE_POLICY_DRIFT",
     )
@@ -766,14 +805,14 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         complete_set.get("languages") == active_languages,
         "COMPLETE_ROUTE_LANGUAGE_ORDER_DRIFT",
     )
-    require(complete_set.get("route_count") == 156, "COMPLETE_ROUTE_COUNT_DRIFT")
+    require(complete_set.get("route_count") == 182, "COMPLETE_ROUTE_COUNT_DRIFT")
     require(
         complete_set.get("route_keys") == list(COMPLETE_ROUTE_KEYS),
         "COMPLETE_ROUTE_KEYS_DRIFT",
     )
 
     require(inventory.get("route_count") == len(routes), "ROUTE_COUNT_DRIFT")
-    require(inventory.get("route_count") == 156, "ROUTE_EXPLICIT_COUNT_DRIFT")
+    require(inventory.get("route_count") == 182, "ROUTE_EXPLICIT_COUNT_DRIFT")
     require(
         isinstance(inventory.get("semantic_profile"), str), "SEMANTIC_PROFILE_MISSING"
     )
@@ -890,6 +929,21 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
                 and entry.get("independent_verification_status") == "NOT_RUN"
                 and entry.get("external_certification_status") == "NOT_RUN",
                 f"V3_ROUTE_EVIDENCE_OVERCLAIM:{key}",
+            )
+        if key in VB6_EXACT_ROUTE_KEYS:
+            require(
+                entry.get("status") == "research"
+                and entry.get("local_execution_status") == "NOT_RUN"
+                and entry.get("local_execution_reason")
+                == "VB6_VENDOR_ROUTE_CAMPAIGN_NOT_RUN"
+                and entry.get("repository_execution_status") == "NOT_RUN"
+                and entry.get("repository_profile") is None
+                and entry.get("repository_evidence_ref") is None
+                and entry.get("repository_evidence_sha256") is None
+                and entry.get("repository_evidence_bytes") is None
+                and entry.get("independent_verification_status") == "NOT_RUN"
+                and entry.get("external_certification_status") == "NOT_RUN",
+                f"VB6_ROUTE_EVIDENCE_OVERCLAIM:{key}",
             )
         # Evidence may never run ahead of itself: independent verification
         # requires a local pass, and external certification requires an
@@ -1069,7 +1123,7 @@ def check_route_packs(
         profile_entry = next(
             (item for item in capabilities if item.get("id") == semantic_profile), None
         )
-        if key in V3_EXACT_ROUTE_KEYS:
+        if key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}:
             # Analyzer readiness is deliberately narrower than route support.
             # These research packs retain their unpromoted capability matrix
             # until route execution evidence exists. Their empty semantic
@@ -1118,13 +1172,28 @@ def check_route_packs(
                 target_declared.get("exact_versions"),
                 f"V3_ROUTE_TARGET_VERSION_DRIFT:{key}",
             )
-            require(
-                pack.get("profiles")
-                == {"semantic_profile": "", "target_profile": ""}
-                and pack.get("framework_profiles") == [],
-                f"V3_ROUTE_PROFILE_OVERCLAIM:{key}",
-            )
-            require(profile_entry is None, f"V3_ROUTE_SUPPORT_OVERCLAIM:{key}")
+            if key in VB6_EXACT_ROUTE_KEYS:
+                require(
+                    pack.get("profiles")
+                    == {
+                        "semantic_profile": "typed-pure-module-v1",
+                        "target_profile": "vb6-long32-pure-module-v1",
+                    }
+                    and pack.get("framework_profiles") == [],
+                    f"VB6_ROUTE_PROFILE_DRIFT:{key}",
+                )
+                require(
+                    profile_entry is None,
+                    f"VB6_ROUTE_SUPPORT_PROFILE_OVERCLAIM:{key}",
+                )
+            else:
+                require(
+                    pack.get("profiles")
+                    == {"semantic_profile": "", "target_profile": ""}
+                    and pack.get("framework_profiles") == [],
+                    f"V3_ROUTE_PROFILE_OVERCLAIM:{key}",
+                )
+                require(profile_entry is None, f"V3_ROUTE_SUPPORT_OVERCLAIM:{key}")
             require(
                 all(
                     isinstance(item, dict)
