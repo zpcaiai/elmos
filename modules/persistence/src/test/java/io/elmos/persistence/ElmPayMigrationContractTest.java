@@ -13,9 +13,11 @@ class ElmPayMigrationContractTest {
     private static final Path REPAIR = Path.of(
             "src/main/resources/db/migration/V95__elmpay_digest_function_schema_repair.sql");
 
-    @Test void forwardRepairQualifiesDigestFunctionsAgainstTheirActualSchemas() throws Exception {
+    @Test void forwardRepairQualifiesDigestFunctionsAndPreservesProviderBinding() throws Exception {
         String sql = Files.readString(REPAIR);
         assertEquals(3, occurrences(sql, "pg_catalog.encode(public.digest(pg_catalog.convert_to("));
+        assertEquals(3, occurrences(sql, "amount_minor, provider, status)"));
+        assertEquals(3, occurrences(sql, "NEW.provider, NEW.status)"));
         assertFalse(sql.contains("public.encode("));
         assertEquals(3, occurrences(sql, "SECURITY DEFINER"));
         assertEquals(3, occurrences(sql, "SET search_path = pg_catalog, public, pg_temp"));
