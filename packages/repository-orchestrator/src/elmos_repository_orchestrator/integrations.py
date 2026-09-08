@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import os
 import re
 from dataclasses import dataclass
 from typing import Any, Iterator, Mapping, Sequence
@@ -13,7 +14,15 @@ from .retrieval import RetrievalQuery, SearchDocument
 
 
 _INDEX_NAME = re.compile(r"^[a-z0-9][a-z0-9._-]{0,254}$")
+_EXACT_VERSION = re.compile(r"^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$")
 _SENSITIVE_ATTRIBUTE = re.compile(r"(api.?key|authorization|credential|secret|password|prompt|content|source)", re.I)
+
+
+def _required_environment(environment: Mapping[str, str], name: str) -> str:
+    value = environment.get(name, "").strip()
+    if not value:
+        raise ContractError("integration_not_configured", f"{name} is required")
+    return value
 
 
 def _endpoint(value: str, field_name: str) -> str:
@@ -34,6 +43,9 @@ class ElasticsearchSettings:
     index_name: str
     vector_dimensions: int
     api_key: str
+    expected_version: str = "8.19.3"
+    ca_certs: str | None = None
+    request_timeout_seconds: float = 30.0
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "endpoint", _endpoint(self.endpoint, "elasticsearch.endpoint"))
@@ -44,6 +56,38 @@ class ElasticsearchSettings:
         key = require_string(self.api_key, "elasticsearch.api_key")
         if key.upper() in {"SET_ME", "CHANGEME", "PLACEHOLDER"}:
             raise ContractError("elasticsearch_not_configured", "Elasticsearch API key is not configured")
+        version = require_string(self.expected_version, "elasticsearch.expected_version")
+        if not _EXACT_VERSION.fullmatch(version):
+            raise ContractError("invalid_elasticsearch_version", "Elasticsearch expected_version must be exact")
+        if self.ca_certs is not None and not self.ca_certs.strip():
+            raise ContractError("invalid_ca_bundle", "Elasticsearch CA bundle path cannot be empty")
+        if not 1 <= self.request_timeout_seconds <= 300:
+            raise ContractError("invalid_timeout", "Elasticsearch timeout_seconds must be between 1 and 300")
+
+    @classmethod
+    def from_environment(cls, environment: Mapping[str, str] | None = None) -> "ElasticsearchSettings":
+        values = os.environ if environment is None else environment
+        dimensions_text = _required_environment(values, "ELMOS_ELASTICSEARCH_VECTOR_DIMENSIONS")
+        try:
+            dimensions = int(dimensions_text)
+        except ValueError as exc:
+            raise ContractError(
+                "invalid_vector_dimensions", "ELMOS_ELASTICSEARCH_VECTOR_DIMENSIONS must be an integer"
+            ) from exc
+        timeout_text = values.get("ELMOS_ELASTICSEARCH_TIMEOUT_SECONDS", "30").strip() or "30"
+        try:
+            timeout = float(timeout_text)
+        except ValueError as exc:
+            raise ContractError("invalid_timeout", "ELMOS_ELASTICSEARCH_TIMEOUT_SECONDS must be numeric") from exc
+        return cls(
+            endpoint=_required_environment(values, "ELMOS_ELASTICSEARCH_URL"),
+            index_name=_required_environment(values, "ELMOS_ELASTICSEARCH_INDEX"),
+            vector_dimensions=dimensions,
+            api_key=_required_environment(values, "ELMOS_ELASTICSEARCH_API_KEY"),
+            expected_version=_required_environment(values, "ELMOS_ELASTICSEARCH_EXPECTED_VERSION"),
+            ca_certs=values.get("ELMOS_ELASTICSEARCH_CA_CERTS") or None,
+            request_timeout_seconds=timeout,
+        )
 
 
 class ElasticsearchProjection:
@@ -59,7 +103,15 @@ class ElasticsearchProjection:
                     "elasticsearch_client_not_configured",
                     "install the repository-orchestrator integrations extra",
                 ) from exc
-            client = Elasticsearch(settings.endpoint, api_key=settings.api_key, request_timeout=30)
+            options: dict[str, Any] = {
+                "api_key": settings.api_key,
+                "request_timeout": settings.request_timeout_seconds,
+                "retry_on_timeout": False,
+                "max_retries": 0,
+            }
+            if settings.ca_certs:
+                options["ca_certs"] = settings.ca_certs
+            client = Elasticsearch(settings.endpoint, **options)
         self.client = client
 
     @property
@@ -72,7 +124,7 @@ class ElasticsearchProjection:
                 "project_id": {"type": "keyword"},
                 "revision_id": {"type": "keyword"},
                 "allowed_principals": {"type": "keyword"},
-                "content": {"type": "text"},
+                "content": {"type": "text", "analyzer": "standard"},
                 "modality": {"type": "keyword"},
                 "vector": {
                     "type": "dense_vector",
@@ -80,16 +132,70 @@ class ElasticsearchProjection:
                     "index": True,
                     "similarity": "cosine",
                 },
-                "anchor": {"type": "object", "enabled": True},
+                "anchor": {
+                    "type": "object",
+                    "dynamic": "strict",
+                    "properties": {
+                        "uri": {"type": "keyword", "index": False},
+                        "kind": {"type": "keyword"},
+                        "content_sha256": {"type": "keyword"},
+                        "start": {"type": "integer"},
+                        "end": {"type": "integer"},
+                        "locator": {"type": "flattened", "index": False},
+                    },
+                },
                 "source_digest": {"type": "keyword"},
             },
         }
 
     def ensure_index(self) -> bool:
         if bool(self.client.indices.exists(index=self.settings.index_name)):
+            response = self.client.indices.get_mapping(index=self.settings.index_name)
+            body = response.body if hasattr(response, "body") else response
+            index_mapping = require_mapping(body, "elasticsearch.mapping").get(self.settings.index_name)
+            if index_mapping is None and len(body) == 1:
+                index_mapping = next(iter(body.values()))
+            mappings = require_mapping(
+                require_mapping(index_mapping, "elasticsearch.index_mapping").get("mappings"),
+                "elasticsearch.index_mapping.mappings",
+            )
+            properties = require_mapping(mappings.get("properties"), "elasticsearch.mapping.properties")
+            vector = require_mapping(properties.get("vector"), "elasticsearch.mapping.vector")
+            required_types = {
+                "document_id": "keyword",
+                "tenant_id": "keyword",
+                "project_id": "keyword",
+                "revision_id": "keyword",
+                "allowed_principals": "keyword",
+                "content": "text",
+                "modality": "keyword",
+                "source_digest": "keyword",
+            }
+            for field_name, expected_type in required_types.items():
+                field = require_mapping(properties.get(field_name), f"elasticsearch.mapping.{field_name}")
+                if field.get("type") != expected_type:
+                    raise ContractError("elasticsearch_mapping_mismatch", f"{field_name} mapping is incompatible")
+            if vector.get("type") != "dense_vector" or vector.get("dims") != self.settings.vector_dimensions:
+                raise ContractError("elasticsearch_mapping_mismatch", "vector mapping is incompatible")
             return False
         self.client.indices.create(index=self.settings.index_name, mappings=self.mapping)
         return True
+
+    def server_profile(self) -> Mapping[str, Any]:
+        response = self.client.info()
+        body = response.body if hasattr(response, "body") else response
+        version = require_mapping(require_mapping(body, "elasticsearch.info").get("version"), "elasticsearch.version")
+        number = require_string(version.get("number"), "elasticsearch.version.number")
+        if number != self.settings.expected_version:
+            raise ContractError(
+                "elasticsearch_version_mismatch",
+                "Elasticsearch server version does not match the configured exact version",
+            )
+        return {
+            "version": number,
+            "distribution": version.get("distribution", "elasticsearch"),
+            "build_flavor": version.get("build_flavor"),
+        }
 
     @staticmethod
     def _source(document: SearchDocument) -> dict[str, Any]:
@@ -128,7 +234,18 @@ class ElasticsearchProjection:
         body = response.body if hasattr(response, "body") else response
         if not isinstance(body, Mapping) or body.get("errors") is not False:
             raise ContractError("elasticsearch_bulk_failed", "Elasticsearch bulk projection failed")
+        items = body.get("items", ())
+        if not isinstance(items, Sequence) or isinstance(items, (str, bytes, bytearray)):
+            raise ContractError("invalid_elasticsearch_response", "Elasticsearch bulk items must be an array")
+        for item in items:
+            operation = require_mapping(require_mapping(item, "elasticsearch.bulk_item").get("index"), "bulk.index")
+            status = operation.get("status")
+            if isinstance(status, bool) or not isinstance(status, int) or status < 200 or status >= 300:
+                raise ContractError("elasticsearch_bulk_failed", "Elasticsearch bulk item failed")
         return body
+
+    def refresh(self) -> None:
+        self.client.indices.refresh(index=self.settings.index_name)
 
     @staticmethod
     def _scope_filters(query: RetrievalQuery) -> list[dict[str, Any]]:
@@ -195,13 +312,19 @@ class ElasticsearchProjection:
             conflicts="proceed",
             refresh=True,
         )
-        return response.body if hasattr(response, "body") else response
+        body = response.body if hasattr(response, "body") else response
+        result = require_mapping(body, "elasticsearch.delete_by_query")
+        if result.get("timed_out") is True or result.get("failures"):
+            raise ContractError("elasticsearch_delete_failed", "Elasticsearch revision deletion failed")
+        return result
 
 
 @dataclass(frozen=True, slots=True)
 class DifySettings:
     endpoint: str
     api_key: str
+    workflow_id: str
+    expected_version: str
     tenant_id: str
     project_id: str
     purpose: str
@@ -209,12 +332,40 @@ class DifySettings:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "endpoint", _endpoint(self.endpoint, "dify.endpoint"))
-        for field_name in ("api_key", "tenant_id", "project_id", "purpose"):
+        for field_name in ("api_key", "workflow_id", "expected_version", "tenant_id", "project_id", "purpose"):
             value = require_string(getattr(self, field_name), f"dify.{field_name}")
             if field_name == "api_key" and value.upper() in {"SET_ME", "CHANGEME", "PLACEHOLDER"}:
                 raise ContractError("dify_not_configured", "Dify API key is not configured")
+        if not _EXACT_VERSION.fullmatch(self.expected_version):
+            raise ContractError("invalid_dify_version", "Dify expected_version must be exact")
         if not 1 <= self.timeout_seconds <= 300:
             raise ContractError("invalid_timeout", "Dify timeout_seconds must be between 1 and 300")
+
+    @classmethod
+    def from_environment(
+        cls,
+        *,
+        tenant_id: str,
+        project_id: str,
+        purpose: str,
+        environment: Mapping[str, str] | None = None,
+    ) -> "DifySettings":
+        values = os.environ if environment is None else environment
+        timeout_text = values.get("ELMOS_DIFY_TIMEOUT_SECONDS", "60").strip() or "60"
+        try:
+            timeout = float(timeout_text)
+        except ValueError as exc:
+            raise ContractError("invalid_timeout", "ELMOS_DIFY_TIMEOUT_SECONDS must be numeric") from exc
+        return cls(
+            endpoint=_required_environment(values, "ELMOS_DIFY_URL"),
+            api_key=_required_environment(values, "ELMOS_DIFY_API_KEY"),
+            workflow_id=_required_environment(values, "ELMOS_DIFY_WORKFLOW_ID"),
+            expected_version=_required_environment(values, "ELMOS_DIFY_EXPECTED_VERSION"),
+            tenant_id=tenant_id,
+            project_id=project_id,
+            purpose=purpose,
+            timeout_seconds=timeout,
+        )
 
 
 class DifyWorkflowClient:
@@ -229,6 +380,21 @@ class DifyWorkflowClient:
                 raise ContractError("dify_client_not_configured", "install the integrations extra") from exc
             client = httpx.Client(base_url=settings.endpoint, timeout=settings.timeout_seconds)
         self.client = client
+
+    def application_profile(self) -> Mapping[str, Any]:
+        response = self.client.get(
+            "/v1/info",
+            headers={"Authorization": f"Bearer {self.settings.api_key}"},
+        )
+        response.raise_for_status()
+        body = require_mapping(response.json(), "dify.info")
+        return {
+            "workflow_id": self.settings.workflow_id,
+            "application_digest": sha256_payload(body),
+            "mode": body.get("mode"),
+            "configured_server_version": self.settings.expected_version,
+            "server_version_verification": "CONFIGURATION_BOUND_NOT_VERIFIED",
+        }
 
     def run(self, inputs: Mapping[str, Any], *, actor_id: str, idempotency_key: str) -> Mapping[str, Any]:
         payload_inputs = dict(require_mapping(inputs, "dify.inputs"))
@@ -258,10 +424,16 @@ class DifyWorkflowClient:
         body = require_mapping(response.json(), "dify.response")
         run_id = body.get("workflow_run_id") or body.get("task_id")
         require_string(run_id, "dify.response.workflow_run_id")
+        data = require_mapping(body.get("data"), "dify.response.data")
+        status = require_string(data.get("status"), "dify.response.data.status")
+        if status != "succeeded":
+            raise ContractError("dify_workflow_failed", f"Dify workflow ended with status {status}")
         return {
+            "workflow_id": self.settings.workflow_id,
             "workflow_run_id": run_id,
             "task_id": body.get("task_id"),
-            "data": body.get("data"),
+            "output_digest": sha256_payload(data.get("outputs", {})),
+            "status": status,
             "request_digest": sha256_payload({"payload": payload, "idempotency_key": request_key}),
             "policy_authority": False,
             "external_execution": "EXECUTED_UNVERIFIED",
@@ -305,12 +477,15 @@ def integration_fingerprint(settings: ElasticsearchSettings | DifySettings) -> s
                 "endpoint": settings.endpoint,
                 "index_name": settings.index_name,
                 "vector_dimensions": settings.vector_dimensions,
+                "expected_version": settings.expected_version,
             }
         )
     return sha256_payload(
         {
             "kind": "dify",
             "endpoint": settings.endpoint,
+            "workflow_id": settings.workflow_id,
+            "expected_version": settings.expected_version,
             "tenant_id": settings.tenant_id,
             "project_id": settings.project_id,
             "purpose": settings.purpose,

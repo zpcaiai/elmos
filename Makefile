@@ -313,9 +313,12 @@ ai-optimization-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_ai_optimization_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-optimization-engine/src $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/ai-optimization-skills -p 'test_*.py'
 
-.PHONY: repository-task-router-skills ai-external-gate-preflight
+.PHONY: repository-task-router-skills ai-external-gate-preflight ai-runtime-preflight
 ai-external-gate-preflight:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test elmos-repository-orchestrator external-preflight --plan packages/repository-orchestrator/config/ai-external-gate-plan.json --expect-blocked
+
+ai-runtime-preflight:
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test elmos-repository-orchestrator runtime-preflight --plan packages/repository-orchestrator/config/ai-runtime-plan.json --expect-blocked
 
 repository-task-router-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python tooling/integrate_repository_task_router_skills.py --check
