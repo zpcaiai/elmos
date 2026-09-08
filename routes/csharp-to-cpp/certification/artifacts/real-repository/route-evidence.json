@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:402c40ee90146e01999adf5982a5cbfbcdca15f544fc4437900e00817127e06c",
+    "artifact_sha256": "sha256:5014e9b08aa0407658515c3a5b16eae5bfdc348248fd08d73b9ec5586a6efdbd",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:2a80d2d6b4b4acb9f85f95ac3aeedd7076761022220d5f53dad486e7fb05d03d",
+    "formal_input_digest": "sha256:8bf2da74dd2d079843a07cf496e90911f25968b1961b57bb7002ec0e22570586",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:2a80d2d6b4b4acb9f85f95ac3aeedd7076761022220d5f53dad486e7fb05d03d",
+    "formal_input_sha256": "sha256:8bf2da74dd2d079843a07cf496e90911f25968b1961b57bb7002ec0e22570586",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:2a80d2d6b4b4acb9f85f95ac3aeedd7076761022220d5f53dad486e7fb05d03d",
+        "formal_input_sha256": "sha256:8bf2da74dd2d079843a07cf496e90911f25968b1961b57bb7002ec0e22570586",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:5b297e640e3549d8a232eeeadffafa83acfaf3c3cfdd6c919e9b085cb9dd0a49",
+        "sha256": "sha256:7e898d3eb8d09180e05f34278f0baea4a5634be8c9aaf979066c688f78552520",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:2a80d2d6b4b4acb9f85f95ac3aeedd7076761022220d5f53dad486e7fb05d03d",
+        "formal_input_sha256": "sha256:8bf2da74dd2d079843a07cf496e90911f25968b1961b57bb7002ec0e22570586",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:1983cb7794de3f2f0a6ce9713f6975bfca79d903111a9ad5ae2532442092ab5c",
+        "sha256": "sha256:45be785701dc010185a8afeae57669d8a92d8865928fe1187facff30d3465f60",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:5b297e640e3549d8a232eeeadffafa83acfaf3c3cfdd6c919e9b085cb9dd0a49",
+    "solver_input_digest": "sha256:7e898d3eb8d09180e05f34278f0baea4a5634be8c9aaf979066c688f78552520",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -70,7 +70,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:1a3c134c77139814fe0e547e57799504f5212ebd5590989c3659587f3fe780bb",
+    "plan_sha256": "sha256:1e574bcfc2269269cb955fa50bf9316ffd29ad68337574b3349d1206312f3cec",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:60be21527c6f726ca8a8016b9169222ae9b33ceaa4063e23505ea34bce092f8a",
     "raw_target_relift": {
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:0b8023ee72088e815059d1388b6ee9daf02876d1690aea88e887b49473b46e5a",
+    "artifact_sha256": "sha256:31d8cdfde77cc841db7d02c32b606cdfc735e685052a26f0b45e95b2ed6b2194",
     "status": "PASSED"
   },
   "limitations": [
@@ -115,15 +115,15 @@
     "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:3c3a08ef0690fb10b29616092abf9757f1c714fcff842d8cb00fcda447566864",
+    "source_ir_sha256": "sha256:27f52db7d87f6f56e496b0b3a3846e0d48b2b283583a84e0dc3f4bec05036fd4",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:bf00c1384c264fafb921ac4a8f5fccc8c960a5bda8fb99a6e596f1e647b266ab"
   },
-  "semantic_ir_sha256": "sha256:3c3a08ef0690fb10b29616092abf9757f1c714fcff842d8cb00fcda447566864",
+  "semantic_ir_sha256": "sha256:27f52db7d87f6f56e496b0b3a3846e0d48b2b283583a84e0dc3f4bec05036fd4",
   "source": {
     "analyzer": "Microsoft.CodeAnalysis.CSharp",
-    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:fadb28bac19852f79991f515862815efaa2b9d63196db0061d5c349646471908",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:e574d53c171fcfec2b3ac92c97c9bb265099efd84dd6d01ae037d2bc95daff76",
     "function_name": "difference",
     "language": "csharp",
     "path": "Difference.cs",
@@ -144,7 +144,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-cpp-og8tak3y/real-repository/source-runtime/SourceHarness.csproj (in 47 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-cpp-og8tak3y/real-repository/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.67\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-cpp-2a4089i_/real-repository/source-runtime/SourceHarness.csproj (in 72 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-cpp-2a4089i_/real-repository/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.98\n"
       },
       {
         "command": [

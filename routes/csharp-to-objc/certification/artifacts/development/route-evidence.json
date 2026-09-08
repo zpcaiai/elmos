@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:1fae41d043f7ac0fbba3145a3f6589fd826a7a27f1e185c6e4b052fb8115d4e7",
+    "artifact_sha256": "sha256:43193fede73a24a6204206c56bf3af2c87d644ac2a7b890e6c705bd4800bffb5",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:6f2ed74c6560072a0007b48811fa83dc8a5e26b8c73fe5386fd5a2a688812030",
+    "formal_input_digest": "sha256:aba2e437f98ae400742113a9353bc7788ef992857356a63fdec3745ca47a142e",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:6f2ed74c6560072a0007b48811fa83dc8a5e26b8c73fe5386fd5a2a688812030",
+    "formal_input_sha256": "sha256:aba2e437f98ae400742113a9353bc7788ef992857356a63fdec3745ca47a142e",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:6f2ed74c6560072a0007b48811fa83dc8a5e26b8c73fe5386fd5a2a688812030",
+        "formal_input_sha256": "sha256:aba2e437f98ae400742113a9353bc7788ef992857356a63fdec3745ca47a142e",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:53860d14e9a3262fdbfb21e07b8ee005583649076ee4c1b4edb98bb5b0a8e89b",
+        "sha256": "sha256:72598041c6dafa4bd3f8485c7fc05b147940007410b156e094c6a723a672c3a1",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:6f2ed74c6560072a0007b48811fa83dc8a5e26b8c73fe5386fd5a2a688812030",
+        "formal_input_sha256": "sha256:aba2e437f98ae400742113a9353bc7788ef992857356a63fdec3745ca47a142e",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:0ee6737f0f053f877ec7d8e34f7c15200f64480b18d3c9ae7d1ad3f63dc8669e",
+        "sha256": "sha256:5ff4366b2996462fe8c32fc953b9c94cfa7ccd3c9f921fa3a6addf7a64367520",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:53860d14e9a3262fdbfb21e07b8ee005583649076ee4c1b4edb98bb5b0a8e89b",
+    "solver_input_digest": "sha256:72598041c6dafa4bd3f8485c7fc05b147940007410b156e094c6a723a672c3a1",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -70,7 +70,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:321fd73a63d66d4dbd11ae848ecf03ee338f8d504a81246ad75b42b757e30a81",
+    "plan_sha256": "sha256:9a74eefad4c2f969601907585ee13b0bb1e99f87954b46e4d676dfcc2d0b0f3e",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
     "raw_target_relift": {
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:9a085bb09b944bb3ec2e18d601833bfda6eaf2395bcdd41b7df0d35d13176bda",
+    "artifact_sha256": "sha256:f89bc819e462ca9b9ce0e7cf55f9fd50270d5d72996c961e8c7302ce018a3efc",
     "status": "PASSED"
   },
   "limitations": [
@@ -115,15 +115,15 @@
     "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:6db2ac5fba97f43fe0b6c8cdca8d9955ea767d5bf245be33cdee85c98abe4e85",
+    "source_ir_sha256": "sha256:c8732b107ac18394bde9f3fe5408be623128bd4c1e81a399312f3b2b1f3866d1",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:17de63d12aa1b57fe72de40d365787af963b2107d8bfabcdd23b64aa489095b3"
   },
-  "semantic_ir_sha256": "sha256:6db2ac5fba97f43fe0b6c8cdca8d9955ea767d5bf245be33cdee85c98abe4e85",
+  "semantic_ir_sha256": "sha256:c8732b107ac18394bde9f3fe5408be623128bd4c1e81a399312f3b2b1f3866d1",
   "source": {
     "analyzer": "Microsoft.CodeAnalysis.CSharp",
-    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:fadb28bac19852f79991f515862815efaa2b9d63196db0061d5c349646471908",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:6ef2d32c7d24424b188782baa458eeda209ad47b84889f7c8656180ee73cd6e3",
     "function_name": "calculate",
     "language": "csharp",
     "path": "Pricing.cs",
@@ -144,7 +144,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-objc-gzxpnez2/development/source-runtime/SourceHarness.csproj (in 44 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-objc-gzxpnez2/development/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.64\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-objc-pqk19_n6/development/source-runtime/SourceHarness.csproj (in 53 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-objc-pqk19_n6/development/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.93\n"
       },
       {
         "command": [
