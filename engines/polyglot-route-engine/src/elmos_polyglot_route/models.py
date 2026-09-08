@@ -19,6 +19,7 @@ Language = Literal[
     "react",
     "flutter",
     "vb6",
+    "vcpp6",
     # Deprecated.  Kept in the type so the Node.js analyzer, emitter, assembly
     # and evidence machinery that still ships in this engine remains typed.  It
     # is deliberately absent from ``SUPPORTED_LANGUAGES`` below: no javascript
@@ -48,6 +49,7 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "react",
     "flutter",
     "vb6",
+    "vcpp6",
 )
 
 #: Languages that are declared in the route matrix but have no native analyzer

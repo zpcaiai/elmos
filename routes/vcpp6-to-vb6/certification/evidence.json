@@ -1,0 +1,29 @@
+{
+  "critical_behavior_regressions": null,
+  "critical_unknown_semantics": null,
+  "execution_status": "NOT_RUN",
+  "external_certification_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN",
+  "metrics": {
+    "build_green_rate": null,
+    "cost_per_verified_workload": null,
+    "first_build_pass_rate": null,
+    "manual_hours": null,
+    "p0_behavior_pass_rate": null,
+    "source_map_coverage": null
+  },
+  "module_execution_status": "NOT_RUN",
+  "negative_runs": [],
+  "notes": [
+    "The typed pure VC++6 C++98-era analyzer and emitter are bounded local engineering handlers.",
+    "MFC, ATL, COM, Win32 handles, pointers, references, templates, exceptions and object ownership remain unsupported.",
+    "Microsoft Visual C++ 6.0 SP6 compiler/linker/runtime, repository, independent and external evidence remain NOT_RUN."
+  ],
+  "repository_execution_status": "NOT_RUN",
+  "route_key": "vcpp6-to-vb6",
+  "route_maturity": "RESEARCH",
+  "route_version": "0.1.0",
+  "runs": [],
+  "schema_version": 1,
+  "test_integrity_violations": null
+}

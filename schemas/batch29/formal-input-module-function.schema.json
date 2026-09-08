@@ -87,7 +87,8 @@
         "kotlin",
         "react",
         "flutter",
-        "vb6"
+        "vb6",
+        "vcpp6"
       ]
     },
     "route": {

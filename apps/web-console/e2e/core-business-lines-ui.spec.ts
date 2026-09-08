@@ -293,10 +293,10 @@ test("跨语言整库 Runner 在路线证据未通过时拒绝创建任务", asy
     repositoryExecutableRouteCount: number;
     certificationStatus: string;
   };
-  expect(capability.languages).toHaveLength(14);
-  expect(capability.routePackageCount).toBe(182);
-  expect(capability.routes).toHaveLength(182);
-  expect(new Set(capability.routes.map((route) => route.id)).size).toBe(182);
+  expect(capability.languages).toHaveLength(15);
+  expect(capability.routePackageCount).toBe(210);
+  expect(capability.routes).toHaveLength(210);
+  expect(new Set(capability.routes.map((route) => route.id)).size).toBe(210);
   expect(capability.repositoryExecutableRouteCount).toBe(0);
   expect(capability.certificationStatus).toBe("NOT_CERTIFIED");
   expect(capability.routes.find((route) => route.id === "python-to-typescript")).toMatchObject({

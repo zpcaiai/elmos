@@ -1,6 +1,6 @@
 """Keep engine, repository-route and specialised-proof language sets explicit.
 
-The route matrix has one route record for every ordered pair of the fourteen
+The route matrix has one route record for every ordered pair of the fifteen
 supported languages.  That inventory breadth is deliberately separate from
 three other things, and this module exists to keep them from collapsing into
 each other:
@@ -127,7 +127,7 @@ def test_deprecated_language_keeps_its_engine_machinery_but_leaves_the_matrix() 
         assert repository_language_lifecycle(v3_language, "javascript") is None
 
 
-def test_public_cli_language_choices_are_live_active_thirteen_only() -> None:
+def test_public_cli_language_choices_are_the_live_active_matrix() -> None:
     parser_fields = (
         (cli._migration_parser(), ("source_language", "target_language")),
         (cli._inventory_parser(), ("source_language", "target_language")),
@@ -160,7 +160,10 @@ def test_repository_orchestration_surface_is_exactly_the_completed_repository_se
     # A repository-pending language has no extension, no declaration pattern, no
     # placer and no build file, and adding stubs so this comparison passes
     # would assert support the engine does not have.
-    assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    # VC++6 intentionally shares C++ source extensions with modern C++; its
+    # exact identity comes from the requested source profile, not a suffix.
+    assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES) - {"vcpp6"}
+    assert _EXTENSIONS[".cpp"] == "cpp"
     assert discovery_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_project_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_build_languages == set(REPOSITORY_SURFACE_LANGUAGES)
@@ -171,20 +174,20 @@ def test_repository_orchestration_surface_is_exactly_the_completed_repository_se
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
-    assert len(directed_pairs) == 182
+    assert len(directed_pairs) == 210
 
 
-def test_route_contract_is_complete_fourteen_language_matrix_with_exact_subsets() -> None:
+def test_route_contract_is_complete_fifteen_language_matrix_with_exact_subsets() -> None:
     assert ROUTED_LANGUAGES == COMPLETE_MATRIX_LANGUAGES
-    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 182
+    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 210
     assert len(SPECIALIZED_DIRECTED_PAIRS) == 8
     # Pinned to a literal.  If this ever reads 0 the pin was reverted to a
     # comprehension over the language tuple and javascript's removal silently
     # emptied it -- which would flip requires_concrete_source_spans for all 20.
     assert len(NODEJS_DIRECTED_PAIRS) == 20
-    assert len(COMPLETE_MATRIX_LANGUAGES) == 14
-    assert len(ROUTED_PAIRS) == 182
-    assert len(set(ROUTED_PAIRS)) == 182
+    assert len(COMPLETE_MATRIX_LANGUAGES) == 15
+    assert len(ROUTED_PAIRS) == 210
+    assert len(set(ROUTED_PAIRS)) == 210
     assert all(is_routed_pair(source, target) for source, target in ROUTED_PAIRS)
 
     assert is_routed_pair("php", "java")
@@ -210,6 +213,10 @@ def test_route_contract_is_complete_fourteen_language_matrix_with_exact_subsets(
     assert is_routed_pair("java", "vb6")
     assert is_routed_pair("vb6", "flutter")
     assert is_routed_pair("flutter", "vb6")
+    assert is_routed_pair("vcpp6", "java")
+    assert is_routed_pair("java", "vcpp6")
+    assert is_routed_pair("vcpp6", "vb6")
+    assert is_routed_pair("vb6", "vcpp6")
     assert not is_routed_pair("react", "react")
     # Deprecated: declared once, routed never again.
     assert not is_routed_pair("javascript", "java")
@@ -228,11 +235,11 @@ def test_exact_toolchain_receipt_uses_the_engine_language_tuple() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    # The route tuple includes preparation-only VB6. The exact-toolchain
+    # The route tuple includes preparation-only VB6 and VC++6. The exact-toolchain
     # receipt remains the locally executable thirteen-language tuple until a
-    # governed Windows/x86 VB6 SP6 provider is available.
+    # governed Windows/x86 vendor provider is available.
     assert module.EXPECTED_ACTIVE_LANGUAGES == tuple(
-        language for language in ROUTED_LANGUAGES if language != "vb6"
+        language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}
     )
 
 
@@ -650,7 +657,7 @@ def test_every_declared_routed_pair_has_a_pack_and_nothing_else_does() -> None:
     present = {path.name for path in ROUTES.iterdir() if path.is_dir()}
     expected = {f"{source}-to-{target}" for source, target in ROUTED_PAIRS}
     deprecated = {f"{source}-to-{target}" for source, target in DEPRECATED_DIRECTED_PAIRS}
-    assert len(expected) == 182
+    assert len(expected) == 210
     assert len(deprecated) == 20
     assert not expected & deprecated
     missing = sorted(expected - present)
@@ -671,7 +678,7 @@ def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> No
 
 
 @pytest.mark.skipif(not (ROUTES / "inventory.json").is_file(), reason="routes/inventory.json is not present")
-def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() -> None:
+def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() -> None:
     """The inventory is generated by ``run_polyglot_routes.py --inventory-only``.
 
     That regeneration requires the pinned macOS toolchain, so after a matrix
@@ -685,11 +692,12 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
     assert inventory["deprecated_languages"] == list(DEPRECATED_LANGUAGES)
     assert inventory["pending_analyzer_languages"] == list(PENDING_ANALYZER_LANGUAGES)
     assert inventory["pending_repository_languages"] == list(PENDING_REPOSITORY_LANGUAGES)
-    assert inventory["route_count"] == 182
-    assert len(inventory["routes"]) == 182
+    assert inventory["schema_version"] == "1.5.0"
+    assert inventory["route_count"] == 210
+    assert len(inventory["routes"]) == 210
     assert inventory["route_policy"] == {
-        "cartesian_expansion": "EXPLICIT_FOURTEEN_LANGUAGE_MATRIX",
-        "complete_route_set": "fourteen-language-complete-182",
+        "cartesian_expansion": "EXPLICIT_FIFTEEN_LANGUAGE_MATRIX",
+        "complete_route_set": "fifteen-language-complete-210",
         "completion_route_set": "nine-language-completion-34",
         "deprecated_route_set": "javascript-node26-completion-18",
         "legacy_route_set": "legacy-complete-30",
@@ -702,6 +710,7 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
         "specialized_route_set": "cpp-objc-swift-java-exact-8",
         "v3_route_set": "kotlin-react-flutter-completion-66",
         "vb6_route_set": "vb6-completion-26",
+        "vcpp6_route_set": "vcpp6-completion-28",
     }
     route_sets = inventory["route_sets"]
 
@@ -712,6 +721,7 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
     ten_languages = eleven_languages - {"php"}
     nine_languages = ten_languages - {"javascript"}
     vb6_languages = {"vb6"}
+    vcpp6_languages = {"vcpp6"}
 
     def complete(languages: set[str]) -> set[str]:
         return {
@@ -730,16 +740,20 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
     php_keys = eleven_language_keys - ten_language_keys
     nodejs_keys = ten_language_keys - nine_language_keys
     completion_keys = nine_language_keys - core_keys - specialized_keys
-    thirteen_active_languages = set(SUPPORTED_LANGUAGES) - vb6_languages
+    thirteen_active_languages = set(SUPPORTED_LANGUAGES) - vb6_languages - vcpp6_languages
     thirteen_active_keys = complete(thirteen_active_languages)
     v3_keys = thirteen_active_keys - (eleven_language_keys - {
         key for key in eleven_language_keys if "javascript" in key.split("-to-")
     })
-    vb6_keys = active_keys - thirteen_active_keys
+    fourteen_active_languages = set(SUPPORTED_LANGUAGES) - vcpp6_languages
+    fourteen_active_keys = complete(fourteen_active_languages)
+    vb6_keys = fourteen_active_keys - thirteen_active_keys
+    vcpp6_keys = active_keys - fourteen_active_keys
 
-    assert len(active_keys) == 182
+    assert len(active_keys) == 210
     assert len(v3_keys) == 66
     assert len(vb6_keys) == 26
+    assert len(vcpp6_keys) == 28
     assert len(eleven_language_keys) == 110
     javascript_keys = {key for key in eleven_language_keys if "javascript" in key.split("-to-")}
     assert len(javascript_keys) == 20
@@ -758,6 +772,8 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
         "thirteen-language-complete-156",
         "vb6-completion-26",
         "fourteen-language-complete-182",
+        "vcpp6-completion-28",
+        "fifteen-language-complete-210",
     }
     assert route_sets["legacy-complete-30"]["policy"] == "complete-directed-permutation"
     assert set(route_sets["legacy-complete-30"]["route_keys"]) == core_keys
@@ -779,7 +795,10 @@ def test_inventory_declares_the_complete_182_with_preserved_provenance_sets() ->
     assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == thirteen_active_keys
     assert set(route_sets["vb6-completion-26"]["route_keys"]) == vb6_keys
     assert route_sets["vb6-completion-26"]["vendor_runtime_status"] == "NOT_RUN"
-    assert set(route_sets["fourteen-language-complete-182"]["route_keys"]) == active_keys
+    assert set(route_sets["fourteen-language-complete-182"]["route_keys"]) == fourteen_active_keys
+    assert set(route_sets["vcpp6-completion-28"]["route_keys"]) == vcpp6_keys
+    assert route_sets["vcpp6-completion-28"]["vendor_runtime_status"] == "NOT_RUN"
+    assert set(route_sets["fifteen-language-complete-210"]["route_keys"]) == active_keys
 
     # The active inventory carries no deprecated direction.
     assert {route["route_key"] for route in inventory["routes"]} == active_keys

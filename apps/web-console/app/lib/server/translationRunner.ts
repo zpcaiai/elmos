@@ -135,6 +135,7 @@ const languages = new Set<TranslationLanguageId>([
   "react",
   "flutter",
   "vb6",
+  "vcpp6",
 ]);
 const sensitivePattern = /(authorization|token|secret|password|cookie|api[-_]?key)\s*[:=]\s*\S+/gi;
 

@@ -31,7 +31,7 @@ from elmos_polyglot_route.pipeline import (
 )
 
 EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = tuple(
-    language for language in SUPPORTED_LANGUAGES if language != "vb6"
+    language for language in SUPPORTED_LANGUAGES if language not in {"vb6", "vcpp6"}
 )
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
     (source, target)
@@ -1279,9 +1279,10 @@ def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> Non
     # Live repository execution is exactly the governed active matrix. The
     # lower-level repository inventory surface retains JavaScript only for
     # explicit archived replay and must never expand this executable matrix.
-    assert len(SUPPORTED_LANGUAGES) == 14
+    assert len(SUPPORTED_LANGUAGES) == 15
     assert "javascript" not in SUPPORTED_LANGUAGES
     assert "vb6" in SUPPORTED_LANGUAGES
+    assert "vcpp6" in SUPPORTED_LANGUAGES
     assert len(DIRECTED_LANGUAGE_PAIRS) == 156
     assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 156
     assert set(DIRECTED_LANGUAGE_PAIRS) == {

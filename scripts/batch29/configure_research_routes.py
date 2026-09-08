@@ -3,7 +3,7 @@
 
 The historical command owned a four-language/12-direction contract.  It may
 still verify that immutable contract read-only, but it cannot silently reinterpret
-it as the active 14-language/182-direction matrix.  Active synchronization is a
+it as the active 15-language/210-direction matrix.  Active synchronization is a
 separate, explicit operation delegated to the one authoritative generator.
 """
 
@@ -64,12 +64,17 @@ def main() -> int:
     operation = parser.add_mutually_exclusive_group(required=True)
     operation.add_argument("--verify-legacy-12", action="store_true")
     operation.add_argument("--synchronize-active-182", action="store_true")
+    operation.add_argument("--synchronize-active-210", action="store_true")
     parser.add_argument("--routes-root", type=Path, default=CANONICAL_ROUTES_ROOT)
     args = parser.parse_args()
     routes_root = _canonical_routes_root(args.routes_root)
     if args.verify_legacy_12:
         verify_legacy_twelve(routes_root)
         return 0
+    if args.synchronize_active_182:
+        raise ValueError(
+            "ACTIVE_182_ALIAS_RETIRED_USE_SYNCHRONIZE_ACTIVE_210"
+        )
     generator = REPOSITORY_ROOT / "scripts" / "batch29" / "run_polyglot_routes.py"
     if generator.is_symlink() or not generator.is_file():
         raise ValueError(f"POLYGLOT_ROUTE_GENERATOR_MISSING:{generator}")
