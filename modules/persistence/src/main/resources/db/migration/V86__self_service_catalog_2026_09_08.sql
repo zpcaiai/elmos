@@ -1,6 +1,6 @@
 -- Align the append-only database catalog and its subscription entry points with
 -- contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json version 2026-09-08.1.
--- The prior 2026-07-28.2 rows remain immutable historical snapshots.
+-- Prior catalog rows remain immutable historical snapshots.
 
 INSERT INTO self_service_pricing_plan_versions (
     catalog_version, plan_id, currency, price_minor, billing_period, allowance_window,
@@ -177,3 +177,29 @@ BEGIN
     );
 END;
 $$;
+
+REVOKE ALL ON FUNCTION elmos_activate_subscription_period(
+    varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+    timestamptz, timestamptz, varchar, varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION elmos_grant_trial(
+    varchar, varchar, varchar, varchar, char, varchar) FROM PUBLIC;
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN
+        GRANT EXECUTE ON FUNCTION elmos_activate_subscription_period(
+            varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+            timestamptz, timestamptz, varchar, varchar) TO elmos_billing_runtime;
+        GRANT EXECUTE ON FUNCTION elmos_grant_trial(
+            varchar, varchar, varchar, varchar, char, varchar) TO elmos_billing_runtime;
+    END IF;
+END
+$$;
+
+COMMENT ON FUNCTION elmos_activate_subscription_period(
+    varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+    timestamptz, timestamptz, varchar, varchar) IS
+    'Activates an exact 2026-09-08.1 paid subscription snapshot.';
+COMMENT ON FUNCTION elmos_grant_trial(
+    varchar, varchar, varchar, varchar, char, varchar) IS
+    'Grants the exact 2026-09-08.1 immutable free-trial snapshot.';
