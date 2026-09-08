@@ -1,0 +1,25 @@
+{
+  "route_key": "python-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 168,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:c0017874123a64c3218ca0de1fa09a1c5b44054e8a983cb5a3a8ca1794d0d691"
+    },
+    {
+      "bytes": 207,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:687ff45b07100c6c65f93ecbe0f76336955e068a611e5e2db663bd1a0f22fb9e"
+    },
+    {
+      "bytes": 157,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:6da2ec736fe5e46dbb2f59e50bd2c7e5709e962da6f09e7a4a71db11f4c06b2e"
+    }
+  ]
+}

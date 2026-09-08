@@ -175,10 +175,10 @@
       "sha256": "sha256:d774150225fe647a62ccd1ade8fefe992db57100c7cfcfb061f8e1c84b0cc76c"
     },
     {
-      "bytes": 8433,
+      "bytes": 8653,
       "path": "certification/artifacts/module/source-module-validation.json",
       "role": "source-module-validation",
-      "sha256": "sha256:a13ced4cd2462d515b3fae9caafe512e2a9ee531f15c5ee1541413fe87131e52"
+      "sha256": "sha256:27cea15fd7320e027c15867a693a70903d4e56c97106327f7e870bdeef78d1b1"
     },
     {
       "bytes": 9228,
@@ -3560,6 +3560,7 @@
         "language": "cpp",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3638,6 +3639,7 @@
         "language": "cpp",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3723,6 +3725,7 @@
         "language": "cpp",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3808,6 +3811,7 @@
         "language": "cpp",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3886,6 +3890,7 @@
         "language": "cpp",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",

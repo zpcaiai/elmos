@@ -3,13 +3,12 @@ import { writeFile } from "node:fs/promises";
 
 const routes = [
   "/",
-  "/frontend",
   "/help",
   "/login",
   "/register",
   "/admin/login",
 ] as const;
-const administratorRoutes = ["/capabilities"] as const;
+const administratorRoutes = ["/capabilities", "/frontend"] as const;
 const trustedOidcToken = process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim();
 
 test.beforeEach(async ({ context }) => {

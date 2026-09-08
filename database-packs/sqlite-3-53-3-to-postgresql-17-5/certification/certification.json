@@ -1,15 +1,51 @@
 {
+  "approved_by": [],
+  "evidence_digests": {
+    "certification/local-engine-evidence.json": "sha256:92f81c46a828424b6deeba41ee1385d24e90d59fb1a996f8fc17b51a7da3730d"
+  },
   "evidence_refs": [
     "certification/local-engine-evidence.json"
   ],
+  "exact_tuple": {
+    "source": {
+      "charset": "UTF-8",
+      "collation": "BINARY",
+      "dialect": "sqlite",
+      "driver_versions": [
+        "python-stdlib:3.14.6"
+      ],
+      "edition": "public-domain",
+      "engine": "sqlite",
+      "extensions": [],
+      "timezone": "UTC-text-ISO8601",
+      "versions": [
+        "3.53.3"
+      ]
+    },
+    "target": {
+      "charset": "UTF8",
+      "collation": "C",
+      "dialect": "postgresql",
+      "driver_versions": [
+        "psql:17.5"
+      ],
+      "edition": "community",
+      "engine": "postgresql",
+      "extensions": [],
+      "timezone": "UTC",
+      "versions": [
+        "17.5"
+      ]
+    }
+  },
   "external_certification": "NOT_RUN",
   "limitations": [
-    "Offline bounded workload only; CDC and production cutover are NOT_RUN."
+    "Offline bounded workload only; online CDC and production cutover are NOT_RUN."
   ],
   "metrics": {
     "canonical_ir_coverage": 1.0,
     "data_reconciliation_pass_rate": 1.0,
-    "query_performance_slo_pass_rate": 1.0,
+    "query_performance_slo_pass_rate": 0.0,
     "query_semantic_pass_rate": 1.0,
     "representative_workload_pass_rate": 1.0,
     "schema_conversion_pass_rate": 1.0,
@@ -20,6 +56,9 @@
     "workload_fingerprint_coverage": 1.0
   },
   "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "restrictions": [
+    "Offline cutover was rehearsed locally; online CDC, production cutover, and independent verification are NOT_RUN."
+  ],
   "schema_version": 1,
   "status": "experimental"
 }

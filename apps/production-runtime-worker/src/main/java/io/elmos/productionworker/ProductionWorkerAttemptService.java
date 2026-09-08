@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Bounded worker inbox and exact downstream workload execution protocol. */
 final class ProductionWorkerAttemptService implements AutoCloseable {
     private static final int MAX_ENGINE_RESPONSE_BYTES = 1_048_576;
-    private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration CLOSE_TIMEOUT = Duration.ofSeconds(5);
     enum LocalStatus {
         ACKED, RUNNING, SUCCEEDED, FAILED, PROVIDER_OUTCOME_UNKNOWN,
         CHECKPOINT_OUTCOME_UNKNOWN, COMPLETION_OUTCOME_UNKNOWN
@@ -1036,8 +1036,8 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
     }
 
     @PreDestroy
-    @Override
-    public void close() {
+    void close() {
+        if (!closed.compareAndSet(false, true)) return;
         List<ExecutorService> ownedExecutors = List.of(
                 heartbeatScheduler,
                 reconciliationScheduler,
@@ -1046,10 +1046,19 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
                 checkpointReconciliationExecutor,
                 completionReconciliationExecutor,
                 executors);
-        if (closed.compareAndSet(false, true)) {
-            ownedExecutors.forEach(ExecutorService::shutdownNow);
+        ownedExecutors.forEach(ExecutorService::shutdownNow);
+
+        long deadline = System.nanoTime() + CLOSE_TIMEOUT.toNanos();
+        for (ExecutorService executor : ownedExecutors) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) return;
+            try {
+                if (!executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) return;
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
-        awaitTermination(ownedExecutors);
     }
 
     boolean executorsShutdown() {
@@ -1072,24 +1081,6 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
                 && checkpointReconciliationExecutor.isTerminated()
                 && completionReconciliationExecutor.isTerminated()
                 && executors.isTerminated();
-    }
-
-    private static void awaitTermination(List<ExecutorService> ownedExecutors) {
-        long deadline = System.nanoTime() + SHUTDOWN_TIMEOUT.toNanos();
-        try {
-            for (ExecutorService executor : ownedExecutors) {
-                long remaining = deadline - System.nanoTime();
-                if (remaining <= 0L
-                        || !executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) {
-                    throw new IllegalStateException(
-                            "worker executors did not terminate within shutdown timeout");
-                }
-            }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(
-                    "interrupted while waiting for worker executors to terminate", ex);
-        }
     }
 
     boolean journalHealthy() {

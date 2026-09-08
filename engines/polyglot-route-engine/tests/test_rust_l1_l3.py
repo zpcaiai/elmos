@@ -1,8 +1,5 @@
 from pathlib import Path
-import pytest
 
-from elmos_polyglot_route.emitter import emit
-from elmos_polyglot_route.models import RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze
 
 

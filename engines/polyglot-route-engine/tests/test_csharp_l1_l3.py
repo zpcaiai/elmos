@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.native import analyze
 

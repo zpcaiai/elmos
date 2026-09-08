@@ -43,8 +43,13 @@ def _installer_bound_toolchain_root() -> Path:
 
 
 _EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
+_homebrew_default = (
+    "/opt/homebrew"
+    if platform.system() == "Darwin"
+    else str(_EXPECTED_TOOLCHAIN_ROOT / "homebrew-not-applicable")
+)
 _EXPECTED_HOMEBREW_PREFIX = Path(
-    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", _homebrew_default)
 ).expanduser()
 if (
     not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
@@ -3910,6 +3915,30 @@ def _go() -> ExactToolchain:
     )
 
 
+def _rust_sysroot_root_identity() -> tuple[int, int, int, int, int, int, int]:
+    try:
+        metadata = _EXPECTED_RUST_SYSROOT.lstat()
+    except OSError as error:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE") from error
+    if (
+        not stat.S_ISDIR(metadata.st_mode)
+        or _EXPECTED_RUST_SYSROOT.is_symlink()
+        or stat.S_IMODE(metadata.st_mode) != 0o555
+        or metadata.st_uid not in {0, os.getuid()}
+        or metadata.st_nlink < 2
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE")
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_nlink,
+        metadata.st_mtime_ns,
+    )
+
+
 def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
     wrappers = _qualified_tree_manifest(
         _EXPECTED_RUST_WRAPPER_ROOT,
@@ -3926,23 +3955,25 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         expected_bytes=_EXPECTED_RUST_WRAPPER_TREE_BYTES,
         failure="EXACT_TOOLCHAIN_RUST_WRAPPER_TREE_MISMATCH",
     )
+    sysroot_root_before = _rust_sysroot_root_identity()
     sysroot = _qualified_tree_manifest(
         _EXPECTED_RUST_SYSROOT,
         _EXPECTED_USER_LOCAL,
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
         portable_owner_identity=True,
     )
-    if sysroot not in _EXPECTED_RUST_SYSROOT_TREES:
-        raise RouteError(
-            "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH:expected="
-            + json.dumps(
-                _EXPECTED_RUST_SYSROOT_TREES,
-                sort_keys=True,
-                separators=(",", ":"),
-            )
-            + ":observed="
-            + json.dumps(sysroot, sort_keys=True, separators=(",", ":"))
-        )
+    _verify_qualified_tree_manifest(
+        sysroot,
+        expected_root=_EXPECTED_RUST_SYSROOT,
+        expected_sha256=_EXPECTED_RUST_SYSROOT_TREE_SHA256,
+        expected_record_count=_EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
+        expected_file_count=_EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
+        expected_directory_count=_EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
+        expected_bytes=_EXPECTED_RUST_SYSROOT_TREE_BYTES,
+        failure="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
+    )
+    if _rust_sysroot_root_identity() != sysroot_root_before:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_CHANGED")
     return wrappers, sysroot
 
 
@@ -4523,11 +4554,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     }
     if (
         not set(versions).issubset(allowed_version_fields)
-        # Homebrew's API receipt records a missing HEAD version as null, while
-        # loading the same pinned formula from the repository-owned tap records
-        # the formula's git source as the sentinel "HEAD". Neither changes the
-        # selected stable 8.5.9 bottle, but every other value remains unsafe.
-        or ("head" in versions and versions["head"] not in {None, "HEAD"})
+        # Homebrew's API-backed core receipt records an unselected HEAD as null,
+        # while the exact same pinned formula loaded from the CI tap records the
+        # declared HEAD sentinel. ``source.spec == "stable"`` above proves that
+        # neither form selected HEAD; accept only those two exact encodings.
+        or versions.get("head") not in {None, "HEAD"}
         or (
             "version_scheme" in versions
             and (
@@ -4537,10 +4568,21 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         )
         or (
             "compatibility_version" in versions
-            and versions["compatibility_version"] is not None
-            and (
-                type(versions["compatibility_version"]) is not int
-                or versions["compatibility_version"] != 1
+            and not (
+                (
+                    type(versions["compatibility_version"]) is int
+                    and versions["compatibility_version"] == 1
+                )
+                # A bottle loaded from the exact no-git CI tap starts with an
+                # empty source-version record. Homebrew hydrates ``stable`` and
+                # ``version_scheme`` before writing INSTALL_RECEIPT.json, but
+                # leaves ``compatibility_version`` null. The pinned formula
+                # digest and the normalized install tree still bind the declared
+                # compatibility version; accept this null only for that tap.
+                or (
+                    source.get("tap") == "elmos/pinned-route-ci"
+                    and versions["compatibility_version"] is None
+                )
             )
         )
     ):
@@ -5845,8 +5887,45 @@ def _vb6() -> ExactToolchain:
     )
 
 
+def _vcpp6() -> ExactToolchain:
+    """Bind an exact, externally governed Windows/x86 VC++ 6 SP6 install."""
+
+    from .vcpp6_toolchain import resolve_vcpp6_toolchain
+
+    binding = resolve_vcpp6_toolchain(REPOSITORY_ROOT)
+    return ExactToolchain(
+        "vcpp6",
+        (
+            "Microsoft Visual C++ 6.0 SP6 / "
+            f"compiler {binding.compiler_version} / linker {binding.linker_version} / "
+            f"runtime {binding.runtime_version}"
+        ),
+        str(binding.compiler),
+        str(binding.linker),
+        profile=(
+            "vcpp6-dialect=6.0-sp6-cpp98-era",
+            "vcpp6-compiler-architecture=x86",
+            f"vcpp6-host-architecture={binding.host_architecture}",
+            f"vcpp6-linker={binding.linker}",
+            f"vcpp6-linker-sha256={binding.linker_sha256}",
+            f"vcpp6-linker-version={binding.linker_version}",
+            f"vcpp6-runtime={binding.runtime}",
+            f"vcpp6-runtime-sha256={binding.runtime_sha256}",
+            f"vcpp6-runtime-version={binding.runtime_version}",
+            f"vcpp6-runner-id={binding.runner_id}",
+            f"vcpp6-authorization-ref={binding.authorization_ref}",
+            f"vcpp6-binding-manifest-sha256={binding.manifest_sha256}",
+            "vcpp6-binding-evidence=GOVERNED_EXTERNAL_SELF_ATTESTED",
+            "vcpp6-independent-verification=NOT_RUN_UNLESS_SEPARATE_RECEIPT",
+        ),
+        executable_sha256=binding.compiler_sha256,
+        auxiliary_sha256=binding.linker_sha256,
+    )
+
+
 def _toolchain_fingerprint() -> tuple[str, ...]:
     from .vb6_toolchain import binding_fingerprint
+    from .vcpp6_toolchain import binding_fingerprint as vcpp6_binding_fingerprint
 
     tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
     try:
@@ -5862,6 +5941,7 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
         *binding_fingerprint(),
+        *vcpp6_binding_fingerprint(),
         tsc_identity,
     )
 
@@ -5887,6 +5967,7 @@ def _cached_exact_toolchain(
         "react": _react,
         "flutter": _flutter,
         "vb6": _vb6,
+        "vcpp6": _vcpp6,
     }
     try:
         selector = selectors[language]

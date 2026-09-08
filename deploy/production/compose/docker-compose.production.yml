@@ -202,7 +202,9 @@ services:
       ELMOS_DATABASE_DATA_PORT: "8089"
       ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
       ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL: http://chinadb-sql-preflight:8101
+      ELMOS_DATABASE_JOB_STATE_DIR: /var/lib/elmos/database-jobs
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    volumes: ["database-job-state:/var/lib/elmos/database-jobs"]
     networks: [backend, chinadb-preflight]
     expose: ["8089"]
     depends_on:
@@ -330,3 +332,4 @@ services:
 
 volumes:
   artifact-data:
+  database-job-state:

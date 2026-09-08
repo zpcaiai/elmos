@@ -682,6 +682,7 @@ def _walk_repository(
                 )
                 inventory_issues.append((relative, "FILE_SYMLINK_NOT_READ"))
                 continue
+            content: bytes | None
             try:
                 content: bytes | None
                 if retain_content:
@@ -1648,9 +1649,19 @@ def _apply_contextual_source_language(
     scanned: Sequence[_ScannedFile],
     semantic_discovery: Mapping[str, object] | None,
 ) -> list[_ScannedFile]:
-    """Preserve React's route identity for `.ts` files in a React project."""
+    """Preserve route identities for extensions shared with another frontend."""
 
-    if semantic_discovery is None or semantic_discovery.get("source_language") != "react":
+    if semantic_discovery is None:
+        return list(scanned)
+    source_language = semantic_discovery.get("source_language")
+    if source_language == "vcpp6":
+        return [
+            replace(file, language="vcpp6")
+            if file.language == "cpp"
+            else file
+            for file in scanned
+        ]
+    if source_language != "react":
         return list(scanned)
     return [
         replace(file, language="react")

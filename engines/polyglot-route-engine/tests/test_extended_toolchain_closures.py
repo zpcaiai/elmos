@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import os
+import stat
 import subprocess
 from pathlib import Path
 
@@ -97,6 +98,46 @@ def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
         wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
         assert function.count(wrapper_call) == 1
         assert function.index(wrapper_call) > reuse_branch_end
+    seal_call = 'seal_rust_sysroot "${target}"'
+    assert function.count(seal_call) == 1
+    assert function.index(seal_call) > function.index('write_rust_wrapper "${target}" "rustup"')
+
+
+def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("seal_rust_sysroot() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    target = tmp_path / "rust"
+    sysroot = target / "rustup" / "toolchains" / "1.89.0-aarch64-apple-darwin"
+    executable = sysroot / "bin" / "rustc"
+    payload = sysroot / "lib" / "libstd.rlib"
+    executable.parent.mkdir(parents=True)
+    payload.parent.mkdir(parents=True)
+    executable.write_bytes(b"compiler")
+    payload.write_bytes(b"library")
+    executable.chmod(0o755)
+    payload.chmod(0o644)
+
+    completed = subprocess.run(
+        [
+            "/bin/bash",
+            "-c",
+            function + '\nRUST_VERSION=1.89.0\nseal_rust_sysroot "$1"',
+            "bash",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert stat.S_IMODE(executable.stat().st_mode) == 0o555
+    assert stat.S_IMODE(payload.stat().st_mode) == 0o444
+    assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
 
 
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
@@ -225,39 +266,21 @@ def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
     assert strict["sha256"] != local["sha256"]
 
 
-def test_rust_accepts_only_complete_allowlisted_hosted_sysroot(
+def test_rust_sysroot_root_must_remain_read_only(
+    tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    wrappers = _tree_identity(
-        toolchains._EXPECTED_RUST_WRAPPER_ROOT,
-        toolchains._EXPECTED_RUST_WRAPPER_TREE_SHA256,
-        toolchains._EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT,
-        toolchains._EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT,
-        toolchains._EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT,
-        toolchains._EXPECTED_RUST_WRAPPER_TREE_BYTES,
-    )
-    hosted_sysroot = copy.deepcopy(toolchains._EXPECTED_RUST_SYSROOT_TREES[1])
+    root = tmp_path / "rust-sysroot"
+    root.mkdir(mode=0o755)
+    monkeypatch.setattr(toolchains, "_EXPECTED_RUST_SYSROOT", root)
 
-    def manifest(root: Path, *_args: object, **_kwargs: object) -> dict[str, object]:
-        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else hosted_sysroot
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE"):
+        toolchains._rust_sysroot_root_identity()
 
-    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", manifest)
-    assert toolchains._rust_tree_identities() == (wrappers, hosted_sysroot)
+    root.chmod(0o555)
+    identity = toolchains._rust_sysroot_root_identity()
 
-    forged = copy.deepcopy(hosted_sysroot)
-    forged["sha256"] = "f" * 64
-
-    def forged_manifest(
-        root: Path, *_args: object, **_kwargs: object
-    ) -> dict[str, object]:
-        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else forged
-
-    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", forged_manifest)
-    with pytest.raises(
-        RouteError,
-        match="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
-    ):
-        toolchains._rust_tree_identities()
+    assert stat.S_IMODE(identity[2]) == 0o555
 
 
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])

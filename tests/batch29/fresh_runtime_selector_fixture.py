@@ -8,7 +8,10 @@ def main() -> int:
     if sys.argv[1:] != ["--selector-smoke"]:
         raise SystemExit("focused fresh-child fixture received unexpected arguments")
     from elmos_polyglot_route import toolchains
-    from elmos_polyglot_route.models import DEPRECATED_LANGUAGES, ROUTED_LANGUAGES
+    from elmos_polyglot_route.models import (
+        DEPRECATED_LANGUAGES,
+        HOSTED_REPOSITORY_MATRIX_LANGUAGES,
+    )
     from elmos_polyglot_route.toolchains import ExactToolchain
 
     selectors = {
@@ -27,7 +30,7 @@ def main() -> int:
         "flutter": "_flutter",
         "vb6": "_vb6",
     }
-    assert tuple(selectors) == tuple(ROUTED_LANGUAGES)
+    assert tuple(selectors) == tuple(HOSTED_REPOSITORY_MATRIX_LANGUAGES)
     assert tuple(DEPRECATED_LANGUAGES) == ("javascript",)
     assert callable(toolchains._javascript)
     for language, selector in selectors.items():

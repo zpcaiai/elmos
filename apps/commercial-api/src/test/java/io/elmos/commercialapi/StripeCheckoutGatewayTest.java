@@ -37,7 +37,7 @@ class StripeCheckoutGatewayTest {
                         "organization_id":"org-a",
                         "actor_id":"actor-a",
                         "plan_id":"elmos-pro-monthly",
-                        "catalog_version":"2026-07-28.2"
+                        "catalog_version":"2026-09-08.1"
                       }
                     }},
                     "lines":{"data":[{"period":{"start":1785232800,"end":1787911200}}]}

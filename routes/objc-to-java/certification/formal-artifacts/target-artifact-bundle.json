@@ -1,0 +1,25 @@
+{
+  "route_key": "objc-to-java",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 221,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.java",
+      "sha256": "sha256:6a4bc2930e833dd463364f84cc4fbc8aff506c23db07c9c48c1a3b2ba3c5282c"
+    },
+    {
+      "bytes": 261,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.java",
+      "sha256": "sha256:bdfcd66974b33ae46262e25e2e6022664e5c36cc3705fdee7f21700e4bd117f5"
+    },
+    {
+      "bytes": 222,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.java",
+      "sha256": "sha256:bafabe1bebd90b44ca2bf3a1970ff74866abc1c9547624f5a0baa752d426f0f3"
+    }
+  ]
+}

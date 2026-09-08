@@ -18,6 +18,7 @@ import io
 import json
 from collections import Counter
 from dataclasses import dataclass, field
+from hashlib import sha256
 from pathlib import Path
 
 from sqlglot import exp
@@ -30,10 +31,8 @@ from elmos_sql_dialect.advanced import (
     emit_row_policy,
     emit_table_function,
     emit_trigger,
-    emit_view,
     looks_like_role_comment,
     parse_comment,
-    parse_create_view,
     parse_privilege,
     parse_procedure,
     parse_row_policy,
@@ -150,9 +149,7 @@ def statements_of(path: Path, dialect: Dialect):
             for statement, raw in zip(statements, raw_statements, strict=True):
                 if isinstance(statement, exp.Command):
                     try:
-                        recovered = _parse_source_statements(
-                            strip_leading_comments(raw.text), dialect
-                        )
+                        recovered = _parse_source_statements(strip_leading_comments(raw.text), dialect)
                     except Exception:  # noqa: S112 - preserve the opaque blocker
                         recovered = []
                     if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
@@ -167,9 +164,7 @@ def statements_of(path: Path, dialect: Dialect):
         if looks_like_client_directive(raw.text, dialect):
             continue
         try:
-            parsed = [
-                s for s in _parse_source_statements(raw.text, dialect) if s is not None
-            ]
+            parsed = [s for s in _parse_source_statements(raw.text, dialect) if s is not None]
         except Exception:  # noqa: S112 - one malformed recovered chunk must not hide later units
             continue
         if len(parsed) == 1:
@@ -287,26 +282,18 @@ def emit_to(
             allow_reserved_word_shim=allow_reserved_word_shim,
         )
     if isinstance(statement, exp.Drop):
-        return emitter.emit_drop_table(
-            parser.parse_drop_table(statement, source, namespace_map), target
-        )
+        return emitter.emit_drop_table(parser.parse_drop_table(statement, source, namespace_map), target)
     if isinstance(statement, exp.Insert):
         insert = parser.parse_insert_statement(statement, source, namespace_map)
         if hasattr(insert, "rows"):
             return emitter.emit_insert(insert, target)
         return emitter.emit_insert_select(insert, target)
     if isinstance(statement, exp.Update):
-        return emitter.emit_update(
-            parser.parse_update(statement, source, namespace_map, source_catalog), target
-        )
+        return emitter.emit_update(parser.parse_update(statement, source, namespace_map, source_catalog), target)
     if isinstance(statement, exp.Delete):
-        return emitter.emit_delete(
-            parser.parse_delete(statement, source, namespace_map), target
-        )
+        return emitter.emit_delete(parser.parse_delete(statement, source, namespace_map), target)
     if isinstance(statement, exp.TruncateTable):
-        return emitter.emit_truncate_table(
-            parser.parse_truncate_table(statement, source, namespace_map), target
-        )
+        return emitter.emit_truncate_table(parser.parse_truncate_table(statement, source, namespace_map), target)
     if isinstance(statement, exp.Comment):
         return emit_comment(
             parse_comment(statement, source, namespace_map),
@@ -491,9 +478,7 @@ def main() -> int:
     admitted = 0
     discovered = 0
     reachable_per_target: Counter[str] = Counter()
-    refusals_per_target: dict[str, Counter[str]] = {
-        d.value: Counter() for d in ALL_DIALECTS
-    }
+    refusals_per_target: dict[str, Counter[str]] = {d.value: Counter() for d in ALL_DIALECTS}
     all_four = 0
     disposition_units = 0
     disposition_covered = 0
@@ -501,11 +486,13 @@ def main() -> int:
     catalog_evidence_units = 0
     lost_by_first_refusal: Counter[str] = Counter()
     source_dialects: set[Dialect] = set()
+    route_units: list[dict[str, object]] = []
 
     for raw in args.corpus:
-        _name, path, dialect_name = raw.split("=", 2)
+        corpus_name, path, dialect_name = raw.split("=", 2)
         source = Dialect(dialect_name)
         source_dialects.add(source)
+        corpus_root = Path(path).resolve(strict=True)
         scan_report = scan_repository(
             path,
             source,
@@ -519,15 +506,13 @@ def main() -> int:
         catalog_evidence_units += len(scan_report.source_catalog_evidence)
         comment_catalog = ReachabilityCommentCatalog()
         source_catalog = SourceSchemaCatalog()
-        for file in discover_sql_files(Path(path).resolve(strict=True)):
+        for file in discover_sql_files(corpus_root):
             # Keep the denominator identical to the authoritative scanner:
             # source-format failures are still discovered units with an
             # explicit disposition, not silently removed from the target
             # reachability denominator.
-            discovered += len(
-                split_statements(file.read_text(encoding="utf-8"), dialect=source)
-            )
-            for statement in statements_of(file, source):
+            discovered += len(split_statements(file.read_text(encoding="utf-8"), dialect=source))
+            for statement_index, statement in enumerate(statements_of(file, source), start=1):
                 if type(statement).__name__ not in DDL_TYPES:
                     continue
                 # Build source facts before classifying the next unit.  This
@@ -550,9 +535,14 @@ def main() -> int:
                     continue
                 admitted += 1
                 blocked_codes: list[str] = []
+                target_states: dict[str, dict[str, str | None]] = {}
                 for target in ALL_DIALECTS:
                     if target is source:
                         reachable_per_target[target.value] += 1
+                        target_states[target.value] = {
+                            "state": "REACHABLE",
+                            "refusalCode": None,
+                        }
                         continue
                     try:
                         with contextlib.redirect_stderr(io.StringIO()):
@@ -580,22 +570,56 @@ def main() -> int:
                                 allow_reserved_word_shim=args.allow_reserved_word_shim,
                             )
                         reachable_per_target[target.value] += 1
+                        target_states[target.value] = {
+                            "state": "REACHABLE",
+                            "refusalCode": None,
+                        }
                     except DialectError as refusal:
                         refusals_per_target[target.value][refusal.code] += 1
                         blocked_codes.append(refusal.code)
+                        target_states[target.value] = {
+                            "state": "BLOCKED",
+                            "refusalCode": refusal.code,
+                        }
                     except Exception as unexpected:  # engine defect, never laundered
-                        refusals_per_target[target.value][
-                            f"ENGINE_ERROR:{type(unexpected).__name__}"
-                        ] += 1
+                        refusal_code = f"ENGINE_ERROR:{type(unexpected).__name__}"
+                        refusals_per_target[target.value][refusal_code] += 1
                         blocked_codes.append("ENGINE_ERROR")
+                        target_states[target.value] = {
+                            "state": "BLOCKED",
+                            "refusalCode": refusal_code,
+                        }
                 if blocked_codes:
                     lost_by_first_refusal[blocked_codes[0]] += 1
                 else:
                     all_four += 1
+                statement_digest = "sha256:" + sha256(statement.sql(dialect=source.value).encode("utf-8")).hexdigest()
+                route_units.append(
+                    {
+                        "unitId": (
+                            f"{corpus_name}:{file.relative_to(corpus_root).as_posix()}"
+                            f"#{statement_index}:{statement_digest[7:19]}"
+                        ),
+                        "corpus": corpus_name,
+                        "sourcePath": file.relative_to(corpus_root).as_posix(),
+                        "parsedStatementIndex": statement_index,
+                        "sourceDialect": source.value,
+                        "statementKind": type(statement).__name__,
+                        "statementDigest": statement_digest,
+                        "allFourReachable": not blocked_codes,
+                        "targets": target_states,
+                    }
+                )
                 if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-                    comment_catalog.add_table(parser.parse_create_table(statement, source, namespace_map, type_policy=type_policy))
+                    comment_catalog.add_table(
+                        parser.parse_create_table(statement, source, namespace_map, type_policy=type_policy)
+                    )
                 elif isinstance(statement, exp.Alter):
-                    comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map, allow_alter_column=args.allow_alter_column))
+                    comment_catalog.apply_alter(
+                        parser.parse_alter_table(
+                            statement, source, namespace_map, allow_alter_column=args.allow_alter_column
+                        )
+                    )
 
     target_priority = sorted(
         (dialect.value for dialect in ALL_DIALECTS),
@@ -610,13 +634,9 @@ def main() -> int:
         "disposition_units": disposition_units,
         "disposition_covered": disposition_covered,
         "disposition_unknown": disposition_unknown,
-        "disposition_coverage": round(disposition_covered / disposition_units, 4)
-        if disposition_units
-        else 0.0,
+        "disposition_coverage": round(disposition_covered / disposition_units, 4) if disposition_units else 0.0,
         "translatable_to_all_four": all_four,
-        "all_four_ratio_of_admitted": round(all_four / admitted, 4)
-        if admitted
-        else 0.0,
+        "all_four_ratio_of_admitted": round(all_four / admitted, 4) if admitted else 0.0,
         "reachable_per_target": dict(reachable_per_target),
         "target_route_rate": {
             dialect.value: round(reachable_per_target[dialect.value] / admitted, 4) if admitted else 0.0
@@ -633,9 +653,7 @@ def main() -> int:
                 "fail-closed metric and must not be widened by semantic downgrades"
             ),
         },
-        "refusals_per_target": {
-            k: dict(v.most_common()) for k, v in refusals_per_target.items()
-        },
+        "refusals_per_target": {k: dict(v.most_common()) for k, v in refusals_per_target.items()},
         "lost_by_first_refusal": dict(lost_by_first_refusal.most_common()),
         "namespaceProfile": None if active_namespace_profile is None else active_namespace_profile.to_dict(),
         "capabilityMatrix": target_capability_matrix(),
@@ -643,14 +661,11 @@ def main() -> int:
         "independentVerification": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "sourceCatalogEvidenceUnits": catalog_evidence_units,
+        "routeUnits": route_units,
     }
-    args.output.write_text(
-        json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    args.output.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"admitted source-side      {admitted}")
-    print(
-        f"translatable to ALL FOUR  {all_four}  ({out['all_four_ratio_of_admitted']:.1%} of admitted)"
-    )
+    print(f"translatable to ALL FOUR  {all_four}  ({out['all_four_ratio_of_admitted']:.1%} of admitted)")
     print("\nreachable per target:")
     for d in ALL_DIALECTS:
         print(f"  {d.value:9} {reachable_per_target[d.value]:>6}")

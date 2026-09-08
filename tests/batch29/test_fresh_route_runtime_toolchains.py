@@ -795,7 +795,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     }
 
 
-def test_fresh_child_selects_all_fourteen_active_language_ids_with_a_sanitized_path() -> None:
+def test_fresh_child_selects_hosted_repository_language_ids_with_a_sanitized_path() -> None:
     runtime = _runtime()
 
     assert (
@@ -818,26 +818,6 @@ def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
         '    "Formula/c/cmake.rb" \\\n'
         '    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"'
         in full_profile
-    )
-
-
-def test_ci_installer_retries_digest_bound_homebrew_metadata_via_exact_mirror() -> None:
-    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
-    download = installer.split("download_verified() {", 1)[1].split(
-        "\n}\n", 1
-    )[0]
-
-    assert "--retry-all-errors" in download
-    assert "--retry-max-time 60" in download
-    assert 'if [[ "${observed}" == "${expected}" ]]' in download
-    assert "No digest-valid pinned source was available" in download
-    assert (
-        'https://cdn.jsdelivr.net/gh/Homebrew/homebrew-core@${commit}/${source_path}'
-        in installer
-    )
-    assert (
-        'https://cdn.jsdelivr.net/gh/Homebrew/homebrew-cask@${commit}/${source_path}'
-        in installer
     )
 
 

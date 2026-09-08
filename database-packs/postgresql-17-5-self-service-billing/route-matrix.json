@@ -3,15 +3,35 @@
   "pack_key": "postgresql-17-5-self-service-billing",
   "tuples": [
     {
-      "source_engine": "postgresql",
-      "source_version": "17.5",
-      "source_edition": "community",
-      "target_engine": "postgresql",
-      "target_version": "17.5",
-      "target_edition": "neon-managed",
+      "source": {
+        "engine": "postgresql",
+        "versions": ["17.5"],
+        "dialect": "postgresql",
+        "edition": "community",
+        "timezone": "UTC",
+        "charset": "UTF8",
+        "collation": "C",
+        "extensions": [],
+        "driver_versions": ["postgresql-jdbc-42.7.7"]
+      },
+      "target": {
+        "engine": "postgresql",
+        "versions": ["17.5"],
+        "dialect": "postgresql",
+        "edition": "neon-managed",
+        "timezone": "UTC",
+        "charset": "UTF8",
+        "collation": "C",
+        "extensions": [],
+        "driver_versions": ["postgresql-jdbc-42.7.7"]
+      },
       "status": "research",
-      "evidence_refs": []
+      "evidence_refs": [],
+      "restrictions": ["External Neon execution and independent verification are NOT_RUN."]
     }
   ],
-  "recertification_triggers": []
+  "recertification_triggers": [
+    "source or target engine version changes",
+    "driver, provider, collation, timezone, RLS policy, schema, or workload changes"
+  ]
 }

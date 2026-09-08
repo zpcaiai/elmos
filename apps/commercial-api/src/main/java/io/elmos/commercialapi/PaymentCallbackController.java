@@ -4,6 +4,7 @@ import io.elmos.commercialadapter.payment.PaymentCallbackPipeline.Outcome;
 import io.elmos.commercialadapter.payment.PaymentCallbackPipeline.RawCallback;
 import io.elmos.commercialadapter.payment.PaymentCallbackPorts;
 import io.elmos.commercialadapter.payment.PaymentProvider;
+import io.elmos.commercialadapter.payment.ElmPayWebhookAdapter;
 
 import java.util.Map;
 
@@ -80,18 +81,26 @@ public class PaymentCallbackController {
     private static final String WECHAT_FAILURE = "{\"code\":\"FAIL\",\"message\":\"NOT ACCEPTED\"}";
 
     private final ObjectProvider<PaymentCallbackPorts> ports;
+    private final ObjectProvider<ElmPayWebhookAdapter> elmPayAdapters;
 
     @Autowired
-    public PaymentCallbackController(ObjectProvider<PaymentCallbackPorts> ports) {
-        if (ports == null) {
-            throw new IllegalArgumentException("PaymentCallbackPorts 提供者未注入");
+    public PaymentCallbackController(ObjectProvider<PaymentCallbackPorts> ports,
+            ObjectProvider<ElmPayWebhookAdapter> elmPayAdapters) {
+        if (ports == null || elmPayAdapters == null) {
+            throw new IllegalArgumentException("支付回调提供者未注入");
         }
         this.ports = ports;
+        this.elmPayAdapters = elmPayAdapters;
     }
 
     /** 测试与手工装配用：直接给一组确定的端口。 */
     public PaymentCallbackController(PaymentCallbackPorts ports) {
-        this(new FixedPorts(ports));
+        this(new FixedProvider<>(ports), new FixedProvider<>(null));
+    }
+
+    /** ELMPay 回调测试与手工装配用。 */
+    public PaymentCallbackController(PaymentCallbackPorts ports, ElmPayWebhookAdapter adapter) {
+        this(new FixedProvider<>(ports), new FixedProvider<>(adapter));
     }
 
     /**
@@ -145,6 +154,42 @@ public class PaymentCallbackController {
                 : ResponseEntity.badRequest().body(WECHAT_FAILURE);
     }
 
+    /** ELMPay 的签名业务事件；只有 captured v1 会进入收款履约管线。 */
+    @PostMapping("/elmpay")
+    public ResponseEntity<Void> elmPay(
+            @RequestBody String rawBody,
+            @RequestHeader("X-Elmpay-Signature") String signature,
+            @RequestHeader("X-Elmpay-Event-Id") String eventId,
+            @RequestHeader("X-Elmpay-Event-Type") String eventType,
+            @RequestHeader("X-Elmpay-Timestamp") String timestamp,
+            @RequestHeader("X-Elmpay-Key-Id") String keyId) {
+        PaymentCallbackPorts resolved = ports.getIfAvailable();
+        ElmPayWebhookAdapter adapter = elmPayAdapters.getIfAvailable();
+        if (resolved == null || adapter == null) {
+            return ResponseEntity.status(503).build();
+        }
+        Map<String, String> headers = Map.of(
+                "X-Elmpay-Signature", signature,
+                "X-Elmpay-Event-Id", eventId,
+                "X-Elmpay-Event-Type", eventType,
+                "X-Elmpay-Timestamp", timestamp,
+                "X-Elmpay-Key-Id", keyId);
+        RawCallback raw = new RawCallback(adapter.provider(), rawBody, headers, Map.of());
+        if (!adapter.acceptsTimestamp(raw)) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!adapter.verifySignature(raw)) {
+            return ResponseEntity.status(401).build();
+        }
+        if (!adapter.isCapturedEvent(raw)) {
+            return ResponseEntity.noContent().build();
+        }
+        Outcome outcome = resolved.pipelineFor(adapter).process(raw);
+        return accepted(outcome)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
+    }
+
     /**
      * 哪些结果对提供方回成功。
      *
@@ -169,31 +214,27 @@ public class PaymentCallbackController {
     }
 
     /** 把一组确定的端口包成 {@link ObjectProvider}，供非 Spring 场景使用。 */
-    private record FixedPorts(PaymentCallbackPorts value)
-            implements ObjectProvider<PaymentCallbackPorts> {
-        private FixedPorts {
-            if (value == null) {
-                throw new IllegalArgumentException("PaymentCallbackPorts 为空");
-            }
-        }
+    private record FixedProvider<T>(T value) implements ObjectProvider<T> {
 
         @Override
-        public PaymentCallbackPorts getObject() {
+        public T getObject() {
+            if (value == null) throw new IllegalStateException("对象未配置");
             return value;
         }
 
         @Override
-        public PaymentCallbackPorts getObject(Object... args) {
+        public T getObject(Object... args) {
+            if (value == null) throw new IllegalStateException("对象未配置");
             return value;
         }
 
         @Override
-        public PaymentCallbackPorts getIfAvailable() {
+        public T getIfAvailable() {
             return value;
         }
 
         @Override
-        public PaymentCallbackPorts getIfUnique() {
+        public T getIfUnique() {
             return value;
         }
     }

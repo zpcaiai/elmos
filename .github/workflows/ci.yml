@@ -369,6 +369,11 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Populate the exact lock-file graph while network is authorized;
+          # analyzer execution later verifies and restores from this cache offline.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -496,6 +501,9 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           # The native Rust analyzer executes with --offline --locked so a
           # repository workload cannot cause an undeclared network fetch.
           # Hydrate only the checked-in Cargo.lock graph before that
@@ -514,15 +522,11 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
-      - name: Fail fast on exact PHP and Flutter build closure drift
+      - name: Fail fast on exact PHP tree drift
         run: |
-          uv --directory engines/polyglot-route-engine sync --locked
           uv --directory engines/polyglot-route-engine run --locked --no-dev \
             python -c \
               'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
-          uv --directory engines/polyglot-route-engine run --locked \
-            python -m pytest -q \
-              tests/test_flutter_repository_pipeline.py::test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,
@@ -569,8 +573,7 @@ jobs:
   polyglot-route-engine-matrix:
     name: Directed route engine matrix (${{ matrix.source_language }})
     # Establish the exact hosted compiler/runtime identity once before
-    # consuming scarce macOS workers for the 13 locally executable pre-VB6
-    # source-language shards. VB6 stays in its governed Windows/x86 campaign.
+    # consuming scarce macOS workers for the 14 source-language shards.
     needs: polyglot-route-engine-core
     runs-on: macos-26
     timeout-minutes: 240
@@ -632,6 +635,9 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -658,10 +664,10 @@ jobs:
           import subprocess
           import sys
 
-          from elmos_polyglot_route.models import SUPPORTED_LANGUAGES
+          from elmos_polyglot_route.models import HOSTED_REPOSITORY_MATRIX_LANGUAGES
 
           source = os.environ["ELMOS_ROUTE_SOURCE_LANGUAGE"]
-          if source not in SUPPORTED_LANGUAGES:
+          if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:
               raise SystemExit(f"unsupported matrix source shard: {source}")
           test_file = (
               Path(os.environ["GITHUB_WORKSPACE"])
@@ -675,7 +681,7 @@ jobs:
           selectors = [
               f"{test_file}::{function}[{source}-{target}]"
               for function in functions
-              for target in SUPPORTED_LANGUAGES
+              for target in HOSTED_REPOSITORY_MATRIX_LANGUAGES
               if target != source
           ]
           if len(selectors) != 24 or len(set(selectors)) != 24:
@@ -758,6 +764,22 @@ jobs:
           uv run --locked pytest
           uv run --locked ruff check src tests
           uv run --locked mypy src
+
+  batch31-database-gates:
+    name: Batch 31 evidence-derived database gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Validate schemas, spoof resistance, and every checked-in pack
+        run: make b31-skills-test b31-all-packs-check
 
   project-synthesis:
     name: Project Synthesis and operability

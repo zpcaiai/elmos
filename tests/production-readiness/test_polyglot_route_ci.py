@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _supported_route_languages() -> tuple[str, ...]:
+def _hosted_repository_matrix_languages() -> tuple[str, ...]:
     models_path = (
         ROOT
         / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
@@ -22,12 +22,12 @@ def _supported_route_languages() -> tuple[str, ...]:
         if (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id == "SUPPORTED_LANGUAGES"
+            and node.target.id == "HOSTED_REPOSITORY_MATRIX_LANGUAGES"
         ):
             value = ast.literal_eval(node.value)
             if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
                 return value
-    raise AssertionError("SUPPORTED_LANGUAGES literal was not found")
+    raise AssertionError("HOSTED_REPOSITORY_MATRIX_LANGUAGES literal was not found")
 
 
 def _locally_executable_repository_languages() -> tuple[str, ...]:
@@ -601,6 +601,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         route_workers = route_engine_job + route_matrix_job
         all_route_jobs = route_pack_job + route_workers
+        csharp_restore = (
+            "dotnet restore \\\n"
+            "            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+            "Elmos.Dotnet.SemanticCli.csproj \\\n"
+            "            --locked-mode"
+        )
 
         self.assertLess(cargo_fetch, core_partition)
         self.assertLess(cargo_fetch, native_core_build)
@@ -750,6 +756,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             all_route_jobs.count("git diff --exit-code -- Package.resolved"),
             3,
         )
+        self.assertEqual(all_route_jobs.count(csharp_restore), 3)
+        for job in (route_pack_job, route_engine_job, route_matrix_job):
+            self.assertLess(job.index(csharp_restore), job.index("swift package resolve"))
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)
@@ -769,10 +778,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(
-            configured_sources,
-            _locally_executable_repository_languages(),
-        )
+        self.assertEqual(configured_sources, _hosted_repository_matrix_languages())
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests
@@ -787,7 +793,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             route_matrix_job,
         )
         self.assertIn(
-            'if source not in SUPPORTED_LANGUAGES:',
+            'if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:',
             route_matrix_job,
         )
         self.assertNotIn("-k", route_matrix_job)

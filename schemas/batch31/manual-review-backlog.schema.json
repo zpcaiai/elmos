@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "source_report_digest", "summary", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "elmos.batch31.manual-review-backlog"},
+    "source_report_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "open", "in_review", "resolved", "waived", "blocked", "release_blocked"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "open": {"type": "integer", "minimum": 0},
+        "in_review": {"type": "integer", "minimum": 0},
+        "resolved": {"type": "integer", "minimum": 0},
+        "waived": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "release_blocked": {"type": "boolean"}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "finding_id", "fingerprint", "source_path", "statement_index", "reason_code",
+          "reason", "family", "excerpt", "status", "owner", "recommended_action",
+          "resolution", "waiver", "revalidation"
+        ],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^sql-review-[0-9a-f]{20}$"},
+          "fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "source_path": {"type": "string", "minLength": 1},
+          "statement_index": {"type": "integer", "minimum": 0},
+          "reason_code": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1},
+          "family": {"type": ["string", "null"]},
+          "excerpt": {"type": "string"},
+          "status": {"enum": ["OPEN", "IN_REVIEW", "RESOLVED", "WAIVED", "BLOCKED"]},
+          "owner": {"type": "string", "minLength": 1},
+          "recommended_action": {"type": "string", "minLength": 1},
+          "resolution": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["strategy", "artifact_refs"],
+            "properties": {
+              "strategy": {"enum": ["NOT_SET", "HAND_PORT", "TARGET_ADAPTER", "SOURCE_FIX", "OUT_OF_SCOPE"]},
+              "artifact_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+            }
+          },
+          "waiver": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "approved_by", "expires_at", "reason"],
+            "properties": {
+              "status": {"enum": ["NOT_REQUESTED", "REQUESTED", "APPROVED", "REJECTED"]},
+              "approved_by": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "expires_at": {"type": ["string", "null"], "format": "date-time"},
+              "reason": {"type": ["string", "null"]}
+            }
+          },
+          "revalidation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "evidence_refs"],
+            "properties": {
+              "status": {"enum": ["NOT_RUN", "PASSED", "FAILED"]},
+              "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        }
+      }
+    }
+  }
+}

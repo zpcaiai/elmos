@@ -1,0 +1,25 @@
+{
+  "route_key": "go-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 596,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:4cf55e963e7269e3fc3fd5ed4ce29bd8453ddda1cffe5964f1f18ea9e3f56097"
+    },
+    {
+      "bytes": 416,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:ca9400282e8e74b14597b18110a4b0455f5627a3a42a39369d64448f1f4c4f1f"
+    },
+    {
+      "bytes": 622,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:1dc14d5d9fa1abe5827216ae580cdcddd95dbc3d171f70e97504929f08aad80b"
+    }
+  ]
+}

@@ -48,7 +48,7 @@ from elmos_polyglot_route.models import (
     repository_language_lifecycle,
 )
 from elmos_polyglot_route.repository import plan_repository
-from elmos_polyglot_route.toolchains import exact_toolchain
+from elmos_polyglot_route.toolchains import ExactToolchain, exact_toolchain
 
 
 def assemble_project(
@@ -194,8 +194,10 @@ def _unit_materials(
     target_path: str,
     content: str,
     function_name: str,
+    *,
+    target_language: Language | None = None,
 ) -> tuple[str, bytes, str, bytes, str, str]:
-    target_language = _target_language(target_path)
+    target_language = target_language or _target_language(target_path)
     source_language = _fixture_source_language(target_language)
     source_path = f"src/{unit_id}.src"
     source_sha256 = hashlib.sha256(f"fixture-source:{unit_id}".encode()).hexdigest()
@@ -322,28 +324,46 @@ def _write_unit(
     content: str,
     *,
     function_name: str = "calculate",
+    target_language: Language | None = None,
 ) -> None:
     evidence_text, plan_bytes, source_ir_text, behavior_bytes, _target_function, _source_sha256 = _unit_materials(
         unit_id,
         target_path,
         content,
         function_name,
+        target_language=target_language,
     )
     directory = batch_output / "units" / unit_id
     directory.mkdir(parents=True)
-    (directory / target_path).write_text(content, encoding="utf-8")
-    (directory / "route-evidence.json").write_text(evidence_text, encoding="utf-8")
+    (directory / target_path).write_text(content, encoding="utf-8", newline="")
+    (directory / "route-evidence.json").write_text(
+        evidence_text,
+        encoding="utf-8",
+        newline="",
+    )
     (directory / "identifier-plan.json").write_bytes(plan_bytes)
-    (directory / "source-semantic-ir.json").write_text(source_ir_text, encoding="utf-8")
+    (directory / "source-semantic-ir.json").write_text(
+        source_ir_text,
+        encoding="utf-8",
+        newline="",
+    )
     (directory / "behavior-equivalence.json").write_bytes(behavior_bytes)
 
 
-def _passed_unit(unit_id: str, target_path: str, content: str, *, function_name: str = "calculate") -> dict[str, Any]:
+def _passed_unit(
+    unit_id: str,
+    target_path: str,
+    content: str,
+    *,
+    function_name: str = "calculate",
+    target_language: Language | None = None,
+) -> dict[str, Any]:
     evidence_text, _plan_bytes, _source_ir_text, _behavior_bytes, target_function, source_sha256 = _unit_materials(
         unit_id,
         target_path,
         content,
         function_name,
+        target_language=target_language,
     )
     plan = json.loads(_plan_bytes)
     return {
@@ -448,6 +468,10 @@ ADDITIONAL_TARGET_UNITS: dict[Language, tuple[str, str]] = {
         "    calculate = a + b\n"
         "End Function\n",
     ),
+    "vcpp6": (
+        "migrated.cpp",
+        "__int64 calculate(__int64 a, __int64 b) { return a + b; }\n",
+    ),
 }
 
 
@@ -540,6 +564,7 @@ _ADDITIONAL_TARGET_PROJECT_SHAPES: dict[Language, tuple[str, set[str]]] = {
         {"pubspec.yaml", "analysis_options.yaml", ".dart_tool/package_config.json"},
     ),
     "vb6": ("src/wu00001/migrated.bas", {"elmos-migrated.vbp"}),
+    "vcpp6": ("src/wu00001/migrated.cpp", {"vcpp6-sources.rsp"}),
 }
 
 
@@ -564,10 +589,23 @@ def test_assemble_supports_every_additional_target_project_shape(
 ) -> None:
     target_path, content = ADDITIONAL_TARGET_UNITS[target_language]
     batch_output = tmp_path / "batch"
-    _write_unit(batch_output, "WU-00001", target_path, content)
+    _write_unit(
+        batch_output,
+        "WU-00001",
+        target_path,
+        content,
+        target_language=target_language,
+    )
     report = _batch_report(
         target_language,
-        [_passed_unit("WU-00001", target_path, content)],
+        [
+            _passed_unit(
+                "WU-00001",
+                target_path,
+                content,
+                target_language=target_language,
+            )
+        ],
     )
 
     destination = tmp_path / "assembled"
@@ -597,6 +635,98 @@ def test_assemble_supports_every_additional_target_project_shape(
         assert "Module=ElmosMain; src/ElmosMain.bas" in project
         assert (destination / "src" / "ElmosMain.bas").is_file()
         assert 'Name="ElmosMigrated"' in project
+    if target_language == "vcpp6":
+        response = (destination / "vcpp6-sources.rsp").read_text(encoding="ascii")
+        assert response == f'"{expected_path}"\n'
+
+
+def test_vcpp6_assembly_compiles_units_to_unique_objects_and_links_one_dll(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target_path, content = ADDITIONAL_TARGET_UNITS["vcpp6"]
+    batch_output = tmp_path / "batch"
+    _write_unit(
+        batch_output,
+        "WU-00001",
+        target_path,
+        content,
+        target_language="vcpp6",
+    )
+    destination = tmp_path / "assembled"
+    assemble_project(
+        _batch_report(
+            "vcpp6",
+            [
+                _passed_unit(
+                    "WU-00001",
+                    target_path,
+                    content,
+                    target_language="vcpp6",
+                )
+            ],
+        ),
+        batch_output,
+        destination,
+    )
+    toolchain = ExactToolchain(
+        language="vcpp6",
+        version="12.00.9782",
+        executable="C:/governed-vcpp6/CL.EXE",
+        auxiliary="C:/governed-vcpp6/LINK.EXE",
+        profile=("evidence_class=GOVERNED_EXTERNAL_SELF_ATTESTED",),
+        executable_sha256="a" * 64,
+        auxiliary_sha256="b" * 64,
+    )
+    commands: list[list[str]] = []
+
+    def run(
+        command: list[str],
+        cwd: Path,
+        *,
+        timeout: int = 120,
+        executable_dirs: tuple[Path, ...] = (),
+    ) -> subprocess.CompletedProcess[str]:
+        assert cwd == destination
+        assert timeout == 900
+        assert executable_dirs
+        commands.append(command)
+        object_argument = next((part for part in command if part.startswith("/Fo")), None)
+        if object_argument is not None:
+            (cwd / object_argument.removeprefix("/Fo")).write_bytes(b"vcpp6-object")
+        output_argument = next((part for part in command if part.startswith("/OUT:")), None)
+        if output_argument is not None:
+            (cwd / output_argument.removeprefix("/OUT:")).write_bytes(b"MZ-vcpp6-dll")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(assembly, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(assembly, "_run", run)
+
+    verified = verify_assembled_project("vcpp6", destination)
+
+    assert verified["build_verification_status"] == "PASSED"
+    assert commands[0][-1] == "/Fobuild/wu00001.obj"
+    assert commands[1] == [
+        toolchain.auxiliary,
+        "/NOLOGO",
+        "/DLL",
+        "/OUT:build/elmos-migrated.dll",
+        "build/wu00001.obj",
+    ]
+    assert verified["build_verification"]["vcpp6_compiled_artifact"]["bytes"] > 0
+
+
+@pytest.mark.parametrize("target_language", ["vb6", "vcpp6"])
+def test_vendor_legacy_assembly_guidance_preserves_external_evidence_boundary(
+    target_language: Language,
+) -> None:
+    files = assembly.render_assembly_deployment_guidance(target_language, 1)
+    contract = json.loads(files["deploy/deployment-options.json"])
+
+    assert contract["target_language"] == target_language
+    assert contract["external_execution_evidence"] == "NOT_RUN"
+    assert contract["cloud"]["apply_status"] == "NOT_RUN"
+    assert contract["local"]["build_commands"]
 
 
 @pytest.mark.parametrize("target_language", ["cpp", "objc"])

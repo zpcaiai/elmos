@@ -3,8 +3,9 @@ import Link from "next/link";
 import { Icon } from "../components/Icon";
 import { formatCny, formatQuota, pricingCatalog } from "../lib/pricingCatalog";
 import styles from "./PricingPage.module.css";
-import { PlanBillingAction, SubscriptionManager } from "./BillingActions";
+import { PlanBillingAction, ProductBillingAction, SubscriptionManager } from "./BillingActions";
 import { UsageDashboard } from "./UsageDashboard";
+import { CreditWalletPanel } from "./CreditWalletPanel";
 import { requirePlatformOperationsSurface } from "../lib/server/surfaceGuards";
 
 export const metadata: Metadata = {
@@ -56,6 +57,8 @@ export default async function PricingPage() {
         allowLocalCredentials={process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"}
         emailAlertsEnabled={process.env.ELMOS_USAGE_EMAIL_ALERTS_ENABLED === "true"}
       />
+
+      <CreditWalletPanel />
 
       <section aria-labelledby="pricing-plans-title">
         <div className="section-heading">
@@ -119,6 +122,40 @@ export default async function PricingPage() {
               <div className={styles.planAction}>
                 <PlanBillingAction plan={plan} orderable={catalogOrderable} />
               </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="one-time-products-title">
+        <div className="section-heading">
+          <div>
+            <span className="overline">ONE-TIME PURCHASES</span>
+            <h2 id="one-time-products-title">按需购买，不必先订阅</h2>
+          </div>
+          <span className="quiet-label">订单、履约与消耗记录均可追溯</span>
+        </div>
+        <div className={styles.planGrid}>
+          {pricingCatalog.creditPacks.map((product) => (
+            <article className={styles.planCard} key={product.sku}>
+              <span className="overline">CREDIT PACK</span>
+              <h3>{product.name}</h3>
+              <p className={styles.planDescription}>{product.description}</p>
+              <div className={styles.priceLine}><strong>{formatCny(product.priceFen)}</strong></div>
+              <p className={styles.savings}>
+                {formatQuota(product.credits)} Credits · {product.expiryDays} 天有效
+              </p>
+              <ProductBillingAction product={product} orderable={catalogOrderable} />
+            </article>
+          ))}
+          {pricingCatalog.oneTimeProducts.map((product) => (
+            <article className={styles.planCard} key={product.sku}>
+              <span className="overline">PROJECT PASS</span>
+              <h3>{product.name}</h3>
+              <p className={styles.planDescription}>{product.description}</p>
+              <div className={styles.priceLine}><strong>{formatCny(product.priceFen)}</strong></div>
+              <p className={styles.savings}>绑定一个项目 · 最多 {product.maxRunnerMinutes} 分钟 Runner</p>
+              <ProductBillingAction product={product} orderable={catalogOrderable} />
             </article>
           ))}
         </div>

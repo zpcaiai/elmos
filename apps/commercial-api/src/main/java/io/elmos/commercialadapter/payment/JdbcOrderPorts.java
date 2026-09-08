@@ -86,9 +86,10 @@ public final class JdbcOrderPorts {
      */
     public static PaymentCallbackPipeline.OrderLookup orderLookup(DataSource source) {
         return outTradeNo -> {
+            LookupKey key = LookupKey.parse(outTradeNo);
             try (Connection connection = source.getConnection()) {
                 Optional<PaymentCallbackPipeline.LocalOrder> subscription =
-                        lookupSubscriptionOrder(connection, outTradeNo);
+                        lookupSubscriptionOrder(connection, key);
                 if (subscription.isPresent()) {
                     return subscription;
                 }
@@ -97,7 +98,9 @@ public final class JdbcOrderPorts {
                 // 充值目录接受 CREATED/PENDING_PAYMENT/PAID/CREDITED。
                 // 揉进一个 UNION 会逼出一个能同时表达两套状态机的 WHERE，
                 // 而那个 WHERE 下次改任一侧时都会被改错。
-                return lookupTopupOrder(connection, outTradeNo);
+                Optional<PaymentCallbackPipeline.LocalOrder> topup =
+                        lookupTopupOrder(connection, key);
+                return topup.isPresent() ? topup : lookupCommercialOrder(connection, key);
             } catch (SQLException failure) {
                 // 查不到订单与"查询本身失败"必须区分：前者进对账，后者应让提供方重发。
                 throw new IllegalStateException("订单查询失败", failure);
@@ -105,16 +108,49 @@ public final class JdbcOrderPorts {
         };
     }
 
+    private static Optional<PaymentCallbackPipeline.LocalOrder> lookupCommercialOrder(
+            Connection connection, LookupKey key) throws SQLException {
+        String sql = key.digest() ? """
+                SELECT order_id, organization_id, order_type, amount_minor, provider
+                  FROM commercial_order_directory
+                 WHERE business_order_sha256 = ?
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED',
+                                  'RECONCILIATION_REQUIRED')
+                """ : """
+                SELECT order_id, organization_id, order_type, amount_minor, provider
+                  FROM commercial_order_directory
+                 WHERE out_trade_no = ?
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED',
+                                  'RECONCILIATION_REQUIRED')
+        """;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, key.value());
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) return Optional.empty();
+                return Optional.of(new PaymentCallbackPipeline.LocalOrder(
+                        rows.getString("order_id"), rows.getString("organization_id"), null,
+                        rows.getLong("amount_minor"),
+                        PaymentCallbackPipeline.OrderKind.valueOf(rows.getString("order_type")),
+                        PaymentProvider.parse(rows.getString("provider"))));
+            }
+        }
+    }
+
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupSubscriptionOrder(
-            Connection connection, String outTradeNo) throws SQLException {
-        String sql = """
-                SELECT checkout_session_id, organization_id, plan_id, amount_minor
+            Connection connection, LookupKey key) throws SQLException {
+        String sql = key.digest() ? """
+                SELECT checkout_session_id, organization_id, plan_id, amount_minor, provider
+                  FROM payment_order_directory
+                 WHERE business_order_sha256 = ?
+                   AND status IN ('CREATING', 'OPEN', 'COMPLETED')
+                """ : """
+                SELECT checkout_session_id, organization_id, plan_id, amount_minor, provider
                   FROM payment_order_directory
                  WHERE checkout_session_id = ?
                    AND status IN ('CREATING', 'OPEN', 'COMPLETED')
-                """;
+        """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, outTradeNo);
+            statement.setString(1, key.value());
             try (ResultSet rows = statement.executeQuery()) {
                 if (!rows.next()) {
                     return Optional.empty();
@@ -124,7 +160,8 @@ public final class JdbcOrderPorts {
                         rows.getString("organization_id"),
                         rows.getString("plan_id"),
                         rows.getLong("amount_minor"),
-                        PaymentCallbackPipeline.OrderKind.SUBSCRIPTION));
+                        PaymentCallbackPipeline.OrderKind.SUBSCRIPTION,
+                        PaymentProvider.parse(rows.getString("provider"))));
             }
         }
     }
@@ -139,15 +176,22 @@ public final class JdbcOrderPorts {
      * 而且静默——回调返 4xx，提供方持续重发，直到有人去翻滞留表。
      */
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupTopupOrder(
-            Connection connection, String outTradeNo) throws SQLException {
-        String sql = """
-                SELECT topup_order_id, organization_id, amount_minor
+            Connection connection, LookupKey key) throws SQLException {
+        String sql = key.digest() ? """
+                SELECT topup_order_id, organization_id, amount_minor, provider
+                  FROM wallet_topup_order_directory
+                 WHERE business_order_sha256 = ?
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED',
+                                  'RECONCILIATION_REQUIRED')
+                """ : """
+                SELECT topup_order_id, organization_id, amount_minor, provider
                   FROM wallet_topup_order_directory
                  WHERE out_trade_no = ?
-                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED')
-                """;
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED',
+                                  'RECONCILIATION_REQUIRED')
+        """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, outTradeNo);
+            statement.setString(1, key.value());
             try (ResultSet rows = statement.executeQuery()) {
                 if (!rows.next()) {
                     return Optional.empty();
@@ -157,8 +201,35 @@ public final class JdbcOrderPorts {
                         rows.getString("organization_id"),
                         null,
                         rows.getLong("amount_minor"),
-                        PaymentCallbackPipeline.OrderKind.TOPUP));
+                        PaymentCallbackPipeline.OrderKind.TOPUP,
+                        paymentProvider(rows.getString("provider"))));
             }
+        }
+    }
+
+    private static PaymentProvider paymentProvider(String storedProvider) {
+        return switch (storedProvider) {
+            case "ALIPAY" -> PaymentProvider.ALIPAY_CHECKOUT;
+            case "WECHAT_PAY" -> PaymentProvider.WECHAT_PAY_NATIVE;
+            case "STRIPE" -> PaymentProvider.STRIPE_CHECKOUT;
+            default -> throw new IllegalArgumentException(
+                    "回调目录包含不支持的支付渠道: " + storedProvider);
+        };
+    }
+
+    private record LookupKey(boolean digest, String value) {
+        private static LookupKey parse(String value) {
+            if (value == null || value.isBlank()) {
+                throw new IllegalArgumentException("订单查找键为空");
+            }
+            if (!value.startsWith("sha256:")) {
+                return new LookupKey(false, value);
+            }
+            String digest = value.substring("sha256:".length());
+            if (!digest.matches("[0-9a-f]{64}")) {
+                throw new IllegalArgumentException("订单 SHA-256 查找键非法");
+            }
+            return new LookupKey(true, digest);
         }
     }
 
@@ -189,6 +260,25 @@ public final class JdbcOrderPorts {
                 statement.execute();
             } catch (SQLException failure) {
                 throw new IllegalStateException("充值入账失败: " + order.orderId(), failure);
+            }
+        };
+    }
+
+    /** Atomically fulfills a paid Credit-pack or one-time generation order. */
+    public static PaymentCallbackPipeline.CommercialOrderFulfiller commercialOrderFulfiller(
+            DataSource source, String actorId) {
+        return (order, callback) -> {
+            try (Connection connection = source.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(
+                         "SELECT elmos_commercial_fulfill_order(?, ?, ?, ?)")) {
+                statement.setString(1, order.organizationId());
+                statement.setString(2, order.orderId());
+                statement.setString(3, callback.providerEventId());
+                statement.setString(4, actorId);
+                statement.execute();
+            } catch (SQLException failure) {
+                throw new IllegalStateException(
+                        "商业商品订单履约失败: " + order.orderId(), failure);
             }
         };
     }

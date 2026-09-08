@@ -1,9 +1,9 @@
 {
   "authority": "local-engineering-validation",
   "engine_source_manifest": {
-    "bytes": 269277,
+    "bytes": 271520,
     "path": "certification/formal-artifacts/engine-source-manifest.json",
-    "sha256": "sha256:813df9c99c48f1c352f4ed6a85b201fab7255f3f903c2baf36ae09ea00a62683"
+    "sha256": "sha256:cbf8fe0eea947e565faa4c16fdba83ca9ae6083055b64c2b267a59935652faec"
   },
   "external_certification": "NOT_RUN",
   "independent_verification": "NOT_RUN",

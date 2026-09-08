@@ -280,19 +280,13 @@ seal_rust_sysroot() {
   local target="$1"
   local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
   if [[ ! -d "${sysroot}" || -L "${sysroot}" ]]; then
-    printf 'Rust sysroot is missing or unsafe: %s\n' "${sysroot}" >&2
-    return 1
+    printf 'Rust %s sysroot is unavailable or unsafe.\n' "${RUST_VERSION}" >&2
+    exit 3
   fi
-  if find "${sysroot}" -type l -print -quit | grep -q .; then
-    printf 'Rust sysroot contains an unsupported symbolic link: %s\n' "${sysroot}" >&2
-    return 1
-  fi
-
-  # rustup preserves archive modes, which may vary across hosted extraction
-  # paths even when every file byte is identical.  Seal the disposable copy to
-  # the same immutable mode profile consumed by the route engine before any
-  # wrapper can publish it.  The engine still hashes every path, mode and file
-  # byte, so this normalization cannot admit substituted toolchain content.
+  # Compiler and analyzer outputs belong in their isolated CARGO_HOME and
+  # CARGO_TARGET_DIR. The installed compiler closure is immutable input: make
+  # every payload read-only so a long route campaign cannot silently mutate a
+  # previously qualified sysroot and poison later route identities.
   find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
   find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
   find "${sysroot}" -type d -exec chmod 0555 {} +
@@ -333,6 +327,7 @@ install_rust() {
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"
+  seal_rust_sysroot "${target}"
 }
 
 if [[ ",${INSTALL_ONLY}," == *',go,'* ]]; then

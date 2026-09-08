@@ -3,11 +3,9 @@ from __future__ import annotations
 import atexit
 import base64
 import binascii
-import fcntl
 import hashlib
 import json
 import os
-import pwd
 import re
 import shutil
 import signal
@@ -21,6 +19,16 @@ import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Final, cast
+
+try:
+    import fcntl
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    fcntl = None  # type: ignore[assignment]
+
+try:
+    import pwd
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    pwd = None  # type: ignore[assignment]
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
@@ -1231,6 +1239,8 @@ def _swift_dependency_cache_base() -> Path:
 
 
 def _swift_dependency_cache_home() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir)
 
 
@@ -2751,6 +2761,8 @@ def _ensure_swift_dependency_cache(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[Path, dict[str, Any]]:
+    if fcntl is None:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     cache_base = _swift_dependency_cache_base()
     cache_key = _swift_dependency_cache_key()
     cache = cache_base / cache_key
@@ -4683,6 +4695,8 @@ def _csharp_analyzer_input_manifest(engine: Path) -> dict[str, Any]:
 
 
 def _csharp_package_cache_root() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("CSHARP_ANALYZER_PACKAGE_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".nuget" / "packages"
 
 
@@ -5311,6 +5325,8 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
     read-only or hostile home directory degrades to the previous per-call
     temporary directory instead of blocking analysis.
     """
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     try:
         base = (
             Path(pwd.getpwuid(os.getuid()).pw_dir)
@@ -5461,6 +5477,8 @@ def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
     if not _analyzer_binary_cache_enabled():
         return None
     if _toolchain_build_cache(kind, key, ()) is None:
+        return None
+    if pwd is None or not hasattr(os, "getuid"):
         return None
     return (
         Path(pwd.getpwuid(os.getuid()).pw_dir)
@@ -5878,6 +5896,10 @@ def _run(
     command: list[str],
     *,
     cwd: Path,
+    # Native source analysis accepts files up to the repository contract's
+    # two-megabyte ceiling. Keep its default deadline aligned with target
+    # validation so a valid near-limit source is not classified as NOT_RUN
+    # merely because analysis gets less time than the generated build.
     timeout: int = 600,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
@@ -6042,99 +6064,6 @@ def _verify_trusted_php_toolchain(expected: ExactToolchain) -> None:
         raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED")
 
 
-_PHP_PROMOTABLE_DOMAIN_ERROR_CODES = frozenset(
-    {
-        "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
-        "PHP_BRACED_NAMESPACE_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_BREAK_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_BREAK_OUTSIDE_LOOP",
-        "PHP_BY_REFERENCE_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_CLOSURE_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_CONDITION_MUST_BE_BOOLEAN",
-        "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_CONTINUE_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_CONTINUE_OUTSIDE_LOOP",
-        "PHP_DEFAULT_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_DO_WHILE_REJECTED",
-        "PHP_DUPLICATE_FUNCTION_NAME",
-        "PHP_DUPLICATE_PARAMETER",
-        "PHP_EMITTED_HELPER_ARITY_INVALID",
-        "PHP_EXPLICIT_PARAMETER_TYPE_REQUIRED",
-        "PHP_EXPLICIT_RETURN_TYPE_REQUIRED",
-        "PHP_FLOAT_REMAINDER_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_FOR_BLOCK_BODY_REQUIRED",
-        "PHP_FOR_CLOSED_RANGE_REJECTED",
-        "PHP_FOR_CONDITION_NON_MONOTONIC",
-        "PHP_FOR_DOWNTO_REJECTED",
-        "PHP_FOR_NON_POSITIVE_STEP_REJECTED",
-        "PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_FOR_VARIABLE_REQUIRED",
-        "PHP_FUNCTION_BODY_REQUIRED",
-        "PHP_INTEGER_DIVISION_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE",
-        "PHP_LOOSE_COMPARISON_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_OPEN_TAG_REQUIRED",
-        "PHP_OPERAND_TYPE_MISMATCH",
-        "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_QUALIFIED_NAME_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_REFERENCE_RETURN_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_RETURN_TYPE_MISMATCH",
-        "PHP_RETURN_WITHOUT_VALUE",
-        "PHP_SOURCE_UNPARSEABLE",
-        "PHP_STRICT_TYPES_DECLARATION_REQUIRED",
-        "PHP_STRING_INTERPOLATION_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_TOKENIZER_EXTENSION_MISSING",
-        "PHP_TOKEN_STREAM_NOT_BYTE_EXACT",
-        "PHP_UNDECLARED_NAME",
-        "PHP_UNEXPECTED_END_OF_INPUT",
-        "PHP_UNION_TYPE_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_UNSUPPORTED_CONDITION",
-        "PHP_UNSUPPORTED_EXPRESSION",
-        "PHP_UNSUPPORTED_FLOAT_LITERAL",
-        "PHP_UNSUPPORTED_OPERATOR",
-        "PHP_UNSUPPORTED_STATEMENT",
-        "PHP_UNSUPPORTED_TYPE",
-        "PHP_VARIADIC_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
-        "PHP_WHILE_BLOCK_BODY_REQUIRED",
-        "PHP_ZEND_AST_PARAMETER_MISMATCH",
-        "PHP_ZEND_AST_PARSE_FAILED",
-        "PHP_ZEND_AST_RETURN_TYPE_MISMATCH",
-        "PHP_ZEND_AST_STATEMENT_SHAPE_MISMATCH",
-        "PHP_ZEND_AST_SUBJECT_AMBIGUOUS",
-        "PHP_ZEND_AST_SUBJECT_MISSING",
-        "PHP_ZEND_AST_VERSION_UNSUPPORTED",
-    }
-)
-
-
-def _is_allowlisted_php_domain_error(candidate: str) -> bool:
-    """Accept one complete, content-pinned analyzer rejection only.
-
-    The native process wrapper can include arbitrary stderr.  Promotion must
-    therefore bind the complete payload to a known analyzer code instead of
-    accepting a matching first line and silently discarding trailing output.
-    ``PHP_FUNCTION_NOT_FOUND`` is deliberately excluded because its requested
-    function binding is handled separately by the caller.
-    """
-
-    if (
-        not candidate
-        or len(candidate) > 2_000
-        or candidate != candidate.strip()
-        or "\n" in candidate
-        or "\r" in candidate
-        or not all(character.isprintable() for character in candidate)
-    ):
-        return False
-    code, separator, detail = candidate.partition(":")
-    if code not in _PHP_PROMOTABLE_DOMAIN_ERROR_CODES:
-        return False
-    return not separator or bool(detail)
-
-
 def _run_trusted_php_analyzer(
     toolchain: ExactToolchain,
     source: Path,
@@ -6197,9 +6126,25 @@ def _run_trusted_php_analyzer(
             raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}") from error
         prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:"
         if wrapped.startswith(prefix):
-            candidate = wrapped[len(prefix) :]
-            if _is_allowlisted_php_domain_error(candidate):
-                raise RouteError(candidate) from error
+            candidate = wrapped[len(prefix) :].strip()
+            first_line = candidate.splitlines()[0].strip() if candidate else ""
+            public_failures = frozenset(
+                {
+                    "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
+                    "PHP_BREAK_OUTSIDE_LOOP",
+                    "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONTINUE_OUTSIDE_LOOP",
+                    "PHP_DO_WHILE_REJECTED",
+                    "PHP_FOR_CLOSED_RANGE_REJECTED",
+                    "PHP_FOR_DOWNTO_REJECTED",
+                    "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_UNDECLARED_NAME",
+                }
+            )
+            failure_code = first_line.partition(":")[0]
+            if candidate == first_line and failure_code in public_failures:
+                raise RouteError(first_line) from error
         raise
     analyzer_after = _javascript_bound_content(
         _PHP_ANALYZER,
@@ -7996,32 +7941,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                "--inventory",
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(
@@ -8520,7 +8443,8 @@ def _kotlin_analyzer_classes(
                     _verify_kotlin_analyzer_classes(_KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT)
                     return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
                 except RouteError:
-                    pass
+                    _KOTLIN_ANALYZER_CLASSES = None
+                    _KOTLIN_ANALYZER_RECEIPT = None
         safe_cache_key = f"{helper_sha}_{compiler_sha}".replace(":", "_")
         disk_cache_dir = Path.home() / ".cache" / "elmos" / "kotlin-classes" / safe_cache_key
         disk_receipt_file = disk_cache_dir / "receipt.json"
@@ -8536,8 +8460,16 @@ def _kotlin_analyzer_classes(
                     _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
                     _KOTLIN_ANALYZER_RECEIPT = disk_receipt
                     return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
-            except Exception:
-                pass
+            except (
+                AttributeError,
+                json.JSONDecodeError,
+                KeyError,
+                OSError,
+                RouteError,
+                TypeError,
+                UnicodeDecodeError,
+            ):
+                disk_receipt = None
         temp_dir = tempfile.TemporaryDirectory(prefix="elmos-kotlin-classes-")
         classes_dir = Path(temp_dir.name).resolve(strict=True) / "classes"
         classes_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -8572,7 +8504,8 @@ def _kotlin_analyzer_classes(
             temp_dir.cleanup()
             return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
         except Exception:
-            pass
+            _KOTLIN_ANALYZER_CLASSES = None
+            _KOTLIN_ANALYZER_RECEIPT = None
         if _KOTLIN_ANALYZER_TEMPORARY is not None:
             _KOTLIN_ANALYZER_TEMPORARY.cleanup()
         _KOTLIN_ANALYZER_TEMPORARY = temp_dir
