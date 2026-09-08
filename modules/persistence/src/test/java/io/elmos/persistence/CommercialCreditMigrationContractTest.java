@@ -83,6 +83,8 @@ class CommercialCreditMigrationContractTest {
         assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory()"));
         assertTrue(sql.contains("SET search_path = pg_catalog, public, pg_temp"));
         assertTrue(sql.contains("pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to("));
+        assertTrue(sql.contains("amount_minor, provider, status)"));
+        assertTrue(sql.contains("NEW.amount_minor, NEW.provider, NEW.status)"));
         assertFalse(sql.contains("public.encode("));
         assertFalse(sql.contains("public.digest("));
     }
