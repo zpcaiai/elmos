@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
-  "status": "experimental",
+  "status": "research",
   "exact_tuple": {
     "source": {
       "engine": "postgresql",
@@ -57,6 +57,9 @@
   "evidence_refs": [
     "certification/local-postgresql-dm8-query-evidence.json"
   ],
+  "evidence_digests": {
+    "certification/local-postgresql-dm8-query-evidence.json": "sha256:a4c44558539ae4497dfdcaf0d09e500f2b97cb427b3d75138ce861755fba1b17"
+  },
   "approved_by": [],
   "external_certification": "NOT_RUN",
   "production_certification": "NOT_CERTIFIED"
