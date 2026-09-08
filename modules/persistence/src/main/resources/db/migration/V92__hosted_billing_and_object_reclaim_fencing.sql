@@ -53,7 +53,7 @@ ALTER TABLE artifact.content_objects
         )
     );
 
--- V87 could only be reached by direct privileged SQL because the Java host was
+-- V89 could only be reached by direct privileged SQL because the Java host was
 -- startup-blocked. Refuse to reinterpret unresolved legacy work as fenced.
 DO $$
 BEGIN
@@ -332,7 +332,7 @@ INSERT INTO wallet_price_book(
     'TRANSLATION', 'translate-pipeline-v1', 'CNY',
     2000, 'WALL_SECOND', 2, 100,
     '2026-09-08T00:00:00Z',
-    'modules/persistence/src/main/resources/db/migration/V90__hosted_billing_and_object_reclaim_fencing.sql',
+    'modules/persistence/src/main/resources/db/migration/V92__hosted_billing_and_object_reclaim_fencing.sql',
     'DRAFT'
 );
 

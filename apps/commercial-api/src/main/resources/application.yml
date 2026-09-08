@@ -24,6 +24,23 @@ elmos:
     # 回调时间窗。容差就是重放窗口，CallbackReplayGuard 会拒绝超过 1 小时的值。
     callback:
       timestamp-tolerance-seconds: ${ELMOS_CALLBACK_TIMESTAMP_TOLERANCE_SECONDS:300}
+    # ELMPay 聚合支付。启用后仅替换当前目录通道的下单出口；支付宝/微信原生回调
+    # 仍保留，用于切换期间的在途订单。生产 HTTPS 必须提供 PKCS12 双向 TLS 材料；
+    # loopback HTTP 只在显式 local sandbox 开关下允许。
+    elmpay:
+      enabled: ${ELMOS_ELMPAY_ENABLED:false}
+      base-url: ${ELMOS_ELMPAY_BASE_URL:}
+      tenant-id: ${ELMOS_ELMPAY_TENANT_ID:}
+      project-id: ${ELMOS_ELMPAY_PROJECT_ID:}
+      api-token-file: ${ELMOS_ELMPAY_API_TOKEN_FILE:}
+      return-route-id: ${ELMOS_ELMPAY_RETURN_ROUTE_ID:elmos-payment-complete}
+      webhook-key-id: ${ELMOS_ELMPAY_WEBHOOK_KEY_ID:}
+      webhook-secret-file: ${ELMOS_ELMPAY_WEBHOOK_SECRET_FILE:}
+      allow-http-local-sandbox: ${ELMOS_ELMPAY_ALLOW_HTTP_LOCAL_SANDBOX:false}
+      tls-key-store-file: ${ELMOS_ELMPAY_TLS_KEY_STORE_FILE:}
+      tls-key-store-password-file: ${ELMOS_ELMPAY_TLS_KEY_STORE_PASSWORD_FILE:}
+      tls-trust-store-file: ${ELMOS_ELMPAY_TLS_TRUST_STORE_FILE:}
+      tls-trust-store-password-file: ${ELMOS_ELMPAY_TLS_TRUST_STORE_PASSWORD_FILE:}
     # 支付宝。公钥走文件而不是环境变量：环境变量会出现在 /proc、
     # 容器检查输出和崩溃转储里，文件可以挂成 0400 的 secret。
     # app-id 不是可选项——它是判断"这条通知是不是发给我们的"的唯一凭据，

@@ -10,7 +10,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-/** Exact V89 guard on disposable roles; never alters a deployed runtime role. */
+/** Exact V91 guard on disposable roles; never alters a deployed runtime role. */
 class JdbcRuntimeRoleHardeningLiveTest {
     @Test void unsafeRoleAttributesAndMembershipFailWithoutRepairOrRoleLeak() throws Exception {
         String url=System.getenv("ELMOS_EXECUTION_QUEUE_TEST_JDBC_URL");

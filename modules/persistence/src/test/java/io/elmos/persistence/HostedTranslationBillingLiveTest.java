@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-/** Local disposable PostgreSQL qualification for the V90 commercial boundary. */
+/** Local disposable PostgreSQL qualification for the V92 commercial boundary. */
 class HostedTranslationBillingLiveTest {
     private static DriverManagerDataSource data;
 
@@ -86,7 +86,7 @@ class HostedTranslationBillingLiveTest {
                 execute(c,"INSERT INTO organizations(organization_id) VALUES(?)",org);
                 scalar(c,"SELECT elmos_wallet_open(?)",org);
                 scalar(c,"SELECT elmos_wallet_adjust(?, 'CREDIT', 10000, 'fixture', "
-                        + "'V90 qualification credit', ?)",org,"credit-"+org);
+                        + "'V92 qualification credit', ?)",org,"credit-"+org);
                 execute(c,"SELECT set_config('app.organization_id',?,true)",org);
                 execute(c,"""
                     INSERT INTO execution_jobs(

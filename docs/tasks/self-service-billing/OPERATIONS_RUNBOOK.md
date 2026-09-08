@@ -52,6 +52,10 @@ Micrometer 指标：
 - `ELMOS_WECHATPAY_API_V3_KEY`（必须由 Secret Manager 注入，禁止写入仓库）
 - `ELMOS_WECHATPAY_NOTIFY_URL`（备案 HTTPS 域名）
 
+ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启用时必须同时
+完成 API 凭据、tenant/project 绑定、mTLS、签名 webhook endpoint 与 V84/V94 迁移；不得把
+`ELMOS_ELMPAY_ALLOW_HTTP_LOCAL_SANDBOX` 带入生产。
+
 至少一个与目录 `paymentProvider` 完全相同的下单网关和回调验签器必须同时存在。
 缺任何一项均应保持 503/失败关闭，不允许只开放付款按钮。
 
@@ -87,12 +91,12 @@ Micrometer 指标：
 
 ## 发布与回滚
 
-1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V91。
+1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V94。
 2. 注入只读目录/白名单函数权限的运行角色和支付 Secret，保持 live billing 关闭。
 3. 执行真实小额付款、回调重发、延迟回调、退款和逐笔对账；保存提供方 receipt。
 4. 外部门禁全部签核后发布新的 `PUBLISHED` 目录版本，再开启 live billing，并采用灰度流量。
 5. 异常回滚先关闭 `ELMOS_BILLING_LIVE_ENABLED` 和新生成入口；保留订单、回调、账本和
-   Token 事实供对账。V91 是前向审计迁移，不做删除式 down migration。
+   Token 事实供对账。V83–V94 是前向审计迁移，不做删除式 down migration。
 
 ## 邮件告警
 

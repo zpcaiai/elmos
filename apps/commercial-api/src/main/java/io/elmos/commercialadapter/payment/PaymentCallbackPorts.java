@@ -71,10 +71,21 @@ public record PaymentCallbackPorts(
 
     /** 按回调所属通道装配一条管线。 */
     public PaymentCallbackPipeline pipelineFor(PaymentProvider provider) {
+        return pipelineFor(router.callbackAdapter(provider));
+    }
+
+    /** 装配使用独立验签协议的聚合支付回调管线。 */
+    public PaymentCallbackPipeline pipelineFor(PaymentCallbackPipeline.ProviderAdapter adapter) {
         return new PaymentCallbackPipeline(
-                router.callbackAdapter(provider),
+                requireAdapter(adapter),
                 processedEvents, orders, events, subscriptions, wallet, commercialOrders,
                 reconciliation);
+    }
+
+    private static PaymentCallbackPipeline.ProviderAdapter requireAdapter(
+            PaymentCallbackPipeline.ProviderAdapter adapter) {
+        require(adapter, "adapter");
+        return adapter;
     }
 
     private static void require(Object value, String name) {

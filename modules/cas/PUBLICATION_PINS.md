@@ -1,6 +1,6 @@
 # CAS publication without long database transactions
 
-V83 and `JdbcCasCatalog` retain the existing four durable-publication method signatures.
+V85 and `JdbcCasCatalog` retain the existing four durable-publication method signatures.
 Their JDBC implementation now uses three phases:
 
 1. Short transaction: authenticate tenant context, lock tenant → resource (if supplied) →
@@ -53,13 +53,13 @@ This table is not a substitute for an independently retained compliance audit tr
 
 ## Migration, permissions and rollback
 
-Apply V83 before running the new JDBC writer. Its pin table has forced RLS, exact tenant
+Apply V85 before running the new JDBC writer. Its pin table has forced RLS, exact tenant
 policy, and no PUBLIC table privileges. The host's existing trusted CAS runtime role needs
 SELECT/INSERT/UPDATE/DELETE on this one additional table; do not grant access to other tenants,
 schema ownership, bypass-RLS, or superuser rights. The tests use a separate NOSUPERUSER,
 NOBYPASSRLS fixture role in an explicitly confirmed disposable database.
 
-Do not drop V83 or run a v2-only catalogue/GC writer while unresolved pins exist. Recovery
+Do not drop V85 or run a v2-only catalogue/GC writer while unresolved pins exist. Recovery
 must retain the pin-aware deletion guard; disabling that trigger is not a rollback strategy.
 No migration, provider call or production permission change is performed by this document.
 

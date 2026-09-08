@@ -95,7 +95,7 @@ BEGIN
             v_run:='gch-'||md5(p_round_id||':'||v_org);
             INSERT INTO public.object_gc_host_runs(run_id,organization_id,run_state)
               VALUES(v_run,v_org,'UNRESOLVED');
-            -- V86 scopes both root snapshots and updates explicitly, including
+            -- V88 scopes both root snapshots and updates explicitly, including
             -- when that legacy function's owner can bypass RLS.
             PERFORM public.elmos_expire_artifacts(v_run,v_metadata);
             INSERT INTO public.object_gc_host_items(run_id,organization_id,content_object_id,

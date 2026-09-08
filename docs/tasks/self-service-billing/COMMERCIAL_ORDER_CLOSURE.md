@@ -44,7 +44,7 @@
 - 回调 HTTPS 域名、备案、证书轮换和网络准入通过；
 - 法务、隐私、税务、退款、服务条款和电子发票责任人签核；
 - 单位经济成本样本通过，价格/额度不会造成未批准的亏损风险；
-- 生产 PostgreSQL 备份、V1–V91 validate/migrate/validate、监控和回滚演练通过；
+- 生产 PostgreSQL 备份、V1–V94 validate/migrate/validate、监控和回滚演练通过；
 - 独立验证者复核订单、资金、provider receipt、Credit/权益和 Token 历史逐笔一致。
 
 仓库门禁 `scripts/commercial/validate_pricing_catalog_publication.py --check-publishable`

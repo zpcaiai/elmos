@@ -1,5 +1,5 @@
 -- Explicit, operator-owned PUBLIC-schema hosted translation capability bundle.
--- Apply after V88 with the approved migration administrator. This is NOT an
+-- Apply after V90 with the approved migration administrator. This is NOT an
 -- application startup action and grants no LOGIN, password or membership.
 -- The operator separately grants this exact role to the configured control-plane
 -- database login; it supplements, never replaces, that service's existing grants.

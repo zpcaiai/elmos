@@ -22,7 +22,7 @@ non-symlink operator paths. Missing configuration fails closed.
 `elmos.translation.node-executable` must be an absolute trusted Node executable;
 the fixed admission launcher reuses the exact Web route evidence gate.
 
-After V88, an approved database operator applies the repository-owned
+After V90, an approved database operator applies the repository-owned
 `modules/persistence/src/main/resources/db/provisioning/translation_input_runtime.sql`,
 then explicitly grants `elmos_translation_input_runtime` to the exact configured
 control-plane DB login. No LOGIN, password, automatic membership, wallet write,

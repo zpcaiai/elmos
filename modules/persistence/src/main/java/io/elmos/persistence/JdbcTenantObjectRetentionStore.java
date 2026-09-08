@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Host-internal V87 adapter. No caller-selected tenant and no provider I/O in JDBC transactions. */
+/** Host-internal V89 adapter. No caller-selected tenant and no provider I/O in JDBC transactions. */
 public final class JdbcTenantObjectRetentionStore {
     public static final int MAX_TENANTS = 8;
     public static final int METADATA_BUDGET = 256;
@@ -22,7 +22,7 @@ public final class JdbcTenantObjectRetentionStore {
     public JdbcTenantObjectRetentionStore(JdbcClient jdbc, TransactionTemplate transactions) {
         this.jdbc = Objects.requireNonNull(jdbc);
         this.transactions = new TransactionTemplate(Objects.requireNonNull(transactions.getTransactionManager()));
-        // V86 rechecks roots with a fresh command snapshot after taking the object lock.
+        // V88 rechecks roots with a fresh command snapshot after taking the object lock.
         this.transactions.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
     }
 

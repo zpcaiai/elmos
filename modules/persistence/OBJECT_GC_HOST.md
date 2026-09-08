@@ -1,10 +1,10 @@
 # Tenant-bound physical object GC
 
-V87 adds a host-internal scheduler path without changing the existing public
+V89 adds a host-internal scheduler path without changing the existing public
 `JdbcObjectStorageStore` or V61 SQL signatures. Tenant tables retain FORCE RLS.
 The scheduler obtains tenant IDs only from the authoritative organizations
 catalog, not from request parameters. PostgreSQL READ COMMITTED is required for
-the V86 lock-then-resnapshot root checks.
+the V88 lock-then-resnapshot root checks.
 
 ## Explicit deployment enablement
 
@@ -12,7 +12,7 @@ The worker is disabled by default. A legacy backend remains
 **BLOCKED_UPLOAD_FENCING**: explicitly setting
 `elmos.object-storage.host-gc-enabled=true` fails startup with
 `PHYSICAL_GC_BLOCKED_UPLOAD_FENCING` before any retention mutation or provider
-call. V90 adds `WRITE_ONCE_RECLAIM_FENCE_V1`, but the backend must carry an
+call. V92 adds `WRITE_ONCE_RECLAIM_FENCE_V1`, but the backend must carry an
 operator-owned verification timestamp and actor. The protocol uses a
 signature-bound create-only header (`If-None-Match: *` for AWS S3/MinIO,
 `x-oss-forbid-overwrite: true` for OSS) and atomically replaces expired payload
@@ -29,7 +29,7 @@ BYPASSRLS. Preexisting login/superuser/bypass/inheriting/member-of-other-role
 tuples are rejected, not silently reused. The migration owner needs the normal object privileges and CREATEROLE
 for initial provisioning; no runtime account needs CREATEROLE. Do not expose
 the adapter as a tenant API. Missing privileges fail closed; applying a migration
-does not establish production enablement or provider acceptance. V89 additionally
+does not establish production enablement or provider acceptance. V91 additionally
 rejects CREATEROLE, CREATEDB and REPLICATION on either named host group if it
 exists. Its private migration-time assertion is read-only and SECURITY INVOKER;
 it grants no runtime authority and never auto-repairs a role or membership.
@@ -50,7 +50,7 @@ stays unchanged. URL expiry alone is not proof that an upload stopped. The new
 translation PREPARED input roots do not retroactively prove the lifetime of
 those older artifact writers.
 
-Consequently, V90 records the upload protocol on each content object and excludes
+Consequently, V92 records the upload protocol on each content object and excludes
 every `LEGACY_UNFENCED` object from physical candidates. Changing a backend later
 does not promote old objects. A migration refuses unresolved legacy host work
 rather than reinterpreting it. AWS S3/MinIO verification must include conditional
@@ -85,7 +85,7 @@ at most 32 **completed** private run records near the history bound. The older
 `object_gc_runs` append-only audit is preserved, not silently deleted; its
 long-term archival remains an operator retention-policy responsibility.
 
-Expired PREPARED inputs remain retained by V86. A provider timeout, host crash,
+Expired PREPARED inputs remain retained by V88. A provider timeout, host crash,
 interruption, metadata acknowledgement failure or unavailable backend leaves
 the durable item unresolved and the object PURGE_PENDING. A later idempotent
 reclaim-fence replacement may confirm its provider request and exact read-back

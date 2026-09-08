@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 /**
- * PostgreSQL implementation of {@link CasCatalog} against the V65-V83 CAS schema, using
+ * PostgreSQL implementation of {@link CasCatalog} against the V65-V85 CAS schema, using
  * {@code java.sql} only — no ORM, no Spring, no driver-specific API. The driver is supplied by
  * whoever builds the {@link DataSource}.
  *
