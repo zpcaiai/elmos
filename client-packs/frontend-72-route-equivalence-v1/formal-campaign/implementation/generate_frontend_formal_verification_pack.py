@@ -33,7 +33,6 @@ CAMPAIGN_KEY = "frontend-72-route-formal-equivalence-v1"
 CLIENT_KEY_V2 = "frontend-72-route-equivalence-v2"
 VERIFICATION_KEY_V2 = "frontend-72-route-formal-equivalence-v2"
 CAMPAIGN_KEY_V2 = "frontend-72-route-formal-equivalence-v2"
-V2_ENGINE_VERIFIER_TIMEOUT_SECONDS = 900
 PROFILE_IDS = (
     "angular",
     "flutter",
@@ -1614,7 +1613,7 @@ def verify_engine_campaign_v2(repo_root: Path, engine_root: Path) -> dict[str, A
         # The complete 72-route/864-block verification routinely exceeds three
         # minutes on the pinned Node 26 macOS runner. Keep the replay bounded,
         # but budget enough time for the production-sized campaign to finish.
-        timeout=V2_ENGINE_VERIFIER_TIMEOUT_SECONDS,
+        timeout=600,
         check=False,
     )
     try:
