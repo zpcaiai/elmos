@@ -737,7 +737,8 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
     "c26b6a48e4695754b27b0c2b7ce5d2cfce1a53bb" \
     "Formula/p/postgresql@17.rb" \
     "869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55"
-  readonly postgres_bin="$(brew --prefix postgresql@17)/bin"
+  postgres_bin="$(brew --prefix postgresql@17)/bin"
+  readonly postgres_bin
   if [[ "$("${postgres_bin}/postgres" --version)" != "postgres (PostgreSQL) 17.5 (Homebrew)" ]]; then
     printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
     exit 3
