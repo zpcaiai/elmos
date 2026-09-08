@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Bounded worker inbox and exact downstream workload execution protocol. */
 final class ProductionWorkerAttemptService {
     private static final int MAX_ENGINE_RESPONSE_BYTES = 1_048_576;
+    private static final Duration CLOSE_TIMEOUT = Duration.ofSeconds(5);
     enum LocalStatus {
         ACKED, RUNNING, SUCCEEDED, FAILED, PROVIDER_OUTCOME_UNKNOWN,
         CHECKPOINT_OUTCOME_UNKNOWN, COMPLETION_OUTCOME_UNKNOWN
@@ -1037,49 +1038,7 @@ final class ProductionWorkerAttemptService {
     @PreDestroy
     void close() {
         if (!closed.compareAndSet(false, true)) return;
-        List<ExecutorService> ownedExecutors = ownedExecutors();
-        ownedExecutors.forEach(ExecutorService::shutdownNow);
-
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-        boolean interrupted = false;
-        boolean terminated = true;
-        for (ExecutorService executor : ownedExecutors) {
-            while (!executor.isTerminated()) {
-                long remaining = deadline - System.nanoTime();
-                if (remaining <= 0) {
-                    terminated = false;
-                    break;
-                }
-                try {
-                    if (!executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) {
-                        terminated = false;
-                        break;
-                    }
-                } catch (InterruptedException ex) {
-                    interrupted = true;
-                }
-            }
-        }
-        if (interrupted) Thread.currentThread().interrupt();
-        if (!terminated) {
-            throw new ProductionRuntimeException(
-                    "WORKER_SHUTDOWN_TIMEOUT",
-                    "worker executors did not terminate within the shutdown deadline");
-        }
-    }
-
-    boolean executorsShutdown() {
-        return closed.get()
-                && ownedExecutors().stream().allMatch(ExecutorService::isShutdown);
-    }
-
-    boolean executorsTerminated() {
-        return closed.get()
-                && ownedExecutors().stream().allMatch(ExecutorService::isTerminated);
-    }
-
-    private List<ExecutorService> ownedExecutors() {
-        return List.of(
+        List<ExecutorService> ownedExecutors = List.of(
                 heartbeatScheduler,
                 reconciliationScheduler,
                 heartbeatExecutor,
@@ -1087,6 +1046,41 @@ final class ProductionWorkerAttemptService {
                 checkpointReconciliationExecutor,
                 completionReconciliationExecutor,
                 executors);
+        ownedExecutors.forEach(ExecutorService::shutdownNow);
+
+        long deadline = System.nanoTime() + CLOSE_TIMEOUT.toNanos();
+        for (ExecutorService executor : ownedExecutors) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) return;
+            try {
+                if (!executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) return;
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    boolean executorsShutdown() {
+        return closed.get()
+                && heartbeatScheduler.isShutdown()
+                && reconciliationScheduler.isShutdown()
+                && heartbeatExecutor.isShutdown()
+                && providerReconciliationExecutor.isShutdown()
+                && checkpointReconciliationExecutor.isShutdown()
+                && completionReconciliationExecutor.isShutdown()
+                && executors.isShutdown();
+    }
+
+    boolean executorsTerminated() {
+        return closed.get()
+                && heartbeatScheduler.isTerminated()
+                && reconciliationScheduler.isTerminated()
+                && heartbeatExecutor.isTerminated()
+                && providerReconciliationExecutor.isTerminated()
+                && checkpointReconciliationExecutor.isTerminated()
+                && completionReconciliationExecutor.isTerminated()
+                && executors.isTerminated();
     }
 
     boolean journalHealthy() {

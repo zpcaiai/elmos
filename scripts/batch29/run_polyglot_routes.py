@@ -435,43 +435,48 @@ def nodejs_route_error_code(reason: str) -> str | None:
     return code
 
 
-def _stable_native_route_error(reason: str, *, invalid_wrapper: str) -> str:
-    """Remove only an absolute native-analyzer path from a domain error."""
+def nodejs_stable_route_error(reason: str) -> str:
+    """Remove only the private absolute analyzer snapshot path from an error."""
 
     prefix = "NATIVE_ANALYZER_FAILED:"
     if not reason.startswith(prefix):
         return reason
     wrapped = reason[len(prefix) :].split(":", 1)
     if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
-        raise RuntimeError(f"{invalid_wrapper}:{reason}")
+        raise RuntimeError(f"NODEJS_NATIVE_ERROR_WRAPPER_INVALID:{reason}")
     return wrapped[1]
 
 
-def stable_native_route_error(reason: str) -> str:
-    """Project an exact native wrapper onto its stable semantic error text."""
+def stable_missing_symbol_failure(reason: str) -> str | None:
+    """Return the one stable missing-symbol rejection from a native wrapper.
 
-    stable = _stable_native_route_error(
-        reason,
-        invalid_wrapper="NATIVE_ERROR_WRAPPER_INVALID",
-    )
-    if stable == reason:
-        return stable
-    executable = reason.removeprefix("NATIVE_ANALYZER_FAILED:").split(":", 1)[0]
-    go_runner_failure = MISSING_SYMBOL_FAILURE + "\nexit status 2"
-    if Path(executable).name == "go" and stable == go_runner_failure:
+    Native analyzers that are launched through an exact compiler executable
+    report domain rejections inside ``NATIVE_ANALYZER_FAILED``.  The executable
+    path is host-specific evidence, while the synthetic negative case has one
+    host-independent expected result.  Strip the wrapper only when the complete
+    value is an absolute executable plus that exact result. ``go run`` appends
+    its fixed ``exit status 2`` launcher trailer, which is accepted only as the
+    complete second line. Every malformed, forged-relative, or different
+    diagnostic remains unrecognized and therefore fails the negative gate
+    closed.
+    """
+
+    if reason == MISSING_SYMBOL_FAILURE:
+        return reason
+    if not reason or "\r" in reason:
+        return None
+    prefix = "NATIVE_ANALYZER_FAILED:"
+    if not reason.startswith(prefix):
+        return None
+    wrapped = reason[len(prefix) :].split(":", 1)
+    if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
+        return None
+    detail = wrapped[1]
+    if detail == MISSING_SYMBOL_FAILURE:
+        return detail
+    if detail == f"{MISSING_SYMBOL_FAILURE}\nexit status 2":
         return MISSING_SYMBOL_FAILURE
-    if "\n" in stable or "\r" in stable:
-        raise RuntimeError(f"NATIVE_ERROR_WRAPPER_INVALID:{reason}")
-    return stable
-
-
-def nodejs_stable_route_error(reason: str) -> str:
-    """Preserve the Node.js-specific invalid-wrapper diagnostic contract."""
-
-    return _stable_native_route_error(
-        reason,
-        invalid_wrapper="NODEJS_NATIVE_ERROR_WRAPPER_INVALID",
-    )
+    return None
 
 
 def declared_input_domain(route_key: str) -> str:
@@ -764,6 +769,7 @@ ARTIFACT_ALLOWED_SUFFIXES = {
     ".md",
     ".m",
     ".mjs",
+    ".php",
     ".bas",
     ".py",
     ".rs",
@@ -5611,12 +5617,14 @@ def execute_negative(
                 Path(temporary) / "output",
             )
         except RouteError as exc:
-            reason = str(exc)
+            captured_reason = str(exc)
+            reason = stable_missing_symbol_failure(captured_reason)
+            if reason is None:
+                reason = captured_reason
         else:
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"
             )
-    reason = stable_native_route_error(reason)
     if reason != MISSING_SYMBOL_FAILURE:
         raise RuntimeError(f"NEGATIVE_CASE_WRONG_FAILURE:{source}-to-{target}:{reason}")
     relative = "certification/local-negative-evidence.json"

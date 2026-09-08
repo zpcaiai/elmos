@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import os
+import stat
 import subprocess
 from pathlib import Path
 
@@ -97,26 +98,46 @@ def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
         wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
         assert function.count(wrapper_call) == 1
         assert function.index(wrapper_call) > reuse_branch_end
+    seal_call = 'seal_rust_sysroot "${target}"'
+    assert function.count(seal_call) == 1
+    assert function.index(seal_call) > function.index('write_rust_wrapper "${target}" "rustup"')
 
 
-def test_rust_installer_seals_fresh_and_cached_sysroots_before_publish() -> None:
+def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
+    tmp_path: Path,
+) -> None:
     installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
-    function_start = installer.index("install_rust() {")
-    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function_start = installer.index("seal_rust_sysroot() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
     function = installer[function_start:function_end]
-    link_guard = 'find "${sysroot}" -type l -print -quit | grep -q .'
-    executable_files = (
-        'find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +'
-    )
-    data_files = (
-        'find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +'
-    )
-    directories = 'find "${sysroot}" -type d -exec chmod 0555 {} +'
-    first_wrapper = 'write_rust_wrapper "${target}" "rustc"'
+    target = tmp_path / "rust"
+    sysroot = target / "rustup" / "toolchains" / "1.89.0-aarch64-apple-darwin"
+    executable = sysroot / "bin" / "rustc"
+    payload = sysroot / "lib" / "libstd.rlib"
+    executable.parent.mkdir(parents=True)
+    payload.parent.mkdir(parents=True)
+    executable.write_bytes(b"compiler")
+    payload.write_bytes(b"library")
+    executable.chmod(0o755)
+    payload.chmod(0o644)
 
-    for command in (link_guard, executable_files, data_files, directories):
-        assert function.count(command) == 1
-        assert function.index(command) < function.index(first_wrapper)
+    completed = subprocess.run(
+        [
+            "/bin/bash",
+            "-c",
+            function + '\nRUST_VERSION=1.89.0\nseal_rust_sysroot "$1"',
+            "bash",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert stat.S_IMODE(executable.stat().st_mode) == 0o555
+    assert stat.S_IMODE(payload.stat().st_mode) == 0o444
+    assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
 
 
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
@@ -150,6 +171,41 @@ def test_complete_tree_verifier_rejects_a_self_consistent_forgery() -> None:
             expected_bytes=7,
             failure="EXACT_TOOLCHAIN_GO_TREE_MISMATCH",
         )
+
+
+def test_flutter_tree_accepts_only_complete_allowlisted_receipts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    hosted_cache = copy.deepcopy(toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1])
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: hosted_cache,
+    )
+
+    assert toolchains._flutter_build_tree_identities() == {"dart_sdk": hosted_cache}
+
+    forged = copy.deepcopy(hosted_cache)
+    forged["sha256"] = "f" * 64
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: forged,
+    )
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
+    ):
+        toolchains._flutter_build_tree_identities()
+
+
+def test_flutter_closure_digest_is_bound_to_selected_complete_tree() -> None:
+    pristine = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[0]}
+    hosted_cache = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1]}
+
+    assert toolchains._flutter_build_closure_sha256(pristine) != (
+        toolchains._flutter_build_closure_sha256(hosted_cache)
+    )
 
 
 def test_go_tree_verifier_rejects_same_version_content_drift(
@@ -210,66 +266,21 @@ def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
     assert strict["sha256"] != local["sha256"]
 
 
-def test_rustup_component_receipts_normalize_only_install_order(tmp_path: Path) -> None:
-    components = tmp_path / "components"
-    names = [
-        f"{package}-{target}"
-        for package, target, _is_extension in toolchains._EXPECTED_RUST_SYSROOT_COMPONENTS
-    ]
-    components.write_text("\n".join(names) + "\n", encoding="utf-8")
-    first = toolchains._normalized_rust_sysroot_receipt(
-        components,
-        toolchains._RUST_SYSROOT_COMPONENTS_PATH,
-        "TEST_RUST",
-    )
-    components.write_text("\n".join(reversed(names)) + "\n", encoding="utf-8")
-    second = toolchains._normalized_rust_sysroot_receipt(
-        components,
-        toolchains._RUST_SYSROOT_COMPONENTS_PATH,
-        "TEST_RUST",
-    )
-    assert first == second
+def test_rust_sysroot_root_must_remain_read_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir(mode=0o755)
+    monkeypatch.setattr(toolchains, "_EXPECTED_RUST_SYSROOT", root)
 
-    def config(rows: list[tuple[str, str, bool]]) -> str:
-        body = ['config_version = "1"']
-        for package, target, extension in rows:
-            body.extend(
-                (
-                    "",
-                    "[[components]]",
-                    f'pkg = "{package}"',
-                    f'target = "{target}"',
-                    f"is_extension = {str(extension).lower()}",
-                )
-            )
-        return "\n".join(body) + "\n"
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE"):
+        toolchains._rust_sysroot_root_identity()
 
-    receipt = tmp_path / "multirust-config.toml"
-    rows = list(toolchains._EXPECTED_RUST_SYSROOT_COMPONENTS)
-    receipt.write_text(config(rows), encoding="utf-8")
-    first = toolchains._normalized_rust_sysroot_receipt(
-        receipt,
-        toolchains._RUST_SYSROOT_CONFIG_PATH,
-        "TEST_RUST",
-    )
-    receipt.write_text(config(list(reversed(rows))), encoding="utf-8")
-    second = toolchains._normalized_rust_sysroot_receipt(
-        receipt,
-        toolchains._RUST_SYSROOT_CONFIG_PATH,
-        "TEST_RUST",
-    )
-    assert first == second
+    root.chmod(0o555)
+    identity = toolchains._rust_sysroot_root_identity()
 
-
-def test_rustup_component_receipts_reject_semantic_drift(tmp_path: Path) -> None:
-    receipt = tmp_path / "components"
-    receipt.write_text("cargo-aarch64-apple-darwin\nunknown-target\n", encoding="utf-8")
-    with pytest.raises(RouteError, match="RUSTUP_COMPONENTS_INVALID"):
-        toolchains._normalized_rust_sysroot_receipt(
-            receipt,
-            toolchains._RUST_SYSROOT_COMPONENTS_PATH,
-            "TEST_RUST",
-        )
+    assert stat.S_IMODE(identity[2]) == 0o555
 
 
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])

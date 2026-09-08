@@ -161,7 +161,11 @@ def test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel(
         output,
     )
 
-    assert report["status"] == "COMPLETE"
+    assert report["status"] == "COMPLETE", {
+        "build_verification": report["build_verification"],
+        "runtime_verification": report["runtime_verification"],
+        "status_counts": report["status_counts"],
+    }
     assert report["repository_complete"] is True
     assert report["repository_execution_status"] == "PASSED_LOCAL"
     assert report["work_unit_count"] == 2

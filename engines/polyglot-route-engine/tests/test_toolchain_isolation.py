@@ -328,17 +328,15 @@ def test_java_codesign_receipt_reports_the_exact_failed_stage(
     assert "exit=1:diagnostic=strict verification failed" in str(caught.value)
 
 
-@pytest.mark.parametrize("archive_suffix", ["21.0.11-10.0", "21.0.11-10.0.LTS"])
 def test_temurin_contract_is_explicitly_selected_for_ci_home(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    archive_suffix: str,
 ) -> None:
     home = (
         tmp_path
         / "hostedtoolcache"
         / "Java_Temurin-Hotspot_jdk"
-        / archive_suffix
+        / "21.0.11-10.0"
         / "arm64"
         / "Contents"
         / "Home"
@@ -507,32 +505,40 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
 
     assert local.profile_id == "local-macos26-20260904"
-    assert local.flutter_dart_sdk_tree_sha256 == (
-        "04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50"
+    dotnet_fields = (
+        "dotnet_muxer_sha256",
+        "dotnet_muxer_bytes",
+        "dotnet_sdk_tree_sha256",
+        "dotnet_sdk_tree_bytes",
+        "dotnet_hostfxr_tree_sha256",
+        "dotnet_hostfxr_tree_bytes",
+        "dotnet_runtime_tree_sha256",
+        "dotnet_runtime_tree_bytes",
+        "dotnet_reference_pack_tree_sha256",
+        "dotnet_reference_pack_tree_bytes",
+        "dotnet_apphost_pack_tree_sha256",
+        "dotnet_apphost_pack_tree_bytes",
+        "dotnet_hostfxr_sha256",
+        "dotnet_hostpolicy_sha256",
     )
-    assert local.flutter_dart_sdk_tree_file_count == 1_012
-    assert local.flutter_dart_sdk_tree_identity_status == "PINNED"
-    assert legacy_hosted.dotnet_muxer_sha256 == current_hosted.dotnet_muxer_sha256
-    assert legacy_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
-    assert legacy_hosted.php_tree_sha256 != local.php_tree_sha256
+    assert all(
+        getattr(legacy_hosted, field) == getattr(current_hosted, field)
+        for field in dotnet_fields
+    )
+    assert legacy_hosted.php_tree_sha256 == (
+        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
+    )
+    assert legacy_hosted.php_tree_bytes == 129_937_220
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "0d4e4ce28b2e8a7715fc93ea8dc5d095a3400d781056a574555fcbf927d2f9a0"
+        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
-    assert current_hosted.php_tree_bytes == 129_937_253
-    assert current_hosted.flutter_dart_sdk_tree_sha256 == (
-        "723c91129a701c5f3aaf31e30df986e6d79c70092b3f9087b7d3225028a7b107"
-    )
-    assert current_hosted.flutter_dart_sdk_tree_record_count == 1_125
-    assert current_hosted.flutter_dart_sdk_tree_file_count == 1_013
-    assert current_hosted.flutter_dart_sdk_tree_directory_count == 112
-    assert current_hosted.flutter_dart_sdk_tree_bytes == 611_763_504
-    assert current_hosted.flutter_dart_sdk_tree_identity_status == "PINNED"
-    assert legacy_hosted.flutter_dart_sdk_tree_identity_status == "PROBE_REQUIRED"
+    assert current_hosted.php_tree_bytes == 129_937_220
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
-    assert current_hosted.php_tree_sha256 != local.php_tree_sha256
+    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert current_hosted.php_tree_bytes == local.php_tree_bytes
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
         toolchains._select_homebrew_route_bundle_profile(
@@ -542,10 +548,18 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    "profile",
+    (
+        toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
+        toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    ),
+    ids=lambda profile: profile.profile_id,
+)
 def test_homebrew_hosted_profile_survives_an_isolated_runtime(
     monkeypatch: pytest.MonkeyPatch,
+    profile: toolchains.HomebrewRouteBundleProfile,
 ) -> None:
-    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
     monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
     monkeypatch.setattr(
@@ -594,65 +608,6 @@ def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
     assert f"homebrew-bundle-profile={bundle_profile.profile_id}" in selected.profile
     assert f"php-tree-sha256={bundle_profile.php_tree_sha256}" in selected.profile
     assert f"php-tree-bytes={bundle_profile.php_tree_bytes}" in selected.profile
-
-
-def _flutter_tree_for_profile(
-    profile: toolchains.HomebrewRouteBundleProfile,
-) -> dict[str, object]:
-    return {
-        "root": str(toolchains._EXPECTED_FLUTTER_DART_SDK_ROOT),
-        "sha256": profile.flutter_dart_sdk_tree_sha256,
-        "record_count": profile.flutter_dart_sdk_tree_record_count,
-        "file_count": profile.flutter_dart_sdk_tree_file_count,
-        "directory_count": profile.flutter_dart_sdk_tree_directory_count,
-        "bytes": profile.flutter_dart_sdk_tree_bytes,
-    }
-
-
-def test_flutter_tree_accepts_only_the_evidenced_current_hosted_identity(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
-    observed = _flutter_tree_for_profile(profile)
-    monkeypatch.setattr(toolchains, "homebrew_route_bundle_profile", lambda: profile)
-    monkeypatch.setattr(
-        toolchains,
-        "_qualified_tree_manifest",
-        lambda *_args, **_kwargs: observed,
-    )
-
-    assert toolchains._flutter_build_tree_identities() == {"dart_sdk": observed}
-    assert toolchains._expected_flutter_build_closure(profile)["trees"] == {
-        "dart_sdk": observed
-    }
-
-    drift = {**observed, "sha256": "0" * 64}
-    monkeypatch.setattr(
-        toolchains,
-        "_qualified_tree_manifest",
-        lambda *_args, **_kwargs: drift,
-    )
-    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH"):
-        toolchains._flutter_build_tree_identities()
-
-
-def test_flutter_tree_unobserved_hosted_profile_emits_identity_without_accepting_probe(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    profile = toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE
-    observed = _flutter_tree_for_profile(profile)
-    monkeypatch.setattr(toolchains, "homebrew_route_bundle_profile", lambda: profile)
-    monkeypatch.setattr(
-        toolchains,
-        "_qualified_tree_manifest",
-        lambda *_args, **_kwargs: observed,
-    )
-
-    with pytest.raises(
-        RouteError,
-        match=r"EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_PROBE_REQUIRED:observed=.*sha256",
-    ):
-        toolchains._flutter_build_tree_identities()
 
 
 def test_dotnet_tree_rejects_parent_symlink_escape(

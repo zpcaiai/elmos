@@ -29,6 +29,10 @@ local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
   provider, training and deployment evidence, holdout corpus, required gates,
   implementation/catalog/policy digests, separated producer/executor/verifier/
   authority identities, revocation, validity interval and trust epoch;
+- a verify-only external qualification intake with strict JSON schemas,
+  Ed25519 public trust keys, validity and revocation enforcement, trust-store
+  digest binding, authority-role and public-key separation, exact executor and
+  tenant/project/target bindings, and an atomic private decision artifact;
 - exact permit-request and execution entry points for all 14 golden pipelines;
 - durable transitions, checkpoints, audit/evidence and outbox reconciliation;
 - private immutable artifact storage;
@@ -65,7 +69,9 @@ this external-gate list. Their
 receipts are bounded, self-attested engineering evidence only.
 
 The repository now implements the reusable external execution and evidence
-verification boundary in `elmos_foundry.external_assurance`. It does not ship a
+verification boundary in `elmos_foundry.external_assurance` and the complete
+intake gate documented in
+[EXTERNAL_QUALIFICATION.md](EXTERNAL_QUALIFICATION.md). It does not ship a
 provider credential, provider executable, training cluster, deployment account,
 independent holdout result, verifier key or certification-authority decision.
 Consequently provider, training, deployment and independent evidence remain

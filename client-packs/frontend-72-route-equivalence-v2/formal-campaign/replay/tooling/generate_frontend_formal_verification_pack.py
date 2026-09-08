@@ -783,7 +783,6 @@ V2_ENGINE_VERIFIER_MODULES = (
     "project-templates",
     "project-types",
 )
-V2_ENGINE_VERIFIER_TIMEOUT_SECONDS = 600
 LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT = 67
 LOCKED_V2_NODE_TYPES_TREE_SHA256 = (
     "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
@@ -1614,7 +1613,7 @@ def verify_engine_campaign_v2(repo_root: Path, engine_root: Path) -> dict[str, A
         # The complete 72-route/864-block verification routinely exceeds three
         # minutes on the pinned Node 26 macOS runner. Keep the replay bounded,
         # but budget enough time for the production-sized campaign to finish.
-        timeout=V2_ENGINE_VERIFIER_TIMEOUT_SECONDS,
+        timeout=600,
         check=False,
     )
     try:

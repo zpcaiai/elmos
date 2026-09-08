@@ -583,28 +583,57 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
-def test_swift_emitted_integer_to_number_cast_relifts_exactly(tmp_path: Path) -> None:
+def test_swift_emitted_target_relifts_exact_integer_to_double_widening(
+    tmp_path: Path,
+) -> None:
     from elmos_polyglot_route.native import analyze
 
-    semantic = _ir(
-        _function("asNumber", [("value", "integer")], "number", _name("value"))
+    source = tmp_path / "widening.swift"
+    source.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value) }\n",
+        encoding="utf-8",
     )
-    plan = plan_identifiers(semantic, "swift")
-    target = target_ir_view(semantic, plan).functions[0]
-    emitted = emit(semantic, "swift", identifier_plan=plan)
-    source = tmp_path / emitted.relative_path
-    source.write_text(emitted.content, encoding="utf-8")
 
-    relifted = analyze(source, "swift", target.name, emitted_target=True)
-
-    function = relifted.functions[0]
+    semantic = analyze(source, "swift", "widen", emitted_target=True)
+    function = semantic.functions[0]
     assert function.return_type == "number"
-    assert [(parameter.name, parameter.type) for parameter in function.parameters] == [
-        (target.parameters[0].name, "integer")
-    ]
     assert function.body[0].expression is not None
-    assert function.body[0].expression.kind == "name"
-    assert function.body[0].expression.value == target.parameters[0].name
+    assert function.body[0].expression.to_mapping()["kind"] == "name"
+    assert function.body[0].expression.to_mapping()["value"] == "value"
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+@pytest.mark.parametrize(
+    "declaration",
+    [
+        "func f(_ value: Double) -> Double { return Double(value) }",
+        "func f(_ value: Int64) -> Double { return Double(value, value) }",
+        "func f(_ value: Int64) -> Double { return Double(exactly: value) }",
+        "func f() -> Double { return Double(1.5) }",
+    ],
+)
+def test_swift_emitted_target_rejects_noncanonical_double_calls(
+    tmp_path: Path, declaration: str
+) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "invalid-widening.swift"
+    source.write_text(declaration + "\n", encoding="utf-8")
+    with pytest.raises(RouteError, match="SWIFT_EMITTED_DOUBLE_WIDENING_INVALID"):
+        analyze(source, "swift", "f", emitted_target=True)
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_source_does_not_gain_double_call_authority(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "source-widening.swift"
+    source.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value) }\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError, match="SWIFT_CALL_OUTSIDE_CERTIFIED_SUBSET"):
+        analyze(source, "swift", "widen")
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")

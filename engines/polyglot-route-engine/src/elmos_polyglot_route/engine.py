@@ -1392,7 +1392,7 @@ def _verify_inventory_analyzer_build_receipt(
         "canonical_identity",
     }:
         raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
-    apple_profile = apple_route_host_profile("swift")
+    selected_host = apple_route_host_profile("swift")
     if receipt.get("schema_version") != "1.0.0" or receipt.get("kind") != "elmos.swift-analyzer-build-receipt":
         raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
 
@@ -1524,7 +1524,7 @@ def _verify_inventory_analyzer_build_receipt(
         or not isinstance(git, dict)
         or set(git) != {"path", "sha256", "version"}
         or git.get("path") != "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
-        or git.get("sha256") != "sha256:" + apple_profile.apple_git_sha256
+        or git.get("sha256") != "sha256:" + selected_host.apple_git_sha256
         or git.get("version") != "git version 2.50.1 (Apple Git-155)"
         or not isinstance(cache, dict)
         or set(cache)
@@ -1659,18 +1659,18 @@ def _verify_inventory_analyzer_build_receipt(
         "scope": "swift-build-process-tree",
         "sandbox": {
             "path": "/usr/bin/sandbox-exec",
-            "sha256": "sha256:" + apple_profile.sandbox_exec_sha256,
-            "bytes": apple_profile.sandbox_exec_bytes,
+            "sha256": "sha256:" + selected_host.sandbox_exec_sha256,
+            "bytes": selected_host.sandbox_exec_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
             "nlink": 1,
-            "cdhash_full": apple_profile.sandbox_exec_cdhash_full,
+            "cdhash_full": selected_host.sandbox_exec_cdhash_full,
         },
         "verifier": {
             "path": "/usr/bin/codesign",
-            "sha256": "sha256:" + apple_profile.codesign_sha256,
-            "bytes": apple_profile.codesign_bytes,
+            "sha256": "sha256:" + selected_host.codesign_sha256,
+            "bytes": selected_host.codesign_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
