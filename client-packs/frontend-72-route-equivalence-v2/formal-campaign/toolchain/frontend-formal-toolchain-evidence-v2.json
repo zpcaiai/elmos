@@ -6087,7 +6087,7 @@
           "sdk_version": "6.0.0.47",
           "selected": true,
           "sha256": "sha256:3ff036094366823b5c562e287f96246dd638ef0c43a15fabead95179a76e5c46",
-          "source": "CLI_CONFIGURED",
+          "source": "STANDARD_USER_LOCATION",
           "symlink": false,
           "validation": "PASSED"
         },
@@ -6104,7 +6104,7 @@
           "sdk_version": "6.0.0.47",
           "selected": true,
           "sha256": "sha256:879b70f0609f3ac08a37bd43ab12cf85e7c9e094f4540a00455831f1080de9e7",
-          "source": "CLI_CONFIGURED",
+          "source": "STANDARD_USER_LOCATION",
           "symlink": false,
           "validation": "PASSED"
         },
@@ -6121,7 +6121,7 @@
           "sdk_version": "6.0.0.47",
           "selected": true,
           "sha256": "sha256:e7d4e0f7970ec5d8430f2935dc22b31effe06d9e8c725a16ff0706f8c60ec22c",
-          "source": "CLI_CONFIGURED",
+          "source": "STANDARD_USER_LOCATION",
           "symlink": false,
           "validation": "PASSED"
         },
@@ -6138,7 +6138,7 @@
           "sdk_version": "6.0.0.47",
           "selected": true,
           "sha256": "sha256:d996bcbcb94c3fc1368700523b7acee23e13d6045ae473d9aea1e1cba03d6fe6",
-          "source": "CLI_CONFIGURED",
+          "source": "STANDARD_USER_LOCATION",
           "symlink": false,
           "validation": "PASSED"
         },
@@ -6155,7 +6155,7 @@
           "sdk_version": "6.0.0.47",
           "selected": true,
           "sha256": "sha256:7a55b96d922968fba58c96e40c6df247ecd45f2745d85069df1b0743fbca2ba6",
-          "source": "CLI_CONFIGURED",
+          "source": "STANDARD_USER_LOCATION",
           "symlink": false,
           "validation": "PASSED"
         }
@@ -10599,9 +10599,7 @@
       "--chrome-path",
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
       "--firefox-path",
-      "/Applications/Firefox.app/Contents/MacOS/firefox",
-      "--harmony-sdk-root",
-      "/Users/stephen/Library/OpenHarmony/Sdk/20"
+      "/Applications/Firefox.app/Contents/MacOS/firefox"
     ],
     "campaign_byte_count": 1593573,
     "campaign_sha256": "sha256:acf686961ae3b96b13db978695c431f7f26095238152adfa2948706874fce69e",
