@@ -3,15 +3,14 @@
   "batch": 40,
   "status": "PASS",
   "repository": "zpcaiai/elmos",
-  "commit": "20b4df0182d3e440b450b821cde6fd5a3de7b940",
+  "commit": "6299f7dabcd162fbe0904df59dace6e53e7cb08c",
   "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-  "queriedAt": "2026-09-08T05:00:23Z",
+  "queriedAt": "2026-09-06T18:55:03Z",
   "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts --paginate --slurp",
-  "inputSha256": "sha256:aeb9ea181e568f4926c654185b907d74446230f4d9f6f47a1163afbc7e722b38",
+  "inputSha256": "sha256:3f9f28842d7c21a89a17f0e8120ed0d621d4821b7767f3c2da0a45b426afbdea",
   "alertCount": 290,
   "stateCounts": {
-    "auto_dismissed": 1,
-    "dismissed": 104,
+    "dismissed": 105,
     "fixed": 185
   },
   "openCount": 0,
@@ -24,14 +23,160 @@
   "maxOpen": 0,
   "metrics": {
     "criticalVulnerabilityCount": 0,
-    "highVulnerabilityCount": 0
+    "highVulnerabilityCount": 0,
+    "vulnerabilitySlaCompliance": 0.9027
+  },
+  "vulnerabilitySla": {
+    "policySeconds": {
+      "critical": 86400,
+      "high": 604800,
+      "medium": 2592000,
+      "low": 7776000
+    },
+    "population": "fixed Dependabot alerts with created_at and fixed_at",
+    "evaluatedCount": 185,
+    "metCount": 167,
+    "breachCount": 18,
+    "incompleteAlertNumbers": [],
+    "breaches": [
+      {
+        "number": 41,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 39,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 36,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 35,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 34,
+        "severity": "high",
+        "elapsedSeconds": 609986,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 29,
+        "severity": "high",
+        "elapsedSeconds": 609986,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 23,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 22,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 21,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 20,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 19,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 18,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 12,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 11,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 6,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 5,
+        "severity": "high",
+        "elapsedSeconds": 609985,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 2,
+        "severity": "high",
+        "elapsedSeconds": 839603,
+        "limitSeconds": 604800,
+        "met": false
+      },
+      {
+        "number": 1,
+        "severity": "high",
+        "elapsedSeconds": 609984,
+        "limitSeconds": 604800,
+        "met": false
+      }
+    ],
+    "excludedStateCounts": {
+      "dismissed": 105
+    }
   },
   "openAlerts": [],
   "blockers": [],
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
     "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
-    "The snapshot is self-attested evidence until an independently authorized verifier signs it."
+    "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
+    "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant."
   ],
   "alerts": [
     {
@@ -258,7 +403,7 @@
     },
     {
       "number": 253,
-      "state": "auto_dismissed",
+      "state": "dismissed",
       "package": "diff",
       "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
