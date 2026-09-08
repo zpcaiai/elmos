@@ -7,12 +7,12 @@
     "elasticsearch": {
       "status": "NOT_RUN",
       "evidence_role": "search-provider-runtime",
-      "required_env": ["ELMOS_ELASTICSEARCH_URL", "ELMOS_ELASTICSEARCH_API_KEY", "ELMOS_ELASTICSEARCH_INDEX"]
+      "required_env": ["ELMOS_ELASTICSEARCH_URL", "ELMOS_ELASTICSEARCH_API_KEY", "ELMOS_ELASTICSEARCH_INDEX", "ELMOS_ELASTICSEARCH_VECTOR_DIMENSIONS", "ELMOS_ELASTICSEARCH_EXPECTED_VERSION"]
     },
     "dify": {
       "status": "NOT_RUN",
       "evidence_role": "workflow-provider-runtime",
-      "required_env": ["ELMOS_DIFY_URL", "ELMOS_DIFY_API_KEY", "ELMOS_DIFY_WORKFLOW_ID"]
+      "required_env": ["ELMOS_DIFY_URL", "ELMOS_DIFY_API_KEY", "ELMOS_DIFY_WORKFLOW_ID", "ELMOS_DIFY_EXPECTED_VERSION"]
     },
     "model_provider": {
       "status": "NOT_RUN",
@@ -47,7 +47,7 @@
     "production_deployment": {
       "status": "NOT_RUN",
       "evidence_role": "production-deployment-and-rollback",
-      "required_env": ["ELMOS_PRODUCTION_ENVIRONMENT", "ELMOS_PRODUCTION_ARTIFACT_SHA256", "ELMOS_PRODUCTION_CHANGE_AUTHORIZATION"]
+      "required_env": ["ELMOS_PRODUCTION_ENVIRONMENT", "ELMOS_PRODUCTION_ARTIFACT_SHA256", "ELMOS_PRODUCTION_CHANGE_AUTHORIZATION", "ELMOS_CONTROL_PLANE_BASE_URL", "ELMOS_OPERATIONS_API_KEY", "ELMOS_OPERATIONS_TENANT_ID", "ELMOS_OPERATIONS_ACTOR_ID", "ELMOS_RUNNER_NODE_ID", "ELMOS_RUNNER_POOL_ID", "ELMOS_RUNNER_CAPABILITIES", "ELMOS_RUNNER_AGENT_VERSION", "ELMOS_RUNNER_AGENT_IMAGE", "ELMOS_RUNNER_IMAGE_GENERATION", "ELMOS_RUNNER_IMAGE_ALLOWLIST_VERSION"]
     },
     "independent_verification": {
       "status": "NOT_RUN",
