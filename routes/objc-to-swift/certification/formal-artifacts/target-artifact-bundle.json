@@ -4,22 +4,22 @@
   "semantic_profile": "typed-pure-function-v1",
   "target_artifacts": [
     {
-      "bytes": 152,
+      "bytes": 168,
       "corpus": "development",
       "path": "certification/artifacts/development/migrated.swift",
-      "sha256": "sha256:fc27a2216a9ebb405070401c0076898ed1e1d9fea173dbe7b32631a0d4b217d7"
+      "sha256": "sha256:c257baeeb8f17b6a4ec0477d3c55ddbe6370b114caaf470ef2bb831e71dc99bd"
     },
     {
-      "bytes": 64,
+      "bytes": 79,
       "corpus": "holdout",
       "path": "certification/artifacts/holdout/migrated.swift",
-      "sha256": "sha256:60e1d743d39815192b75408226ae9b2fbf05520a60f8a366371af9d2aabb2191"
+      "sha256": "sha256:00787ff786f975084a4a99554ee07d3a1ea4c72fc184152d01f4d8dbd2ec40eb"
     },
     {
-      "bytes": 157,
+      "bytes": 174,
       "corpus": "real-repository",
       "path": "certification/artifacts/real-repository/migrated.swift",
-      "sha256": "sha256:78bf04aa18b1c01f2298d87ebe6ee6b01502390766144d8a66c44626407c12d7"
+      "sha256": "sha256:3fb098c301ee2d5ce9d4f360dd94bd40c4209e23dd7b439096f864c751617b24"
     }
   ]
 }

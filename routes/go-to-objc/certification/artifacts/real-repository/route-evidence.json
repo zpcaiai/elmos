@@ -1,0 +1,280 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:f6ce86e4c1aaa2478570f8c1dc3c82ed2e00951da678931e32cf4141395c52d9",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:29bcc95e4e5c1685a1516d6f066a9d0f88d22b8ecc586cbd5a2a93d0c8e107e4",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:8427d21e0e7e00634eb746d79bb05fddc3fa5e093b2e467810e56ff59f971c23",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:f933f803048284fd0a7d7387e89a9e3f30a98e48ad6458af17ff5e4308102e6d",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:f933f803048284fd0a7d7387e89a9e3f30a98e48ad6458af17ff5e4308102e6d",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:f933f803048284fd0a7d7387e89a9e3f30a98e48ad6458af17ff5e4308102e6d",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:e070847c00d99827fbaf9720f14164554ff69c2fae169d3b1538cc989f814f0f",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:f933f803048284fd0a7d7387e89a9e3f30a98e48ad6458af17ff5e4308102e6d",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:e659be226476f8343b8cc28bd3376ddae34a7518dc5ce8f1653c7f304974ff2f",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:e070847c00d99827fbaf9720f14164554ff69c2fae169d3b1538cc989f814f0f",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:89107f261efcc8e8df0dbc0f24ca43c039e2c7d017a4308410fca22b6c7930ac",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:5027da15c543c1aa3f428a012df5ce41a9a3c6d5f767b6eb837e9ae22abd9d48",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:8b49643b88a909e3d3ecff8e68ec5b1f97fa9ab059b28f23ca0ede9e1c2c6631",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "difference",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_c558e587446ddf05",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "difference.go",
+      "source_sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:4be1764b4c840178b50ad5e0e8e96ea7166faf606c46e00a750197ce1cc352b3"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:1bfbc95c9f3ed3fe3b6b22fa3308a6db23e255efffbcd072f6a8ac4cee8ff131",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "go-to-objc",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:89107f261efcc8e8df0dbc0f24ca43c039e2c7d017a4308410fca22b6c7930ac"
+  },
+  "semantic_ir_sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8",
+  "source": {
+    "analyzer": "go/parser AST",
+    "analyzer_version": "go1.25.0",
+    "function_name": "difference",
+    "language": "go",
+    "path": "difference.go",
+    "sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "difference.go",
+    "artifact_sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+          "test",
+          "-v",
+          "-count=1",
+          "-run",
+          "^TestElmosSourceBehavior$",
+          "difference.go",
+          "source_behavior_test.go"
+        ],
+        "stderr": "",
+        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTM=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tMA==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.393s\n"
+      }
+    ],
+    "language": "go",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTM=",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+      "executable_sha256": "c812de5f1e8307431c5bce8ebc4887c180827abc5834a72cd640a8a14200a93b",
+      "language": "go",
+      "profile": [
+        "go-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "go-root=/Users/stephen/.local/share/elmos/toolchains/go/1.25.0",
+        "go-tree-sha256=877afe68674e435643c86dcbb546ec9d441f636962068ac7b63d3ced854c2704",
+        "go-tree-record-count=16087",
+        "go-tree-file-count=14496",
+        "go-tree-directory-count=1591",
+        "go-tree-bytes=202722007",
+        "go-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "1.25.0"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_c558e587446ddf05",
+    "language": "objc",
+    "path": "migrated.m",
+    "sha256": "sha256:17b9e74b1daca5068287c4f4000b2cfa4013e56bab40c65885c2b9e0bde59999"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "-x",
+          "objective-c",
+          "-std=c17",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-fobjc-arc",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-framework",
+          "Foundation",
+          "-o",
+          "route_harness",
+          "route_harness.m"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t13\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\n"
+      }
+    ],
+    "language": "objc",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "13",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "objc",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c17/objc-arc/Foundation/Apple-runtime"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "route_key": "rust-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 572,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:b67dad1e3bf224727ab7bfc6f8da0c2756fc9ef14ccbe92ffa84e07b8747b7da"
+    },
+    {
+      "bytes": 383,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:5835a764f05b7e6b9266ceb2f5c88d54f0426dec695a83543baecd734b4a13b1"
+    },
+    {
+      "bytes": 598,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:da004cbfe23a5f8fa59a3ab5225e6a8714ec56d3e161c65e78bbb312504e9a98"
+    }
+  ]
+}

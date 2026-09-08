@@ -3,43 +3,43 @@
     "development": {
       "bytes": 5771,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:e0873a2701c544d8e245a8abebaade33a0823cb13da4fa3014a8c3a2e9e782bf"
+      "sha256": "sha256:9990f9436ea5b2cccc6de9f56070c4b6bed32857379d241c83206c53cd743dcd"
     },
     "holdout": {
       "bytes": 5759,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:dd543645594c6e52c77a6956eb0b738fcf6b53694063b13310783060e69114fa"
+      "sha256": "sha256:904ee4b78aa0cb33fa4022d4e087ea929d176226e111768bdfce34c41c2081a8"
     },
     "real-repository": {
       "bytes": 5785,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:70d068f954d5331916e4c17a09959f40c6be168b45ebcbf66c1de02ec2e54ff8"
+      "sha256": "sha256:338175a7958666a1634e7e134490c88fc9e19262cc8ed50c7e141da72d180b79"
     }
   },
   "artifact_refs": [
     {
       "bytes": 5771,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:e0873a2701c544d8e245a8abebaade33a0823cb13da4fa3014a8c3a2e9e782bf"
+      "sha256": "sha256:9990f9436ea5b2cccc6de9f56070c4b6bed32857379d241c83206c53cd743dcd"
     },
     {
       "bytes": 5759,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:dd543645594c6e52c77a6956eb0b738fcf6b53694063b13310783060e69114fa"
+      "sha256": "sha256:904ee4b78aa0cb33fa4022d4e087ea929d176226e111768bdfce34c41c2081a8"
     },
     {
       "bytes": 5785,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:70d068f954d5331916e4c17a09959f40c6be168b45ebcbf66c1de02ec2e54ff8"
+      "sha256": "sha256:338175a7958666a1634e7e134490c88fc9e19262cc8ed50c7e141da72d180b79"
     }
   ],
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
   "execution_status": "PASSED_LOCAL",
   "formal_equivalence": {
-    "bytes": 304856,
+    "bytes": 304857,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:270672ee2dd1e86ddcbd67fe9d1e0c0dd9814f85036175fd6cc86729f486e118"
+    "sha256": "sha256:29a9b7e51ec7eb85bf39e680564938d48ed8000462e45219f28cb5a3b7815191"
   },
   "metrics": {
     "build_green_rate": 1.0,

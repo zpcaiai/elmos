@@ -1,14 +1,14 @@
 {
   "binary": {
-    "bytes": 14595072,
-    "device": 16777233,
+    "bytes": 14613600,
+    "device": 16777230,
     "gid": 20,
-    "inode": 487588291,
+    "inode": 608236377,
     "mode": "0500",
     "name": "ElmosSwiftAnalyzer",
     "nlink": 1,
-    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc/ElmosSwiftAnalyzer",
-    "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e",
+    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd/ElmosSwiftAnalyzer",
+    "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e",
     "uid": 501
   },
   "build": {
@@ -82,11 +82,11 @@
   "canonical_identity": {
     "receipt": {
       "binary": {
-        "bytes": 14595072,
+        "bytes": 14613600,
         "mode": "0500",
         "name": "ElmosSwiftAnalyzer",
         "nlink": 1,
-        "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e"
+        "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e"
       },
       "build": {
         "argv": [
@@ -164,12 +164,13 @@
           "bytes": 8866479,
           "cache": {
             "bytes": 8866479,
-            "cache_key": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
-            "cache_schema": "swift-dependencies-v1",
+            "cache_key": "swift-syntax-standalone-v2-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+            "cache_schema": "swift-dependencies-standalone-v2",
             "file_count": 753,
             "identity": "swift-syntax",
+            "object_store_policy": "standalone-no-alternates-no-hardlinks-v2",
             "revision": "0687f71944021d616d34d922343dcef086855920",
-            "seed": "verified-content-addressed-cache",
+            "seed": "verified-content-addressed-standalone-cache",
             "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
             "version": "600.0.1"
           },
@@ -180,7 +181,7 @@
           },
           "identity": "swift-syntax",
           "revision": "0687f71944021d616d34d922343dcef086855920",
-          "seed": "verified-content-addressed-cache",
+          "seed": "verified-content-addressed-standalone-cache",
           "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
           "version": "600.0.1"
         },
@@ -190,11 +191,11 @@
       },
       "execution_seal": {
         "binary": {
-          "bytes": 14595072,
+          "bytes": 14613600,
           "mode": "0500",
           "name": "ElmosSwiftAnalyzer",
           "nlink": 1,
-          "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e"
+          "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e"
         },
         "mode": "0500",
         "policy": "private-nonwritable-execution-root-v1"
@@ -293,10 +294,10 @@
         },
         "sandbox": {
           "bytes": 102368,
-          "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+          "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
           "mode": "0755",
           "nlink": 1,
-          "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+          "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
         },
         "scope": "swift-build-process-tree",
         "status": "PASSED",
@@ -304,7 +305,7 @@
           "bytes": 458576,
           "mode": "0755",
           "nlink": 1,
-          "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+          "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
         }
       },
       "schema_version": "1.0.0",
@@ -321,12 +322,12 @@
             "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
           },
           {
-            "bytes": 27300,
+            "bytes": 42338,
             "path": "Sources/ElmosSwiftAnalyzer/main.swift",
-            "sha256": "sha256:6ba3b995a43c70151e654b33bc6767c944ff0d92757bbcd4663e509048350b33"
+            "sha256": "sha256:366907d0b6a742333badcc79f96cc8c8cf62768237493a200c92895deab3efee"
           }
         ],
-        "sha256": "sha256:6082fc6160afa6498590a8ad8da909645274928bf6bf98fd34b9a8535a453c53"
+        "sha256": "sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763"
       },
       "toolchain": {
         "build_closure": {
@@ -653,7 +654,7 @@
         "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
       }
     },
-    "sha256": "sha256:0a3bd73ef83f94fed80ca6049ead2f2f8396792e1a8d557f77ab05b39b127303"
+    "sha256": "sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e"
   },
   "dependency": {
     "bytes": 8866479,
@@ -663,12 +664,13 @@
       "bytes": 8866479,
       "cache": {
         "bytes": 8866479,
-        "cache_key": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
-        "cache_schema": "swift-dependencies-v1",
+        "cache_key": "swift-syntax-standalone-v2-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+        "cache_schema": "swift-dependencies-standalone-v2",
         "file_count": 753,
         "identity": "swift-syntax",
+        "object_store_policy": "standalone-no-alternates-no-hardlinks-v2",
         "revision": "0687f71944021d616d34d922343dcef086855920",
-        "seed": "verified-content-addressed-cache",
+        "seed": "verified-content-addressed-standalone-cache",
         "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
         "version": "600.0.1"
       },
@@ -680,7 +682,7 @@
       },
       "identity": "swift-syntax",
       "revision": "0687f71944021d616d34d922343dcef086855920",
-      "seed": "verified-content-addressed-cache",
+      "seed": "verified-content-addressed-standalone-cache",
       "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
       "version": "600.0.1"
     },
@@ -690,23 +692,23 @@
   },
   "execution_seal": {
     "binary": {
-      "bytes": 14595072,
-      "device": 16777233,
+      "bytes": 14613600,
+      "device": 16777230,
       "gid": 20,
-      "inode": 487588291,
+      "inode": 608236377,
       "mode": "0500",
       "name": "ElmosSwiftAnalyzer",
       "nlink": 1,
-      "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc/ElmosSwiftAnalyzer",
-      "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e",
+      "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd/ElmosSwiftAnalyzer",
+      "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e",
       "uid": 501
     },
-    "device": 16777233,
+    "device": 16777230,
     "gid": 20,
-    "inode": 487584976,
+    "inode": 608208025,
     "mode": "0500",
     "policy": "private-nonwritable-execution-root-v1",
-    "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc",
+    "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd",
     "uid": 501
   },
   "kind": "elmos.swift-analyzer-build-receipt",
@@ -719,13 +721,13 @@
     "probe": {
       "binary": {
         "bytes": 33784,
-        "device": 16777233,
+        "device": 16777230,
         "gid": 20,
-        "inode": 487585960,
+        "inode": 608212782,
         "mode": "0500",
         "name": "ElmosNetworkDenyProbe",
         "nlink": 1,
-        "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc/network-probe-execution/ElmosNetworkDenyProbe",
+        "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd/network-probe-execution/ElmosNetworkDenyProbe",
         "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
         "uid": 501
       },
@@ -786,22 +788,22 @@
       "execution_seal": {
         "binary": {
           "bytes": 33784,
-          "device": 16777233,
+          "device": 16777230,
           "gid": 20,
-          "inode": 487585960,
+          "inode": 608212782,
           "mode": "0500",
           "name": "ElmosNetworkDenyProbe",
           "nlink": 1,
-          "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc/network-probe-execution/ElmosNetworkDenyProbe",
+          "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd/network-probe-execution/ElmosNetworkDenyProbe",
           "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
           "uid": 501
         },
-        "device": 16777233,
+        "device": 16777230,
         "gid": 20,
-        "inode": 487585959,
+        "inode": 608212781,
         "mode": "0500",
         "policy": "private-nonwritable-execution-root-v1",
-        "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-ss31rlhc/network-probe-execution",
+        "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-0l4gk1nd/network-probe-execution",
         "uid": 501
       },
       "mach_o": {
@@ -822,12 +824,12 @@
     },
     "sandbox": {
       "bytes": 102368,
-      "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+      "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
       "gid": 0,
       "mode": "0755",
       "nlink": 1,
       "path": "/usr/bin/sandbox-exec",
-      "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f",
+      "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
       "uid": 0
     },
     "scope": "swift-build-process-tree",
@@ -838,7 +840,7 @@
       "mode": "0755",
       "nlink": 1,
       "path": "/usr/bin/codesign",
-      "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40",
+      "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
       "uid": 0
     }
   },
@@ -856,12 +858,12 @@
         "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
       },
       {
-        "bytes": 27300,
+        "bytes": 42338,
         "path": "Sources/ElmosSwiftAnalyzer/main.swift",
-        "sha256": "sha256:6ba3b995a43c70151e654b33bc6767c944ff0d92757bbcd4663e509048350b33"
+        "sha256": "sha256:366907d0b6a742333badcc79f96cc8c8cf62768237493a200c92895deab3efee"
       }
     ],
-    "sha256": "sha256:6082fc6160afa6498590a8ad8da909645274928bf6bf98fd34b9a8535a453c53"
+    "sha256": "sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763"
   },
   "toolchain": {
     "build_closure": {
@@ -1303,6 +1305,7 @@
     },
     "profile": [
       "platform=Darwin/arm64",
+      "apple-host-profile=local-macos26-20260904",
       "xcode=26.6/17F113",
       "macosx-sdk=26.5",
       "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",

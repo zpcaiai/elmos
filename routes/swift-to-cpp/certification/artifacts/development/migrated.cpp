@@ -10,9 +10,9 @@ static std::int64_t elmos_checked_add(std::int64_t left, std::int64_t right) {
     return result;
 }
 
-std::int64_t calculate(std::int64_t subtotal, std::int64_t tax) {
-    if ((subtotal < 0)) {
+std::int64_t elmos_fn_cd34b3e5a55edbfa(std::int64_t elmos_p000_5e79a0177f062b7b, std::int64_t elmos_p001_2e4719cf7d0e3db1) {
+    if ((elmos_p000_5e79a0177f062b7b < 0)) {
         return 0;
     }
-    return elmos_checked_add(subtotal, tax);
+    return elmos_checked_add(elmos_p000_5e79a0177f062b7b, elmos_p001_2e4719cf7d0e3db1);
 }

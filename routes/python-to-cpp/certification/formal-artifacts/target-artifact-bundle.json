@@ -1,0 +1,25 @@
+{
+  "route_key": "python-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 596,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:6da0fc50a310d2b1a9c147039e0404ea07617b0d1147440afda430c3a8c942ce"
+    },
+    {
+      "bytes": 416,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:48367a94f2858ddf5e3ea5522e2f0d19cc5c3c1eb7361ef973765fa8e4b0da01"
+    },
+    {
+      "bytes": 622,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:bc242e8aa516b14f05a8a4ad9133d9c7b349b294ce2af3852604f54726687fff"
+    }
+  ]
+}

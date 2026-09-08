@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:471c421870548610918088ce7f7e34853d89129a91f98e5c9a5ba746bb1d5d8b
-; formal-input-sha256: sha256:471c421870548610918088ce7f7e34853d89129a91f98e5c9a5ba746bb1d5d8b
+; formal_input_digest: sha256:41e9ad907a2f24c6aa278eb752f8f49e8de48b8931dbca836e4cee2ee5b8bd36
+; formal-input-sha256: sha256:41e9ad907a2f24c6aa278eb752f8f49e8de48b8931dbca836e4cee2ee5b8bd36
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -22,27 +22,27 @@
 (assert
  (= source_fallback target_fallback))
 (assert
- (let (($x2014 (and source_left source_right)))
- (let (($x1187 (or $x2014 source_fallback)))
- (let ((?x67 (ite $x1187 0 0)))
- (let ((?x85 (ite $x2014 0 0)))
- (let ((?x4211 (ite source_left 0 0)))
- (let (($x3430 (and (distinct 0 0) true)))
- (let ((?x1837 (ite $x3430 0 ?x4211)))
- (let ((?x1694 (ite (and (distinct ?x1837 0) true) ?x1837 ?x85)))
- (let ((?x16 (ite (and (distinct ?x1694 0) true) ?x1694 ?x67)))
- (= ?x16 0)))))))))))
+ (let (($x22 (and source_left source_right)))
+ (let (($x16 (or $x22 source_fallback)))
+ (let ((?x12 (ite $x16 0 0)))
+ (let ((?x14 (ite $x22 0 0)))
+ (let ((?x20 (ite source_left 0 0)))
+ (let (($x18 (and (distinct 0 0) true)))
+ (let ((?x17 (ite $x18 0 ?x20)))
+ (let ((?x21 (ite (and (distinct ?x17 0) true) ?x17 ?x14)))
+ (let ((?x55 (ite (and (distinct ?x21 0) true) ?x21 ?x12)))
+ (= ?x55 0)))))))))))
 (assert
- (let (($x2014 (and source_left source_right)))
- (let (($x1187 (or $x2014 source_fallback)))
- (let ((?x67 (ite $x1187 0 0)))
- (let ((?x85 (ite $x2014 0 0)))
- (let ((?x4211 (ite source_left 0 0)))
- (let (($x3430 (and (distinct 0 0) true)))
- (let ((?x1837 (ite $x3430 0 ?x4211)))
- (let ((?x1694 (ite (and (distinct ?x1837 0) true) ?x1837 ?x85)))
- (let ((?x16 (ite (and (distinct ?x1694 0) true) ?x1694 ?x67)))
- (= ?x16 0)))))))))))
+ (let (($x22 (and source_left source_right)))
+ (let (($x16 (or $x22 source_fallback)))
+ (let ((?x12 (ite $x16 0 0)))
+ (let ((?x14 (ite $x22 0 0)))
+ (let ((?x20 (ite source_left 0 0)))
+ (let (($x18 (and (distinct 0 0) true)))
+ (let ((?x17 (ite $x18 0 ?x20)))
+ (let ((?x21 (ite (and (distinct ?x17 0) true) ?x17 ?x14)))
+ (let ((?x55 (ite (and (distinct ?x21 0) true) ?x21 ?x12)))
+ (= ?x55 0)))))))))))
 (assert
  false)
 (check-sat)

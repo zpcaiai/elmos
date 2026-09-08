@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:e17355c36ac665c2df8a3678dedadf900087653c950f891a8f354d60a7e9a9aa
-; formal-input-sha256: sha256:e17355c36ac665c2df8a3678dedadf900087653c950f891a8f354d60a7e9a9aa
+; formal_input_digest: sha256:e790a50d36bb10c13352ad503e1fc513cc89577cfd461f5626a1da51d1419808
+; formal-input-sha256: sha256:e790a50d36bb10c13352ad503e1fc513cc89577cfd461f5626a1da51d1419808
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -18,25 +18,25 @@
 (assert
  (= source_tax target_tax))
 (assert
- (let ((?x4997 (bvadd ((_ sign_extend 64) source_subtotal) ((_ sign_extend 64) source_tax))))
- (let ((?x680 ((_ extract 63 0) ?x4997)))
- (let ((?x527 (ite (and (distinct ?x4997 ((_ sign_extend 64) ?x680)) true) 1 0)))
- (let ((?x209 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x4588 (and (distinct ?x209 0) true)))
- (let (($x421 (bvsgt (_ bv0 64) source_subtotal)))
- (let ((?x4712 (ite $x421 0 (ite $x4588 ?x209 ?x527))))
- (let ((?x1447 (ite $x4588 ?x209 ?x4712)))
- (= ?x1447 0))))))))))
+ (let ((?x15 (bvadd ((_ sign_extend 64) source_subtotal) ((_ sign_extend 64) source_tax))))
+ (let ((?x16 ((_ extract 63 0) ?x15)))
+ (let ((?x20 (ite (and (distinct ?x15 ((_ sign_extend 64) ?x16)) true) 1 0)))
+ (let ((?x12 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x21 (and (distinct ?x12 0) true)))
+ (let (($x23 (bvsgt (_ bv0 64) source_subtotal)))
+ (let ((?x28 (ite $x23 0 (ite $x21 ?x12 ?x20))))
+ (let ((?x34 (ite $x21 ?x12 ?x28)))
+ (= ?x34 0))))))))))
 (assert
- (let ((?x4997 (bvadd ((_ sign_extend 64) source_subtotal) ((_ sign_extend 64) source_tax))))
- (let ((?x680 ((_ extract 63 0) ?x4997)))
- (let ((?x527 (ite (and (distinct ?x4997 ((_ sign_extend 64) ?x680)) true) 1 0)))
- (let ((?x209 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x4588 (and (distinct ?x209 0) true)))
- (let (($x421 (bvsgt (_ bv0 64) source_subtotal)))
- (let ((?x4712 (ite $x421 0 (ite $x4588 ?x209 ?x527))))
- (let ((?x1447 (ite $x4588 ?x209 ?x4712)))
- (= ?x1447 0))))))))))
+ (let ((?x15 (bvadd ((_ sign_extend 64) source_subtotal) ((_ sign_extend 64) source_tax))))
+ (let ((?x16 ((_ extract 63 0) ?x15)))
+ (let ((?x20 (ite (and (distinct ?x15 ((_ sign_extend 64) ?x16)) true) 1 0)))
+ (let ((?x12 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x21 (and (distinct ?x12 0) true)))
+ (let (($x23 (bvsgt (_ bv0 64) source_subtotal)))
+ (let ((?x28 (ite $x23 0 (ite $x21 ?x12 ?x20))))
+ (let ((?x34 (ite $x21 ?x12 ?x28)))
+ (= ?x34 0))))))))))
 (assert
  false)
 (check-sat)

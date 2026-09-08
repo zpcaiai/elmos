@@ -1,16 +1,34 @@
 {
   "artifact_refs": [
     {
+      "bytes": 11197,
+      "path": "identifier-plan.json",
+      "role": "identifier-plan",
+      "sha256": "sha256:6b33aea6e20fada3ee9d945e1d14c3c28a6d3e47f3971e5eea7c8728a3da4975"
+    },
+    {
+      "bytes": 7788,
+      "path": "target-semantic-ir.raw.json",
+      "role": "raw-target-ir",
+      "sha256": "sha256:f3ad993569ecc312cf69d703a2a809965483aff3b890d2dbfd609fd397bb14de"
+    },
+    {
+      "bytes": 7001,
+      "path": "target-semantic-ir.normalized.json",
+      "role": "normalized-target-ir",
+      "sha256": "sha256:e3ce05453340663151ac7516e06c953185606d7dd36768b716cfa69ddb2c6c71"
+    },
+    {
       "bytes": 8431,
       "path": "source-module-semantic-ir.json",
       "role": "source-module-semantic-ir",
-      "sha256": "sha256:fd4ddddbb720b2740d03d5e9d3efef26a8db654391525a9c0f167e0c59a04533"
+      "sha256": "sha256:5db1f9b88af1972c720e18fe04e053543a73d1acca49c8b52fa9610f8fdbf3b5"
     },
     {
-      "bytes": 6960,
+      "bytes": 7001,
       "path": "target-module-semantic-ir.json",
       "role": "target-module-semantic-ir",
-      "sha256": "sha256:c71e1809f49ed9ca0bcfb0f96d82275d323b5ac160d1551278d63fbb9b598a28"
+      "sha256": "sha256:e3ce05453340663151ac7516e06c953185606d7dd36768b716cfa69ddb2c6c71"
     },
     {
       "bytes": 1881,
@@ -31,10 +49,10 @@
       "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
     },
     {
-      "bytes": 1299,
+      "bytes": 2086,
       "path": "migrated.m",
       "role": "emitted-target-module-artifact",
-      "sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09"
+      "sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594"
     },
     {
       "bytes": 2794,
@@ -43,130 +61,130 @@
       "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
     },
     {
-      "bytes": 1265,
+      "bytes": 3903,
       "path": "module-formal-input.json",
       "role": "module-formal-input",
-      "sha256": "sha256:2a5701dbc774a0f51f032e6afacb36f43c06383035b07bd9256ec28cd14f50a1"
+      "sha256": "sha256:7c971b258b83e356f852fe79b0d6d77d9ee2861ed0d5e814c9c5ee7a0fe23ee9"
     },
     {
-      "bytes": 42830,
+      "bytes": 43098,
       "path": "source-module-inventory.json",
       "role": "source-module-inventory",
-      "sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9"
+      "sha256": "sha256:1428370a54a201aed62cc969a01cd6d39f0f638aa35c42d93805149d0660dce4"
     },
     {
-      "bytes": 3682,
+      "bytes": 4115,
       "path": "target-module-inventory.json",
       "role": "target-module-inventory",
-      "sha256": "sha256:b7ba6c1df6406b88816fadf4b0376578b51b92afd8627f6a744ad13a1fa106ab"
+      "sha256": "sha256:bd92aa3c008ecf13471900c02b49b61132cbd9ab702f620a1432e8b280d1996b"
     },
     {
-      "bytes": 10747,
+      "bytes": 14326,
       "path": "whole-file-module-closure.json",
       "role": "whole-file-module-closure",
-      "sha256": "sha256:a90566dd1a62327ae00631c210f1d5090b59250352839c609b8b3d26e0ef4d73"
+      "sha256": "sha256:67e7a082fdfbde61c290b0a12efda61a605182eccf1fc20cc3a34345247b70ac"
     },
     {
-      "bytes": 1365,
+      "bytes": 2608,
       "path": "formal-function-000-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7"
+      "sha256": "sha256:5c2525601290d1de18384911f551cf4cec1420c4aa6b3d74c14cf4f7e24a57c6"
     },
     {
-      "bytes": 1291,
+      "bytes": 1275,
       "path": "formal-function-000.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e"
+      "sha256": "sha256:cc51cc2121c7237479cba5bd3cdaf92b3729bf4bfd6b9de6429bfb45deb50819"
     },
     {
       "bytes": 2418,
       "path": "formal-function-000-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:d2a902f50d59f1b1070858f8f43c41828d039069bda389fd8f6de1eb95365fc3"
+      "sha256": "sha256:e19e5c1fe2f16d3bbbf92f30882e8f932be1d52f841f246969dac6f45ab9452f"
     },
     {
-      "bytes": 1822,
+      "bytes": 3072,
       "path": "formal-function-001-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39"
+      "sha256": "sha256:dca6224682607f8cedcf75acf60bfc493562bc2fd6ba41cade5d955b2b848b50"
     },
     {
-      "bytes": 2025,
+      "bytes": 1985,
       "path": "formal-function-001.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb"
+      "sha256": "sha256:93366798d86be73dcfbcff478262fbf321fd81ba15a7a62b5032aad6431297b3"
     },
     {
       "bytes": 2427,
       "path": "formal-function-001-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:45561049ffbfd1b03fb8b88c2e4bb68c655b0b4a46298860047a9fa44daf84a9"
+      "sha256": "sha256:02e73c1f5dc530c6957f4007cb95bdad17962ac2c09a8c9845219f10a6e29f06"
     },
     {
-      "bytes": 2221,
+      "bytes": 3565,
       "path": "formal-function-002-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0"
+      "sha256": "sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80"
     },
     {
-      "bytes": 1907,
+      "bytes": 1873,
       "path": "formal-function-002.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3"
+      "sha256": "sha256:2f6dd01e5b61dfa515a47952abd3d3f5bb7ad63e1c50c82bf1489d0bed4db71b"
     },
     {
       "bytes": 2454,
       "path": "formal-function-002-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:381e993c6c0d1cc8ed05e374c7433a8681b73d750ffe0640a9d86e9144811fcb"
+      "sha256": "sha256:8cee253b58f2d1a2739866386afc9fd207e974ededac7f920648f40f30c93100"
     },
     {
-      "bytes": 2227,
+      "bytes": 3574,
       "path": "formal-function-003-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244"
+      "sha256": "sha256:a1617374743b25ac19277a36ee6f139e8d9719a817c3db1dc002fdba37c4eb27"
     },
     {
-      "bytes": 2593,
+      "bytes": 2551,
       "path": "formal-function-003.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05"
+      "sha256": "sha256:2cd72710614ae403e2f62c40c91d90e91febcb7693a019772386bcad4162ed8e"
     },
     {
       "bytes": 2738,
       "path": "formal-function-003-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:8789e4ab31a1a56873d15ec0bc9ffbd5f1746bdb3db2c6006375b32bb6777ad8"
+      "sha256": "sha256:dec962564a2ca583da53946f6084f93e73bd3d4711464b4021a15e8654ab3198"
     },
     {
-      "bytes": 1381,
+      "bytes": 2630,
       "path": "formal-function-004-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545"
+      "sha256": "sha256:61ade4fb3b196e04ddd5ec5a5a7c4adca66732e3395fb7b867226cbe835fc992"
     },
     {
-      "bytes": 1807,
+      "bytes": 1771,
       "path": "formal-function-004.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605"
+      "sha256": "sha256:213397b3fa053d0ded313443f0dae9fa4518bf2f10cd7d55766889743435ff42"
     },
     {
       "bytes": 2424,
       "path": "formal-function-004-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:eff2b53debe8a2629deb663f01cb36a28656b318726b922a37430acaffa233f0"
+      "sha256": "sha256:80768badcd84dcd7afe2fb81b84bcca82876fcc57840ca1a33067924a14c0f59"
     },
     {
-      "bytes": 9548,
+      "bytes": 9768,
       "path": "source-module-validation.json",
       "role": "source-module-validation",
-      "sha256": "sha256:c3f24aca8ca8739d95e7f01e1afa306f8bfea536de29d8069f414769494a1140"
+      "sha256": "sha256:6d74cac081035ce8f1a16612171afbdb2f053277ea4811c2f2d55eeb906c0c97"
     },
     {
-      "bytes": 8093,
+      "bytes": 8313,
       "path": "target-module-validation.json",
       "role": "target-module-validation",
-      "sha256": "sha256:f27c67c52d8a2beb5eaae922372a1a2e6fa5fe368d7d97a090b20fde23d14d8d"
+      "sha256": "sha256:68760d1af8035eb26300261c6397288882bc0761e227a900bea8afd1f14053d5"
     }
   ],
   "certification_status": "NOT_CERTIFIED",
@@ -337,11 +355,11 @@
                 "start_byte": 632
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0",
-              "target_chunk_id": "sha256:ce6b2858d13d5d8818cdf893be10774ddd762a9f71baad91a47d74bc6ee5c4df",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0",
+              "target_chunk_id": "sha256:34a53c2222eb4a88a239edaa22934cb03199a2b5acfdc4dc848783a890856f61",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 627,
+                "end_byte": 738,
                 "file": "migrated.m",
                 "start_byte": 563
               }
@@ -358,13 +376,13 @@
                 "start_byte": 642
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:e4d1905567e9d3d69fb33cb30277857cab70b83285c5c16008308269d70a9695",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:e06f8bc635110b59b2c472f8ccc138d217d267a5382488d90c3cd2f01cd86e45",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 582,
+                "end_byte": 626,
                 "file": "migrated.m",
-                "start_byte": 573
+                "start_byte": 594
               }
             },
             {
@@ -379,13 +397,13 @@
                 "start_byte": 656
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:e8d46c6023e1397999a7ba7b67dc234a5a2b74a128a6f8aab8746de940800684",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:ba36315fd9758b9a7f4c0c999e87f0ce0edc57c61c7852fd5abae012c00199b5",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 594,
+                "end_byte": 660,
                 "file": "migrated.m",
-                "start_byte": 584
+                "start_byte": 628
               }
             },
             {
@@ -400,13 +418,13 @@
                 "start_byte": 685
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0",
-              "target_chunk_id": "sha256:e33a099b977fddd42213fa1a056cb483d3991439bf7794092e303727a90bf879",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0",
+              "target_chunk_id": "sha256:17979dddd402b8b5141a05a98b2a24accc448ab37031c24e3ab49f16cabbbbf7",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 624,
+                "end_byte": 735,
                 "file": "migrated.m",
-                "start_byte": 602
+                "start_byte": 668
               }
             },
             {
@@ -421,13 +439,13 @@
                 "start_byte": 692
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:da75a8e730dcb152bd4a009af2b9d5047b5c18a993e51474917bbf9154961b74",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:051cdbab53f4fde04abf5e588aae2caab7bbd8aef6e5ef8d5e8e81c58187e396",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 623,
+                "end_byte": 734,
                 "file": "migrated.m",
-                "start_byte": 610
+                "start_byte": 676
               }
             },
             {
@@ -442,13 +460,13 @@
                 "start_byte": 692
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:3832deef6bf38b78842825febe69f2d02d9456c322bee8d2a021ac29b116331b",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:977a47f2ebe038eca4313ad2ba2ee247f28af13ef20e536abad37fa96dcbae30",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 614,
+                "end_byte": 703,
                 "file": "migrated.m",
-                "start_byte": 610
+                "start_byte": 676
               }
             },
             {
@@ -463,13 +481,13 @@
                 "start_byte": 700
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:dc1d4a5270c58826218faf6e521dbf139f4f47eca162033cac8fd80d49e302e9",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:13d3c7fe7443137d511ae2959c8150be77e6f67a8a0aeb0cae85b744327ca819",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 623,
+                "end_byte": 734,
                 "file": "migrated.m",
-                "start_byte": 618
+                "start_byte": 707
               }
             }
           ],
@@ -501,8 +519,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 1299,
-              "artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
+              "artifact_byte_count": 2086,
+              "artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
               "logical_file": "migrated.m",
               "node_count": 7,
               "rules": [
@@ -549,13 +567,13 @@
           },
           "formal_input": {
             "path": "formal-function-000-input.json",
-            "sha256": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7"
+            "sha256": "sha256:5c2525601290d1de18384911f551cf4cec1420c4aa6b3d74c14cf4f7e24a57c6"
           },
-          "formal_input_digest": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7",
+          "formal_input_digest": "sha256:5c2525601290d1de18384911f551cf4cec1420c4aa6b3d74c14cf4f7e24a57c6",
           "formal_input_path": "formal-function-000-input.json",
-          "formal_input_sha256": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7",
+          "formal_input_sha256": "sha256:5c2525601290d1de18384911f551cf4cec1420c4aa6b3d74c14cf4f7e24a57c6",
           "formal_result_path": "formal-function-000-result.json",
-          "formal_result_sha256": "sha256:d2a902f50d59f1b1070858f8f43c41828d039069bda389fd8f6de1eb95365fc3",
+          "formal_result_sha256": "sha256:e19e5c1fe2f16d3bbbf92f30882e8f932be1d52f841f246969dac6f45ab9452f",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
@@ -594,11 +612,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-000.smt2",
-            "sha256": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e"
+            "sha256": "sha256:cc51cc2121c7237479cba5bd3cdaf92b3729bf4bfd6b9de6429bfb45deb50819"
           },
-          "solver_input_digest": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e",
+          "solver_input_digest": "sha256:cc51cc2121c7237479cba5bd3cdaf92b3729bf4bfd6b9de6429bfb45deb50819",
           "solver_input_path": "formal-function-000.smt2",
-          "solver_input_sha256": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e",
+          "solver_input_sha256": "sha256:cc51cc2121c7237479cba5bd3cdaf92b3729bf4bfd6b9de6429bfb45deb50819",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "both",
           "version": "4.16.0"
@@ -777,13 +795,13 @@
                 "start_byte": 0
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0",
-              "target_chunk_id": "sha256:2d9556cf1dcaaa78e3dda13d49599e7e63a8b25bc2641b5e35b3f4322cd5383d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0",
+              "target_chunk_id": "sha256:75eaabb24848329e2123f1e2694adea3961cd1676dc5935b2af9f37a993d3f93",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 780,
+                "end_byte": 1012,
                 "file": "migrated.m",
-                "start_byte": 629
+                "start_byte": 740
               }
             },
             {
@@ -798,13 +816,13 @@
                 "start_byte": 15
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:06b17384005bcebdaceda977d560af9252074c393ac66076701718d040e6bb00",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:d7229a8a488250aebb4c700c0c3aac08410a6a520e20a17152b9ad0d5c8b69ae",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 667,
+                "end_byte": 813,
                 "file": "migrated.m",
-                "start_byte": 649
+                "start_byte": 776
               }
             },
             {
@@ -819,13 +837,13 @@
                 "start_byte": 34
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:fd2b70f7ad330030166925596e7c3634e187800b28e830f2a921dc9b1d28c8a3",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:930d9700809b4d5f760e91b645f266f766ec6273f158239f8250a8efddc0b4f7",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 682,
+                "end_byte": 852,
                 "file": "migrated.m",
-                "start_byte": 669
+                "start_byte": 815
               }
             },
             {
@@ -840,13 +858,13 @@
                 "start_byte": 63
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0",
-              "target_chunk_id": "sha256:3173d73e5097db93804c914e91f0e17b6b77c50e0948c3d40b2a4a8019009adc",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0",
+              "target_chunk_id": "sha256:5c12b55a3bbe2548a3ac3d79575eb2886eecf1da24aae4645e0f2c6ed8cc1f11",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 735,
+                "end_byte": 924,
                 "file": "migrated.m",
-                "start_byte": 690
+                "start_byte": 860
               }
             },
             {
@@ -861,13 +879,13 @@
                 "start_byte": 66
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:bc8ac666dca96a591f1d100219abf2497107b32d0d9db64def1f67ccd4fbddd2",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:f504aee14628fb3271b99d5019c74aaed590083f4126d542b97ad15eb910ead0",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 707,
+                "end_byte": 896,
                 "file": "migrated.m",
-                "start_byte": 695
+                "start_byte": 865
               }
             },
             {
@@ -882,13 +900,13 @@
                 "start_byte": 66
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:af834b1064bfe08542f84e30addf18bbf52bce00f4e46279cc80b99f21fcf306",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:fc25cf662b0254b6585c0bf33f54ff0c5d92cf5d9deb5249af20430b72214f75",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 703,
+                "end_byte": 892,
                 "file": "migrated.m",
-                "start_byte": 695
+                "start_byte": 865
               }
             },
             {
@@ -903,13 +921,13 @@
                 "start_byte": 77
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:a934df6c6ed02b305cc13ff8011af1094c661b51325491d840018c01769397d8",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:41f38f0adeea0223c3f6b519dd13448d9cd1d3b19d0c2ed9b7f85274575f614e",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 707,
+                "end_byte": 896,
                 "file": "migrated.m",
-                "start_byte": 706
+                "start_byte": 895
               }
             },
             {
@@ -924,13 +942,13 @@
                 "start_byte": 89
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:5efbab5e0d33c569abf839d7105bf8433866318d5073b32a49a60d8f0cda5655",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:df44616fda4ba4b0d046f6e8e12470b4156abf2780e27e7bd0857b43bb1aab8a",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 728,
+                "end_byte": 917,
                 "file": "migrated.m",
-                "start_byte": 720
+                "start_byte": 909
               }
             },
             {
@@ -945,13 +963,13 @@
                 "start_byte": 96
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:1a51a58074bc2ce2ecfdc2b04a255fa9669e3c53fbcfaf7feb55a7141b548400",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:e2a987e25f39be67d482cac65b4a6a7073bd771930e95ee480b6246b5df80242",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 728,
+                "end_byte": 917,
                 "file": "migrated.m",
-                "start_byte": 727
+                "start_byte": 916
               }
             },
             {
@@ -966,13 +984,13 @@
                 "start_byte": 108
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1",
-              "target_chunk_id": "sha256:c326efaad71f04ba35603c285a48d5ff1c270db062892c09162362ba6e1cd24c",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1",
+              "target_chunk_id": "sha256:979a0973c9b6f60640beafe3dd1899b246133f121b32d4becc0915925546e3fe",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 777,
+                "end_byte": 1009,
                 "file": "migrated.m",
-                "start_byte": 740
+                "start_byte": 929
               }
             },
             {
@@ -987,13 +1005,13 @@
                 "start_byte": 115
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/expression",
-              "target_chunk_id": "sha256:91c1133faabc80b85f3f96b7e4adff4c504d542285e9f6f373b6093cf7129a4a",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/expression",
+              "target_chunk_id": "sha256:f2513255e05aedcac24509a5d3a36b14138183cf8f0778fab74a48612b269a67",
               "target_semantic_pointer": "/functions/0/body/1/expression",
               "target_span": {
-                "end_byte": 777,
+                "end_byte": 1009,
                 "file": "migrated.m",
-                "start_byte": 747
+                "start_byte": 936
               }
             },
             {
@@ -1008,13 +1026,13 @@
                 "start_byte": 115
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/expression/left",
-              "target_chunk_id": "sha256:f3968516082d45677aeb58ca365a0472344e687b759d26dc36729a1973e08c9b",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/expression/left",
+              "target_chunk_id": "sha256:779bcbd739c41bafc4a2f8675e940e38d0600a33df4c118cb8b8bfe8e7f50b74",
               "target_semantic_pointer": "/functions/0/body/1/expression/left",
               "target_span": {
-                "end_byte": 771,
+                "end_byte": 979,
                 "file": "migrated.m",
-                "start_byte": 763
+                "start_byte": 952
               }
             },
             {
@@ -1029,13 +1047,13 @@
                 "start_byte": 126
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/expression/right",
-              "target_chunk_id": "sha256:811f88f0ed89929d82fb361b4adb4cb3d9d47d34cceb6ff2d7dcd199320c3a1b",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/expression/right",
+              "target_chunk_id": "sha256:e6b904cf149852abe5cedff8b7f8bf300166e7f905930a34d54f104e8dac4e03",
               "target_semantic_pointer": "/functions/0/body/1/expression/right",
               "target_span": {
-                "end_byte": 776,
+                "end_byte": 1008,
                 "file": "migrated.m",
-                "start_byte": 773
+                "start_byte": 981
               }
             }
           ],
@@ -1067,8 +1085,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 1299,
-              "artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
+              "artifact_byte_count": 2086,
+              "artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
               "logical_file": "migrated.m",
               "node_count": 13,
               "rules": [
@@ -1115,13 +1133,13 @@
           },
           "formal_input": {
             "path": "formal-function-001-input.json",
-            "sha256": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39"
+            "sha256": "sha256:dca6224682607f8cedcf75acf60bfc493562bc2fd6ba41cade5d955b2b848b50"
           },
-          "formal_input_digest": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39",
+          "formal_input_digest": "sha256:dca6224682607f8cedcf75acf60bfc493562bc2fd6ba41cade5d955b2b848b50",
           "formal_input_path": "formal-function-001-input.json",
-          "formal_input_sha256": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39",
+          "formal_input_sha256": "sha256:dca6224682607f8cedcf75acf60bfc493562bc2fd6ba41cade5d955b2b848b50",
           "formal_result_path": "formal-function-001-result.json",
-          "formal_result_sha256": "sha256:45561049ffbfd1b03fb8b88c2e4bb68c655b0b4a46298860047a9fa44daf84a9",
+          "formal_result_sha256": "sha256:02e73c1f5dc530c6957f4007cb95bdad17962ac2c09a8c9845219f10a6e29f06",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
@@ -1160,11 +1178,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-001.smt2",
-            "sha256": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb"
+            "sha256": "sha256:93366798d86be73dcfbcff478262fbf321fd81ba15a7a62b5032aad6431297b3"
           },
-          "solver_input_digest": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb",
+          "solver_input_digest": "sha256:93366798d86be73dcfbcff478262fbf321fd81ba15a7a62b5032aad6431297b3",
           "solver_input_path": "formal-function-001.smt2",
-          "solver_input_sha256": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb",
+          "solver_input_sha256": "sha256:93366798d86be73dcfbcff478262fbf321fd81ba15a7a62b5032aad6431297b3",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "calculate",
           "version": "4.16.0"
@@ -1368,13 +1386,13 @@
                 "start_byte": 133
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0",
-              "target_chunk_id": "sha256:c8ce4d079c83d7e69cd43b69cd540c5bfd58fe68465359fd9922008f363d509b",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0",
+              "target_chunk_id": "sha256:6008cf3a9b8aa38f7bbf20d208977577965685e99f3f3970ac0a274166bf80e4",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 992,
+                "end_byte": 1452,
                 "file": "migrated.m",
-                "start_byte": 782
+                "start_byte": 1014
               }
             },
             {
@@ -1389,13 +1407,13 @@
                 "start_byte": 144
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:4e8d6cba03a452c6104eac08bff4be23a8d7e8d6e81dd7b33d5c5afae316f469",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:c5c530eff59e5a63a5c67b5c5bc810ecf4261f0d33f03f4badec953259ff2da7",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 813,
+                "end_byte": 1087,
                 "file": "migrated.m",
-                "start_byte": 798
+                "start_byte": 1050
               }
             },
             {
@@ -1410,13 +1428,13 @@
                 "start_byte": 160
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:feeaafd89693dd61ad1e55b1b2547572d53c3eabbcb2d3e5e76475e4b0a9ccf1",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:aacac42899558c1d07e7dea428d3c22e6c775fcb44799d26dfc66c37dd65658a",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 832,
+                "end_byte": 1126,
                 "file": "migrated.m",
-                "start_byte": 815
+                "start_byte": 1089
               }
             },
             {
@@ -1431,13 +1449,13 @@
                 "start_byte": 178
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:f0d05a07ace06f933139b0abfe986bd5e66f18495d2c7ad967cf7c69011a4789",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:ea8dbeac4659f549217a5ddf73cdc7caf98e15dedca23d0028808817b4d17e75",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 851,
+                "end_byte": 1165,
                 "file": "migrated.m",
-                "start_byte": 834
+                "start_byte": 1128
               }
             },
             {
@@ -1452,13 +1470,13 @@
                 "start_byte": 211
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0",
-              "target_chunk_id": "sha256:d400c3ff35b9b373d58b4d52651e440afba96f9b6b0b5586607e0b1779693f7d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0",
+              "target_chunk_id": "sha256:af840314cd33128285efc93c46a1e4ccdb94fcb79525c8728d4c369e106cb31a",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 913,
+                "end_byte": 1289,
                 "file": "migrated.m",
-                "start_byte": 859
+                "start_byte": 1173
               }
             },
             {
@@ -1473,13 +1491,13 @@
                 "start_byte": 214
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:b0cca7fc28dbef2331fb61d6fc703e48533752f640930b8b27c67cd0e42a08da",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:901ee75f6515f997911f0c5d2379e84bcf66e4bdd41b8cd4734bca4512c7d5d9",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 879,
+                "end_byte": 1235,
                 "file": "migrated.m",
-                "start_byte": 864
+                "start_byte": 1178
               }
             },
             {
@@ -1494,13 +1512,13 @@
                 "start_byte": 214
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:5d25f7f9956160c15937f5af94076e0ada894f9b518ac8c6fd5e6b2fa508ff43",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:e353ffefe02a92a9bb90857333599b8a3a0a8c2980cc6cc35e621a69923c587f",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 869,
+                "end_byte": 1205,
                 "file": "migrated.m",
-                "start_byte": 864
+                "start_byte": 1178
               }
             },
             {
@@ -1515,13 +1533,13 @@
                 "start_byte": 222
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:de10d7a8c8a841d259d70d06f4440a2e72cc2fccec9509f0466fe8c781a44ad7",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:618b0488c9d7f106c25bbee3fd7cdfe369694cea65cba7a50a6a348e3e550810",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 879,
+                "end_byte": 1235,
                 "file": "migrated.m",
-                "start_byte": 872
+                "start_byte": 1208
               }
             },
             {
@@ -1536,13 +1554,13 @@
                 "start_byte": 240
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:b29008440949061027faeef901442459b971f79f12ff0777bea3283f5d0606c1",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:4915e3ace0c88ccda8708756beec06b90e7ad1dcd5c6a9bd8d583f8fd281a4a2",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 906,
+                "end_byte": 1282,
                 "file": "migrated.m",
-                "start_byte": 892
+                "start_byte": 1248
               }
             },
             {
@@ -1557,13 +1575,13 @@
                 "start_byte": 247
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:f234795c7ceff8c8e429c79fce2fc8060d1df7a40da581527afdd8d7650b3ebe",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:cd30ec72b4258496d44a9a565cb6579a3a908f166d36aeee7ee617117c96bfef",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 906,
+                "end_byte": 1282,
                 "file": "migrated.m",
-                "start_byte": 899
+                "start_byte": 1255
               }
             },
             {
@@ -1578,13 +1596,13 @@
                 "start_byte": 265
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1",
-              "target_chunk_id": "sha256:5e75f155c75913abdeea59c8f9d517cfea1f7fc118e8bd94259399c564fe6260",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1",
+              "target_chunk_id": "sha256:81269f60711d42414ff10c41d8b753e3922bf2a0e0c1621a24a3f45b7aeaef45",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 972,
+                "end_byte": 1410,
                 "file": "migrated.m",
-                "start_byte": 918
+                "start_byte": 1294
               }
             },
             {
@@ -1599,13 +1617,13 @@
                 "start_byte": 268
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:e9db6d7f6bb6bdf9c785857f6a07a1a4a2fa8a83dfb751f85d6c287fb449a513",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:801dd2cf0d90160affe24097d3bdd40d053554aee97c908eefb587219d1aa287",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 938,
+                "end_byte": 1356,
                 "file": "migrated.m",
-                "start_byte": 923
+                "start_byte": 1299
               }
             },
             {
@@ -1620,13 +1638,13 @@
                 "start_byte": 268
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:952d9dd4c352c40ef11d6732fe83d6d09805d1fbe07db4fd09aa80fcd3b8e1be",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:115441d07ab47c63ce838f390d65db59457c99f08e8bf4ac9a5acf9e6e10af9c",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 928,
+                "end_byte": 1326,
                 "file": "migrated.m",
-                "start_byte": 923
+                "start_byte": 1299
               }
             },
             {
@@ -1641,13 +1659,13 @@
                 "start_byte": 276
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:9dab7d898a17484607196a88301881f2e483201d19deccb8986f310c587c5be0",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:4021c5f2fb17df219815bbb8497e5909054c56e7a6e449db16c1479473dfd9c2",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 938,
+                "end_byte": 1356,
                 "file": "migrated.m",
-                "start_byte": 931
+                "start_byte": 1329
               }
             },
             {
@@ -1662,13 +1680,13 @@
                 "start_byte": 294
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:1861c0c13abbb73328872cbf0b4f97a5c11664418783f0cd0c97a7706653b008",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:9c763e5c349c49335ddf3af036d1673424200e465d52bd509ee676aee22d50a0",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 965,
+                "end_byte": 1403,
                 "file": "migrated.m",
-                "start_byte": 951
+                "start_byte": 1369
               }
             },
             {
@@ -1683,13 +1701,13 @@
                 "start_byte": 301
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:c78a1bba957cad11c993562157995a0bf9a8787ed756a350bc12085f0dfbfa70",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:7845367bafddd2f47e188e3fe4a1559e08375436cf3276232c15ff88242859d9",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 965,
+                "end_byte": 1403,
                 "file": "migrated.m",
-                "start_byte": 958
+                "start_byte": 1376
               }
             },
             {
@@ -1704,13 +1722,13 @@
                 "start_byte": 319
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/2",
-              "target_chunk_id": "sha256:3bec9f112594273e9168374033d31c07dfe062179a6140fa7a6c714ddbf43580",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/2",
+              "target_chunk_id": "sha256:547816fd1bcb4e1e8eac454afc0715918d0f0f74f071d5d09ebb19b61a4927df",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 989,
+                "end_byte": 1449,
                 "file": "migrated.m",
-                "start_byte": 977
+                "start_byte": 1415
               }
             },
             {
@@ -1725,13 +1743,13 @@
                 "start_byte": 326
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:1f457e6501b2da26409b1436a9da8d0ec4fda5e4444362000b760e06b72fcd6d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:3014a928ac001989778b64221ea20a89a9867909aa2033e5fc2e5987721028bd",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 989,
+                "end_byte": 1449,
                 "file": "migrated.m",
-                "start_byte": 984
+                "start_byte": 1422
               }
             }
           ],
@@ -1763,8 +1781,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 1299,
-              "artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
+              "artifact_byte_count": 2086,
+              "artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
               "logical_file": "migrated.m",
               "node_count": 18,
               "rules": [
@@ -1812,13 +1830,13 @@
           },
           "formal_input": {
             "path": "formal-function-002-input.json",
-            "sha256": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0"
+            "sha256": "sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80"
           },
-          "formal_input_digest": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0",
+          "formal_input_digest": "sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80",
           "formal_input_path": "formal-function-002-input.json",
-          "formal_input_sha256": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0",
+          "formal_input_sha256": "sha256:4b4bf49c3df4c25aab3ccc0500e51c78fb7bc24a0287908ecb9a35997b002f80",
           "formal_result_path": "formal-function-002-result.json",
-          "formal_result_sha256": "sha256:381e993c6c0d1cc8ed05e374c7433a8681b73d750ffe0640a9d86e9144811fcb",
+          "formal_result_sha256": "sha256:8cee253b58f2d1a2739866386afc9fd207e974ededac7f920648f40f30c93100",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
@@ -1857,11 +1875,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-002.smt2",
-            "sha256": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3"
+            "sha256": "sha256:2f6dd01e5b61dfa515a47952abd3d3f5bb7ad63e1c50c82bf1489d0bed4db71b"
           },
-          "solver_input_digest": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3",
+          "solver_input_digest": "sha256:2f6dd01e5b61dfa515a47952abd3d3f5bb7ad63e1c50c82bf1489d0bed4db71b",
           "solver_input_path": "formal-function-002.smt2",
-          "solver_input_sha256": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3",
+          "solver_input_sha256": "sha256:2f6dd01e5b61dfa515a47952abd3d3f5bb7ad63e1c50c82bf1489d0bed4db71b",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clamp",
           "version": "4.16.0"
@@ -2069,13 +2087,13 @@
                 "start_byte": 420
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0",
-              "target_chunk_id": "sha256:662d0aae030ee27c09630fd84f3c0c86d79d70b3cc4b72631d5a7a97ab9aef7d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0",
+              "target_chunk_id": "sha256:6335c22b9a337ad7e032e337a2e3516cb27d6a5acdf30f618bb74ddcc9b3c3f9",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 1198,
+                "end_byte": 1880,
                 "file": "migrated.m",
-                "start_byte": 994
+                "start_byte": 1454
               }
             },
             {
@@ -2090,13 +2108,13 @@
                 "start_byte": 437
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:2506e5bcf8d5bba80e41d02b6d6514da4afebd0c4d5c925722d193f593b4ca33",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:edc8454015d9016bc50af03e0cf9b53a2cf1308d64b6dd2b2dcabc2040bc8da4",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 1025,
+                "end_byte": 1521,
                 "file": "migrated.m",
-                "start_byte": 1013
+                "start_byte": 1487
               }
             },
             {
@@ -2111,13 +2129,13 @@
                 "start_byte": 454
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:417b87df398a29f0cb2786e7bbd1be0f4b659c1684459a76ac04c3f7f00b9530",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:eae1fa939b3e4a08799f1657279a21daf462b4c2c1c28d5819366bd1a0283e28",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 1041,
+                "end_byte": 1557,
                 "file": "migrated.m",
-                "start_byte": 1027
+                "start_byte": 1523
               }
             },
             {
@@ -2132,13 +2150,13 @@
                 "start_byte": 473
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/2",
-              "target_chunk_id": "sha256:1d6c3cb014a875407f03c4bebffef254d651a585b14aaa304328e790f7366580",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:def515a211518f28f4cca5a3289bb5e0670053e36e3e28bc595d6e1d2b803fe4",
               "target_semantic_pointer": "/functions/0/parameters/2",
               "target_span": {
-                "end_byte": 1057,
+                "end_byte": 1593,
                 "file": "migrated.m",
-                "start_byte": 1043
+                "start_byte": 1559
               }
             },
             {
@@ -2153,13 +2171,13 @@
                 "start_byte": 508
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0",
-              "target_chunk_id": "sha256:d400c3ff35b9b373d58b4d52651e440afba96f9b6b0b5586607e0b1779693f7d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0",
+              "target_chunk_id": "sha256:af840314cd33128285efc93c46a1e4ccdb94fcb79525c8728d4c369e106cb31a",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 1119,
+                "end_byte": 1717,
                 "file": "migrated.m",
-                "start_byte": 1065
+                "start_byte": 1601
               }
             },
             {
@@ -2174,13 +2192,13 @@
                 "start_byte": 511
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition",
-              "target_chunk_id": "sha256:b0cca7fc28dbef2331fb61d6fc703e48533752f640930b8b27c67cd0e42a08da",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:901ee75f6515f997911f0c5d2379e84bcf66e4bdd41b8cd4734bca4512c7d5d9",
               "target_semantic_pointer": "/functions/0/body/0/condition",
               "target_span": {
-                "end_byte": 1085,
+                "end_byte": 1663,
                 "file": "migrated.m",
-                "start_byte": 1070
+                "start_byte": 1606
               }
             },
             {
@@ -2195,13 +2213,13 @@
                 "start_byte": 511
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/left",
-              "target_chunk_id": "sha256:5d25f7f9956160c15937f5af94076e0ada894f9b518ac8c6fd5e6b2fa508ff43",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:e353ffefe02a92a9bb90857333599b8a3a0a8c2980cc6cc35e621a69923c587f",
               "target_semantic_pointer": "/functions/0/body/0/condition/left",
               "target_span": {
-                "end_byte": 1075,
+                "end_byte": 1633,
                 "file": "migrated.m",
-                "start_byte": 1070
+                "start_byte": 1606
               }
             },
             {
@@ -2216,13 +2234,13 @@
                 "start_byte": 519
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/condition/right",
-              "target_chunk_id": "sha256:de10d7a8c8a841d259d70d06f4440a2e72cc2fccec9509f0466fe8c781a44ad7",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:618b0488c9d7f106c25bbee3fd7cdfe369694cea65cba7a50a6a348e3e550810",
               "target_semantic_pointer": "/functions/0/body/0/condition/right",
               "target_span": {
-                "end_byte": 1085,
+                "end_byte": 1663,
                 "file": "migrated.m",
-                "start_byte": 1078
+                "start_byte": 1636
               }
             },
             {
@@ -2237,13 +2255,13 @@
                 "start_byte": 537
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0",
-              "target_chunk_id": "sha256:b29008440949061027faeef901442459b971f79f12ff0777bea3283f5d0606c1",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:4915e3ace0c88ccda8708756beec06b90e7ad1dcd5c6a9bd8d583f8fd281a4a2",
               "target_semantic_pointer": "/functions/0/body/0/then/0",
               "target_span": {
-                "end_byte": 1112,
+                "end_byte": 1710,
                 "file": "migrated.m",
-                "start_byte": 1098
+                "start_byte": 1676
               }
             },
             {
@@ -2258,13 +2276,13 @@
                 "start_byte": 544
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/then/0/expression",
-              "target_chunk_id": "sha256:f234795c7ceff8c8e429c79fce2fc8060d1df7a40da581527afdd8d7650b3ebe",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:cd30ec72b4258496d44a9a565cb6579a3a908f166d36aeee7ee617117c96bfef",
               "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
               "target_span": {
-                "end_byte": 1112,
+                "end_byte": 1710,
                 "file": "migrated.m",
-                "start_byte": 1105
+                "start_byte": 1683
               }
             },
             {
@@ -2279,13 +2297,13 @@
                 "start_byte": 562
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1",
-              "target_chunk_id": "sha256:5e75f155c75913abdeea59c8f9d517cfea1f7fc118e8bd94259399c564fe6260",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1",
+              "target_chunk_id": "sha256:81269f60711d42414ff10c41d8b753e3922bf2a0e0c1621a24a3f45b7aeaef45",
               "target_semantic_pointer": "/functions/0/body/1",
               "target_span": {
-                "end_byte": 1178,
+                "end_byte": 1838,
                 "file": "migrated.m",
-                "start_byte": 1124
+                "start_byte": 1722
               }
             },
             {
@@ -2300,13 +2318,13 @@
                 "start_byte": 565
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition",
-              "target_chunk_id": "sha256:e9db6d7f6bb6bdf9c785857f6a07a1a4a2fa8a83dfb751f85d6c287fb449a513",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:801dd2cf0d90160affe24097d3bdd40d053554aee97c908eefb587219d1aa287",
               "target_semantic_pointer": "/functions/0/body/1/condition",
               "target_span": {
-                "end_byte": 1144,
+                "end_byte": 1784,
                 "file": "migrated.m",
-                "start_byte": 1129
+                "start_byte": 1727
               }
             },
             {
@@ -2321,13 +2339,13 @@
                 "start_byte": 565
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition/left",
-              "target_chunk_id": "sha256:952d9dd4c352c40ef11d6732fe83d6d09805d1fbe07db4fd09aa80fcd3b8e1be",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:115441d07ab47c63ce838f390d65db59457c99f08e8bf4ac9a5acf9e6e10af9c",
               "target_semantic_pointer": "/functions/0/body/1/condition/left",
               "target_span": {
-                "end_byte": 1134,
+                "end_byte": 1754,
                 "file": "migrated.m",
-                "start_byte": 1129
+                "start_byte": 1727
               }
             },
             {
@@ -2342,13 +2360,13 @@
                 "start_byte": 573
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/condition/right",
-              "target_chunk_id": "sha256:9dab7d898a17484607196a88301881f2e483201d19deccb8986f310c587c5be0",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:4021c5f2fb17df219815bbb8497e5909054c56e7a6e449db16c1479473dfd9c2",
               "target_semantic_pointer": "/functions/0/body/1/condition/right",
               "target_span": {
-                "end_byte": 1144,
+                "end_byte": 1784,
                 "file": "migrated.m",
-                "start_byte": 1137
+                "start_byte": 1757
               }
             },
             {
@@ -2363,13 +2381,13 @@
                 "start_byte": 591
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/then/0",
-              "target_chunk_id": "sha256:1861c0c13abbb73328872cbf0b4f97a5c11664418783f0cd0c97a7706653b008",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:9c763e5c349c49335ddf3af036d1673424200e465d52bd509ee676aee22d50a0",
               "target_semantic_pointer": "/functions/0/body/1/then/0",
               "target_span": {
-                "end_byte": 1171,
+                "end_byte": 1831,
                 "file": "migrated.m",
-                "start_byte": 1157
+                "start_byte": 1797
               }
             },
             {
@@ -2384,13 +2402,13 @@
                 "start_byte": 598
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/1/then/0/expression",
-              "target_chunk_id": "sha256:c78a1bba957cad11c993562157995a0bf9a8787ed756a350bc12085f0dfbfa70",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:7845367bafddd2f47e188e3fe4a1559e08375436cf3276232c15ff88242859d9",
               "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
               "target_span": {
-                "end_byte": 1171,
+                "end_byte": 1831,
                 "file": "migrated.m",
-                "start_byte": 1164
+                "start_byte": 1804
               }
             },
             {
@@ -2405,13 +2423,13 @@
                 "start_byte": 616
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/2",
-              "target_chunk_id": "sha256:3bec9f112594273e9168374033d31c07dfe062179a6140fa7a6c714ddbf43580",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/2",
+              "target_chunk_id": "sha256:547816fd1bcb4e1e8eac454afc0715918d0f0f74f071d5d09ebb19b61a4927df",
               "target_semantic_pointer": "/functions/0/body/2",
               "target_span": {
-                "end_byte": 1195,
+                "end_byte": 1877,
                 "file": "migrated.m",
-                "start_byte": 1183
+                "start_byte": 1843
               }
             },
             {
@@ -2426,13 +2444,13 @@
                 "start_byte": 623
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/2/expression",
-              "target_chunk_id": "sha256:1f457e6501b2da26409b1436a9da8d0ec4fda5e4444362000b760e06b72fcd6d",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:3014a928ac001989778b64221ea20a89a9867909aa2033e5fc2e5987721028bd",
               "target_semantic_pointer": "/functions/0/body/2/expression",
               "target_span": {
-                "end_byte": 1195,
+                "end_byte": 1877,
                 "file": "migrated.m",
-                "start_byte": 1190
+                "start_byte": 1850
               }
             }
           ],
@@ -2464,8 +2482,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 1299,
-              "artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
+              "artifact_byte_count": 2086,
+              "artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
               "logical_file": "migrated.m",
               "node_count": 18,
               "rules": [
@@ -2519,13 +2537,13 @@
           },
           "formal_input": {
             "path": "formal-function-003-input.json",
-            "sha256": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244"
+            "sha256": "sha256:a1617374743b25ac19277a36ee6f139e8d9719a817c3db1dc002fdba37c4eb27"
           },
-          "formal_input_digest": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244",
+          "formal_input_digest": "sha256:a1617374743b25ac19277a36ee6f139e8d9719a817c3db1dc002fdba37c4eb27",
           "formal_input_path": "formal-function-003-input.json",
-          "formal_input_sha256": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244",
+          "formal_input_sha256": "sha256:a1617374743b25ac19277a36ee6f139e8d9719a817c3db1dc002fdba37c4eb27",
           "formal_result_path": "formal-function-003-result.json",
-          "formal_result_sha256": "sha256:8789e4ab31a1a56873d15ec0bc9ffbd5f1746bdb3db2c6006375b32bb6777ad8",
+          "formal_result_sha256": "sha256:dec962564a2ca583da53946f6084f93e73bd3d4711464b4021a15e8654ab3198",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
@@ -2564,11 +2582,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-003.smt2",
-            "sha256": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05"
+            "sha256": "sha256:2cd72710614ae403e2f62c40c91d90e91febcb7693a019772386bcad4162ed8e"
           },
-          "solver_input_digest": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05",
+          "solver_input_digest": "sha256:2cd72710614ae403e2f62c40c91d90e91febcb7693a019772386bcad4162ed8e",
           "solver_input_path": "formal-function-003.smt2",
-          "solver_input_sha256": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05",
+          "solver_input_sha256": "sha256:2cd72710614ae403e2f62c40c91d90e91febcb7693a019772386bcad4162ed8e",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clampNumber",
           "version": "4.16.0"
@@ -2751,13 +2769,13 @@
                 "start_byte": 335
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0",
-              "target_chunk_id": "sha256:8c66d18cea48170760222b4edd163116e5f5b42b24346b7ef6353573b4b33819",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0",
+              "target_chunk_id": "sha256:5ddf18955618aa451715a64339b6878d0093aee410e1bad5c4ad9df7f01881db",
               "target_semantic_pointer": "/functions/0",
               "target_span": {
-                "end_byte": 1298,
+                "end_byte": 2085,
                 "file": "migrated.m",
-                "start_byte": 1200
+                "start_byte": 1882
               }
             },
             {
@@ -2772,13 +2790,13 @@
                 "start_byte": 351
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/0",
-              "target_chunk_id": "sha256:7f34af92957bc69da34c730c889066b6c00f31ba345428620e17b574c7d08bb9",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:d894237c0fe67a9a4d701151947c53bfc09051e006b07434cca9bf5078068dd3",
               "target_semantic_pointer": "/functions/0/parameters/0",
               "target_span": {
-                "end_byte": 1235,
+                "end_byte": 1955,
                 "file": "migrated.m",
-                "start_byte": 1221
+                "start_byte": 1918
               }
             },
             {
@@ -2793,13 +2811,13 @@
                 "start_byte": 366
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/parameters/1",
-              "target_chunk_id": "sha256:50af572f57cb525f2f48f5c3190dff92d2ec2acc4643ca1f47c2779b86ae2b9c",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:bba3f8ec2dfd1a6101e5222387da8ad124810aaf3a07eaae6ca4e8bf68ac9851",
               "target_semantic_pointer": "/functions/0/parameters/1",
               "target_span": {
-                "end_byte": 1252,
+                "end_byte": 1994,
                 "file": "migrated.m",
-                "start_byte": 1237
+                "start_byte": 1957
               }
             },
             {
@@ -2814,13 +2832,13 @@
                 "start_byte": 397
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0",
-              "target_chunk_id": "sha256:35d78505a81ebfa08b8fd1dd71c3c8d711377b86544c7e9500bdc842f487ace0",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0",
+              "target_chunk_id": "sha256:f305b7f5f707cf32c9cee197fb7fbc44301ecb40fd843688e327a64d89a0b5f1",
               "target_semantic_pointer": "/functions/0/body/0",
               "target_span": {
-                "end_byte": 1295,
+                "end_byte": 2082,
                 "file": "migrated.m",
-                "start_byte": 1260
+                "start_byte": 2002
               }
             },
             {
@@ -2835,13 +2853,13 @@
                 "start_byte": 404
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression",
-              "target_chunk_id": "sha256:6d6f74e2f1dfefff8798a879f53651a50eb0beb2aba509c67bf3cf62340a753a",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:1ef3b75f9585f9174f0a80dcbefeed7316a0d7623845d905f56ac1440390f020",
               "target_semantic_pointer": "/functions/0/body/0/expression",
               "target_span": {
-                "end_byte": 1295,
+                "end_byte": 2082,
                 "file": "migrated.m",
-                "start_byte": 1267
+                "start_byte": 2009
               }
             },
             {
@@ -2856,13 +2874,13 @@
                 "start_byte": 404
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression/left",
-              "target_chunk_id": "sha256:3832deef6bf38b78842825febe69f2d02d9456c322bee8d2a021ac29b116331b",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:977a47f2ebe038eca4313ad2ba2ee247f28af13ef20e536abad37fa96dcbae30",
               "target_semantic_pointer": "/functions/0/body/0/expression/left",
               "target_span": {
-                "end_byte": 1287,
+                "end_byte": 2052,
                 "file": "migrated.m",
-                "start_byte": 1283
+                "start_byte": 2025
               }
             },
             {
@@ -2877,13 +2895,13 @@
                 "start_byte": 411
               },
               "status": "EXACT",
-              "target_artifact_pointer": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09#/functions/0/body/0/expression/right",
-              "target_chunk_id": "sha256:dc1d4a5270c58826218faf6e521dbf139f4f47eca162033cac8fd80d49e302e9",
+              "target_artifact_pointer": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:13d3c7fe7443137d511ae2959c8150be77e6f67a8a0aeb0cae85b744327ca819",
               "target_semantic_pointer": "/functions/0/body/0/expression/right",
               "target_span": {
-                "end_byte": 1294,
+                "end_byte": 2081,
                 "file": "migrated.m",
-                "start_byte": 1289
+                "start_byte": 2054
               }
             }
           ],
@@ -2915,8 +2933,8 @@
             },
             "status": "PASSED",
             "target": {
-              "artifact_byte_count": 1299,
-              "artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
+              "artifact_byte_count": 2086,
+              "artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
               "logical_file": "migrated.m",
               "node_count": 7,
               "rules": [
@@ -2963,13 +2981,13 @@
           },
           "formal_input": {
             "path": "formal-function-004-input.json",
-            "sha256": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545"
+            "sha256": "sha256:61ade4fb3b196e04ddd5ec5a5a7c4adca66732e3395fb7b867226cbe835fc992"
           },
-          "formal_input_digest": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545",
+          "formal_input_digest": "sha256:61ade4fb3b196e04ddd5ec5a5a7c4adca66732e3395fb7b867226cbe835fc992",
           "formal_input_path": "formal-function-004-input.json",
-          "formal_input_sha256": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545",
+          "formal_input_sha256": "sha256:61ade4fb3b196e04ddd5ec5a5a7c4adca66732e3395fb7b867226cbe835fc992",
           "formal_result_path": "formal-function-004-result.json",
-          "formal_result_sha256": "sha256:eff2b53debe8a2629deb663f01cb36a28656b318726b922a37430acaffa233f0",
+          "formal_result_sha256": "sha256:80768badcd84dcd7afe2fb81b84bcca82876fcc57840ca1a33067924a14c0f59",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
@@ -3008,11 +3026,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-004.smt2",
-            "sha256": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605"
+            "sha256": "sha256:213397b3fa053d0ded313443f0dae9fa4518bf2f10cd7d55766889743435ff42"
           },
-          "solver_input_digest": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605",
+          "solver_input_digest": "sha256:213397b3fa053d0ded313443f0dae9fa4518bf2f10cd7d55766889743435ff42",
           "solver_input_path": "formal-function-004.smt2",
-          "solver_input_sha256": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605",
+          "solver_input_sha256": "sha256:213397b3fa053d0ded313443f0dae9fa4518bf2f10cd7d55766889743435ff42",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "difference",
           "version": "4.16.0"
@@ -3044,6 +3062,129 @@
       "symbol": "difference"
     }
   ],
+  "identifier_hygiene": {
+    "functions": [
+      {
+        "canonical_symbol": "both",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "boolean",
+            "raw_name": "elmos_p000_3d991f85167873ba"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "boolean",
+            "raw_name": "elmos_p001_7ef727c2d74e4b49"
+          }
+        ],
+        "raw_symbol": "elmos_fn_d78d3e483b14bbac"
+      },
+      {
+        "canonical_symbol": "calculate",
+        "parameters": [
+          {
+            "canonical_name": "subtotal",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p000_06c193718d10c87b"
+          },
+          {
+            "canonical_name": "tax",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p001_282cc0b3de08cb13"
+          }
+        ],
+        "raw_symbol": "elmos_fn_71f8d4ee14897ddf"
+      },
+      {
+        "canonical_symbol": "clamp",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p000_a23ca96616ad898a"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p001_c5ec28419a3163ae"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p002_8c26fc00173048ac"
+          }
+        ],
+        "raw_symbol": "elmos_fn_6236e9dee9c18de3"
+      },
+      {
+        "canonical_symbol": "clampNumber",
+        "parameters": [
+          {
+            "canonical_name": "value",
+            "canonical_type": "number",
+            "raw_name": "elmos_p000_989480a609bbd665"
+          },
+          {
+            "canonical_name": "minimum",
+            "canonical_type": "number",
+            "raw_name": "elmos_p001_ec646907bd2cc21f"
+          },
+          {
+            "canonical_name": "maximum",
+            "canonical_type": "number",
+            "raw_name": "elmos_p002_c592faece1a17f84"
+          }
+        ],
+        "raw_symbol": "elmos_fn_381c27419f9e5857"
+      },
+      {
+        "canonical_symbol": "difference",
+        "parameters": [
+          {
+            "canonical_name": "left",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p000_60983cd1b91dc070"
+          },
+          {
+            "canonical_name": "right",
+            "canonical_type": "integer",
+            "raw_name": "elmos_p001_8125f67a3a77b4ea"
+          }
+        ],
+        "raw_symbol": "elmos_fn_17c1997e72cd67db"
+      }
+    ],
+    "normalized_target_ir": {
+      "bytes": 7001,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:e3ce05453340663151ac7516e06c953185606d7dd36768b716cfa69ddb2c6c71"
+    },
+    "plan": {
+      "bytes": 11197,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:6b33aea6e20fada3ee9d945e1d14c3c28a6d3e47f3971e5eea7c8728a3da4975"
+    },
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
+    "raw_target_ir": {
+      "bytes": 7788,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:f3ad993569ecc312cf69d703a2a809965483aff3b890d2dbfd609fd397bb14de"
+    },
+    "renamed": true,
+    "status": "PASSED",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "equivalence_module.swift",
+      "source_sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:f9f20e147f2eab8f80ec48bca0066140e003fafaf9e5a4894385eac2b284ed8c"
+  },
   "kind": "typed-pure-module-equivalence",
   "local_verification_status": "PASSED",
   "module_contract": {
@@ -3063,20 +3204,22 @@
       "target_call_graph": {
         "edges": [
           {
-            "callee": "ElmosCheckedAdd",
-            "callee_kind": "exact-generated-helper",
-            "caller": "calculate",
-            "canonical_domain": "integer",
-            "canonical_operator": "+",
-            "normalization_rule": "objc.integer.+.call:ElmosCheckedAdd"
-          },
-          {
             "callee": "ElmosCheckedSub",
             "callee_kind": "exact-generated-helper",
-            "caller": "difference",
+            "caller": "elmos_fn_17c1997e72cd67db",
+            "canonical_caller": "difference",
             "canonical_domain": "integer",
             "canonical_operator": "-",
             "normalization_rule": "objc.integer.-.call:ElmosCheckedSub"
+          },
+          {
+            "callee": "ElmosCheckedAdd",
+            "callee_kind": "exact-generated-helper",
+            "caller": "elmos_fn_71f8d4ee14897ddf",
+            "canonical_caller": "calculate",
+            "canonical_domain": "integer",
+            "canonical_operator": "+",
+            "normalization_rule": "objc.integer.+.call:ElmosCheckedAdd"
           }
         ],
         "helper_internal_calls": {
@@ -3289,11 +3432,134 @@
         "status": "NOT_APPLICABLE"
       }
     },
-    "whole_file_closure_sha256": "sha256:a90566dd1a62327ae00631c210f1d5090b59250352839c609b8b3d26e0ef4d73"
+    "whole_file_closure_sha256": "sha256:67e7a082fdfbde61c290b0a12efda61a605182eccf1fc20cc3a34345247b70ac"
   },
   "module_input": {
     "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
     "corpus_sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112",
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "elmos_p000_3d991f85167873ba"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "elmos_p001_7ef727c2d74e4b49"
+            }
+          ],
+          "raw_symbol": "elmos_fn_d78d3e483b14bbac"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_06c193718d10c87b"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_282cc0b3de08cb13"
+            }
+          ],
+          "raw_symbol": "elmos_fn_71f8d4ee14897ddf"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_a23ca96616ad898a"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_c5ec28419a3163ae"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p002_8c26fc00173048ac"
+            }
+          ],
+          "raw_symbol": "elmos_fn_6236e9dee9c18de3"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "elmos_p000_989480a609bbd665"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "elmos_p001_ec646907bd2cc21f"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "elmos_p002_c592faece1a17f84"
+            }
+          ],
+          "raw_symbol": "elmos_fn_381c27419f9e5857"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_60983cd1b91dc070"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_8125f67a3a77b4ea"
+            }
+          ],
+          "raw_symbol": "elmos_fn_17c1997e72cd67db"
+        }
+      ],
+      "normalized_target_ir": {
+        "bytes": 7001,
+        "path": "target-semantic-ir.normalized.json",
+        "sha256": "sha256:e3ce05453340663151ac7516e06c953185606d7dd36768b716cfa69ddb2c6c71"
+      },
+      "plan": {
+        "bytes": 11197,
+        "path": "identifier-plan.json",
+        "sha256": "sha256:6b33aea6e20fada3ee9d945e1d14c3c28a6d3e47f3971e5eea7c8728a3da4975"
+      },
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
+      "raw_target_ir": {
+        "bytes": 7788,
+        "path": "target-semantic-ir.raw.json",
+        "sha256": "sha256:f3ad993569ecc312cf69d703a2a809965483aff3b890d2dbfd609fd397bb14de"
+      },
+      "renamed": true,
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.swift",
+        "source_sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:f9f20e147f2eab8f80ec48bca0066140e003fafaf9e5a4894385eac2b284ed8c"
+    },
     "input_domain": "canonical-finite-no-error-input-domain",
     "profile": "typed-pure-module-v1",
     "route": {
@@ -3302,19 +3568,19 @@
     },
     "source_artifact_byte_count": 708,
     "source_artifact_sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac",
-    "source_inventory_byte_count": 42830,
-    "source_inventory_sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9",
+    "source_inventory_byte_count": 43098,
+    "source_inventory_sha256": "sha256:1428370a54a201aed62cc969a01cd6d39f0f638aa35c42d93805149d0660dce4",
     "source_logical_file": "equivalence_module.swift",
-    "source_semantic_ir_sha256": "sha256:fd4ddddbb720b2740d03d5e9d3efef26a8db654391525a9c0f167e0c59a04533",
-    "target_artifact_byte_count": 1299,
-    "target_artifact_sha256": "sha256:0a8887798bb64b955bffed005d2edc191d85b4c1669ecff54ee31c1c4cccea09",
-    "target_inventory_byte_count": 3682,
-    "target_inventory_sha256": "sha256:b7ba6c1df6406b88816fadf4b0376578b51b92afd8627f6a744ad13a1fa106ab",
+    "source_semantic_ir_sha256": "sha256:5db1f9b88af1972c720e18fe04e053543a73d1acca49c8b52fa9610f8fdbf3b5",
+    "target_artifact_byte_count": 2086,
+    "target_artifact_sha256": "sha256:631860c1beb02b1fc948d7ea1d59714eb76a8aa5ba23a1a4bb6070435946b594",
+    "target_inventory_byte_count": 4115,
+    "target_inventory_sha256": "sha256:bd92aa3c008ecf13471900c02b49b61132cbd9ab702f620a1432e8b280d1996b",
     "target_logical_file": "migrated.m",
-    "target_semantic_ir_sha256": "sha256:c71e1809f49ed9ca0bcfb0f96d82275d323b5ac160d1551278d63fbb9b598a28",
-    "whole_file_closure_sha256": "sha256:a90566dd1a62327ae00631c210f1d5090b59250352839c609b8b3d26e0ef4d73"
+    "target_semantic_ir_sha256": "sha256:e3ce05453340663151ac7516e06c953185606d7dd36768b716cfa69ddb2c6c71",
+    "whole_file_closure_sha256": "sha256:67e7a082fdfbde61c290b0a12efda61a605182eccf1fc20cc3a34345247b70ac"
   },
-  "module_input_sha256": "sha256:2a5701dbc774a0f51f032e6afacb36f43c06383035b07bd9256ec28cd14f50a1",
+  "module_input_sha256": "sha256:7c971b258b83e356f852fe79b0d6d77d9ee2861ed0d5e814c9c5ee7a0fe23ee9",
   "profile": "typed-pure-module-v1",
   "route": {
     "route_key": "swift-to-objc",
@@ -3393,6 +3659,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3472,6 +3739,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3558,6 +3826,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3644,6 +3913,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3723,6 +3993,7 @@
         "language": "swift",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3807,6 +4078,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3887,6 +4159,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -3974,6 +4247,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -4061,6 +4335,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -4141,6 +4416,7 @@
         "language": "objc",
         "profile": [
           "platform=Darwin/arm64",
+          "apple-host-profile=local-macos26-20260904",
           "xcode=26.6/17F113",
           "macosx-sdk=26.5",
           "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
@@ -4163,6 +4439,114 @@
       "source": [],
       "target": []
     },
+    "identifier_hygiene": {
+      "functions": [
+        {
+          "canonical_symbol": "both",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "boolean",
+              "raw_name": "elmos_p000_3d991f85167873ba"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "boolean",
+              "raw_name": "elmos_p001_7ef727c2d74e4b49"
+            }
+          ],
+          "raw_symbol": "elmos_fn_d78d3e483b14bbac"
+        },
+        {
+          "canonical_symbol": "calculate",
+          "parameters": [
+            {
+              "canonical_name": "subtotal",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_06c193718d10c87b"
+            },
+            {
+              "canonical_name": "tax",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_282cc0b3de08cb13"
+            }
+          ],
+          "raw_symbol": "elmos_fn_71f8d4ee14897ddf"
+        },
+        {
+          "canonical_symbol": "clamp",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_a23ca96616ad898a"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_c5ec28419a3163ae"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p002_8c26fc00173048ac"
+            }
+          ],
+          "raw_symbol": "elmos_fn_6236e9dee9c18de3"
+        },
+        {
+          "canonical_symbol": "clampNumber",
+          "parameters": [
+            {
+              "canonical_name": "value",
+              "canonical_type": "number",
+              "raw_name": "elmos_p000_989480a609bbd665"
+            },
+            {
+              "canonical_name": "minimum",
+              "canonical_type": "number",
+              "raw_name": "elmos_p001_ec646907bd2cc21f"
+            },
+            {
+              "canonical_name": "maximum",
+              "canonical_type": "number",
+              "raw_name": "elmos_p002_c592faece1a17f84"
+            }
+          ],
+          "raw_symbol": "elmos_fn_381c27419f9e5857"
+        },
+        {
+          "canonical_symbol": "difference",
+          "parameters": [
+            {
+              "canonical_name": "left",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p000_60983cd1b91dc070"
+            },
+            {
+              "canonical_name": "right",
+              "canonical_type": "integer",
+              "raw_name": "elmos_p001_8125f67a3a77b4ea"
+            }
+          ],
+          "raw_symbol": "elmos_fn_17c1997e72cd67db"
+        }
+      ],
+      "plan_sha256": "sha256:6b33aea6e20fada3ee9d945e1d14c3c28a6d3e47f3971e5eea7c8728a3da4975",
+      "policy_id": "typed-alpha-hygiene-v2",
+      "policy_sha256": "sha256:2c3bec7abb6a2b14b4fa04616076dbcdf8d3e8666f34eccdf7c7092290398227",
+      "status": "PASSED",
+      "unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": null,
+        "schema_version": "1.0.0",
+        "scope": "standalone-artifact",
+        "source_logical_path": "equivalence_module.swift",
+        "source_sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac",
+        "work_unit_id": null
+      },
+      "unit_namespace_sha256": "sha256:f9f20e147f2eab8f80ec48bca0066140e003fafaf9e5a4894385eac2b284ed8c"
+    },
     "kind": "elmos.typed-pure-module-whole-file-closure",
     "manifest_symbols": [
       "both",
@@ -4177,8 +4561,8 @@
       "target_language": "objc"
     },
     "schema_version": "1.0.0",
-    "source_inventory_bytes": 42830,
-    "source_inventory_sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9",
+    "source_inventory_bytes": 43098,
+    "source_inventory_sha256": "sha256:1428370a54a201aed62cc969a01cd6d39f0f638aa35c42d93805149d0660dce4",
     "source_profile_symbols": [
       {
         "canonical_signature": {
@@ -4194,6 +4578,7 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
         "qualified_name": "both",
@@ -4216,6 +4601,7 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "both",
         "source_span": {
           "end_byte": 707,
           "file": "equivalence_module.swift",
@@ -4237,6 +4623,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
         "qualified_name": "calculate",
@@ -4259,6 +4646,7 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "calculate",
         "source_span": {
           "end_byte": 131,
           "file": "equivalence_module.swift",
@@ -4284,6 +4672,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
         "qualified_name": "clamp",
@@ -4311,6 +4700,7 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "clamp",
         "source_span": {
           "end_byte": 333,
           "file": "equivalence_module.swift",
@@ -4336,6 +4726,7 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
         "qualified_name": "clampNumber",
@@ -4363,6 +4754,7 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "clampNumber",
         "source_span": {
           "end_byte": 630,
           "file": "equivalence_module.swift",
@@ -4384,6 +4776,7 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "FunctionDeclSyntax",
         "occurrence": 1,
         "qualified_name": "difference",
@@ -4406,6 +4799,7 @@
           "storage": "file-scope",
           "visibility": "internal"
         },
+        "raw_symbol": "difference",
         "source_span": {
           "end_byte": 418,
           "file": "equivalence_module.swift",
@@ -4426,20 +4820,22 @@
     "target_call_graph": {
       "edges": [
         {
-          "callee": "ElmosCheckedAdd",
-          "callee_kind": "exact-generated-helper",
-          "caller": "calculate",
-          "canonical_domain": "integer",
-          "canonical_operator": "+",
-          "normalization_rule": "objc.integer.+.call:ElmosCheckedAdd"
-        },
-        {
           "callee": "ElmosCheckedSub",
           "callee_kind": "exact-generated-helper",
-          "caller": "difference",
+          "caller": "elmos_fn_17c1997e72cd67db",
+          "canonical_caller": "difference",
           "canonical_domain": "integer",
           "canonical_operator": "-",
           "normalization_rule": "objc.integer.-.call:ElmosCheckedSub"
+        },
+        {
+          "callee": "ElmosCheckedAdd",
+          "callee_kind": "exact-generated-helper",
+          "caller": "elmos_fn_71f8d4ee14897ddf",
+          "canonical_caller": "calculate",
+          "canonical_domain": "integer",
+          "canonical_operator": "+",
+          "normalization_rule": "objc.integer.+.call:ElmosCheckedAdd"
         }
       ],
       "helper_internal_calls": {
@@ -4520,8 +4916,8 @@
         "visibility": "internal"
       }
     ],
-    "target_inventory_bytes": 3682,
-    "target_inventory_sha256": "sha256:b7ba6c1df6406b88816fadf4b0376578b51b92afd8627f6a744ad13a1fa106ab",
+    "target_inventory_bytes": 4115,
+    "target_inventory_sha256": "sha256:bd92aa3c008ecf13471900c02b49b61132cbd9ab702f620a1432e8b280d1996b",
     "target_profile_symbols": [
       {
         "canonical_signature": {
@@ -4537,21 +4933,22 @@
           ],
           "return_type": "boolean"
         },
+        "canonical_symbol": "both",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
-        "qualified_name": "both",
+        "qualified_name": "elmos_fn_d78d3e483b14bbac",
         "raw_parameter_names": [
-          "left",
-          "right"
+          "elmos_p000_3d991f85167873ba",
+          "elmos_p001_7ef727c2d74e4b49"
         ],
         "raw_signature": {
           "parameters": [
             {
-              "name": "left",
+              "name": "elmos_p000_3d991f85167873ba",
               "source_type": "BOOL"
             },
             {
-              "name": "right",
+              "name": "elmos_p001_7ef727c2d74e4b49",
               "source_type": "BOOL"
             }
           ],
@@ -4560,8 +4957,9 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "elmos_fn_d78d3e483b14bbac",
         "source_span": {
-          "end_byte": 627,
+          "end_byte": 738,
           "file": "migrated.m",
           "start_byte": 563
         },
@@ -4581,21 +4979,22 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "calculate",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
-        "qualified_name": "calculate",
+        "qualified_name": "elmos_fn_71f8d4ee14897ddf",
         "raw_parameter_names": [
-          "subtotal",
-          "tax"
+          "elmos_p000_06c193718d10c87b",
+          "elmos_p001_282cc0b3de08cb13"
         ],
         "raw_signature": {
           "parameters": [
             {
-              "name": "subtotal",
+              "name": "elmos_p000_06c193718d10c87b",
               "source_type": "long long"
             },
             {
-              "name": "tax",
+              "name": "elmos_p001_282cc0b3de08cb13",
               "source_type": "long long"
             }
           ],
@@ -4604,10 +5003,11 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "elmos_fn_71f8d4ee14897ddf",
         "source_span": {
-          "end_byte": 780,
+          "end_byte": 1012,
           "file": "migrated.m",
-          "start_byte": 629
+          "start_byte": 740
         },
         "symbol": "calculate"
       },
@@ -4629,26 +5029,27 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "clamp",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
-        "qualified_name": "clamp",
+        "qualified_name": "elmos_fn_6236e9dee9c18de3",
         "raw_parameter_names": [
-          "value",
-          "minimum",
-          "maximum"
+          "elmos_p000_a23ca96616ad898a",
+          "elmos_p001_c5ec28419a3163ae",
+          "elmos_p002_8c26fc00173048ac"
         ],
         "raw_signature": {
           "parameters": [
             {
-              "name": "value",
+              "name": "elmos_p000_a23ca96616ad898a",
               "source_type": "long long"
             },
             {
-              "name": "minimum",
+              "name": "elmos_p001_c5ec28419a3163ae",
               "source_type": "long long"
             },
             {
-              "name": "maximum",
+              "name": "elmos_p002_8c26fc00173048ac",
               "source_type": "long long"
             }
           ],
@@ -4657,10 +5058,11 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "elmos_fn_6236e9dee9c18de3",
         "source_span": {
-          "end_byte": 992,
+          "end_byte": 1452,
           "file": "migrated.m",
-          "start_byte": 782
+          "start_byte": 1014
         },
         "symbol": "clamp"
       },
@@ -4682,26 +5084,27 @@
           ],
           "return_type": "number"
         },
+        "canonical_symbol": "clampNumber",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
-        "qualified_name": "clampNumber",
+        "qualified_name": "elmos_fn_381c27419f9e5857",
         "raw_parameter_names": [
-          "value",
-          "minimum",
-          "maximum"
+          "elmos_p000_989480a609bbd665",
+          "elmos_p001_ec646907bd2cc21f",
+          "elmos_p002_c592faece1a17f84"
         ],
         "raw_signature": {
           "parameters": [
             {
-              "name": "value",
+              "name": "elmos_p000_989480a609bbd665",
               "source_type": "double"
             },
             {
-              "name": "minimum",
+              "name": "elmos_p001_ec646907bd2cc21f",
               "source_type": "double"
             },
             {
-              "name": "maximum",
+              "name": "elmos_p002_c592faece1a17f84",
               "source_type": "double"
             }
           ],
@@ -4710,10 +5113,11 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "elmos_fn_381c27419f9e5857",
         "source_span": {
-          "end_byte": 1198,
+          "end_byte": 1880,
           "file": "migrated.m",
-          "start_byte": 994
+          "start_byte": 1454
         },
         "symbol": "clampNumber"
       },
@@ -4731,21 +5135,22 @@
           ],
           "return_type": "integer"
         },
+        "canonical_symbol": "difference",
         "declaration_kind": "FunctionDecl",
         "occurrence": 1,
-        "qualified_name": "difference",
+        "qualified_name": "elmos_fn_17c1997e72cd67db",
         "raw_parameter_names": [
-          "left",
-          "right"
+          "elmos_p000_60983cd1b91dc070",
+          "elmos_p001_8125f67a3a77b4ea"
         ],
         "raw_signature": {
           "parameters": [
             {
-              "name": "left",
+              "name": "elmos_p000_60983cd1b91dc070",
               "source_type": "long long"
             },
             {
-              "name": "right",
+              "name": "elmos_p001_8125f67a3a77b4ea",
               "source_type": "long long"
             }
           ],
@@ -4754,10 +5159,11 @@
           "storage": "none",
           "visibility": "external"
         },
+        "raw_symbol": "elmos_fn_17c1997e72cd67db",
         "source_span": {
-          "end_byte": 1298,
+          "end_byte": 2085,
           "file": "migrated.m",
-          "start_byte": 1200
+          "start_byte": 1882
         },
         "symbol": "difference"
       }
