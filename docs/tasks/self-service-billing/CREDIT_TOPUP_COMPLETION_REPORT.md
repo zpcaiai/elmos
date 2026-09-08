@@ -9,7 +9,7 @@ skills:
 repository: elmos
 branch: codex/credit-topup-user-flow-20260909
 baseline_commit: 1603014450378934d3618d2f97380405e5faf9b8
-final_commit: WORKTREE
+final_commit: 8c7ffd81b
 completed_at: 2026-09-09
 operator: Codex
 ```
@@ -87,9 +87,22 @@ pnpm --dir apps/web-console build
 PASS: Next.js 16.3.0 production build, 18 static pages generated
 
 ELMOS_E2E_ENGINE_SKIP_BUILD=true pnpm --dir apps/web-console exec playwright test \
-  e2e/pricing-ui.spec.ts --grep 'Credit 面板' --project=chromium --project=mobile-chromium
-PASS: 2/2
+  e2e/pricing-ui.spec.ts --project=chromium --project=mobile-chromium
+PASS: 6/6
+
+mvn -q -pl apps/commercial-api -am \
+  -Dtest=CommercialOrderCallbackRoutingTest,PaymentCallbackBindingTest,BillingApiErrorAdviceTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+PASS: 13/13
+
+engines/project-synthesis-engine/.venv/bin/python -m pytest -q \
+  engines/project-synthesis-engine/tests/test_project_documentation.py
+PASS: 3/3
 ```
+
+当前隔离环境的 PostgreSQL Testcontainers 复验未形成新通过证据：OrbStack Docker 的
+`localhost:2375` 无响应。历史 V83 实库证据仍保留在 `TEST_EVIDENCE.md`，但本报告不把
+该历史结果冒充为本次复跑成功。
 
 完整 `pnpm check` 在隔离 sparse worktree 的两个非本功能环境测试上没有形成通过证据：
 翻译报告首次 Python 工具下载超过固定 120 秒，ChinaDB/多模态/生成测试最初缺 sparse 资源。
