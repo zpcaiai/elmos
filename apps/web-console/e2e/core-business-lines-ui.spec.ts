@@ -22,6 +22,28 @@ test.beforeEach(async ({ page }) => {
     route.fulfill({ status: 204, body: "" }));
 });
 
+test("首页与迁移能力 API 使用权威 15 语言 210 路线零本地通过事实", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText(
+    "15 种语言 · 210 条路线 · 本地通过 0 · 全部 NOT_RUN",
+    { exact: true },
+  )).toBeVisible();
+  await expect(page.getByRole("region", { name: "平台结构摘要" })
+    .getByText("210", { exact: true })).toBeVisible();
+
+  const response = await page.request.get("/api/capabilities/migration");
+  expect(response.status()).toBe(200);
+  const payload = await response.json() as {
+    externalExecutionEvidence: string;
+    capabilities: Array<{ id: string; description: string }>;
+  };
+  const m29 = payload.capabilities.find((capability) => capability.id === "M29");
+  expect(m29?.description).toContain("15 种活动语言组成 210 条精确方向路线");
+  expect(m29?.description).toContain("本地通过 Profile 为 0");
+  expect(m29?.description).toContain("全部保持 NOT_RUN");
+  expect(payload.externalExecutionEvidence).toBe("NOT_RUN");
+});
+
 for (const businessLine of [
   {
     path: "/spring",
