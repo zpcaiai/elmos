@@ -366,7 +366,9 @@ public final class CallbackAdapterSelfTest {
                 outTradeNo -> {
                     calls.add("findByOutTradeNo");
                     return Optional.of(new LocalOrder(
-                            "order-1", "org-1", "elmos-pro-monthly", 12900));
+                            "order-1", "org-1", "elmos-pro-monthly", 12900,
+                            PaymentCallbackPipeline.OrderKind.SUBSCRIPTION,
+                            PaymentProvider.ALIPAY_CHECKOUT));
                 },
                 (order, callback, body) -> calls.add("record"),
                 (order, callback) -> calls.add("activate"),

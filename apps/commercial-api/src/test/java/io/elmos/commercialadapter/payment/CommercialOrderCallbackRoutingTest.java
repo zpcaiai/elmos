@@ -52,7 +52,8 @@ class CommercialOrderCallbackRoutingTest {
         var pipeline = new PaymentCallbackPipeline(adapter(), log,
                 trade -> Optional.of(new PaymentCallbackPipeline.LocalOrder(
                         "commercial-order-1", "org-1", null, 3900,
-                        PaymentCallbackPipeline.OrderKind.CREDIT_PACK)),
+                        PaymentCallbackPipeline.OrderKind.CREDIT_PACK,
+                        PaymentProvider.ALIPAY_CHECKOUT)),
                 (order, callback, body) -> { }, (order, callback) -> { },
                 (order, callback) -> { },
                 (order, callback) -> {
@@ -70,7 +71,8 @@ class CommercialOrderCallbackRoutingTest {
     private PaymentCallbackPipeline pipeline(PaymentCallbackPipeline.OrderKind kind) {
         return new PaymentCallbackPipeline(adapter(), processed::add,
                 trade -> Optional.of(new PaymentCallbackPipeline.LocalOrder(
-                        "commercial-order-1", "org-1", null, 3900, kind)),
+                        "commercial-order-1", "org-1", null, 3900, kind,
+                        PaymentProvider.ALIPAY_CHECKOUT)),
                 (order, callback, body) -> { },
                 (order, callback) -> subscriptions.add(order.orderId()),
                 (order, callback) -> wallet.add(order.orderId()),

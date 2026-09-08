@@ -147,7 +147,6 @@ public class WalletTopupController {
                     503, "TOPUP_CHANNEL_NOT_SUPPORTED",
                     "Prepaid top-up requires a mainland China payment channel.", false);
         }
-
         BigDecimal amount = BigDecimal.valueOf(request.amountMinor());
         String topupOrderId = "topup-" + UUID.randomUUID();
         String outTradeNo = topupOrderId;
@@ -171,26 +170,54 @@ public class WalletTopupController {
                         500, "TOPUP_ORDER_MISSING_AFTER_CREATE",
                         "The top-up order could not be read back.", true));
 
+        PaymentProvider orderProvider = paymentProvider(order.provider());
+        if ("PAID".equals(order.status()) || "CREDITED".equals(order.status())) {
+            return new TopupHandoffResponse(
+                    order.topupOrderId(), order.outTradeNo(), order.currency(),
+                    order.amountMinor(), order.status(), order.expiresAt(),
+                    orderProvider.name(), null, null);
+        }
+        if (!"CREATED".equals(order.status()) && !"PENDING_PAYMENT".equals(order.status())) {
+            throw new BillingApiException(409, "TOPUP_ORDER_NOT_PAYABLE",
+                    "The existing top-up order cannot open another checkout.", false);
+        }
+        PaymentProviderRouter.CheckoutGateway gateway;
+        try {
+            gateway = paymentRouter.checkoutGateway(orderProvider);
+        } catch (IllegalStateException missing) {
+            throw new BillingApiException(503, "CHECKOUT_NOT_CONFIGURED",
+                    "The top-up order's payment channel is not configured.", false, missing);
+        }
+
         PaymentProviderRouter.CheckoutHandoff handoff;
         try {
-            handoff = paymentRouter.checkoutGateway().prepare(
+            handoff = gateway.prepare(
                     order.outTradeNo(), order.amountMinor().longValueExact(),
                     "ELMOS 账户充值");
+            wallet.markTopupAwaitingPayment(
+                    principal.organizationId(), order.topupOrderId(), principal.actorId());
         } catch (RuntimeException failure) {
             metrics.checkout("provider_error");
-            // 订单留在 CREATED，由过期机制收口。此处不标 FAILED：
-            // 微信路径的 prepare 已经发过 HTTPS 请求，异常可能发生在收到响应
-            // 之后，提供方那边到底建没建单我们并不知道，单方面认定"没建单"
-            // 正是产生挂账的方式（见 CheckoutGateway#contactsProviderDuringPrepare）。
+            boolean unknown = gateway.contactsProviderDuringPrepare();
+            try {
+                wallet.markTopupPreparationFailed(
+                        principal.organizationId(), order.topupOrderId(), principal.actorId(),
+                        unknown, unknown ? "CHECKOUT_PREPARE_OUTCOME_UNKNOWN"
+                                : "CHECKOUT_PREPARE_FAILED");
+            } catch (RuntimeException stateFailure) {
+                failure.addSuppressed(stateFailure);
+            }
             throw new BillingApiException(
-                    502, "TOPUP_PROVIDER_UNAVAILABLE",
-                    "The payment channel could not open this top-up.", true, failure);
+                    unknown ? 502 : 503, "TOPUP_PROVIDER_UNAVAILABLE",
+                    "The payment channel could not open this top-up.", unknown, failure);
         }
 
         metrics.checkout("wallet_topup_opened");
+        WalletPort.TopupOrder ready = wallet.findTopupOrder(
+                principal.organizationId(), order.topupOrderId()).orElseThrow();
         return new TopupHandoffResponse(
-                order.topupOrderId(), order.outTradeNo(), order.currency(),
-                order.amountMinor(), order.status(), order.expiresAt(),
+                ready.topupOrderId(), ready.outTradeNo(), ready.currency(),
+                ready.amountMinor(), ready.status(), ready.expiresAt(),
                 handoff.provider().name(), handoff.redirectUrl(), handoff.qrCodeUrl());
     }
 
@@ -236,6 +263,16 @@ public class WalletTopupController {
             case ALIPAY_CHECKOUT -> "ALIPAY";
             case WECHAT_PAY_NATIVE -> "WECHAT_PAY";
             case STRIPE_CHECKOUT -> "STRIPE";
+        };
+    }
+
+    private static PaymentProvider paymentProvider(String provider) {
+        return switch (provider) {
+            case "ALIPAY" -> PaymentProvider.ALIPAY_CHECKOUT;
+            case "WECHAT_PAY" -> PaymentProvider.WECHAT_PAY_NATIVE;
+            case "STRIPE" -> PaymentProvider.STRIPE_CHECKOUT;
+            default -> throw new BillingApiException(409, "TOPUP_PROVIDER_INVALID",
+                    "The stored top-up payment channel is invalid.", false);
         };
     }
 

@@ -110,6 +110,8 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
                     "business_order_no", outTradeNo,
                     "amount", amountFen,
                     "currency", "CNY",
+                    "payment_method", provider == PaymentProvider.ALIPAY_CHECKOUT
+                            ? "alipay" : "wechat",
                     "return_route_id", returnRouteId));
         } catch (Exception failure) {
             throw new IllegalStateException("ELMPay 下单请求序列化失败", failure);
@@ -123,7 +125,7 @@ public final class ElmPayCheckoutGateway implements PaymentProviderRouter.Checko
             JsonNode root = mapper.readTree(response.body());
             java.util.LinkedHashSet<String> names = new java.util.LinkedHashSet<>();
             root.fieldNames().forEachRemaining(names::add);
-            if (!root.isObject() || !names.containsAll(RESPONSE_FIELDS)
+            if (!root.isObject() || !names.equals(RESPONSE_FIELDS)
                     || !"OPEN".equals(root.path("status").asText())) {
                 throw new IllegalArgumentException("ELMPay 下单响应结构或状态非法");
             }

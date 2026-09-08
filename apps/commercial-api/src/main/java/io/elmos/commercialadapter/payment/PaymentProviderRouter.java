@@ -104,10 +104,21 @@ public final class PaymentProviderRouter {
      * @throws IllegalStateException 该通道没有注册实现——这是配置错误，必须暴露
      */
     public CheckoutGateway checkoutGateway() {
-        CheckoutGateway gateway = gateways.get(active);
+        return checkoutGateway(active);
+    }
+
+    /**
+     * 取订单创建时已经绑定的通道。幂等重放必须走原通道，而不是目录当前通道；
+     * 否则切换支付配置后，同一个幂等键会在第二家提供方再开一张可付款订单。
+     */
+    public CheckoutGateway checkoutGateway(PaymentProvider provider) {
+        if (provider == null) {
+            throw new IllegalArgumentException("订单支付通道为空");
+        }
+        CheckoutGateway gateway = gateways.get(provider);
         if (gateway == null) {
             throw new IllegalStateException(
-                    "定价目录声明 " + active + "，但该通道没有注册下单网关实现");
+                    "支付通道 " + provider + " 没有注册下单网关实现");
         }
         return gateway;
     }
