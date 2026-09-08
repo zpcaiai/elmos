@@ -511,8 +511,15 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942"
+        "40103742839b296053427efb77c21ddfca219ec8d964bbc930c1e72adcef3dcf"
     )
+    assert current_hosted.rust_sysroot_tree_sha256 == (
+        "142705d4cb3f05508d8a23ec78fb98644d50264900b2830875796d7936103c1e"
+    )
+    assert local.rust_sysroot_tree_sha256 == (
+        "93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a"
+    )
+    assert current_hosted.rust_sysroot_tree_sha256 != local.rust_sysroot_tree_sha256
     assert current_hosted.php_tree_bytes == 129_952_823
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert current_hosted.php_tree_bytes != local.php_tree_bytes

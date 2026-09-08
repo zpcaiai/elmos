@@ -443,6 +443,42 @@ def nodejs_stable_route_error(reason: str) -> str:
     return wrapped[1]
 
 
+def missing_symbol_stable_route_error(
+    reason: str, source_language: Language
+) -> str:
+    """Normalize only an exact native missing-symbol rejection.
+
+    Go and Rust analyzers return source-domain rejections through a non-zero
+    native process, so the engine preserves the verified executable path in a
+    ``NATIVE_ANALYZER_FAILED`` wrapper.  The route evidence must not persist
+    that host-private path, but an arbitrary analyzer failure must never be
+    promoted into semantic evidence.  Accept only one absolute executable and
+    the complete, exact missing-symbol contract.
+    """
+
+    if reason == MISSING_SYMBOL_FAILURE:
+        return reason
+    if not reason or "\r" in reason:
+        return reason
+    prefix = "NATIVE_ANALYZER_FAILED:"
+    if not reason.startswith(prefix):
+        return reason
+    wrapped = reason[len(prefix) :].split(":", 1)
+    allowed_details = {MISSING_SYMBOL_FAILURE}
+    if source_language == "go":
+        # ``go run`` appends this fixed process-status line after forwarding
+        # the analyzer's exact stderr rejection.
+        allowed_details.add(f"{MISSING_SYMBOL_FAILURE}\nexit status 2")
+    if (
+        len(wrapped) == 2
+        and "\n" not in wrapped[0]
+        and Path(wrapped[0]).is_absolute()
+        and wrapped[1] in allowed_details
+    ):
+        return MISSING_SYMBOL_FAILURE
+    return reason
+
+
 def declared_input_domain(route_key: str) -> str:
     if route_key in SPECIALIZED_ROUTE_KEYS:
         return SPECIALIZED_INPUT_DOMAIN
@@ -5514,7 +5550,7 @@ def execute_negative(
                 Path(temporary) / "output",
             )
         except RouteError as exc:
-            reason = str(exc)
+            reason = missing_symbol_stable_route_error(str(exc), source)
         else:
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"

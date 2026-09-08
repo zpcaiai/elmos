@@ -223,6 +223,37 @@ def test_rust_rejects_wrapper_or_sysroot_tree_drift(
         toolchains._rust_tree_identities()
 
 
+def test_rust_hosted_sysroot_binds_selected_image_profile(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    wrappers = _tree_identity(
+        toolchains._EXPECTED_RUST_WRAPPER_ROOT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_SHA256,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_BYTES,
+    )
+    sysroot = _tree_identity(
+        toolchains._EXPECTED_RUST_SYSROOT,
+        profile.rust_sysroot_tree_sha256,
+        toolchains._EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
+        toolchains._EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
+        toolchains._EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
+        toolchains._EXPECTED_RUST_SYSROOT_TREE_BYTES,
+    )
+
+    def manifest(root: Path, *_args: object, **_kwargs: object) -> dict[str, object]:
+        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else sysroot
+
+    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", manifest)
+    monkeypatch.setattr(toolchains, "homebrew_route_bundle_profile", lambda: profile)
+    monkeypatch.setenv(toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV, profile.profile_id)
+
+    assert toolchains._rust_tree_identities() == (wrappers, sysroot)
+
+
 def test_rust_rejects_real_compiler_content_drift(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
