@@ -13,6 +13,16 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
   await page.goto("/");
+  const topAdminLogin = page.locator("header").getByRole("link", {
+    name: "管理员登录",
+    exact: true,
+  });
+  await expect(topAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
+  await topAdminLogin.click();
+  await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+  await page.goto("/");
+
   if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
     await page.getByRole("button", { name: "打开导航" }).click();
     await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
@@ -24,6 +34,15 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await sidebarLogin.click();
   await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+
+  const sidebarAdminLogin = page.locator("aside").getByRole("link", {
+    name: "管理员登录",
+    exact: true,
+  });
+  await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
+  await sidebarAdminLogin.click();
+  await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
 
 test("account session discovery represents anonymous state without a console-level 401", async ({
