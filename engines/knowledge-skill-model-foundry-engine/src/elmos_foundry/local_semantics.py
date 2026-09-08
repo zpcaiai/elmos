@@ -84,6 +84,11 @@ LOCAL_SEMANTIC_SKILLS: frozenset[str] = frozenset(
         "call-graph-construction",
         "control-flow-graph",
         "semantic-diff-and-impact-analysis",
+        "skill-efficiency-evaluation",
+        "skill-output-evaluation",
+        "skill-process-evaluation",
+        "skill-robustness-evaluation",
+        "skill-trigger-evaluation",
     }
 )
 
@@ -325,6 +330,7 @@ class LocalSemanticRuntime:
         from .foundation_extensions import build_foundation_extension_handlers
         from .ingestion_extensions import build_ingestion_extension_handlers
         from .graph_semantics import build_graph_extension_handlers
+        from .evaluation_semantics import build_evaluation_handlers
 
         handlers.update(build_foundation_handlers(catalog, store))
         handlers.update(build_dataset_handlers(catalog, store))
@@ -336,6 +342,7 @@ class LocalSemanticRuntime:
         handlers.update(build_foundation_extension_handlers(catalog, store))
         handlers.update(build_ingestion_extension_handlers(catalog, store))
         handlers.update(build_graph_extension_handlers(catalog, store))
+        handlers.update(build_evaluation_handlers(catalog, store))
         if set(handlers) != LOCAL_SEMANTIC_SKILLS:
             raise RuntimeError("local semantic handler registry is not exact")
         missing = sorted(LOCAL_SEMANTIC_SKILLS - set(catalog.atomic_skills))

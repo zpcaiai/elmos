@@ -4,7 +4,7 @@
     "catalog_path": "registry/skill-catalog.yaml",
     "catalog_sha256": "57b25a220f20b01207443e3a748c82f495752a468a5b9c3e95073f8293f45e52"
   },
-  "catalog_content_digest": "sha256:8a8ad4b36f6d1c74dccc844530c68f44ae0ecd9e66d7ca0fc6b9e539d1d4b72f",
+  "catalog_content_digest": "sha256:a7b3a6931ae42e767db6249227bebd8a2132d623d8660e2e61004907d03ce8f7",
   "certification_status": "NOT_CERTIFIED",
   "external_evidence_status": "NOT_RUN",
   "highest_fanout_missing_handlers": [
@@ -520,18 +520,13 @@
     "skill-decomposition-and-composition",
     "skill-deprecation-and-revocation",
     "skill-description-optimizer",
-    "skill-efficiency-evaluation",
     "skill-gene-mutation-and-composition",
-    "skill-output-evaluation",
     "skill-pack-marketplace-governance",
-    "skill-process-evaluation",
     "skill-replay-and-snapshot",
-    "skill-robustness-evaluation",
     "skill-sandbox-executor",
     "skill-signing-and-release",
     "skill-telemetry-and-cost-profile",
     "skill-to-weight-distillation",
-    "skill-trigger-evaluation",
     "skill-version-and-compatibility",
     "sla-slo-and-service-credit",
     "smt-and-model-checking-adapter",
@@ -1983,9 +1978,9 @@
     },
     {
       "atomic_skills": 29,
-      "local_semantic_handlers": 5,
+      "local_semantic_handlers": 10,
       "pack": "05-skill-foundry-runtime",
-      "prepare_only": 24,
+      "prepare_only": 19,
       "skills_with_missing_dependency_handlers": 0,
       "whole_skills_complete": 0
     },
@@ -2414,7 +2409,7 @@
   ],
   "schema_version": "elmos.foundry.implementation-readiness.v2",
   "scope": "Repository code and source-contract inventory; no Skill or provider execution",
-  "semantic_registry_digest": "sha256:510e635621b944bc9a78bcd3ba7c8b0dcc9489b60d9eca410a6f4f4b30dc2be0",
+  "semantic_registry_digest": "sha256:9ba5b7ecf02e81b4381075a73675cae1e13e218169f8fe90e878c942ce0885b1",
   "skills": [
     {
       "allowed_tools": [
@@ -183362,11 +183357,11 @@
         "policy.evaluate",
         "eval.run"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "skill.registry",
             "workflow.execute",
@@ -183375,7 +183370,7 @@
             "eval.run"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -183438,14 +183433,10 @@
         "policy context"
       ],
       "integration_binding": {
-        "adapter_digest": "1ec5e7e64f879be40c0a0ec79a2f5eb197f92803ad23ddeba6178c3aaa6a81a1",
-        "adapter_id": "external.skill-efficiency-evaluation",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.skill-efficiency-evaluation.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "3e6147b7d9dbe26c22f0033fd58006b36a0b5e924b7b412b7ecffce66f334f2c",
-        "route_id": "route.skill-efficiency-evaluation",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.skill-efficiency-evaluation",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "skill-efficiency-evaluation",
@@ -183465,8 +183456,8 @@
         "rollback-tested"
       ],
       "risk_class": "medium",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.evaluation_semantics.EvaluationSemantics.skill_efficiency_evaluation",
+      "semantic_handler_binding": "local.skill-efficiency-evaluation",
       "source_path": "skills/atomic/05-skill-foundry-runtime/skill-efficiency-evaluation/SKILL.md",
       "source_sha256": "2b2763addee92680f6a3a14576c34b749206ad158862248ef8ea3d8be8b01676",
       "verification_missing": {
@@ -183682,11 +183673,11 @@
         "policy.evaluate",
         "eval.run"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "skill.registry",
             "workflow.execute",
@@ -183695,7 +183686,7 @@
             "eval.run"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -183758,14 +183749,10 @@
         "policy context"
       ],
       "integration_binding": {
-        "adapter_digest": "5d243ed6d71b854b784752becb0396b6b85606452a31f660877461a3b4316df5",
-        "adapter_id": "external.skill-output-evaluation",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.skill-output-evaluation.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "4c06bb82265eb7611acdbd07b025968d859f9910d541ff24b4b8ae667a08e2a2",
-        "route_id": "route.skill-output-evaluation",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.skill-output-evaluation",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "skill-output-evaluation",
@@ -183785,8 +183772,8 @@
         "rollback-tested"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.evaluation_semantics.EvaluationSemantics.skill_output_evaluation",
+      "semantic_handler_binding": "local.skill-output-evaluation",
       "source_path": "skills/atomic/05-skill-foundry-runtime/skill-output-evaluation/SKILL.md",
       "source_sha256": "52b97e4d7276c434155c8487006f34b20f04fac237375224b95b1fb2ec4bb97e",
       "verification_missing": {
@@ -184002,11 +183989,11 @@
         "policy.evaluate",
         "eval.run"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "skill.registry",
             "workflow.execute",
@@ -184015,7 +184002,7 @@
             "eval.run"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -184078,14 +184065,10 @@
         "policy context"
       ],
       "integration_binding": {
-        "adapter_digest": "d16fffd7601c49176800bc24d11ca61b45bd967a5a401ce1b9716739f3196a7d",
-        "adapter_id": "external.skill-process-evaluation",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.skill-process-evaluation.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "a2a8063de7dae18e94ee2022f56ca1a558bcb36749da5e8d0522f287d2d50e50",
-        "route_id": "route.skill-process-evaluation",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.skill-process-evaluation",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "skill-process-evaluation",
@@ -184105,8 +184088,8 @@
         "rollback-tested"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.evaluation_semantics.EvaluationSemantics.skill_process_evaluation",
+      "semantic_handler_binding": "local.skill-process-evaluation",
       "source_path": "skills/atomic/05-skill-foundry-runtime/skill-process-evaluation/SKILL.md",
       "source_sha256": "1472a7b9d084c5e7a57d227b132c330e67a165bb3ed4f6c58bc8a3a4912ec020",
       "verification_missing": {
@@ -184324,11 +184307,11 @@
         "policy.evaluate",
         "eval.run"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "skill.registry",
             "workflow.execute",
@@ -184337,7 +184320,7 @@
             "eval.run"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -184400,14 +184383,10 @@
         "policy context"
       ],
       "integration_binding": {
-        "adapter_digest": "86d4eb86401981a47e6469e4db1803504662fd25eb58aaaae8d84c91227322e6",
-        "adapter_id": "external.skill-robustness-evaluation",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.skill-robustness-evaluation.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "09bb72280c3ce21ba9b2076308e55b1aa9e53cfc6c9fb7bb6778873ac0105244",
-        "route_id": "route.skill-robustness-evaluation",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.skill-robustness-evaluation",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "skill-robustness-evaluation",
@@ -184427,8 +184406,8 @@
         "rollback-tested"
       ],
       "risk_class": "medium",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.evaluation_semantics.EvaluationSemantics.skill_robustness_evaluation",
+      "semantic_handler_binding": "local.skill-robustness-evaluation",
       "source_path": "skills/atomic/05-skill-foundry-runtime/skill-robustness-evaluation/SKILL.md",
       "source_sha256": "15ae26565ca2fddac4095ce1eb1f81e1ee12c1e3ff4ba1d41c451ea942d21318",
       "verification_missing": {
@@ -185280,11 +185259,11 @@
         "policy.evaluate",
         "eval.run"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "skill.registry",
             "workflow.execute",
@@ -185293,7 +185272,7 @@
             "eval.run"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -185356,14 +185335,10 @@
         "policy context"
       ],
       "integration_binding": {
-        "adapter_digest": "ff1f0d146835473998fc9980676f0fd4a7ae02a4ae1129a44199ce74cdf35a02",
-        "adapter_id": "external.skill-trigger-evaluation",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.skill-trigger-evaluation.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "a0f48265bea6e3cddab72eedaac40498d98aba6da57605a6a1b044a02e33112b",
-        "route_id": "route.skill-trigger-evaluation",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.skill-trigger-evaluation",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "skill-trigger-evaluation",
@@ -185383,8 +185358,8 @@
         "rollback-tested"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.evaluation_semantics.EvaluationSemantics.skill_trigger_evaluation",
+      "semantic_handler_binding": "local.skill-trigger-evaluation",
       "source_path": "skills/atomic/05-skill-foundry-runtime/skill-trigger-evaluation/SKILL.md",
       "source_sha256": "ad247424174b4ea9487629b97260bca104c0c31aee42eb88759d84c6e1141e10",
       "verification_missing": {
@@ -222975,12 +222950,12 @@
     "atomic_skills": 1310,
     "dependency_edges": 9090,
     "exact_adapter_bindings": 1310,
-    "host_route_bound": 1249,
+    "host_route_bound": 1244,
     "integration_unbound": 0,
-    "local_semantic_handlers": 61,
+    "local_semantic_handlers": 66,
     "packs": 41,
     "pipelines": 14,
-    "prepare_only": 1249,
+    "prepare_only": 1244,
     "source_acceptance_cases_required": 31440,
     "whole_skills_complete": 0
   }

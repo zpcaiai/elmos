@@ -89,6 +89,11 @@ LOCAL_SEMANTIC_SKILLS = frozenset(
         "call-graph-construction",
         "control-flow-graph",
         "semantic-diff-and-impact-analysis",
+        "skill-efficiency-evaluation",
+        "skill-output-evaluation",
+        "skill-process-evaluation",
+        "skill-robustness-evaluation",
+        "skill-trigger-evaluation",
     }
 )
 

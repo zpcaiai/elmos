@@ -136,6 +136,104 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         }
 
     @staticmethod
+    def _evaluation_semantic_inputs(skill_name: str, scope: TenantScope) -> dict[str, Any]:
+        from elmos_foundry.canonical import canonical_digest
+
+        base = {
+            "runbook": {"evaluation_id": "eval-local", "mode": "evaluate"},
+            "experience episodes": {"episode_ids": ["episode-eval"]},
+            "policy context": {"purpose": scope.purpose, "effect_class": "LOCAL_DETERMINISTIC"},
+        }
+        if skill_name == "skill-efficiency-evaluation":
+            base["task contract"] = {
+                "purpose": scope.purpose,
+                "budget": {
+                    "max_tokens": 10_000,
+                    "max_tool_calls": 100,
+                    "max_wall_clock_seconds": 3600,
+                    "max_cost_units": 50.0,
+                },
+                "measurements": {
+                    "token_count": 5_000,
+                    "tool_call_count": 20,
+                    "retry_count": 2,
+                    "wall_clock_seconds": 1200.0,
+                    "cache_hit_ratio": 0.5,
+                    "cost_units": 12.5,
+                },
+            }
+            base["semantic IR"] = {"efficiency_targets": ["token-efficiency", "cost-efficiency"]}
+        elif skill_name == "skill-output-evaluation":
+            base["task contract"] = {
+                "purpose": scope.purpose,
+                "acceptance_criteria": [
+                    {"criterion_id": "criterion-a", "required": True, "validator": "digest-match"},
+                    {"criterion_id": "criterion-b", "required": False, "validator": "schema-check"},
+                ],
+                "artifacts": [
+                    {
+                        "artifact_id": "artifact-a",
+                        "content_digest": canonical_digest("artifact-a-content"),
+                        "artifact_type": "code",
+                        "satisfies": ["criterion-a"],
+                    },
+                ],
+            }
+            base["semantic IR"] = {"output_targets": ["contract-conformance"]}
+        elif skill_name == "skill-process-evaluation":
+            base["task contract"] = {
+                "purpose": scope.purpose,
+                "prescribed_steps": ["step-discover", "step-plan", "step-execute", "step-verify"],
+                "executed_steps": [
+                    {"step": "step-discover", "tool": "skill.registry", "approved": True, "validated": True},
+                    {"step": "step-plan", "tool": "workflow.execute", "approved": True, "validated": True},
+                    {"step": "step-execute", "tool": "sandbox.run", "approved": True, "validated": True},
+                    {"step": "step-verify", "tool": "eval.run", "approved": True, "validated": True},
+                ],
+                "approvals": {"required": ["approver-lead"], "obtained": ["approver-lead"]},
+            }
+            base["semantic IR"] = {"process_targets": ["step-compliance"]}
+        elif skill_name == "skill-robustness-evaluation":
+            scenarios = []
+            for cat in ("boundary-input", "version-change", "tool-failure",
+                        "concurrency", "recovery", "malicious-content"):
+                scenarios.append({
+                    "scenario_id": f"scenario-{cat}",
+                    "category": cat,
+                    "input_digest": canonical_digest(f"input-{cat}"),
+                    "expected_outcome": "pass",
+                    "actual_outcome": "pass",
+                })
+            base["task contract"] = {
+                "purpose": scope.purpose,
+                "robustness_scenarios": scenarios,
+            }
+            base["semantic IR"] = {"robustness_targets": ["boundary-coverage"]}
+        elif skill_name == "skill-trigger-evaluation":
+            scenarios = [
+                {"scenario_id": "scenario-should-trigger", "category": "should-trigger",
+                 "query": "evaluate skill efficiency", "expected_skills": ["skill-efficiency-evaluation"],
+                 "actual_skills": ["skill-efficiency-evaluation"]},
+                {"scenario_id": "scenario-should-not-trigger", "category": "should-not-trigger",
+                 "query": "what time is it", "expected_skills": [], "actual_skills": []},
+                {"scenario_id": "scenario-ambiguous", "category": "ambiguous-intent",
+                 "query": "check output", "expected_skills": ["skill-output-evaluation"],
+                 "actual_skills": ["skill-output-evaluation"]},
+                {"scenario_id": "scenario-typo", "category": "typo",
+                 "query": "efficency evaluaton", "expected_skills": ["skill-efficiency-evaluation"],
+                 "actual_skills": ["skill-efficiency-evaluation"]},
+                {"scenario_id": "scenario-multi-intent", "category": "multi-intent",
+                 "query": "evaluate output and process", "expected_skills": ["skill-output-evaluation", "skill-process-evaluation"],
+                 "actual_skills": ["skill-output-evaluation", "skill-process-evaluation"]},
+            ]
+            base["task contract"] = {
+                "purpose": scope.purpose,
+                "trigger_scenarios": scenarios,
+            }
+            base["semantic IR"] = {"trigger_targets": ["trigger-accuracy"]}
+        return base
+
+    @staticmethod
     def _security_inputs(scope: TenantScope) -> dict[str, Any]:
         return {
             "identity": {
@@ -348,6 +446,7 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         from elmos_foundry.ingestion_semantics import INGESTION_SEMANTIC_SKILLS
         from elmos_foundry.graph_semantics import GRAPH_SEMANTIC_SKILLS
         from elmos_foundry.ingestion_extensions import INGESTION_EXTENSION_SKILLS
+        from elmos_foundry.evaluation_semantics import EVALUATION_SEMANTIC_SKILLS
 
         if skill_name == "build-and-dependency-graph":
             return build_graph_fixture(skill_name, scope or self.scope)
@@ -361,6 +460,8 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
             return self._ingestion_extension_inputs(skill_name, scope or self.scope)
         if skill_name in RUNTIME_SEMANTIC_SKILLS:
             return runtime_fixture(skill_name, scope or self.scope)
+        if skill_name in EVALUATION_SEMANTIC_SKILLS:
+            return self._evaluation_semantic_inputs(skill_name, scope or self.scope)
         if skill_name in FOUNDATION_SEMANTIC_SKILLS:
             return foundation_fixture(skill_name, scope or self.scope)
         if skill_name in DATASET_SEMANTIC_SKILLS:
@@ -461,7 +562,7 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         return inner["outputs"]
 
     def test_all_exact_local_skills_execute_with_declared_contracts(self) -> None:
-        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 61)
+        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 66)
         described = {
             skill_name
             for row in self.service.status()["adapters"]

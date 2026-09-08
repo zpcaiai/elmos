@@ -63,7 +63,7 @@ SOURCE_ARCHIVE_PATH = ROOT / "skills/subskills/elmos-knowledge-skill-model-found
 SOURCE_ARCHIVE_PREFIX = "elmos-knowledge-skill-model-foundry-v3.0.0/"
 CATALOG_SCHEMA_VERSION = "elmos.knowledge-skill-model-foundry.compiled-catalog.v2"
 EXPECTED_COMPILED_CATALOG_SHA256 = (
-    "6b6a3fa6036d20b6a28dbabc7eb1926a830c79a3b73188be374e1930848c15cc"
+    "b1d8907ac5ea9434f7c4107966a0f74d9ca7bb47d1ed31576227c71ef871331f"
 )
 EXPECTED_PACKAGE = {
     "id": "elmos-knowledge-skill-model-foundry-v3.0.0",

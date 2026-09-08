@@ -36,10 +36,10 @@ class ServiceTests(unittest.TestCase):
             status["implementation_status"],
             "ALL_EXACT_BINDINGS_LOCAL_OR_HOST_ROUTED",
         )
-        self.assertEqual(status["capability_states"], {"LOCAL": 61, "PREPARE_ONLY": 1_249})
+        self.assertEqual(status["capability_states"], {"LOCAL": 66, "PREPARE_ONLY": 1_244})
         self.assertEqual(
             status["integration_states"],
-            {"LOCAL_EXECUTABLE": 61, "HOST_ROUTE_BOUND": 1_249, "UNBOUND": 0},
+            {"LOCAL_EXECUTABLE": 66, "HOST_ROUTE_BOUND": 1_244, "UNBOUND": 0},
         )
         self.assertEqual(status["exact_adapter_bindings"], 1_310)
         self.assertEqual(status["local_evidence_status"], "NOT_RUN")
