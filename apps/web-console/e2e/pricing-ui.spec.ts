@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 test("人民币套餐页展示精确 token 与 credit 额度", async ({ page }) => {
+  await installAdministratorSession(page);
   await page.goto("/pricing");
 
   await expect(page.getByRole("heading", { name: "先验证价值，再为持续交付付费。" })).toBeVisible();
