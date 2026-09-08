@@ -50,7 +50,7 @@ const mobileNavigation = navigation.filter((item) =>
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
   { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
-  { href: "/translation", label: "选择跨语言方向路线", hint: "13 语言活动矩阵 · 156 条路线", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 156 routes Java C# Go Rust Python TypeScript C++ Objective-C Swift PHP Kotlin React Flutter" },
+  { href: "/translation", label: "选择跨语言方向路线", hint: "15 语言 · 210 路线 · 本地通过 0 · 全部 NOT_RUN", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 210 routes 15 languages Java C# Go Rust Python TypeScript C++ Objective-C Swift PHP Kotlin React Flutter VB6 VC++6 NOT_RUN" },
   { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "能力", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
   { href: "/migration/sql", label: "运行国产数据库 SQL 预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
@@ -247,6 +247,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={`app-shell ${adminSurface ? "admin-shell" : ""}`}>
+      <a className="skip-link" href="#main-content">
+        {english ? "Skip to main content" : "跳到主要内容"}
+      </a>
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`} aria-label={english ? "Primary navigation" : "主导航"}>
         <div className="brand-row">
           <Link className="brand-mark" href="/" onClick={() => setMobileOpen(false)}>E</Link>

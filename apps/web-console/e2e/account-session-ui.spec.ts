@@ -113,6 +113,12 @@ test("local test account establishes a development-only session", async ({ page 
       roles: ["DEVELOPER"],
     },
   });
+
+  await page.goto("/admin");
+  await expect(page).toHaveURL(/\/admin\/login\?error=ADMIN_EMAIL_REQUIRED&returnTo=%2Fadmin$/);
+  await expect(page.locator(".auth-error[role='alert']")).toContainText(
+    "不是获准的管理员账户",
+  );
 });
 
 test("local registration creates an account and starts a session", async ({ page }) => {

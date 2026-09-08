@@ -207,13 +207,13 @@ export function MigrationStudio() {
       </section>
 
       <div className="segmented-tabs" role="tablist" aria-label="迁移工坊视图">
-        <button role="tab" aria-selected={view === "routes"} className={view === "routes" ? "active" : ""} onClick={() => setView("routes")}><Icon name="route" size={17} />迁移路线</button>
-        <button role="tab" aria-selected={view === "marketplace"} className={view === "marketplace" ? "active" : ""} onClick={() => setView("marketplace")}><Icon name="box" size={17} />扩展 Marketplace</button>
+        <button id="migration-routes-tab" type="button" role="tab" aria-controls="migration-routes-panel" aria-selected={view === "routes"} tabIndex={view === "routes" ? 0 : -1} className={view === "routes" ? "active" : ""} onClick={() => setView("routes")}><Icon name="route" size={17} />迁移路线</button>
+        <button id="migration-marketplace-tab" type="button" role="tab" aria-controls="migration-marketplace-panel" aria-selected={view === "marketplace"} tabIndex={view === "marketplace" ? 0 : -1} className={view === "marketplace" ? "active" : ""} onClick={() => setView("marketplace")}><Icon name="box" size={17} />扩展 Marketplace</button>
         {drafts.length > 0 && <span className="draft-count">{drafts.length} 个本地草稿</span>}
       </div>
 
       {view === "routes" ? (
-        <section className="studio-layout" aria-label="迁移路线目录">
+        <section id="migration-routes-panel" className="studio-layout" role="tabpanel" aria-labelledby="migration-routes-tab">
           <div className="catalog-panel">
             <div className="catalog-toolbar">
               <label className="search-field"><Icon name="search" size={17} /><span className="sr-only">搜索能力</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索能力、Batch 或领域" /></label>
@@ -248,7 +248,7 @@ export function MigrationStudio() {
               <div><dt>外部证据</dt><dd className="warning-text">NOT_RUN</dd></div>
             </dl>
             <div className="gate-block"><span>唯一认证门禁</span><code>{selectedCapability.gateCommand}</code></div>
-            {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>13 语言活动矩阵已接入</strong><small>156 条路线均保持 NOT_RUN；其中 12 个 typed-pure-function-v1 本地实验 Profile 有精确验证。整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
+            {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>15 语言活动矩阵已接入</strong><small>210 条方向路线均保持 NOT_RUN；整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
             {selectedCapability.id === "M30" && <div className="feature-callout"><Icon name="workflow" size={17} /><div><strong>Spring 老项目专属流程已接入</strong><small>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</small><a className="text-link" href="/spring">打开 Spring 翻新 <Icon name="arrow" size={13} /></a></div></div>}
             {selectedCapability.id === "M31" && <div className="feature-callout"><Icon name="database" size={17} /><div><strong>ChinaDB 商业迁移扩展已接入</strong><small>13 个国产目标已登记，并提供受限的兼容模式查询发射；它不是厂商原生语义适配器。实库执行、结果等价与认证保持 NOT_RUN / NOT_CERTIFIED。</small><code>elmos-sql-transpiler commercial-capabilities</code><a className="text-link" href="/migration/sql">运行 SQL 预检 <Icon name="arrow" size={13} /></a><a className="text-link" href="/api/capabilities/database-sql" target="_blank" rel="noreferrer">查看目标与路线契约 <Icon name="external" size={13} /></a></div></div>}
             {selectedCapability.id === "M36" && <div className="feature-callout"><Icon name="spark" size={17} /><div><strong>开发者预览已接入</strong><small>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</small></div></div>}
@@ -284,7 +284,7 @@ function Marketplace({ extensions: items, query, setQuery }: { extensions: typeo
   const needle = query.toLocaleLowerCase("zh-CN");
   const visible = items.filter((item) => !needle || `${item.name} ${item.type} ${item.description}`.toLocaleLowerCase("zh-CN").includes(needle));
   return (
-    <section className="marketplace-layout">
+    <section id="migration-marketplace-panel" className="marketplace-layout" role="tabpanel" aria-labelledby="migration-marketplace-tab">
       <div className="market-main">
         <div className="market-hero">
           <div><span className="overline">BATCH 37 · SAFE EXTENSIBILITY</span><h2>扩展核心之外的能力，<br/>不放宽核心边界。</h2><p>每个扩展都绑定精确 ABI、Publisher、签名、SBOM、Sandbox 与撤销策略。</p></div>

@@ -16,11 +16,11 @@ const workspaces = [
   {
     eyebrow: "BATCH 29 · DIRECTED ROUTES",
     title: "全库跨语言转换",
-    description: "在 13 种语言组成的显式活动矩阵中选择精确方向，查看语义风险、阻断项和受控执行状态；路线证据保持 NOT_RUN。",
+    description: "在 15 种语言组成的显式活动矩阵中选择精确方向，查看语义风险、阻断项和受控执行状态；210 条路线、本地 Profile 与外部证据全部保持 NOT_RUN。",
     href: "/translation",
     icon: "code" as const,
     accent: "cyan",
-    meta: "13 种语言 · 156 条路线 · 证据 NOT_RUN",
+    meta: "15 种语言 · 210 条路线 · 本地通过 0 · 全部 NOT_RUN",
   },
   {
     eyebrow: "PROJECT SYNTHESIS · B46–B80",
@@ -52,7 +52,7 @@ const workspaces = [
 ];
 
 const attention = [
-  ["转换路线独立验证", "13 语言活动矩阵已接入；客户仓库与独立验证仍未运行", "NOT_RUN"],
+  ["转换路线独立验证", "15 语言 / 210 路线已接入；本地通过 Profile 为 0，客户仓库与独立验证全部未运行", "NOT_RUN"],
   ["Spring 外部 Runner 证据", "实验 Pack 已闭环，真实客户仓库、holdout 与独立执行未运行", "NOT_RUN"],
   ["多语言生成外部工具链", "浏览器只准备受控交接，不执行生成", "NOT_RUN"],
   ["ChinaDB 实库执行", "13 个目标仅提供有限兼容模式发射，并非厂商原生适配；实库执行与认证仍未运行", "NOT_RUN"],
@@ -92,7 +92,7 @@ export default async function Home() {
 
       <section className="overview-metrics" aria-label="平台结构摘要">
         <article><span className="metric-icon tone-cyan"><Icon name="workflow" size={18} /></span><div><small>Spring 实验 Pack</small><strong>1</strong><em>外部证据 NOT_RUN</em></div></article>
-        <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言路线</small><strong>156</strong><em>证据 NOT_RUN</em></div></article>
+        <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言路线</small><strong>210</strong><em>本地通过 0 · 全部 NOT_RUN</em></div></article>
         <article><span className="metric-icon tone-amber"><Icon name="spark" size={18} /></span><div><small>项目生成目标</small><strong>8</strong><em>逐目标验证</em></div></article>
         <article><span className="metric-icon tone-violet"><Icon name="database" size={18} /></span><div><small>国产数据库目标</small><strong>13</strong><em>本地适配器 · 执行 NOT_RUN</em></div></article>
         <article><span className="metric-icon tone-green"><Icon name="shield" size={18} /></span><div><small>外部认证</small><strong>0</strong><em>Fail closed</em></div></article>

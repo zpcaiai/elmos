@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Icon } from "../components/Icon";
 import { useUiPreferences } from "../components/UiPreferencesProvider";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 import { frtCatalog } from "../lib/frtCatalog.generated";
 import styles from "./FrontendTransformationStudio.module.css";
 
@@ -288,12 +289,10 @@ export function FrontendTransformationStudio() {
 
   function downloadArtifacts() {
     if (!run) return;
-    const url = URL.createObjectURL(new Blob([JSON.stringify(run.artifacts, null, 2)], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${run.runId}-artifacts.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([JSON.stringify(run.artifacts, null, 2)], { type: "application/json" }),
+      `${run.runId}-artifacts.json`,
+    );
   }
 
   function chooseSource(value: Stack) {
