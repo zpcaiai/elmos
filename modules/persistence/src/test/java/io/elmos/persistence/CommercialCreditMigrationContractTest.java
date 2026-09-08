@@ -13,6 +13,8 @@ class CommercialCreditMigrationContractTest {
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
     private static final Path ELMPAY_MIGRATION = Path.of(
             "src/main/resources/db/migration/V84__elmpay_order_digest_lookup.sql");
+    private static final Path CATALOG_MIGRATION = Path.of(
+            "src/main/resources/db/migration/V85__self_service_catalog_2026_09_08.sql");
     private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
             "../../scripts/commercial/configure_billing_runtime_role.sh");
 
@@ -107,5 +109,22 @@ class CommercialCreditMigrationContractTest {
         assertFalse(sql.contains("public.encode("));
         assertFalse(sql.contains("public.digest("));
         assertFalse(sql.contains("digest("));
+    }
+
+    @Test void databaseCatalogAndSubscriptionFunctionsUseTheCurrentAppendOnlyVersion() throws Exception {
+        String sql = Files.readString(CATALOG_MIGRATION);
+        for (String plan : new String[]{
+                "elmos-free-trial", "elmos-pro-monthly", "elmos-pro-annual"}) {
+            assertTrue(sql.contains("'2026-09-08.1', '" + plan + "'"),
+                    plan + " must be present in the current database catalog snapshot");
+        }
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_activate_subscription_period"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_grant_trial"));
+        assertTrue(sql.contains("WHERE catalog_version = '2026-09-08.1' AND plan_id = p_plan_id"));
+        assertTrue(sql.contains(
+                "WHERE catalog_version = '2026-09-08.1' AND plan_id = 'elmos-free-trial'"));
+        assertFalse(sql.contains("catalog_version = '2026-07-28.2'"));
+        assertFalse(sql.contains("('2026-07-28.2',"));
+        assertFalse(sql.contains("ON CONFLICT (catalog_version, plan_id)"));
     }
 }
