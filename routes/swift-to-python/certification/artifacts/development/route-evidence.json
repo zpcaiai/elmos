@@ -1,0 +1,287 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:14e9ce7e0b44abd8055e1c2fc0ef1ef360866dc462746c6e27f3db5ce1c0f0d8",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:156f1d59a328c40a1d1df82b4681fcd8d1dd591e962762756df282789f632f1e",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:a9099f377da53ba6f4efae6502e0991399ca738a5285e303a7e2c04dfe806906",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:fb259194c3a191ae5629d8f39260035075f98f1c796deebe1a66b0b07cbce04e",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:fb259194c3a191ae5629d8f39260035075f98f1c796deebe1a66b0b07cbce04e",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:fb259194c3a191ae5629d8f39260035075f98f1c796deebe1a66b0b07cbce04e",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:8750c1111ef2d43b55419f2ce8b78ef74b0ec6dc847e30e2e6c5c22fba735ef4",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:fb259194c3a191ae5629d8f39260035075f98f1c796deebe1a66b0b07cbce04e",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:1a502014880477e0054eea2cb0ca0ad0b343e39a7a061989c60db81b3ed1be82",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:8750c1111ef2d43b55419f2ce8b78ef74b0ec6dc847e30e2e6c5c22fba735ef4",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:90b1603d1c575a23218d5116ee8e795c59698bdc0965b805275be7558bfd75f5",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:06350f5c88e1d13888aecde369fe8d07cb977d317ea7572616fa5e2b2ed11108",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:e59434b55aa4b83451bef687d44cfc5fb3f104a38de921af706947f2664d2bf3",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:90b1603d1c575a23218d5116ee8e795c59698bdc0965b805275be7558bfd75f5",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "calculate",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.swift",
+      "source_sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:5a408dedca95f7443d3c92ed3b03563f3b1842438d7f27fdf31f2e52a75e5ee1"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:bf499b689ccbacef00dcebf63c0a4c3d8ee694ac67e6de6163ebd9788f1d2bd7",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "swift-to-python",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:20837c27acf34244fa12b6068bda794d091767a1affd4613cba9dbfa2ff07b93",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:90b1603d1c575a23218d5116ee8e795c59698bdc0965b805275be7558bfd75f5"
+  },
+  "semantic_ir_sha256": "sha256:20837c27acf34244fa12b6068bda794d091767a1affd4613cba9dbfa2ff07b93",
+  "source": {
+    "analyzer": "SwiftSyntax",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "function_name": "calculate",
+    "language": "swift",
+    "path": "pricing.swift",
+    "sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.swift",
+    "artifact_sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "-swift-version",
+          "6",
+          "-sdk",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-warnings-as-errors",
+          "-o",
+          "source_harness",
+          "pricing.swift",
+          "main.swift"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "swift",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "language": "swift",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "swift-language-mode=6",
+        "integer=Int64"
+      ],
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "calculate",
+    "language": "python",
+    "path": "migrated.py",
+    "sha256": "sha256:4f03efd77189cd4f860237b81acec501d99d4a3ffc0843a1e669317cb07c44ff"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+          "-m",
+          "py_compile",
+          "migrated.py",
+          "route_harness.py"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+          "route_harness.py"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":120}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":5}\n"
+      }
+    ],
+    "language": "python",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":120}",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":5}",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/lib/libpython3.12.dylib",
+      "auxiliary_sha256": "6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+      "executable": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+      "executable_sha256": "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
+      "language": "python",
+      "profile": [
+        "python-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "distribution=python-build-standalone-20260211-install-only-stripped",
+        "python-root=/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python",
+        "python-source-archive-sha256=22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84",
+        "python-source-archive-bytes=17667661",
+        "python-source-tree-sha256=1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154",
+        "python-runtime-tree-sha256=49eb47a1e6f1a8803ef3686da328abf2e18f1d31b6447190c3455640e4df9adf",
+        "python-runtime-tree-record-count=1899",
+        "python-runtime-tree-file-count=1890",
+        "python-runtime-tree-bytes=47880708",
+        "python-runtime-identity-sha256=8776314c1c57bbf83332a98d947144d329c8e6e57d2fe1cd850875f27d807d0a",
+        "libpython-sha256=6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+        "math-runtime=built-in-via-libpython3.12.dylib",
+        "python-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "3.12.12+20260211"
+    }
+  }
+}
