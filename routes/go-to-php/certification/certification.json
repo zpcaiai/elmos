@@ -9,16 +9,16 @@
     "certification/formal-equivalence.json"
   ],
   "formal_equivalence": {
-    "bytes": 303830,
+    "bytes": 303832,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:649b0c923fd81d3129684109fba291b2975a46e75ccca1c2b6935f6ec27a7f44"
+    "sha256": "sha256:88c7b94ecf95a1864cb083158d52c990da2ffdcad712d3301a5a8a8d058a1953"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
     "independent_verification": "NOT_RUN",
     "local_execution": "PASSED"
   },
-  "issued_at": "2026-09-08T11:23:36.819692+00:00",
+  "issued_at": "2026-09-08T19:42:43.295323+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,

@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4333,
+    "bytes": 4345,
     "path": "certification/artifacts/development/artifact-manifest.json",
-    "sha256": "sha256:d06456024c3bc926501b7c60f802438cecde090be905dd0b8015cc4017e6a07b"
+    "sha256": "sha256:ea1d63a7de7519a3be1ad48acea0ec5093fe51b5ddc5630b1ddd0d14de1f69c1"
   },
   "artifact_root": "certification/artifacts/development",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:49c34fdede71b6d53e351cf705b4439bd0e445d3f921d79e8fcbcff53f9e8608",
+    "artifact_sha256": "sha256:6cd732ae0395ea850816082cf28da11053d8de8b3ce6eb27d35ec74e706df164",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:05584464fd2bd9cc1efa62326c816ef7300b3f7fa0045a5f423a07ca4c7647f5",
+    "formal_input_digest": "sha256:bebc56b2f665c3eeafcf62f4aac41a59cd87f6f27fe6dd4da0543d669eb6988d",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:05584464fd2bd9cc1efa62326c816ef7300b3f7fa0045a5f423a07ca4c7647f5",
+    "formal_input_sha256": "sha256:bebc56b2f665c3eeafcf62f4aac41a59cd87f6f27fe6dd4da0543d669eb6988d",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:05584464fd2bd9cc1efa62326c816ef7300b3f7fa0045a5f423a07ca4c7647f5",
+        "formal_input_sha256": "sha256:bebc56b2f665c3eeafcf62f4aac41a59cd87f6f27fe6dd4da0543d669eb6988d",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:5843fdfcc957322325b4d5f0fa5e90436b426a9c1442021d53b85ded8f3a6a07",
+        "sha256": "sha256:133843def138e2fde9d2ceb718464b294b3d804fb1a7d6a228cbb5ed29d34209",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:05584464fd2bd9cc1efa62326c816ef7300b3f7fa0045a5f423a07ca4c7647f5",
+        "formal_input_sha256": "sha256:bebc56b2f665c3eeafcf62f4aac41a59cd87f6f27fe6dd4da0543d669eb6988d",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:c60a584f9f26c87591b4a4c1262c6ca497e64a6f4f4870ca623166bc4e8dbe6f",
+        "sha256": "sha256:0ce12708a98a3728d825ee5099b5047d56a18f826c1c0cf9c9d400bebc96a537",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:5843fdfcc957322325b4d5f0fa5e90436b426a9c1442021d53b85ded8f3a6a07",
+    "solver_input_digest": "sha256:133843def138e2fde9d2ceb718464b294b3d804fb1a7d6a228cbb5ed29d34209",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:6bd0a276547bfa17e4f55437714b01f72122526c67865359ad52744e4739fb89",
+    "artifact_sha256": "sha256:980c7709f005b61ba8bb7eede331888d95de7400de7a387ad9e8abcf21d275a1",
     "status": "PASSED"
   },
   "limitations": [
@@ -153,7 +153,7 @@
           "source_behavior_test.go"
         ],
         "stderr": "",
-        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.562s\n"
+        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.413s\n"
       }
     ],
     "language": "go",
@@ -302,11 +302,11 @@
         "platform=Darwin/arm64",
         "homebrew-bundle-profile=local-macos26-20260904",
         "php-root=/opt/homebrew/Cellar/php/8.5.9",
-        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
         "php-tree-record-count=643",
         "php-tree-file-count=532",
         "php-tree-directory-count=109",
-        "php-tree-bytes=129952851",
+        "php-tree-bytes=129937220",
         "php-tree-symlink-count=1",
         "php-tree-unbound-symlink-count=1",
         "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
@@ -318,6 +318,8 @@
         "php-debug=False",
         "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
         "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
         "php-runtime-semantic-soundness=NOT_RUN"
       ],
       "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"

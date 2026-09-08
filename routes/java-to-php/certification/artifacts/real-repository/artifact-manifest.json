@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -69,22 +70,22 @@
     {
       "bytes": 3036,
       "path": "formal-composition.json",
-      "sha256": "sha256:3b48207e937d4e38214b613a4d00d2e0d37edf14889f78bcdb57bc83204f56ea"
+      "sha256": "sha256:892182a7fb36f132bc8a0facf251d68c1fe094fda5b619e41cce07e0adbc3ab1"
     },
     {
       "bytes": 1010,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:00582745ac47b4717cbe79c0ae9f2c85084d68b68a595ae9beb678e646b9301e"
+      "sha256": "sha256:d5caae45da0e1df557b9cf81e2b37b080bf7c1e468d2dc040a99208b8807cd4d"
     },
     {
-      "bytes": 13437,
+      "bytes": 13438,
       "path": "formal-input.json",
-      "sha256": "sha256:7b265210a0f9b228accd3f1e454e069cec0bc6443900e4357050e6302b7b6981"
+      "sha256": "sha256:7c4e3750acb9a14d408c8bf52fcd89f74fca56e4a63af6beaba759f1f0cdf078"
     },
     {
       "bytes": 2378,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:cfeaede94524d0cef7dfe4e9d53686b06ce95adedc8b2bb13130e61177d3f33c"
+      "sha256": "sha256:e7b7fc407bfd23d80e23b1d37dc326d41ee4a45c48254f57fc3e8aaee1370036"
     },
     {
       "bytes": 2238,
@@ -104,7 +105,7 @@
     {
       "bytes": 3757,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:eab42ae53763bf3830c9aeaebebf88da2d929a794661e957e6f922d7a2f7aec6"
+      "sha256": "sha256:233113d6be1351d360d246954b0219d1e165108f190e7ce06dcf51d80be272e6"
     },
     {
       "bytes": 388,
@@ -112,9 +113,9 @@
       "sha256": "sha256:6c52073b36ede3cf07c8a34eacec5806cba9ac289648a08f70f04ba9a7d4e605"
     },
     {
-      "bytes": 12005,
+      "bytes": 12118,
       "path": "route-evidence.json",
-      "sha256": "sha256:15f93d34abb1b681f27308832cfcbefe8b0e21af87cd19dcf365714477a555e7"
+      "sha256": "sha256:6bad1de5b0ee5d718c1ac35a3ab71fa68446d8fe3cedf81ff2962459f2a4d05c"
     },
     {
       "bytes": 942,
@@ -160,5 +161,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "java-to-php",
   "schema_version": 1,
-  "total_bytes": 61236
+  "total_bytes": 61350
 }

@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:3b48207e937d4e38214b613a4d00d2e0d37edf14889f78bcdb57bc83204f56ea",
+    "artifact_sha256": "sha256:892182a7fb36f132bc8a0facf251d68c1fe094fda5b619e41cce07e0adbc3ab1",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:7b265210a0f9b228accd3f1e454e069cec0bc6443900e4357050e6302b7b6981",
+    "formal_input_digest": "sha256:7c4e3750acb9a14d408c8bf52fcd89f74fca56e4a63af6beaba759f1f0cdf078",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:7b265210a0f9b228accd3f1e454e069cec0bc6443900e4357050e6302b7b6981",
+    "formal_input_sha256": "sha256:7c4e3750acb9a14d408c8bf52fcd89f74fca56e4a63af6beaba759f1f0cdf078",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:7b265210a0f9b228accd3f1e454e069cec0bc6443900e4357050e6302b7b6981",
+        "formal_input_sha256": "sha256:7c4e3750acb9a14d408c8bf52fcd89f74fca56e4a63af6beaba759f1f0cdf078",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:00582745ac47b4717cbe79c0ae9f2c85084d68b68a595ae9beb678e646b9301e",
+        "sha256": "sha256:d5caae45da0e1df557b9cf81e2b37b080bf7c1e468d2dc040a99208b8807cd4d",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:7b265210a0f9b228accd3f1e454e069cec0bc6443900e4357050e6302b7b6981",
+        "formal_input_sha256": "sha256:7c4e3750acb9a14d408c8bf52fcd89f74fca56e4a63af6beaba759f1f0cdf078",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:cfeaede94524d0cef7dfe4e9d53686b06ce95adedc8b2bb13130e61177d3f33c",
+        "sha256": "sha256:e7b7fc407bfd23d80e23b1d37dc326d41ee4a45c48254f57fc3e8aaee1370036",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:00582745ac47b4717cbe79c0ae9f2c85084d68b68a595ae9beb678e646b9301e",
+    "solver_input_digest": "sha256:d5caae45da0e1df557b9cf81e2b37b080bf7c1e468d2dc040a99208b8807cd4d",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:eab42ae53763bf3830c9aeaebebf88da2d929a794661e957e6f922d7a2f7aec6",
+    "artifact_sha256": "sha256:233113d6be1351d360d246954b0219d1e165108f190e7ce06dcf51d80be272e6",
     "status": "PASSED"
   },
   "limitations": [
@@ -299,11 +299,11 @@
         "platform=Darwin/arm64",
         "homebrew-bundle-profile=local-macos26-20260904",
         "php-root=/opt/homebrew/Cellar/php/8.5.9",
-        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
         "php-tree-record-count=643",
         "php-tree-file-count=532",
         "php-tree-directory-count=109",
-        "php-tree-bytes=129952851",
+        "php-tree-bytes=129937220",
         "php-tree-symlink-count=1",
         "php-tree-unbound-symlink-count=1",
         "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
@@ -315,6 +315,8 @@
         "php-debug=False",
         "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
         "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
         "php-runtime-semantic-soundness=NOT_RUN"
       ],
       "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"

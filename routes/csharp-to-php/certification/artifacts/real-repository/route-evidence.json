@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:1622882cacf780926a52fadd0ef5b77e6e8dfd94d80d1af4dac3cefdb10659d2",
+    "artifact_sha256": "sha256:79c8c70432064850c21042c3f0b82bc984b5b12323afda6b96063cdedfc70e48",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+    "formal_input_digest": "sha256:4c7aba59ad5da55c98f6317ecf7e70f08ed3a4c0efcb8f67b4e515afee64051b",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+    "formal_input_sha256": "sha256:4c7aba59ad5da55c98f6317ecf7e70f08ed3a4c0efcb8f67b4e515afee64051b",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+        "formal_input_sha256": "sha256:4c7aba59ad5da55c98f6317ecf7e70f08ed3a4c0efcb8f67b4e515afee64051b",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:d8aad91f69db8b5a8d050a444a7921b78d3e3a88b93ecf392753bd826404b950",
+        "sha256": "sha256:0a9e96624c87435f2262be518a59f1d17a4ca8154227f29354cbcef53951ae48",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+        "formal_input_sha256": "sha256:4c7aba59ad5da55c98f6317ecf7e70f08ed3a4c0efcb8f67b4e515afee64051b",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:f1ee2cfdd5c57297884fec428b16e81fe1d1c38381efcc290f99245a5584dbf2",
+        "sha256": "sha256:1982e7345e60e580e928269210dcf223d793ab1d1f52e72044ebf1c729e7c935",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:d8aad91f69db8b5a8d050a444a7921b78d3e3a88b93ecf392753bd826404b950",
+    "solver_input_digest": "sha256:0a9e96624c87435f2262be518a59f1d17a4ca8154227f29354cbcef53951ae48",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -70,7 +70,7 @@
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:9238f3c6b054019f12eadd2f5d31c77b679aaa4a66281417ab8f94d26b795185",
+    "plan_sha256": "sha256:7bfd1700309ba18ae9f50064260cba1d193d574100f25b67f56834b289931f3a",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:7a6c63cc83ffb1b4ea4bcbab527f2adec8d660c73eaa74f55e92a1da9e4feb2e",
     "raw_target_relift": {
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:7e3a3564e6593a626f9399ef891618f1e4795f1430d3b854334743381a19952e",
+    "artifact_sha256": "sha256:7c3f733fb658be20d8c50f41336c05f58c1360a9dd5c42af5ff021b0a9c9c5d5",
     "status": "PASSED"
   },
   "limitations": [
@@ -115,15 +115,15 @@
     "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:1c5b1f4ef147518ce184dd19621451e7a5192f7996d91d881993ae550125a063",
+    "source_ir_sha256": "sha256:2835c97087afce968c9125fa71d356e23835069caccff75c712fcdc11f8cc412",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
     "target_ir_sha256": "sha256:527537a838317ca5de87cf586807fe4eaf618557d4209a6076f139c5f28b1917"
   },
-  "semantic_ir_sha256": "sha256:1c5b1f4ef147518ce184dd19621451e7a5192f7996d91d881993ae550125a063",
+  "semantic_ir_sha256": "sha256:2835c97087afce968c9125fa71d356e23835069caccff75c712fcdc11f8cc412",
   "source": {
     "analyzer": "Microsoft.CodeAnalysis.CSharp",
-    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:5991a3592cc3d4579d5e809c9767ed57ab762a2d045f34b87175bd79b5a2aac4",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:f9f59cd2852c3838f69699865fdf7bee41c46a13fe8011edaf84f28eb5d46068",
     "function_name": "difference",
     "language": "csharp",
     "path": "Difference.cs",
@@ -144,7 +144,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/real-repository/source-runtime/SourceHarness.csproj (in 333 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/real-repository/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:10.13\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-soid07ol/real-repository/source-runtime/SourceHarness.csproj (in 60 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-soid07ol/real-repository/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.01\n"
       },
       {
         "command": [
@@ -337,11 +337,11 @@
         "platform=Darwin/arm64",
         "homebrew-bundle-profile=local-macos26-20260904",
         "php-root=/opt/homebrew/Cellar/php/8.5.9",
-        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
         "php-tree-record-count=643",
         "php-tree-file-count=532",
         "php-tree-directory-count=109",
-        "php-tree-bytes=129952851",
+        "php-tree-bytes=129937220",
         "php-tree-symlink-count=1",
         "php-tree-unbound-symlink-count=1",
         "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
@@ -353,6 +353,8 @@
         "php-debug=False",
         "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
         "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
         "php-runtime-semantic-soundness=NOT_RUN"
       ],
       "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
