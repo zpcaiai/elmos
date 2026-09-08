@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "independence": "not used to implement the deployment parser",
+  "cases": [
+    {"id": "holdout-wrong-jwt-audience", "expected": "401"},
+    {"id": "holdout-expired-jwt", "expected": "401"},
+    {"id": "holdout-cross-tenant-claim", "expected": "403"},
+    {"id": "holdout-secret-rotation", "expected": "new revision uses the latest version without log disclosure"}
+  ],
+  "status": "NOT_RUN"
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id": "negative-shell-syntax", "expected": "dotenv content is parsed as data and never executed"},
+    {"id": "negative-duplicate-key", "expected": "duplicate provider key is rejected"},
+    {"id": "negative-untrusted-descope-origin", "expected": "HTTP, userinfo, path and query are rejected"},
+    {"id": "negative-database-host-injection", "expected": "host path/query injection is rejected"},
+    {"id": "negative-missing-google-identity", "expected": "apply fails before provider mutation"}
+  ]
+}

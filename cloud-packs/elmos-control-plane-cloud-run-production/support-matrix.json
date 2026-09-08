@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "capabilities": [
+    {
+      "key": "digest-pinned-container-build",
+      "status": "experimental",
+      "scope": "Linux amd64 image from apps/control-plane/Dockerfile, pushed to immutable Artifact Registry and deployed by digest",
+      "owner": "ELMOS Platform Engineering",
+      "evidence_refs": ["certification/local-validation.json"],
+      "limitations": ["Real Artifact Registry push is required before promotion"]
+    },
+    {
+      "key": "secret-config-environment-promotion",
+      "status": "conditional",
+      "scope": "Neon database values enter three exact Secret Manager resources via stdin; Descope issuer, JWKS and audience are public configuration",
+      "owner": "ELMOS Security",
+      "evidence_refs": ["certification/local-validation.json"],
+      "limitations": ["Secret rotation and rollback need real provider evidence"]
+    },
+    {
+      "key": "cloud-run-service-and-vercel-binding",
+      "status": "blocked",
+      "scope": "Cloud Run v2 service in nexus/asia-east1 and Vercel production HTTPS origin binding",
+      "owner": "ELMOS SRE",
+      "evidence_refs": [],
+      "limitations": ["Google OAuth CLI grant, provider apply, readiness, Vercel redeploy and smoke are NOT_RUN"]
+    },
+    {
+      "key": "production-certification",
+      "status": "blocked",
+      "scope": "Independent representative, rollback, destroy, cost, drift, SLO and security evidence",
+      "owner": "Independent Release Authority",
+      "evidence_refs": [],
+      "limitations": ["Local validation and a single production deployment cannot certify this route"]
+    }
+  ]
+}
