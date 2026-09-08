@@ -108,7 +108,8 @@ class CommercialCreditMigrationContractTest {
             assertTrue(script.contains("'" + function + "'"),
                     function + " must be granted when the runtime role is created after Flyway");
         }
-        assertTrue(script.contains("GRANT SELECT ON TABLE\n  commercial_products,"));
+        assertTrue(script.contains(
+                "GRANT SELECT ON TABLE self_service_pricing_plan_versions, commercial_products"));
         assertTrue(script.contains("payment_unmatched_callbacks_payment_unmatched_callback_id_seq"));
         assertTrue(script.contains("GRANT UPDATE (processing_status, attempt_count, updated_at)"));
         assertFalse(script.contains("GRANT INSERT ON TABLE commercial_credit_accounts"));
