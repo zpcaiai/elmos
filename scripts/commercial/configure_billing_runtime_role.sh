@@ -109,6 +109,8 @@ BEGIN
          'elmos_wallet_credit_topup',
          'elmos_wallet_topup_bounds',
          'elmos_wallet_create_topup_order',
+         'elmos_wallet_mark_topup_handoff',
+         'elmos_wallet_mark_topup_prepare_failed',
          'elmos_expire_current_trial',
          'elmos_commercial_create_order',
          'elmos_commercial_fulfill_order',
@@ -116,7 +118,8 @@ BEGIN
          'elmos_commercial_mark_order_prepare_failed',
          'elmos_commercial_reserve_generation',
          'elmos_commercial_settle_generation',
-         'elmos_commercial_release_generation'
+         'elmos_commercial_release_generation',
+         'elmos_commercial_expire_generation_reservations'
        )
   LOOP
     EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO %I', v_function.signature, '$runtime_role');
