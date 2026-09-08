@@ -361,11 +361,15 @@ class RepositoryGateTests(unittest.TestCase):
         self.assertEqual(13, len(GATE.LANGUAGES))
         self.assertEqual(156, len(GATE.EXPECTED_ROUTE_KEYS))
         self.assertEqual(
-            tuple(ROUTE_SETS.SUPPORTED_ROUTE_LANGUAGES), GATE.LANGUAGES
+            tuple(ROUTE_SETS.THIRTEEN_LANGUAGE_MATRIX_LANGUAGES), GATE.LANGUAGES
         )
         self.assertEqual(
-            tuple(ROUTE_SETS.COMPLETE_ROUTE_KEYS), GATE.EXPECTED_ROUTE_KEYS
+            tuple(ROUTE_SETS.THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+            GATE.EXPECTED_ROUTE_KEYS,
         )
+        self.assertIn("vb6", ROUTE_SETS.SUPPORTED_ROUTE_LANGUAGES)
+        self.assertNotIn("vb6", GATE.LANGUAGES)
+        self.assertEqual(26, len(ROUTE_SETS.VB6_EXACT_ROUTE_KEYS))
         self.assertNotIn("javascript", GATE.LANGUAGES)
         self.assertTrue(
             all("javascript" not in route for route in GATE.EXPECTED_ROUTE_KEYS)
