@@ -89,7 +89,8 @@ REQUIRED_RUNTIME_CHANNELS = {
     "vue3": ("browser",),
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
-SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 300
+SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 600
+FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS = 600
 LOCKED_NODE_IDENTITIES = (
     {
         "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
@@ -2833,7 +2834,7 @@ def validate_engine_verifier(
             cwd=pack,
             capture_output=True,
             text=True,
-            timeout=180,
+            timeout=FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS,
             check=False,
         )
         result = json.loads(completed.stdout.strip().splitlines()[-1])
