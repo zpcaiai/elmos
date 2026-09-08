@@ -1,26 +1,21 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-09-08T02:19:37Z",
+  "generated_at": "2026-09-08T05:37:04Z",
   "subject": "ELMOS governed RAG, agentic orchestration, integrations, memory, and performance P0-P2",
-  "evaluated_repository_revision": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "evaluated_repository_revision": "ec993306b721714f413d3a4894b0809826de52ed",
   "implementation_commits": [
     "ac43ad8be8980f2b210a50773fb741d27e273348",
-    "3e748ecff8c77cc50409c1895ef665880faa40b0"
+    "3e748ecff8c77cc50409c1895ef665880faa40b0",
+    "ec993306b721714f413d3a4894b0809826de52ed"
   ],
   "engineering_state": "LOCAL_ENGINEERING_VALIDATED",
   "certification_state": "NOT_CERTIFIED",
   "tests": {
-    "pinned_extras": {
-      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src .venv/bin/python -m unittest discover -s packages/repository-orchestrator/tests -p test_*.py",
+    "locked_test_dependency_group": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src uv run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s packages/repository-orchestrator/tests -p test_*.py",
       "cases": 36,
       "passed": 36,
       "skipped": 0,
-      "failed": 0
-    },
-    "system_python_optional_dependencies": {
-      "cases": 36,
-      "passed": 33,
-      "skipped": 3,
       "failed": 0
     },
     "repository_task_router_source_integration": {
@@ -30,11 +25,19 @@
       "failed": 0
     },
     "project_intelligence_runtime": {
-      "cases": 155,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src uv run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s engines/project-intelligence-engine/tests -p test_*.py",
+      "cases": 154,
       "passed": 154,
-      "skipped": 1,
+      "skipped": 0,
       "failed": 0,
-      "following_qualification_gate": "FAIL_CLOSED_RECEIPT_DRIFT"
+      "following_qualification_gate": "PASS",
+      "importer_gate": "PASS"
+    },
+    "project_intelligence_source_integration": {
+      "cases": 51,
+      "passed": 51,
+      "skipped": 0,
+      "failed": 0
     },
     "ruff": {
       "state": "PASS"
@@ -85,7 +88,9 @@
     "multiagent.py": "db846b6ced9e92a3d74f760cedceb74d8f28f41835a46f868da91319c981a87f",
     "performance.py": "a8ccc08fbaa3cabde3a2c682619a7d168adde6a73b30683e97d24e0ccee1ab22",
     "semantic.py": "f52025b5a171b50bf74b91db5874dd2af69c9b9677565f16efedc23e73335508",
-    "uv.lock": "d2d0032342de232db0ebb4e7e2b7c74a3c04b3932aef1f6b9c915db890fc1dad",
-    "execution_report.md": "9d08f90e6e40981fb5b8b953e7a97025de55e6bc6486638e650abc3179e630de"
+    "repository_orchestrator_uv.lock": "eb8670dcf9bf06b5e75a1a60c34312d957b02f0640e0cc1ee4115399227e88bd",
+    "project_intelligence_uv.lock": "aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217",
+    "project_intelligence_local_qualification.json": "9964a2cb487252d5ca98209f3b4fed4f3766fe8b8f2c0e3ac1ab4f0caf38cb94",
+    "execution_report.md": "a7078ee895fa013ec54c8c32a4f01b3c5d8a745ecbc6a3b217f59acc3184986b"
   }
 }
