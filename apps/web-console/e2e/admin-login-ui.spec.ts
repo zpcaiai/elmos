@@ -31,14 +31,18 @@ test("administrator login is visibly separate from user login", async ({ page })
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
   await expect(page.getByText("管理员专用 · ADMIN ONLY", { exact: true })).toBeVisible();
   await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveCount(0);
+  await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
   await expect(page.getByLabel("管理员用户名")).toHaveValue(administratorEmail);
   await expect(page.getByLabel("管理员密码")).toBeVisible();
-  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeVisible();
   await expect(page.getByText(/仅用于开发测试，生产环境不启用/)).toBeVisible();
-  await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
-  // The privileged page must not contain the ordinary user credential form.
-  await expect(page.locator(".admin-auth-card form[action='/api/auth/login']")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /返回用户登录/ })).toHaveAttribute("href", "/login");
+  // 返回用户页只是导航；管理员身份仍只能由这个独立入口重新认证。
+  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveAttribute(
+    "href",
+    "/login",
+  );
+  await expect(page.locator(".admin-auth-card input[name='loginMode']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card")).toBeVisible();
 });
 

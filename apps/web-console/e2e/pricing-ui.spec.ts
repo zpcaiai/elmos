@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-
 import { installAdministratorSession } from "./helpers/admin-session";
 
 test("人民币套餐页展示精确 token 与 credit 额度", async ({ page }) => {
