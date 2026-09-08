@@ -149,6 +149,7 @@ test("deployed console exposes separate provider-backed user and administrator e
   await expect(page.getByRole("heading", { name: "邮箱注册" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "手机号注册" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "微信扫码注册" })).toBeVisible();
+  await expect(page.locator('form[action="/api/auth/descope/otp/start"] input[name="returnTo"]').first()).toHaveValue("/");
 
   await page.goto("/admin/login", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
