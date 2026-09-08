@@ -3,14 +3,8 @@ name: Vercel deployment smoke
 on:
   push:
     branches: [main]
-    paths:
-      - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/**"
   pull_request:
     branches: [main]
-    paths:
-      - "apps/web-console/**"
-      - "contracts/pricing-catalog-schema/**"
   workflow_dispatch:
     inputs:
       deployment_url:
