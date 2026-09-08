@@ -92,6 +92,16 @@ class DependabotGovernanceTest(unittest.TestCase):
             "eol_compatibility", MODULE.classify(alert(91, "vue", manifest))
         )
 
+    def test_route_formal_artifact_uses_narrow_certification_classification(self) -> None:
+        manifest = (
+            "routes/java-to-php/certification/formal-artifacts/engine-sources/"
+            "runtime/typescript/sha256-example/package.json"
+        )
+        self.assertEqual(
+            "immutable_certification_artifact",
+            MODULE.classify(alert(330, "fast-xml-parser", manifest)),
+        )
+
     def test_runtime_manifest_is_never_eligible(self) -> None:
         value = alert(999, "vite", "apps/web-console/package.json")
         self.assertIsNone(MODULE.classify(value))
