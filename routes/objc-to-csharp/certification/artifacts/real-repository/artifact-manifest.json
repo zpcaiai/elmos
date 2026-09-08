@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -106,22 +108,22 @@
     {
       "bytes": 3048,
       "path": "formal-composition.json",
-      "sha256": "sha256:5d8380266a7bd5aad32723d868b3b832d5a1c92a52ebf8242713c6ff99c2be58"
+      "sha256": "sha256:1c408890ee2d7c454a086b42b9a541f6e4ded20df2b595a080d3ea9721d48b9f"
     },
     {
       "bytes": 1010,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:93c6f1a322061cba5b1746f3b3d9ea9cc14c06c3d9deb8026a121a2936ebc2a1"
+      "sha256": "sha256:b8b06309c339098f4319683ca136f2e2dac2e2f9ab27d61e40b31c50957f7268"
     },
     {
-      "bytes": 10495,
+      "bytes": 10496,
       "path": "formal-input.json",
-      "sha256": "sha256:66b0b6b81f4816e82a8d4f6b185b2c1a5a45d8df8dc92ea360ee16105acd395d"
+      "sha256": "sha256:02bb85629f4a55be08ba1c3a298c0d7f3ec6eb283baa7e0c6dc69251266557b4"
     },
     {
       "bytes": 2390,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:36cbd228b906f7ee03fbd890e787b36bddc05932067065a2c4e83c6c4a41a9c7"
+      "sha256": "sha256:11f05e2e6fb6fa31d853acc1584092c376fb3fde8df06cb8a5d59868a418d96c"
     },
     {
       "bytes": 2372,
@@ -141,12 +143,12 @@
     {
       "bytes": 3547,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:582e3d17adbb5fb46ee6c6a428d0e628c855d299747343458c523b4d1d58a004"
+      "sha256": "sha256:8c5d24fec9e7872c60615a66b85168cef271910464e9c477470a04fd66b945ca"
     },
     {
       "bytes": 14101,
       "path": "route-evidence.json",
-      "sha256": "sha256:36f0ba6f79f8c7b2a727a3a6adb0a0370eb9ec7f592b15c086957939143d5001"
+      "sha256": "sha256:026a026aebe450c8022ad8a79b9152ce2c648864699d592e1f50b6ba87f67ce7"
     },
     {
       "bytes": 309,
@@ -187,5 +189,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "objc-to-csharp",
   "schema_version": 1,
-  "total_bytes": 58074
+  "total_bytes": 58075
 }

@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:6f228f37ca96c927f7dac68660411c38101bf27947b85447f224b818647371cd
-; formal-input-sha256: sha256:6f228f37ca96c927f7dac68660411c38101bf27947b85447f224b818647371cd
+; formal_input_digest: sha256:35606397bdf6c66e86fd4301914fcfef0fd39e2c02f1a7a22eddeba1e77bb756
+; formal-input-sha256: sha256:35606397bdf6c66e86fd4301914fcfef0fd39e2c02f1a7a22eddeba1e77bb756
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: profile-total-domain
 ; original-source-bytes-theorem: false

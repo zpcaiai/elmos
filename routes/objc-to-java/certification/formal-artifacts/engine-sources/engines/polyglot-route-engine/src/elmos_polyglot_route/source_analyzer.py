@@ -14,6 +14,7 @@ from .native import analyze_many as analyze_many_native
 from .native import inventory_module as inventory_module_native
 from .react_analyzer import analyze_react, inventory_react_module
 from .toolchains import exact_toolchain
+from .vb6_analyzer import analyze_many_vb6, analyze_vb6, inventory_vb6_module
 
 
 def analyze(
@@ -34,6 +35,8 @@ def analyze(
             exact_toolchain("flutter"),
             emitted_target=emitted_target,
         )
+    if language == "vb6":
+        return analyze_vb6(source, function_name, emitted_target=emitted_target)
     return analyze_native(source, language, function_name, emitted_target=emitted_target)
 
 
@@ -55,6 +58,8 @@ def inventory_module(
         )
     if language == "kotlin":
         return inventory_kotlin_module(source)
+    if language == "vb6":
+        return inventory_vb6_module(source, emitted_target=emitted_target)
     if emitted_target:
         return inventory_module_native(source, language)
     return inventory_module_native(source, language)
@@ -87,6 +92,12 @@ def analyze_many(
             except RouteError as error:
                 outcomes[name] = error
         return outcomes
+    if language == "vb6":
+        return analyze_many_vb6(
+            source,
+            list(function_names),
+            emitted_target=emitted_target,
+        )
     return analyze_many_native(
         source,
         language,

@@ -1,5 +1,6 @@
 {
   "allowed_suffixes": [
+    ".bas",
     ".cpp",
     ".cs",
     ".csproj",
@@ -12,6 +13,7 @@
     ".m",
     ".md",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
@@ -69,22 +71,22 @@
     {
       "bytes": 3316,
       "path": "formal-composition.json",
-      "sha256": "sha256:d98f132371dfe98c928be888340e4f888230bd0b31d41d8d7cee49640fa96bd5"
+      "sha256": "sha256:2ee6adeb466ec3223d62da5671d7e8b4ab0987f50b771bad4f622cb8952c8576"
     },
     {
       "bytes": 2709,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:7c004b6170b18e5f564530829ed1c844b04878054a2feeb925057e4e00e9a26a"
+      "sha256": "sha256:f20f7c4bd2d36e5edac98cfceb572f2c8f7f40da1e5b515aa0fdf140e00602fd"
     },
     {
-      "bytes": 14353,
+      "bytes": 14354,
       "path": "formal-input.json",
-      "sha256": "sha256:24814ca19dc7cada603374afb49d3ff0074b3c678b3fab63350feeffba125368"
+      "sha256": "sha256:4289675e6f790ea8a34e31b3b1186146468e424b5777bd97de2fb32dc9c69d27"
     },
     {
       "bytes": 2658,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:a0865f01716046c23dd42a2bd1075e8a62d44949c1c8cfad917e816ad54ec173"
+      "sha256": "sha256:59f578fa3e585d5654743d51c9257de5c0e5b335c081cf245522185661cf1c99"
     },
     {
       "bytes": 2242,
@@ -104,7 +106,7 @@
     {
       "bytes": 4268,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:b79ed43c770a4ecbc225853bcc240049b749e7cc96cc66cbca66f209df49607f"
+      "sha256": "sha256:e251b936e776c262cbb71224236a96c04c1ed98ee418abf4181d23d27a926cf6"
     },
     {
       "bytes": 517,
@@ -119,7 +121,7 @@
     {
       "bytes": 11857,
       "path": "route-evidence.json",
-      "sha256": "sha256:d8529a4f097734fb65ba9d451899e664482198388d93c68eebe721e4abdc9b0e"
+      "sha256": "sha256:64a933218bb9dc39eb6421312900fe9a380c17d7f8af7771011651043ba43d2a"
     },
     {
       "bytes": 1200,
@@ -170,5 +172,5 @@
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "objc-to-typescript",
   "schema_version": 1,
-  "total_bytes": 66675
+  "total_bytes": 66676
 }
