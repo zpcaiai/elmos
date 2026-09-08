@@ -100,6 +100,10 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".swift": "swift",
     ".ts": "typescript",
     ".tsx": "react",
+    ".bas": "vb6",
+    ".cls": "vb6",
+    ".frm": "vb6",
+    ".ctl": "vb6",
 }
 
 _IGNORED_DIRECTORIES: Final[frozenset[str]] = frozenset(
@@ -167,6 +171,8 @@ _BUILD_DESCRIPTOR_SUFFIXES: Final[tuple[str, ...]] = (
     ".sln",
     ".vcxproj",
     ".vbproj",
+    ".vbp",
+    ".vbg",
 )
 
 _RESOURCE_EXTENSIONS: Final[frozenset[str]] = frozenset(

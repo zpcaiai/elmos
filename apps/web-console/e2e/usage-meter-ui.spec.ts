@@ -176,7 +176,10 @@ test.describe.serial("实时账户用量", () => {
   });
 
   test("套餐页实时更新 token 消耗量与进度", async ({ page }) => {
-    await installAdministratorSession(page);
+    await installAdministratorSession(page, {
+      actorId,
+      organizationId: tenantId,
+    });
     await page.goto("/pricing");
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);

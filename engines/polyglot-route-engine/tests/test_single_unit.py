@@ -141,6 +141,7 @@ def _static_check_toolchain(
         ("kotlin", "Migrated.kt", "-jvm-target", False),
         ("react", "migrated.tsx", "tsconfig.json", True),
         ("flutter", "migrated.dart", "analyze", True),
+        ("vb6", "migrated.bas", "elmos-static-check.vbp", False),
     ],
 )
 def test_check_only_dispatches_every_repository_surface_to_its_exact_static_compiler(
@@ -173,6 +174,8 @@ def test_check_only_dispatches_every_repository_surface_to_its_exact_static_comp
         assert toolchain == selected(language)
         assert timeout == 120
         commands.append(command)
+        if language == "vb6":
+            (cwd / "elmos-static-check.exe").write_bytes(b"MZ-test-artifact")
         stdout = '{"version":1,"diagnostics":[]}' if language == "flutter" else ""
         return subprocess.CompletedProcess(command, 0, stdout, "")
 

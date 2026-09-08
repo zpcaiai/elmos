@@ -83,6 +83,7 @@ test("normalizes repository responses from before controlled delivery", async ({
 
   await page.goto("/repositories");
   await expect(page.getByText("当前企业身份")).toBeVisible();
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
   await page.getByRole("button", { name: "拉取并建立工作区" }).click();
@@ -100,6 +101,8 @@ test("pulls, reads and locally modifies a Gitee repository without external effe
   let observedChange: Record<string, unknown> | null = null;
   await page.route("**/api/repository-workspaces**", async (route) => {
     const request = route.request();
+    // An authenticated enterprise session stays in HttpOnly cookies. The BFF,
+    // not browser JavaScript, derives the upstream bearer after this request.
     expect(request.headers().authorization).toBeUndefined();
     const url = new URL(request.url());
     if (request.method() === "POST" && url.pathname.endsWith("/api/repository-workspaces")) {
@@ -215,6 +218,7 @@ test("pulls, reads and locally modifies a Gitee repository without external effe
   await page.goto("/repositories");
   await expect(page.getByRole("heading", { name: "代码仓库工作区" })).toBeVisible();
   await expect(page.getByText("当前企业身份")).toBeVisible();
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
@@ -278,6 +282,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
   });
   await page.goto("/repositories");
   await expect(page.getByText("当前企业身份")).toBeVisible();
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
@@ -290,6 +295,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
 
   await page.goto("/repositories");
   await expect(page.getByText("当前企业身份")).toBeVisible();
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");

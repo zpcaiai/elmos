@@ -1,0 +1,131 @@
+{
+  "analyzer": "clang AST (JSON)",
+  "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 97,
+                "file": "difference.cpp",
+                "start_byte": 93
+              },
+              "value": "left"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 105,
+                "file": "difference.cpp",
+                "start_byte": 100
+              },
+              "value": "right"
+            },
+            "source_span": {
+              "end_byte": 105,
+              "file": "difference.cpp",
+              "start_byte": 93
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 132,
+            "file": "difference.cpp",
+            "start_byte": 89
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 125,
+                  "file": "difference.cpp",
+                  "start_byte": 124
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 125,
+                "file": "difference.cpp",
+                "start_byte": 117
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 148,
+                "file": "difference.cpp",
+                "start_byte": 144
+              },
+              "value": "left"
+            },
+            "operator": "-",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 156,
+                "file": "difference.cpp",
+                "start_byte": 151
+              },
+              "value": "right"
+            },
+            "source_span": {
+              "end_byte": 156,
+              "file": "difference.cpp",
+              "start_byte": 144
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 156,
+            "file": "difference.cpp",
+            "start_byte": 137
+          }
+        }
+      ],
+      "name": "difference",
+      "parameters": [
+        {
+          "name": "left",
+          "source_span": {
+            "end_byte": 61,
+            "file": "difference.cpp",
+            "start_byte": 44
+          },
+          "type": "integer"
+        },
+        {
+          "name": "right",
+          "source_span": {
+            "end_byte": 81,
+            "file": "difference.cpp",
+            "start_byte": 63
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 159,
+        "file": "difference.cpp",
+        "start_byte": 20
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "difference.cpp",
+  "source_language": "cpp"
+}

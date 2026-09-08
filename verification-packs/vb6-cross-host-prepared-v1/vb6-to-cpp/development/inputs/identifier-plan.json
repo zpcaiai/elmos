@@ -1,0 +1,107 @@
+{
+  "binding_count": 3,
+  "bindings": [
+    {
+      "binding_id": "sha256:90eb450d236273f6ac29634283cd56c82cca93c55dfff1bde79780deb86d815e",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "calculate",
+          "reasons": [
+            "TARGET_OPEN_GLOBAL_SYMBOL_NAMESPACE"
+          ],
+          "status": "REJECTED"
+        },
+        {
+          "index": 1,
+          "name": "elmos_fn_c5b2c3271bf49faf",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": null,
+      "decision": "ALPHA_RENAMED",
+      "ordinal": 0,
+      "role": "function",
+      "scope_id": "sha256:2e6443992f19a710d27dd920d64f313d3b3bcf03c4ab7f76d17f264d07f64946",
+      "selected_candidate_index": 1,
+      "signature_sha256": "sha256:757330ff03868e1011f4333ee25c70cb812e61f466acb94b6a9abf3a61df000e",
+      "source_name": "calculate",
+      "target_name": "elmos_fn_c5b2c3271bf49faf"
+    },
+    {
+      "binding_id": "sha256:bb9b18f65e023bca18273fd7c5df2b0e5047be016284ff5e3fb2d82d2ac30548",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "subtotal",
+          "reasons": [
+            "TARGET_OPEN_PREPROCESSOR_IDENTIFIER_NAMESPACE"
+          ],
+          "status": "REJECTED"
+        },
+        {
+          "index": 1,
+          "name": "elmos_p000_c3a20de96ac5a279",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": "integer",
+      "decision": "ALPHA_RENAMED",
+      "ordinal": 0,
+      "role": "parameter",
+      "scope_id": "sha256:90eb450d236273f6ac29634283cd56c82cca93c55dfff1bde79780deb86d815e",
+      "selected_candidate_index": 1,
+      "signature_sha256": null,
+      "source_name": "subtotal",
+      "target_name": "elmos_p000_c3a20de96ac5a279"
+    },
+    {
+      "binding_id": "sha256:392b16c39b5e947c22baaaa7c650b4650d52bc8b2ab577235e5e53694aec1666",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "tax",
+          "reasons": [
+            "TARGET_OPEN_PREPROCESSOR_IDENTIFIER_NAMESPACE"
+          ],
+          "status": "REJECTED"
+        },
+        {
+          "index": 1,
+          "name": "elmos_p001_4425bd0a5d9b0ba4",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": "integer",
+      "decision": "ALPHA_RENAMED",
+      "ordinal": 1,
+      "role": "parameter",
+      "scope_id": "sha256:90eb450d236273f6ac29634283cd56c82cca93c55dfff1bde79780deb86d815e",
+      "selected_candidate_index": 1,
+      "signature_sha256": null,
+      "source_name": "tax",
+      "target_name": "elmos_p001_4425bd0a5d9b0ba4"
+    }
+  ],
+  "candidate_limit": 16,
+  "kind": "elmos.typed-identifier-plan",
+  "policy_id": "typed-alpha-hygiene-v2",
+  "policy_sha256": "sha256:60be21527c6f726ca8a8016b9169222ae9b33ceaa4063e23505ea34bce092f8a",
+  "schema_version": "2.0.0",
+  "source_ir_sha256": "sha256:2bb2d5900c75f63223ff1729eb94949c9bec3d4675d965f02b3afee05831d8f7",
+  "source_semantic_sha256": "sha256:ce351bc48930ce1bdb3460f30b5883fc44ded247e157d588489508aa9830cf0e",
+  "target_language": "cpp",
+  "unit_namespace": {
+    "kind": "elmos.identifier-unit-namespace",
+    "repository_snapshot_sha256": null,
+    "schema_version": "1.0.0",
+    "scope": "standalone-semantic-ir",
+    "source_logical_path": "pricing.bas",
+    "source_sha256": "sha256:ce351bc48930ce1bdb3460f30b5883fc44ded247e157d588489508aa9830cf0e",
+    "work_unit_id": null
+  },
+  "unit_namespace_sha256": "sha256:27aa7aa0fe9c929330d1fd7382141276331df2a82ac45567d501569bcfe94396"
+}
