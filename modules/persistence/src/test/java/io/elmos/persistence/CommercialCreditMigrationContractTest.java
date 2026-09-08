@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
+    private static final Path DIGEST_TRIGGER_REPAIR = Path.of(
+            "src/main/resources/db/migration/V85__elmpay_digest_trigger_catalog_hashing.sql");
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
@@ -70,5 +72,16 @@ class CommercialCreditMigrationContractTest {
         assertFalse(sql.contains("GRANT INSERT ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT UPDATE ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT DELETE ON commercial_credit_ledger_entries"));
+    }
+
+    @Test void elmpayDigestTriggersUseCatalogHashingUnderPinnedSearchPath() throws Exception {
+        String sql = Files.readString(DIGEST_TRIGGER_REPAIR);
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_sync_payment_order_directory()"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory()"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_sync_commercial_order_directory()"));
+        assertTrue(sql.contains("SET search_path = pg_catalog, public, pg_temp"));
+        assertTrue(sql.contains("pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to("));
+        assertFalse(sql.contains("public.encode("));
+        assertFalse(sql.contains("public.digest("));
     }
 }
