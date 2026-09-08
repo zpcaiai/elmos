@@ -35,12 +35,18 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
+    await page.getByRole("button", { name: "打开导航" }).click();
+    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
+  }
   const sidebarAdminLogin = page.locator("aside").getByRole("link", {
     name: "管理员登录",
     exact: true,
   });
   await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  await sidebarAdminLogin.click();
+  await sidebarAdminLogin.focus();
+  await expect(sidebarAdminLogin).toBeFocused();
+  await sidebarAdminLogin.press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
