@@ -1,4 +1,5 @@
 {
+  "pack_key": "postgresql-to-dm8",
   "blockers": [
     {
       "code": "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
