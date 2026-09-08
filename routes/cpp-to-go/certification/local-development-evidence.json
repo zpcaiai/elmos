@@ -1,11 +1,286 @@
 {
-  "behavior_pass_rate": 0.0,
+  "artifact_manifest": {
+    "bytes": 4376,
+    "path": "certification/artifacts/development/artifact-manifest.json",
+    "sha256": "sha256:e3d5f94de2af03d3884d4a7d87e1dd250a6bf2fb2ce3479a9a664f00ac02d825"
+  },
+  "artifact_root": "certification/artifacts/development",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:b8c9624b35d925ca92c24d8dfc441fd720adbab8e1ba39df7d1c5e30cc76b332",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
   "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:d85e3af06886ec046467c6059c027531b7989fe0a59eb317cefba4b817628e89",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
   "corpus": "development",
-  "critical_unknown_semantics": 1,
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:0d386d1ec5311a6d6d0da33d166a11a525b50b85daf507cb05a015885c473e20",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:2245a2e2f26c06a2a85a1bb0ff31b4f1562b674e5691ffb1ac142581aad2de45",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:2245a2e2f26c06a2a85a1bb0ff31b4f1562b674e5691ffb1ac142581aad2de45",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:2245a2e2f26c06a2a85a1bb0ff31b4f1562b674e5691ffb1ac142581aad2de45",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:0b2b93e7aeace34f3a8aaf61c33cd07b218974ba1165eeeac1eee3509e002fd2",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:2245a2e2f26c06a2a85a1bb0ff31b4f1562b674e5691ffb1ac142581aad2de45",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:ef225a61de72af0efdf86d250e98e294d230744019f2d88e0e0003398ee5500a",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:0b2b93e7aeace34f3a8aaf61c33cd07b218974ba1165eeeac1eee3509e002fd2",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:4d9f958c76f2fb37c951dfa07e149c8f08267a86af351c01d2ba323d02363929",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:d19f0623da7cbeb5cdd76a55ff8aab386948977e99b8da7c5bc420455fdcfcd1",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:587e27268c50acec65bb18709918acee4c2d97c9a1b9aeb641213ce173053335",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:4d9f958c76f2fb37c951dfa07e149c8f08267a86af351c01d2ba323d02363929",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "calculate",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.cpp",
+      "source_sha256": "sha256:4b70c616003b32afc4e4115bdf7a3e16211e5f959283c319f83d07f6e50d1dea",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:550026a95e6196b1add2008099351de4cb8835ded70ad8151f87ba571d32c7c6"
+  },
   "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:e5b8baf308b2690cb5ee380a7eb8275ef6a0b3b60b7ff181c71aa84ae9aa9f3d",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "cpp-to-go",
-  "schema_version": 1,
-  "source_map_coverage": 0.0,
-  "status": "NOT_RUN"
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:9eccd72c3a16c8a615ee4197c6f7ef7903c4d59316f93b3a086026b1de3388ae",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:4d9f958c76f2fb37c951dfa07e149c8f08267a86af351c01d2ba323d02363929"
+  },
+  "semantic_ir_sha256": "sha256:9eccd72c3a16c8a615ee4197c6f7ef7903c4d59316f93b3a086026b1de3388ae",
+  "source": {
+    "analyzer": "clang AST (JSON)",
+    "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "function_name": "calculate",
+    "language": "cpp",
+    "path": "pricing.cpp",
+    "sha256": "sha256:4b70c616003b32afc4e4115bdf7a3e16211e5f959283c319f83d07f6e50d1dea"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.cpp",
+    "artifact_sha256": "sha256:4b70c616003b32afc4e4115bdf7a3e16211e5f959283c319f83d07f6e50d1dea",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "-std=c++20",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "source_harness",
+          "source_harness.cpp"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "cpp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "cpp",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c++20"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "calculate",
+    "language": "go",
+    "path": "migrated.go",
+    "sha256": "sha256:606e5af0c37b299ae616f4f1c0476f33dfe3ef005d5c92584609e9a35c42ae3f"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+          "build",
+          "-o",
+          "route_harness",
+          "migrated.go",
+          "route_harness.go"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n"
+      }
+    ],
+    "language": "go",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIw",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NQ==",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+      "executable_sha256": "c812de5f1e8307431c5bce8ebc4887c180827abc5834a72cd640a8a14200a93b",
+      "language": "go",
+      "profile": [
+        "go-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "go-root=/Users/stephen/.local/share/elmos/toolchains/go/1.25.0",
+        "go-tree-sha256=877afe68674e435643c86dcbb546ec9d441f636962068ac7b63d3ced854c2704",
+        "go-tree-record-count=16087",
+        "go-tree-file-count=14496",
+        "go-tree-directory-count=1591",
+        "go-tree-bytes=202722007",
+        "go-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "1.25.0"
+    }
+  }
 }

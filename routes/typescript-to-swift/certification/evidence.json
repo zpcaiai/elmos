@@ -39,7 +39,7 @@
   "formal_equivalence": {
     "bytes": 308352,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:29f2711f0cac42dbb4e8e3358b5cfda61b48a03482af28c1fa8dffff20fd5916"
+    "sha256": "sha256:e17763e555c25ca82697374d17aec42e69f0ec3b44fb908d0e04ce238f5442a6"
   },
   "metrics": {
     "build_green_rate": 1.0,
