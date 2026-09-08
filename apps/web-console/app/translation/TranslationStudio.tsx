@@ -6,6 +6,7 @@ import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 import { Sha256Accumulator } from "../lib/sha256Accumulator";
 import type {
   DirectedLanguageRoute,
@@ -114,19 +115,6 @@ function routeCellIcon(route: DirectedLanguageRoute | undefined) {
   if (!route) return "close" as const;
   if (route.localExecution === "PASSED") return "check" as const;
   return "lock" as const;
-}
-
-function triggerVerifiedDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.rel = "noopener";
-  anchor.hidden = true;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
 }
 
 async function verifiedDownloadBlob(
@@ -649,7 +637,7 @@ export function TranslationStudio() {
         MAX_TRANSLATION_ARTIFACT_BYTES,
         "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
       );
-      triggerVerifiedDownload(
+      triggerBrowserDownload(
         blob,
         `${job.sourceLanguage}-to-${job.targetLanguage}-${job.status.toLowerCase()}.zip`,
       );
@@ -694,7 +682,7 @@ export function TranslationStudio() {
         format === "bundle" ? MAX_REPORT_BUNDLE_BYTES : MAX_REPORT_BYTES,
         "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
       );
-      triggerVerifiedDownload(blob, descriptor.path);
+      triggerBrowserDownload(blob, descriptor.path);
       setFeedback(
         `已在浏览器复算 ${format === "bundle" ? "完整 ZIP" : format === "markdown" ? "Markdown" : "JSON"} 报告摘要并下载；`
         + "报告状态不代表独立验证或认证。",
@@ -725,12 +713,10 @@ export function TranslationStudio() {
       commands: [routeCommand, ...validationCommands],
       repositoryPlan: handoff.scope === "repository" ? repositoryPlan : undefined,
     };
-    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${handoff.routeId}-handoff.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }),
+      `${handoff.routeId}-handoff.json`,
+    );
     setFeedback("路线交接已导出，所有执行与认证状态保持 NOT_RUN / NOT_CERTIFIED。");
   }
 
@@ -745,12 +731,10 @@ export function TranslationStudio() {
       unit.execution_status,
       unit.unsupported_until_discovered.join(" | "),
     ].map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([header + rows + "\n"], { type: "text/csv" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${repositoryPlan.route_id}-work-units.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    triggerBrowserDownload(
+      new Blob([header + rows + "\n"], { type: "text/csv" }),
+      `${repositoryPlan.route_id}-work-units.csv`,
+    );
     setFeedback("工作单元清单已导出为 CSV；每个单元的执行状态仍为 NOT_RUN。");
   }
 

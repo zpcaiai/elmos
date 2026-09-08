@@ -5,6 +5,7 @@ import { Icon } from "../components/Icon";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 import type { SpringRouteDescriptor } from "../lib/contracts";
 import { springDeploymentGuidance } from "../lib/deploymentGuidance";
 
@@ -613,12 +614,7 @@ export function SpringModernizationStudio() {
       ) {
         throw new Error("ARTIFACT_INTEGRITY_MISMATCH: 下载字节与独立验证证据不一致");
       }
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = artifactFileName;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      triggerBrowserDownload(blob, artifactFileName);
       notify("ZIP 的长度和 SHA-256 已在浏览器复算并与独立验证证据一致。");
     } catch (error) {
       notify(error instanceof Error ? error.message : "归档下载失败", "error");

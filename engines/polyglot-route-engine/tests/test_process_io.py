@@ -10,7 +10,11 @@ from pathlib import Path
 
 import pytest
 
-from elmos_polyglot_route.process_io import ProcessOutputLimitError, run_bounded
+from elmos_polyglot_route.process_io import (
+    ProcessOutputLimitError,
+    bounded_communicate,
+    run_bounded,
+)
 
 
 @pytest.mark.parametrize("budget", [
@@ -58,6 +62,36 @@ def test_exact_output_and_input_are_preserved() -> None:
     assert result.stdout == "semantic-π\n"
     assert result.stderr == "err\n"
     assert result.returncode == 0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX inherited-pipe contract")
+def test_completed_leader_allows_bounded_inherited_pipe_drain() -> None:
+    child = "import time; time.sleep(0.15)"
+    parent = (
+        "import subprocess,sys; "
+        f"subprocess.Popen([sys.executable, '-c', {child!r}]); "
+        "print('leader-complete')"
+    )
+    process = subprocess.Popen(
+        [sys.executable, "-c", parent],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+
+    started = time.monotonic()
+    stdout, stderr = bounded_communicate(
+        process,
+        timeout=5,
+        reap=True,
+        leader_exit_poll_interval=0.01,
+    )
+
+    assert stdout == "leader-complete\n"
+    assert stderr == ""
+    assert process.returncode == 0
+    assert 0.1 <= time.monotonic() - started < 2.0
 
 
 @pytest.mark.parametrize("stream", ["stdout", "stderr"])

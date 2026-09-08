@@ -24,16 +24,18 @@ export async function requirePlatformOperationsSurface(
   let denialCode: string | null = null;
   try {
     const syntheticRequest = new Request(`https://elmos.invalid${surface}`, { headers: requestHeaders });
-    // Only the development bootstrap needs a real loopback URL. Its validator
-    // still requires both that URL and Host to match; never trust arbitrary Host.
-    const temporary = (requestHeaders.get("cookie") ?? "").includes(`${localAccountCookieNames.administratorSession}=`);
-    const request = temporary
+    // Every locally issued credential validates the request origin before its
+    // signature and account policy are evaluated. Use the configured trusted
+    // public origin for those cookies so an ordinary alpha-demo user reaches
+    // the administrator-policy denial instead of a misleading loopback error.
+    const cookieHeader = requestHeaders.get("cookie") ?? "";
+    const localCredential = Object.values(localAccountCookieNames).some(
+      (name) => cookieHeader.includes(`${name}=`),
+    );
+    const request = localCredential
       ? new Request(new URL(surface, trustedPublicOrigin(syntheticRequest)), { headers: requestHeaders })
       : syntheticRequest;
-    const session = accountSessionFromRequest(
-      request,
-      "admin:read",
-    );
+    const session = accountSessionFromRequest(request);
     if (!isPlatformAdministrator(session.principal)) {
       denialCode = "ADMIN_EMAIL_REQUIRED";
     }
@@ -55,13 +57,14 @@ export async function hasPlatformAdministratorSession(): Promise<boolean> {
   const requestHeaders = new Headers(await headers());
   try {
     const syntheticRequest = new Request("https://elmos.invalid/", { headers: requestHeaders });
-    const temporary = (requestHeaders.get("cookie") ?? "").includes(
-      `${localAccountCookieNames.administratorSession}=`,
+    const cookieHeader = requestHeaders.get("cookie") ?? "";
+    const localCredential = Object.values(localAccountCookieNames).some(
+      (name) => cookieHeader.includes(`${name}=`),
     );
-    const request = temporary
+    const request = localCredential
       ? new Request(new URL("/", trustedPublicOrigin(syntheticRequest)), { headers: requestHeaders })
       : syntheticRequest;
-    const session = accountSessionFromRequest(request, "admin:read");
+    const session = accountSessionFromRequest(request);
     return isPlatformAdministrator(session.principal);
   } catch {
     return false;

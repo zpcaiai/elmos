@@ -27,6 +27,7 @@ from typing import BinaryIO
 MAX_PROCESS_STREAM_BYTES = 16 * 1024 * 1024
 MAX_ALLOWED_PROCESS_STREAM_BYTES = 64 * 1024 * 1024
 _CHUNK = 64 * 1024
+_LEADER_EXIT_PIPE_DRAIN_SECONDS = 2.0
 
 
 class ProcessOutputLimitError(OSError):
@@ -98,6 +99,7 @@ def bounded_communicate(
         if leader_exit_poll_interval is not None
         else None
     )
+    completed_leader_drain_deadline: float | None = None
     outputs = [bytearray(), bytearray()]
     stream_sizes = [0, 0]
     logs = (stdout_log, stderr_log)
@@ -119,6 +121,11 @@ def bounded_communicate(
                 process.stdin.close()
         while selector.get_map():
             remaining = deadline - time.monotonic()
+            if completed_leader_drain_deadline is not None:
+                remaining = min(
+                    remaining,
+                    completed_leader_drain_deadline - time.monotonic(),
+                )
             if remaining <= 0:
                 raise subprocess.TimeoutExpired(process.args, timeout)
             wait = remaining
@@ -160,10 +167,17 @@ def bounded_communicate(
                     log.flush()
             if leader_probe_deadline is not None and time.monotonic() >= leader_probe_deadline:
                 poll = getattr(process, "poll", None)
-                if not callable(poll) or poll() is not None:
+                if not callable(poll):
                     raise subprocess.TimeoutExpired(process.args, timeout)
-                assert leader_exit_poll_interval is not None
-                leader_probe_deadline = time.monotonic() + leader_exit_poll_interval
+                if poll() is not None:
+                    completed_leader_drain_deadline = min(
+                        deadline,
+                        time.monotonic() + _LEADER_EXIT_PIPE_DRAIN_SECONDS,
+                    )
+                    leader_probe_deadline = None
+                else:
+                    assert leader_exit_poll_interval is not None
+                    leader_probe_deadline = time.monotonic() + leader_exit_poll_interval
     for stream in (process.stdout, process.stderr):
         if stream is not None:
             stream.close()

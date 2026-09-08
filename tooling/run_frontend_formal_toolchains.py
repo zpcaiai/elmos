@@ -590,7 +590,7 @@ LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256 = (
 )
 # The fixed 72-route/864-block campaign is intentionally bounded but exceeds
 # the former two-minute budget on the pinned Node 26 macOS runner.
-INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 600
+INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 900
 SOLVER_RESULT_KEYS = {
     "schema_version",
     "solver",
@@ -10327,9 +10327,6 @@ def execute_flutter_browser_runtime(
         flutter_identity = runtime_tool_identity(
             Path(policy.flutter_path), flutter_version
         )
-        python_identity = runtime_tool_identity(
-            Path(sys.executable), platform.python_version()
-        )
         integration_identity = file_identity(
             workspace / "integration_test/elmos_bounded_interaction_test.dart",
             "Flutter integration test source",
@@ -10346,7 +10343,6 @@ def execute_flutter_browser_runtime(
             "integration_test_sha256": integration_identity["sha256"],
             "integration_driver_sha256": driver_source_identity["sha256"],
         }
-        closure_digest = digest_json(closure)
         acquisition_relative, acquisition_sha, acquisition_bytes = (
             write_content_addressed_runtime_json(
                 evidence_root,

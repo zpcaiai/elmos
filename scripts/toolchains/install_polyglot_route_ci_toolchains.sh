@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew cc chmod codesign curl find git install make mv python3 realpath shasum stat sudo sw_vers tar; do
+for command_name in brew chmod codesign curl find git install mv python3 realpath shasum stat sudo sw_vers tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -181,18 +181,33 @@ file_sha256() {
 }
 
 download_verified() {
-  local url="$1"
+  local primary_url="$1"
   local expected="$2"
   local destination="$3"
-  curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
-    --output "${destination}" "${url}"
-  local observed
-  observed="$(file_sha256 "${destination}")"
-  if [[ "${observed}" != "${expected}" ]]; then
-    printf 'Pinned source checksum mismatch for %s: expected %s, observed %s\n' \
-      "${url}" "${expected}" "${observed}" >&2
-    exit 3
+  local fallback_url="${4:-}"
+  local url observed
+  local -a urls=("${primary_url}")
+  if [[ -n "${fallback_url}" ]]; then
+    urls+=("${fallback_url}")
   fi
+  for url in "${urls[@]}"; do
+    if curl --fail --location --proto '=https' --tlsv1.2 \
+      --connect-timeout 15 --max-time 90 --retry 4 --retry-all-errors \
+      --retry-delay 2 --retry-max-time 60 \
+      --output "${destination}" "${url}"; then
+      observed="$(file_sha256 "${destination}")"
+      if [[ "${observed}" == "${expected}" ]]; then
+        return 0
+      fi
+      printf 'Pinned source checksum mismatch for %s: expected %s, observed %s\n' \
+        "${url}" "${expected}" "${observed}" >&2
+    else
+      printf 'Pinned source download failed for %s\n' "${url}" >&2
+    fi
+  done
+  printf 'No digest-valid pinned source was available for %s\n' \
+    "${primary_url}" >&2
+  exit 3
 }
 
 install -d -m 0755 "${PINNED_HOME}"
@@ -222,8 +237,9 @@ install_pinned_formula() {
   local source="${temporary_root}/${token//@/_}.rb"
   local target="${TAP_ROOT}/Formula/${token}.rb"
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-core/${commit}/${source_path}"
+  local fallback_url="https://cdn.jsdelivr.net/gh/Homebrew/homebrew-core@${commit}/${source_path}"
 
-  download_verified "${url}" "${source_sha256}" "${source}"
+  download_verified "${url}" "${source_sha256}" "${source}" "${fallback_url}"
   python3 - "${source}" "${target}" "${token}" <<'PY'
 from pathlib import Path
 import sys
@@ -675,8 +691,9 @@ install_pinned_cask() {
   local source="${temporary_root}/${token}.rb"
   local target="${TAP_ROOT}/Casks/${token}.rb"
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-cask/${commit}/${source_path}"
+  local fallback_url="https://cdn.jsdelivr.net/gh/Homebrew/homebrew-cask@${commit}/${source_path}"
 
-  download_verified "${url}" "${source_sha256}" "${source}"
+  download_verified "${url}" "${source_sha256}" "${source}" "${fallback_url}"
   install -m 0444 "${source}" "${target}"
   if brew list --cask --versions "${token}" >/dev/null 2>&1; then
     brew uninstall --cask --force "${token}"
@@ -721,54 +738,8 @@ install_pinned_uv() {
   fi
 }
 
-install_pinned_postgresql_17() {
-  local -r postgres_version="17.5"
-  local -r postgres_sha256="730bfef34b03825c051ae0fc37542c8be26b55a44e472369221afd397196e303"
-  local -r target="${TOOLCHAIN_ROOT}/postgresql/${postgres_version}"
-  if [[ -x "${target}/bin/postgres" ]] \
-    && [[ "$("${target}/bin/postgres" --version)" == "postgres (PostgreSQL) ${postgres_version}" ]]; then
-    printf '%s\n' "${target}/bin" >>"${GITHUB_PATH}"
-    printf 'POSTGRESQL_17_BIN=%s\n' "${target}/bin" >>"${GITHUB_ENV}"
-    return
-  fi
-  if [[ -e "${target}" || -L "${target}" ]]; then
-    printf 'Refusing to overwrite a non-matching PostgreSQL toolchain: %s\n' "${target}" >&2
-    exit 3
-  fi
-
-  local -r archive="${temporary_root}/postgresql-${postgres_version}.tar.gz"
-  local -r source_root="${temporary_root}/postgresql-${postgres_version}"
-  download_verified \
-    "https://ftp.postgresql.org/pub/source/v${postgres_version}/postgresql-${postgres_version}.tar.gz" \
-    "${postgres_sha256}" "${archive}"
-  tar -xzf "${archive}" -C "${temporary_root}"
-  (
-    cd "${source_root}"
-    ./configure \
-      --prefix="${target}" \
-      --without-icu \
-      --without-readline \
-      --without-zlib
-    make -j2
-    make install
-  )
-  if [[ "$("${target}/bin/postgres" --version)" != "postgres (PostgreSQL) ${postgres_version}" ]]; then
-    printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
-    exit 3
-  fi
-  for postgres_tool in postgres initdb pg_ctl createdb psql; do
-    if [[ ! -x "${target}/bin/${postgres_tool}" ]]; then
-      printf 'PostgreSQL %s is missing required tool: %s\n' "${postgres_version}" "${postgres_tool}" >&2
-      exit 3
-    fi
-  done
-  printf '%s\n' "${target}/bin" >>"${GITHUB_PATH}"
-  printf 'POSTGRESQL_17_BIN=%s\n' "${target}/bin" >>"${GITHUB_ENV}"
-}
-
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
   install_pinned_sqlite
-  install_pinned_postgresql_17
 fi
 
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
@@ -778,11 +749,23 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
     "38adcf3b2e2f5f90f72fb559467495200b1ee8bb" \
     "Formula/p/python@3.14.rb" \
     "a658a88637d2d4668c7d98e0b32e3c38fc2e30695e614d061b7017b8d9b208b3"
+  install_pinned_formula \
+    "postgresql@17" "17.5" \
+    "c26b6a48e4695754b27b0c2b7ce5d2cfce1a53bb" \
+    "Formula/p/postgresql@17.rb" \
+    "869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55"
+  postgres_bin="$(brew --prefix postgresql@17)/bin"
+  readonly postgres_bin
+  if [[ "$("${postgres_bin}/postgres" --version)" != "postgres (PostgreSQL) 17.5 (Homebrew)" ]]; then
+    printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
+    exit 3
+  fi
   {
     printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
     printf '%s\n' "$(brew --prefix python@3.14)/bin"
-    printf '%s\n' "${TOOLCHAIN_ROOT}/postgresql/17.5/bin"
+    printf '%s\n' "${postgres_bin}"
   } >>"${GITHUB_PATH}"
+  printf 'POSTGRESQL_17_BIN=%s\n' "${postgres_bin}" >>"${GITHUB_ENV}"
   if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)" ]]; then
     printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2
     exit 3

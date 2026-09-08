@@ -55,6 +55,13 @@ def _hosted_repository_matrix_languages() -> tuple[str, ...]:
     return hosted
 
 
+def _locally_executable_repository_languages() -> tuple[str, ...]:
+    supported = _supported_route_languages()
+    if supported.count("vb6") != 1:
+        raise AssertionError("the preparation-only VB6 matrix member is missing")
+    return tuple(language for language in supported if language != "vb6")
+
+
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
     matrix_path = (
         ROOT

@@ -28,6 +28,29 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         self.assertIn("cargo build --locked --release", job)
         self.assertIn("--manifest-path native/rust-core/Cargo.toml", job)
 
+    def test_spring_route_job_fetches_the_qualification_commit_history(self) -> None:
+        job = _job(self.workflow, "spring-golden-route-engine", "external-gate-intake")
+        checkout = job.index("uses: actions/checkout@")
+        history = job.index("fetch-depth: 0")
+        validation = job.index("integrate_spring_golden_route_commercial_skills.py --check")
+
+        self.assertLess(checkout, history)
+        self.assertLess(history, validation)
+
+    def test_typed_sql_job_provisions_the_exact_postgresql_runner(self) -> None:
+        job = _job(self.workflow, "typed-sql-transpiler", "project-synthesis")
+        installer = job.index("scripts/toolchains/install_polyglot_route_ci_toolchains.sh")
+        tests = job.index("uv run --locked pytest")
+        self.assertLess(installer, tests)
+
+        script = (
+            ROOT / "scripts/toolchains/install_polyglot_route_ci_toolchains.sh"
+        ).read_text(encoding="utf-8")
+        self.assertIn('"postgresql@17" "17.5"', script)
+        self.assertIn("c26b6a48e4695754b27b0c2b7ce5d2cfce1a53bb", script)
+        self.assertIn("869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55", script)
+        self.assertIn('POSTGRESQL_17_BIN=%s\\n', script)
+
     def test_web_console_binds_chinadb_runtime_after_python_312_consumers(self) -> None:
         job = _job(self.workflow, "web-console", "precision-migration-b01-44")
         polyglot_sync = job.index("uv --directory engines/polyglot-route-engine sync --locked --no-dev")

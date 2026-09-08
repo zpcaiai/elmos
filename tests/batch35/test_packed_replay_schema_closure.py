@@ -686,7 +686,7 @@ def test_packed_replay_constants_bind_all_identifier_schemas() -> None:
     assert set(SCHEMA_RELATIVES) <= set(specialized_generator.PACKED_REPLAY_FILES)
 
 
-def test_reference_pack_preserves_frozen_swift_component_read_bound() -> None:
+def test_reference_pack_preserves_named_swift_component_read_bound() -> None:
     captured_validator = (
         REFERENCE_ENGINE_SOURCES / "scripts/batch29/validate_route.py"
     ).read_text(encoding="utf-8")

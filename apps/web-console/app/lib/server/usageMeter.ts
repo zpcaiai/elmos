@@ -191,9 +191,19 @@ function safeEqual(left: string, right: string): boolean {
 }
 
 function authorize(request: NextRequest, configured: UsageSettings, now: Date): void {
+  const authorization = request.headers.get("authorization") ?? "";
+  const tenantId = request.headers.get("x-elmos-tenant") ?? "";
+  const actorId = request.headers.get("x-elmos-actor") ?? "";
+  // Local development exposes an explicit, short-lived meter credential form.
+  // If any part of that credential tuple is supplied, validate the tuple as a
+  // whole instead of silently falling back to an unrelated browser cookie.
+  // Production never accepts this path, even when these headers are present.
+  const localCredentialAttempt = process.env.NODE_ENV !== "production"
+    && Boolean(authorization || tenantId || actorId);
   if (
-    unsafeCookieValue(request, accountCookieNames.session)
-    || unsafeCookieValue(request, localAccountCookieNames.session)
+    !localCredentialAttempt
+    && (unsafeCookieValue(request, accountCookieNames.session)
+      || unsafeCookieValue(request, localAccountCookieNames.session))
   ) {
     try {
       const account = accountSessionFromRequest(request, "usage:read");
@@ -225,10 +235,7 @@ function authorize(request: NextRequest, configured: UsageSettings, now: Date): 
       false,
     );
   }
-  const authorization = request.headers.get("authorization") ?? "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  const tenantId = request.headers.get("x-elmos-tenant") ?? "";
-  const actorId = request.headers.get("x-elmos-actor") ?? "";
   if (!token || !safeEqual(token, configured.token)) {
     throw new UsageMeterError(401, "USAGE_AUTHENTICATION_REQUIRED", "实时用量凭证无效。", false);
   }

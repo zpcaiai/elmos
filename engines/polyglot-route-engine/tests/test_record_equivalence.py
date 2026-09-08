@@ -133,8 +133,8 @@ def test_four_way_record_lifting_and_ir_parity(tmp_path: Path) -> None:
     assert ir_ts.functions[0].body[2].expression.kind == "record_construct"
 
 
-def test_cross_emission_to_all_14_targets(tmp_path: Path) -> None:
-    """Verify that a lifted record IR successfully emits code across all 14 targets."""
+def test_cross_emission_to_every_local_record_target(tmp_path: Path) -> None:
+    """Verify record emission for every target whose local profile includes records."""
     java_file = tmp_path / "Geometry.java"
     java_file.write_text(
         "public final class Geometry {\n"
@@ -147,10 +147,17 @@ def test_cross_emission_to_all_14_targets(tmp_path: Path) -> None:
     )
 
     ir = analyze(java_file, "java", "origin")
-    for target in ROUTED_LANGUAGES:
+    for target in (
+        language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}
+    ):
         result = emit(ir, target)
         assert len(result.content) > 0
         assert "Point" in result.content
+
+    with pytest.raises(RouteError, match="VB6_RECORD_LOWERING_OUTSIDE_CERTIFIED_SUBSET"):
+        emit(ir, "vb6")
+    with pytest.raises(RouteError, match="VCPP6_RECORD_LOWERING_OUTSIDE_BOUNDED_PROFILE"):
+        emit(ir, "vcpp6")
 
 
 def test_multiple_records_in_module(tmp_path: Path) -> None:
