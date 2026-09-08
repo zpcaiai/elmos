@@ -565,7 +565,8 @@ jobs:
   polyglot-route-engine-matrix:
     name: Directed route engine matrix (${{ matrix.source_language }})
     # Establish the exact hosted compiler/runtime identity once before
-    # consuming scarce macOS workers for the 13 source-language shards.
+    # consuming scarce macOS workers for the 13 locally executable pre-VB6
+    # source-language shards. VB6 stays in its governed Windows/x86 campaign.
     needs: polyglot-route-engine-core
     runs-on: macos-26
     timeout-minutes: 240

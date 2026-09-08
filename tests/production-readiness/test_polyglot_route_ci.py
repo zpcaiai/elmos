@@ -30,6 +30,13 @@ def _supported_route_languages() -> tuple[str, ...]:
     raise AssertionError("SUPPORTED_LANGUAGES literal was not found")
 
 
+def _locally_executable_repository_languages() -> tuple[str, ...]:
+    supported = _supported_route_languages()
+    if supported.count("vb6") != 1:
+        raise AssertionError("the preparation-only VB6 matrix member is missing")
+    return tuple(language for language in supported if language != "vb6")
+
+
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
     matrix_path = (
         ROOT
@@ -762,7 +769,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(configured_sources, _supported_route_languages())
+        self.assertEqual(
+            configured_sources,
+            _locally_executable_repository_languages(),
+        )
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests
