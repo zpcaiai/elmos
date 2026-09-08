@@ -434,6 +434,7 @@ class HomebrewRouteBundleProfile:
     dotnet_apphost_pack_tree_bytes: int
     dotnet_hostfxr_sha256: str
     dotnet_hostpolicy_sha256: str
+    rust_sysroot_tree_sha256: str
     php_tree_sha256: str
     php_tree_bytes: int
 
@@ -457,6 +458,7 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
+    rust_sysroot_tree_sha256="93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a",
     php_tree_sha256="fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
     php_tree_bytes=129_952_851,
 )
@@ -486,7 +488,8 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942",
+    rust_sysroot_tree_sha256="142705d4cb3f05508d8a23ec78fb98644d50264900b2830875796d7936103c1e",
+    php_tree_sha256="40103742839b296053427efb77c21ddfca219ec8d964bbc930c1e72adcef3dcf",
     php_tree_bytes=129_952_823,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
@@ -517,7 +520,7 @@ def _select_homebrew_route_bundle_profile(
 
 @cache
 def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
-    """Bind .NET and PHP bytes to one local or authenticated hosted image."""
+    """Bind .NET, PHP, and hosted Rust bytes to one authenticated image."""
 
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         raise RouteError(
@@ -3876,10 +3879,17 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
         portable_owner_identity=True,
     )
+    rust_sysroot_tree_sha256 = _EXPECTED_RUST_SYSROOT_TREE_SHA256
+    if os.environ.get(_HOMEBREW_ROUTE_PROFILE_ID_ENV) or os.environ.get(
+        "ImageVersion"
+    ):
+        rust_sysroot_tree_sha256 = (
+            homebrew_route_bundle_profile().rust_sysroot_tree_sha256
+        )
     _verify_qualified_tree_manifest(
         sysroot,
         expected_root=_EXPECTED_RUST_SYSROOT,
-        expected_sha256=_EXPECTED_RUST_SYSROOT_TREE_SHA256,
+        expected_sha256=rust_sysroot_tree_sha256,
         expected_record_count=_EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
         expected_file_count=_EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
         expected_directory_count=_EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
