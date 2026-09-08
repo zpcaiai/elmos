@@ -369,6 +369,11 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Populate the exact lock-file graph while network is authorized;
+          # analyzer execution later verifies and restores from this cache offline.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -380,6 +385,12 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP tree drift
+        run: |
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
       - name: Run complete Batch 29 and route-pack contracts
         run: |
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
@@ -486,6 +497,9 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           # The native Rust analyzer executes with --offline --locked so a
           # repository workload cannot cause an undeclared network fetch.
           # Hydrate only the checked-in Cargo.lock graph before that
@@ -504,6 +518,11 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP tree drift
+        run: |
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,
@@ -550,7 +569,7 @@ jobs:
   polyglot-route-engine-matrix:
     name: Directed route engine matrix (${{ matrix.source_language }})
     # Establish the exact hosted compiler/runtime identity once before
-    # consuming scarce macOS workers for the 13 source-language shards.
+    # consuming scarce macOS workers for the 14 source-language shards.
     needs: polyglot-route-engine-core
     runs-on: macos-26
     timeout-minutes: 240
@@ -612,6 +631,9 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml

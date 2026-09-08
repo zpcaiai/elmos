@@ -85,9 +85,10 @@ export async function GET(request: NextRequest) {
       302,
     );
     const accessMaxAge = sessionCookieMaxAge(result.expiresAt);
-    const sessionMaxAge = result.refreshExpiresAt
+    const refreshMaxAge = result.refreshExpiresAt
       ? refreshSessionCookieMaxAge(result.refreshExpiresAt)
-      : accessMaxAge;
+      : undefined;
+    const sessionMaxAge = refreshMaxAge ?? accessMaxAge;
     response.cookies.set(accountCookieNames.session, result.session, {
       httpOnly: true,
       secure: true,
@@ -102,8 +103,7 @@ export async function GET(request: NextRequest) {
       path: "/",
       maxAge: accessMaxAge,
     });
-    if (result.tokens.refreshToken && result.refreshExpiresAt) {
-      const refreshMaxAge = refreshSessionCookieMaxAge(result.refreshExpiresAt);
+    if (result.tokens.refreshToken && refreshMaxAge !== undefined) {
       response.cookies.set(accountCookieNames.refreshToken, result.tokens.refreshToken, {
         httpOnly: true,
         secure: true,

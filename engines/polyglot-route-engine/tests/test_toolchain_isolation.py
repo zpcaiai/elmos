@@ -505,17 +505,40 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
 
     assert local.profile_id == "local-macos26-20260904"
-    assert legacy_hosted.dotnet_muxer_sha256 == local.dotnet_muxer_sha256
-    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    dotnet_fields = (
+        "dotnet_muxer_sha256",
+        "dotnet_muxer_bytes",
+        "dotnet_sdk_tree_sha256",
+        "dotnet_sdk_tree_bytes",
+        "dotnet_hostfxr_tree_sha256",
+        "dotnet_hostfxr_tree_bytes",
+        "dotnet_runtime_tree_sha256",
+        "dotnet_runtime_tree_bytes",
+        "dotnet_reference_pack_tree_sha256",
+        "dotnet_reference_pack_tree_bytes",
+        "dotnet_apphost_pack_tree_sha256",
+        "dotnet_apphost_pack_tree_bytes",
+        "dotnet_hostfxr_sha256",
+        "dotnet_hostpolicy_sha256",
+    )
+    assert all(
+        getattr(legacy_hosted, field) == getattr(current_hosted, field)
+        for field in dotnet_fields
+    )
+    assert legacy_hosted.php_tree_sha256 == (
+        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
+    )
+    assert legacy_hosted.php_tree_bytes == 129_937_220
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942"
+        "60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f"
     )
-    assert current_hosted.php_tree_bytes == 129_952_823
+    assert current_hosted.php_tree_bytes == 129_937_220
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
-    assert current_hosted.php_tree_bytes != local.php_tree_bytes
+    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert current_hosted.php_tree_bytes == local.php_tree_bytes
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
         toolchains._select_homebrew_route_bundle_profile(
@@ -525,10 +548,18 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    "profile",
+    (
+        toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
+        toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    ),
+    ids=lambda profile: profile.profile_id,
+)
 def test_homebrew_hosted_profile_survives_an_isolated_runtime(
     monkeypatch: pytest.MonkeyPatch,
+    profile: toolchains.HomebrewRouteBundleProfile,
 ) -> None:
-    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
     monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
     monkeypatch.setattr(

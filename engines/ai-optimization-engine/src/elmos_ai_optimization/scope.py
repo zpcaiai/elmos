@@ -78,7 +78,7 @@ class ScopeResolver:
         requested_revisions: Sequence[tuple[str, str] | tuple[str, str, str]],
     ) -> TrustedScope:
         """Resolve session and revision pairs into a TrustedScope.
-        
+
         revisions argument must be tuples of (repository, snapshot) or (repository, snapshot, generation).
         Cartesian products across repositories and snapshots are strictly rejected.
         """
