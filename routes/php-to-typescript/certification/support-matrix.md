@@ -2,8 +2,8 @@
 
 Generated from the route's authoritative `../support-matrix.json`; this view does not create execution or certification evidence.
 
-- Source SHA-256: `sha256:7d0dbfcc75251fd26a7bf23d89fdb4572977850a4238094dfe3e69018ac4e76f`
-- Source bytes: `1471`
+- Source SHA-256: `sha256:3d1acc8c36af4c3dc1cf7c1c68ed8e293f92c8def0a8809853e6cd08eea11246`
+- Source bytes: `1721`
 
 ## typed-pure-function-v1
 
@@ -32,3 +32,10 @@ Generated from the route's authoritative `../support-matrix.json`; this view doe
 - Strategy: `separate-exact-pack`
 - Evidence: None
 - Reason: Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.
+
+## typed-pure-module-v1
+
+- Status: `blocked`
+- Strategy: `per-function-proof-plus-module-composition`
+- Evidence: None
+- Reason: This legacy route has not requested the separate module profile.
