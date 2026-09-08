@@ -62,7 +62,7 @@ export default async function RegisterPage({
         {parameters.verify === "1" && descopeReady && (
           <form className="auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
             <h2>输入一次性验证码</h2>
-            <p>验证码已发送。验证通过后将创建账户并进入用户中心。</p>
+            <p>验证码已发送。验证通过后将创建账户并进入普通用户功能首页。</p>
             <label><span>验证码</span><input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength={4} maxLength={10} required autoFocus /></label>
             <button className="button button-primary" type="submit">验证并完成注册</button>
             <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>重新选择注册方式</a>
