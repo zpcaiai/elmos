@@ -21,6 +21,13 @@ catalog in the same archive is retained only as a diagnosed source defect.
 - external execution accepts only a host-owned Broker route, never a direct
   Python callback; route operation/effect, permit, request, provider receipt and
   declared outputs must match exactly;
+- production hosts can bind those routes to exact digest-pinned executables via
+  `build_subprocess_broker`; command execution is shell-free, environment/time/
+  output bounded, drift checked, and provider receipts require an injected
+  trusted signature verifier;
+- `ExternalRunRequest`, `IndependentAcceptanceRequest`, and
+  `CertificationRequest` bind training, deployment, independent holdout and
+  authority decisions to exact artifacts, roles and external signatures;
 - SQLite state transitions, checkpoints, evidence, audit events, and outbox
   records are durable and tenant/project scoped;
 - artifacts are immutable, content addressed, private, and verified on read;
@@ -53,6 +60,10 @@ provider business effect occurred.
 Local qualification may report only `LOCAL_EXECUTED_SELF_ATTESTED` and
 `READY_FOR_EXTERNAL_GATE`. External evidence remains `NOT_RUN`; certification
 remains `NOT_CERTIFIED`.
+
+The external assurance API validates evidence supplied by real providers,
+independent verifiers and certification authorities. It intentionally contains
+no local issuer, signing key, synthetic success path or default trust decision.
 
 Run the repository integration target:
 
