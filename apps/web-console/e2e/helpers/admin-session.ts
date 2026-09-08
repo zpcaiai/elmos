@@ -6,11 +6,19 @@ export const administratorEmail = "zpchoney@gmail.com";
 const localSessionSecret = "elmos-local-e2e-session-secret-at-least-32-characters";
 const productionSessionSecret = "elmos-production-e2e-session-secret-at-least-32-characters";
 
+type AdministratorSessionOptions = {
+  actorId?: string;
+  organizationId?: string;
+};
+
 function base64url(value: Buffer): string {
   return value.toString("base64url");
 }
 
-function sealedAdministratorSession(accessToken: string): string {
+function sealedAdministratorSession(
+  accessToken: string,
+  options: AdministratorSessionOptions,
+): string {
   const secret = process.env.ELMOS_E2E_WEB_SERVER_MODE === "production"
     ? productionSessionSecret
     : localSessionSecret;
@@ -23,18 +31,21 @@ function sealedAdministratorSession(accessToken: string): string {
     "admin:operate",
     "admin:approve",
     "configuration:manage",
+    "usage:read",
   ];
+  const actorId = options.actorId ?? "oidc-e2e-admin";
+  const organizationId = options.organizationId ?? "tenant-operations-a";
   const principal = {
-    actorId: "oidc-e2e-admin",
+    actorId,
     displayName: "ELMOS E2E Administrator",
     email: administratorEmail,
     emailVerified: true,
     isPlatformAdmin: true,
-    organizationId: "tenant-operations-a",
+    organizationId,
     roles: ["APPROVER"],
     permissions,
     memberships: [{
-      organizationId: "tenant-operations-a",
+      organizationId,
       roles: ["APPROVER"],
       permissions,
     }],
@@ -54,9 +65,12 @@ function sealedAdministratorSession(accessToken: string): string {
  * Installs a self-attested browser fixture session for UI-only E2E tests.
  * It is not OIDC evidence and must never be used as certification evidence.
  */
-export async function installAdministratorSession(page: Page): Promise<void> {
+export async function installAdministratorSession(
+  page: Page,
+  options: AdministratorSessionOptions = {},
+): Promise<void> {
   const accessToken = "e2e-admin-access-token-not-a-provider-credential";
-  const session = sealedAdministratorSession(accessToken);
+  const session = sealedAdministratorSession(accessToken, options);
   await page.setExtraHTTPHeaders({
     Cookie: `__Host-elmos_session=${session}; __Host-elmos_access_token=${accessToken}`,
   });
