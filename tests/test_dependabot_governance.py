@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
+from unittest import mock
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -63,6 +64,7 @@ class DependabotGovernanceTest(unittest.TestCase):
             self.assertEqual("not_affected", exception["vex_status"])
             self.assertEqual(manifest, exception["manifest"]["path"])
             self.assertTrue(exception["manifest"]["sha256"].startswith("sha256:"))
+            self.assertLessEqual(len(MODULE.dismissal_comment(exception)), 280)
             MODULE.validate_registry(registry, alerts, now=now, repo_root=root)
             vex = MODULE.build_vex_record(registry)
             self.assertEqual("review", vex["status"])
@@ -114,6 +116,33 @@ class DependabotGovernanceTest(unittest.TestCase):
                 MODULE.build_registry(
                     "zpcaiai/elmos", [value], repo_root=Path(directory)
                 )
+
+    def test_apply_resume_skips_an_already_closed_alert(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = (
+                "client-packs/frontend-to-miniapp-vue3-wechat-v1/"
+                "source-snapshots/example/package.json"
+            )
+            path = root / manifest
+            path.parent.mkdir(parents=True)
+            path.write_text("{}\n", encoding="utf-8")
+            value = alert(225, "vite", manifest)
+            registry = MODULE.build_registry(
+                "zpcaiai/elmos",
+                [value],
+                now=datetime(2026, 9, 8, tzinfo=timezone.utc),
+                repo_root=root,
+            )
+            value["state"] = "dismissed"
+            with mock.patch.object(MODULE.subprocess, "run") as run:
+                self.assertEqual(
+                    0,
+                    MODULE.dismiss_eligible(
+                        "zpcaiai/elmos", registry, [value], repo_root=root
+                    ),
+                )
+                run.assert_not_called()
 
 
 if __name__ == "__main__":
