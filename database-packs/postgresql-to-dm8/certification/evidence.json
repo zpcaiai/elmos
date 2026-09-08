@@ -26,5 +26,20 @@
   "evidence_refs": [
     "certification/local-postgresql-dm8-query-evidence.json"
   ],
+  "evidence_digests": {
+    "certification/local-postgresql-dm8-query-evidence.json": "sha256:a4c44558539ae4497dfdcaf0d09e500f2b97cb427b3d75138ce861755fba1b17"
+  },
+  "evidence_status": {
+    "source_execution": "NOT_RUN",
+    "target_execution": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "rollback": "NOT_RUN",
+    "security": "NOT_RUN",
+    "cdc": "NOT_APPLICABLE",
+    "cutover": "NOT_APPLICABLE",
+    "independent_verification": "NOT_RUN",
+    "external_certification": "NOT_RUN"
+  },
   "evidence_scope": "Local typed parse, exact-route emission, and target-dialect reparse only; all database execution and equivalence metrics remain zero."
 }
