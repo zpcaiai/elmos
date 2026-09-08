@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _supported_route_languages() -> tuple[str, ...]:
+def _hosted_repository_matrix_languages() -> tuple[str, ...]:
     models_path = (
         ROOT
         / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
@@ -22,12 +22,12 @@ def _supported_route_languages() -> tuple[str, ...]:
         if (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id == "SUPPORTED_LANGUAGES"
+            and node.target.id == "HOSTED_REPOSITORY_MATRIX_LANGUAGES"
         ):
             value = ast.literal_eval(node.value)
             if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
                 return value
-    raise AssertionError("SUPPORTED_LANGUAGES literal was not found")
+    raise AssertionError("HOSTED_REPOSITORY_MATRIX_LANGUAGES literal was not found")
 
 
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
@@ -762,7 +762,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(configured_sources, _supported_route_languages())
+        self.assertEqual(configured_sources, _hosted_repository_matrix_languages())
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests
@@ -777,7 +777,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             route_matrix_job,
         )
         self.assertIn(
-            'if source not in SUPPORTED_LANGUAGES:',
+            'if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:',
             route_matrix_job,
         )
         self.assertNotIn("-k", route_matrix_job)

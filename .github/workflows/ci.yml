@@ -638,10 +638,10 @@ jobs:
           import subprocess
           import sys
 
-          from elmos_polyglot_route.models import SUPPORTED_LANGUAGES
+          from elmos_polyglot_route.models import HOSTED_REPOSITORY_MATRIX_LANGUAGES
 
           source = os.environ["ELMOS_ROUTE_SOURCE_LANGUAGE"]
-          if source not in SUPPORTED_LANGUAGES:
+          if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:
               raise SystemExit(f"unsupported matrix source shard: {source}")
           test_file = (
               Path(os.environ["GITHUB_WORKSPACE"])
@@ -655,7 +655,7 @@ jobs:
           selectors = [
               f"{test_file}::{function}[{source}-{target}]"
               for function in functions
-              for target in SUPPORTED_LANGUAGES
+              for target in HOSTED_REPOSITORY_MATRIX_LANGUAGES
               if target != source
           ]
           if len(selectors) != 24 or len(set(selectors)) != 24:

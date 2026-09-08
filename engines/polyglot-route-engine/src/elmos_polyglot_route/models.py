@@ -50,6 +50,28 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "vb6",
 )
 
+#: Exact language set exercised by the hosted whole-repository CI campaign.
+#: VB6 remains a supported route identity with repository-owned preparation
+#: surfaces, but its compile/run side requires the separately governed Windows
+#: VB6 SP6 cross-host campaign.  Keeping this tuple explicit prevents adding a
+#: declared language from silently expanding an evidence scope that was filed
+#: for the frozen pre-VB6 13-language / 156-direction matrix.
+HOSTED_REPOSITORY_MATRIX_LANGUAGES: tuple[Language, ...] = (
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "go",
+    "rust",
+    "cpp",
+    "objc",
+    "swift",
+    "php",
+    "kotlin",
+    "react",
+    "flutter",
+)
+
 #: Languages that are declared in the route matrix but have no native analyzer
 #: yet.  They are real matrix members -- every direction naming them has a
 #: route pack and a provenance owner -- but any attempt to *lift from* them
