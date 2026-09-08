@@ -9,7 +9,7 @@
     "target_artifact_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
     "workload_key": "bounded-frontend-interaction-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:64191763fa42515b66b86495e4a3652a4c50789886ac633bf6b92e92e58e852b"
+    "environment_digest": "sha256:c5d21c31ca2f8869945562cac8ff2081aea3770736747cdcec966b8162229d74"
   },
   "metrics": {},
   "evidence_refs": [

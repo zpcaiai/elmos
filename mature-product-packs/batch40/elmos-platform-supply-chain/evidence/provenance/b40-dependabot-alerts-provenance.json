@@ -8,13 +8,13 @@
   "owner": "elmos-platform-maintainers",
   "source": {
     "repository": "zpcaiai/elmos",
-    "commit": "c30b3297457b5dd1312ba2b6fb0ea7d744971395",
+    "commit": "20b4df0182d3e440b450b821cde6fd5a3de7b940",
     "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-    "queriedAt": "2026-09-05T04:24:30Z",
+    "queriedAt": "2026-09-08T05:00:23Z",
     "rawSnapshot": {
       "path": "evidence/execution/b40-dependabot-alerts.raw.json",
-      "sha256": "sha256:f99ce7f2fa8fe5199d008d89e505515fe49fa84f5bb0ca74dbd09e7abc4a9edf",
-      "bytes": 1273272
+      "sha256": "sha256:aeb9ea181e568f4926c654185b907d74446230f4d9f6f47a1163afbc7e722b38",
+      "bytes": 1266680
     }
   },
   "analyzer": {

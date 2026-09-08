@@ -2,11 +2,1079 @@
   "schemaVersion": 1,
   "id": "elmos-platform-supply-chain-vex-record",
   "batch": 40,
-  "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
-  "metadata": {},
+  "version": "0.2.0",
+  "owner": "elmos-security-owner",
+  "status": "review",
+  "evidenceRefs": [
+    "b40-dependabot-vex"
+  ],
+  "records": [
+    {
+      "id": "dependabot-91-ghsa-5j4c-8p2g-v4jx",
+      "vulnerabilityId": "GHSA-5j4c-8p2g-v4jx",
+      "alertNumber": 91,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vue",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "vulnerable_code_not_in_execute_path",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:d972172ae695b56009b44a8574b92eccae30841c936e1e6e9a2dd90576f1f68e",
+          "bytes": 436
+        }
+      },
+      "controls": [
+        "vue2-route-isolated-from-new-production-routes",
+        "runtime-templates-are-static-and-not-attacker-controlled",
+        "migration-to-vue3-is-required-before-support-expansion",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-97-ghsa-5j4c-8p2g-v4jx",
+      "vulnerabilityId": "GHSA-5j4c-8p2g-v4jx",
+      "alertNumber": 97,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vue",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "vulnerable_code_not_in_execute_path",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:4fab55df4c4c9032699a09740648a4be208d5fc7ead24731feacd7cea041356a",
+          "bytes": 441
+        }
+      },
+      "controls": [
+        "vue2-route-isolated-from-new-production-routes",
+        "runtime-templates-are-static-and-not-attacker-controlled",
+        "migration-to-vue3-is-required-before-support-expansion",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-177-ghsa-5j4c-8p2g-v4jx",
+      "vulnerabilityId": "GHSA-5j4c-8p2g-v4jx",
+      "alertNumber": 177,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vue",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "vulnerable_code_not_in_execute_path",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:d972172ae695b56009b44a8574b92eccae30841c936e1e6e9a2dd90576f1f68e",
+          "bytes": 436
+        }
+      },
+      "controls": [
+        "vue2-route-isolated-from-new-production-routes",
+        "runtime-templates-are-static-and-not-attacker-controlled",
+        "migration-to-vue3-is-required-before-support-expansion",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-183-ghsa-5j4c-8p2g-v4jx",
+      "vulnerabilityId": "GHSA-5j4c-8p2g-v4jx",
+      "alertNumber": 183,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vue",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "vulnerable_code_not_in_execute_path",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:4fab55df4c4c9032699a09740648a4be208d5fc7ead24731feacd7cea041356a",
+          "bytes": 441
+        }
+      },
+      "controls": [
+        "vue2-route-isolated-from-new-production-routes",
+        "runtime-templates-are-static-and-not-attacker-controlled",
+        "migration-to-vue3-is-required-before-support-expansion",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-223-ghsa-5xrq-8626-4rwp",
+      "vulnerabilityId": "GHSA-5xrq-8626-4rwp",
+      "alertNumber": 223,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vitest",
+        "manifestPath": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json",
+          "sha256": "sha256:aca63992cc7aee76ceb7f5d27695038cfc58010295ff12b440860b759166769f",
+          "bytes": 285
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-225-ghsa-vg6x-rcgg-rjx6",
+      "vulnerabilityId": "GHSA-vg6x-rcgg-rjx6",
+      "alertNumber": 225,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-226-ghsa-x574-m823-4x7w",
+      "vulnerabilityId": "GHSA-x574-m823-4x7w",
+      "alertNumber": 226,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-227-ghsa-4r4m-qw57-chr8",
+      "vulnerabilityId": "GHSA-4r4m-qw57-chr8",
+      "alertNumber": 227,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-228-ghsa-xcj6-pq6g-qj4x",
+      "vulnerabilityId": "GHSA-xcj6-pq6g-qj4x",
+      "alertNumber": 228,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-229-ghsa-356w-63v5-8wf4",
+      "vulnerabilityId": "GHSA-356w-63v5-8wf4",
+      "alertNumber": 229,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-230-ghsa-859w-5945-r5v3",
+      "vulnerabilityId": "GHSA-859w-5945-r5v3",
+      "alertNumber": 230,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-231-ghsa-jqfw-vq24-v9c3",
+      "vulnerabilityId": "GHSA-jqfw-vq24-v9c3",
+      "alertNumber": 231,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-232-ghsa-g4jq-h2w9-997c",
+      "vulnerabilityId": "GHSA-g4jq-h2w9-997c",
+      "alertNumber": 232,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-233-ghsa-93m4-6634-74q7",
+      "vulnerabilityId": "GHSA-93m4-6634-74q7",
+      "alertNumber": 233,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-234-ghsa-p9ff-h696-f583",
+      "vulnerabilityId": "GHSA-p9ff-h696-f583",
+      "alertNumber": 234,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-235-ghsa-4w7w-66w2-5vf9",
+      "vulnerabilityId": "GHSA-4w7w-66w2-5vf9",
+      "alertNumber": 235,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-236-ghsa-fx2h-pf6j-xcff",
+      "vulnerabilityId": "GHSA-fx2h-pf6j-xcff",
+      "alertNumber": 236,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-237-ghsa-v6wh-96g9-6wx3",
+      "vulnerabilityId": "GHSA-v6wh-96g9-6wx3",
+      "alertNumber": 237,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/package.json",
+          "sha256": "sha256:86e6a297beda3d691b13a6ba17c30fdeb6701bb3e1176bba91e3d4d035f9d50f",
+          "bytes": 461
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-238-ghsa-vg6x-rcgg-rjx6",
+      "vulnerabilityId": "GHSA-vg6x-rcgg-rjx6",
+      "alertNumber": 238,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-239-ghsa-67mh-4wv8-2f99",
+      "vulnerabilityId": "GHSA-67mh-4wv8-2f99",
+      "alertNumber": 239,
+      "component": {
+        "ecosystem": "npm",
+        "name": "esbuild",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "transitive"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-240-ghsa-x574-m823-4x7w",
+      "vulnerabilityId": "GHSA-x574-m823-4x7w",
+      "alertNumber": 240,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-241-ghsa-4r4m-qw57-chr8",
+      "vulnerabilityId": "GHSA-4r4m-qw57-chr8",
+      "alertNumber": 241,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-242-ghsa-xcj6-pq6g-qj4x",
+      "vulnerabilityId": "GHSA-xcj6-pq6g-qj4x",
+      "alertNumber": 242,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-243-ghsa-356w-63v5-8wf4",
+      "vulnerabilityId": "GHSA-356w-63v5-8wf4",
+      "alertNumber": 243,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-244-ghsa-859w-5945-r5v3",
+      "vulnerabilityId": "GHSA-859w-5945-r5v3",
+      "alertNumber": 244,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-245-ghsa-jqfw-vq24-v9c3",
+      "vulnerabilityId": "GHSA-jqfw-vq24-v9c3",
+      "alertNumber": 245,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-246-ghsa-g4jq-h2w9-997c",
+      "vulnerabilityId": "GHSA-g4jq-h2w9-997c",
+      "alertNumber": 246,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-247-ghsa-93m4-6634-74q7",
+      "vulnerabilityId": "GHSA-93m4-6634-74q7",
+      "alertNumber": 247,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-248-ghsa-p9ff-h696-f583",
+      "vulnerabilityId": "GHSA-p9ff-h696-f583",
+      "alertNumber": 248,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-249-ghsa-4w7w-66w2-5vf9",
+      "vulnerabilityId": "GHSA-4w7w-66w2-5vf9",
+      "alertNumber": 249,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-250-ghsa-fx2h-pf6j-xcff",
+      "vulnerabilityId": "GHSA-fx2h-pf6j-xcff",
+      "alertNumber": 250,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-251-ghsa-v6wh-96g9-6wx3",
+      "vulnerabilityId": "GHSA-v6wh-96g9-6wx3",
+      "alertNumber": 251,
+      "component": {
+        "ecosystem": "npm",
+        "name": "vite",
+        "manifestPath": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/frontend-to-miniapp-vue3-wechat-v1/source-snapshots/vue3-todo-v1.0.1/pnpm-lock.yaml",
+          "sha256": "sha256:111acfc0fc5a87fadf906b892a4fe7406fc391b8cad9fc83228c0cc711e3b937",
+          "bytes": 27372
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-254-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 254,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-278-ghsa-ggr8-5vv4-36mx",
+      "vulnerabilityId": "GHSA-ggr8-5vv4-36mx",
+      "alertNumber": 278,
+      "component": {
+        "ecosystem": "npm",
+        "name": "deepmerge-ts",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    },
+    {
+      "id": "dependabot-287-ghsa-6gmq-8vp8-gcm6",
+      "vulnerabilityId": "GHSA-6gmq-8vp8-gcm6",
+      "alertNumber": 287,
+      "component": {
+        "ecosystem": "npm",
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T04:48:05Z"
+    }
+  ],
+  "metadata": {
+    "repository": "zpcaiai/elmos",
+    "generatedAt": "2026-09-08T04:48:05.477155Z",
+    "sourceAlertSnapshotDigest": "sha256:f88b68e9a33628db454318679d8e19e704bf2010387c7023cc6ad2e905501528",
+    "exceptionCount": 35,
+    "fixedClaims": [],
+    "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "githubDisposition": "DISMISSED",
+    "dismissedCount": 35,
+    "independentVerification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
   "packKey": "elmos-platform-supply-chain"
 }
