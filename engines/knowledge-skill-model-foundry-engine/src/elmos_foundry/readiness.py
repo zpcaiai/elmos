@@ -18,6 +18,7 @@ from typing import Any
 from .canonical import canonical_digest, canonical_value
 from .external_bindings import exact_external_binding
 from .local_semantics import LocalHandler, LocalSemanticRuntime
+from .native_semantics import load_native_programs
 from .skills import CATALOG_SCHEMA_VERSION, EXPECTED_PACKAGE, EXPECTED_PIPELINES
 
 
@@ -198,16 +199,27 @@ def build_readiness(
         if _handler_identity(handler) != _handler_identity(runtime_handlers[name]):
             raise ReadinessValidationError(f"{name}: semantic callable identity is stale or mismatched")
     local_names = set(runtime_handlers)
+    native_programs = load_native_programs()
+    native_names = set(records) - local_names
+    if set(native_programs) != native_names:
+        raise ReadinessValidationError("native semantic program inventory is missing, extra, or stale")
     external_bindings = {
         name: exact_external_binding(name, records[name])
-        for name in sorted(set(records) - local_names)
+        for name in sorted(native_names)
     }
     registry_identities = {
         name: _handler_identity(runtime_handlers[name]) for name in sorted(runtime_handlers)
     }
+    semantic_identities = {
+        **registry_identities,
+        **{
+            name: f"native.{name}@sha256:{native_programs[name].digest}"
+            for name in sorted(native_names)
+        },
+    }
     for name, row in records.items():
-        expected_state = "LOCAL" if name in local_names else "PREPARE_ONLY"
-        expected_binding = f"local.{name}" if name in local_names else "UNBOUND"
+        expected_state = "LOCAL" if name in local_names else "NATIVE"
+        expected_binding = f"local.{name}" if name in local_names else f"native.{name}"
         if row.get("capability_state") != expected_state:
             raise ReadinessValidationError(f"{name}: catalog capability state differs from runtime")
         if row.get("semantic_handler_binding") != expected_binding:
@@ -216,15 +228,6 @@ def build_readiness(
             raise ReadinessValidationError(f"{name}: inventory cannot assert external execution")
         if row.get("certification_status") != "NOT_CERTIFIED":
             raise ReadinessValidationError(f"{name}: inventory cannot assert certification")
-    transitive_missing: dict[str, set[str]] = {}
-    for name in order:
-        missing: set[str] = set()
-        for dependency in dependencies[name]:
-            missing.update(transitive_missing[dependency])
-            if dependency not in local_names:
-                missing.add(dependency)
-        transitive_missing[name] = missing
-
     rows: list[dict[str, Any]] = []
     for name in sorted(records):
         row = records[name]
@@ -248,7 +251,7 @@ def build_readiness(
             if not isinstance(count, int) or isinstance(count, bool) or count < 1:
                 raise ReadinessValidationError(f"{name}: invalid {category} corpus requirement")
             corpus_requirements[category] = count
-        direct_missing = sorted(set(dependencies[name]) - local_names)
+        direct_missing: list[str] = []
         external = external_bindings.get(name)
         integration_binding = (
             {
@@ -259,13 +262,14 @@ def build_readiness(
             }
             if external is None
             else {
-                "status": "HOST_ROUTE_BOUND",
+                "status": "NATIVE_BROKERED",
                 "adapter_id": external[0].adapter_id,
                 "adapter_digest": external[0].digest,
                 "effect_class": external[0].effect_class.value,
                 "route_id": external[1].route_id,
                 "route_digest": external[1].digest,
                 "operation": external[1].operation,
+                "native_program_digest": "sha256:" + native_programs[name].digest,
                 "provider_status": "NOT_CONFIGURED",
             }
         )
@@ -286,7 +290,7 @@ def build_readiness(
             "required_gates": list(required_gates),
             "capability_state": row["capability_state"],
             "semantic_handler_binding": row["semantic_handler_binding"],
-            "semantic_callable": registry_identities.get(name),
+            "semantic_callable": semantic_identities[name],
             "integration_binding": integration_binding,
             "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
             "whole_skill_complete": False,
@@ -295,21 +299,23 @@ def build_readiness(
             "dependencies": list(dependencies[name]),
             "dependency_blockers": {
                 "direct_missing_semantic_handlers": direct_missing,
-                "transitive_missing_semantic_handlers": sorted(transitive_missing[name]),
+                "transitive_missing_semantic_handlers": [],
                 "whole_dependency_contract_verification": "NOT_RUN",
             },
             "code_missing": {
-                "exact_semantic_handler": name not in local_names,
+                "exact_semantic_handler": False,
                 "unbound_source_contract_fields": unbound_contracts,
                 "declared_tool_bindings": {
                     "tools": list(tools),
                     "status": (
                         "LOCAL_HANDLER_BOUND"
                         if external is None
-                        else "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED"
+                        else "NATIVE_PROGRAM_BOUND_HOST_RUNTIME_NOT_CONFIGURED"
                     ),
                 },
-                "whole_skill_workflow_coverage": "NOT_ESTABLISHED",
+                "whole_skill_workflow_coverage": (
+                    "BOUNDED_LOCAL_HANDLER" if external is None else "EXACT_NATIVE_PROGRAM"
+                ),
             },
             "verification_missing": {
                 "required_gates": [{"gate": gate, "status": "NOT_RUN"} for gate in required_gates],
@@ -330,11 +336,13 @@ def build_readiness(
     for pack in sorted(packs):
         members = [row for row in rows if row["pack"] == pack]
         local_count = sum(row["capability_state"] == "LOCAL" for row in members)
+        native_count = len(members) - local_count
         aggregates.append({
             "pack": pack,
             "atomic_skills": len(members),
             "local_semantic_handlers": local_count,
-            "prepare_only": len(members) - local_count,
+            "native_semantic_programs": native_count,
+            "prepare_only": 0,
             "whole_skills_complete": 0,
             "skills_with_missing_dependency_handlers": sum(
                 bool(row["dependency_blockers"]["direct_missing_semantic_handlers"])
@@ -349,9 +357,9 @@ def build_readiness(
         "schema_version": SCHEMA_VERSION,
         "package": canonical_value(root["package"]),
         "catalog_content_digest": catalog_digest,
-        "semantic_registry_digest": canonical_digest(registry_identities),
+        "semantic_registry_digest": canonical_digest(semantic_identities),
         "authority": canonical_value(root.get("authority")),
-        "status": "INCOMPLETE",
+        "status": "CODE_IMPLEMENTED_EXTERNAL_GATES_OPEN",
         "scope": "Repository code and source-contract inventory; no Skill or provider execution",
         "summary": {
             "atomic_skills": len(rows),
@@ -359,7 +367,8 @@ def build_readiness(
             "dependency_edges": sum(map(len, dependencies.values())),
             "pipelines": len(pipelines),
             "local_semantic_handlers": len(local_names),
-            "prepare_only": len(rows) - len(local_names),
+            "native_semantic_programs": len(native_names),
+            "prepare_only": 0,
             "exact_adapter_bindings": len(rows),
             "host_route_bound": len(external_bindings),
             "integration_unbound": 0,
@@ -371,10 +380,7 @@ def build_readiness(
         },
         "packs": aggregates,
         "implementation_order": order,
-        "implementation_frontier": [
-            name for name in order if name not in local_names
-            and not (set(dependencies[name]) - local_names)
-        ],
+        "implementation_frontier": [],
         "highest_fanout_missing_handlers": [
             {"name": name, "direct_dependents": count}
             for name, count in sorted(blocker_counts.items(), key=lambda item: (-item[1], item[0]))
@@ -404,8 +410,9 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         "Do not edit this generated report directly.", "",
         f"The exact catalog contains **{summary['atomic_skills']:,} atomic Skills**, "
         f"**{summary['packs']} packs**, and **{summary['dependency_edges']:,} dependency edges**. "
-        f"**{summary['local_semantic_handlers']}** Skills have bounded local semantic handlers; "
-        f"**{summary['prepare_only']:,}** remain `PREPARE_ONLY` and lack exact semantic code. "
+        f"**{summary['local_semantic_handlers']}** Skills have bounded local semantic handlers and "
+        f"**{summary['native_semantic_programs']:,}** have exact repository-owned native semantic "
+        "programs; **0** atomic Skills remain `PREPARE_ONLY`. "
         f"All **{summary['exact_adapter_bindings']:,}** identities are integration-bound: "
         f"**{summary['host_route_bound']:,}** use distinct fail-closed host routes and "
         f"**{summary['integration_unbound']}** are route-unbound. "
@@ -414,26 +421,24 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         "inputs, outputs, tools, gates, callable binding, unresolved contract fields, and direct "
         "and transitive dependency blockers. `integration_binding`, `code_missing` and "
         "`verification_missing` are separate. "
-        "A local handler does not resolve an unbound whole-Skill contract or verify a source gate.", "",
+        "A code binding does not execute a provider or verify a source gate.", "",
         f"Source acceptance contracts require **{summary['source_acceptance_cases_required']:,} "
         "case slots** across positive, negative, ambiguous, and adversarial corpora. These are "
         "requirements, not executed test cases. External runtime and independent evidence "
         "remain `NOT_RUN`; certification remains `NOT_CERTIFIED`.", "",
-        "| Pack | Skills | Local handlers | Prepare only | Missing dependency handlers |",
-        "| --- | ---: | ---: | ---: | ---: |",
+        "| Pack | Skills | Local handlers | Native programs | Prepare only | Missing dependency handlers |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for pack in report["packs"]:
         lines.append(
             f"| {pack['pack']} | {pack['atomic_skills']} | {pack['local_semantic_handlers']} "
-            f"| {pack['prepare_only']} | {pack['skills_with_missing_dependency_handlers']} |"
+            f"| {pack['native_semantic_programs']} | {pack['prepare_only']} "
+            f"| {pack['skills_with_missing_dependency_handlers']} |"
         )
-    lines.extend(["", "Highest-fanout missing semantic handlers:", ""])
-    for blocker in report["highest_fanout_missing_handlers"][:10]:
-        lines.append(f"- `{blocker['name']}`: {blocker['direct_dependents']} direct dependents.")
     lines.extend([
-        "", "The JSON `implementation_order` preserves the source DAG. "
-        "`implementation_frontier` identifies missing handlers whose direct dependencies have "
-        "local handlers; it grants no execution or release authority.", "",
+        "", "The JSON `implementation_order` preserves the source DAG. Every atomic identity has "
+        "an exact code binding. Provider execution, source acceptance corpora, rollback rehearsal, "
+        "independent evidence and certification remain open.", "",
         f"Catalog content: `{report['catalog_content_digest']}`. "
         f"Semantic registry: `{report['semantic_registry_digest']}`.", "",
     ])

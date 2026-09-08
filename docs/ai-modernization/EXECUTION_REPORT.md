@@ -44,23 +44,26 @@ certification. The machine was concurrently running other Git and Java tasks.
 ## Verification
 
 - `ruff check ...`: passed for all task-owned Python and test files.
-- Full package tests with pinned extras: `36 passed`, `0 skipped`, `0 failed`.
-- System-Python optional-dependency path: `36 cases`: `33 passed`, `3 skipped`,
-  `0 failed`.
+- Repository Orchestrator locked test dependency group: `36 passed`, `0 skipped`,
+  `0 failed`. LangGraph and OpenTelemetry coverage now runs unconditionally.
 - Repository Skill importer: `INSTALLATION_VERIFIED`, 54 handlers, 142 DAG edges,
   external evidence `NOT_RUN`, certification `NOT_CERTIFIED`.
-- Project Intelligence runtime suite: `154 passed`, `1 skipped`; its following
-  qualification check failed closed because the committed local receipt has
-  drifted from the concurrently updated engine. The repository-owned refresh
-  also rejected the current installed manifest because its digest is not in the
-  trusted set, so no receipt or generated documentation was force-updated.
+- Project Intelligence runtime suite: `154 passed`, `0 skipped`, `0 failed`.
+  JSON Schema parity coverage now runs unconditionally from its locked test
+  dependency group. The local qualification check and importer both pass with
+  the refreshed digest-bound receipt; external evidence remains `NOT_RUN` and
+  certification remains `NOT_CERTIFIED`.
+- Project Intelligence source-package integration suite: `51 passed`,
+  `0 skipped`, `0 failed`.
 - Source-package integration suite with its declared YAML/JSON Schema tooling:
   `13 passed`, `0 failed`.
 
-Observed machine wall-clock: full extras test run `30.975 s`; final benchmark
-process `19.204 s`. A statistically valid end-to-end machine p50/p90 was not
-established from one suite run. Human review remains separately required for
-provider provisioning, production corpus approval, deployment, and independent
+Observed zero-skip rerun wall-clock: Repository Orchestrator `4.331 s` and
+Project Intelligence runtime `20.188 s`. The complete Project Intelligence
+source-package integration run took `1262.001 s`. The benchmark process took
+`19.204 s`. A statistically valid end-to-end machine p50/p90 was not established
+from one suite run. Human review remains separately required for provider
+provisioning, production corpus approval, deployment, and independent
 verification.
 
 ## External completion boundary
@@ -75,5 +78,5 @@ systems.
 
 Search projections are disposable and rebuildable from immutable source
 records. Local runtime rollback removes the new modules, their tests, benchmark
-script, optional dependency groups, and lock file. No production data, schema,
-deployment, or provider resource was mutated by this work.
+script, locked test dependency groups, and lock files. No production data,
+schema, deployment, or provider resource was mutated by this work.

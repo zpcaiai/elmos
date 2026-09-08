@@ -47,6 +47,7 @@ from .local_semantics import (
     LOCAL_SEMANTIC_SKILLS,
     CatalogView,
 )
+from .native_semantics import load_native_programs
 from .registry import build_default_adapter_registry
 from .store import FoundryStore
 
@@ -63,7 +64,7 @@ SOURCE_ARCHIVE_PATH = ROOT / "skills/subskills/elmos-knowledge-skill-model-found
 SOURCE_ARCHIVE_PREFIX = "elmos-knowledge-skill-model-foundry-v3.0.0/"
 CATALOG_SCHEMA_VERSION = "elmos.knowledge-skill-model-foundry.compiled-catalog.v2"
 EXPECTED_COMPILED_CATALOG_SHA256 = (
-    "b1d8907ac5ea9434f7c4107966a0f74d9ca7bb47d1ed31576227c71ef871331f"
+    "19051857bdb5ce5437b1a67ef965465579ea7ae34ffe4b27a3859a3b716f9145"
 )
 EXPECTED_PACKAGE = {
     "id": "elmos-knowledge-skill-model-foundry-v3.0.0",
@@ -669,12 +670,12 @@ def _validate_atomic_contract_row(
         row["semantic_handler_binding"], f"{label}.semantic_handler_binding"
     )
     capability_state = _string(row["capability_state"], f"{label}.capability_state")
-    if capability_state == "PREPARE_ONLY":
-        if semantic_handler != _UNBOUND:
-            raise CatalogValidationError(f"{name}: prepare-only Skill cannot bind semantic handler")
-    elif capability_state == "LOCAL":
+    if capability_state == "LOCAL":
         if semantic_handler != f"local.{name}":
             raise CatalogValidationError(f"{name}: LOCAL semantic handler binding is not exact")
+    elif capability_state == "NATIVE":
+        if semantic_handler != f"native.{name}":
+            raise CatalogValidationError(f"{name}: NATIVE semantic handler binding is not exact")
     else:
         raise CatalogValidationError(f"{name}: unsupported capability state")
 
@@ -910,6 +911,15 @@ def load_compiled_catalog(path: Path = DEFAULT_CATALOG_PATH) -> CatalogSnapshot:
         raise CatalogValidationError(
             "compiled LOCAL capability set does not match the exact local semantic registry"
         )
+    native_names = {
+        name for name, row in atomic.items() if row["capability_state"] == "NATIVE"
+    }
+    if native_names != set(load_native_programs()):
+        raise CatalogValidationError(
+            "compiled NATIVE capability set does not match the exact native program registry"
+        )
+    if local_names | native_names != set(atomic):
+        raise CatalogValidationError("every exact Skill must have LOCAL or NATIVE semantic code")
     if len(packs) != 41:
         raise CatalogValidationError("atomic Skills must cover exactly 41 packs")
     if {handler.pack for handler in PACK_HANDLER_REGISTRY.values()} != packs:
@@ -1068,7 +1078,7 @@ def _check_dag(atomic: Mapping[str, Mapping[str, Any]]) -> None:
 
 
 class SkillCatalog:
-    """Validated exact catalog plus prepare-only and adapter execution paths."""
+    """Validated exact catalog plus local and native brokered execution paths."""
 
     def __init__(self, kernel: ExecutionKernel | None = None, *, catalog_path: Path | None = None, adapter_registry: AdapterRegistry | None = None, store: FoundryStore | None = None, permit_verifier: PermitVerifier | None = None, external_broker: ExternalExecutionBroker | None = None) -> None:
         self.kernel = kernel or ExecutionKernel()
@@ -1097,9 +1107,15 @@ class SkillCatalog:
                         f"{name}: default adapter registry/catalog binding mismatch"
                     )
         from .semantic_program_runner import SemanticProgramRunner
+        adapter_implementations = getattr(self.adapters, "_implementations", {})
+        local_handlers = {
+            name: adapter_implementations[f"local.{name}"]
+            for name in LOCAL_SEMANTIC_SKILLS
+            if f"local.{name}" in adapter_implementations
+        }
         self.program_runner = SemanticProgramRunner(
             self.kernel,
-            local_handlers=getattr(self.adapters, "_implementations", None),
+            local_handlers=local_handlers,
         )
         self._records = self.snapshot.atomic_skills
         self._meta_skills = self.snapshot.meta_skills
@@ -1120,11 +1136,11 @@ class SkillCatalog:
                 postconditions=tuple(str(value) for value in record["required_gates"]),
                 inputs_schema={
                     "contracts": tuple(dict(value) for value in record["input_contracts"]),
-                    "binding": _UNBOUND,
+                    "binding": record["semantic_handler_binding"],
                 },
                 outputs_schema={
                     "contracts": tuple(dict(value) for value in record["output_contracts"]),
-                    "binding": _UNBOUND,
+                    "binding": record["semantic_handler_binding"],
                 },
                 rollback_policy=dict(record["rollback_contract"]),
             )
@@ -1372,14 +1388,17 @@ class SkillCatalog:
                 "exact_adapter_bindings": len(self.adapters.describe()),
                 "external_integration_bindings": self.total_atomic_skills
                 - len(LOCAL_SEMANTIC_SKILLS),
-                "implementation_status": "ALL_EXACT_BINDINGS_LOCAL_OR_HOST_ROUTED",
+                "implementation_status": "ALL_EXACT_BINDINGS_LOCAL_OR_NATIVE_BROKERED",
                 "capability_states": MappingProxyType(
-                    {"LOCAL": len(LOCAL_SEMANTIC_SKILLS), "PREPARE_ONLY": self.total_atomic_skills - len(LOCAL_SEMANTIC_SKILLS)}
+                    {
+                        "LOCAL": len(LOCAL_SEMANTIC_SKILLS),
+                        "NATIVE": self.total_atomic_skills - len(LOCAL_SEMANTIC_SKILLS),
+                    }
                 ),
                 "integration_states": MappingProxyType(
                     {
                         "LOCAL_EXECUTABLE": len(LOCAL_SEMANTIC_SKILLS),
-                        "HOST_ROUTE_BOUND": self.total_atomic_skills
+                        "NATIVE_BROKERED": self.total_atomic_skills
                         - len(LOCAL_SEMANTIC_SKILLS),
                         "UNBOUND": 0,
                     }

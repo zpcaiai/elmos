@@ -47,6 +47,12 @@ from .knowledge import KnowledgeManager
 from .local_semantics import LOCAL_SEMANTIC_SKILLS, LOCAL_SEMANTIC_VERSION
 from .memory import ExperienceMemoryStore
 from .model import ModelFoundry
+from .native_semantics import (
+    NATIVE_SEMANTIC_VERSION,
+    NativeSemanticError,
+    NativeSemanticProgram,
+    load_native_programs,
+)
 from .pipelines import PipelineOrchestrator
 from .policies import PolicyEngine
 from .semantic_program_runner import SemanticProgramRunner, StageResult
@@ -98,6 +104,9 @@ __all__ = [
     "ModelFoundry",
     "ModelRelease",
     "ModelServingGateway",
+    "NATIVE_SEMANTIC_VERSION",
+    "NativeSemanticError",
+    "NativeSemanticProgram",
     "OutboxReceiptVerifier",
     "PipelineOrchestrator",
     "PolicyEngine",
@@ -109,4 +118,5 @@ __all__ = [
     "SkillContract",
     "StageResult",
     "TenantScope",
+    "load_native_programs",
 ]
