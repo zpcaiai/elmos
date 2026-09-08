@@ -1,0 +1,168 @@
+{
+  "analyzer": "JDK JavacTask Tree API",
+  "analyzer_version": "21.0.11",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 123,
+                "file": "Clamp.java",
+                "start_byte": 118
+              },
+              "value": "value"
+            },
+            "operator": ">",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 131,
+                "file": "Clamp.java",
+                "start_byte": 126
+              },
+              "value": "upper"
+            },
+            "source_span": {
+              "end_byte": 132,
+              "file": "Clamp.java",
+              "start_byte": 117
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 170,
+            "file": "Clamp.java",
+            "start_byte": 114
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "name",
+                "source_span": {
+                  "end_byte": 159,
+                  "file": "Clamp.java",
+                  "start_byte": 154
+                },
+                "value": "upper"
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 160,
+                "file": "Clamp.java",
+                "start_byte": 147
+              }
+            }
+          ]
+        },
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 188,
+                "file": "Clamp.java",
+                "start_byte": 183
+              },
+              "value": "value"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 192,
+                "file": "Clamp.java",
+                "start_byte": 191
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 193,
+              "file": "Clamp.java",
+              "start_byte": 182
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 227,
+            "file": "Clamp.java",
+            "start_byte": 179
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 216,
+                  "file": "Clamp.java",
+                  "start_byte": 215
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 217,
+                "file": "Clamp.java",
+                "start_byte": 208
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "name",
+            "source_span": {
+              "end_byte": 248,
+              "file": "Clamp.java",
+              "start_byte": 243
+            },
+            "value": "value"
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 249,
+            "file": "Clamp.java",
+            "start_byte": 236
+          }
+        }
+      ],
+      "name": "clamp",
+      "parameters": [
+        {
+          "name": "value",
+          "source_span": {
+            "end_byte": 90,
+            "file": "Clamp.java",
+            "start_byte": 80
+          },
+          "type": "integer"
+        },
+        {
+          "name": "upper",
+          "source_span": {
+            "end_byte": 102,
+            "file": "Clamp.java",
+            "start_byte": 92
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 255,
+        "file": "Clamp.java",
+        "start_byte": 55
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "Clamp.java",
+  "source_language": "java"
+}

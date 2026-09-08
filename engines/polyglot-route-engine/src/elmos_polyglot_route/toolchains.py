@@ -225,6 +225,41 @@ def sanitized_subprocess_env(
 ) -> dict[str, str]:
     """Return a deterministic subprocess environment with no ambient hooks."""
 
+    if os.name == "nt":
+        # Create a private user-profile surface while preserving only the
+        # operating-system paths required by CreateProcess and the VB6 IDE.
+        # Repository-controlled hooks and language-specific ambient variables
+        # are intentionally not copied.
+        app_data = home / "AppData" / "Roaming"
+        local_app_data = home / "AppData" / "Local"
+        for directory in (app_data, local_app_data):
+            directory.mkdir(parents=True, exist_ok=True)
+        system_root = os.environ.get("SystemRoot", os.environ.get("WINDIR", "")).strip()
+        if not system_root or not Path(system_root).is_absolute():
+            raise RouteError("SUBPROCESS_WINDOWS_SYSTEM_ROOT_REQUIRED")
+        system32 = Path(system_root) / "System32"
+        fixed_paths = [*executable_dirs, system32, Path(system_root)]
+        path = os.pathsep.join(
+            str(item.resolve())
+            for item in dict.fromkeys(fixed_paths)
+            if item.is_dir()
+        )
+        return {
+            "PATH": path,
+            "SystemRoot": system_root,
+            "WINDIR": system_root,
+            "COMSPEC": str(system32 / "cmd.exe"),
+            "PATHEXT": ".COM;.EXE;.BAT;.CMD",
+            "USERPROFILE": str(home.resolve()),
+            "APPDATA": str(app_data.resolve()),
+            "LOCALAPPDATA": str(local_app_data.resolve()),
+            "TEMP": str(temp_dir.resolve()),
+            "TMP": str(temp_dir.resolve()),
+            "TZ": "UTC",
+            "NO_COLOR": "1",
+            "SOURCE_DATE_EPOCH": "0",
+        }
+
     go_telemetry = _disabled_go_telemetry_directory(home)
     fixed_paths = [
         *executable_dirs,
@@ -5460,7 +5495,38 @@ def _react() -> ExactToolchain:
     )
 
 
+def _vb6() -> ExactToolchain:
+    """Bind an exact, externally governed Windows/x86 VB6 SP6 installation."""
+
+    from .vb6_toolchain import resolve_vb6_toolchain
+
+    binding = resolve_vb6_toolchain(REPOSITORY_ROOT)
+    return ExactToolchain(
+        "vb6",
+        (
+            "Microsoft Visual Basic 6.0 SP6 / "
+            f"compiler {binding.compiler_version} / runtime {binding.runtime_version}"
+        ),
+        str(binding.compiler),
+        str(binding.runtime),
+        profile=(
+            "vb6-dialect=6.0-sp6",
+            "vb6-compiler-architecture=x86",
+            f"vb6-host-architecture={binding.host_architecture}",
+            f"vb6-runner-id={binding.runner_id}",
+            f"vb6-authorization-ref={binding.authorization_ref}",
+            f"vb6-binding-manifest-sha256={binding.manifest_sha256}",
+            "vb6-binding-evidence=GOVERNED_EXTERNAL_SELF_ATTESTED",
+            "vb6-independent-verification=NOT_RUN_UNLESS_SEPARATE_RECEIPT",
+        ),
+        executable_sha256=binding.compiler_sha256,
+        auxiliary_sha256=binding.runtime_sha256,
+    )
+
+
 def _toolchain_fingerprint() -> tuple[str, ...]:
+    from .vb6_toolchain import binding_fingerprint
+
     tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
     try:
         tsc_stat = tsc.stat(follow_symlinks=True)
@@ -5474,6 +5540,7 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
         os.environ.get("ELMOS_CLANG_HOME", ""),
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        *binding_fingerprint(),
         tsc_identity,
     )
 
@@ -5498,6 +5565,7 @@ def _cached_exact_toolchain(
         "kotlin": _kotlin,
         "react": _react,
         "flutter": _flutter,
+        "vb6": _vb6,
     }
     try:
         selector = selectors[language]

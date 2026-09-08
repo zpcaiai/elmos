@@ -1,0 +1,131 @@
+{
+  "analyzer": "clang AST (JSON)",
+  "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 102,
+                "file": "pricing.cpp",
+                "start_byte": 94
+              },
+              "value": "subtotal"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 106,
+                "file": "pricing.cpp",
+                "start_byte": 105
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 106,
+              "file": "pricing.cpp",
+              "start_byte": 94
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 133,
+            "file": "pricing.cpp",
+            "start_byte": 90
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 126,
+                  "file": "pricing.cpp",
+                  "start_byte": 125
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 126,
+                "file": "pricing.cpp",
+                "start_byte": 118
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 153,
+                "file": "pricing.cpp",
+                "start_byte": 145
+              },
+              "value": "subtotal"
+            },
+            "operator": "+",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 159,
+                "file": "pricing.cpp",
+                "start_byte": 156
+              },
+              "value": "tax"
+            },
+            "source_span": {
+              "end_byte": 159,
+              "file": "pricing.cpp",
+              "start_byte": 145
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 159,
+            "file": "pricing.cpp",
+            "start_byte": 138
+          }
+        }
+      ],
+      "name": "calculate",
+      "parameters": [
+        {
+          "name": "subtotal",
+          "source_span": {
+            "end_byte": 64,
+            "file": "pricing.cpp",
+            "start_byte": 43
+          },
+          "type": "integer"
+        },
+        {
+          "name": "tax",
+          "source_span": {
+            "end_byte": 82,
+            "file": "pricing.cpp",
+            "start_byte": 66
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 162,
+        "file": "pricing.cpp",
+        "start_byte": 20
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "pricing.cpp",
+  "source_language": "cpp"
+}

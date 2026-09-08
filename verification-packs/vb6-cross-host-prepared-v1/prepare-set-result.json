@@ -1,0 +1,195 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.vb6-cross-host-prepare-set-result",
+  "prepared": [],
+  "requests": [
+    {
+      "bytes": 4293,
+      "path": "java-to-vb6/campaign-request.json",
+      "route_key": "java-to-vb6",
+      "sha256": "sha256:90b678c34ebf85ab845f0dddd5c304c0fe67f9bd1c45a65e68ca7e021aebe6d4"
+    },
+    {
+      "bytes": 4291,
+      "path": "csharp-to-vb6/campaign-request.json",
+      "route_key": "csharp-to-vb6",
+      "sha256": "sha256:3b758dcf0c298e4d6eb49bd389dfa6670e098b4c7cd942650fdb23d146fd5ed2"
+    },
+    {
+      "bytes": 4283,
+      "path": "go-to-vb6/campaign-request.json",
+      "route_key": "go-to-vb6",
+      "sha256": "sha256:a4d7c4c6fd9db6ef640174442819a7f5742632715b3766d091d30cc3df3b6dd8"
+    },
+    {
+      "bytes": 4287,
+      "path": "rust-to-vb6/campaign-request.json",
+      "route_key": "rust-to-vb6",
+      "sha256": "sha256:9f16e5daf6c8a486b9a96fc08d45cd2b809555ec3de9ce84b257c40fd5927d07"
+    },
+    {
+      "bytes": 4291,
+      "path": "python-to-vb6/campaign-request.json",
+      "route_key": "python-to-vb6",
+      "sha256": "sha256:c4a4df5f386bc1a9ee3f328931b9d5b96728bbdedbc26d55fa15a7c560d64548"
+    },
+    {
+      "bytes": 4299,
+      "path": "typescript-to-vb6/campaign-request.json",
+      "route_key": "typescript-to-vb6",
+      "sha256": "sha256:04e892b927c3c219819e1449adcf732ea4a6ac8e6988243b8b346cf11d7440bc"
+    },
+    {
+      "bytes": 4288,
+      "path": "cpp-to-vb6/campaign-request.json",
+      "route_key": "cpp-to-vb6",
+      "sha256": "sha256:abea16690ee28372d38947a7b020d7d895644936352dc4d7e0ee4e73bb518d1e"
+    },
+    {
+      "bytes": 4284,
+      "path": "objc-to-vb6/campaign-request.json",
+      "route_key": "objc-to-vb6",
+      "sha256": "sha256:0edff609466ea7d91ef0bd6adb50dc420176e30aeefd2a1ac8d0e1bbf7b81e39"
+    },
+    {
+      "bytes": 4298,
+      "path": "swift-to-vb6/campaign-request.json",
+      "route_key": "swift-to-vb6",
+      "sha256": "sha256:a0ee68cf3ae86f5718f9f511e501c1f66b6716f1d9cda532d414c3619bc63f7f"
+    },
+    {
+      "bytes": 4288,
+      "path": "php-to-vb6/campaign-request.json",
+      "route_key": "php-to-vb6",
+      "sha256": "sha256:cb01db65ed923c60afb2156ac22605a8081563ce39dd19c88737e713253613b1"
+    },
+    {
+      "bytes": 4291,
+      "path": "kotlin-to-vb6/campaign-request.json",
+      "route_key": "kotlin-to-vb6",
+      "sha256": "sha256:dd814fd3cf2da58744d3a74adc1a1cc8aa2cb08ae9ea2851a5b19f582f3318e7"
+    },
+    {
+      "bytes": 4292,
+      "path": "react-to-vb6/campaign-request.json",
+      "route_key": "react-to-vb6",
+      "sha256": "sha256:63510ea95de5cc0e812061d6cfff8e77f36d6f8b430b87b3ce14ebe2c7052812"
+    },
+    {
+      "bytes": 4299,
+      "path": "flutter-to-vb6/campaign-request.json",
+      "route_key": "flutter-to-vb6",
+      "sha256": "sha256:4b0d2866a96ae50aab74e78de2ee4b10cadfa6d7cb0257c51b22b2bedf39f103"
+    },
+    {
+      "bytes": 4293,
+      "path": "vb6-to-java/campaign-request.json",
+      "route_key": "vb6-to-java",
+      "sha256": "sha256:30714543cce586cf18b3788f970e86816a86f87aed067c05f0fe4a067eb0c6a7"
+    },
+    {
+      "bytes": 4291,
+      "path": "vb6-to-csharp/campaign-request.json",
+      "route_key": "vb6-to-csharp",
+      "sha256": "sha256:71e9b711278b35101c37a6393077447ddb712e7c221dbea5e12d0445a3570083"
+    },
+    {
+      "bytes": 4283,
+      "path": "vb6-to-go/campaign-request.json",
+      "route_key": "vb6-to-go",
+      "sha256": "sha256:dae28f777c581f4fbde2e21cba13df1189e9be595c8113f5c04dd476c2118cfe"
+    },
+    {
+      "bytes": 4287,
+      "path": "vb6-to-rust/campaign-request.json",
+      "route_key": "vb6-to-rust",
+      "sha256": "sha256:c7a7e563cab4163de3ccbf453a526c636b57175f6235b1ed42a1a1c66902050b"
+    },
+    {
+      "bytes": 4291,
+      "path": "vb6-to-python/campaign-request.json",
+      "route_key": "vb6-to-python",
+      "sha256": "sha256:7f6e2d904f4d987774cce57abe871e55410fec4cac799c18b60ef8cff14dc427"
+    },
+    {
+      "bytes": 4299,
+      "path": "vb6-to-typescript/campaign-request.json",
+      "route_key": "vb6-to-typescript",
+      "sha256": "sha256:36826eddd4d5239d8bb91959e4096d5ef108915d163b37bbd39b96702c3d9e14"
+    },
+    {
+      "bytes": 4288,
+      "path": "vb6-to-cpp/campaign-request.json",
+      "route_key": "vb6-to-cpp",
+      "sha256": "sha256:15b71ac7faba264ef14b6f8ba5d22d759da98215ccbb273f87224a8fbb7de22d"
+    },
+    {
+      "bytes": 4284,
+      "path": "vb6-to-objc/campaign-request.json",
+      "route_key": "vb6-to-objc",
+      "sha256": "sha256:3f1e5532d0d8c1c9933a421f4016570c4d0f265367052c5d824252984725b558"
+    },
+    {
+      "bytes": 4298,
+      "path": "vb6-to-swift/campaign-request.json",
+      "route_key": "vb6-to-swift",
+      "sha256": "sha256:5e6c1fa0e596558958c8a18df80d63562f8791784956963627bfee4f7ab6cc1f"
+    },
+    {
+      "bytes": 4288,
+      "path": "vb6-to-php/campaign-request.json",
+      "route_key": "vb6-to-php",
+      "sha256": "sha256:244e19a9603cee9e7dc27f85832ae73c063e82c1f5309e6bec5e3ab2f5e087ac"
+    },
+    {
+      "bytes": 4291,
+      "path": "vb6-to-kotlin/campaign-request.json",
+      "route_key": "vb6-to-kotlin",
+      "sha256": "sha256:ce5f5cf13524a0556243324c1fb6eaf7c0a880430bd24ff24571fb2783168b8f"
+    },
+    {
+      "bytes": 4292,
+      "path": "vb6-to-react/campaign-request.json",
+      "route_key": "vb6-to-react",
+      "sha256": "sha256:e010b2d8ba1a084a3fa63e90216ecc5b38138c4ff3702462c7e02f44784c73c0"
+    },
+    {
+      "bytes": 4299,
+      "path": "vb6-to-flutter/campaign-request.json",
+      "route_key": "vb6-to-flutter",
+      "sha256": "sha256:98c2911c1a67c159176d9db10c2f7ea66d5998a921790108a6f3073cbccfbb12"
+    }
+  ],
+  "reused": [
+    "java-to-vb6",
+    "csharp-to-vb6",
+    "go-to-vb6",
+    "rust-to-vb6",
+    "python-to-vb6",
+    "typescript-to-vb6",
+    "cpp-to-vb6",
+    "objc-to-vb6",
+    "swift-to-vb6",
+    "php-to-vb6",
+    "kotlin-to-vb6",
+    "react-to-vb6",
+    "flutter-to-vb6",
+    "vb6-to-java",
+    "vb6-to-csharp",
+    "vb6-to-go",
+    "vb6-to-rust",
+    "vb6-to-python",
+    "vb6-to-typescript",
+    "vb6-to-cpp",
+    "vb6-to-objc",
+    "vb6-to-swift",
+    "vb6-to-php",
+    "vb6-to-kotlin",
+    "vb6-to-react",
+    "vb6-to-flutter"
+  ],
+  "route_count": 26,
+  "schema_version": 1,
+  "windows_vb6_side_status": "NOT_RUN"
+}

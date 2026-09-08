@@ -1,0 +1,88 @@
+{
+  "analyzer": "ELMOS React/TSX typed-pure source analyzer",
+  "analyzer_version": "TypeScript 5.9.2 / Node 26.0.0 / React 19.2.7 / React DOM 19.2.7;analyzer-sha256=e5e81537872c527f335479cddb929ad26cd2af8bc3b4dad0aa7da9644becd4b8;dependency-profile-sha256=bdfc0de83010d6293ba93b45040d5d683a3dc9da17b6827c148f973aa9b1a5fb",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "value": "value"
+            },
+            "operator": ">",
+            "right": {
+              "kind": "name",
+              "value": "upper"
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "then": [
+            {
+              "expression": {
+                "kind": "name",
+                "value": "upper"
+              },
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "value": "value"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "value": 0
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "value": 0
+              },
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "name",
+            "value": "value"
+          },
+          "kind": "return"
+        }
+      ],
+      "name": "clamp",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "number"
+        },
+        {
+          "name": "upper",
+          "type": "number"
+        }
+      ],
+      "return_type": "number",
+      "source_span": {
+        "end_byte": 161,
+        "file": "clamp.tsx",
+        "start_byte": 0
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "clamp.tsx",
+  "source_language": "react"
+}

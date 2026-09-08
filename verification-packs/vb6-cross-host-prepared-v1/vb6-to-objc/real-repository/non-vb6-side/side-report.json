@@ -1,0 +1,74 @@
+{
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "-x",
+        "objective-c",
+        "-std=c17",
+        "-isysroot",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-fobjc-arc",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-framework",
+        "Foundation",
+        "-o",
+        "route_harness",
+        "route_harness.m"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "./route_harness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t13\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\n"
+    }
+  ],
+  "language": "objc",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "13",
+      "status": "RETURNED",
+      "value": 13
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    }
+  ],
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": null,
+    "auxiliary_sha256": null,
+    "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+    "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+    "language": "objc",
+    "profile": [
+      "platform=Darwin/arm64",
+      "apple-host-profile=local-macos26-20260904",
+      "xcode=26.6/17F113",
+      "macosx-sdk=26.5",
+      "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "c17/objc-arc/Foundation/Apple-runtime"
+    ],
+    "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+  }
+}
