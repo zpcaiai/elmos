@@ -1,27 +1,33 @@
 {
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 2,
   "evidence_refs": [
     "certification/local-development-evidence.json",
     "certification/local-holdout-evidence.json",
     "certification/local-representative-evidence.json",
-    "certification/local-negative-evidence.json"
+    "certification/formal-equivalence.json"
   ],
+  "formal_equivalence": {
+    "bytes": 304172,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:24d3c8781f920e9971e97f25d2eb9577d80c430a242a89a942f9f5315d84b84b"
+  },
   "gate_results": {
     "external_execution": "NOT_RUN",
     "independent_verification": "NOT_RUN",
-    "local_execution": "NOT_RUN"
+    "local_execution": "PASSED"
   },
-  "issued_at": "2026-08-09T00:00:00+00:00",
+  "issued_at": "2026-09-08T09:47:45.974687+00:00",
   "metrics": {
-    "build_green_rate": 0.0,
+    "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 0.0,
+    "first_build_pass_rate": 1.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 0.0,
-    "source_map_coverage": 0.0
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
   },
-  "next_review_at": "2026-11-09T00:00:00+00:00",
+  "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "swift-to-go",
   "route_version": "1.0.0",
   "schema_version": 1,
