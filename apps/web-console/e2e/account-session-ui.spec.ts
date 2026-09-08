@@ -49,7 +49,12 @@ test("anonymous user login entries perform a document navigation", async ({ page
     exact: true,
   });
   await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  await sidebarAdminLogin.click();
+  // Use the keyboard activation path: it still exercises the anchor's real
+  // document navigation while remaining independent of Next's development
+  // overlay portal, which can transiently intercept pointer events after the
+  // preceding full-document login navigation in a cold CI compilation.
+  await sidebarAdminLogin.focus();
+  await sidebarAdminLogin.press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
