@@ -620,7 +620,7 @@ def test_swift_emitted_integer_to_number_cast_relifts_exactly(tmp_path: Path) ->
     )
     with pytest.raises(
         RouteError,
-        match=r"^NATIVE_ANALYZER_FAILED:.*:SWIFT_EMITTED_DOUBLE_CAST_INVALID$",
+        match=r"^NATIVE_ANALYZER_FAILED:.*:SWIFT_EMITTED_DOUBLE_LITERAL_INVALID$",
     ):
         analyze(target, "swift", "widen", emitted_target=True)
 

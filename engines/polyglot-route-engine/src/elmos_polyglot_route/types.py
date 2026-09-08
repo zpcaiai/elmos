@@ -210,6 +210,16 @@ def _check_statements(
                 raise RouteError(f"LET_TYPE_MISMATCH:{statement.declared_type}:{actual}")
             environment[statement.name] = statement.declared_type
             continue
+        if statement.kind == "assign":
+            if statement.name is None or statement.expression is None:
+                raise RouteError("INVALID_ASSIGN_STATEMENT")
+            if statement.name not in environment:
+                raise RouteError(f"ASSIGN_NAME_NOT_BOUND:{statement.name}")
+            expected = environment[statement.name]
+            actual = infer(statement.expression, environment, records_env, functions_env)
+            if actual != expected:
+                raise RouteError(f"ASSIGN_TYPE_MISMATCH:{expected}:{actual}")
+            continue
         if statement.kind == "return" and statement.expression is not None:
             actual = infer(statement.expression, environment, records_env, functions_env)
             # integer -> number is the one widening every target performs

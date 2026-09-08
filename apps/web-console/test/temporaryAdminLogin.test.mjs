@@ -8,10 +8,10 @@ registerHooks({ resolve(specifier, context, nextResolve) {
   return nextResolve(specifier === "next/server" ? "next/server.js" : specifier, context);
 } });
 const account = await import("../app/lib/server/accountSession.ts");
-const { POST } = await import("../app/api/auth/admin/login/route.ts");
+const { POST } = await import("../app/api/auth/admin/login/_route.ts");
 const { POST: userLogin } = await import("../app/api/auth/login/_route.ts");
 const { POST: logout } = await import("../app/api/auth/logout/_route.ts");
-const { GET: sessionRoute } = await import("../app/api/auth/session/route.ts");
+const { GET: sessionRoute } = await import("../app/api/auth/session/_route.ts");
 const { authorizeAdmin } = await import("../app/lib/server/operationsProxy.ts");
 const { requireRunnerFleetOidcAdmin } = await import("../app/lib/server/runnerFleetPolicy.ts");
 const password = randomBytes(24).toString("hex");

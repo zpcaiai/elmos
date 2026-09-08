@@ -1,0 +1,71 @@
+{
+  "schema_version": "ao.v1",
+  "host_revision": null,
+  "status": "not_inspected",
+  "ports": [
+    {
+      "port": "EvidenceContextService",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "ScopeResolver",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "RevisionCatalog",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "SymbolGraphPort",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "ModelGateway",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "AgentSubflowPort",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "ExecutionGateway",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    },
+    {
+      "port": "AcceptanceService",
+      "path": null,
+      "symbol": null,
+      "status": "unknown",
+      "action": "inspect",
+      "evidence": []
+    }
+  ]
+}

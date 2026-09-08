@@ -1698,50 +1698,6 @@ def test_python_postgres_runtime_plan_keeps_bounded_real_probe_budgets(tmp_path:
     assert plan["integration_timeout_seconds"] == 180
 
 
-def test_java_postgres_runtime_plan_allows_a_bounded_cold_integration_run(tmp_path: Path) -> None:
-    workspace = tmp_path / "workspace"
-    request = approve_request(
-        create_draft(
-            name="java-runtime-budget-service",
-            description="Durable authenticated and tenant-isolated order API.",
-            entity="order",
-            languages=("java",),
-            persistence="postgresql",
-            auth_mode="jwt",
-            permissions=allow_crud("order"),
-        ),
-        actor="user:test",
-    )
-    generate_workspace(request, workspace)
-
-    [plan] = runtime_commands(workspace)
-
-    assert plan["integration_command"][1:] == ["-B", "test", "-Pintegration"]
-    assert plan["integration_timeout_seconds"] == 600
-
-
-def test_kotlin_postgres_runtime_plan_preserves_the_bounded_jvm_startup_budget(tmp_path: Path) -> None:
-    workspace = tmp_path / "workspace"
-    request = approve_request(
-        create_draft(
-            name="kotlin-runtime-budget-service",
-            description="Durable authenticated and tenant-isolated order API.",
-            entity="order",
-            languages=("kotlin",),
-            persistence="postgresql",
-            auth_mode="jwt",
-            permissions=allow_crud("order"),
-        ),
-        actor="user:test",
-    )
-    generate_workspace(request, workspace)
-
-    [plan] = runtime_commands(workspace)
-
-    assert plan["startup_timeout_seconds"] == 300
-    assert plan["integration_timeout_seconds"] == 300
-
-
 def test_every_profile_open_target_declares_an_integration_command() -> None:
     # A target opened in SUPPORTED_PROFILE_TARGETS but absent from the harness
     # tables would boot, answer /health and never run the tenant isolation

@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from .chinadb import chinadb_capabilities
+from .chinadb import CHINADB_TARGETS, chinadb_capabilities, translate_chinadb_ddl
 from .engine import translate_ddl
 from .models import Dialect, DialectError, RouteError, TypeMigrationPolicy
 from .profiles import NamespaceProfile
@@ -19,7 +19,18 @@ def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     p = subparsers.add_parser("translate", help="translate one certified SQL statement between dialects")
     p.add_argument("--source-file", required=True, type=Path)
     p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
-    p.add_argument("--target-dialect", required=True, choices=[d.value for d in Dialect])
+    p.add_argument("--target-dialect", default=None, choices=[d.value for d in Dialect])
+    p.add_argument(
+        "--chinadb-target",
+        default=None,
+        choices=[target.id for target in CHINADB_TARGETS],
+        help="emit certified-profile DDL through an explicit ChinaDB compatibility mode",
+    )
+    p.add_argument(
+        "--compatibility-mode",
+        default=None,
+        help="required with --chinadb-target; never treated as a silent dialect alias",
+    )
     p.add_argument(
         "--statement-kind",
         default="TABLE",
@@ -81,19 +92,52 @@ def _run_translate(args: argparse.Namespace) -> int:
         if not isinstance(raw_profile, dict):
             raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
         namespace_profile = NamespaceProfile.from_payload(raw_profile)
-    report = translate_ddl(
-        sql,
-        args.source_dialect,
-        args.target_dialect,
-        statement_kind=args.statement_kind,
-        dsn=args.dsn,
-        namespace_map=namespace_map,
-        namespace_profile=namespace_profile,
-    )
+    translate_kwargs = {
+        "statement_kind": args.statement_kind,
+        "dsn": args.dsn,
+        "namespace_map": namespace_map,
+        "namespace_profile": namespace_profile,
+    }
+    if args.chinadb_target is not None:
+        if args.target_dialect is not None:
+            raise RouteError(
+                "CHINADB_TARGET_AND_DIALECT_MUTUALLY_EXCLUSIVE: use --chinadb-target with "
+                "--compatibility-mode, or --target-dialect, not both"
+            )
+        if not args.compatibility_mode:
+            raise RouteError(
+                "CHINADB_COMPATIBILITY_MODE_REQUIRED: --chinadb-target requires an explicit "
+                "--compatibility-mode from that target's allow-list"
+            )
+        report = translate_chinadb_ddl(
+            sql,
+            args.source_dialect,
+            args.chinadb_target,
+            args.compatibility_mode,
+            **translate_kwargs,
+        )
+        emitted_dialect = report.get("mappedDialect")
+    else:
+        if args.compatibility_mode:
+            raise RouteError(
+                "COMPATIBILITY_MODE_REQUIRES_CHINADB_TARGET: --compatibility-mode is only valid "
+                "with --chinadb-target"
+            )
+        if args.target_dialect is None:
+            raise RouteError(
+                "TARGET_DIALECT_REQUIRED: provide --target-dialect or --chinadb-target"
+            )
+        report = translate_ddl(
+            sql,
+            args.source_dialect,
+            args.target_dialect,
+            **translate_kwargs,
+        )
+        emitted_dialect = args.target_dialect
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "translation-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    if report["emitted"] is not None:
-        extension = {"postgres": "sql", "mysql": "sql", "oracle": "sql", "tsql": "sql"}[args.target_dialect]
+    if report["emitted"] is not None and emitted_dialect:
+        extension = {"postgres": "sql", "mysql": "sql", "oracle": "sql", "tsql": "sql"}[emitted_dialect]
         (args.output / f"emitted.{extension}").write_text(report["emitted"] + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
     return 0 if report["status"] == "PASSED" else 2

@@ -251,5 +251,80 @@ class SpringRouteReferenceEvidenceTests(unittest.TestCase):
             target_evidence.write_text(original, encoding="utf-8")
 
 
+    def test_gradle_route_fixture_declares_a_canonical_boot_gradle_build(self) -> None:
+        route = REFERENCE.ROUTES["boot-2.x-gradle-to-boot-3.5.3-java-21"]
+        self.assertEqual(route.build_tool, "gradle")
+        build = REFERENCE.gradle_build(route)
+        # The dependency-management plugin is what lets the starters resolve
+        # without versions on Boot 2.x; a build.gradle that loses it fails at
+        # compileJava with an empty version, far away from the real cause.
+        self.assertIn(
+            "id 'org.springframework.boot' version '2.7.18'", build
+        )
+        self.assertIn(
+            "id 'io.spring.dependency-management' version '1.0.15.RELEASE'", build
+        )
+        # Regression lock: the dependencies block wrapper must be present, or
+        # Gradle reads `implementation` as an unknown root-project method.
+        self.assertIn("dependencies {", build)
+        self.assertIn(
+            "implementation 'org.springframework.boot:spring-boot-starter-web'", build
+        )
+        self.assertIn(
+            "testImplementation 'org.springframework.boot:spring-boot-starter-test'",
+            build,
+        )
+        self.assertIn("sourceCompatibility = '17'", build)
+        self.assertIn("useJUnitPlatform()", build)
+        self.assertEqual(
+            REFERENCE.gradle_settings(route),
+            "rootProject.name = 'spring-reference-2-7-18'\n",
+        )
+
+    def test_gradle_route_recipe_matches_the_catalog_route_id(self) -> None:
+        route = REFERENCE.ROUTES["boot-2.x-gradle-to-boot-3.5.3-java-21"]
+        recipe = (
+            ROOT
+            / "apps/java-engine-worker/src/main/resources/rewrite"
+            / route.recipe_file
+        )
+        self.assertTrue(recipe.is_file())
+        text = recipe.read_text(encoding="utf-8")
+        self.assertIn(f"name: {route.recipe_id}", text)
+        self.assertIn("pluginIdPattern: org.springframework.boot", text)
+        self.assertIn("newVersion: 3.5.3", text)
+        # The harness drives the same init-script mechanism the Java Worker
+        # ships, so the recipe must pin the boot plugin for Gradle builds.
+        self.assertIn("org.openrewrite.gradle.plugins.ChangePluginVersion", text)
+
+    def test_built_boot_jar_rejects_missing_and_plain_jars(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary)
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.built_boot_jar(project, "maven")
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.built_boot_jar(project, "gradle")
+            maven_target = project / "target"
+            maven_target.mkdir()
+            (maven_target / "app.jar.original").write_bytes(b"original")
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.built_boot_jar(project, "maven")
+            (maven_target / "app.jar").write_bytes(b"boot")
+            self.assertEqual(
+                REFERENCE.built_boot_jar(project, "maven"),
+                maven_target / "app.jar",
+            )
+            gradle_libs = project / "build" / "libs"
+            gradle_libs.mkdir(parents=True)
+            (gradle_libs / "app-1.0.0-plain.jar").write_bytes(b"plain")
+            with self.assertRaises(REFERENCE.RunFailure):
+                REFERENCE.built_boot_jar(project, "gradle")
+            (gradle_libs / "app-1.0.0.jar").write_bytes(b"boot")
+            self.assertEqual(
+                REFERENCE.built_boot_jar(project, "gradle"),
+                gradle_libs / "app-1.0.0.jar",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

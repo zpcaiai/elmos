@@ -1,0 +1,15 @@
+{
+  "schema_version": "ao.v1",
+  "dataset_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "environment_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "scope_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "model_profile": "not_used",
+  "warm_state": "warm",
+  "n_independent_cases": 12,
+  "total_attempt_cost": null,
+  "accepted_jobs": 0,
+  "production_claim": false,
+  "raw_artifact_refs": [
+    "reference-demo"
+  ]
+}

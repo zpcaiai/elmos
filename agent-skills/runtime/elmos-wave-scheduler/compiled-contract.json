@@ -2,40 +2,37 @@
   "certification_status": "NOT_CERTIFIED",
   "contract": {
     "acceptance": [
-      "every dispatched task is ready and lock-safe"
+      "every dispatch is graph-ready, handoff-ready and resource-safe"
     ],
     "guardrails": [
-      "No dependency violation.",
-      "No concurrent overlapping writes."
+      "No dependency, contract, lock or barrier violation for throughput."
     ],
     "inputs": [
-      "`DAG`",
-      "`path locks`",
+      "`verified typed DAG`",
+      "`critical path/resource plan`",
       "`model quotas`",
       "`budget`"
     ],
     "outputs": [
-      "`execution wave plan`"
+      "`execution wave plan`",
+      "`dispatch rationale`"
     ],
-    "triggers": [
-      "DAG ready"
-    ]
+    "triggers": []
   },
   "dag": {
     "activation": "required",
     "dependencies": [
-      "elmos-task-dag-builder",
-      "elmos-budget-planner",
-      "elmos-eta-estimator",
+      "elmos-critical-path-resource-scheduler",
+      "elmos-integration-edge-planner",
       "elmos-run-state-journal"
     ]
   },
   "external_evidence_status": "NOT_RUN",
-  "namespace": "repository-task-router-v1",
+  "namespace": "repository-task-router-v2",
   "package": {
     "id": "elmos.repository-task-router-skills",
     "name": "elmos-repository-task-decomposition-cost-router-skills",
-    "version": "1.1.0"
+    "version": "2.0.0"
   },
   "runtime_binding": {
     "adapter_requirement": null,
@@ -46,14 +43,14 @@
     "local_evidence_status": "NOT_RUN",
     "module": "elmos_repository_orchestrator.runtime",
     "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
-    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
   },
   "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
     "name": "elmos-wave-scheduler",
     "ordinal": 17,
-    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/17-wave-scheduler/SKILL.md",
-    "sha256": "sha256:3ffec64f45bca31e1311fab3c41f16bc2e06d3fc89bc89d1cd40788618445f90",
-    "version": "1.0.0"
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/17-wave-scheduler/SKILL.md",
+    "sha256": "sha256:d76765994c857c39ae121af18172ad6503953483ec0fc9591524e5ec24aa3510",
+    "version": "2.0.0"
   }
 }

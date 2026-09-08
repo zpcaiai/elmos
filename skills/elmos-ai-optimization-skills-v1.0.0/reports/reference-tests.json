@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "tests_run": 131,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "duration_seconds": 1.8195984509998198,
+  "python": "3.13.5",
+  "environment_kind": "local_reference",
+  "host_integration_verified": false,
+  "native_langgraph_verified": false,
+  "production_qualified": false
+}

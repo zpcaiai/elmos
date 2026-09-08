@@ -9,7 +9,7 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
-from . import placeholders
+from . import placeholders, rewrites
 from .adapters import target_adapter_for_profile
 from .models import (
     Diagnostic,
@@ -424,6 +424,25 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                         after=canonical_statement,
                     )
                 )
+            before_source_rewrites = canonical_statement.copy()
+            canonical_statement, aggregate_rules = rewrites.canonicalize_aggregate_order(
+                canonical_statement
+            )
+            canonical_statement, oracle_trunc_rules = (
+                rewrites.normalize_oracle_date_trunc(canonical_statement)
+                if source.dialect == "oracle"
+                else (canonical_statement, ())
+            )
+            for rule_id in (*aggregate_rules, *oracle_trunc_rules):
+                rule_trace.append(
+                    _transformation_trace(
+                        statement_index=index,
+                        rule_id=rule_id,
+                        action="NORMALIZE_TYPED_AST",
+                        before=before_source_rewrites,
+                        after=canonical_statement,
+                    )
+                )
             before_placeholder_rewrite = canonical_statement
             canonical_statement, placeholder_mapping = placeholders.rewrite(
                 before_placeholder_rewrite, source.dialect, target.dialect
@@ -474,6 +493,21 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                         )
                     )
 
+            before_target_lowering = canonical_statement.copy()
+            canonical_statement, lowering_rules = rewrites.lower_sqlite_group_concat_order(
+                canonical_statement, target.dialect
+            )
+            for rule_id in lowering_rules:
+                rule_trace.append(
+                    _transformation_trace(
+                        statement_index=index,
+                        rule_id=rule_id,
+                        action="LOWER_TYPED_AST_TARGET_DIALECT",
+                        before=before_target_lowering,
+                        after=canonical_statement,
+                    )
+                )
+
             emission = target_adapter.emit(canonical_statement)
             if (
                 emission.adapter_id != target_adapter.adapter_id
@@ -511,6 +545,12 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 obligations.add("POSITIONAL_REFERENCE_NORMALIZED")
             if placeholder_mapping:
                 obligations.add("PARAMETER_BINDING_REWRITTEN")
+            if aggregate_rules:
+                obligations.add(rewrites.AGGREGATE_ORDER_CANONICALIZED)
+            if oracle_trunc_rules:
+                obligations.add(rewrites.ORACLE_TRUNC_FORMAT_NORMALIZED)
+            if lowering_rules:
+                obligations.add(rewrites.SQLITE_AGGREGATE_ORDER_LOWERED)
             statement_irs.append(
                 StatementIr(
                     index=index,
@@ -523,6 +563,19 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 )
             )
             target_sql_parts.append(generated.rstrip(";"))
+    except rewrites.RewriteBlocked as error:
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code=error.code,
+                severity="ERROR",
+                statement_index=len(statement_irs),
+                message=error.message,
+            ),
+            syntax_parse="PASSED",
+            target_emit="NOT_RUN",
+            target_reparse="NOT_RUN",
+        )
     except (ParseError, TokenError, UnsupportedError) as error:
         code = (
             "TARGET_REPARSE_FAILED"

@@ -120,7 +120,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 trusted_context=_trusted_context(args.trusted_context),
             )
         elif args.command == "validate-plan":
-            result = dispatch("elmos-task-dag-builder", _read_json(args.input, "input"))
+            plan_input = _read_json(args.input, "input")
+            if "nodes" in plan_input or "required_scenarios" in plan_input:
+                result = dispatch("elmos-plan-graph-verifier", plan_input)
+            else:
+                result = dispatch("elmos-task-dag-builder", plan_input)
         else:
             request = _read_json(args.input, "gate_request")
             registry = _read_json(args.registry, "handler_registry")

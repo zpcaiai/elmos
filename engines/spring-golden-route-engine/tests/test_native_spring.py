@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 from elmos_spring_golden_route.native_spring_bridge import (
     native_scan_bytecode_bytes,
     native_shadow_diff,

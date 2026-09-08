@@ -49,6 +49,7 @@ from .memory import ExperienceMemoryStore
 from .model import ModelFoundry
 from .pipelines import PipelineOrchestrator
 from .policies import PolicyEngine
+from .semantic_program_runner import SemanticProgramRunner, StageResult
 from .service import FoundryService
 from .serving import ModelServingGateway
 from .skills import SkillCatalog
@@ -103,7 +104,9 @@ __all__ = [
     "RightsClass",
     "RollbackError",
     "SchemaInspectionError",
+    "SemanticProgramRunner",
     "SkillCatalog",
     "SkillContract",
+    "StageResult",
     "TenantScope",
 ]

@@ -1,6 +1,6 @@
 ---
 name: b46-ephemeral-data-isolation-teardown
-description: Keep smoke data confined to a throwaway topology: loopback-only binds, ephemeral volumes, reserved-range keys, and deletion at lease end — never a write to a shared or production store.
+description: "Keep smoke data confined to a throwaway topology: loopback-only binds, ephemeral volumes, reserved-range keys, and deletion at lease end — never a write to a shared or production store."
 ---
 
 ## Operating mode

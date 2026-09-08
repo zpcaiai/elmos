@@ -822,7 +822,7 @@ def test_trusted_php_analyzer_promotes_only_exact_missing_function(
     [
         "PHP_FUNCTION_NOT_FOUND:other",
         "PHP_FUNCTION_NOT_FOUND:absent\nextra-output",
-        "PHP_FUNCTION_BODY_REQUIRED:absent",
+        "PHP_UNKNOWN_DOMAIN_ERROR:absent",
         "NATIVE_ANALYZER_FAILED:/forged/php:PHP_FUNCTION_NOT_FOUND:absent",
     ],
 )

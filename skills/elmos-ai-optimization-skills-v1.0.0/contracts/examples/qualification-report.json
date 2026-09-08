@@ -1,0 +1,14 @@
+{
+  "schema_version": "ao.v1",
+  "environment_kind": "reference_only",
+  "host_revision": null,
+  "enabled_features": [],
+  "checks": {
+    "host_mapping_review": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    }
+  },
+  "production_qualified": false
+}

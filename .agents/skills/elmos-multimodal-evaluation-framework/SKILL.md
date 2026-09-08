@@ -81,8 +81,8 @@ description: "为 OCR、ASR、版面、UI、图表、需求提取、检索和上
 - Source contract SHA-256: `ab935dd117800c15fbc6f930421d10d7a24370b032a6a8a879923f32f7fe24ea`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_multimodal_evaluation_framework`
 - Runtime phase: `evaluation`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: none
 - Acceptance identities: `S24-01`, `S24-02`, `S24-03`, `S24-04`
 - Generated contract: `compiled-contract.json`

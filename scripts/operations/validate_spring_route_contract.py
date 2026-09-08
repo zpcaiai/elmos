@@ -42,9 +42,21 @@ SPRING_4_1_VERSION_MATRIX = ROOT / "framework-packs" / "spring-to-boot-4-1-0" / 
 MVC_PACK = ROOT / "framework-packs" / "spring-framework-5-3-mvc-to-spring-boot-3-5-3"
 MVC_PACK_RECIPE = MVC_PACK / "recipes" / "spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml"
 MVC_EXECUTABLE_ROUTE_ID = "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
-MVC_INVENTORY_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
-CURRENT_TARGET_INVENTORY = {
-    "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": ("3.5.16", "21"),
+MVC_UNVERIFIED_ROUTE_ID = "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21"
+BOOT_3_5_16_ROUTE_COMPOSITIONS = {
+    "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21": (
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_0",
+        "org.openrewrite.java.spring.boot2.UpgradeSpringBoot_2_7",
+        "org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_5",
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+    ),
+}
+MVC_UNVERIFIED_ROUTE_COMPOSITIONS = {
+    MVC_UNVERIFIED_ROUTE_ID: (
+        "org.openrewrite.java.migrate.UpgradeToJava21",
+        "org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta",
+        "org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2",
+    ),
 }
 BOOT_4_1_ROUTE_COMPOSITIONS = {
     "boot-1.5-maven-to-boot-4.1.0-java-21": (
@@ -560,48 +572,80 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             f"BOOT_3_2_COMPOSITION_ORDER_DRIFT:{route_id}",
         )
 
-    mvc_inventory = next(
-        (route for route in routes if route["route_id"] == MVC_INVENTORY_ROUTE_ID), None
-    )
-    require(
-        mvc_inventory is not None,
-        f"REQUIRED_INVENTORY_EDGE_MISSING:{MVC_INVENTORY_ROUTE_ID}",
-    )
-    assert mvc_inventory is not None
-    require(
-        mvc_inventory["evidence"] == "NOT_IMPLEMENTED",
-        f"INVENTORY_EDGE_SELECTABLE:{MVC_INVENTORY_ROUTE_ID}",
-    )
+    for route_id, ordered_steps in BOOT_3_5_16_ROUTE_COMPOSITIONS.items():
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_BOOT_3_5_16_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(
+            edge["pack_key"] == "spring-boot-1-5-3-5-15-to-3-5-16"
+            and edge["target_boot"] == "3.5.16"
+            and edge["target_java"] == "21",
+            f"BOOT_3_5_16_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
+        )
+        require(
+            edge["recipe_resource"] != "" and edge["recipe_id"] != "",
+            f"BOOT_3_5_16_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
+        )
+        require(edge["evidence"] == "NOT_RUN", f"BOOT_3_5_16_EDGE_EVIDENCE_DRIFT:{route_id}")
+        require(
+            edge["verified_boot"] == "" and edge["verified_java"] == "",
+            f"BOOT_3_5_16_EDGE_DECLARES_EVIDENCE:{route_id}",
+        )
+        recipe = (
+            WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
+        ).read_text(encoding="utf-8")
+        recipe_start = recipe.find(f"name: {edge['recipe_id']}")
+        require(recipe_start >= 0, f"BOOT_3_5_16_RECIPE_NAME_MISSING:{route_id}")
+        recipe_end = recipe.find("\n---", recipe_start)
+        recipe_block = recipe[recipe_start:] if recipe_end < 0 else recipe[recipe_start:recipe_end]
+        positions = []
+        for step in ordered_steps:
+            position = recipe_block.find(f"  - {step}")
+            require(position >= 0, f"BOOT_3_5_16_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            positions.append(position)
+        require(
+            positions == sorted(positions),
+            f"BOOT_3_5_16_COMPOSITION_ORDER_DRIFT:{route_id}",
+        )
+        require("newVersion: 3.5.16" in recipe_block, f"BOOT_3_5_16_MAVEN_PIN_MISSING:{route_id}")
 
-    for route_id, (target_boot, target_java) in CURRENT_TARGET_INVENTORY.items():
-        current_inventory = next(
-            (route for route in routes if route["route_id"] == route_id), None
-        )
-        require(current_inventory is not None, f"REQUIRED_INVENTORY_EDGE_MISSING:{route_id}")
-        assert current_inventory is not None
+    for route_id, ordered_steps in MVC_UNVERIFIED_ROUTE_COMPOSITIONS.items():
+        edge = next((route for route in routes if route["route_id"] == route_id), None)
+        require(edge is not None, f"REQUIRED_MVC_UNVERIFIED_EDGE_MISSING:{route_id}")
+        assert edge is not None
         require(
-            current_inventory["source_family"] == "SPRING_BOOT",
-            f"CURRENT_TARGET_INVENTORY_SOURCE_FAMILY_DRIFT:{route_id}",
-        )
-        require(
-            current_inventory["target_boot"] == target_boot
-            and current_inventory["target_java"] == target_java,
-            f"CURRENT_TARGET_INVENTORY_TUPLE_DRIFT:{route_id}",
+            edge["pack_key"] == "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3"
+            and edge["source_family"] == "SPRING_MVC"
+            and edge["target_boot"] == "3.5.3"
+            and edge["target_java"] == "21",
+            f"MVC_UNVERIFIED_EDGE_TARGET_OR_PACK_DRIFT:{route_id}",
         )
         require(
-            current_inventory["evidence"] == "NOT_IMPLEMENTED",
-            f"CURRENT_TARGET_INVENTORY_SELECTABLE:{route_id}",
+            edge["recipe_resource"] != "" and edge["recipe_id"] != "",
+            f"MVC_UNVERIFIED_EDGE_MISSING_EXECUTION_RECIPE:{route_id}",
         )
+        require(edge["evidence"] == "NOT_RUN", f"MVC_UNVERIFIED_EDGE_EVIDENCE_DRIFT:{route_id}")
         require(
-            current_inventory["recipe_resource"] == ""
-            and current_inventory["recipe_id"] == "",
-            f"CURRENT_TARGET_INVENTORY_DECLARES_RECIPE:{route_id}",
+            edge["verified_boot"] == "" and edge["verified_java"] == "",
+            f"MVC_UNVERIFIED_EDGE_DECLARES_EVIDENCE:{route_id}",
         )
+        recipe = (
+            WORKER / "resources" / str(edge["recipe_resource"]).lstrip("/")
+        ).read_text(encoding="utf-8")
+        recipe_start = recipe.find(f"name: {edge['recipe_id']}")
+        require(recipe_start >= 0, f"MVC_UNVERIFIED_RECIPE_NAME_MISSING:{route_id}")
+        recipe_end = recipe.find("\n---", recipe_start)
+        recipe_block = recipe[recipe_start:] if recipe_end < 0 else recipe[recipe_start:recipe_end]
+        positions = []
+        for step in ordered_steps:
+            position = recipe_block.find(f"  - {step}")
+            require(position >= 0, f"MVC_UNVERIFIED_COMPOSITION_STEP_MISSING:{route_id}:{step}")
+            positions.append(position)
         require(
-            current_inventory["verified_boot"] == ""
-            and current_inventory["verified_java"] == "",
-            f"CURRENT_TARGET_INVENTORY_DECLARES_EVIDENCE:{route_id}",
+            positions == sorted(positions),
+            f"MVC_UNVERIFIED_COMPOSITION_ORDER_DRIFT:{route_id}",
         )
+        require("newVersion: 3.5.3" in recipe_block, f"MVC_UNVERIFIED_MAVEN_PIN_MISSING:{route_id}")
 
     for route_id, ordered_steps in BOOT_4_1_ROUTE_COMPOSITIONS.items():
         edge = next((route for route in routes if route["route_id"] == route_id), None)
@@ -1188,8 +1232,11 @@ def main() -> int:
                     }
                 ),
                 "inventory_only_targets": sorted(
-                    f"Spring Boot {target_boot} / Java {target_java}"
-                    for target_boot, target_java in CURRENT_TARGET_INVENTORY.values()
+                    {
+                        f"Spring Boot {route['target_boot']} / Java {route['target_java']}"
+                        for route in routes
+                        if route["evidence"] == "NOT_IMPLEMENTED"
+                    }
                 ),
                 "source_families": sorted({str(route["source_family"]) for route in routes}),
                 "open_rewrite": constants["REWRITE_SPRING"],
