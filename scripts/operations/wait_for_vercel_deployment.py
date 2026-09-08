@@ -28,6 +28,7 @@ API_ROOT = "https://api.github.com"
 REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 COMMIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 TERMINAL_FAILURES = frozenset({"error", "failure", "inactive"})
+DEFAULT_TIMEOUT_SECONDS = 1_800
 
 
 class DeploymentResolutionError(RuntimeError):
@@ -148,7 +149,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--repository", required=True)
     parser.add_argument("--sha", required=True)
     parser.add_argument("--github-env", type=Path, required=True)
-    parser.add_argument("--timeout-seconds", type=float, default=900)
+    parser.add_argument(
+        "--timeout-seconds",
+        type=float,
+        default=DEFAULT_TIMEOUT_SECONDS,
+        help="bounded wait for an exact-SHA deployment (default: 1800 seconds)",
+    )
     parser.add_argument("--poll-seconds", type=float, default=10)
     parser.add_argument("--production-url")
     return parser.parse_args()
