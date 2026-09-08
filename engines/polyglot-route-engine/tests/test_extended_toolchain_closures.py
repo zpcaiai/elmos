@@ -99,6 +99,26 @@ def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
         assert function.index(wrapper_call) > reuse_branch_end
 
 
+def test_rust_installer_seals_fresh_and_cached_sysroots_before_publish() -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("install_rust() {")
+    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function = installer[function_start:function_end]
+    link_guard = 'find "${sysroot}" -type l -print -quit | grep -q .'
+    executable_files = (
+        'find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +'
+    )
+    data_files = (
+        'find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +'
+    )
+    directories = 'find "${sysroot}" -type d -exec chmod 0555 {} +'
+    first_wrapper = 'write_rust_wrapper "${target}" "rustc"'
+
+    for command in (link_guard, executable_files, data_files, directories):
+        assert function.count(command) == 1
+        assert function.index(command) < function.index(first_wrapper)
+
+
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
 def test_real_fixed_user_toolchains_work_without_ambient_path(
     language: str,
