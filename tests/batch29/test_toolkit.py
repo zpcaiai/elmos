@@ -3677,6 +3677,7 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
+        self.assertIn(".php", runner.ARTIFACT_ALLOWED_SUFFIXES)
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
         self.assertEqual(runner.parse_route_key("java-to-php"), ("java", "php"))
