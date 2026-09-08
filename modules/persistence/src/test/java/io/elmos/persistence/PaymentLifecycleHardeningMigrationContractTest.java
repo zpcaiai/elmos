@@ -14,6 +14,8 @@ class PaymentLifecycleHardeningMigrationContractTest {
             "src/main/resources/db/migration/V85__payment_provider_binding_and_credit_expiry.sql");
     private static final Path RUNTIME_ROLE_CONFIG = Path.of(
             "..", "..", "scripts", "commercial", "configure_billing_runtime_role.sh");
+    private static final Path CATALOG_MIGRATION = Path.of(
+            "src/main/resources/db/migration/V86__self_service_catalog_2026_09_08.sql");
 
     @Test
     void callbackDirectoriesBindTheImmutableProviderAndUseTheRealEncodeSchema() throws Exception {
@@ -103,5 +105,20 @@ class PaymentLifecycleHardeningMigrationContractTest {
         assertTrue(script.contains("GRANT UPDATE (processing_status, attempt_count, updated_at)"));
         assertFalse(script.contains("GRANT UPDATE ON TABLE payment_callback_receipts"),
                 "callback receipts must retain column-scoped update privilege");
+    }
+
+    @Test
+    void currentCatalogIsPersistedAndUsedByTrialAndPaidActivation() throws Exception {
+        String sql = Files.readString(CATALOG_MIGRATION);
+
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-free-trial'"));
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-monthly'"));
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-annual'"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_grant_trial"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_activate_subscription_period"));
+        assertFalse(sql.contains("2026-07-28.2"),
+                "new trial and paid activations must not bind the superseded catalog");
+        assertTrue(sql.contains("REVOKE ALL ON FUNCTION elmos_grant_trial"));
+        assertTrue(sql.contains("GRANT EXECUTE ON FUNCTION elmos_grant_trial"));
     }
 }
