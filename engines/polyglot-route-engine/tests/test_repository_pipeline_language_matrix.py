@@ -22,7 +22,11 @@ from typing import Any, cast
 
 import pytest
 
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language
+from elmos_polyglot_route.models import (
+    LOCAL_EXECUTION_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+)
 from elmos_polyglot_route.pipeline import (
     ARTIFACT_MANIFEST_NAME,
     ARTIFACT_NAME,
@@ -30,9 +34,7 @@ from elmos_polyglot_route.pipeline import (
     run_repository_pipeline,
 )
 
-EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = tuple(
-    language for language in SUPPORTED_LANGUAGES if language != "vb6"
-)
+EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = LOCAL_EXECUTION_LANGUAGES
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
     (source, target)
     for source, target in product(EXECUTABLE_REPOSITORY_LANGUAGES, repeat=2)

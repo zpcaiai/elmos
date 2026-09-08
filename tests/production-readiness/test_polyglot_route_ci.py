@@ -12,22 +12,33 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _supported_route_languages() -> tuple[str, ...]:
+def _local_execution_languages() -> tuple[str, ...]:
     models_path = (
         ROOT
         / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
     )
     module = ast.parse(models_path.read_text(encoding="utf-8"))
+    tuples: dict[str, tuple[str, ...]] = {}
     for node in module.body:
         if (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id == "SUPPORTED_LANGUAGES"
+            and node.target.id
+            in {"SUPPORTED_LANGUAGES", "EXTERNAL_TOOLCHAIN_LANGUAGES"}
         ):
             value = ast.literal_eval(node.value)
             if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
-                return value
-    raise AssertionError("SUPPORTED_LANGUAGES literal was not found")
+                tuples[node.target.id] = value
+    if set(tuples) != {"SUPPORTED_LANGUAGES", "EXTERNAL_TOOLCHAIN_LANGUAGES"}:
+        raise AssertionError("route language lifecycle literals were not found")
+    external = set(tuples["EXTERNAL_TOOLCHAIN_LANGUAGES"])
+    if not external.issubset(tuples["SUPPORTED_LANGUAGES"]):
+        raise AssertionError("external toolchain languages must be supported")
+    return tuple(
+        language
+        for language in tuples["SUPPORTED_LANGUAGES"]
+        if language not in external
+    )
 
 
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
@@ -762,7 +773,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(configured_sources, _supported_route_languages())
+        self.assertEqual(configured_sources, _local_execution_languages())
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests

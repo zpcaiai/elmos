@@ -50,6 +50,21 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "vb6",
 )
 
+#: Supported languages whose native execution requires an exact external host
+#: that the standard macOS repository-matrix runners do not provide. They stay
+#: in the directed route catalog, but are excluded from local execution shards
+#: until their governed host binding is injected.
+EXTERNAL_TOOLCHAIN_LANGUAGES: tuple[Language, ...] = ("vb6",)
+
+#: Languages exercised by the standard local repository execution matrix.
+#: This distinction prevents catalog support from being mistaken for locally
+#: available native execution.
+LOCAL_EXECUTION_LANGUAGES: tuple[Language, ...] = tuple(
+    language
+    for language in SUPPORTED_LANGUAGES
+    if language not in EXTERNAL_TOOLCHAIN_LANGUAGES
+)
+
 #: Languages that are declared in the route matrix but have no native analyzer
 #: yet.  They are real matrix members -- every direction naming them has a
 #: route pack and a provenance owner -- but any attempt to *lift from* them
