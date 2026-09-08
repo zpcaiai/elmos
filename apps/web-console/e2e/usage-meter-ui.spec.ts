@@ -183,7 +183,10 @@ test.describe.serial("实时账户用量", () => {
     });
     await page.goto("/pricing");
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
-    await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);
+    const subscriptionPlans = page.getByRole("region", { name: "选择适合当前阶段的计划" });
+    const oneTimeProducts = page.getByRole("region", { name: "按需购买，不必先订阅" });
+    await expect(subscriptionPlans.getByRole("button", { name: "等待开放" })).toHaveCount(2);
+    await expect(oneTimeProducts.getByRole("button", { name: "等待开放" })).toHaveCount(2);
     for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {
       await expect(button).toBeDisabled();
     }
