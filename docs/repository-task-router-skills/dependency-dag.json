@@ -1,8 +1,8 @@
 {
   "acyclic": true,
   "authority": "repository-compiled-contract",
-  "edge_count": 84,
-  "node_count": 37,
+  "edge_count": 142,
+  "node_count": 54,
   "nodes": [
     {
       "activation": "required",
@@ -56,16 +56,93 @@
     {
       "activation": "required",
       "depends_on": [
-        "elmos-requirement-normalizer",
         "elmos-architecture-indexer"
+      ],
+      "name": "elmos-repository-intelligence-graph",
+      "source_ordinal": 39
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-requirement-normalizer",
+        "elmos-architecture-indexer",
+        "elmos-repository-intelligence-graph"
+      ],
+      "name": "elmos-implicit-requirement-miner",
+      "source_ordinal": 37
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-requirement-normalizer",
+        "elmos-implicit-requirement-miner"
+      ],
+      "name": "elmos-behavioral-scenario-graph",
+      "source_ordinal": 38
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-architecture-indexer",
+        "elmos-repository-intelligence-graph",
+        "elmos-behavioral-scenario-graph"
+      ],
+      "name": "elmos-architecture-invariant-ledger",
+      "source_ordinal": 40
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-behavioral-scenario-graph",
+        "elmos-repository-intelligence-graph",
+        "elmos-architecture-invariant-ledger"
       ],
       "name": "elmos-change-impact-analyzer",
       "source_ordinal": 4
     },
     {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-change-impact-analyzer",
+        "elmos-repository-intelligence-graph"
+      ],
+      "name": "elmos-uncertainty-exploration-planner",
+      "source_ordinal": 45
+    },
+    {
       "activation": "required",
       "depends_on": [
-        "elmos-change-impact-analyzer"
+        "elmos-repository-intelligence-graph",
+        "elmos-architecture-invariant-ledger",
+        "elmos-behavioral-scenario-graph"
+      ],
+      "name": "elmos-semantic-seam-detector",
+      "source_ordinal": 41
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-change-impact-analyzer",
+        "elmos-behavioral-scenario-graph"
+      ],
+      "name": "elmos-baseline-golden-snapshotter",
+      "source_ordinal": 51
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-change-impact-analyzer",
+        "elmos-uncertainty-exploration-planner",
+        "elmos-semantic-seam-detector",
+        "elmos-baseline-golden-snapshotter"
+      ],
+      "name": "elmos-adaptive-hierarchical-planner",
+      "source_ordinal": 42
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-adaptive-hierarchical-planner"
       ],
       "name": "elmos-task-decomposer",
       "source_ordinal": 5
@@ -73,23 +150,25 @@
     {
       "activation": "required",
       "depends_on": [
-        "elmos-task-decomposer"
+        "elmos-task-decomposer",
+        "elmos-semantic-seam-detector",
+        "elmos-architecture-invariant-ledger"
+      ],
+      "name": "elmos-task-granularity-controller",
+      "source_ordinal": 43
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-granularity-controller"
       ],
       "name": "elmos-atomicity-validator",
       "source_ordinal": 6
     },
     {
-      "activation": "required",
-      "depends_on": [
-        "elmos-atomicity-validator"
-      ],
-      "name": "elmos-task-dag-builder",
-      "source_ordinal": 7
-    },
-    {
       "activation": "conditional",
       "depends_on": [
-        "elmos-task-dag-builder"
+        "elmos-atomicity-validator"
       ],
       "name": "elmos-contract-boundary-generator",
       "source_ordinal": 8
@@ -97,7 +176,48 @@
     {
       "activation": "required",
       "depends_on": [
+        "elmos-atomicity-validator",
         "elmos-contract-boundary-generator"
+      ],
+      "name": "elmos-task-dag-builder",
+      "source_ordinal": 7
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-contract-boundary-generator",
+        "elmos-architecture-invariant-ledger",
+        "elmos-behavioral-scenario-graph"
+      ],
+      "name": "elmos-proof-obligation-generator",
+      "source_ordinal": 46
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-contract-boundary-generator",
+        "elmos-proof-obligation-generator"
+      ],
+      "name": "elmos-integration-edge-planner",
+      "source_ordinal": 47
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-behavioral-scenario-graph",
+        "elmos-architecture-invariant-ledger",
+        "elmos-proof-obligation-generator",
+        "elmos-integration-edge-planner"
+      ],
+      "name": "elmos-plan-graph-verifier",
+      "source_ordinal": 44
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-plan-graph-verifier"
       ],
       "name": "elmos-complexity-estimator",
       "source_ordinal": 9
@@ -105,7 +225,7 @@
     {
       "activation": "required",
       "depends_on": [
-        "elmos-contract-boundary-generator"
+        "elmos-plan-graph-verifier"
       ],
       "name": "elmos-risk-classifier",
       "source_ordinal": 10
@@ -113,7 +233,7 @@
     {
       "activation": "required",
       "depends_on": [
-        "elmos-contract-boundary-generator"
+        "elmos-plan-graph-verifier"
       ],
       "name": "elmos-context-slicer",
       "source_ordinal": 11
@@ -172,6 +292,16 @@
         "elmos-task-dag-builder",
         "elmos-budget-planner",
         "elmos-eta-estimator",
+        "elmos-plan-graph-verifier"
+      ],
+      "name": "elmos-critical-path-resource-scheduler",
+      "source_ordinal": 50
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-critical-path-resource-scheduler",
+        "elmos-integration-edge-planner",
         "elmos-run-state-journal"
       ],
       "name": "elmos-wave-scheduler",
@@ -281,6 +411,7 @@
         "elmos-security-auth-gate",
         "elmos-data-migration-gate",
         "elmos-concurrency-idempotency-gate",
+        "elmos-integration-edge-planner",
         "elmos-run-state-journal"
       ],
       "name": "elmos-integration-manager",
@@ -298,10 +429,42 @@
       "activation": "required",
       "depends_on": [
         "elmos-integration-manager",
-        "elmos-conflict-resolver"
+        "elmos-contract-boundary-generator",
+        "elmos-architecture-invariant-ledger"
+      ],
+      "name": "elmos-semantic-conflict-detector",
+      "source_ordinal": 49
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-integration-manager",
+        "elmos-conflict-resolver",
+        "elmos-semantic-conflict-detector",
+        "elmos-baseline-golden-snapshotter"
       ],
       "name": "elmos-incremental-regression-gate",
       "source_ordinal": 30
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-plan-graph-verifier",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-plan-diff-audit-journal",
+      "source_ordinal": 52
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-failure-classifier",
+        "elmos-semantic-conflict-detector",
+        "elmos-incremental-regression-gate",
+        "elmos-plan-diff-audit-journal"
+      ],
+      "name": "elmos-dynamic-replanner",
+      "source_ordinal": 48
     },
     {
       "activation": "required",
@@ -310,7 +473,10 @@
         "elmos-security-auth-gate",
         "elmos-data-migration-gate",
         "elmos-concurrency-idempotency-gate",
-        "elmos-incremental-regression-gate"
+        "elmos-incremental-regression-gate",
+        "elmos-plan-graph-verifier",
+        "elmos-proof-obligation-generator",
+        "elmos-dynamic-replanner"
       ],
       "name": "elmos-repository-certifier",
       "source_ordinal": 31
@@ -339,16 +505,27 @@
     {
       "activation": "offline",
       "depends_on": [
+        "elmos-repository-certifier",
+        "elmos-plan-diff-audit-journal",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-decomposition-telemetry-learner",
+      "source_ordinal": 53
+    },
+    {
+      "activation": "offline",
+      "depends_on": [
         "elmos-model-registry-guard",
         "elmos-cost-performance-router",
-        "elmos-telemetry-learner"
+        "elmos-telemetry-learner",
+        "elmos-decomposition-telemetry-learner"
       ],
       "name": "elmos-routing-policy-optimizer",
       "source_ordinal": 35
     }
   ],
   "package": "elmos-repository-task-decomposition-cost-router-skills",
-  "package_version": "1.1.0",
+  "package_version": "2.0.0",
   "schema_version": "elmos.repository-task-router.dependency-dag.v1",
   "source_manifest_declared_dag": false,
   "topological_order": [
@@ -358,11 +535,23 @@
     "elmos-requirement-normalizer",
     "elmos-repo-intake",
     "elmos-architecture-indexer",
+    "elmos-repository-intelligence-graph",
+    "elmos-implicit-requirement-miner",
+    "elmos-behavioral-scenario-graph",
+    "elmos-architecture-invariant-ledger",
     "elmos-change-impact-analyzer",
+    "elmos-uncertainty-exploration-planner",
+    "elmos-semantic-seam-detector",
+    "elmos-baseline-golden-snapshotter",
+    "elmos-adaptive-hierarchical-planner",
     "elmos-task-decomposer",
+    "elmos-task-granularity-controller",
     "elmos-atomicity-validator",
-    "elmos-task-dag-builder",
     "elmos-contract-boundary-generator",
+    "elmos-task-dag-builder",
+    "elmos-proof-obligation-generator",
+    "elmos-integration-edge-planner",
+    "elmos-plan-graph-verifier",
     "elmos-complexity-estimator",
     "elmos-risk-classifier",
     "elmos-context-slicer",
@@ -371,6 +560,7 @@
     "elmos-cost-performance-router",
     "elmos-budget-planner",
     "elmos-eta-estimator",
+    "elmos-critical-path-resource-scheduler",
     "elmos-wave-scheduler",
     "elmos-worktree-manager",
     "elmos-worker-prompt-builder",
@@ -384,10 +574,14 @@
     "elmos-concurrency-idempotency-gate",
     "elmos-integration-manager",
     "elmos-conflict-resolver",
+    "elmos-semantic-conflict-detector",
     "elmos-incremental-regression-gate",
+    "elmos-plan-diff-audit-journal",
+    "elmos-dynamic-replanner",
     "elmos-repository-certifier",
     "elmos-rollback-recovery",
     "elmos-telemetry-learner",
+    "elmos-decomposition-telemetry-learner",
     "elmos-routing-policy-optimizer"
   ]
 }

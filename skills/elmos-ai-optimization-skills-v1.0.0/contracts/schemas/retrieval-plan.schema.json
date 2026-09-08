@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:retrieval-plan",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "scope_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "exact",
+        "lexical",
+        "hybrid"
+      ]
+    },
+    "max_candidates": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "graph_depth": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "embedding_profile": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rerank": {
+      "type": "boolean"
+    },
+    "deadline_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "scope_ref",
+    "route",
+    "max_candidates",
+    "graph_depth",
+    "embedding_profile",
+    "rerank",
+    "deadline_ref"
+  ],
+  "additionalProperties": false
+}

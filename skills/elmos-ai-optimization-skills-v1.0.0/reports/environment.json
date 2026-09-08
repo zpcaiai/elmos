@@ -1,0 +1,10 @@
+{
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "jsonschema": "4.26.0",
+  "pyyaml": "6.0.3",
+  "typescript": "Version 5.8.3",
+  "model_calls": 0,
+  "embedding_calls": 0,
+  "actual_elmos_repository_inspected": false
+}

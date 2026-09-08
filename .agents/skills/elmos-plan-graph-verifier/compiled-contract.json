@@ -1,0 +1,62 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "graph is executable, acyclic and acceptance-complete",
+      "all critical edge risks are resolved or explicitly waived"
+    ],
+    "guardrails": [
+      "An LLM prose review cannot override failed deterministic structural checks."
+    ],
+    "inputs": [
+      "hierarchical plan",
+      "execution DAG",
+      "scenario graph",
+      "invariant ledger",
+      "task contracts"
+    ],
+    "outputs": [
+      "`plan verification report`",
+      "`node risks`",
+      "`edge risks`",
+      "`repair suggestions`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-task-dag-builder",
+      "elmos-behavioral-scenario-graph",
+      "elmos-architecture-invariant-ledger",
+      "elmos-proof-obligation-generator",
+      "elmos-integration-edge-planner"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.local-verification-gate",
+    "handler": "plan_graph_verifier",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-plan-graph-verifier",
+    "ordinal": 44,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/44-plan-graph-verifier/SKILL.md",
+    "sha256": "sha256:3f483448b5b0d88d5d6b5b55d954890bd45a3e2d3ee0d689ce0f49cc23e5fd28",
+    "version": "2.0.0"
+  }
+}

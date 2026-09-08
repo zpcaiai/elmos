@@ -1,0 +1,10 @@
+[
+  "tests/test_adaptive_planner.py::test_example_dag_structurally_valid_and_covered",
+  "tests/test_adaptive_planner.py::test_granularity_splits_large_node_and_keeps_indivisible_invariant",
+  "tests/test_adaptive_planner.py::test_refinement_prioritizes_uncertain_coarse_branch",
+  "tests/test_adaptive_planner.py::test_replan_scope",
+  "tests/test_allowlist.py::test_exact_allowlist",
+  "tests/test_model_selection.py::test_examples_never_use_unknown_model",
+  "tests/test_model_selection.py::test_model_selection_schema_exact_allowlist",
+  "tests/test_model_selection.py::test_selection_policy_has_smart_and_manual"
+]

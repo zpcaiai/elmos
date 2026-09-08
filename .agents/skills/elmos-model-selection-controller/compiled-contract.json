@@ -46,11 +46,11 @@
     ]
   },
   "external_evidence_status": "NOT_RUN",
-  "namespace": "repository-task-router-v1",
+  "namespace": "repository-task-router-v2",
   "package": {
     "id": "elmos.repository-task-router-skills",
     "name": "elmos-repository-task-decomposition-cost-router-skills",
-    "version": "1.1.0"
+    "version": "2.0.0"
   },
   "runtime_binding": {
     "adapter_requirement": null,
@@ -61,13 +61,13 @@
     "local_evidence_status": "NOT_RUN",
     "module": "elmos_repository_orchestrator.runtime",
     "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
-    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
   },
   "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
     "name": "elmos-model-selection-controller",
     "ordinal": 36,
-    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/36-model-selection-controller/SKILL.md",
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/36-model-selection-controller/SKILL.md",
     "sha256": "sha256:13bccef39b5a533ea47ce2026be569ed297e60ec3371b171d9fcca146da5185b",
     "version": "1.1.0"
   }

@@ -23640,7 +23640,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "archive",
@@ -23849,7 +23849,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.archive-and-folder-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/archive-and-folder-ingestion/tests/conformance.yaml",
@@ -45559,7 +45559,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "call",
@@ -45756,7 +45756,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.call-graph-construction",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/call-graph-construction/tests/conformance.yaml",
@@ -76594,7 +76594,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "contract",
@@ -76794,7 +76794,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.contract-migration-manager",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/contract-migration-manager/tests/conformance.yaml",
@@ -76921,7 +76921,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "control",
@@ -77118,7 +77118,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.control-flow-graph",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/control-flow-graph/tests/conformance.yaml",
@@ -126390,7 +126390,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "document",
@@ -126599,7 +126599,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.document-structure-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/document-structure-ingestion/tests/conformance.yaml",
@@ -154786,7 +154786,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "codegen",
@@ -154986,7 +154986,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.extension-sdk-and-codegen",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/extension-sdk-and-codegen/tests/conformance.yaml",
@@ -199648,7 +199648,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "gate",
@@ -199857,7 +199857,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.ingestion-quarantine-gate",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/ingestion-quarantine-gate/tests/conformance.yaml",
@@ -261907,7 +261907,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "artifact",
@@ -262116,7 +262116,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.multimodal-artifact-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/multimodal-artifact-ingestion/tests/conformance.yaml",
@@ -370613,7 +370613,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "analysis",
@@ -370811,7 +370811,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.semantic-diff-and-impact-analysis",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/semantic-diff-and-impact-analysis/tests/conformance.yaml",
@@ -386863,7 +386863,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "efficiency",
@@ -387066,7 +387066,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-efficiency-evaluation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-efficiency-evaluation/tests/conformance.yaml",
@@ -387520,7 +387520,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "evaluation",
@@ -387723,7 +387723,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-output-evaluation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-output-evaluation/tests/conformance.yaml",
@@ -388177,7 +388177,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "evaluation",
@@ -388380,7 +388380,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-process-evaluation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-process-evaluation/tests/conformance.yaml",
@@ -388839,7 +388839,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "evaluation",
@@ -389042,7 +389042,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-robustness-evaluation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-robustness-evaluation/tests/conformance.yaml",
@@ -390818,7 +390818,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "evaluation",
@@ -391021,7 +391021,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-trigger-evaluation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-trigger-evaluation/tests/conformance.yaml",
@@ -422338,7 +422338,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "graph",
@@ -422535,7 +422535,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.symbol-and-reference-graph",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/symbol-and-reference-graph/tests/conformance.yaml",

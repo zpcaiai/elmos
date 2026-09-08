@@ -46,3 +46,24 @@ export async function requirePlatformOperationsSurface(
     redirect(`/admin/login?${new URLSearchParams({ error: denialCode, returnTo: surface })}`);
   }
 }
+
+/**
+ * Read-only check for public pages that must decide whether to surface
+ * administrator-only links. Never redirects and never throws.
+ */
+export async function hasPlatformAdministratorSession(): Promise<boolean> {
+  const requestHeaders = new Headers(await headers());
+  try {
+    const syntheticRequest = new Request("https://elmos.invalid/", { headers: requestHeaders });
+    const temporary = (requestHeaders.get("cookie") ?? "").includes(
+      `${localAccountCookieNames.administratorSession}=`,
+    );
+    const request = temporary
+      ? new Request(new URL("/", trustedPublicOrigin(syntheticRequest)), { headers: requestHeaders })
+      : syntheticRequest;
+    const session = accountSessionFromRequest(request, "admin:read");
+    return isPlatformAdministrator(session.principal);
+  } catch {
+    return false;
+  }
+}

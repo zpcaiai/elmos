@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.v1",
+  "run_ref": "run1",
+  "logical_step": "fix1",
+  "base_revision": "s1",
+  "intent_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "artifact_ref": "cas-patch",
+  "requested_capabilities": [
+    "patch.candidate"
+  ],
+  "budget_ref": "b1",
+  "verification_plan_ref": "oracle1"
+}

@@ -82,8 +82,8 @@ description: "解析原生、扫描和图文混合 PDF 的文字、表格、图�
 - Source contract SHA-256: `c3e6bfc9359783f268b06ba3930ac2995a758e1071d2dbb56e2fddb5b4aaa487`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_pdf_layout_table_parser`
 - Runtime phase: `secure-intake`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-image-ocr-and-preprocessing`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S09-01`, `S09-02`, `S09-03`, `S09-04`
 - Generated contract: `compiled-contract.json`

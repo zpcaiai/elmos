@@ -1,7 +1,7 @@
 {
   "schema_version": "elmos.repository-orchestrator.handler-registry.v1",
   "package": "elmos-repository-task-decomposition-cost-router-skills",
-  "package_version": "1.1.0",
+  "package_version": "2.0.0",
   "runtime_module": "elmos_repository_orchestrator.runtime",
   "runtime_callable": "dispatch",
   "skills": [
@@ -41,6 +41,23 @@
     {"name":"elmos-run-state-journal","handler":"run_state_journal","canonical_owner":"canonical.elmos.durable-runtime","adapter_requirement":null},
     {"name":"elmos-telemetry-learner","handler":"telemetry_learner","canonical_owner":"canonical.elmos.execution-intelligence","adapter_requirement":null},
     {"name":"elmos-routing-policy-optimizer","handler":"routing_policy_optimizer","canonical_owner":"canonical.elmos.model-gateway","adapter_requirement":null},
-    {"name":"elmos-model-selection-controller","handler":"model_selection_controller","canonical_owner":"canonical.elmos.model-gateway","adapter_requirement":null}
+    {"name":"elmos-model-selection-controller","handler":"model_selection_controller","canonical_owner":"canonical.elmos.model-gateway","adapter_requirement":null},
+    {"name":"elmos-implicit-requirement-miner","handler":"implicit_requirement_miner","canonical_owner":"canonical.elmos.requirement-baseline","adapter_requirement":null},
+    {"name":"elmos-behavioral-scenario-graph","handler":"behavioral_scenario_graph","canonical_owner":"canonical.elmos.scenario-graph","adapter_requirement":null},
+    {"name":"elmos-repository-intelligence-graph","handler":"repository_intelligence_graph","canonical_owner":"canonical.elmos.semantic-index","adapter_requirement":null},
+    {"name":"elmos-architecture-invariant-ledger","handler":"architecture_invariant_ledger","canonical_owner":"canonical.elmos.invariant-ledger","adapter_requirement":null},
+    {"name":"elmos-semantic-seam-detector","handler":"semantic_seam_detector","canonical_owner":"canonical.elmos.impact-graph","adapter_requirement":null},
+    {"name":"elmos-adaptive-hierarchical-planner","handler":"adaptive_hierarchical_planner","canonical_owner":"canonical.elmos.durable-runtime","adapter_requirement":null},
+    {"name":"elmos-task-granularity-controller","handler":"task_granularity_controller","canonical_owner":"canonical.elmos.durable-runtime","adapter_requirement":null},
+    {"name":"elmos-plan-graph-verifier","handler":"plan_graph_verifier","canonical_owner":"canonical.elmos.local-verification-gate","adapter_requirement":null},
+    {"name":"elmos-uncertainty-exploration-planner","handler":"uncertainty_exploration_planner","canonical_owner":"canonical.elmos.execution-intelligence","adapter_requirement":null},
+    {"name":"elmos-proof-obligation-generator","handler":"proof_obligation_generator","canonical_owner":"canonical.elmos.verification-fabric","adapter_requirement":null},
+    {"name":"elmos-integration-edge-planner","handler":"integration_edge_planner","canonical_owner":"canonical.elmos.contract-registry","adapter_requirement":null},
+    {"name":"elmos-dynamic-replanner","handler":"dynamic_replanner","canonical_owner":"canonical.elmos.durable-runtime","adapter_requirement":null},
+    {"name":"elmos-semantic-conflict-detector","handler":"semantic_conflict_detector","canonical_owner":"canonical.elmos.verification-fabric","adapter_requirement":null},
+    {"name":"elmos-critical-path-resource-scheduler","handler":"critical_path_resource_scheduler","canonical_owner":"canonical.elmos.execution-intelligence","adapter_requirement":null},
+    {"name":"elmos-baseline-golden-snapshotter","handler":"baseline_golden_snapshotter","canonical_owner":"canonical.elmos.verification-fabric","adapter_requirement":null},
+    {"name":"elmos-plan-diff-audit-journal","handler":"plan_diff_audit_journal","canonical_owner":"canonical.elmos.durable-runtime","adapter_requirement":null},
+    {"name":"elmos-decomposition-telemetry-learner","handler":"decomposition_telemetry_learner","canonical_owner":"canonical.elmos.execution-intelligence","adapter_requirement":null}
   ]
 }

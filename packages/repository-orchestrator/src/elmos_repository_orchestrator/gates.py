@@ -111,10 +111,16 @@ def validate_handler_registry(registry: Mapping[str, Any], handler_names: Iterab
             raise ContractError("duplicate_handler", f"duplicate handler registry Skill: {name}")
         seen[name] = entry
     if set(seen) != set(SKILL_NAMES):
-        raise ContractError("handler_registry_coverage", "static handler registry must contain the exact 37 Skills")
+        raise ContractError(
+            "handler_registry_coverage",
+            f"static handler registry must contain the exact {len(SKILL_NAMES)} Skills",
+        )
     runtime_names = set(handler_names)
     if runtime_names != set(SKILL_NAMES):
-        raise ContractError("dispatcher_coverage", "runtime dispatcher must contain the exact 37 Skills")
+        raise ContractError(
+            "dispatcher_coverage",
+            f"runtime dispatcher must contain the exact {len(SKILL_NAMES)} Skills",
+        )
     for name in SKILL_NAMES:
         spec = SKILL_SPECS[name]
         entry = seen[name]

@@ -99,7 +99,29 @@ struct AnalyzerError: Error {
 struct LiftContext {
     let sourceFile: String
     let emittedTarget: Bool
-    let environment: [String: String]
+    var environment: [String: String]
+    var mutableVariables: Set<String>
+    var parameterNames: Set<String>
+    var loopVariables: Set<String>
+    var inLoop: Bool
+}
+
+func compileTimeInt64(_ raw: ExprSyntax) -> Int64? {
+    let expr = unwrap(raw)
+    if let lit = expr.as(IntegerLiteralExprSyntax.self) {
+        let text = lit.literal.text.replacingOccurrences(of: "_", with: "")
+        return Int64(text)
+    }
+    if let prefix = expr.as(PrefixOperatorExprSyntax.self),
+        prefix.operator.text == "-",
+        let lit = prefix.expression.as(IntegerLiteralExprSyntax.self)
+    {
+        let text = lit.literal.text.replacingOccurrences(of: "_", with: "")
+        if let val = Int64(text) {
+            return -val
+        }
+    }
+    return nil
 }
 
 func sourceSpan<T: SyntaxProtocol>(_ syntax: T, _ context: LiftContext) throws -> JSONValue {
@@ -180,13 +202,18 @@ func unwrap(_ expression: ExprSyntax) -> ExprSyntax {
 
 func inferredType(_ raw: ExprSyntax, _ context: LiftContext) throws -> String {
     let expression = unwrap(raw)
-    if let reference = expression.as(DeclReferenceExprSyntax.self),
-        let type = context.environment[reference.baseName.text]
-    {
-        return type
+    if let reference = expression.as(DeclReferenceExprSyntax.self) {
+        if let type = context.environment[reference.baseName.text] {
+            return type
+        }
+        throw AnalyzerError("SWIFT_UNDECLARED_VARIABLE:\(reference.baseName.text)")
     }
-    if expression.is(IntegerLiteralExprSyntax.self) || expression.is(PrefixOperatorExprSyntax.self) {
+    if expression.is(IntegerLiteralExprSyntax.self) {
         return "integer"
+    }
+    if let prefix = expression.as(PrefixOperatorExprSyntax.self) {
+        if prefix.operator.text == "-" { return "integer" }
+        if prefix.operator.text == "!" { return "boolean" }
     }
     if expression.is(FloatLiteralExprSyntax.self) { return "number" }
     if expression.is(BooleanLiteralExprSyntax.self) { return "boolean" }
@@ -364,10 +391,14 @@ func liftExpression(_ raw: ExprSyntax, _ context: LiftContext) throws -> JSONVal
 // MARK: - Statements
 
 func liftStatements(
-    _ statements: CodeBlockItemListSyntax, _ context: LiftContext
+    _ statements: CodeBlockItemListSyntax, _ context: inout LiftContext
 ) throws -> [JSONValue] {
     var result: [JSONValue] = []
     for item in statements {
+        if item.item.is(LabeledStmtSyntax.self) {
+            throw AnalyzerError("SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET")
+        }
+
         if let returnStatement = item.item.as(ReturnStmtSyntax.self) {
             guard let value = returnStatement.expression else {
                 throw AnalyzerError("SWIFT_RETURN_WITHOUT_VALUE")
@@ -380,22 +411,307 @@ func liftStatements(
             )
             continue
         }
-        if let conditional = item.item.as(ExpressionStmtSyntax.self)?
-            .expression.as(IfExprSyntax.self)
-        {
-            result.append(try liftIf(conditional, context))
+
+        if item.item.is(RepeatWhileStmtSyntax.self) {
+            throw AnalyzerError("SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET")
+        }
+
+        if let whileStmt = item.item.as(WhileStmtSyntax.self) {
+            guard whileStmt.conditions.count == 1,
+                let element = whileStmt.conditions.first
+            else {
+                throw AnalyzerError("SWIFT_UNSUPPORTED_CONDITION")
+            }
+            guard case .expression(let rawCondition) = element.condition else {
+                throw AnalyzerError("SWIFT_UNSUPPORTED_CONDITION:\(element.condition.kind)")
+            }
+            let condition = unwrap(rawCondition)
+            let condType = try inferredType(condition, context)
+            guard condType == "boolean" else {
+                throw AnalyzerError("SWIFT_CONDITION_MUST_BE_BOOLEAN")
+            }
+            let liftedCond = try liftExpression(condition, context)
+            var loopContext = context
+            loopContext.inLoop = true
+            let bodyStatements = try liftStatements(whileStmt.body.statements, &loopContext)
+            result.append(
+                try spanned([
+                    ("kind", .string("while")),
+                    ("condition", liftedCond),
+                    ("body", .array(bodyStatements)),
+                ], whileStmt, context)
+            )
             continue
         }
+
+        if let forStmt = item.item.as(ForStmtSyntax.self) {
+            guard let identifier = forStmt.pattern.as(IdentifierPatternSyntax.self) else {
+                throw AnalyzerError("SWIFT_FOR_VARIABLE_REQUIRED")
+            }
+            let loopVar = identifier.identifier.text
+            guard loopVar != "_" else {
+                throw AnalyzerError("SWIFT_FOR_VARIABLE_REQUIRED")
+            }
+
+            let startExpr: ExprSyntax
+            let endExpr: ExprSyntax
+            let stepExpr: ExprSyntax?
+
+            let sequence = unwrap(forStmt.sequence)
+            if let infix = sequence.as(InfixOperatorExprSyntax.self),
+                let binOp = infix.operator.as(BinaryOperatorExprSyntax.self)
+            {
+                let opText = binOp.operator.text
+                if opText == "..." {
+                    throw AnalyzerError("SWIFT_FOR_CLOSED_RANGE_REJECTED")
+                }
+                guard opText == "..<" else {
+                    throw AnalyzerError("SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                }
+                startExpr = infix.leftOperand
+                endExpr = infix.rightOperand
+                stepExpr = nil
+            } else if let call = sequence.as(FunctionCallExprSyntax.self),
+                let callee = call.calledExpression.as(DeclReferenceExprSyntax.self),
+                callee.baseName.text == "stride"
+            {
+                var fromArg: ExprSyntax? = nil
+                var toArg: ExprSyntax? = nil
+                var byArg: ExprSyntax? = nil
+                for arg in call.arguments {
+                    if let label = arg.label?.text {
+                        if label == "from" {
+                            fromArg = arg.expression
+                        } else if label == "to" {
+                            toArg = arg.expression
+                        } else if label == "through" {
+                            throw AnalyzerError("SWIFT_FOR_CLOSED_RANGE_REJECTED")
+                        } else if label == "by" {
+                            byArg = arg.expression
+                        }
+                    }
+                }
+                guard let f = fromArg, let t = toArg, let b = byArg else {
+                    throw AnalyzerError("SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                }
+                startExpr = f
+                endExpr = t
+                stepExpr = b
+            } else {
+                throw AnalyzerError("SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+            }
+
+            guard try inferredType(startExpr, context) == "integer" else {
+                throw AnalyzerError("SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED")
+            }
+            guard try inferredType(endExpr, context) == "integer" else {
+                throw AnalyzerError("SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED")
+            }
+            if let step = stepExpr {
+                guard try inferredType(step, context) == "integer" else {
+                    throw AnalyzerError("SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED")
+                }
+                if let stepVal = compileTimeInt64(step) {
+                    if stepVal < 0 {
+                        throw AnalyzerError("SWIFT_FOR_DOWNTO_REJECTED")
+                    }
+                    if stepVal == 0 {
+                        throw AnalyzerError("SWIFT_FOR_NON_POSITIVE_STEP_REJECTED")
+                    }
+                }
+            }
+
+            if let startVal = compileTimeInt64(startExpr), let endVal = compileTimeInt64(endExpr) {
+                let stepVal = stepExpr.flatMap(compileTimeInt64) ?? 1
+                if stepVal > 0 && startVal >= endVal {
+                    throw AnalyzerError("SWIFT_FOR_CONDITION_NON_MONOTONIC")
+                }
+            }
+
+            var loopContext = context
+            loopContext.inLoop = true
+            loopContext.environment[loopVar] = "integer"
+            loopContext.loopVariables.insert(loopVar)
+
+            let bodyStatements = try liftStatements(forStmt.body.statements, &loopContext)
+
+            var entries: [(String, JSONValue)] = [
+                ("kind", .string("for")),
+                ("name", .string(loopVar)),
+                ("type", .string("integer")),
+                ("start", try liftExpression(startExpr, context)),
+                ("end", try liftExpression(endExpr, context)),
+            ]
+            if let step = stepExpr {
+                entries.append(("step", try liftExpression(step, context)))
+            }
+            entries.append(("body", .array(bodyStatements)))
+            result.append(try spanned(entries, forStmt, context))
+            continue
+        }
+
+        if let breakStmt = item.item.as(BreakStmtSyntax.self) {
+            guard context.inLoop else {
+                throw AnalyzerError("SWIFT_BREAK_OUTSIDE_LOOP")
+            }
+            if breakStmt.label != nil {
+                throw AnalyzerError("SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET")
+            }
+            result.append(
+                try spanned([
+                    ("kind", .string("break")),
+                ], breakStmt, context)
+            )
+            continue
+        }
+
+        if let continueStmt = item.item.as(ContinueStmtSyntax.self) {
+            guard context.inLoop else {
+                throw AnalyzerError("SWIFT_CONTINUE_OUTSIDE_LOOP")
+            }
+            if continueStmt.label != nil {
+                throw AnalyzerError("SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET")
+            }
+            result.append(
+                try spanned([
+                    ("kind", .string("continue")),
+                ], continueStmt, context)
+            )
+            continue
+        }
+
+        if let varDecl = item.item.as(VariableDeclSyntax.self) {
+            let isVar = varDecl.bindingSpecifier.tokenKind == .keyword(.var)
+            let isLet = varDecl.bindingSpecifier.tokenKind == .keyword(.let)
+            guard isVar || isLet else {
+                throw AnalyzerError("SWIFT_UNSUPPORTED_VARIABLE_DECLARATION")
+            }
+            for binding in varDecl.bindings {
+                guard let identifier = binding.pattern.as(IdentifierPatternSyntax.self) else {
+                    throw AnalyzerError("SWIFT_UNSUPPORTED_PATTERN:\(binding.pattern.kind)")
+                }
+                let varName = identifier.identifier.text
+                guard let typeSyntax = binding.typeAnnotation?.type else {
+                    throw AnalyzerError("SWIFT_EXPLICIT_TYPE_REQUIRED")
+                }
+                let declaredType = try canonicalType(typeSyntax)
+                guard let initializer = binding.initializer else {
+                    throw AnalyzerError("SWIFT_LOCAL_INITIALIZER_REQUIRED")
+                }
+                let initType = try inferredType(initializer.value, context)
+                guard initType == declaredType else {
+                    throw AnalyzerError("SWIFT_ASSIGNMENT_TYPE_MISMATCH")
+                }
+                let liftedExpr = try liftExpression(initializer.value, context)
+                context.environment[varName] = declaredType
+                if isVar {
+                    context.mutableVariables.insert(varName)
+                }
+                result.append(
+                    try spanned([
+                        ("kind", .string("let")),
+                        ("name", .string(varName)),
+                        ("type", .string(declaredType)),
+                        ("expression", liftedExpr),
+                    ], varDecl, context)
+                )
+            }
+            continue
+        }
+
+        let rawExpr: ExprSyntax?
+        if let exprStmt = item.item.as(ExpressionStmtSyntax.self) {
+            rawExpr = exprStmt.expression
+        } else if let expr = item.item.as(ExprSyntax.self) {
+            rawExpr = expr
+        } else {
+            rawExpr = nil
+        }
+
+        if let expr = rawExpr {
+            if let conditional = expr.as(IfExprSyntax.self) {
+                result.append(try liftIf(conditional, &context))
+                continue
+            }
+            if let infix = expr.as(InfixOperatorExprSyntax.self) {
+                var assignOp: String? = nil
+                if infix.operator.is(AssignmentExprSyntax.self) {
+                    assignOp = "="
+                } else if let binOp = infix.operator.as(BinaryOperatorExprSyntax.self) {
+                    let text = binOp.operator.text
+                    if text == "=" || text == "+=" || text == "-=" || text == "*=" || text == "/=" || text == "%=" {
+                        assignOp = text
+                    }
+                }
+                if let op = assignOp {
+                    guard let targetRef = unwrap(infix.leftOperand).as(DeclReferenceExprSyntax.self) else {
+                        throw AnalyzerError("SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+                    }
+                    let targetName = targetRef.baseName.text
+                    if context.parameterNames.contains(targetName) {
+                        throw AnalyzerError("SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:\(targetName)")
+                    }
+                    if context.loopVariables.contains(targetName) {
+                        throw AnalyzerError("SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:\(targetName)")
+                    }
+                    guard let targetType = context.environment[targetName] else {
+                        throw AnalyzerError("SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED:\(targetName)")
+                    }
+                    guard context.mutableVariables.contains(targetName) else {
+                        throw AnalyzerError("SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:\(targetName)")
+                    }
+
+                    let rightType = try inferredType(infix.rightOperand, context)
+                    guard rightType == targetType else {
+                        throw AnalyzerError("SWIFT_ASSIGNMENT_TYPE_MISMATCH")
+                    }
+
+                    if op == "=" {
+                        let liftedVal = try liftExpression(infix.rightOperand, context)
+                        result.append(
+                            try spanned([
+                                ("kind", .string("assign")),
+                                ("name", .string(targetName)),
+                                ("expression", liftedVal),
+                            ], item.item, context)
+                        )
+                    } else {
+                        let binaryOp = String(op.dropLast())
+                        let leftSpanned = try spanned([
+                            ("kind", .string("name")),
+                            ("value", .string(targetName)),
+                        ], infix.leftOperand, context)
+                        let rightSpanned = try liftExpression(infix.rightOperand, context)
+                        let binaryExpr = try spanned([
+                            ("kind", .string("binary")),
+                            ("operator", .string(binaryOp)),
+                            ("left", leftSpanned),
+                            ("right", rightSpanned),
+                        ], infix, context)
+                        result.append(
+                            try spanned([
+                                ("kind", .string("assign")),
+                                ("name", .string(targetName)),
+                                ("expression", binaryExpr),
+                            ], item.item, context)
+                        )
+                    }
+                    continue
+                }
+            }
+        }
+
         if let conditional = item.item.as(IfExprSyntax.self) {
-            result.append(try liftIf(conditional, context))
+            result.append(try liftIf(conditional, &context))
             continue
         }
+
         throw AnalyzerError("SWIFT_UNSUPPORTED_STATEMENT:\(item.item.kind)")
     }
     return result
 }
 
-func liftIf(_ conditional: IfExprSyntax, _ context: LiftContext) throws -> JSONValue {
+func liftIf(_ conditional: IfExprSyntax, _ context: inout LiftContext) throws -> JSONValue {
     // `if let` / `if case` / `if #available` bind, destructure or query the
     // platform; the subset has no canonical form for any of them, so only a
     // single plain boolean expression is accepted.
@@ -404,23 +720,32 @@ func liftIf(_ conditional: IfExprSyntax, _ context: LiftContext) throws -> JSONV
     else {
         throw AnalyzerError("SWIFT_UNSUPPORTED_CONDITION")
     }
-    guard case .expression(let condition) = element.condition else {
+    guard case .expression(let rawCondition) = element.condition else {
         throw AnalyzerError("SWIFT_UNSUPPORTED_CONDITION:\(element.condition.kind)")
     }
+    let condition = unwrap(rawCondition)
+    let condType = try inferredType(condition, context)
+    guard condType == "boolean" else {
+        throw AnalyzerError("SWIFT_CONDITION_MUST_BE_BOOLEAN")
+    }
+    var thenContext = context
+    let thenStatements = try liftStatements(conditional.body.statements, &thenContext)
+
     var elseBody: [JSONValue] = []
     if let elseBlock = conditional.elseBody {
         switch elseBlock {
         case .codeBlock(let block):
-            elseBody = try liftStatements(block.statements, context)
+            var elseContext = context
+            elseBody = try liftStatements(block.statements, &elseContext)
         case .ifExpr(let chained):
-            // `else if` is one nested if statement.
-            elseBody = [try liftIf(chained, context)]
+            var chainedContext = context
+            elseBody = [try liftIf(chained, &chainedContext)]
         }
     }
     return try spanned([
         ("kind", .string("if")),
         ("condition", try liftExpression(condition, context)),
-        ("then", .array(try liftStatements(conditional.body.statements, context))),
+        ("then", .array(thenStatements)),
         ("else", .array(elseBody)),
     ], conditional, context)
 }
@@ -443,6 +768,7 @@ func liftFunction(_ declaration: FunctionDeclSyntax, _ context: LiftContext) thr
 
     var parameters: [JSONValue] = []
     var environment: [String: String] = [:]
+    var parameterNames: Set<String> = []
     for parameter in declaration.signature.parameterClause.parameters {
         // `func f(_ value: Int)` -> the binding name is `value`; with a label
         // (`func f(of value: Int)`) it is the second name.
@@ -453,6 +779,7 @@ func liftFunction(_ declaration: FunctionDeclSyntax, _ context: LiftContext) thr
         }
         let type = try canonicalType(parameter.type)
         environment[name] = type
+        parameterNames.insert(name)
         parameters.append(
             try spanned([
                 ("name", .string(name)),
@@ -465,15 +792,19 @@ func liftFunction(_ declaration: FunctionDeclSyntax, _ context: LiftContext) thr
         throw AnalyzerError("SWIFT_EXPLICIT_RETURN_TYPE_REQUIRED")
     }
 
-    let functionContext = LiftContext(
+    var functionContext = LiftContext(
         sourceFile: context.sourceFile,
         emittedTarget: context.emittedTarget,
-        environment: environment)
+        environment: environment,
+        mutableVariables: [],
+        parameterNames: parameterNames,
+        loopVariables: [],
+        inLoop: false)
     return try spanned([
         ("name", .string(declaration.name.text)),
         ("parameters", .array(parameters)),
         ("return_type", .string(try canonicalType(returnClause.type))),
-        ("body", .array(try liftStatements(body.statements, functionContext))),
+        ("body", .array(try liftStatements(body.statements, &functionContext))),
     ], declaration, context)
 }
 
@@ -568,7 +899,11 @@ if inventoryMode && arguments.count != 3 {
 let context = LiftContext(
     sourceFile: sourcePath.lastPathComponent,
     emittedTarget: arguments.count == 4,
-    environment: [:])
+    environment: [:],
+    mutableVariables: [],
+    parameterNames: [],
+    loopVariables: [],
+    inLoop: false)
 
 do {
     let source = try String(contentsOf: sourcePath, encoding: .utf8)

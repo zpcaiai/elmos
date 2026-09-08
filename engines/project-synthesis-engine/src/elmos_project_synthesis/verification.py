@@ -956,24 +956,12 @@ _INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
     "rust": 300,
     "kotlin": 300,
     "csharp": 240,
-    # A cold Maven/Spring Boot integration run has to initialise the test
-    # application context while the generated runtime and its isolated
-    # PostgreSQL instance are already active.  The former 240 second bound was
-    # lower than an observed clean-worktree run on a loaded builder: the
-    # service answered its exact health contract, but Surefire was killed while
-    # starting ProductionIntegrationTest.  Keep the run bounded by the
-    # per-case 1,800 second matrix budget while giving the real integration
-    # scenario enough time to finish under cold-cache contention.
-    "java": 600,
+    "java": 240,
 }
 
 _HARNESS_STARTUP_TIMEOUT_SECONDS: dict[str, int] = {
-    # The production harness starts an isolated PostgreSQL instance before a
-    # no-daemon Gradle launch.  The ordinary in-memory Kotlin runtime already
-    # uses the probe's maximum bounded startup budget; keep the PostgreSQL
-    # profile consistent so a cold Gradle compiler does not prevent the health
-    # and integration checks from running.
     "kotlin": 300,
+    "rust": 300,
 }
 
 # Python declares its integration command inline in ``runtime_commands``

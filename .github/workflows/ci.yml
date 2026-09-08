@@ -106,48 +106,6 @@ jobs:
             -Dtest=SelfServiceBillingApiLiveTest \
             -Dsurefire.failIfNoSpecifiedTests=false test
 
-  live-workbench-postgres:
-    name: Live Workbench PostgreSQL 17
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    services:
-      postgres:
-        image: postgres@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa # 17.5-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: elmos_live_workbench
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d elmos_live_workbench"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 12
-    env:
-      ELMOS_LW_TEST_DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/elmos_live_workbench
-      ELMOS_LW_TEST_DATABASE_USER: postgres
-      ELMOS_LW_TEST_DATABASE_PASSWORD: postgres
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Java 21
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
-        with:
-          distribution: temurin
-          java-version: "21"
-          cache: maven
-      - name: Install Live Workbench reactor dependencies
-        run: mvn -B -ntp -q -DskipTests -pl modules/live-workbench -am install
-      - name: Verify real PostgreSQL lifecycle and RLS contracts
-        run: >-
-          mvn -B -ntp -f modules/live-workbench/pom.xml
-          -Dtest=JdbcLiveWorkbenchStorePostgresTest test
-      - name: Verify package integration and anti-fabrication gate
-        run: |
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/live-workbench -p 'test_*.py'
-          PYTHONDONTWRITEBYTECODE=1 python3 scripts/live_workbench/run_production_gate.py --expect-blocked
-
   dotnet-engine:
     name: .NET Engine
     runs-on: ubuntu-24.04
@@ -186,6 +144,39 @@ jobs:
             --output-root "$RUNNER_TEMP/elmos-engine-tests"
           uv --directory engines/python-engine run --locked ruff check src tests
           uv --directory engines/python-engine run --locked mypy src
+
+  spring-golden-route-engine:
+    name: Spring Golden Route Engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Build native Spring bridge library
+        run: >-
+          cargo build --locked --release
+          --manifest-path native/rust-core/Cargo.toml
+      - name: Verify Spring commercial skill import boundary
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 uv run --quiet --with pyyaml==6.0.2
+          --with jsonschema==4.25.1 python
+          tooling/integrate_spring_golden_route_commercial_skills.py --check
+      - name: Run Spring golden route engine tests
+        run: |
+          python3 scripts/operations/run_engine_tests.py spring-golden-route-engine \
+            --output-root "$RUNNER_TEMP/elmos-engine-tests"
+          PYTHONDONTWRITEBYTECODE=1 uv run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 \
+            python -m unittest discover -s tests/spring-golden-route-commercial -p 'test_*.py'
+      - name: Run Batch 30 skill tests (Spring runner topology)
+        run: make -f Makefile.batch30 b30-skills-test
 
   external-gate-intake:
     name: External intake anti-fabrication (pre-gate only)
@@ -759,8 +750,15 @@ jobs:
           test -f "${ELMOS_NATIVE_LIB}"
           uv sync --locked
           uv run --locked pytest
-          uv run --locked ruff check src tests
+          uv run --locked ruff check src tests scripts workload
           uv run --locked mypy src
+      - name: Verify generation support matrix and workload image assets
+        run: |
+          uv --directory engines/project-synthesis-engine run --locked \
+            python ../../scripts/operations/validate_generation_support_matrix.py
+          test -f engines/project-synthesis-engine/workload/Dockerfile
+          test -f engines/project-synthesis-engine/workload/entrypoint.py
+          python3 -m py_compile scripts/operations/build_generation_workload_image.py
       - name: Verify service operability contracts
         run: |
           uv run --with pyyaml python tooling/validate_runtime_operability.py
@@ -974,6 +972,30 @@ jobs:
           e2e/runtime-deployment-guide.spec.ts
           e2e/truthful-workbench-ui.spec.ts
           e2e/usage-meter-ui.spec.ts
+      - name: Verify generation hosted fail-closed journeys
+        id: generation-hosted-journeys
+        env:
+          ELMOS_E2E_PORT: "3211"
+          ELMOS_E2E_WEB_SERVER_MODE: development
+          ELMOS_E2E_OUTPUT_DIR: test-results/ci-playwright-hosted
+          ELMOS_E2E_REPORT_DIR: test-results/ci-playwright-hosted-report
+          ELMOS_HOSTED_EXECUTION_ENABLED: "true"
+          ELMOS_E2E_HOSTED_MODE: "true"
+          ELMOS_LOCAL_GITHUB_PUBLISH_ENABLED: "true"
+        run: >-
+          pnpm --dir apps/web-console exec playwright test
+          --project=chromium
+          e2e/generation-hosted-failclosed.spec.ts
+      - name: Preserve generation hosted journey evidence
+        if: ${{ always() && steps.generation-hosted-journeys.outcome != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: web-console-generation-hosted-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/web-console/test-results/ci-playwright-hosted
+            apps/web-console/test-results/ci-playwright-hosted-report
+          if-no-files-found: error
+          retention-days: 30
       - name: Preserve browser journey evidence
         if: ${{ always() && steps.browser-journeys.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

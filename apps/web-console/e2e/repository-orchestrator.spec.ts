@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import {
+  administratorEmail,
+  installAdministratorSession,
+} from "./helpers/admin-session";
 
 const modelSeeds = [
   ["gpt-5.6-sol-max", "GPT-5.6 Sol Max", "openai", "architect_verifier", 5, ["L2", "L3", "L4"]],
@@ -77,6 +81,12 @@ const catalog = {
 };
 
 test("Smart-first repository preflight consumes the server catalog and stays fail-closed", async ({ page }) => {
+  // A cold Next.js development compilation can consume most of the global
+  // 60-second test budget before this journey starts. Keep every assertion and
+  // fail-closed check intact while giving this single integration journey a
+  // bounded production-sized budget.
+  test.setTimeout(120_000);
+  await installAdministratorSession(page);
   let submitted: Record<string, unknown> | null = null;
   const sideEffectRequests: string[] = [];
 
@@ -87,9 +97,28 @@ test("Smart-first repository preflight consumes the server catalog and stays fai
   });
   await page.route("**/api/telemetry/events", (route) => route.fulfill({ status: 204, body: "" }));
   await page.route("**/api/auth/session", (route) => route.fulfill({
-    status: 401,
+    status: 200,
     contentType: "application/json",
-    body: JSON.stringify({ authenticated: false }),
+    body: JSON.stringify({
+      authenticated: true,
+      configured: true,
+      expiresAt: "2026-08-09T12:00:00Z",
+      principal: {
+        actorId: "oidc-e2e-admin",
+        displayName: "ELMOS E2E Administrator",
+        email: administratorEmail,
+        emailVerified: true,
+        isPlatformAdmin: true,
+        organizationId: "tenant-operations-a",
+        roles: ["APPROVER"],
+        permissions: ["workspace:view", "admin:read", "admin:operate", "admin:approve"],
+        memberships: [{
+          organizationId: "tenant-operations-a",
+          roles: ["APPROVER"],
+          permissions: ["workspace:view", "admin:read", "admin:operate", "admin:approve"],
+        }],
+      },
+    }),
   }));
   await page.route("**/api/repository-orchestrator/models", (route) => route.fulfill({
     status: 200,

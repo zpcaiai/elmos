@@ -789,6 +789,17 @@ class SynthesisRequest:
         ports = [target.port for target in targets]
         if len(languages) != len(set(languages)) or len(ports) != len(set(ports)):
             raise RequestValidationError("TARGET_LANGUAGE_AND_PORT_MUST_BE_UNIQUE")
+        if "languages" in mapping:
+            declared_languages = mapping.get("languages")
+            if not isinstance(declared_languages, list | tuple) or not declared_languages:
+                raise RequestValidationError("TARGETS_REQUIRED")
+            unsupported_languages = sorted(set(declared_languages) - set(SUPPORTED_LANGUAGES))
+            if unsupported_languages:
+                raise RequestValidationError(
+                    f"UNSUPPORTED_TARGET_LANGUAGE:{','.join(unsupported_languages)}"
+                )
+            if set(declared_languages) != set(languages):
+                raise RequestValidationError("TARGET_LANGUAGES_MISMATCH")
         allowed_targets = SUPPORTED_PROFILE_TARGETS.get((persistence, auth_mode))
         if allowed_targets is None:
             raise RequestValidationError(f"PROFILE_COMBINATION_UNSUPPORTED:{persistence}:{auth_mode}")
