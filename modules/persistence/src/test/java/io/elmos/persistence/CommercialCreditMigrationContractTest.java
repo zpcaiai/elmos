@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
+    private static final Path DIGEST_MIGRATION = Path.of(
+            "src/main/resources/db/migration/V84__elmpay_order_digest_lookup.sql");
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
@@ -70,5 +72,13 @@ class CommercialCreditMigrationContractTest {
         assertFalse(sql.contains("GRANT INSERT ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT UPDATE ON commercial_credit_accounts"));
         assertFalse(sql.contains("GRANT DELETE ON commercial_credit_ledger_entries"));
+    }
+
+    @Test void elmpayDigestTriggersUseCatalogHashingUnderPinnedSearchPath() throws Exception {
+        String sql = Files.readString(DIGEST_MIGRATION);
+        assertTrue(sql.contains("SET search_path = pg_catalog, public, pg_temp"));
+        assertTrue(sql.contains("pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to("));
+        assertFalse(sql.contains("public.encode("));
+        assertFalse(sql.contains("public.digest("));
     }
 }
