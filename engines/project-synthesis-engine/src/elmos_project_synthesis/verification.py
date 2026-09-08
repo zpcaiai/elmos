@@ -689,6 +689,12 @@ def _loopback_environment(environment: dict[str, str] | None = None) -> dict[str
 #: Same bound the probe has always reported; only *when* it is read changed.
 _PROBE_OUTPUT_TAIL_CHARACTERS = 6_000
 
+# The production runtime starts the installed application directly.  Keep
+# ``installDist`` in the verified build so startup never needs to hold a
+# Gradle client/daemon connection open while the integration task starts a
+# second Gradle invocation against the same user home.
+_KOTLIN_BUILD_ARGUMENTS = ("--no-daemon", "test", "build", "installDist")
+
 
 def _drain_tail(stream: Any, sink: list[str], limit: int) -> None:
     """Read `stream` to EOF, keeping only its last `limit` characters.
@@ -1457,7 +1463,7 @@ def verify_workspace(
             ],
         ),
         "go": ("go", [["vet", "./..."], ["test", "-race", "./..."], ["build", "./..."]]),
-        "kotlin": ("gradle", [["--no-daemon", "test", "build"]]),
+        "kotlin": ("gradle", [list(_KOTLIN_BUILD_ARGUMENTS)]),
         # Deliberately shape-agnostic: the starter profile names its class
         # src/Store.php while the production profile names it after the
         # entity, so linting a hardcoded path would fail on one of them.

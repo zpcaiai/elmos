@@ -802,6 +802,16 @@ def test_all_eight_production_targets_render_distinct_deployment_manifests() -> 
     for path in expected:
         assert "kind: Deployment" in files[path]
         assert "runAsNonRoot: true" in files[path]
+    assert (
+        "APP_COMMAND = ['build/install/all-target-orders/bin/all-target-orders']"
+        in files["kotlin/scripts/local_runtime.py"]
+    )
+    assert verification._KOTLIN_BUILD_ARGUMENTS == (
+        "--no-daemon",
+        "test",
+        "build",
+        "installDist",
+    )
 
 
 def test_all_eight_production_targets_render_multi_entity_postgresql_workspaces() -> None:
