@@ -1,0 +1,131 @@
+{
+  "analyzer": "clang AST (JSON)",
+  "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 108,
+                "file": "pricing.m",
+                "start_byte": 100
+              },
+              "value": "subtotal"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 112,
+                "file": "pricing.m",
+                "start_byte": 111
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 112,
+              "file": "pricing.m",
+              "start_byte": 100
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 139,
+            "file": "pricing.m",
+            "start_byte": 96
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 132,
+                  "file": "pricing.m",
+                  "start_byte": 131
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 132,
+                "file": "pricing.m",
+                "start_byte": 124
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 159,
+                "file": "pricing.m",
+                "start_byte": 151
+              },
+              "value": "subtotal"
+            },
+            "operator": "+",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 165,
+                "file": "pricing.m",
+                "start_byte": 162
+              },
+              "value": "tax"
+            },
+            "source_span": {
+              "end_byte": 165,
+              "file": "pricing.m",
+              "start_byte": 151
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 165,
+            "file": "pricing.m",
+            "start_byte": 144
+          }
+        }
+      ],
+      "name": "calculate",
+      "parameters": [
+        {
+          "name": "subtotal",
+          "source_span": {
+            "end_byte": 73,
+            "file": "pricing.m",
+            "start_byte": 55
+          },
+          "type": "integer"
+        },
+        {
+          "name": "tax",
+          "source_span": {
+            "end_byte": 88,
+            "file": "pricing.m",
+            "start_byte": 75
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 168,
+        "file": "pricing.m",
+        "start_byte": 35
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "pricing.m",
+  "source_language": "objc"
+}

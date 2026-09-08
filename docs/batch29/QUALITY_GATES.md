@@ -100,7 +100,7 @@
 
 ## Gate R29-H — Small/medium whole-repository matrix
 
-- the repository capability campaign uses the exact thirteen active languages and all 156 directed routes from `scripts/batch29/route_sets.py`; deprecated JavaScript is absent and each direction remains independent
+- the existing repository capability campaign remains frozen to the exact thirteen locally executable pre-VB6 languages and their 156 directed routes from `scripts/batch29/route_sets.py`; deprecated JavaScript and preparation-only VB6 are absent and each direction remains independent
 - every route contains one measured `SMALL` and one measured `MEDIUM` workload, for 312 explicit workload results
 - each workload binds a passing source baseline build/test, complete source-unit classification, zero skipped/failed/unsupported/unknown units, complete conversion, and a passing whole-target-repository build/test
 - every referenced JSON artifact binds campaign/route/repository/class/stage/role in both its reference and verified bytes; IDs, paths, and hard-linked inodes cannot be reused across subjects
@@ -114,7 +114,11 @@ The detailed contract and bounded repository-size rules are in
 `docs/batch29/REPOSITORY_QUALITY_GATES.md`. Former ten-language/90-route
 JavaScript evidence is historical-only and cannot satisfy this gate. No
 checked-in campaign currently claims that all 156 active routes have passed;
-its absence is `NOT_RUN`, not success.
+its absence is `NOT_RUN`, not success. The additional 26 VB6 directions use the
+digest-bound three-phase runner in `scripts/batch29/run_vb6_cross_host_campaign.py`:
+the non-VB6 side is prepared on its exact host, the VB6 side compiles/runs on an
+approved Windows x86-compatible VB6 SP6 host, and typed observations are compared
+after transfer. Missing Windows or independent receipts remain `NOT_RUN`, never success.
 
 ## Certification outcomes
 

@@ -100,6 +100,10 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".swift": "swift",
     ".ts": "typescript",
     ".tsx": "react",
+    ".bas": "vb6",
+    ".cls": "vb6",
+    ".frm": "vb6",
+    ".ctl": "vb6",
 }
 
 _IGNORED_DIRECTORIES: Final[frozenset[str]] = frozenset(
@@ -167,6 +171,8 @@ _BUILD_DESCRIPTOR_SUFFIXES: Final[tuple[str, ...]] = (
     ".sln",
     ".vcxproj",
     ".vbproj",
+    ".vbp",
+    ".vbg",
 )
 
 _RESOURCE_EXTENSIONS: Final[frozenset[str]] = frozenset(
@@ -677,6 +683,7 @@ def _walk_repository(
                 inventory_issues.append((relative, "FILE_SYMLINK_NOT_READ"))
                 continue
             try:
+                content: bytes | None
                 if retain_content:
                     content = _stable_read(os.path.join(current, name))
                     digest, byte_count = _sha256_bytes(content), len(content)

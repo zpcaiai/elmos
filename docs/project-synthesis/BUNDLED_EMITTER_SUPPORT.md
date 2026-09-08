@@ -24,8 +24,8 @@ All eight bundled languages implement the exact PostgreSQL 17.5 production
 profile with JWT HS256 through an owner-only Secret file or OIDC through an
 owner-only JWKS file. `scripts/run_production_matrix.py` runs all 16
 language/auth-mode cases with real migrations, startup, authorization, CRUD,
-negative token checks, and PostgreSQL RLS tenant isolation. Java and Python
-support multi-entity production requests; the other six targets enforce an
-explicit single-entity boundary. External PostgreSQL/IdP operation, production
-rootless execution, delivery, restore/DR, independent user acceptance, and
-certification remain `NOT_RUN` until run in their exact environments.
+negative token checks, and PostgreSQL RLS tenant isolation. All eight profiles
+support the same multi-entity production request contract. External hosted
+PostgreSQL/IdP operation, production rootless execution, delivery, restore/DR,
+independent user acceptance, and certification remain `NOT_RUN` until run in
+their exact environments.

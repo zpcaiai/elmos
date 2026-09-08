@@ -11,5 +11,7 @@
   },
   "execution_status": "PASSED_LOCAL",
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
-  "schema_version": 1
+  "schema_version": 1,
+  "source_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "source_snapshot_sha256": "3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc"
 }

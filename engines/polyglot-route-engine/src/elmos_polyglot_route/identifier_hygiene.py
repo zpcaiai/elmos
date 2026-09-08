@@ -229,6 +229,24 @@ _DART_RESERVED = _words(
     """
 )
 
+_VB6_RESERVED = _words(
+    """
+    AddressOf Alias And As Attribute Base Begin Binary Boolean ByRef Byte ByVal
+    Call Case CBool CByte CCur CDate CDbl CDec CInt CLng Const CSng CStr Currency
+    Date Decimal Declare DefBool DefByte DefCur DefDate DefDbl DefDec DefInt
+    DefLng DefObj DefSng DefStr DefVar Dim Do Double Each Else ElseIf Empty End
+    Enum Eqv Erase Error Event Exit Explicit False For Friend Function Get Global
+    GoSub GoTo If Imp Implements In Input Integer Is LBound Let Lib Like Line
+    Load Lock Long Loop LSet Mid Mod New Next Not Nothing Null Object On Open
+    Option Optional Or Output ParamArray Preserve Print Private Property Public
+    Put Random Read ReDim Resume Return RSet Seek Select Set Single Static Step
+    Stop String Sub Then To True Type UBound Unlock Variant Wend While With
+    Write Xor
+    """
+)
+
+_VB6_DIALECT = "visual-basic-6.0-sp6-typed-pure-module-v1"
+
 _FLUTTER_DART_DIALECT = "flutter-3.44.1-dart-3.12.1-native-pure-module"
 
 _FORBIDDEN: dict[Language, frozenset[str]] = {
@@ -361,6 +379,13 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         actual0
         """
     ),
+    "vb6": _words(
+        """
+        ElmosCheckedAdd ElmosCheckedSub ElmosCheckedMul ElmosCheckedDiv
+        ElmosCheckedMod ElmosNonZero Err Fix CDbl CLng migrated
+        leftValue rightValue resultValue quotientValue value
+        """
+    ),
 }
 
 _RESERVED: dict[Language, frozenset[str]] = {
@@ -378,6 +403,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "php": _PHP_RESERVED,
     "kotlin": _KOTLIN_RESERVED,
     "flutter": _DART_RESERVED,
+    "vb6": _VB6_RESERVED,
 }
 
 _DIALECT: dict[Language, str] = {
@@ -395,6 +421,7 @@ _DIALECT: dict[Language, str] = {
     "php": _PHP_DIALECT,
     "kotlin": _KOTLIN_DIALECT,
     "flutter": _FLUTTER_DART_DIALECT,
+    "vb6": _VB6_DIALECT,
 }
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
@@ -410,6 +437,8 @@ _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
         r"(?i)\A(?:" + "|".join(sorted(_PHP_RESERVED)) + r")\Z",
         r"^__",
     ),
+    # VB6 identifiers and keywords are case-insensitive.
+    "vb6": (r"(?i)\A(?:" + "|".join(sorted(_VB6_RESERVED)) + r")\Z",),
 }
 
 

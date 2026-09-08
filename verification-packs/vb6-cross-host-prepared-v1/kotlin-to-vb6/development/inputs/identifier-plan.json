@@ -1,0 +1,83 @@
+{
+  "binding_count": 3,
+  "bindings": [
+    {
+      "binding_id": "sha256:31690605cc10e753efbd17045fac11aaae2045ec6c1612587cf264e90c13d3ab",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "calculate",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": null,
+      "decision": "PRESERVED",
+      "ordinal": 0,
+      "role": "function",
+      "scope_id": "sha256:78fe7ab13fcb7be2f7d4cba0cb2d3fb608f2762d39718f08631ac1cc23b96af3",
+      "selected_candidate_index": 0,
+      "signature_sha256": "sha256:757330ff03868e1011f4333ee25c70cb812e61f466acb94b6a9abf3a61df000e",
+      "source_name": "calculate",
+      "target_name": "calculate"
+    },
+    {
+      "binding_id": "sha256:3eca4f7c2b36a27ef6e0657dffbc5837630be8c7ee6a9c7dd2690df611295530",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "subtotal",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": "integer",
+      "decision": "PRESERVED",
+      "ordinal": 0,
+      "role": "parameter",
+      "scope_id": "sha256:31690605cc10e753efbd17045fac11aaae2045ec6c1612587cf264e90c13d3ab",
+      "selected_candidate_index": 0,
+      "signature_sha256": null,
+      "source_name": "subtotal",
+      "target_name": "subtotal"
+    },
+    {
+      "binding_id": "sha256:76b3f2741897cce8bce519d39ad4bfafed9185d38ab1cb72786a97cd63ddcd0f",
+      "candidates_examined": [
+        {
+          "index": 0,
+          "name": "tax",
+          "reasons": [],
+          "status": "SELECTED"
+        }
+      ],
+      "canonical_type": "integer",
+      "decision": "PRESERVED",
+      "ordinal": 1,
+      "role": "parameter",
+      "scope_id": "sha256:31690605cc10e753efbd17045fac11aaae2045ec6c1612587cf264e90c13d3ab",
+      "selected_candidate_index": 0,
+      "signature_sha256": null,
+      "source_name": "tax",
+      "target_name": "tax"
+    }
+  ],
+  "candidate_limit": 16,
+  "kind": "elmos.typed-identifier-plan",
+  "policy_id": "typed-alpha-hygiene-v2",
+  "policy_sha256": "sha256:9f7269095372a095d31cc341cfedbae514a591d53b6e849c8f724dd930358fa2",
+  "schema_version": "2.0.0",
+  "source_ir_sha256": "sha256:bf85be08d7e8728fca1f3993ea10fc2f5bc924fed39412170ee59525f85f00ec",
+  "source_semantic_sha256": "sha256:19567b7fee5bd2d02252f1d1a962a190071da8a9bcba1d9ac8713afc7bf0c5f5",
+  "target_language": "vb6",
+  "unit_namespace": {
+    "kind": "elmos.identifier-unit-namespace",
+    "repository_snapshot_sha256": null,
+    "schema_version": "1.0.0",
+    "scope": "standalone-semantic-ir",
+    "source_logical_path": "pricing.kt",
+    "source_sha256": "sha256:19567b7fee5bd2d02252f1d1a962a190071da8a9bcba1d9ac8713afc7bf0c5f5",
+    "work_unit_id": null
+  },
+  "unit_namespace_sha256": "sha256:20127386c27164b076af601411b481d5df5fbf1655ae166696b8b12dab3370e9"
+}
