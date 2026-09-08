@@ -173,10 +173,11 @@ database-bigdata-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
 .PHONY: project-intelligence-skills
 project-intelligence-skills:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 -m unittest discover -s engines/project-intelligence-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/qualify_project_intelligence_runtime.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_project_intelligence_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
+	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s engines/project-intelligence-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python tooling/qualify_project_intelligence_runtime.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python tooling/integrate_project_intelligence_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
 .PHONY: legacy-web-modernization-skills
 legacy-web-modernization-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_legacy_web_modernization_skills.py --check
@@ -307,9 +308,9 @@ ai-optimization-skills:
 
 .PHONY: repository-task-router-skills
 repository-task-router-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_repository_task_router_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python tooling/integrate_repository_task_router_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/repair-orchestration,apps/agent-gateway -am test
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine run build
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit

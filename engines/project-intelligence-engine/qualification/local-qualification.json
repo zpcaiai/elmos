@@ -16,10 +16,10 @@
       "sha256": "sha256:4309bf575daad542185d341dcecaa05e358bb3158a8e9048b5b78782eed9500d"
     },
     {
-      "bytes": 544,
+      "bytes": 638,
       "mode": "0644",
       "path": "pyproject.toml",
-      "sha256": "sha256:ed1fc69ba162dc7ce890e589d3c1fc92cd60d9fd09a4c0a2017dd3b551c6f025"
+      "sha256": "sha256:e032d4a5e4e8e5637763a2c6e9754c07f0b6b9ea68943f457d2825142fa88f9d"
     },
     {
       "bytes": 616,
@@ -70,10 +70,10 @@
       "sha256": "sha256:099636e02a8261d822ce0d137aca0ca0df945478b1484b7e52ce6d5a61bdbe39"
     },
     {
-      "bytes": 105442,
+      "bytes": 106089,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/domain.py",
-      "sha256": "sha256:d4daa0938683e05e52f455195ac33fbcfe5036c4047a56156627e83e11d8258d"
+      "sha256": "sha256:8b331e0e42a501c052f1d7da3a2b13bdf3139d58c2e27ff12f50ba6f1a79016a"
     },
     {
       "bytes": 6906,
@@ -88,10 +88,16 @@
       "sha256": "sha256:13b8f33cba04cfe979b383e464025b7a8128a3b823487fac9fdd52fa4dc64064"
     },
     {
-      "bytes": 8249,
+      "bytes": 18320,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/java_flowgraph.py",
+      "sha256": "sha256:065c2d9af3341d786fa6bb912653740fff949e979eef2561f26fcfbb52b7f0db"
+    },
+    {
+      "bytes": 8549,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/java_structure.py",
-      "sha256": "sha256:2830e7de6d56aa1c5f3d40550a1f52c23f1f2a2ba6710ec67f9287891631a1b8"
+      "sha256": "sha256:2c466c87d731cc65cfbf1166f2eb9e71706cfe15ffc8c3c912042ccbd366bee2"
     },
     {
       "bytes": 4193,
@@ -178,6 +184,12 @@
       "sha256": "sha256:fa6d3cb9a944654e0ae66e4e76fcd47827328fe07a82d2fe0e87b3bf5009eb02"
     },
     {
+      "bytes": 5782,
+      "mode": "0644",
+      "path": "tests/test_java_flowgraph.py",
+      "sha256": "sha256:5d38ed62c570a3bd34597b277d33ef18aa9493ea652c9941452670159401648a"
+    },
+    {
       "bytes": 3121,
       "mode": "0644",
       "path": "tests/test_java_structure.py",
@@ -196,10 +208,10 @@
       "sha256": "sha256:0430f12c9d67ba1d4fcc23e0a557953ab118c8ff1864ee5a1db7c7cd10d777bf"
     },
     {
-      "bytes": 38446,
+      "bytes": 38225,
       "mode": "0644",
       "path": "tests/test_runtime.py",
-      "sha256": "sha256:6d1261a79d1579284cd55cf69f54b6ed98f23ea0dd1d912b0172f3b6dff0a73c"
+      "sha256": "sha256:babb929dd9fee44a5a774785ec84dbdd102478409d3a0d04730aa53b52b3747f"
     },
     {
       "bytes": 2042,
@@ -226,24 +238,24 @@
       "sha256": "sha256:e2ec8f2f1d208ce79935f8435a691b55480aa8708bbe46fc06f983545cd4f221"
     },
     {
-      "bytes": 154,
+      "bytes": 43701,
       "mode": "0644",
       "path": "uv.lock",
-      "sha256": "sha256:2f5707153f6384f7d16ffcec51f2bda2ff84e47d5815ca35908ed2838b1853f5"
+      "sha256": "sha256:aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217"
     }
   ],
-  "engine_tree_sha256": "sha256:b1e6764becbd771df5bddbc2290cb82f6b43da9048618bac04688f5a37c52f6c",
+  "engine_tree_sha256": "sha256:02361db98381f65ddb86c6b3ecb5e4d9cc9fb12a4cabf0604c7451aee3081a57",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
-  "fixture_sha256": "sha256:6d1261a79d1579284cd55cf69f54b6ed98f23ea0dd1d912b0172f3b6dff0a73c",
+  "fixture_sha256": "sha256:babb929dd9fee44a5a774785ec84dbdd102478409d3a0d04730aa53b52b3747f",
   "independent_verifier": null,
   "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
   "qualification_scope": "bounded-local-fixture-handlers",
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
-  "receipt_digest": "sha256:d4758cba4a00822cb887ca10108a83cf407777e71b1bead6bec739fbe1616f3d",
+  "receipt_digest": "sha256:b112a44ce87035be8573b93b49d5b67fc1e9ad7bd220465ce6f95850c0ea6678",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -1510,12 +1522,14 @@
               "asset": "src.store",
               "confidence": "INFERRED",
               "line": 1,
+              "origin": "REGEX",
               "path": "src/app.py"
             },
             {
               "asset": "refunds",
               "confidence": "INFERRED",
               "line": 2,
+              "origin": "REGEX",
               "path": "src/store.py"
             }
           ],
@@ -1523,7 +1537,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+        "result_digest": "sha256:9a1c37389088bb890dbe1c78521fde5968d3f8e45abd78f27fe0dbcbc4e4e582",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-data-architecture-lineage",
@@ -1535,7 +1549,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+      "result_digest": "sha256:9a1c37389088bb890dbe1c78521fde5968d3f8e45abd78f27fe0dbcbc4e4e582",
       "skill": "elmos-data-architecture-lineage",
       "status": "PASSED"
     },
@@ -1558,6 +1572,7 @@
           "endpoints": [
             {
               "line": 1,
+              "origin": "REGEX",
               "path": "/refunds",
               "source": "src/api.py"
             }
@@ -1566,6 +1581,7 @@
             {
               "channel": "refund.created",
               "line": 3,
+              "origin": "REGEX",
               "source": "src/api.py"
             }
           ],
@@ -1573,7 +1589,7 @@
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+        "result_digest": "sha256:4b0506805488e0c8bcd302818ecc504c1d6f34cca152a887e07069ecd7019614",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-api-event-topology",
@@ -1584,7 +1600,7 @@
         ],
         "warnings": []
       },
-      "result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+      "result_digest": "sha256:4b0506805488e0c8bcd302818ecc504c1d6f34cca152a887e07069ecd7019614",
       "skill": "elmos-api-event-topology",
       "status": "PASSED"
     },
@@ -3319,17 +3335,17 @@
   ],
   "runtime_environment": {
     "byteorder": "little",
-    "cache_tag": "cpython-312",
-    "executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
-    "executable_sha256": "sha256:30b2a6bf9706029b609327ca5db722cd458239df96efc87e1f8e37beed49db2e",
-    "hexversion": 51121904,
+    "cache_tag": "cpython-314",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+    "hexversion": 51250672,
     "implementation": "cpython",
     "machine": "arm64",
     "platform": "darwin",
     "release_level": "final",
-    "resolved_executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
     "serial": 0,
-    "version": "3.12.14"
+    "version": "3.14.5"
   },
   "schema_version": "elmos.project-intelligence.local-qualification.v2",
   "source_package": "elmos-project-intelligence-skills",
