@@ -2550,7 +2550,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 38)
+        self.assertEqual(len(swift_definition_names), 40)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
@@ -3558,11 +3558,11 @@ print('\\n'.join(failures))
                 failures,
             )
 
-    def test_route_inventory_is_exact_fourteen_language_complete_182(self):
+    def test_route_inventory_is_exact_fifteen_language_complete_210(self):
         matrix = load_matrix_validator()
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         routes = matrix.check_inventory_shape(inventory)
-        self.assertEqual(len(routes), 182)
+        self.assertEqual(len(routes), 210)
         self.assertEqual(
             {route["route_key"] for route in routes},
             set(matrix.EVIDENCED_ROUTE_KEYS),
@@ -3701,8 +3701,8 @@ print('\\n'.join(failures))
     ):
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         document = (ROOT / "docs" / "batch29" / "ROUTE_MATRIX.md").read_text()
-        self.assertEqual(len(inventory["routes"]), 182)
-        self.assertIn("182 directed routes across 14 active languages", document)
+        self.assertEqual(len(inventory["routes"]), 210)
+        self.assertIn("210 directed routes across 15 active languages", document)
         for route_set in (
             "legacy-complete-30",
             "cpp-objc-swift-java-exact-8",
@@ -3716,9 +3716,11 @@ print('\\n'.join(failures))
             "thirteen-language-complete-156",
             "vb6-completion-26",
             "fourteen-language-complete-182",
+            "vcpp6-completion-28",
+            "fifteen-language-complete-210",
         ):
             self.assertIn(f"`{route_set}`", document)
-        self.assertIn("90 `limited`, 92 `research`, 0 `certified`", document)
+        self.assertIn("90 `limited`, 120 `research`, 0 `certified`", document)
         self.assertIn("`PASSED_LOCAL`", document)
         self.assertIn("`NOT_CERTIFIED`", document)
         self.assertIn("Independent verification: `NOT_RUN`", document)
@@ -4171,6 +4173,7 @@ print('\\n'.join(failures))
                 with (
                     mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
                     mock.patch.object(runner, "VB6_EXACT_ROUTE_KEYS", ()),
+                    mock.patch.object(runner, "VCPP6_EXACT_ROUTE_KEYS", ()),
                     mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
                     mock.patch.object(
                         runner, "ALL_DECLARED_ROUTE_KEYS", route_keys
