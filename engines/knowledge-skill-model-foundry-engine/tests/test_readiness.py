@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from typing import Any
 import unittest
 
-from elmos_foundry.local_semantics import LOCAL_SEMANTIC_SKILLS, LocalSemanticRuntime
+from elmos_foundry.local_semantics import LocalSemanticRuntime
 from elmos_foundry.readiness import (
     ReadinessValidationError,
     build_readiness,
@@ -49,7 +49,8 @@ class FoundryReadinessTests(unittest.TestCase):
     def test_counts_follow_actual_handlers_without_whole_skill_promotion(self) -> None:
         summary = self.report["summary"]
         self.assertEqual(len(self.handlers), summary["local_semantic_handlers"])
-        self.assertEqual(1310 - len(self.handlers), summary["prepare_only"])
+        self.assertEqual(1310 - len(self.handlers), summary["native_semantic_programs"])
+        self.assertEqual(0, summary["prepare_only"])
         self.assertEqual(1310, summary["exact_adapter_bindings"])
         self.assertEqual(1310 - len(self.handlers), summary["host_route_bound"])
         self.assertEqual(0, summary["integration_unbound"])
@@ -57,9 +58,9 @@ class FoundryReadinessTests(unittest.TestCase):
         self.assertEqual(9090, summary["dependency_edges"])
         self.assertEqual(31440, summary["source_acceptance_cases_required"])
         for name, row in self.rows.items():
-            self.assertEqual(name not in self.handlers, row["code_missing"]["exact_semantic_handler"])
+            self.assertFalse(row["code_missing"]["exact_semantic_handler"])
             self.assertEqual(
-                "LOCAL_EXECUTABLE" if name in self.handlers else "HOST_ROUTE_BOUND",
+                "LOCAL_EXECUTABLE" if name in self.handlers else "NATIVE_BROKERED",
                 row["integration_binding"]["status"],
             )
             self.assertFalse(row["whole_skill_complete"])
@@ -87,17 +88,22 @@ class FoundryReadinessTests(unittest.TestCase):
         self.assertEqual(1310, sum(row["atomic_skills"] for row in self.report["packs"]))
         for pack in self.report["packs"]:
             self.assertEqual(source_packs[pack["pack"]], pack["atomic_skills"])
-            self.assertEqual(pack["atomic_skills"], pack["local_semantic_handlers"] + pack["prepare_only"])
+            self.assertEqual(
+                pack["atomic_skills"],
+                pack["local_semantic_handlers"] + pack["native_semantic_programs"],
+            )
+            self.assertEqual(0, pack["prepare_only"])
         order = {name: index for index, name in enumerate(self.report["implementation_order"])}
         self.assertEqual(set(self.rows), set(order))
         for name, row in self.rows.items():
-            expected_missing = sorted(set(row["dependencies"]) - LOCAL_SEMANTIC_SKILLS)
-            self.assertEqual(expected_missing, row["dependency_blockers"]["direct_missing_semantic_handlers"])
+            self.assertEqual([], row["dependency_blockers"]["direct_missing_semantic_handlers"])
             for dependency in row["dependencies"]:
                 self.assertLess(order[dependency], order[name])
                 self.assertLess(self.rows[dependency]["dependency_stage"], row["dependency_stage"])
-                for missing in self.rows[dependency]["dependency_blockers"]["transitive_missing_semantic_handlers"]:
-                    self.assertIn(missing, row["dependency_blockers"]["transitive_missing_semantic_handlers"])
+                self.assertEqual(
+                    [],
+                    row["dependency_blockers"]["transitive_missing_semantic_handlers"],
+                )
 
     def test_report_and_markdown_are_deterministic_and_keep_boundaries(self) -> None:
         again = build_readiness(self.catalog)
@@ -176,8 +182,8 @@ class FoundryReadinessTests(unittest.TestCase):
         with self.assertRaisesRegex(ReadinessValidationError, "callable identity"):
             build_readiness(self.catalog, semantic_bindings=handlers)
 
-    def test_catalog_cannot_promote_prepare_only_or_hide_local_binding(self) -> None:
-        for original, promoted in (("PREPARE_ONLY", "LOCAL"), ("LOCAL", "PREPARE_ONLY")):
+    def test_catalog_cannot_swap_native_or_local_binding(self) -> None:
+        for original, promoted in (("NATIVE", "LOCAL"), ("LOCAL", "NATIVE")):
             altered = deepcopy(self.catalog)
             row = next(row for row in altered["atomic_skills"] if row["capability_state"] == original)
             row["capability_state"] = promoted

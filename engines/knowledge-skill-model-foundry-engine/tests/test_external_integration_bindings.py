@@ -70,6 +70,8 @@ class ExternalIntegrationBindingTests(unittest.TestCase):
                 binding.metadata["skill_source_sha256"],
                 records[name]["source_sha256"],
             )
+            self.assertEqual(binding.metadata["semantic_handler_binding"], f"native.{name}")
+            self.assertTrue(binding.metadata["semantic_program_digest"].startswith("sha256:"))
 
     def test_non_local_route_cannot_run_without_host_broker(self) -> None:
         name = "a2a-agent-discovery-messaging"
@@ -166,6 +168,7 @@ class ExternalIntegrationBindingTests(unittest.TestCase):
         self.assertEqual(skill_request.skill_name, skill_name)
         self.assertEqual(skill_request.adapter_id, f"external.{skill_name}")
         self.assertEqual(skill_request.broker_id, broker.broker_id)
+        self.assertIsNotNone(skill_request.semantic_program_digest)
         self.assertEqual(skill_request.allowed_tools, tuple(sorted(skill_record["allowed_tools"])))
 
         pipeline_name = "knowledge-to-skill"
@@ -183,6 +186,7 @@ class ExternalIntegrationBindingTests(unittest.TestCase):
         self.assertEqual(pipeline_request.skill_name, pipeline_name)
         self.assertEqual(pipeline_request.adapter_id, f"pipeline.{pipeline_name}")
         self.assertEqual(pipeline_request.broker_id, broker.broker_id)
+        self.assertIsNone(pipeline_request.semantic_program_digest)
         self.assertEqual(pipeline_request.allowed_tools, tuple(sorted(profile.required_adapters)))
 
     def test_pipeline_executes_only_with_exact_permit_store_and_verified_receipt(self) -> None:

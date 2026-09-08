@@ -30,7 +30,7 @@
   },
   "capability_states": {
     "LOCAL": 66,
-    "PREPARE_ONLY": 1244
+    "NATIVE": 1244
   },
   "certification_status": "NOT_CERTIFIED",
   "counts": {
@@ -39,6 +39,7 @@
     "dependency_edges": 9090,
     "meta_activation_cases": 188,
     "meta_skills": 41,
+    "native_semantic_programs": 1244,
     "packs": 41,
     "pipeline_steps": 127,
     "pipelines": 14,

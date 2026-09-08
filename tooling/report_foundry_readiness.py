@@ -58,6 +58,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"Foundry inventory {'written' if args.write else 'verified'}: "
             f"{summary['atomic_skills']} exact Skills, "
             f"{summary['local_semantic_handlers']} bounded LOCAL, "
+            f"{summary['native_semantic_programs']} exact NATIVE, "
             f"{summary['prepare_only']} PREPARE_ONLY; NOT_CERTIFIED"
         )
         return 0
