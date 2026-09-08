@@ -1,45 +1,45 @@
 {
   "artifact_manifests": {
     "development": {
-      "bytes": 5794,
+      "bytes": 6141,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:5b013799a58d37e5e606cbb2914c878f7b2a7f37ef60595cafec2c72f5dbf268"
+      "sha256": "sha256:dc60b2dff38ac5b62ed4a37b268dca6729dc92f3062157a3031d7202b2ee0e55"
     },
     "holdout": {
-      "bytes": 5783,
+      "bytes": 6129,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:aef23ed48161f84173ea1c941d0c5388486870e229b1c24b7c1cc132867b750a"
+      "sha256": "sha256:7eae8a0c98b9bfc5e3d4b7b6d935d3c10fc26c3874b166793d7832f1b36373b1"
     },
     "real-repository": {
-      "bytes": 5808,
+      "bytes": 6155,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:fe8080745b4217fd4040e57f0dc3881a01d601a3ef1b06a0e4db5884bab69784"
+      "sha256": "sha256:c13ab66307f59049e7b5fc1b997b3790dd7b18306e2c763dc068e4f8a302d4b8"
     }
   },
   "artifact_refs": [
     {
-      "bytes": 5794,
+      "bytes": 6141,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:5b013799a58d37e5e606cbb2914c878f7b2a7f37ef60595cafec2c72f5dbf268"
+      "sha256": "sha256:dc60b2dff38ac5b62ed4a37b268dca6729dc92f3062157a3031d7202b2ee0e55"
     },
     {
-      "bytes": 5783,
+      "bytes": 6129,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:aef23ed48161f84173ea1c941d0c5388486870e229b1c24b7c1cc132867b750a"
+      "sha256": "sha256:7eae8a0c98b9bfc5e3d4b7b6d935d3c10fc26c3874b166793d7832f1b36373b1"
     },
     {
-      "bytes": 5808,
+      "bytes": 6155,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:fe8080745b4217fd4040e57f0dc3881a01d601a3ef1b06a0e4db5884bab69784"
+      "sha256": "sha256:c13ab66307f59049e7b5fc1b997b3790dd7b18306e2c763dc068e4f8a302d4b8"
     }
   ],
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
-  "execution_status": "NOT_RUN",
+  "execution_status": "PASSED_LOCAL",
   "formal_equivalence": {
-    "bytes": 65567,
+    "bytes": 304878,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:ceb63914aee910c5846975edde8bb376de62df8582e53a96ae034b2d1883c353"
+    "sha256": "sha256:bb5c46493feeab0c758ed1a07baac010e864b4d8e32f8f481c29fa17aa925465"
   },
   "metrics": {
     "build_green_rate": 1.0,
