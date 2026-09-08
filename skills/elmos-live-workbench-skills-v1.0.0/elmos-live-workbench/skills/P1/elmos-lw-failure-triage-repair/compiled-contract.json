@@ -1,0 +1,32 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-24",
+  "name": "elmos-lw-failure-triage-repair",
+  "priority": "P1",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-debug-learning-copilot",
+  "dependencies": [
+    "elmos-lw-acceptance-fixtures"
+  ],
+  "contract_refs": [
+    "contracts/qualification-report.schema.json"
+  ],
+  "output_artifacts": [
+    "failure-classification.json",
+    "repair-plan.json",
+    "repair-evidence.json"
+  ],
+  "acceptance_cases": [
+    "LW-24-AC-01",
+    "LW-24-AC-02",
+    "LW-24-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

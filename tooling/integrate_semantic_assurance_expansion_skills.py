@@ -96,7 +96,7 @@ COLLISION_ALIASES = MappingProxyType(
 PROTECTED_OWNER_TREE_SHA256 = MappingProxyType(
     {
         "elmos-proof-obligation-generator": (
-            "fbb9ae318641a0a4c6eb6dc89be0adfd2be280252eee51bb663ec1d9284d9865"
+            "2d9af22b82568341a8ce1c713464f1dfebce8f0988b0bc16ad608eeab8859370"
         ),
         "elmos-proof-cache-invalidation": (
             "458bcc73170a94bc0a9d2a3c44cc9df06d0f1694aa6a9693817af83e0f0d0f61"

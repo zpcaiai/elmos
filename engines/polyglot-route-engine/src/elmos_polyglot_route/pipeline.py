@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from .assembly import (
+    _UNIT_ID_PATTERN,
     assemble_project,
     verify_archived_assembly_closure,
     verify_assembled_project,
@@ -47,7 +48,12 @@ from .models import (
     Language,
     RouteError,
 )
-from .project_graph import build_project_graph, verify_project_graph
+from .project_graph import (
+    capture_project_snapshot,
+    materialize_project_graph,
+    verify_project_graph,
+    verify_project_snapshot,
+)
 from .repository import plan_repository
 from .safe_io import atomic_output_file, atomic_write_bytes, stable_file_digest, stable_read_bytes
 
@@ -198,8 +204,10 @@ def _cases_manifest(cases: Path, plan: dict[str, Any]) -> tuple[dict[str, Any], 
     inventory.sort(key=lambda item: str(item["path"]))
     by_path = {str(item["path"]): item for item in inventory}
     expected: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     for unit in plan.get("work_units", []):
         unit_id = str(unit.get("id", ""))
+        seen_ids.add(unit_id)
         relative = f"{unit_id}.json"
         entry = by_path.get(relative)
         expected.append(
@@ -211,6 +219,21 @@ def _cases_manifest(cases: Path, plan: dict[str, Any]) -> tuple[dict[str, Any], 
                 "sha256": entry["sha256"] if entry else None,
             }
         )
+    for item in inventory:
+        relative = str(item["path"])
+        if relative.endswith(".json") and "/" not in relative:
+            unit_id = relative[:-5]
+            if unit_id not in seen_ids and _UNIT_ID_PATTERN.fullmatch(unit_id):
+                seen_ids.add(unit_id)
+                expected.append(
+                    {
+                        "work_unit_id": unit_id,
+                        "path": relative,
+                        "status": "PRESENT",
+                        "bytes": item["bytes"],
+                        "sha256": item["sha256"],
+                    }
+                )
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "kind": "elmos.behavior-cases-manifest",
@@ -974,7 +997,8 @@ def _run_repository_pipeline_attempt(
     if cases_directory.is_symlink() or not cases.is_dir():
         raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
 
-    invocation_graph = build_project_graph(root, repository_ref)
+    source_snapshot = capture_project_snapshot(root)
+    invocation_graph = materialize_project_graph(source_snapshot, repository_ref)
     invocation_snapshot = _neutral_project_snapshot(invocation_graph)
 
     plan = plan_repository(root, repository_ref, source_language, target_language)
@@ -996,8 +1020,11 @@ def _run_repository_pipeline_attempt(
             discovery_incident = str(error)[:2_000]
             discovery = inventory_repository_incident(plan, root, discovery_incident)
         if discovery_incident is None:
-            project_graph = build_project_graph(root, repository_ref, discovery)
-            if _neutral_project_snapshot(project_graph) != invocation_snapshot:
+            project_graph = materialize_project_graph(source_snapshot, repository_ref, discovery)
+            if (
+                not verify_project_snapshot(source_snapshot)
+                or _neutral_project_snapshot(project_graph) != invocation_snapshot
+            ):
                 raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
         else:
             # An incident discovery carries no compiler receipt, so it cannot
@@ -1007,7 +1034,6 @@ def _run_repository_pipeline_attempt(
     else:
         project_graph = invocation_graph
 
-    initial_graph_summary = _project_graph_summary(project_graph)
     _bind_project_graph_to_plan(project_graph, plan)
     _write_json(output / "repository-route-plan.json", plan)
     _write_json(output / CASES_MANIFEST_NAME, cases_manifest)
@@ -1092,15 +1118,7 @@ def _run_repository_pipeline_attempt(
                 raise RouteError("PIPELINE_STAGING_DIRECTORY_INVALID")
             shutil.rmtree(assembly_staging)
 
-    replayed_graph = build_project_graph(
-        root,
-        repository_ref,
-        discovery if source_language == "react" and discovery_incident is None else None,
-    )
-    if _neutral_project_snapshot(replayed_graph) != invocation_snapshot:
-        _discard_staging()
-        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
-    if _project_graph_summary(replayed_graph) != initial_graph_summary:
+    if not verify_project_snapshot(source_snapshot):
         _discard_staging()
         raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
 
@@ -1118,9 +1136,10 @@ def _run_repository_pipeline_attempt(
             require_runtime_passed=runtime_status == "PASSED",
         )
 
-    semantic_graph = build_project_graph(root, repository_ref, discovery)
+    semantic_graph = materialize_project_graph(source_snapshot, repository_ref, discovery)
     if (
-        _neutral_project_snapshot(semantic_graph) != invocation_snapshot
+        not verify_project_snapshot(source_snapshot)
+        or _neutral_project_snapshot(semantic_graph) != invocation_snapshot
         or semantic_graph.get("snapshot_sha256") != project_graph.get("snapshot_sha256")
     ):
         raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")

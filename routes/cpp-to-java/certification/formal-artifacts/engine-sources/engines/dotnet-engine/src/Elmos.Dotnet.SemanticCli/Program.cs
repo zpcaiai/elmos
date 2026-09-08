@@ -171,12 +171,20 @@ if (inventoryMode)
     Console.WriteLine(JsonSerializer.Serialize(inventory));
     return 0;
 }
-var functions = root.DescendantNodes()
-    .OfType<MethodDeclarationSyntax>()
-    .Where(item => item.Identifier.ValueText == functionName)
-    .Select(SemanticMapper.Function)
-    .ToList();
-if (functions.Count == 0) diagnostics.Add($"FUNCTION_NOT_FOUND:{functionName}");
+List<Dictionary<string, object?>> functions = new();
+try
+{
+    functions = root.DescendantNodes()
+        .OfType<MethodDeclarationSyntax>()
+        .Where(item => item.Identifier.ValueText == functionName)
+        .Select(SemanticMapper.Function)
+        .ToList();
+    if (functions.Count == 0) diagnostics.Add($"FUNCTION_NOT_FOUND:{functionName}");
+}
+catch (Exception ex)
+{
+    diagnostics.Add(ex.Message);
+}
 
 var output = new Dictionary<string, object?>
 {
@@ -196,6 +204,12 @@ internal static class SemanticMapper
     internal static Dictionary<string, object?> Function(MethodDeclarationSyntax method)
     {
         if (method.Body is null) throw new InvalidOperationException("CSHARP_BLOCK_BODY_REQUIRED");
+        var paramNames = method.ParameterList.Parameters.Select(p => p.Identifier.ValueText).ToHashSet();
+        var scopeVars = new Dictionary<string, string>();
+        foreach (var p in method.ParameterList.Parameters)
+        {
+            scopeVars[p.Identifier.ValueText] = Type(p.Type?.ToString() ?? "");
+        }
         return new()
         {
             ["name"] = method.Identifier.ValueText,
@@ -205,7 +219,7 @@ internal static class SemanticMapper
                 ["type"] = Type(parameter.Type?.ToString() ?? ""),
             }).ToList(),
             ["return_type"] = Type(method.ReturnType.ToString()),
-            ["body"] = Statements(method.Body.Statements),
+            ["body"] = Statements(method.Body.Statements, scopeVars, paramNames),
         };
     }
 
@@ -227,13 +241,163 @@ internal static class SemanticMapper
         _ => throw new InvalidOperationException($"CSHARP_UNSUPPORTED_TYPE:{sourceType}"),
     };
 
-    private static List<Dictionary<string, object?>> Statements(SyntaxList<StatementSyntax> statements)
+    private static List<Dictionary<string, object?>> Statements(
+        SyntaxList<StatementSyntax> statements,
+        Dictionary<string, string> scopeVars,
+        HashSet<string> paramNames)
     {
         var result = new List<Dictionary<string, object?>>();
         foreach (var statement in statements)
         {
             switch (statement)
             {
+                case LocalDeclarationStatementSyntax localDecl:
+                {
+                    if (localDecl.Declaration.Type.IsVar)
+                    {
+                        throw new InvalidOperationException("CSHARP_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    var declaredType = Type(localDecl.Declaration.Type.ToString());
+                    foreach (var variable in localDecl.Declaration.Variables)
+                    {
+                        if (variable.Initializer is null)
+                        {
+                            throw new InvalidOperationException("CSHARP_ANNOTATED_DECLARATION_WITHOUT_VALUE");
+                        }
+                        var varName = variable.Identifier.ValueText;
+                        var valExpr = Expression(variable.Initializer.Value);
+                        scopeVars[varName] = declaredType;
+                        result.Add(new()
+                        {
+                            ["kind"] = "let",
+                            ["name"] = varName,
+                            ["type"] = declaredType,
+                            ["expression"] = valExpr,
+                        });
+                    }
+                    break;
+                }
+                case ExpressionStatementSyntax exprStmt:
+                {
+                    var expr = exprStmt.Expression;
+                    if (expr is AssignmentExpressionSyntax assign)
+                    {
+                        if (assign.Left is not IdentifierNameSyntax id)
+                        {
+                            throw new InvalidOperationException("CSHARP_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        var targetName = id.Identifier.ValueText;
+                        if (paramNames.Contains(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{targetName}");
+                        }
+                        if (!scopeVars.ContainsKey(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_ASSIGNMENT_TARGET_NOT_DECLARED:{targetName}");
+                        }
+                        if (assign.Kind() == SyntaxKind.SimpleAssignmentExpression)
+                        {
+                            result.Add(new()
+                            {
+                                ["kind"] = "assign",
+                                ["name"] = targetName,
+                                ["expression"] = Expression(assign.Right),
+                            });
+                        }
+                        else
+                        {
+                            string op = assign.Kind() switch
+                            {
+                                SyntaxKind.AddAssignmentExpression => "+",
+                                SyntaxKind.SubtractAssignmentExpression => "-",
+                                SyntaxKind.MultiplyAssignmentExpression => "*",
+                                SyntaxKind.DivideAssignmentExpression => "/",
+                                SyntaxKind.ModuloAssignmentExpression => "%",
+                                _ => throw new InvalidOperationException($"CSHARP_UNSUPPORTED_OPERATOR:{assign.Kind()}"),
+                            };
+                            var binaryExpr = new Dictionary<string, object?>
+                            {
+                                ["kind"] = "binary",
+                                ["operator"] = op,
+                                ["left"] = new Dictionary<string, object?> { ["kind"] = "name", ["value"] = targetName },
+                                ["right"] = Expression(assign.Right),
+                            };
+                            result.Add(new()
+                            {
+                                ["kind"] = "assign",
+                                ["name"] = targetName,
+                                ["expression"] = binaryExpr,
+                            });
+                        }
+                    }
+                    else if (expr is PostfixUnaryExpressionSyntax postUnary &&
+                             (postUnary.Kind() is SyntaxKind.PostIncrementExpression or SyntaxKind.PostDecrementExpression))
+                    {
+                        if (postUnary.Operand is not IdentifierNameSyntax id)
+                        {
+                            throw new InvalidOperationException("CSHARP_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        var targetName = id.Identifier.ValueText;
+                        if (paramNames.Contains(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{targetName}");
+                        }
+                        if (!scopeVars.ContainsKey(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_ASSIGNMENT_TARGET_NOT_DECLARED:{targetName}");
+                        }
+                        string op = postUnary.Kind() == SyntaxKind.PostIncrementExpression ? "+" : "-";
+                        var binaryExpr = new Dictionary<string, object?>
+                        {
+                            ["kind"] = "binary",
+                            ["operator"] = op,
+                            ["left"] = new Dictionary<string, object?> { ["kind"] = "name", ["value"] = targetName },
+                            ["right"] = new Dictionary<string, object?> { ["kind"] = "literal", ["value"] = 1L },
+                        };
+                        result.Add(new()
+                        {
+                            ["kind"] = "assign",
+                            ["name"] = targetName,
+                            ["expression"] = binaryExpr,
+                        });
+                    }
+                    else if (expr is PrefixUnaryExpressionSyntax preUnary &&
+                             (preUnary.Kind() is SyntaxKind.PreIncrementExpression or SyntaxKind.PreDecrementExpression))
+                    {
+                        if (preUnary.Operand is not IdentifierNameSyntax id)
+                        {
+                            throw new InvalidOperationException("CSHARP_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        var targetName = id.Identifier.ValueText;
+                        if (paramNames.Contains(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{targetName}");
+                        }
+                        if (!scopeVars.ContainsKey(targetName))
+                        {
+                            throw new InvalidOperationException($"CSHARP_ASSIGNMENT_TARGET_NOT_DECLARED:{targetName}");
+                        }
+                        string op = preUnary.Kind() == SyntaxKind.PreIncrementExpression ? "+" : "-";
+                        var binaryExpr = new Dictionary<string, object?>
+                        {
+                            ["kind"] = "binary",
+                            ["operator"] = op,
+                            ["left"] = new Dictionary<string, object?> { ["kind"] = "name", ["value"] = targetName },
+                            ["right"] = new Dictionary<string, object?> { ["kind"] = "literal", ["value"] = 1L },
+                        };
+                        result.Add(new()
+                        {
+                            ["kind"] = "assign",
+                            ["name"] = targetName,
+                            ["expression"] = binaryExpr,
+                        });
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"CSHARP_UNSUPPORTED_STATEMENT:{expr.Kind()}");
+                    }
+                    break;
+                }
                 case ReturnStatementSyntax returning when returning.Expression is not null:
                     result.Add(new()
                     {
@@ -246,12 +410,113 @@ internal static class SemanticMapper
                     {
                         ["kind"] = "if",
                         ["condition"] = Expression(conditional.Condition),
-                        ["then"] = StatementBody(conditional.Statement),
+                        ["then"] = StatementBody(conditional.Statement, new Dictionary<string, string>(scopeVars), paramNames),
                         ["else"] = conditional.Else is null
                             ? new List<Dictionary<string, object?>>()
-                            : StatementBody(conditional.Else.Statement),
+                            : StatementBody(conditional.Else.Statement, new Dictionary<string, string>(scopeVars), paramNames),
                     });
                     break;
+                case WhileStatementSyntax whileLoop:
+                    result.Add(new()
+                    {
+                        ["kind"] = "while",
+                        ["condition"] = Expression(whileLoop.Condition),
+                        ["body"] = StatementBody(whileLoop.Statement, new Dictionary<string, string>(scopeVars), paramNames),
+                    });
+                    break;
+                case ForStatementSyntax forLoop:
+                {
+                    if (forLoop.Declaration is null || forLoop.Declaration.Variables.Count != 1)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    var initVar = forLoop.Declaration.Variables[0];
+                    if (initVar.Initializer is null)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    if (forLoop.Declaration.Type.IsVar)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    var initType = Type(forLoop.Declaration.Type.ToString());
+                    if (initType != "integer")
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    var varName = initVar.Identifier.ValueText;
+                    var start = Expression(initVar.Initializer.Value);
+
+                    if (forLoop.Condition is not BinaryExpressionSyntax binCond || binCond.Kind() != SyntaxKind.LessThanExpression)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_CONDITION_NON_MONOTONIC");
+                    }
+                    if (binCond.Left is not IdentifierNameSyntax leftId || leftId.Identifier.ValueText != varName)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_CONDITION_NON_MONOTONIC");
+                    }
+                    var end = Expression(binCond.Right);
+
+                    if (forLoop.Incrementors.Count != 1)
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_UPDATE_NON_MONOTONIC");
+                    }
+                    var incExpr = forLoop.Incrementors[0];
+                    Dictionary<string, object?>? step = null;
+                    if (incExpr is PostfixUnaryExpressionSyntax postInc && postInc.Kind() == SyntaxKind.PostIncrementExpression)
+                    {
+                        if (postInc.Operand is not IdentifierNameSyntax id || id.Identifier.ValueText != varName)
+                        {
+                            throw new InvalidOperationException("CSHARP_FOR_UPDATE_NON_MONOTONIC");
+                        }
+                    }
+                    else if (incExpr is PrefixUnaryExpressionSyntax preInc && preInc.Kind() == SyntaxKind.PreIncrementExpression)
+                    {
+                        if (preInc.Operand is not IdentifierNameSyntax id || id.Identifier.ValueText != varName)
+                        {
+                            throw new InvalidOperationException("CSHARP_FOR_UPDATE_NON_MONOTONIC");
+                        }
+                    }
+                    else if (incExpr is AssignmentExpressionSyntax compAssign && compAssign.Kind() == SyntaxKind.AddAssignmentExpression)
+                    {
+                        if (compAssign.Left is not IdentifierNameSyntax id || id.Identifier.ValueText != varName)
+                        {
+                            throw new InvalidOperationException("CSHARP_FOR_UPDATE_NON_MONOTONIC");
+                        }
+                        step = Expression(compAssign.Right);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("CSHARP_FOR_UPDATE_NON_MONOTONIC");
+                    }
+
+                    var loopScope = new Dictionary<string, string>(scopeVars) { [varName] = "integer" };
+                    var body = StatementBody(forLoop.Statement, loopScope, paramNames);
+
+                    var item = new Dictionary<string, object?>
+                    {
+                        ["kind"] = "for",
+                        ["name"] = varName,
+                        ["type"] = "integer",
+                        ["start"] = start,
+                        ["end"] = end,
+                        ["body"] = body,
+                    };
+                    if (step != null)
+                    {
+                        item["step"] = step;
+                    }
+                    result.Add(item);
+                    break;
+                }
+                case BreakStatementSyntax:
+                    result.Add(new() { ["kind"] = "break" });
+                    break;
+                case ContinueStatementSyntax:
+                    result.Add(new() { ["kind"] = "continue" });
+                    break;
+                case DoStatementSyntax:
+                    throw new InvalidOperationException("CSHARP_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET");
                 default:
                     throw new InvalidOperationException($"CSHARP_UNSUPPORTED_STATEMENT:{statement.Kind()}");
             }
@@ -259,10 +524,13 @@ internal static class SemanticMapper
         return result;
     }
 
-    private static List<Dictionary<string, object?>> StatementBody(StatementSyntax statement) =>
+    private static List<Dictionary<string, object?>> StatementBody(
+        StatementSyntax statement,
+        Dictionary<string, string> scopeVars,
+        HashSet<string> paramNames) =>
         statement is BlockSyntax block
-            ? Statements(block.Statements)
-            : Statements(SyntaxFactory.SingletonList(statement));
+            ? Statements(block.Statements, scopeVars, paramNames)
+            : Statements(SyntaxFactory.SingletonList(statement), scopeVars, paramNames);
 
     private static Dictionary<string, object?> Expression(ExpressionSyntax expression)
     {
@@ -275,6 +543,15 @@ internal static class SemanticMapper
         {
             return new() { ["kind"] = "literal", ["value"] = literal.Token.Value };
         }
+        if (expression is PrefixUnaryExpressionSyntax unaryMinus && unaryMinus.Kind() == SyntaxKind.UnaryMinusExpression)
+        {
+            if (unaryMinus.Operand is LiteralExpressionSyntax numLit)
+            {
+                if (numLit.Token.Value is int i) return new() { ["kind"] = "literal", ["value"] = -(long)i };
+                if (numLit.Token.Value is long l) return new() { ["kind"] = "literal", ["value"] = -l };
+                if (numLit.Token.Value is double d) return new() { ["kind"] = "literal", ["value"] = -d };
+            }
+        }
         if (expression is BinaryExpressionSyntax binary)
         {
             return new()
@@ -284,6 +561,26 @@ internal static class SemanticMapper
                 ["left"] = Expression(binary.Left),
                 ["right"] = Expression(binary.Right),
             };
+        }
+        if (expression is CheckedExpressionSyntax checkedExpression)
+        {
+            return Expression(checkedExpression.Expression);
+        }
+        if (expression is InvocationExpressionSyntax invocation)
+        {
+            if (invocation.Expression is IdentifierNameSyntax callIdent)
+            {
+                return new()
+                {
+                    ["kind"] = "call",
+                    ["function"] = callIdent.Identifier.ValueText,
+                    ["arguments"] = invocation.ArgumentList.Arguments.Select(a => Expression(a.Expression)).ToList(),
+                };
+            }
+            if (invocation.Expression.ToString() == "Migrated.ElmosNonZero" && invocation.ArgumentList.Arguments.Count == 1)
+            {
+                return Expression(invocation.ArgumentList.Arguments[0].Expression);
+            }
         }
         throw new InvalidOperationException($"CSHARP_UNSUPPORTED_EXPRESSION:{expression.Kind()}");
     }

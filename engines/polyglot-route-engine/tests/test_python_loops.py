@@ -10,10 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from elmos_polyglot_route import types
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.models import RouteError
-from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.python_analyzer import analyze_python
 
 

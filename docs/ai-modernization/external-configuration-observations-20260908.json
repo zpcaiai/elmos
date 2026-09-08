@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-08T10:05:28Z",
+  "observation_class": "READ_ONLY_CONFIGURATION_INVENTORY_SELF_ATTESTED",
+  "vercel_project": "elmos",
+  "configured_integrations": ["descope-user-auth", "neon-elmos"],
+  "required_ai_bindings": {
+    "elasticsearch": "NOT_CONFIGURED",
+    "dify": "NOT_CONFIGURED",
+    "otel_collector": "NOT_CONFIGURED",
+    "multimodal_ocr": "NOT_CONFIGURED",
+    "multimodal_asr": "NOT_CONFIGURED",
+    "multimodal_vision": "NOT_CONFIGURED",
+    "representative_workload": "NOT_CONFIGURED",
+    "production_deployment": "NOT_CONFIGURED",
+    "independent_verifier": "NOT_CONFIGURED"
+  },
+  "secret_values_recorded": false,
+  "external_execution": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}

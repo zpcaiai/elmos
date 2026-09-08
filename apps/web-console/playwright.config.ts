@@ -5,6 +5,7 @@ import {
   createPrivateKey,
   generateKeyPairSync,
   randomBytes,
+  scryptSync,
   X509Certificate,
 } from "node:crypto";
 import {
@@ -17,7 +18,7 @@ import {
   realpathSync,
   writeFileSync,
 } from "node:fs";
-import { homedir, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 process.env.NO_PROXY = "127.0.0.1,localhost";
@@ -28,6 +29,13 @@ const repositoryRoot = path.resolve(__dirname, "../..");
 const translationSourceFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
 const translationCasesFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
 const runnerToken = "elmos-e2e-local-token-32-characters";
+const temporaryAdminPassword = "elmos-e2e-temporary-admin-password";
+const temporaryAdminPasswordSalt = randomBytes(16).toString("hex");
+const temporaryAdminPasswordHash = scryptSync(
+  temporaryAdminPassword,
+  Buffer.from(temporaryAdminPasswordSalt, "hex"),
+  64,
+).toString("hex");
 
 function resolveExecutableOnPath(name: string): string | null {
   for (const directory of (process.env.PATH ?? "").split(path.delimiter)) {
@@ -294,7 +302,17 @@ if (!existsSync(frtPrivateKeyPath) || !existsSync(frtTrustStorePath)) {
 }
 const outputDir = process.env.ELMOS_E2E_OUTPUT_DIR ?? "./test-results/playwright";
 const reportDir = process.env.ELMOS_E2E_REPORT_DIR ?? "./test-results/playwright-report";
-const nextDistDir = `.next-e2e-${webPort}`;
+// A port is not an ownership token: separate Playwright coordinators can use
+// the same repository and dist directory at different times while one server
+// is still shutting down.  Give every coordinator an isolated Next cache and
+// export it before workers evaluate this config, just like the fixture root.
+const inheritedNextDistDir = process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR_NAME?.trim();
+const nextDistDir = inheritedNextDistDir
+  ?? `.next-e2e-${webPort}-${randomBytes(8).toString("hex")}`;
+if (!/^\.next-e2e-\d{4,5}-[0-9a-f]{16}$/.test(nextDistDir)) {
+  throw new Error("ELMOS_E2E_DIST_DIR_INVALID");
+}
+process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR_NAME = nextDistDir;
 const baseURL = productionOidcEnabled
   ? `https://127.0.0.1:${webPort}`
   : `http://127.0.0.1:${webPort}`;
@@ -424,6 +442,9 @@ export default defineConfig({
           ELMOS_LOCAL_CREDENTIALS_PASSWORD: "test",
           ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID: "local-e2e",
           ELMOS_LOCAL_CREDENTIALS_STORE_PATH: path.join(runnerRoot, "local-accounts.json"),
+          ELMOS_TEMP_ADMIN_ENABLED: "true",
+          ELMOS_TEMP_ADMIN_PASSWORD_SALT: temporaryAdminPasswordSalt,
+          ELMOS_TEMP_ADMIN_PASSWORD_HASH: temporaryAdminPasswordHash,
           ELMOS_SESSION_SECRET: "elmos-local-e2e-session-secret-at-least-32-characters",
           ELMOS_PUBLIC_ORIGIN: baseURL,
         } : {}),
@@ -433,7 +454,14 @@ export default defineConfig({
         ELMOS_TRANSLATION_CASES_ROOT: translationCasesRoot,
         ELMOS_UV_PATH: canonicalUvPath,
         ELMOS_PROJECT_SYNTHESIS_UV_CACHE: process.env.ELMOS_PROJECT_SYNTHESIS_UV_CACHE
-          ?? path.join(homedir(), ".cache", "uv"),
+          ?? path.join(runnerRoot, "dependency-cache", "uv"),
+        // Generated Python projects type-check their typed FastAPI/Pydantic
+        // dependency graph on a cold cache. Keep the command bounded, while
+        // allowing representative browser qualification to finish on a busy
+        // development host instead of inheriting the engine's 300-second
+        // production default.
+        ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS:
+          process.env.ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS ?? "600",
         ELMOS_LOCAL_RUNNER_EXECUTOR: "HOST_DEVELOPMENT",
         ELMOS_LOCAL_RUNNER_AUTH_TOKEN: runnerToken,
         ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT: new Date(

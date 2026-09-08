@@ -12,10 +12,15 @@ dialects is independent, giving 12 supported translation routes.
 The scanner also includes the 13 exact ChinaDB commercial target identities:
 DM8, KingbaseES, openGauss, TiDB, GBase 8s/8c/8a, HighGo/HGDB, OceanBase
 Oracle/MySQL modes, GaussDB Oracle/M modes, and GoldenDB. They are represented
-as `SPEC_ONLY` provider targets with 78 planned source-family routes. A
-compatibility label is not treated as a verified dialect alias, so no target
-SQL is emitted for these targets until an exact versioned adapter, target
-parser, and independent evidence are present.
+as `LOCAL_ADAPTER` provider targets with 78 planned source-family routes.
+A compatibility label is never treated as a silent dialect alias. Scan still
+records `automaticTargetEmissions: 0`. Local DDL emission is available only
+through `elmos-sql-dialect translate --chinadb-target … --compatibility-mode …`,
+which maps the named mode onto the existing postgres / mysql / oracle emitters
+and returns `LOCAL_EMITTED`. That path is not native ChinaDB DDL, live
+execution, result equivalence, or certification: `externalExecution` stays
+`NOT_RUN` and `certification` stays `NOT_CERTIFIED`. Query emission for the
+commercial ChinaDB package continues to live in `sql-transpiler`.
 
 ## What the 100% measurement means here
 

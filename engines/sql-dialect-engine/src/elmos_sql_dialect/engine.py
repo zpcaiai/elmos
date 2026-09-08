@@ -121,8 +121,8 @@ def translate_ddl(
         "DO",
     ):
         raise RouteError(
-            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, UPDATE, "
-            "DELETE, TRUNCATE, ALTER, DROP, "
+            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, UPDATE, DELETE, "
+            "TRUNCATE, ALTER, DROP, "
             "SCHEMA, RLS, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
         )
     profile = {

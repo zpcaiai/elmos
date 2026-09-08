@@ -4,6 +4,7 @@ import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -108,7 +109,10 @@ export function authenticateSpringProxy(
   request: NextRequest,
 ): SpringActorContext | Response {
   const configuration = springProxyConfiguration();
-  if (unsafeCookieValue(request, accountCookieNames.session)) {
+  if (
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session)
+  ) {
     try {
       const account = accountSessionFromRequest(request, "spring:execute");
       if (
@@ -207,7 +211,7 @@ export function proxyNotConfiguredResponse() {
   return Response.json(
     {
       errorCode: "SPRING_UPGRADE_PROXY_NOT_CONFIGURED",
-      message: "Spring 迁移代理尚未绑定可信的单租户组织与 Java Engine；未执行任何客户代码。",
+      message: "Spring 迁移代理尚未绑定可信的多租户身份边界、服务认证与 Java Engine；未执行任何客户代码。",
       retryable: false,
     },
     { status: 503, headers: { "cache-control": "no-store" } },

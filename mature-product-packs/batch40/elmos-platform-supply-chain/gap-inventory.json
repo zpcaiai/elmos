@@ -23,7 +23,7 @@
   ],
   "skillCount": 24,
   "blockingCount": 24,
-  "openCount": 28,
+  "openCount": 27,
   "certifiable": false,
   "gaps": [
     {
@@ -280,11 +280,6 @@
       "category": "evidence",
       "severity": "open",
       "detail": "claim b40-credential-scan-triage is INCONCLUSIVE"
-    },
-    {
-      "category": "evidence",
-      "severity": "open",
-      "detail": "claim b40-dependabot-alert-status is FAIL"
     }
   ]
 }

@@ -53,6 +53,7 @@ from .identifier_hygiene import (
     validate_identifier_plan,
 )
 from .models import (
+    DEPRECATED_DIRECTED_PAIRS,
     REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
     REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     REPOSITORY_SURFACE_LANGUAGES,
@@ -90,7 +91,7 @@ from .native import (
 )
 from .repository import javascript_esm_descriptor
 from .source_analyzer import analyze, inventory_module
-from .toolchains import exact_toolchain
+from .toolchains import apple_route_host_profile, exact_toolchain
 from .validation import safe_output, validate, validate_source
 
 
@@ -228,7 +229,7 @@ def _javascript_descriptor_input(source: Path) -> tuple[dict[str, Any], bytes] |
     return (
         {
             "observed_origin_path": str(descriptor_path),
-            "logical_path": Path(os.path.relpath(descriptor_path, source.parent)).as_posix(),
+            "logical_path": Path(os.path.relpath(descriptor_path, source.resolve().parent)).as_posix(),
             "sha256": _digest(content),
             "bytes": len(content),
             "type": "module",
@@ -930,7 +931,10 @@ def verify_pure_module(
 
     source_language = source_ir.source_language
     target_language = target_ir.source_language
-    if not is_routed_pair(source_language, target_language):
+    if (
+        not is_routed_pair(source_language, target_language)
+        and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS
+    ):
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     validate_identifier_plan(source_ir, identifier_plan)
     observed_normalized_target = alpha_normalize_target(source_ir, raw_target_ir, identifier_plan)
@@ -1388,6 +1392,7 @@ def _verify_inventory_analyzer_build_receipt(
         "canonical_identity",
     }:
         raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    selected_host = apple_route_host_profile("swift")
     if receipt.get("schema_version") != "1.0.0" or receipt.get("kind") != "elmos.swift-analyzer-build-receipt":
         raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
 
@@ -1519,7 +1524,7 @@ def _verify_inventory_analyzer_build_receipt(
         or not isinstance(git, dict)
         or set(git) != {"path", "sha256", "version"}
         or git.get("path") != "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
-        or git.get("sha256") != "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+        or git.get("sha256") != "sha256:" + selected_host.apple_git_sha256
         or git.get("version") != "git version 2.50.1 (Apple Git-155)"
         or not isinstance(cache, dict)
         or set(cache)
@@ -1654,18 +1659,18 @@ def _verify_inventory_analyzer_build_receipt(
         "scope": "swift-build-process-tree",
         "sandbox": {
             "path": "/usr/bin/sandbox-exec",
-            "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
-            "bytes": 102_368,
+            "sha256": "sha256:" + selected_host.sandbox_exec_sha256,
+            "bytes": selected_host.sandbox_exec_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
             "nlink": 1,
-            "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+            "cdhash_full": selected_host.sandbox_exec_cdhash_full,
         },
         "verifier": {
             "path": "/usr/bin/codesign",
-            "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
-            "bytes": 458_576,
+            "sha256": "sha256:" + selected_host.codesign_sha256,
+            "bytes": selected_host.codesign_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
@@ -3020,7 +3025,10 @@ def migrate_module(
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    if (
+        not is_routed_pair(source_language, target_language)
+        and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS
+    ):
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     resolved_source = source.resolve()
     resolved_manifest = manifest_path.resolve()
@@ -3085,7 +3093,10 @@ def _migrate_module_snapshot(
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    if (
+        not is_routed_pair(source_language, target_language)
+        and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS
+    ):
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     source = source.resolve()
     manifest_path = manifest_path.resolve()

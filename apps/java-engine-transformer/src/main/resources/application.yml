@@ -30,4 +30,5 @@ elmos:
     allowed-git-hosts: ${ELMOS_ALLOWED_GIT_HOSTS:github.com}
     one-time-secret: ${ELMOS_TRANSFORMER_HMAC_SECRET_VALUE:}
     auth-window-seconds: ${ELMOS_TRANSFORMER_AUTH_WINDOW_SECONDS:90}
+    replay-root: ${ELMOS_TRANSFORMER_REPLAY_ROOT:/workspace/run/.auth-replay}
     experimental-routes-enabled: ${ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED:false}

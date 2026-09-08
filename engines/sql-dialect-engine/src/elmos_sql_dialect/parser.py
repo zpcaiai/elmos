@@ -755,9 +755,12 @@ def _parse_type(
             return CanonicalTypeRef(canonical_type=CanonicalType.BOOLEAN)
 
     if sqlglot_type == DataType.Type.USERDEFINED:
-        user_defined_kind = data_type.args.get("kind")
-        type_name = str(user_defined_kind).upper() if user_defined_kind is not None else ""
-        if type_name == "UUID":
+        type_identifier = data_type.args.get("kind")
+        if (
+            isinstance(type_identifier, exp.Identifier)
+            and not type_identifier.args.get("quoted")
+            and str(type_identifier.this).upper() == "UUID"
+        ):
             return CanonicalTypeRef(canonical_type=CanonicalType.UUID)
 
     canonical = _TYPE_MAP.get(sqlglot_type)

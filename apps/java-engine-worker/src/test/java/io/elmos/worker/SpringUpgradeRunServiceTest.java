@@ -27,6 +27,8 @@ import static io.elmos.worker.SpringUpgradeModels.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpringUpgradeRunServiceTest {
+    private static final Duration ASYNC_STATE_TIMEOUT = Duration.ofMinutes(3);
+
     @TempDir Path workspace;
     private SpringUpgradeRunService service;
 
@@ -134,26 +136,41 @@ class SpringUpgradeRunServiceTest {
         assertEquals("PENDING_ROUTE_SELECTION", normalized.path("pack_key").asText());
     }
 
-    @Test void conflictingIdempotencyInputAndNonTerminalRetryAreRejected() {
+    @Test void conflictingIdempotencyInputAndNonTerminalRetryAreRejected() throws Exception {
+        CountDownLatch executionEntered = new CountDownLatch(1);
+        CountDownLatch executionReleased = new CountDownLatch(1);
         SpringUpgradeExecutionPort delayed = new SuccessfulTransformer() {
             @Override public ExecutionResult execute(StartRequest request, Path runRoot, Control control) {
+                executionEntered.countDown();
                 try {
-                    Thread.sleep(250);
+                    if (!executionReleased.await(
+                            ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS)) {
+                        throw new IllegalStateException("test execution release timed out");
+                    }
                 } catch (InterruptedException error) {
                     Thread.currentThread().interrupt();
+                    throw new IllegalStateException("test execution was interrupted", error);
                 }
                 return super.execute(request, runRoot, control);
             }
         };
         service = service(delayed, new PassingVerifier());
         RunView first = service.create("org-a", request("conflict-key"));
+        assertTrue(executionEntered.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
         StartRequest changed = new StartRequest("org-a", SourceMode.PUBLIC_GIT,
                 "https://github.com/example/other.git", "main", null, null, null,
                 false, "conflict-key");
-        assertThrows(SpringUpgradeRunService.IdempotencyConflict.class,
-                () -> service.create("org-a", changed));
-        assertThrows(SpringUpgradeRunService.Conflict.class,
-                () -> service.retry("org-a", first.runId(), "retry-key"));
+        try {
+            assertThrows(SpringUpgradeRunService.IdempotencyConflict.class,
+                    () -> service.create("org-a", changed));
+            assertThrows(SpringUpgradeRunService.Conflict.class,
+                    () -> service.retry("org-a", first.runId(), "retry-key"));
+        } finally {
+            executionReleased.countDown();
+        }
+        assertEquals(RunStatus.SUCCEEDED,
+                awaitTerminal(first.runId(), "org-a").status());
     }
 
     @Test void terminalFailureCanBeRetriedAsANewTraceableAttempt() {
@@ -228,14 +245,17 @@ class SpringUpgradeRunServiceTest {
         service = service(transformer, new PassingVerifier());
         StartRequest request = request("remote-cancel", true);
         RunView run = service.create("org-a", request);
-        assertTrue(transformer.startEntered.await(3, TimeUnit.SECONDS));
+        assertTrue(transformer.startEntered.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
 
         assertEquals(RunStatus.CANCELLED,
                 service.cancel("org-a", run.runId()).status());
-        assertTrue(transformer.stopped.await(3, TimeUnit.SECONDS));
+        assertTrue(transformer.stopped.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
         assertEquals(1, transformer.stopCalls.get());
         assertEquals(RunStatus.CANCELLED,
                 awaitTerminal(run.runId(), "org-a").status());
+        awaitLeaseReconciled(run.runId());
     }
 
     @Test void preDestroyStopsEveryRemoteHandleOnce() {
@@ -407,7 +427,7 @@ class SpringUpgradeRunServiceTest {
     }
 
     private RunView awaitTerminal(String runId, String organizationId) {
-        long deadline = System.nanoTime() + java.time.Duration.ofSeconds(3).toNanos();
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
         RunView current;
         do {
             current = service.get(organizationId, runId);
@@ -424,7 +444,7 @@ class SpringUpgradeRunServiceTest {
     }
 
     private RunView awaitRuntime(String runId, RuntimeStatus expected) {
-        long deadline = System.nanoTime() + java.time.Duration.ofSeconds(3).toNanos();
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
         do {
             RunView current = service.get("org-a", runId);
             if (current.runtimeStatus() == expected) return current;
@@ -436,6 +456,35 @@ class SpringUpgradeRunServiceTest {
             }
         } while (System.nanoTime() < deadline);
         return fail("runtime did not reach " + expected);
+    }
+
+    private void awaitLeaseReconciled(String runId) {
+        Path durableQueue = workspace.resolve(".durable-queue");
+        String tenantDigest = sha256Text("org-a");
+        Path receipt = durableQueue.resolve("receipts/spring-upgrade")
+                .resolve(tenantDigest).resolve(runId + ".properties");
+        Path lease = durableQueue.resolve("leases/spring-upgrade")
+                .resolve(tenantDigest).resolve(runId + ".properties");
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
+        do {
+            if (Files.isRegularFile(receipt) && !Files.exists(lease)) return;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                fail("test interrupted while awaiting durable lease reconciliation");
+            }
+        } while (System.nanoTime() < deadline);
+        fail("durable lease was not reconciled for " + runId);
+    }
+
+    private static String sha256Text(String value) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception error) {
+            throw new IllegalStateException("SHA-256 unavailable", error);
+        }
     }
 
     private static StartRequest request(String key) {

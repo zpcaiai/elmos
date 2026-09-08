@@ -1,0 +1,23 @@
+{
+  "skill_id": "LW-17",
+  "cases": [
+    {
+      "id": "LW-17-AC-01",
+      "expectation": "重复相同key不执行第二次，改参数复用key返回冲突。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-17-AC-02",
+      "expectation": "旧generation或stop_epoch命令被拒绝。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-17-AC-03",
+      "expectation": "权限撤销或600秒到期后任何控制请求失败。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    }
+  ]
+}

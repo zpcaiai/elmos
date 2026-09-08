@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/vb6-cross-host-campaign.schema.json",
+  "title": "ELMOS VB6 cross-host campaign artifacts",
+  "$defs": {
+    "routeKey": {
+      "type": "string",
+      "pattern": "^(?:vb6-to-(?:java|python|csharp|typescript|go|rust|cpp|objc|swift|php|kotlin|react|flutter)|(?:java|python|csharp|typescript|go|rust|cpp|objc|swift|php|kotlin|react|flutter)-to-vb6)$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "java", "python", "csharp", "typescript", "go", "rust", "cpp",
+        "objc", "swift", "php", "kotlin", "react", "flutter", "vb6"
+      ]
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "routeBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route_key", "path", "bytes", "sha256"],
+      "properties": {
+        "route_key": {"$ref": "#/$defs/routeKey"},
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "corpus": {
+      "type": "string",
+      "enum": ["development", "holdout", "real-repository"]
+    },
+    "notRun": {"const": "NOT_RUN"},
+    "notCertified": {"const": "NOT_CERTIFIED"},
+    "requestCorpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["corpus", "function_name", "local_role", "artifacts"],
+      "properties": {
+        "corpus": {"$ref": "#/$defs/corpus"},
+        "function_name": {"type": "string", "minLength": 1},
+        "local_role": {"type": "string", "enum": ["source", "target"]},
+        "artifacts": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/binding"}
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "kind", "route_key", "source_language",
+        "target_language", "corpora", "prepared_side_status",
+        "windows_vb6_side_status", "independent_verification_status",
+        "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-campaign-request"},
+        "route_key": {"$ref": "#/$defs/routeKey"},
+        "source_language": {"$ref": "#/$defs/language"},
+        "target_language": {"$ref": "#/$defs/language"},
+        "corpora": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/requestCorpus"}
+        },
+        "prepared_side_status": {"const": "PASSED_LOCAL"},
+        "windows_vb6_side_status": {"$ref": "#/$defs/notRun"},
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      }
+    },
+    "windowsRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["corpus", "status", "report", "artifact_count", "artifacts"],
+      "properties": {
+        "corpus": {"$ref": "#/$defs/corpus"},
+        "status": {"const": "PASSED_LOCAL"},
+        "report": {"$ref": "#/$defs/binding"},
+        "artifact_count": {"type": "integer", "minimum": 1},
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/binding"}
+        }
+      }
+    },
+    "windowsReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "kind", "route_key", "request_sha256", "runs",
+        "windows_vb6_side_status", "evidence_class",
+        "independent_verification_status", "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-windows-receipt"},
+        "route_key": {"$ref": "#/$defs/routeKey"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "runs": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/windowsRun"}
+        },
+        "windows_vb6_side_status": {"const": "PASSED_LOCAL"},
+        "evidence_class": {"const": "GOVERNED_EXTERNAL_SELF_ATTESTED"},
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["corpus", "status"],
+      "properties": {
+        "corpus": {"$ref": "#/$defs/corpus"},
+        "status": {"const": "MATCH"}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "kind", "route_key", "status", "comparisons",
+        "independent_verification_status", "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-verification"},
+        "route_key": {"$ref": "#/$defs/routeKey"},
+        "status": {"const": "PASSED_LOCAL_CROSS_HOST"},
+        "comparisons": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/comparison"}
+        },
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      }
+    },
+    "prepareSet": {
+      "type": "object",
+      "required": [
+        "schema_version", "kind", "route_count", "prepared", "reused",
+        "requests", "windows_vb6_side_status",
+        "independent_verification_status", "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-prepare-set-result"},
+        "route_count": {"const": 26},
+        "prepared": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "reused": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "requests": {
+          "type": "array", "minItems": 26, "maxItems": 26,
+          "items": {"$ref": "#/$defs/routeBinding"}
+        },
+        "windows_vb6_side_status": {"$ref": "#/$defs/notRun"},
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      },
+      "additionalProperties": false
+    },
+    "windowsSet": {
+      "type": "object",
+      "required": [
+        "schema_version", "kind", "route_count", "completed", "reused",
+        "receipts", "windows_vb6_side_status", "evidence_class",
+        "independent_verification_status", "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-windows-set-result"},
+        "route_count": {"const": 26},
+        "completed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "reused": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "receipts": {
+          "type": "array", "minItems": 26, "maxItems": 26,
+          "items": {"$ref": "#/$defs/routeBinding"}
+        },
+        "windows_vb6_side_status": {"const": "PASSED_LOCAL"},
+        "evidence_class": {"const": "GOVERNED_EXTERNAL_SELF_ATTESTED"},
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      },
+      "additionalProperties": false
+    },
+    "verificationSet": {
+      "type": "object",
+      "required": [
+        "schema_version", "kind", "route_count", "completed", "reused",
+        "results", "status", "independent_verification_status",
+        "certification_status"
+      ],
+      "properties": {
+        "schema_version": {"const": 1},
+        "kind": {"const": "elmos.vb6-cross-host-verification-set-result"},
+        "route_count": {"const": 26},
+        "completed": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "reused": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/routeKey"}},
+        "results": {
+          "type": "array", "minItems": 26, "maxItems": 26,
+          "items": {"$ref": "#/$defs/routeBinding"}
+        },
+        "status": {"const": "PASSED_LOCAL_CROSS_HOST"},
+        "independent_verification_status": {"$ref": "#/$defs/notRun"},
+        "certification_status": {"$ref": "#/$defs/notCertified"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/windowsReceipt"},
+    {"$ref": "#/$defs/verification"},
+    {"$ref": "#/$defs/prepareSet"},
+    {"$ref": "#/$defs/windowsSet"},
+    {"$ref": "#/$defs/verificationSet"}
+  ]
+}

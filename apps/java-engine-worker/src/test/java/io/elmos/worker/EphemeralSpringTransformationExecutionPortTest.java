@@ -4,22 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import io.elmos.security.SpringHmacProtocol;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.elmos.worker.SpringUpgradeModels.*;
@@ -29,11 +30,66 @@ class EphemeralSpringTransformationExecutionPortTest {
     @TempDir Path temporary;
 
     @Test
+    void productionRequiresHttpsAndTestTransportAllowsOnlyLoopbackHttp() throws Exception {
+        Path secret = secretFile(
+                "transport-secret",
+                "transformer-transport-test-secret-0123456789".getBytes(StandardCharsets.UTF_8));
+        ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+
+        assertDoesNotThrow(() -> new EphemeralSpringTransformationExecutionPort(
+                temporary,
+                URI.create("https://transformer.example.test"),
+                secret,
+                false,
+                json,
+                Clock.systemUTC()
+        ));
+
+        IllegalArgumentException productionHttp = assertThrows(
+                IllegalArgumentException.class,
+                () -> new EphemeralSpringTransformationExecutionPort(
+                        temporary,
+                        URI.create("http://127.0.0.1:8083"),
+                        secret,
+                        false,
+                        json,
+                        Clock.systemUTC()
+                ));
+        assertTrue(productionHttp.getMessage().contains("absolute HTTPS"));
+        assertThrows(IllegalArgumentException.class, () -> new EphemeralSpringTransformationExecutionPort(
+                temporary,
+                URI.create("/relative-transformer"),
+                secret,
+                false,
+                json,
+                Clock.systemUTC()
+        ));
+
+        assertDoesNotThrow(() -> new EphemeralSpringTransformationExecutionPort(
+                temporary,
+                URI.create("http://127.0.0.1:8083"),
+                secret,
+                false,
+                json,
+                Clock.systemUTC(),
+                true
+        ));
+        assertThrows(IllegalArgumentException.class, () -> new EphemeralSpringTransformationExecutionPort(
+                temporary,
+                URI.create("http://transformer.example.test:8083"),
+                secret,
+                false,
+                json,
+                Clock.systemUTC(),
+                true
+        ));
+    }
+
+    @Test
     void executesThroughDigestBoundHmacBrokerAndReadsDurableProgress() throws Exception {
         ObjectMapper json = new ObjectMapper().findAndRegisterModules();
         byte[] secret = "transformer-test-secret-with-at-least-32-bytes".getBytes(StandardCharsets.UTF_8);
-        Path secretFile = temporary.resolve("secret");
-        Files.write(secretFile, secret);
+        Path secretFile = secretFile("secret", secret);
         String runId = "11111111-2222-3333-4444-555555555555";
         Path workspace = temporary.resolve("workspace");
         Path runRoot = workspace.resolve("spring-upgrades").resolve(runId).resolve("execution");
@@ -100,7 +156,8 @@ class EphemeralSpringTransformationExecutionPortTest {
                             secretFile,
                             false,
                             json,
-                            Clock.systemUTC()
+                            Clock.systemUTC(),
+                            true
                     );
             List<Stage> stages = new ArrayList<>();
             List<String> logs = new ArrayList<>();
@@ -142,8 +199,7 @@ class EphemeralSpringTransformationExecutionPortTest {
     void rejectsBrokerArtifactDigestMismatch() throws Exception {
         ObjectMapper json = new ObjectMapper().findAndRegisterModules();
         byte[] secret = "transformer-test-secret-with-at-least-32-bytes".getBytes(StandardCharsets.UTF_8);
-        Path secretFile = temporary.resolve("mismatch-secret");
-        Files.write(secretFile, secret);
+        Path secretFile = secretFile("mismatch-secret", secret);
         String runId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
         Path workspace = temporary.resolve("mismatch-workspace");
         Path runRoot = workspace.resolve("spring-upgrades").resolve(runId).resolve("execution");
@@ -189,7 +245,8 @@ class EphemeralSpringTransformationExecutionPortTest {
                             secretFile,
                             false,
                             json,
-                            Clock.systemUTC()
+                            Clock.systemUTC(),
+                            true
                     );
             BlockedException error = assertThrows(BlockedException.class, () -> port.execute(
                     new StartRequest(
@@ -215,6 +272,15 @@ class EphemeralSpringTransformationExecutionPortTest {
         };
     }
 
+    private Path secretFile(String name, byte[] value) throws Exception {
+        Path path = temporary.toRealPath().resolve(name);
+        Files.write(path, value);
+        Files.setPosixFilePermissions(path, Set.of(
+                PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE));
+        return path;
+    }
+
     private static void send(HttpExchange exchange, int status, byte[] body) throws java.io.IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(status, body.length);
@@ -236,14 +302,7 @@ class EphemeralSpringTransformationExecutionPortTest {
             String nonce,
             byte[] body
     ) {
-        try {
-            String bodySha = sha256(body);
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new IllegalStateException(error);
-        }
+        return SpringHmacProtocol.sign(
+                secret, SpringHmacProtocol.Role.TRANSFORMER, timestamp, nonce, body);
     }
 }

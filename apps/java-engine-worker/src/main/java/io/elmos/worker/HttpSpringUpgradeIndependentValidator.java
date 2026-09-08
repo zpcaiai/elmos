@@ -2,21 +2,17 @@ package io.elmos.worker;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.SpringHmacProtocol;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,10 +42,26 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
             ObjectMapper json,
             Clock clock
     ) {
+        this(workspaceRoot, verifierBaseUrl, secretFile, expectedVerifierId, json, clock, false);
+    }
+
+    /**
+     * Package-private transport escape hatch for loopback-only protocol tests.
+     * Production configuration always uses the HTTPS-only constructor above.
+     */
+    HttpSpringUpgradeIndependentValidator(
+            Path workspaceRoot,
+            URI verifierBaseUrl,
+            Path secretFile,
+            String expectedVerifierId,
+            ObjectMapper json,
+            Clock clock,
+            boolean allowLoopbackHttpForTests
+    ) {
         this.workspaceRoot = workspaceRoot.toAbsolutePath().normalize();
-        this.endpoint = endpoint(verifierBaseUrl);
+        this.endpoint = endpoint(verifierBaseUrl, allowLoopbackHttpForTests);
         this.expectedVerifierId = requireIdentifier(expectedVerifierId);
-        this.secret = readSecret(secretFile);
+        this.secret = SpringHmacProtocol.readSecret(secretFile, "independent verifier");
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
         this.client = HttpClient.newBuilder()
@@ -95,7 +107,8 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
                     .header("Accept", "application/json")
                     .header("X-ELMOS-Verifier-Timestamp", timestamp)
                     .header("X-ELMOS-Verifier-Nonce", nonce)
-                    .header("X-ELMOS-Verifier-Signature", sign(secret, timestamp, nonce, body))
+                    .header("X-ELMOS-Verifier-Signature", SpringHmacProtocol.sign(
+                            secret, SpringHmacProtocol.Role.VERIFIER, timestamp, nonce, body))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                     .build();
             HttpResponse<byte[]> response = client.send(
@@ -274,14 +287,20 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
         }
     }
 
-    private static URI endpoint(URI base) {
+    private static URI endpoint(URI base, boolean allowLoopbackHttpForTests) {
         Objects.requireNonNull(base);
-        if (!List.of("http", "https").contains(base.getScheme())
+        boolean https = "https".equalsIgnoreCase(base.getScheme());
+        boolean testLoopbackHttp = allowLoopbackHttpForTests
+                && "http".equalsIgnoreCase(base.getScheme())
+                && loopbackHost(base.getHost());
+        if (!base.isAbsolute()
+                || (!https && !testLoopbackHttp)
                 || base.getHost() == null
                 || base.getUserInfo() != null
                 || base.getFragment() != null
                 || base.getQuery() != null) {
-            throw new IllegalArgumentException("independent verifier base URL is invalid");
+            throw new IllegalArgumentException(
+                    "independent verifier base URL must use absolute HTTPS");
         }
         String normalized = base.toString().endsWith("/")
                 ? base.toString()
@@ -289,32 +308,11 @@ final class HttpSpringUpgradeIndependentValidator implements SpringUpgradeIndepe
         return URI.create(normalized).resolve("internal/v1/spring-verifications");
     }
 
-    private static byte[] readSecret(Path path) {
-        try {
-            if (!Files.isRegularFile(path) || Files.isSymbolicLink(path)) {
-                throw new IllegalStateException("independent verifier HMAC secret file is unavailable");
-            }
-            byte[] raw = Files.readAllBytes(path);
-            if (raw.length > 4096) throw new IllegalStateException("independent verifier HMAC secret is too large");
-            byte[] value = new String(raw, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-            if (value.length < 32) throw new IllegalStateException("independent verifier HMAC secret must contain at least 32 bytes");
-            return value;
-        } catch (IOException error) {
-            throw new IllegalStateException("independent verifier HMAC secret file could not be read", error);
-        }
-    }
-
-    private static String sign(byte[] secret, String timestamp, String nonce, byte[] body) {
-        try {
-            String bodySha = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(body));
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new IllegalStateException("independent verifier request signing failed", error);
-        }
+    private static boolean loopbackHost(String host) {
+        return host != null && ("localhost".equalsIgnoreCase(host)
+                || "127.0.0.1".equals(host)
+                || "::1".equals(host)
+                || "[::1]".equals(host));
     }
 
     private static String requireIdentifier(String value) {

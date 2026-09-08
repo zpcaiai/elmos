@@ -14,16 +14,24 @@ const operationsPrefixes = [
   "/proof-loop",
   "/playground",
   "/smoke",
+  // Non-business-line product surfaces: administrators only.
+  "/repositories",
+  "/capabilities",
+  "/intake",
+  "/orchestration",
+  "/frontend",
+  "/pricing",
+  "/account",
+  "/workbench",
 ];
 
-// Product surfaces: any signed-in customer session is enough.
+// Product surfaces: the four customer business lines. Any signed-in customer
+// session is enough; every other page is invisible to a customer session.
 const userPrefixes = [
   "/spring",
   "/translation",
   "/generation",
-  "/repositories",
   "/migration",
-  "/capabilities",
 ];
 
 const protectedPrefixes = [...userPrefixes, ...operationsPrefixes];
@@ -75,6 +83,7 @@ function businessLine(path: string): string {
   if (path.startsWith("/api/spring-upgrades")) return "SPRING_MODERNIZATION";
   if (path.startsWith("/api/translation")) return "LANGUAGE_TRANSLATION";
   if (path.startsWith("/api/generation")) return "PROJECT_SYNTHESIS";
+  if (path.startsWith("/api/live-workbench")) return "LIVE_WORKBENCH";
   if (path.startsWith("/api/repository-workspaces") || path.startsWith("/api/github")) return "REPOSITORY_WORKSPACE";
   if (path.startsWith("/api/database-sql") || path.startsWith("/api/capabilities/database-sql")) return "DATABASE_DATA_SQL";
   if (path.startsWith("/api/capabilities/migration")) return "MIGRATION_GOVERNANCE";
@@ -258,6 +267,8 @@ export async function proxy(request: NextRequest) {
     (localCredentialMode && !adminRoute)
     || request.cookies.has("__Host-elmos_session")
     || request.cookies.has("elmos_local_session")
+    // Presence only: the server-side surface guard validates the bootstrap.
+    || request.cookies.has("elmos_local_admin_session")
   ) {
     return NextResponse.next();
   }
@@ -286,7 +297,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // "/skills" is deliberately absent: it only permanent-redirects to
-  // /capabilities, and gating it would bounce the legacy link to /login instead.
+  // /capabilities, and gating it would bounce the legacy link to the
+  // administrator entry instead.
   matcher: [
     "/api/:path*",
     "/spring/:path*",
@@ -302,5 +314,11 @@ export const config = {
     "/proof-loop/:path*",
     "/playground/:path*",
     "/smoke/:path*",
+    "/intake/:path*",
+    "/orchestration/:path*",
+    "/frontend/:path*",
+    "/pricing/:path*",
+    "/account/:path*",
+    "/workbench/:path*",
   ],
 };

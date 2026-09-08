@@ -1,0 +1,402 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/artifact-delivery.schema.json",
+  "title": "artifact-delivery",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "delivery_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "generated",
+        "converted"
+      ]
+    },
+    "source_snapshot_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "build_artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "lockfile_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "runtime_profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entrypoint_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preview_kind": {
+      "type": "string",
+      "enum": [
+        "web",
+        "api",
+        "cli",
+        "library-test",
+        "native-stream"
+      ]
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "app",
+              "database",
+              "cache",
+              "queue",
+              "virtualized-external"
+            ]
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
+          },
+          "image_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "data_mode": {
+            "type": "string",
+            "enum": [
+              "synthetic",
+              "empty",
+              "none"
+            ]
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "minItems": 0
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "depends_on",
+          "image_digest",
+          "data_mode",
+          "ports"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "read": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        },
+        "teach": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        },
+        "build": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        },
+        "preview": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        },
+        "debug": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        },
+        "compare": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked",
+                "experimental",
+                "not_run",
+                "source-unavailable"
+              ]
+            },
+            "reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "status",
+            "reason",
+            "evidence_ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "read",
+        "teach",
+        "build",
+        "preview",
+        "debug",
+        "compare"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_map_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mission_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "virtualized_dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "production_credentials_allowed": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "delivery_id",
+    "origin",
+    "source_snapshot_id",
+    "build_artifact_digest",
+    "lockfile_digest",
+    "runtime_profile_id",
+    "entrypoint_id",
+    "preview_kind",
+    "services",
+    "capabilities",
+    "semantic_map_id",
+    "mission_ids",
+    "virtualized_dependencies",
+    "production_credentials_allowed"
+  ],
+  "additionalProperties": false
+}

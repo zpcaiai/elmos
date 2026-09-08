@@ -1,0 +1,120 @@
+version: 1
+objective: min_expected_completed_task_cost_subject_to_quality_risk_and_deadline_constraints
+formula:
+  expected_total_cost: invoke_cost + (1-p_success)*expected_escalation_cost + integration_risk_cost
+    + retry_penalty
+  route_score: (p_success * predicted_quality * cache_affinity) / max(expected_total_cost
+    * latency_factor, epsilon)
+  notes:
+  - Risk gates are evaluated before score ranking.
+  - Telemetry posterior overrides priors only after the configured minimum sample
+    count.
+tiers:
+  L0:
+  - gemini-3.7-flash-high
+  - glm-5.3-max
+  - qwen3.8-max
+  L1:
+  - kimi-k3-max
+  - grok-4.6
+  - deepseek-v4-pro-0813
+  - claude-sonnet-5
+  L2:
+  - grok-4.6
+  - kimi-k3-max
+  - claude-sonnet-5
+  - gpt-5.6-sol-max
+  L3:
+  - gpt-5.6-sol-max
+  - claude-opus-5-max
+  L4:
+  - claude-fable-5
+  - claude-opus-5-max
+  - gpt-5.6-sol-max
+task_class_preferences:
+  docs_config_boilerplate:
+  - gemini-3.7-flash-high
+  - glm-5.3-max
+  - qwen3.8-max
+  frontend_standard:
+  - qwen3.8-max
+  - kimi-k3-max
+  - claude-sonnet-5
+  backend_standard:
+  - glm-5.3-max
+  - deepseek-v4-pro-0813
+  - kimi-k3-max
+  - grok-4.6
+  algorithmic:
+  - deepseek-v4-pro-0813
+  - kimi-k3-max
+  - gpt-5.6-sol-max
+  terminal_devops:
+  - grok-4.6
+  - kimi-k3-max
+  - claude-sonnet-5
+  repository_refactor:
+  - claude-sonnet-5
+  - grok-4.6
+  - claude-opus-5-max
+  complex_debug:
+  - grok-4.6
+  - gpt-5.6-sol-max
+  - claude-opus-5-max
+  architecture_contracts:
+  - gpt-5.6-sol-max
+  - claude-opus-5-max
+  long_horizon_migration:
+  - claude-fable-5
+  - claude-opus-5-max
+  - gpt-5.6-sol-max
+  final_repository_certification:
+  - gpt-5.6-sol-max
+  - claude-opus-5-max
+promotion_rules:
+- when: risk.security >= high
+  minimum_tier: L3
+- when: risk.data_migration >= high
+  minimum_tier: L3
+- when: risk.concurrency >= high
+  minimum_tier: L3
+- when: risk.public_contract >= high
+  minimum_tier: L3
+- when: risk.blast_radius >= critical
+  minimum_tier: L3
+- when: task.long_horizon == true
+  minimum_tier: L4
+- when: validation.failure_class in [semantic, architectural, integration] and attempt
+    >= 2
+  minimum_tier: L3
+retry_policy:
+  same_model_max_attempts: 2
+  max_total_attempts: 4
+  retry_same_model_on:
+  - transient_tool
+  - formatting
+  - localized_test_failure
+  promote_on:
+  - semantic
+  - architectural
+  - integration
+  - repeated_test_failure
+  - context_loss
+  do_not_retry_on:
+  - forbidden_path_write
+  - security_policy_violation
+  - budget_hard_stop
+review_policy:
+  default_second_model_review: false
+  require_second_model_review_for:
+  - security
+  - auth
+  - payments
+  - schema_migration
+  - concurrency
+  - public_api_breaking_change
+  - critical_infrastructure
+  reviewer_candidates:
+  - gpt-5.6-sol-max
+  - claude-opus-5-max
+  - claude-sonnet-5

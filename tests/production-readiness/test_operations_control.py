@@ -111,7 +111,7 @@ class OperationsControlReadinessTests(unittest.TestCase):
 
     def test_admin_exposes_complete_governed_workflow(self) -> None:
         api = (
-            ROOT / "apps/web-console/app/api/admin/operations/route.ts"
+            ROOT / "apps/web-console/app/api/admin/operations/_route.ts"
         ).read_text(encoding="utf-8")
         ui = (
             ROOT / "apps/web-console/app/admin/OperationsAdmin.tsx"

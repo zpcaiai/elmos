@@ -2,12 +2,21 @@ from __future__ import annotations
 
 import copy
 import os
+import stat
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from elmos_polyglot_route import toolchains
 from elmos_polyglot_route.models import RouteError
+
+PROJECT_TOOLCHAIN_INSTALLER = (
+    toolchains.REPOSITORY_ROOT
+    / "scripts"
+    / "toolchains"
+    / "install_project_synthesis_toolchains.sh"
+)
 
 
 def _tree_identity(
@@ -28,6 +37,109 @@ def _tree_identity(
     }
 
 
+def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("write_rust_wrapper() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    assert "/usr/bin/realpath" not in function
+
+    root = tmp_path / "root"
+    cargo_bin = root / "cargo" / "bin"
+    wrappers = root / "bin"
+    public = tmp_path / "public"
+    cargo_bin.mkdir(parents=True)
+    wrappers.mkdir()
+    public.mkdir()
+    probe = cargo_bin / "rustc"
+    probe.write_text(
+        '#!/bin/sh\nprintf "%s|%s\\n" "$RUSTUP_HOME" "$CARGO_HOME"\n',
+        encoding="utf-8",
+    )
+    probe.chmod(0o755)
+    subprocess.run(
+        ["/bin/bash", "-c", function + '\nwrite_rust_wrapper "$1" rustc', "bash", str(root)],
+        check=True,
+    )
+    public_wrapper = public / "rustc"
+    public_wrapper.symlink_to(Path("../root/bin/rustc"))
+    expected = f"{root}/rustup|{root}/cargo"
+    restricted_environment = {"PATH": "/usr/bin:/bin"}
+
+    direct = subprocess.run(
+        [str(wrappers / "rustc")],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+    linked = subprocess.run(
+        [str(public_wrapper)],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+
+    assert direct.stdout.strip() == expected
+    assert linked.stdout.strip() == expected
+
+
+def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("install_rust() {")
+    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function = installer[function_start:function_end]
+    reuse_branch_end = function.index("\n  fi\n")
+
+    for command_name in ("rustc", "cargo", "rustup"):
+        wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
+        assert function.count(wrapper_call) == 1
+        assert function.index(wrapper_call) > reuse_branch_end
+    seal_call = 'seal_rust_sysroot "${target}"'
+    assert function.count(seal_call) == 1
+    assert function.index(seal_call) > function.index('write_rust_wrapper "${target}" "rustup"')
+
+
+def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("seal_rust_sysroot() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    target = tmp_path / "rust"
+    sysroot = target / "rustup" / "toolchains" / "1.89.0-aarch64-apple-darwin"
+    executable = sysroot / "bin" / "rustc"
+    payload = sysroot / "lib" / "libstd.rlib"
+    executable.parent.mkdir(parents=True)
+    payload.parent.mkdir(parents=True)
+    executable.write_bytes(b"compiler")
+    payload.write_bytes(b"library")
+    executable.chmod(0o755)
+    payload.chmod(0o644)
+
+    completed = subprocess.run(
+        [
+            "/bin/bash",
+            "-c",
+            function + '\nRUST_VERSION=1.89.0\nseal_rust_sysroot "$1"',
+            "bash",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert stat.S_IMODE(executable.stat().st_mode) == 0o555
+    assert stat.S_IMODE(payload.stat().st_mode) == 0o444
+    assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
+
+
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
 def test_real_fixed_user_toolchains_work_without_ambient_path(
     language: str,
@@ -37,7 +149,9 @@ def test_real_fixed_user_toolchains_work_without_ambient_path(
 
     selected = toolchains.exact_toolchain(language)  # type: ignore[arg-type]
 
-    assert selected.executable.startswith("/Users/stephen/.local/share/elmos/toolchains/")
+    assert Path(selected.executable).is_relative_to(
+        toolchains.configured_polyglot_toolchain_root()
+    )
     assert selected.executable_sha256
     assert selected.profile
     assert any(item.endswith("=NOT_RUN") for item in selected.profile)
@@ -59,6 +173,41 @@ def test_complete_tree_verifier_rejects_a_self_consistent_forgery() -> None:
         )
 
 
+def test_flutter_tree_accepts_only_complete_allowlisted_receipts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    hosted_cache = copy.deepcopy(toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1])
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: hosted_cache,
+    )
+
+    assert toolchains._flutter_build_tree_identities() == {"dart_sdk": hosted_cache}
+
+    forged = copy.deepcopy(hosted_cache)
+    forged["sha256"] = "f" * 64
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: forged,
+    )
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
+    ):
+        toolchains._flutter_build_tree_identities()
+
+
+def test_flutter_closure_digest_is_bound_to_selected_complete_tree() -> None:
+    pristine = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[0]}
+    hosted_cache = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1]}
+
+    assert toolchains._flutter_build_closure_sha256(pristine) != (
+        toolchains._flutter_build_closure_sha256(hosted_cache)
+    )
+
+
 def test_go_tree_verifier_rejects_same_version_content_drift(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -74,6 +223,64 @@ def test_go_tree_verifier_rejects_same_version_content_drift(
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_GO_TREE_MISMATCH"):
         toolchains._go_tree_identity()
+
+
+def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir()
+    compiler = root / "rustc"
+    compiler.write_bytes(b"immutable-rust-bytes")
+    compiler.chmod(0o755)
+
+    local = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    original = toolchains._qualified_file_record
+
+    def alternate_owner_record(*args: object, **kwargs: object) -> dict[str, object]:
+        record = dict(original(*args, **kwargs))
+        record.update(
+            {
+                "uid": int(record["uid"]) + 10_000,
+                "gid": int(record["gid"]) + 10_000,
+            }
+        )
+        return record
+
+    monkeypatch.setattr(toolchains, "_qualified_file_record", alternate_owner_record)
+    alternate = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    strict = toolchains._qualified_tree_manifest(root, tmp_path, "TEST_UNSAFE")
+
+    assert alternate["sha256"] == local["sha256"]
+    assert strict["sha256"] != local["sha256"]
+
+
+def test_rust_sysroot_root_must_remain_read_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir(mode=0o755)
+    monkeypatch.setattr(toolchains, "_EXPECTED_RUST_SYSROOT", root)
+
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE"):
+        toolchains._rust_sysroot_root_identity()
+
+    root.chmod(0o555)
+    identity = toolchains._rust_sysroot_root_identity()
+
+    assert stat.S_IMODE(identity[2]) == 0o555
 
 
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])

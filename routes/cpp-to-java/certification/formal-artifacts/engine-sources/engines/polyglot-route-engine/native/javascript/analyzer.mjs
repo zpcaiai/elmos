@@ -506,6 +506,15 @@ const CANONICAL_EMITTED_HELPERS = new Map([
   return value;
 }`,
   ],
+  [
+    "_elmosRequireRecord",
+    `function _elmosRequireRecord(value) {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new TypeError("ELMOS_RECORD_REQUIRED");
+  }
+  return value;
+}`,
+  ],
 ]);
 
 const CANONICAL_EMITTED_HELPER_SIGNATURES = new Map([
@@ -514,6 +523,7 @@ const CANONICAL_EMITTED_HELPER_SIGNATURES = new Map([
   ["_elmosRequireBoolean", ["boolean", "boolean"]],
   ["_elmosRequireString", ["string", "string"]],
   ["_elmosRequireNonZero", ["number", "number"]],
+  ["_elmosRequireRecord", ["record", "record"]],
 ]);
 
 function canonicalEmittedHelperSignature(node, declarationCounts) {
@@ -635,19 +645,25 @@ function inventory() {
       let contract = null;
       let signature = {};
       if (name.startsWith("_elmos")) {
-        signature = canonicalEmittedHelperSignature(statement, helperDeclarationCounts) ?? {};
+        signature = canonicalEmittedHelperSignature(statement, helperDeclarationCounts) ?? {
+          visibility: "not-applicable",
+          storage: "not-applicable",
+        };
       } else {
         try {
           contract = functionContract(statement);
         } catch {
           contract = null;
         }
+        const isExported = statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
         signature = {
           parameters: contract?.parameters.map((item) => ({
             name: item.name,
             source_type: item.type,
           })) ?? [],
           source_return_type: contract?.returnType ?? "",
+          visibility: isExported ? "public" : "internal",
+          storage: "file-scope",
         };
       }
       subjects.push({
@@ -668,7 +684,10 @@ function inventory() {
       declaration_kind: ts.SyntaxKind[statement.kind],
       analyzable: false,
       source_span: span(statement),
-      signature: {},
+      signature: {
+        visibility: "not-applicable",
+        storage: "not-applicable",
+      },
     });
   }
   return {

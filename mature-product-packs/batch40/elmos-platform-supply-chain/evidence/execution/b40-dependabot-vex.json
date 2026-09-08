@@ -1,0 +1,1420 @@
+{
+  "schema_version": "2.0",
+  "repository": "zpcaiai/elmos",
+  "generated_at": "2026-09-08T12:30:57.028655Z",
+  "source_alert_snapshot_digest": "sha256:83bf7ccc33fb3adeaf7265e0ba17e23ddf7dd38fe9c7e23c06e82e72c5b75519",
+  "exceptions": [
+    {
+      "alert_number": 296,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 298,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 300,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 302,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 304,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 306,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 308,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 310,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 312,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 314,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 316,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 318,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 320,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 322,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 324,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 326,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 328,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 330,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 332,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 334,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 336,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 338,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 340,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 342,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 344,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 346,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 348,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 350,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 352,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 354,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 356,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 358,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 360,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 362,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 364,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 366,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 368,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 370,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 372,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 374,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 376,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 378,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 380,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 382,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 384,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 386,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    },
+    {
+      "alert_number": 388,
+      "ecosystem": "npm",
+      "package": "fast-xml-parser",
+      "manifest_path": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+      "dependency_scope": "development",
+      "relationship": "direct",
+      "ghsa_id": "GHSA-gh4j-gqv2-49f6",
+      "severity": "medium",
+      "vulnerable_version_range": "< 5.7.0",
+      "first_patched_version": "5.7.0",
+      "classification": "immutable_certification_artifact",
+      "vex_status": "not_affected",
+      "vex_justification": "component_not_present_in_runtime",
+      "decision": "dismiss_tolerable_risk",
+      "status": "ACTIVE",
+      "reason": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed.",
+      "manifest": {
+        "path": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "bytes": 3620
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "owner": "elmos-security-owner",
+      "expires_at": "2026-12-07T12:30:57Z"
+    }
+  ],
+  "fixed_claims": [],
+  "certification": "NOT_CERTIFIED"
+}

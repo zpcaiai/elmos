@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import io.elmos.security.SpringHmacProtocol;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Instant;
@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static io.elmos.worker.SpringUpgradeModels.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IsolatedSpringRuntimeExecutionPortTest {
     private static final byte[] SECRET =
@@ -40,6 +43,57 @@ class IsolatedSpringRuntimeExecutionPortTest {
     @AfterEach
     void stopServer() {
         if (server != null) server.stop(0);
+    }
+
+    @Test
+    void productionRequiresHttpsAndTestTransportAllowsOnlyLoopbackHttp() throws Exception {
+        Path secret = secretFile("transport.secret");
+        ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+
+        assertDoesNotThrow(() -> new IsolatedSpringRuntimeExecutionPort(
+                new StubTransformer(),
+                temporary,
+                java.net.URI.create("https://runtime.example.test"),
+                secret,
+                json,
+                Clock.fixed(NOW, ZoneOffset.UTC)
+        ));
+
+        assertThrows(IllegalArgumentException.class, () -> new IsolatedSpringRuntimeExecutionPort(
+                new StubTransformer(),
+                temporary,
+                java.net.URI.create("http://127.0.0.1:8082"),
+                secret,
+                json,
+                Clock.fixed(NOW, ZoneOffset.UTC)
+        ));
+        assertThrows(IllegalArgumentException.class, () -> new IsolatedSpringRuntimeExecutionPort(
+                new StubTransformer(),
+                temporary,
+                java.net.URI.create("/relative-runtime"),
+                secret,
+                json,
+                Clock.fixed(NOW, ZoneOffset.UTC)
+        ));
+
+        assertDoesNotThrow(() -> new IsolatedSpringRuntimeExecutionPort(
+                new StubTransformer(),
+                temporary,
+                java.net.URI.create("http://127.0.0.1:8082"),
+                secret,
+                json,
+                Clock.fixed(NOW, ZoneOffset.UTC),
+                true
+        ));
+        assertThrows(IllegalArgumentException.class, () -> new IsolatedSpringRuntimeExecutionPort(
+                new StubTransformer(),
+                temporary,
+                java.net.URI.create("http://runtime.example.test:8082"),
+                secret,
+                json,
+                Clock.fixed(NOW, ZoneOffset.UTC),
+                true
+        ));
     }
 
     @Test
@@ -76,8 +130,7 @@ class IsolatedSpringRuntimeExecutionPortTest {
         });
         server.start();
 
-        Path secret = temporary.resolve("runtime.secret");
-        Files.write(secret, SECRET);
+        Path secret = secretFile("runtime.secret");
         Path migrated = temporary.resolve("runs/migrated");
         Files.createDirectories(migrated);
         Path artifact = temporary.resolve("runs/download.zip");
@@ -99,7 +152,8 @@ class IsolatedSpringRuntimeExecutionPortTest {
                 java.net.URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
                 secret,
                 json,
-                Clock.fixed(NOW, ZoneOffset.UTC)
+                Clock.fixed(NOW, ZoneOffset.UTC),
+                true
         );
         ExecutionResult result = new ExecutionResult(
                 "a".repeat(40),
@@ -145,17 +199,18 @@ class IsolatedSpringRuntimeExecutionPortTest {
         assertThat(actual).isEqualTo(sign(timestamp, nonce, body));
     }
 
+    private Path secretFile(String name) throws Exception {
+        Path path = temporary.toRealPath().resolve(name);
+        Files.write(path, SECRET);
+        Files.setPosixFilePermissions(path, Set.of(
+                PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE));
+        return path;
+    }
+
     private static String sign(String timestamp, String nonce, byte[] body) {
-        try {
-            String bodySha = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(body));
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(SECRET, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new RuntimeException(error);
-        }
+        return SpringHmacProtocol.sign(
+                SECRET, SpringHmacProtocol.Role.RUNTIME, timestamp, nonce, body);
     }
 
     private static void respond(HttpExchange exchange, byte[] body, int status) throws IOException {

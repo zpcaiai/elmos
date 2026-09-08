@@ -16,7 +16,7 @@ class ChinaDbSqlPreflightConfiguration {
             @Value("${elmos.database-data-preflight.enabled:false}") boolean enabled,
             @Value("${elmos.database-data-preflight.engine-base-url:http://database-data-engine-worker:8089}") String baseUrl,
             @Value("${elmos.database-data-preflight.connect-timeout:2s}") Duration connectTimeout,
-            @Value("${elmos.database-data-preflight.request-timeout:20s}") Duration requestTimeout,
+            @Value("${elmos.database-data-preflight.request-timeout:60s}") Duration requestTimeout,
             ObjectMapper json
     ) {
         return new HttpChinaDbSqlPreflightGateway(

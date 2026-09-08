@@ -1,0 +1,26 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "corpora": [
+    "development",
+    "holdout",
+    "real-repository"
+  ],
+  "kind": "elmos.vcpp6-vendor-campaign-plan",
+  "phases": {
+    "cross_host_behavior_compare": "NOT_RUN",
+    "external_certification": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "non_vcpp6_side_prepare": "READY",
+    "windows_vcpp6_compile_run": "NOT_RUN"
+  },
+  "required_windows_binding": {
+    "compiler_architecture": "x86",
+    "evidence_class": "GOVERNED_EXTERNAL_SELF_ATTESTED",
+    "manifest_digest_environment": "ELMOS_VCPP6_TOOLCHAIN_MANIFEST_SHA256",
+    "manifest_environment": "ELMOS_VCPP6_TOOLCHAIN_MANIFEST",
+    "product": "Microsoft Visual C++ 6.0 SP6"
+  },
+  "route_key": "kotlin-to-vcpp6",
+  "runner": "scripts/batch29/run_vcpp6_cross_host_campaign.py",
+  "schema_version": 1
+}

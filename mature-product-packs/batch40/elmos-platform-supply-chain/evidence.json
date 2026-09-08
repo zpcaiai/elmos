@@ -28,7 +28,7 @@
     },
     {
       "claimId": "b40-dependabot-alert-status",
-      "status": "FAIL",
+      "status": "PASS",
       "evidenceRefs": [
         "b40-dependabot-alerts"
       ],

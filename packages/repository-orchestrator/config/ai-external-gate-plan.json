@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "gate_id": "elmos-ai-modernization-production-v1",
+  "subject": "ELMOS governed RAG, agentic orchestration, multimodal intake, observability, and production deployment",
+  "producer_actor": "elmos-ai-release-operator",
+  "operations": {
+    "elasticsearch": {
+      "status": "NOT_RUN",
+      "evidence_role": "search-provider-runtime",
+      "required_env": ["ELMOS_ELASTICSEARCH_URL", "ELMOS_ELASTICSEARCH_API_KEY", "ELMOS_ELASTICSEARCH_INDEX"]
+    },
+    "dify": {
+      "status": "NOT_RUN",
+      "evidence_role": "workflow-provider-runtime",
+      "required_env": ["ELMOS_DIFY_URL", "ELMOS_DIFY_API_KEY", "ELMOS_DIFY_WORKFLOW_ID"]
+    },
+    "model_provider": {
+      "status": "NOT_RUN",
+      "evidence_role": "model-provider-runtime",
+      "required_env": ["ELMOS_MODEL_PROVIDER_URL", "ELMOS_MODEL_PROVIDER_API_KEY", "ELMOS_MODEL_ID"]
+    },
+    "otel_collector": {
+      "status": "NOT_RUN",
+      "evidence_role": "telemetry-collector-runtime",
+      "required_env": ["ELMOS_OTEL_EXPORTER_OTLP_ENDPOINT", "ELMOS_OTEL_EXPORTER_AUTHORIZATION"]
+    },
+    "multimodal_ocr": {
+      "status": "NOT_RUN",
+      "evidence_role": "ocr-provider-runtime",
+      "required_env": ["ELMOS_OCR_PROVIDER_URL", "ELMOS_OCR_PROVIDER_API_KEY"]
+    },
+    "multimodal_asr": {
+      "status": "NOT_RUN",
+      "evidence_role": "asr-provider-runtime",
+      "required_env": ["ELMOS_ASR_PROVIDER_URL", "ELMOS_ASR_PROVIDER_API_KEY"]
+    },
+    "multimodal_vision": {
+      "status": "NOT_RUN",
+      "evidence_role": "vision-provider-runtime",
+      "required_env": ["ELMOS_VISION_PROVIDER_URL", "ELMOS_VISION_PROVIDER_API_KEY"]
+    },
+    "representative_workload": {
+      "status": "NOT_RUN",
+      "evidence_role": "approved-representative-corpus",
+      "required_env": ["ELMOS_AI_WORKLOAD_URI", "ELMOS_AI_WORKLOAD_SHA256", "ELMOS_AI_DATA_RIGHTS_APPROVAL"]
+    },
+    "production_deployment": {
+      "status": "NOT_RUN",
+      "evidence_role": "production-deployment-and-rollback",
+      "required_env": ["ELMOS_PRODUCTION_ENVIRONMENT", "ELMOS_PRODUCTION_ARTIFACT_SHA256", "ELMOS_PRODUCTION_CHANGE_AUTHORIZATION"]
+    },
+    "independent_verification": {
+      "status": "NOT_RUN",
+      "evidence_role": "independent-e0-e5-verification",
+      "required_env": ["ELMOS_AI_CERTIFIER_ENDPOINT", "ELMOS_AI_CERTIFIER_CREDENTIAL"]
+    }
+  },
+  "certification": {
+    "certifier_actor": "independent-ai-production-certifier",
+    "certifier_organization": "REQUIRED_INDEPENDENT_CERTIFIER_ORGANIZATION",
+    "signature_algorithm": "SHA256_WITH_PEM_KEY",
+    "trusted_public_key_sha256": "REQUIRED_SHA256_OF_TRUSTED_CERTIFIER_PUBLIC_KEY",
+    "max_certificate_age_seconds": 86400
+  },
+  "production_certification": "NOT_CERTIFIED"
+}

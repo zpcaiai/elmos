@@ -149,8 +149,8 @@ def test_provenance_partition_is_a_partition_and_keeps_its_recorded_sizes() -> N
 
     # Guards against a future edit that empties the table and makes the loop
     # above vacuously true.
-    assert len(partitions) == 6
-    assert sum(len(set(keys)) for keys in partitions.values()) == 176
+    assert len(partitions) == 8
+    assert sum(len(set(keys)) for keys in partitions.values()) == 230
 
 
 @requires_route_sets
@@ -194,9 +194,9 @@ def test_inventory_provenance_summary_matches_the_partition_it_summarises() -> N
     for name, keys in partitions.items():
         assert set(summary["sets"][name]) == set(keys), f"{name} drifted in inventory"
 
-    assert summary["active_route_count"] == 156
+    assert summary["active_route_count"] == 210
     assert summary["deprecated_route_count"] == 20
-    assert summary["route_count"] == 176
+    assert summary["route_count"] == 230
 
     # Each partition is also an execution authority; the two tables are written
     # separately and nothing else compares them.
@@ -220,9 +220,9 @@ def test_inventory_route_tiers_account_for_every_active_route() -> None:
         "blocked_route_count",
     )
     assert sum(inventory[tier] for tier in tiers) == inventory["route_count"]
-    # The 66 kotlin/react/flutter directions are research, not limited.  If
-    # this ever reads 0 the newest campaign was silently promoted.
-    assert inventory["research_route_count"] == 66
+    # The 66 kotlin/react/flutter, 26 VB6 and 28 VC++6 directions are research,
+    # not limited. If this ever reads 0 a vendor campaign was silently promoted.
+    assert inventory["research_route_count"] == 120
     assert inventory["certified_route_count"] == 0
 
 
@@ -245,7 +245,7 @@ def test_every_repository_surface_language_has_a_registered_toolchain() -> None:
     source = inspect.getsource(toolchains)
     table = re.search(r"^\s*selectors(?::[^=\n]+)?\s*=\s*\{(.*?)^\s*\}", source, re.S | re.M)
     assert table is not None, "could not locate the toolchain selector table"
-    registered = set(re.findall(r'"([a-z]+)"\s*:', table.group(1)))
+    registered = set(re.findall(r'"([a-z0-9]+)"\s*:', table.group(1)))
 
     # Guards against a regex that silently stops matching and turns the
     # superset check below into a comparison against the empty set.

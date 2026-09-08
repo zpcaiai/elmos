@@ -18,6 +18,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 from .canonical import canonical_digest, canonical_value, require_identifier, validate_digest
 from .domain import TenantScope
+from .native_semantics import NativeSemanticProgram
 from .store import FoundryStore, IdempotencyConflict, RunState, StoreError
 
 
@@ -77,12 +78,19 @@ class ExternalAdapterRoute:
     version: str
     digest: str
     operation: str
+    semantic_program: NativeSemanticProgram | None = None
 
     def __post_init__(self) -> None:
         for field_name in ("route_id", "version", "operation"):
             require_identifier(getattr(self, field_name), field_name)
         if not _SHA256_RE.fullmatch(self.digest):
             raise ValueError("external route digest must be a lowercase SHA-256")
+        if self.semantic_program is not None:
+            expected_operation = (
+                f"foundry.skill.{self.semantic_program.skill_name}.execute"
+            )
+            if self.operation != expected_operation:
+                raise ValueError("external route operation does not match its semantic program")
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,6 +134,7 @@ class InvocationPermit:
     gate_evidence_digest: str
     critical_approval_id: str | None = None
     critical_approval_digest: str | None = None
+    semantic_program_digest: str | None = None
     authorized: bool = False
 
     def __post_init__(self) -> None:
@@ -187,6 +196,8 @@ class InvocationPermit:
                     require_identifier(value, field_name)
         if (self.critical_approval_id is None) != (self.critical_approval_digest is None):
             raise ValueError("critical approval id and digest must be supplied together")
+        if self.semantic_program_digest is not None:
+            validate_digest(self.semantic_program_digest, "semantic_program_digest")
         if not isinstance(self.effect_class, EffectClass):
             raise TypeError("permit effect_class must be an EffectClass")
         if not isinstance(self.authorized, bool):
@@ -221,6 +232,7 @@ class InvocationRequest:
     required_inputs: tuple[str, ...]
     allowed_tools: tuple[str, ...]
     required_gates: tuple[str, ...]
+    semantic_program_digest: str | None = None
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -266,6 +278,8 @@ class InvocationRequest:
         for gate in gates:
             require_identifier(gate, "required_gate")
         object.__setattr__(self, "required_gates", gates)
+        if self.semantic_program_digest is not None:
+            validate_digest(self.semantic_program_digest, "semantic_program_digest")
 
     @property
     def binding_digest(self) -> str:
@@ -298,6 +312,7 @@ class InvocationRequest:
             "required_inputs": list(self.required_inputs),
             "allowed_tools": list(self.allowed_tools),
             "required_gates": list(self.required_gates),
+            "semantic_program_digest": self.semantic_program_digest,
         }
 
 
@@ -444,6 +459,55 @@ class AdapterRegistry:
                 }
             )
             for binding in sorted(self._bindings.values(), key=lambda item: item.adapter_id)
+        )
+
+    def prepare_external_request(
+        self,
+        *,
+        skill_name: str,
+        payload: Mapping[str, Any],
+        tenant_scope: TenantScope,
+        invocation_id: str,
+        adapter_id: str,
+        risk_class: str,
+        required_inputs: Sequence[str],
+        allowed_tools: Sequence[str],
+        required_gates: Sequence[str],
+    ) -> InvocationRequest:
+        """Build the exact side-effect-free request a host must authorize."""
+
+        binding = self.binding_for(skill_name)
+        if binding is None or binding.adapter_id != adapter_id:
+            raise ValueError("requested adapter identity does not match the exact binding")
+        if not binding.effect_class.is_external:
+            raise ValueError("local deterministic bindings do not use external permits")
+        if self._external_broker is None:
+            raise ValueError("external execution broker is not configured")
+        route = self._external_routes.get(adapter_id)
+        if route is None:
+            raise ValueError("external adapter route is not registered")
+        normalized = canonical_value(payload)
+        if not isinstance(normalized, dict):
+            raise TypeError("adapter payload must be an object")
+        operation, declared_inputs = self._validate_adapter_payload(
+            payload=normalized,
+            required_inputs=required_inputs,
+        )
+        if operation != route.operation:
+            raise ValueError("requested operation does not match the exact broker route")
+        return self._request(
+            binding=binding,
+            broker=self._external_broker,
+            route=route,
+            skill_name=skill_name,
+            payload=normalized,
+            tenant_scope=tenant_scope,
+            invocation_id=invocation_id,
+            risk_class=risk_class,
+            operation=operation,
+            declared_inputs=declared_inputs,
+            allowed_tools=allowed_tools,
+            required_gates=required_gates,
         )
 
     def invoke(
@@ -691,6 +755,11 @@ class AdapterRegistry:
                     raise ValueError("provider receipt targets a different request")
                 if receipt.get("outcome") != "CONFIRMED":
                     raise ValueError("provider receipt does not confirm the outcome")
+                if route.semantic_program is not None:
+                    route.semantic_program.validate_result(
+                        normalized,
+                        request_binding_digest=request.binding_digest,
+                    )
                 verified = broker.verify_result(
                     route, binding, request, permit, normalized, tenant_scope
                 )
@@ -706,7 +775,7 @@ class AdapterRegistry:
                         "effect_outcome": "UNKNOWN",
                     },
                     error=(
-                        "external provider receipt verification failed: "
+                        "external semantic/provider receipt verification failed: "
                         + _safe_error_text(str(exc))
                     ),
                     external_effects_performed=True,
@@ -921,6 +990,11 @@ class AdapterRegistry:
             required_inputs=tuple(declared_inputs),
             allowed_tools=tools,
             required_gates=gates,
+            semantic_program_digest=(
+                None
+                if route.semantic_program is None
+                else "sha256:" + route.semantic_program.digest
+            ),
         )
 
     @staticmethod
@@ -1015,6 +1089,7 @@ class AdapterRegistry:
             "revision_set_id": request.revision_set_id,
             "authorized_tools": request.allowed_tools,
             "authorized_gates": request.required_gates,
+            "semantic_program_digest": request.semantic_program_digest,
         }
         for field_name, expected_value in expected.items():
             if getattr(permit, field_name) != expected_value:

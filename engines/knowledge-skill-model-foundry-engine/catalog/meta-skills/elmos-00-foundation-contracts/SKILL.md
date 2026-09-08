@@ -1,11 +1,11 @@
 ---
 name: elmos-00-foundation-contracts
-description: Route the 00-foundation-contracts capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 00-foundation-contracts capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 00-foundation-contracts
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 7147f110a79832843b306acae80b538744328243697e75eff036c1995b7d4962

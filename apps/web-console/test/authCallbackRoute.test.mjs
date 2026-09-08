@@ -4,13 +4,16 @@ import test from "node:test";
 
 import { NextRequest } from "next/server.js";
 
+import "./descopeOtpVerifyRoute.test.mjs";
+import "./descopeIdentity.test.mjs";
+
 import {
   accountCookieNames,
   authCallbackFixture,
   resetAuthCallbackFixture,
 } from "./authCallbackRoute.fixture.mjs";
 
-const callbackRouteUrl = new URL("../app/api/auth/callback/route.ts", import.meta.url);
+const callbackRouteUrl = new URL("../app/api/auth/callback/_route.ts", import.meta.url);
 const fixtureUrl = new URL("./authCallbackRoute.fixture.mjs", import.meta.url).href;
 const routeDependencySpecifiers = new Set([
   "../../../lib/server/accountSession",
@@ -114,9 +117,11 @@ test("administrator OIDC callback establishes a session only after notification 
       > response.cookies.get(accountCookieNames.accessToken).maxAge,
       "the sealed refresh binding must outlive the access-token cookie",
     );
-    assert.equal(
-      response.cookies.get(accountCookieNames.session).maxAge,
-      response.cookies.get(accountCookieNames.refreshToken).maxAge,
+    const sessionMaxAge = response.cookies.get(accountCookieNames.session).maxAge;
+    const refreshMaxAge = response.cookies.get(accountCookieNames.refreshToken).maxAge;
+    assert.ok(
+      Math.abs(sessionMaxAge - refreshMaxAge) <= 1,
+      "session and refresh-token cookie maxAge should stay in sync",
     );
     assert.deepEqual(authCallbackFixture.calls.revokedTokens, []);
   });

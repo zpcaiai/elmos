@@ -90,6 +90,21 @@ test("GitHub 发布先鉴权再有界读取无 Content-Length 请求", async ({}
     return await response.json() as { provider_requests: number };
   };
   const requestsBefore = (await metrics()).provider_requests;
+
+  // Next.js compiles dynamic development routes on first access. Warm this
+  // exact route with a bounded, rejected request so the streaming assertions
+  // below measure authentication/body handling rather than cold compilation.
+  const warmup = await fetch(target, {
+    method: "POST",
+    headers: {
+      ...runnerHeaders,
+      "Authorization": "Bearer invalid-runner-token",
+    },
+    body: "null",
+  });
+  expect(warmup.status).toBe(401);
+  expect(await warmup.json()).toMatchObject({ reason: "AUTHENTICATION_REQUIRED" });
+
   const denied = await chunkedJsonRequest(target, "Bearer invalid-runner-token", 16 * 1024);
   expect(denied.status).toBe(401);
   expect(await denied.json()).toMatchObject({ reason: "AUTHENTICATION_REQUIRED" });
@@ -245,6 +260,16 @@ test("服务端接受 PostgreSQL 生产配置下的多实体 Go 请求", async (
     },
   });
   expect(execution.ok(), await execution.text()).toBe(true);
+  const accepted = await execution.json() as { id: string };
+  const cancelled = await request.post(`/api/generation/jobs/${accepted.id}/cancel`, {
+    headers: runnerHeaders,
+  });
+  expect(cancelled.ok(), await cancelled.text()).toBe(true);
+  expect(await cancelled.json()).toMatchObject({
+    id: accepted.id,
+    status: "CANCELLED",
+    reason: "CANCELLED_BY_AUTHORIZED_ACTOR",
+  });
 });
 
 test("需求分析、完整代码下载、浏览器限时运行与 GitHub 私有仓库发布闭环", async ({
@@ -275,8 +300,18 @@ test("需求分析、完整代码下载、浏览器限时运行与 GitHub 私有
   await expect(javaTarget).not.toBeChecked();
 
   await page.getByRole("button", { name: "锁定生成计划" }).click();
-  await page.getByRole("button", { name: "分析并整理需求" }).click();
-  await expect(page.getByText("实体与字段 · 2")).toBeVisible({ timeout: 30_000 });
+  const analyzeButton = page.getByRole("button", { name: "分析并整理需求" });
+  await expect(analyzeButton).toBeEnabled({ timeout: 120_000 });
+  const analysisResponsePromise = page.waitForResponse((response) => (
+    response.request().method() === "POST"
+    && new URL(response.url()).pathname === "/api/generation/analyze"
+  ), { timeout: 75_000 });
+  await analyzeButton.click();
+  const analysisResponse = await analysisResponsePromise;
+  if (!analysisResponse.ok()) {
+    throw new Error(`generation analysis failed: ${await analysisResponse.text()}`);
+  }
+  await expect(page.getByText("实体与字段 · 2")).toBeVisible();
   await expect(page.getByText("inventory.product_id many-to-one product.id")).toBeVisible();
   await expect(page.getByText("BR-001 · inventory.quantity must be non-negative")).toBeVisible();
   await expect(page.getByText("admin · allow create · inventory")).toBeVisible();
@@ -765,8 +800,35 @@ test("GitHub 创建身份无法确认时持久阻断并禁止无脑重试或不�
 for (const authMode of ["jwt", "oidc"] as const) {
   test(`Python PostgreSQL ${authMode.toUpperCase()} 企业配置可生成、验证并一键本地部署运行`, async ({
     page,
+    request,
   }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "企业配置的真实有副作用旅程只执行一次");
+    const analysisWarmup = await request.post("/api/generation/analyze", {
+      headers: {
+        ...runnerHeaders,
+        Authorization: "Bearer invalid-runner-token-token-token",
+      },
+      data: {},
+      timeout: 180_000,
+    });
+    expect(analysisWarmup.status()).toBe(401);
+    expect(await analysisWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
+    const admissionWarmup = await request.post("/api/generation/jobs", {
+      headers: {
+        ...runnerHeaders,
+        Authorization: "Bearer invalid-runner-token-token-token",
+      },
+      data: {},
+      timeout: 180_000,
+    });
+    expect(admissionWarmup.status()).toBe(401);
+    expect(await admissionWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
     await page.goto("/generation");
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
@@ -788,13 +850,32 @@ for (const authMode of ["jwt", "oidc"] as const) {
     await expect(page.getByLabel("认证配置")).toHaveValue(authMode);
 
     await page.getByRole("button", { name: "锁定生成计划" }).click();
-    await page.getByRole("button", { name: "分析并整理需求" }).click();
-    await expect(page.getByText("实体与字段 · 2")).toBeVisible({ timeout: 30_000 });
+    const analyzeButton = page.getByRole("button", { name: "分析并整理需求" });
+    await expect(analyzeButton).toBeEnabled({ timeout: 120_000 });
+    const analysisResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === "/api/generation/analyze"
+    ), { timeout: 75_000 });
+    await analyzeButton.click();
+    const analysisResponse = await analysisResponsePromise;
+    if (!analysisResponse.ok()) {
+      throw new Error(`generation analysis failed: ${await analysisResponse.text()}`);
+    }
+    await expect(page.getByText("实体与字段 · 2")).toBeVisible();
     await expect(page.getByText("order.customer_id many-to-one customer.id")).toBeVisible();
     await expect(page.getByText("开放问题 · 0")).toBeVisible();
 
     await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
+    const acceptedJobResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === "/api/generation/jobs"
+    ), { timeout: 180_000 });
     await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
+    const acceptedJobResponse = await acceptedJobResponsePromise;
+    if (!acceptedJobResponse.ok()) {
+      throw new Error(`generation job admission failed: ${await acceptedJobResponse.text()}`);
+    }
+    const acceptedJob = await acceptedJobResponse.json() as { id: string };
     const generationOutcome = await Promise.race([
       page.getByText("生成文件树").waitFor({
         state: "visible",
@@ -819,10 +900,90 @@ for (const authMode of ["jwt", "oidc"] as const) {
       timeout: 600_000,
     });
 
+    const runtimeWarmup = await request.post(
+      `/api/generation/jobs/${acceptedJob.id}/run`,
+      {
+        headers: {
+          ...runnerHeaders,
+          Authorization: "Bearer invalid-runner-token-token-token",
+        },
+        data: { language: "python" },
+        timeout: 180_000,
+      },
+    );
+    expect(runtimeWarmup.status()).toBe(401);
+    expect(await runtimeWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
+    const stopWarmup = await request.post(
+      `/api/generation/jobs/${acceptedJob.id}/stop`,
+      {
+        headers: {
+          ...runnerHeaders,
+          Authorization: "Bearer invalid-runner-token-token-token",
+        },
+        timeout: 180_000,
+      },
+    );
+    expect(stopWarmup.status()).toBe(401);
+    expect(await stopWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
+    const runtimeStartResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/run`
+    ), { timeout: 200_000 });
     await page.getByRole("button", { name: "一键运行 10 分钟" }).click();
-    await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
+    const runtimeStartResponse = await runtimeStartResponsePromise;
+    if (!runtimeStartResponse.ok()) {
+      throw new Error(`generation runtime start failed: ${await runtimeStartResponse.text()}`);
+    }
+    expect(await runtimeStartResponse.json()).toMatchObject({
+      runtime: { status: "RUNNING", language: "python" },
+    });
+    await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
+    // The preview endpoint reads the live health payload through the same
+    // lease-checked path the "浏览器查看运行结果" button uses.
+    const runtimePreviewResponse = await request.get(
+      `/api/generation/jobs/${acceptedJob.id}/preview`,
+      { headers: { ...runnerHeaders }, timeout: 60_000 },
+    );
+    expect(runtimePreviewResponse.status()).toBe(200);
+    const runtimePreview = await runtimePreviewResponse.json() as {
+      status?: string;
+      language?: string;
+      health?: { status?: string; service?: string };
+      remainingSeconds?: number;
+    };
+    expect(runtimePreview).toMatchObject({
+      status: "RUNNING",
+      language: "python",
+      health: { status: "UP" },
+    });
+    expect(runtimePreview.remainingSeconds).toBeGreaterThan(0);
+    const runtimeStopResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/stop`
+    ), { timeout: 120_000 });
     await page.getByRole("button", { name: "停止" }).click();
-    await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
+    const runtimeStopResponse = await runtimeStopResponsePromise;
+    if (!runtimeStopResponse.ok()) {
+      throw new Error(`generation runtime stop failed: ${await runtimeStopResponse.text()}`);
+    }
+    expect(await runtimeStopResponse.json()).toMatchObject({
+      runtime: {
+        status: "STOPPED",
+        reason: "STOPPED_BY_AUTHORIZED_ACTOR",
+      },
+    });
+    await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 30_000 });
+    // The enterprise journey leaves a polling page and several long-lived API
+    // connections behind. Close both fixtures explicitly so Playwright does
+    // not spend its five-minute worker shutdown budget draining idle sockets.
+    await page.close();
+    await request.dispose();
   });
 }

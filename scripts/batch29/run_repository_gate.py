@@ -27,9 +27,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.batch29.route_sets import (  # noqa: E402
-    COMPLETE_ROUTE_KEYS as AUTHORITATIVE_ACTIVE_ROUTE_KEYS,
     DEPRECATED_ROUTE_LANGUAGES,
-    SUPPORTED_ROUTE_LANGUAGES,
+    THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS as AUTHORITATIVE_ACTIVE_ROUTE_KEYS,
+    THIRTEEN_LANGUAGE_MATRIX_LANGUAGES,
 )
 
 CAMPAIGN_SCHEMA = (
@@ -43,7 +43,7 @@ CURRENT_RESULT_SCHEMA_VERSION = "batch29.repository-gate-result.v2"
 CURRENT_REPOSITORY_PROFILE = "repository-wide-v2"
 LEGACY_CAMPAIGN_SCHEMA_VERSION = "batch29.repository-capability-campaign.v1"
 
-LANGUAGES = tuple(SUPPORTED_ROUTE_LANGUAGES)
+LANGUAGES = tuple(THIRTEEN_LANGUAGE_MATRIX_LANGUAGES)
 EXPECTED_ROUTE_KEYS = tuple(AUTHORITATIVE_ACTIVE_ROUTE_KEYS)
 EXPECTED_PAIRS = tuple(
     (route_key.split("-to-", 1)[0], route_key.split("-to-", 1)[1])

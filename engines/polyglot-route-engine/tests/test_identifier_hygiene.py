@@ -501,7 +501,7 @@ def test_duplicate_source_function_identity_is_not_treated_as_overload_support()
             _function("same", [("right", "integer")]),
         ]
     )
-    with pytest.raises(RouteError, match="IDENTIFIER_SOURCE_FUNCTION_DUPLICATED"):
+    with pytest.raises(RouteError, match="DUPLICATE_FUNCTION_NAME:same"):
         plan_identifiers(source, "java")
 
 

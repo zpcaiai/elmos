@@ -7,8 +7,9 @@ import platform
 import stat
 import subprocess
 import tempfile
-from dataclasses import dataclass
-from functools import lru_cache
+from dataclasses import dataclass, replace
+from datetime import datetime
+from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -42,8 +43,13 @@ def _installer_bound_toolchain_root() -> Path:
 
 
 _EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
+_homebrew_default = (
+    "/opt/homebrew"
+    if platform.system() == "Darwin"
+    else str(_EXPECTED_TOOLCHAIN_ROOT / "homebrew-not-applicable")
+)
 _EXPECTED_HOMEBREW_PREFIX = Path(
-    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", _homebrew_default)
 ).expanduser()
 if (
     not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
@@ -225,6 +231,41 @@ def sanitized_subprocess_env(
 ) -> dict[str, str]:
     """Return a deterministic subprocess environment with no ambient hooks."""
 
+    if os.name == "nt":
+        # Create a private user-profile surface while preserving only the
+        # operating-system paths required by CreateProcess and the VB6 IDE.
+        # Repository-controlled hooks and language-specific ambient variables
+        # are intentionally not copied.
+        app_data = home / "AppData" / "Roaming"
+        local_app_data = home / "AppData" / "Local"
+        for directory in (app_data, local_app_data):
+            directory.mkdir(parents=True, exist_ok=True)
+        system_root = os.environ.get("SystemRoot", os.environ.get("WINDIR", "")).strip()
+        if not system_root or not Path(system_root).is_absolute():
+            raise RouteError("SUBPROCESS_WINDOWS_SYSTEM_ROOT_REQUIRED")
+        system32 = Path(system_root) / "System32"
+        fixed_paths = [*executable_dirs, system32, Path(system_root)]
+        path = os.pathsep.join(
+            str(item.resolve())
+            for item in dict.fromkeys(fixed_paths)
+            if item.is_dir()
+        )
+        return {
+            "PATH": path,
+            "SystemRoot": system_root,
+            "WINDIR": system_root,
+            "COMSPEC": str(system32 / "cmd.exe"),
+            "PATHEXT": ".COM;.EXE;.BAT;.CMD",
+            "USERPROFILE": str(home.resolve()),
+            "APPDATA": str(app_data.resolve()),
+            "LOCALAPPDATA": str(local_app_data.resolve()),
+            "TEMP": str(temp_dir.resolve()),
+            "TMP": str(temp_dir.resolve()),
+            "TZ": "UTC",
+            "NO_COLOR": "1",
+            "SOURCE_DATE_EPOCH": "0",
+        }
+
     go_telemetry = _disabled_go_telemetry_directory(home)
     fixed_paths = [
         *executable_dirs,
@@ -311,7 +352,7 @@ def _output(
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=60,
                 env=env,
             )
     except (OSError, subprocess.TimeoutExpired) as error:
@@ -354,8 +395,9 @@ _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
 # bundle above: the bytes, release metadata, and signed bundle identity all
 # differ.  Keeping both contracts explicit prevents CI from silently accepting
 # an arbitrary JAVA_HOME merely because it prints the right version.
-_TEMURIN_JAVA_HOME_SUFFIX = (
-    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+_TEMURIN_JAVA_HOME_SUFFIXES = (
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home",
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home",
 )
 _TEMURIN_JAVA_SHA256 = "afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
 _TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"
@@ -409,6 +451,172 @@ _EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES = 11_573_800
 _EXPECTED_DOTNET_APPHOST_PACK_TREE_FILE_COUNT = 7
 _EXPECTED_DOTNET_HOSTFXR_SHA256 = "9387e328807ac3d29fb0f203bbefdf07d10d4e2200e307515ac16273657267a2"
 _EXPECTED_DOTNET_HOSTPOLICY_SHA256 = "145952fb2f06831089127216152a3e4c47ab7ffb74ddaaf4cd06410314de57ff"
+
+
+@dataclass(frozen=True)
+class HomebrewRouteBundleProfile:
+    """One exact Homebrew bundle closure for one authenticated host image."""
+
+    profile_id: str
+    image_version: str
+    product_version: str
+    build_version: str
+    dotnet_muxer_sha256: str
+    dotnet_muxer_bytes: int
+    dotnet_sdk_tree_sha256: str
+    dotnet_sdk_tree_bytes: int
+    dotnet_hostfxr_tree_sha256: str
+    dotnet_hostfxr_tree_bytes: int
+    dotnet_runtime_tree_sha256: str
+    dotnet_runtime_tree_bytes: int
+    dotnet_reference_pack_tree_sha256: str
+    dotnet_reference_pack_tree_bytes: int
+    dotnet_apphost_pack_tree_sha256: str
+    dotnet_apphost_pack_tree_bytes: int
+    dotnet_hostfxr_sha256: str
+    dotnet_hostpolicy_sha256: str
+    php_tree_sha256: str
+    php_tree_bytes: int
+
+
+_HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
+    profile_id="local-macos26-20260904",
+    image_version="",
+    product_version="26.6.2",
+    build_version="25G83",
+    dotnet_muxer_sha256=_EXPECTED_DOTNET_MUXER_SHA256,
+    dotnet_muxer_bytes=_EXPECTED_DOTNET_MUXER_BYTES,
+    dotnet_sdk_tree_sha256=_EXPECTED_DOTNET_SDK_TREE_SHA256,
+    dotnet_sdk_tree_bytes=_EXPECTED_DOTNET_SDK_TREE_BYTES,
+    dotnet_hostfxr_tree_sha256=_EXPECTED_DOTNET_HOSTFXR_TREE_SHA256,
+    dotnet_hostfxr_tree_bytes=_EXPECTED_DOTNET_HOSTFXR_TREE_BYTES,
+    dotnet_runtime_tree_sha256=_EXPECTED_DOTNET_RUNTIME_TREE_SHA256,
+    dotnet_runtime_tree_bytes=_EXPECTED_DOTNET_RUNTIME_TREE_BYTES,
+    dotnet_reference_pack_tree_sha256=_EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256,
+    dotnet_reference_pack_tree_bytes=_EXPECTED_DOTNET_REFERENCE_PACK_TREE_BYTES,
+    dotnet_apphost_pack_tree_sha256=_EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256,
+    dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
+    dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
+    dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
+)
+_HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
+    product_version="26.6.2",
+    build_version="25G83",
+    dotnet_muxer_sha256="09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4",
+    dotnet_muxer_bytes=141_184,
+    dotnet_sdk_tree_sha256="705c14f47e293f8bed4e9924ef978d6f8108f33a457714eb2984aed55a910bde",
+    dotnet_sdk_tree_bytes=360_223_456,
+    dotnet_hostfxr_tree_sha256="faf0f7a009c3591536e82382b0e8fbe528fa383c2534f007f92430b4493d68af",
+    dotnet_hostfxr_tree_bytes=419_312,
+    dotnet_runtime_tree_sha256="c44bc66af88be13dd791a9880ee2984689f03e3b49a1b6a89408c1aab72300f0",
+    dotnet_runtime_tree_bytes=81_268_495,
+    dotnet_reference_pack_tree_sha256="08036f3b9c582ad2d33227b968439da208796f403efb0b2a157c5969fa8816d6",
+    dotnet_reference_pack_tree_bytes=40_730_732,
+    dotnet_apphost_pack_tree_sha256="9bd82f2a3648305e3d5f025f0b9e2501a63249b899471c8b474969465f1e26d9",
+    dotnet_apphost_pack_tree_bytes=11_486_272,
+    dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
+    dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
+)
+_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
+)
+_HOMEBREW_ROUTE_HOST_PROFILES = (
+    _HOMEBREW_ROUTE_LOCAL_PROFILE,
+    _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+)
+_HOMEBREW_ROUTE_PROFILE_ID_ENV = "ELMOS_HOMEBREW_ROUTE_PROFILE_ID"
+
+
+def _select_homebrew_route_bundle_profile(
+    *, image_version: str, product_version: str, build_version: str
+) -> HomebrewRouteBundleProfile:
+    matches = tuple(
+        profile
+        for profile in _HOMEBREW_ROUTE_HOST_PROFILES
+        if profile.image_version == image_version
+        and profile.product_version == product_version
+        and profile.build_version == build_version
+    )
+    if len(matches) != 1:
+        observed = "/".join((image_version or "local", product_version, build_version))
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH:observed={observed}"
+        )
+    return matches[0]
+
+
+@cache
+def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
+    """Bind .NET and PHP bytes to one local or authenticated hosted image."""
+
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_HOMEBREW_HOST_PLATFORM_MISMATCH:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    image_version = os.environ.get("ImageVersion", "").strip()
+    declared_profile_id = os.environ.get(_HOMEBREW_ROUTE_PROFILE_ID_ENV, "").strip()
+    declared_profile: HomebrewRouteBundleProfile | None = None
+    if declared_profile_id:
+        declared_matches = tuple(
+            profile
+            for profile in _HOMEBREW_ROUTE_HOST_PROFILES
+            if profile.profile_id == declared_profile_id and profile.image_version
+        )
+        if len(declared_matches) != 1:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+                + declared_profile_id
+            )
+        declared_profile = declared_matches[0]
+        if image_version and image_version != declared_profile.image_version:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+                + declared_profile_id
+                + "/"
+                + image_version
+            )
+        image_version = declared_profile.image_version
+    if image_version or declared_profile is not None:
+        required_environment = {
+            "GITHUB_ACTIONS": "true",
+            "RUNNER_ENVIRONMENT": "github-hosted",
+            "ImageOS": "macos26",
+        }
+        drift = tuple(
+            key
+            for key, expected in required_environment.items()
+            if os.environ.get(key, "").strip() != expected
+        )
+        if drift:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:"
+                + ",".join(drift)
+            )
+    selected = _select_homebrew_route_bundle_profile(
+        image_version=image_version,
+        product_version=_output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False),
+        build_version=_output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False),
+    )
+    if declared_profile is not None and selected.profile_id != declared_profile.profile_id:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+            + declared_profile_id
+        )
+    return selected
 
 
 def _dotnet_directory_chain(directory: Path, failure: str) -> tuple[tuple[object, ...], ...]:
@@ -729,7 +937,13 @@ def _qualified_file_record(path: Path, root: Path, failure: str) -> dict[str, st
     }
 
 
-def _qualified_tree_manifest(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def _qualified_tree_manifest(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    portable_owner_identity: bool = False,
+) -> dict[str, object]:
     """Return a complete immutable manifest for a symlink-free toolchain tree."""
 
     root_chain = _qualified_directory_chain(root, anchor, failure)
@@ -780,8 +994,21 @@ def _qualified_tree_manifest(root: Path, anchor: Path, failure: str) -> dict[str
         str(item["path"]) for item in records
     ] or _qualified_directory_chain(root, anchor, failure) != root_chain:
         raise RouteError(failure + ":TREE_CHANGED")
+    digest_records = records
+    if portable_owner_identity:
+        # Ownership and link count remain mandatory safety checks above. They
+        # are host installation metadata, however, and are not part of the
+        # immutable toolchain distribution bytes shared by isolated runners.
+        digest_records = [
+            {
+                key: value
+                for key, value in record.items()
+                if key not in {"uid", "gid", "nlink"}
+            }
+            for record in records
+        ]
     encoded = json.dumps(
-        {"records": records},
+        {"records": digest_records},
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
@@ -815,7 +1042,13 @@ def _verify_qualified_tree_manifest(
         "bytes": expected_bytes,
     }
     if identity != expected:
-        raise RouteError(failure)
+        raise RouteError(
+            failure
+            + ":expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+        )
 
 
 def _qualified_fixed_symlink(
@@ -875,6 +1108,7 @@ def _dotnet_bundle_identity() -> dict[str, object]:
             "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:csharp:expected=Darwin/arm64:"
             f"observed={platform.system()}/{platform.machine()}"
         )
+    bundle_profile = homebrew_route_bundle_profile()
     wrapper = _dotnet_file_binding(
         _EXPECTED_DOTNET_WRAPPER,
         _EXPECTED_DOTNET_CELLAR,
@@ -920,38 +1154,38 @@ def _dotnet_bundle_identity() -> dict[str, object]:
         },
         "muxer": {
             "path": str(_EXPECTED_DOTNET_MUXER),
-            "bytes": _EXPECTED_DOTNET_MUXER_BYTES,
-            "sha256": _EXPECTED_DOTNET_MUXER_SHA256,
+            "bytes": bundle_profile.dotnet_muxer_bytes,
+            "sha256": bundle_profile.dotnet_muxer_sha256,
         },
         "sdk": {
             "path": str(_EXPECTED_DOTNET_SDK),
-            "bytes": _EXPECTED_DOTNET_SDK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_sdk_tree_bytes,
             "file_count": _EXPECTED_DOTNET_SDK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_SDK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_sdk_tree_sha256,
         },
         "hostfxr": {
             "path": str(_EXPECTED_DOTNET_HOSTFXR),
-            "bytes": _EXPECTED_DOTNET_HOSTFXR_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_hostfxr_tree_bytes,
             "file_count": _EXPECTED_DOTNET_HOSTFXR_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_HOSTFXR_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_hostfxr_tree_sha256,
         },
         "runtime": {
             "path": str(_EXPECTED_DOTNET_RUNTIME),
-            "bytes": _EXPECTED_DOTNET_RUNTIME_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_runtime_tree_bytes,
             "file_count": _EXPECTED_DOTNET_RUNTIME_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_RUNTIME_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_runtime_tree_sha256,
         },
         "reference_pack": {
             "path": str(_EXPECTED_DOTNET_REFERENCE_PACK),
-            "bytes": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_reference_pack_tree_bytes,
             "file_count": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_reference_pack_tree_sha256,
         },
         "apphost_pack": {
             "path": str(_EXPECTED_DOTNET_APPHOST_PACK),
-            "bytes": _EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_apphost_pack_tree_bytes,
             "file_count": _EXPECTED_DOTNET_APPHOST_PACK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_apphost_pack_tree_sha256,
         },
     }
     observed = {
@@ -965,12 +1199,23 @@ def _dotnet_bundle_identity() -> dict[str, object]:
     }
     if (
         observed != expected
-        or hostfxr_binary["sha256"] != _EXPECTED_DOTNET_HOSTFXR_SHA256
-        or hostpolicy_binary["sha256"] != _EXPECTED_DOTNET_HOSTPOLICY_SHA256
+        or hostfxr_binary["sha256"] != bundle_profile.dotnet_hostfxr_sha256
+        or hostpolicy_binary["sha256"] != bundle_profile.dotnet_hostpolicy_sha256
     ):
-        raise RouteError("EXACT_TOOLCHAIN_DOTNET_BUNDLE_MISMATCH")
+        diagnostic = {
+            "bundle": observed,
+            "hostfxr_binary": hostfxr_binary,
+            "hostpolicy_binary": hostpolicy_binary,
+        }
+        raise RouteError(
+            "EXACT_TOOLCHAIN_DOTNET_BUNDLE_MISMATCH:expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(diagnostic, sort_keys=True, separators=(",", ":"))
+        )
     return {
         **observed,
+        "homebrew_bundle_profile_id": bundle_profile.profile_id,
         "hostfxr_binary": hostfxr_binary,
         "hostpolicy_binary": hostpolicy_binary,
     }
@@ -990,6 +1235,7 @@ def _dotnet_profile(identity: dict[str, object]) -> tuple[str, ...]:
         "dotnet-profile-schema=v1",
         "platform=Darwin/arm64",
         "distribution=Homebrew-dotnet",
+        f"homebrew-bundle-profile={identity['homebrew_bundle_profile_id']}",
         f"dotnet-root={_EXPECTED_DOTNET_ROOT}",
         f"sdk-version={_EXPECTED_DOTNET_VERSION}",
         f"hostfxr-version={_EXPECTED_DOTNET_RUNTIME_VERSION}",
@@ -1109,10 +1355,10 @@ def _java_contract() -> _JavaContract:
         expected_home = Path(configured).resolve(strict=True)
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin") from error
-    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIX):
+    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIXES):
         raise RouteError(
             "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin:"
-            f"expected_suffix={_TEMURIN_JAVA_HOME_SUFFIX}"
+            f"expected_suffixes={','.join(_TEMURIN_JAVA_HOME_SUFFIXES)}"
         )
     return _JavaContract(
         home=expected_home,
@@ -1715,11 +1961,12 @@ _NODE26_LEGACY_PROFILE_FIELDS: dict[str, str | int] = {
     "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
 }
 # Each record is a complete, coherent Node runtime identity.  The first three
-# preserve the previously qualified Homebrew closures.  The fourth is the
-# independently observed GitHub macOS 26 image 20260728.0273.1 closure.  Image
-# provenance names the host on which those bytes were measured; acceptance is
-# still based on the complete content/topology/process record below, never on
-# an environment label alone.
+# preserve the previously qualified Homebrew closures.  The remaining records
+# are independently observed GitHub macOS 26 image closures.  Image provenance
+# names the host on which those bytes were measured; acceptance is still based
+# on the complete content/topology/process record below, never on an
+# environment label alone.  Historical profiles remain registered so an exact
+# replay does not silently reinterpret old bytes as the current hosted image.
 _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
     {
         **_NODE26_LEGACY_PROFILE_FIELDS,
@@ -1765,6 +2012,30 @@ _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
         "system_edge_count": 43,
         "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
         "closure_sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "closure_bytes": 119_975_888,
+        "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
+        "node_bytes": 50_672,
+        "libnode_sha256": "980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88",
+        "libnode_bytes": 70_661_840,
+        "libada_sha256": "b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8",
+        "libada_bytes": 598_704,
+        "process_versions": _NODE26_PROCESS_VERSIONS,
+        "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
+    },
+    {
+        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
+        "bytes": 119_975_888,
+        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
+        "node_version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "topology_sha256": "4d2426eac17276f2bc4ec386d85660ecf5896cb4746fc1de87fbe4d7f2551e82",
+        "component_count": 25,
+        "edge_count": 49,
+        "system_edge_count": 43,
+        "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
+        "closure_sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "closure_bytes": 119_975_888,
         "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
         "node_bytes": 50_672,
@@ -3524,12 +3795,12 @@ _EXPECTED_RUST_PUBLIC_TARGETS = {
     _EXPECTED_RUST_PUBLIC_CARGO: str(_EXPECTED_RUST_WRAPPER_ROOT / "cargo"),
     _EXPECTED_RUST_PUBLIC_RUSTUP: str(_EXPECTED_RUST_WRAPPER_ROOT / "rustup"),
 }
-_EXPECTED_RUST_WRAPPER_TREE_SHA256 = "f74538687384c432f46553dbee0ecddf732c7bcae239aadcf94ad090056ab8c8"
+_EXPECTED_RUST_WRAPPER_TREE_SHA256 = "aa5baa526cfd7d7d2b8c55d98582265ee8ff1d90582ec49f4775111c2abd4141"
 _EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT = 0
-_EXPECTED_RUST_WRAPPER_TREE_BYTES = 790
-_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "cb6193d1c822b49b839033b69a850b049ecf525feac88bfe0d08829f0aea268b"
+_EXPECTED_RUST_WRAPPER_TREE_BYTES = 1_963
+_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a"
 _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT = 157
 _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT = 135
 _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT = 22
@@ -3626,6 +3897,30 @@ def _go() -> ExactToolchain:
     )
 
 
+def _rust_sysroot_root_identity() -> tuple[int, int, int, int, int, int, int]:
+    try:
+        metadata = _EXPECTED_RUST_SYSROOT.lstat()
+    except OSError as error:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE") from error
+    if (
+        not stat.S_ISDIR(metadata.st_mode)
+        or _EXPECTED_RUST_SYSROOT.is_symlink()
+        or stat.S_IMODE(metadata.st_mode) != 0o555
+        or metadata.st_uid not in {0, os.getuid()}
+        or metadata.st_nlink < 2
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE")
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_nlink,
+        metadata.st_mtime_ns,
+    )
+
+
 def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
     wrappers = _qualified_tree_manifest(
         _EXPECTED_RUST_WRAPPER_ROOT,
@@ -3642,10 +3937,12 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         expected_bytes=_EXPECTED_RUST_WRAPPER_TREE_BYTES,
         failure="EXACT_TOOLCHAIN_RUST_WRAPPER_TREE_MISMATCH",
     )
+    sysroot_root_before = _rust_sysroot_root_identity()
     sysroot = _qualified_tree_manifest(
         _EXPECTED_RUST_SYSROOT,
         _EXPECTED_USER_LOCAL,
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
+        portable_owner_identity=True,
     )
     _verify_qualified_tree_manifest(
         sysroot,
@@ -3657,6 +3954,8 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         expected_bytes=_EXPECTED_RUST_SYSROOT_TREE_BYTES,
         failure="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
     )
+    if _rust_sysroot_root_identity() != sysroot_root_before:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_CHANGED")
     return wrappers, sysroot
 
 
@@ -3780,6 +4079,232 @@ _EXPECTED_CLANG_SHA256 = "7def90dd8829726686213a747fc5bff1583df933dae5edc55d7554
 _EXPECTED_SWIFTC_SHA256 = "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
 
 
+@dataclass(frozen=True)
+class AppleRouteHostProfile:
+    """One indivisible, measured GitHub macOS/Xcode execution closure."""
+
+    profile_id: str
+    image_version: str
+    product_version: str
+    build_version: str
+    xcode: str
+    macos_sdk: str
+    clang_sha256: str
+    swiftc_sha256: str
+    component_overrides: tuple[tuple[str, str, int], ...]
+    tree_overrides: tuple[tuple[str, str, int, int], ...]
+    apple_git_sha256: str
+    apple_git_bytes: int
+    sandbox_exec_sha256: str
+    sandbox_exec_cdhash_full: str
+    sandbox_exec_bytes: int
+    codesign_sha256: str
+    codesign_bytes: int
+
+
+# The locally installed 26.6 bundle and GitHub's 26.6 runner bundle report the
+# same marketing version but are different byte closures.  Keep them as whole,
+# non-interchangeable profiles; receipt matching below also includes the Xcode
+# Git and OS signing-tool identities so a hybrid cannot select either profile.
+_APPLE_ROUTE_LOCAL_PROFILE = AppleRouteHostProfile(
+    profile_id="local-macos26-20260904",
+    image_version="",
+    product_version="26.6.2",
+    build_version="25G83",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256=_EXPECTED_CLANG_SHA256,
+    swiftc_sha256=_EXPECTED_SWIFTC_SHA256,
+    component_overrides=(),
+    tree_overrides=(),
+    apple_git_sha256="10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+    apple_git_bytes=3_704_880,
+    sandbox_exec_sha256="abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+    sandbox_exec_cdhash_full="4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+    sandbox_exec_bytes=102_368,
+    codesign_sha256="844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
+    codesign_bytes=458_576,
+)
+
+_APPLE_ROUTE_LEGACY_PROFILE = AppleRouteHostProfile(
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256="d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda",
+    swiftc_sha256="8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f",
+    component_overrides=(
+        ("swift-dispatcher", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("swiftc-dispatcher", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("swift-build-dispatcher", "487af88e37990b089e4979b874bd7944aca0dba5ffb0cae6236aefd02b301f05", 48_459_440),
+        ("swift-package", "487af88e37990b089e4979b874bd7944aca0dba5ffb0cae6236aefd02b301f05", 48_459_440),
+        ("swift-driver", "65b741dd6274318d08d8d510b48b56fc718af418adc20c3913f68aea4b4e4d42", 6_305_152),
+        ("swift-frontend", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("clang", "d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda", 290_664_032),
+        ("clangxx-dispatcher", "d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda", 290_664_032),
+        ("linker", "e412b9f2af31b1567a9eabc28f553a8f1cf34127e2107cb39c2694cf147571a4", 4_953_232),
+        ("archiver", "796d3d310da783252c83ae4a9a9f3c5c92dba0747bb81de3753ce61809be6947", 139_056),
+        ("libtool", "0d41e97fd26c5dd2a268ddb1a5c07b7f8f9e6f0cd28922d92b5b19aec7c42849", 440_176),
+        ("platform-swift-plugin-server", "7a9c12f5b6c5ad40f26b9e0e7767967cb7bd192a91532c4b915c0c01369e3e03", 137_056),
+        ("in-process-plugin-server", "37b37b1eb1354c870910187fb3ac42414805da941c302f00d9be0b1017eb8eba", 173_344),
+        ("swift-driver-library", "31136107cf83f639540d698016d69c861231d4282ea93ded7353e614a7c3b15c", 6_340_944),
+        ("swift-tools-support-library", "728890c1f2e5fefd564247f1b5a350a441a26285d7c234b46f50819608ff3020", 2_419_296),
+        ("build-server-protocol", "a05648ca25c2db07f4c2af84abd8eeb11c8debe76b8b5f8ffb68be2324c6a7f5", 963_248),
+        ("language-server-protocol", "3593be35263b82a0cdd4a31ffcd77ba8fe9433aced80913b8a03bb78ab53a785", 5_343_632),
+        (
+            "language-server-protocol-transport",
+            "bdc80c99e955ed599e1da3f4fdd1ec67aa5c7d58e504bb949070635e0aee6e8f",
+            516_624,
+        ),
+        ("swb-build-service", "67e6b1bbcf34059fca5fa467f3b738a8c0823f28122ebfea719ce3e28c2f6e1c", 2_837_056),
+        ("swb-project-model", "ac3bc1eb2eb6643b392d2bae16c818dca505a434586a25a13eeee1c18dde53bb", 1_113_584),
+        ("swb-util", "92b7dcda84db6891a4f48bed7289750ff8481c270d6da8f2b8de1fcf01720218", 6_440_816),
+        ("swift-build-framework", "fafeefff64776545195c6e41356ee76422ce2a66a0b64d796bb487677df08aa3", 6_935_776),
+        (
+            "tools-protocols-swift-extensions",
+            "689e9f1c1ca838af83cc75bbf451b83f84d8bc3bfb5830c0e5d85a26d3f925c4",
+            396_432,
+        ),
+        ("llbuild-framework", "0322414740fb02dd9f0bc0e238bd251d5dc9e58af43660eec7f5f0664ceb1b03", 2_890_784),
+    ),
+    tree_overrides=(
+        ("toolchain-host-plugins", "4fa83d7d2c0246c4fbe83cc8d71fe26b8beacc27f2a650fb0945d23de0eacbcc", 4, 3_222_976),
+        ("platform-host-plugins", "8d1463ff558fa7cdc81daabf20855fa6878e27716ca4874adf5f37824d2494ed", 15, 10_106_220),
+    ),
+    apple_git_sha256="e68bc9395203d8e1be47b98c374df67ccb45732379a9fdba94b56d861e5f648f",
+    apple_git_bytes=7_604_272,
+    sandbox_exec_sha256="8290e4be7387a0df83cd1559e86afd880464f269450573d012795761fe298f16",
+    sandbox_exec_cdhash_full="2f619ca893522eb88a87dc31ddc1e8cad98f237d4672f6f9d0c9f05395572463",
+    sandbox_exec_bytes=102_560,
+    codesign_sha256="214d455584d19abc0d74d02b9cbc7d3da6bdcb0596c235e6156dd9ed2f4e1ba7",
+    codesign_bytes=459_824,
+)
+
+_APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
+    product_version="26.6.2",
+    build_version="25G83",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256=_APPLE_ROUTE_LEGACY_PROFILE.clang_sha256,
+    swiftc_sha256=_APPLE_ROUTE_LEGACY_PROFILE.swiftc_sha256,
+    component_overrides=_APPLE_ROUTE_LEGACY_PROFILE.component_overrides,
+    tree_overrides=_APPLE_ROUTE_LEGACY_PROFILE.tree_overrides,
+    apple_git_sha256=_APPLE_ROUTE_LEGACY_PROFILE.apple_git_sha256,
+    apple_git_bytes=_APPLE_ROUTE_LEGACY_PROFILE.apple_git_bytes,
+    sandbox_exec_sha256=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_sha256,
+    sandbox_exec_cdhash_full=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_cdhash_full,
+    sandbox_exec_bytes=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_bytes,
+    codesign_sha256=_APPLE_ROUTE_LOCAL_PROFILE.codesign_sha256,
+    codesign_bytes=_APPLE_ROUTE_LOCAL_PROFILE.codesign_bytes,
+)
+
+_APPLE_ROUTE_HOST_PROFILES = (
+    _APPLE_ROUTE_LEGACY_PROFILE,
+    _APPLE_ROUTE_CURRENT_PROFILE,
+    _APPLE_ROUTE_LOCAL_PROFILE,
+)
+
+
+def _select_apple_route_host_profile(
+    *,
+    image_version: str,
+    product_version: str,
+    build_version: str,
+    xcode: str,
+) -> AppleRouteHostProfile:
+    matches = tuple(
+        profile
+        for profile in _APPLE_ROUTE_HOST_PROFILES
+        if (
+            profile.product_version,
+            profile.build_version,
+            profile.xcode,
+        )
+        == (product_version, build_version, xcode)
+        and (not image_version or profile.image_version == image_version)
+    )
+    if not image_version:
+        # A sanitized local child has no GitHub image identity.  Prefer the
+        # explicit local closure when the OS tuple otherwise overlaps a hosted
+        # image; older tuples with only one registered profile remain valid.
+        local_matches = tuple(profile for profile in matches if not profile.image_version)
+        if local_matches:
+            matches = local_matches
+    if len(matches) != 1:
+        observed = "/".join(
+            (image_version, product_version, build_version, xcode.replace("\n", "/"))
+        )
+        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_HOST_PROFILE_MISMATCH:observed={observed}")
+    return matches[0]
+
+
+@cache
+def apple_route_host_profile(language: Language) -> AppleRouteHostProfile:
+    """Select one complete Apple closure; never accept per-file alternatives."""
+
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    xcodebuild = Path("/usr/bin/xcodebuild")
+    xcrun = Path("/usr/bin/xcrun")
+    if not xcodebuild.is_file() or not xcrun.is_file():
+        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
+    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
+    image_version = os.environ.get("ImageVersion", "").strip()
+    if image_version:
+        required_environment = {
+            "GITHUB_ACTIONS": "true",
+            "RUNNER_ENVIRONMENT": "github-hosted",
+            "ImageOS": "macos26",
+            "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
+            "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL": "/Applications/Xcode.app",
+        }
+        drift = tuple(
+            key
+            for key, expected in required_environment.items()
+            if os.environ.get(key, "").strip() != expected
+        )
+        if drift:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_APPLE_HOST_PROVENANCE_MISMATCH:" + ",".join(drift)
+            )
+    product_version = _output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False)
+    build_version = _output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False)
+    selected = _select_apple_route_host_profile(
+        image_version=image_version,
+        product_version=product_version,
+        build_version=build_version,
+        xcode=observed_xcode,
+    )
+    sdk_version = _output(
+        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
+        include_stderr=False,
+    )
+    sdk_path = Path(
+        _output(
+            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
+            include_stderr=False,
+        )
+    )
+    if sdk_version != selected.macos_sdk:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"
+            f"expected={selected.xcode.replace(chr(10), '/')}/sdk={selected.macos_sdk}:"
+            f"observed={observed_xcode.replace(chr(10), '/')}/sdk={sdk_version}"
+        )
+    foundation = sdk_path / "System/Library/Frameworks/Foundation.framework/Headers/Foundation.h"
+    objc_runtime = sdk_path / "usr/include/objc/objc.h"
+    if sdk_path.name != "MacOSX26.5.sdk" or not foundation.is_file() or not objc_runtime.is_file():
+        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_SDK_INCOMPLETE:{language}:{sdk_path}")
+    return selected
+
+
 def _pinned(variable: str, language: Language, repository_pin: str) -> str:
     declared = os.environ.get(variable, repository_pin).strip()
     if declared != repository_pin:
@@ -3794,45 +4319,19 @@ def _sha256(path: Path) -> str:
 
 
 def _apple_profile(language: Language) -> tuple[str, ...]:
-    if platform.system() != "Darwin" or platform.machine() != "arm64":
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Darwin/arm64:"
-            f"observed={platform.system()}/{platform.machine()}"
-        )
-    xcodebuild = Path("/usr/bin/xcodebuild")
-    xcrun = Path("/usr/bin/xcrun")
-    if not xcodebuild.is_file() or not xcrun.is_file():
-        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
-    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
-    sdk_version = _output(
-        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
-        include_stderr=False,
-    )
-    sdk_path = Path(
-        _output(
-            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
-            include_stderr=False,
-        )
-    )
-    if observed_xcode != _EXPECTED_XCODE or sdk_version != _EXPECTED_MACOS_SDK:
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"
-            f"expected={_EXPECTED_XCODE.replace(chr(10), '/')}/sdk={_EXPECTED_MACOS_SDK}:"
-            f"observed={observed_xcode.replace(chr(10), '/')}/sdk={sdk_version}"
-        )
-    foundation = sdk_path / "System/Library/Frameworks/Foundation.framework/Headers/Foundation.h"
-    objc_runtime = sdk_path / "usr/include/objc/objc.h"
-    if sdk_path.name != "MacOSX26.5.sdk" or not foundation.is_file() or not objc_runtime.is_file():
-        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_SDK_INCOMPLETE:{language}:{sdk_path}")
+    selected = apple_route_host_profile(language)
     return (
         "platform=Darwin/arm64",
+        f"apple-host-profile={selected.profile_id}",
         "xcode=26.6/17F113",
         "macosx-sdk=26.5",
-        f"sdk-path={sdk_path}",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+        "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
     )
 
 
 def _clang(language: Language, executable_name: str) -> ExactToolchain:
+    selected = apple_route_host_profile(language)
     xcrun = Path("/usr/bin/xcrun")
     executable = _output([str(xcrun), "--find", executable_name]) if xcrun.is_file() else None
     if not executable or not Path(executable).is_file():
@@ -3851,9 +4350,9 @@ def _clang(language: Language, executable_name: str) -> ExactToolchain:
     expected = _pinned(_CLANG_VERSION_VARIABLE, language, _EXPECTED_CLANG_VERSION)
     observed = _output([executable, "--version"]).splitlines()[0].strip()
     executable_digest = _sha256(Path(executable).resolve())
-    if observed != expected or executable_digest != _EXPECTED_CLANG_SHA256:
+    if observed != expected or executable_digest != selected.clang_sha256:
         raise RouteError(
-            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}/sha256={_EXPECTED_CLANG_SHA256}:"
+            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}/sha256={selected.clang_sha256}:"
             f"observed={observed}/sha256={executable_digest}"
         )
     standard = "c++20" if language == "cpp" else "c17/objc-arc/Foundation/Apple-runtime"
@@ -3877,6 +4376,7 @@ def _objc() -> ExactToolchain:
 
 
 def _swift() -> ExactToolchain:
+    selected = apple_route_host_profile("swift")
     xcrun = Path("/usr/bin/xcrun")
     executable = _output([str(xcrun), "--find", "swiftc"]) if xcrun.is_file() else None
     driver = _output([str(xcrun), "--find", "swift"]) if xcrun.is_file() else None
@@ -3892,13 +4392,13 @@ def _swift() -> ExactToolchain:
     if (
         observed != expected
         or observed_target != _EXPECTED_SWIFT_TARGET
-        or executable_digest != _EXPECTED_SWIFTC_SHA256
-        or driver_digest != _EXPECTED_SWIFTC_SHA256
+        or executable_digest != selected.swiftc_sha256
+        or driver_digest != selected.swiftc_sha256
         or driver_version != "\n".join((expected, _EXPECTED_SWIFT_TARGET, _EXPECTED_SWIFT_DRIVER_VERSION))
     ):
         raise RouteError(
             f"EXACT_TOOLCHAIN_MISMATCH:swift:expected={expected}/{_EXPECTED_SWIFT_TARGET}/"
-            f"swiftc-sha256={_EXPECTED_SWIFTC_SHA256}/swift-driver-sha256={_EXPECTED_SWIFTC_SHA256}:"
+            f"swiftc-sha256={selected.swiftc_sha256}/swift-driver-sha256={selected.swiftc_sha256}:"
             f"observed={observed}/{observed_target}/swiftc-sha256={executable_digest}/"
             f"swift-driver-sha256={driver_digest}"
         )
@@ -3948,11 +4448,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '67b55fd7129e98b7291b6b2e8e7d18a3574ddb682d032159c44305d649dbb18c'
+_EXPECTED_PHP_TREE_SHA256 = '60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129955920
+_EXPECTED_PHP_TREE_BYTES = 129937220
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -3990,6 +4490,159 @@ _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256 = '4d932570ac531f0886895fe7be8440ba5764c7d
 #: thing being dlopen'd bound by the tree digest.
 _EXPECTED_PHP_TOKENIZER = 'builtin'
 
+_PHP_FORMULA_SOURCE_COMMIT = "484c7c82b30520d6e2213fa9e1cad855b0385dc1"
+_PHP_FORMULA_SOURCE_SHA256 = (
+    "57d8566ea1cac7b67fb12b66eaa3a56bf82e5f2665a366c7b171020f44a1fe7d"
+)
+
+
+def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
+    """Bind PHP bottle semantics while removing installer-transaction drift."""
+    if not isinstance(receipt, dict):
+        raise RouteError(failure)
+    normalized = json.loads(json.dumps(receipt))
+    if (
+        type(normalized.get("time")) is not int
+        or type(normalized.get("source_modified_time")) is not int
+        or not isinstance(normalized.get("homebrew_version"), str)
+    ):
+        raise RouteError(failure)
+
+    source = normalized.get("source")
+    versions = source.get("versions") if isinstance(source, dict) else None
+    if (
+        not isinstance(source, dict)
+        or source.get("spec") not in {None, "stable"}
+        or not isinstance(versions, dict)
+        or versions.get("stable") != "8.5.9"
+        or source.get("tap") not in {"homebrew/core", "elmos/pinned-route-ci"}
+    ):
+        raise RouteError(failure)
+    expected_source_paths = {
+        "homebrew/core": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+        "elmos/pinned-route-ci": str(
+            _EXPECTED_HOMEBREW_PREFIX
+            / "Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb"
+        ),
+    }
+    if source.get("path") != expected_source_paths[source["tap"]]:
+        raise RouteError(failure)
+
+    allowed_version_fields = {
+        "stable",
+        "head",
+        "version_scheme",
+        "compatibility_version",
+    }
+    if (
+        not set(versions).issubset(allowed_version_fields)
+        # Homebrew's API-backed core receipt records an unselected HEAD as null,
+        # while the exact same pinned formula loaded from the CI tap records the
+        # declared HEAD sentinel. ``source.spec == "stable"`` above proves that
+        # neither form selected HEAD; accept only those two exact encodings.
+        or versions.get("head") not in {None, "HEAD"}
+        or (
+            "version_scheme" in versions
+            and (
+                type(versions["version_scheme"]) is not int
+                or versions["version_scheme"] != 0
+            )
+        )
+        or (
+            "compatibility_version" in versions
+            and not (
+                (
+                    type(versions["compatibility_version"]) is int
+                    and versions["compatibility_version"] == 1
+                )
+                # A bottle loaded from the exact no-git CI tap starts with an
+                # empty source-version record. Homebrew hydrates ``stable`` and
+                # ``version_scheme`` before writing INSTALL_RECEIPT.json, but
+                # leaves ``compatibility_version`` null. The pinned formula
+                # digest and the normalized install tree still bind the declared
+                # compatibility version; accept this null only for that tap.
+                or (
+                    source.get("tap") == "elmos/pinned-route-ci"
+                    and versions["compatibility_version"] is None
+                )
+            )
+        )
+    ):
+        raise RouteError(failure)
+
+    for key in ("used_options", "unused_options", "changed_files", "aliases"):
+        values = normalized.get(key)
+        if values is None:
+            continue
+        if not isinstance(values, list) or not all(isinstance(item, str) for item in values):
+            raise RouteError(failure)
+        normalized[key] = sorted(values)
+
+    aliases = normalized.get("aliases")
+    if aliases is not None and aliases != [] and aliases != ["php@8.5"]:
+        raise RouteError(failure)
+    normalized["aliases"] = ["php@8.5"]
+
+    dependencies = normalized.get("runtime_dependencies")
+    if dependencies is not None:
+        if not isinstance(dependencies, list):
+            raise RouteError(failure)
+        stable_dependencies: list[dict[str, object]] = []
+        for dependency in dependencies:
+            if (
+                not isinstance(dependency, dict)
+                or not isinstance(dependency.get("full_name"), str)
+                or not dependency["full_name"]
+                or type(dependency.get("declared_directly")) is not bool
+                or set(dependency)
+                != {
+                    "full_name",
+                    "version",
+                    "revision",
+                    "bottle_rebuild",
+                    "pkg_version",
+                    "declared_directly",
+                }
+            ):
+                raise RouteError(failure)
+            stable_dependencies.append(
+                {
+                    "full_name": dependency["full_name"],
+                    "declared_directly": dependency["declared_directly"],
+                }
+            )
+        if len({item["full_name"] for item in stable_dependencies}) != len(
+            stable_dependencies
+        ):
+            raise RouteError(failure)
+        normalized["runtime_dependencies"] = sorted(
+            stable_dependencies, key=lambda item: cast(str, item["full_name"])
+        )
+
+    normalized["time"] = "<installation-time>"
+    normalized["source_modified_time"] = "<source-modified-time>"
+    normalized["homebrew_version"] = "<homebrew-client-version>"
+    if "installed_on_request" in normalized:
+        normalized["installed_on_request"] = "<installation-request-context>"
+    source["spec"] = "stable"
+    source["versions"] = {"stable": "8.5.9"}
+    source["tap"] = (
+        f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
+        f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
+    )
+    source["path"] = "<pinned-php-formula-source>"
+    tap_git_head = source.get("tap_git_head")
+    if tap_git_head is not None and (
+        not isinstance(tap_git_head, str)
+        or len(tap_git_head) != 40
+        or any(character not in "0123456789abcdef" for character in tap_git_head)
+    ):
+        raise RouteError(failure)
+    source["tap_git_head"] = "<installer-local-tap-head>"
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+
 #: Printed as one canonical JSON object on stdout. `-n` suppresses every php.ini
 #: so the answer describes the *build*, not the machine's configuration; the
 #: configuration that will actually be used at emit time is captured separately
@@ -4019,7 +4672,96 @@ _PHP_RUNTIME_IDENTITY_SCRIPT = (
 )
 
 
-def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def _php_install_receipt_field_digests(
+    receipt: dict[str, object],
+) -> dict[str, dict[str, object]]:
+    diagnostics: dict[str, dict[str, object]] = {}
+    for key, value in sorted(receipt.items()):
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+        field: dict[str, object] = {
+            "bytes": len(canonical),
+            "sha256": hashlib.sha256(canonical).hexdigest(),
+            "type": type(value).__name__,
+        }
+        if isinstance(value, list):
+            elements = [
+                json.dumps(item, sort_keys=True, separators=(",", ":"))
+                for item in value
+            ]
+            sorted_canonical = json.dumps(
+                sorted(elements), separators=(",", ":")
+            ).encode("utf-8")
+            field.update(
+                {
+                    "count": len(elements),
+                    "sorted_sha256": hashlib.sha256(sorted_canonical).hexdigest(),
+                    "unique_count": len(set(elements)),
+                }
+            )
+        diagnostics[key] = field
+    return diagnostics
+
+
+def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
+    """Bind the Homebrew SPDX document without its generation timestamp."""
+    if not isinstance(document, dict):
+        raise RouteError(failure)
+    creation = document.get("creationInfo")
+    created = creation.get("created") if isinstance(creation, dict) else None
+    if (
+        document.get("spdxVersion") != "SPDX-2.3"
+        or document.get("dataLicense") != "CC0-1.0"
+        or document.get("SPDXID") != "SPDXRef-DOCUMENT"
+        or document.get("name") != "SBOM-SPDX-php-8.5.9"
+        or document.get("documentNamespace")
+        != "https://formulae.brew.sh/spdx/php-8.5.9.json"
+        or not isinstance(creation, dict)
+        or set(creation) != {"created", "creators"}
+        or not isinstance(created, str)
+        or not isinstance(creation.get("creators"), list)
+        or len(creation["creators"]) != 1
+        or not isinstance(creation["creators"][0], str)
+    ):
+        raise RouteError(failure)
+    creator_prefix = "Tool: https://github.com/Homebrew/brew@"
+    creator = creation["creators"][0]
+    creator_version = creator.removeprefix(creator_prefix)
+    if (
+        not creator.startswith(creator_prefix)
+        or not creator_version
+        or any(
+            not (character.isalnum() or character in ".+-")
+            for character in creator_version
+        )
+    ):
+        raise RouteError(failure)
+    try:
+        if datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ").strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        ) != created:
+            raise RouteError(failure)
+    except ValueError as error:
+        raise RouteError(failure) from error
+    normalized = json.loads(json.dumps(document))
+    normalized["creationInfo"]["created"] = "<sbom-creation-time>"
+    normalized["creationInfo"]["creators"] = [
+        f"{creator_prefix}<installer-version>"
+    ]
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+
+
+def php_tree_identity(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    receipt_field_digests: dict[str, dict[str, object]] | None = None,
+    record_digests: dict[str, str] | None = None,
+) -> dict[str, object]:
     """Content identity of one PHP install tree, symlinks included.
 
     Deliberately *not* `_qualified_tree_manifest`, which requires a symlink-free
@@ -4115,6 +4857,34 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
         if not stat.S_ISREG(metadata.st_mode):
             raise RouteError(failure)
         record = _qualified_file_record(path, root, failure)
+        if relative == "INSTALL_RECEIPT.json":
+            try:
+                receipt = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise RouteError(failure) from error
+            if not isinstance(receipt, dict):
+                raise RouteError(failure)
+            if receipt_field_digests is not None:
+                receipt_field_digests.update(
+                    _php_install_receipt_field_digests(receipt)
+                )
+            normalized = _normalized_php_install_receipt(receipt, failure)
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
+        elif relative == "sbom.spdx.json":
+            try:
+                sbom = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise RouteError(failure) from error
+            normalized = _normalized_php_spdx_sbom(sbom, failure)
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
         file_count += 1
         total_bytes += cast(int, record["bytes"])
         records.append(
@@ -4130,6 +4900,18 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
         item.relative_to(root).as_posix() for item in paths
     ]:
         raise RouteError(f"{failure}:TREE_CHANGED")
+    if record_digests is not None:
+        for diagnostic_record in records:
+            canonical_record = json.dumps(
+                diagnostic_record, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+            # This short digest is diagnostic only: the full canonical records
+            # still determine the security decision below. Keeping the hosted
+            # failure line bounded lets two independent runners identify the
+            # exact drifting path without dumping toolchain file contents.
+            record_digests[cast(str, diagnostic_record["path"])] = hashlib.sha256(
+                canonical_record
+            ).hexdigest()[:16]
     digest = hashlib.sha256(
         json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
@@ -4146,24 +4928,45 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
 
 
 def _php_tree_identity() -> dict[str, object]:
+    bundle_profile = homebrew_route_bundle_profile()
+    receipt_field_digests: dict[str, dict[str, object]] = {}
+    record_digests: dict[str, str] = {}
     identity = php_tree_identity(
         _EXPECTED_PHP_ROOT,
         _EXPECTED_PHP_ANCHOR,
         "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
+        receipt_field_digests=receipt_field_digests,
+        record_digests=record_digests,
     )
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
-        "sha256": _EXPECTED_PHP_TREE_SHA256,
+        "sha256": bundle_profile.php_tree_sha256,
         "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
         "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
         "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
-        "bytes": _EXPECTED_PHP_TREE_BYTES,
+        "bytes": bundle_profile.php_tree_bytes,
         "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
     if identity != expected:
-        raise RouteError("EXACT_TOOLCHAIN_PHP_TREE_MISMATCH")
-    return identity
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+            + ":install-receipt-fields="
+            + json.dumps(
+                receipt_field_digests,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":record-digests="
+            + json.dumps(record_digests, sort_keys=True, separators=(",", ":"))
+        )
+    return {
+        **identity,
+        "homebrew_bundle_profile_id": bundle_profile.profile_id,
+    }
 
 
 def _php_runtime_identity() -> dict[str, object]:
@@ -4320,6 +5123,7 @@ def _php() -> ExactToolchain:
         profile=(
             "php-toolchain-closure-schema=v1",
             "platform=Darwin/arm64",
+            f"homebrew-bundle-profile={tree_after['homebrew_bundle_profile_id']}",
             f"php-root={_EXPECTED_PHP_ROOT}",
             f"php-tree-sha256={tree_after['sha256']}",
             f"php-tree-record-count={tree_after['record_count']}",
@@ -4340,6 +5144,8 @@ def _php() -> ExactToolchain:
             f"php-debug={document['debug']}",
             f"php-extensions={','.join(document['extensions'])}",
             f"php-tokenizer={tokenizer}",
+            "php-homebrew-installer-metadata=NOT_BOUND",
+            "php-homebrew-runtime-dependency-versions=NOT_RUN",
             "php-runtime-semantic-soundness=NOT_RUN",
         ),
         executable_sha256=_EXPECTED_PHP_EXECUTABLE_SHA256,
@@ -4777,34 +5583,58 @@ _EXPECTED_FLUTTER_DART_VERSION = (
 _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA = "v1"
 _EXPECTED_FLUTTER_DART_SDK_ROOT = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "dart-sdk"
 _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256 = (
-    "37a612c64172042f2386954429584d6c75edacff3097443d5b372ac5c9870f0e"
+    "04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50"
 )
 _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT = 1124
 _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT = 1012
 _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT = 112
 _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES = 607_877_856
 
+# Flutter's immutable 3.44.1 cask has two exact Dart SDK tree receipts on the
+# supported macOS 26 GitHub host images. The second receipt is the fully hashed
+# post-install cache state observed on the 20260831 image; it is not a wildcard
+# for additional files or a version-only exception. Every count, byte total and
+# content/mode digest must match one of these complete identities.
+_EXPECTED_FLUTTER_DART_SDK_TREES: tuple[dict[str, object], ...] = (
+    {
+        "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
+        "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
+        "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
+        "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
+        "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
+        "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+    },
+    {
+        "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
+        "sha256": "723c91129a701c5f3aaf31e30df986e6d79c70092b3f9087b7d3225028a7b107",
+        "record_count": 1125,
+        "file_count": 1013,
+        "directory_count": 112,
+        "bytes": 611_763_504,
+    },
+)
 
-def _expected_flutter_build_closure() -> dict[str, object]:
+
+def _expected_flutter_build_closure(
+    trees: dict[str, dict[str, object]] | None = None,
+) -> dict[str, object]:
+    dart_sdk = (
+        dict(_EXPECTED_FLUTTER_DART_SDK_TREES[0])
+        if trees is None
+        else dict(trees["dart_sdk"])
+    )
     return {
         "schema": _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA,
-        "trees": {
-            "dart_sdk": {
-                "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
-                "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-                "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-                "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-                "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-                "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
-            },
-        },
+        "trees": {"dart_sdk": dart_sdk},
     }
 
 
-def _flutter_build_closure_sha256() -> str:
+def _flutter_build_closure_sha256(
+    trees: dict[str, dict[str, object]] | None = None,
+) -> str:
     return hashlib.sha256(
         json.dumps(
-            _expected_flutter_build_closure(),
+            _expected_flutter_build_closure(trees),
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=True,
@@ -4817,17 +5647,19 @@ def _flutter_build_tree_identities() -> dict[str, dict[str, object]]:
         _EXPECTED_FLUTTER_DART_SDK_ROOT,
         _EXPECTED_FLUTTER_ROOT,
         "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_UNSAFE",
+        portable_owner_identity=True,
     )
-    _verify_qualified_tree_manifest(
-        dart_sdk,
-        expected_root=_EXPECTED_FLUTTER_DART_SDK_ROOT,
-        expected_sha256=_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-        expected_record_count=_EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-        expected_file_count=_EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-        expected_directory_count=_EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-        expected_bytes=_EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
-        failure="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
-    )
+    if dart_sdk not in _EXPECTED_FLUTTER_DART_SDK_TREES:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH:expected="
+            + json.dumps(
+                _EXPECTED_FLUTTER_DART_SDK_TREES,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":observed="
+            + json.dumps(dart_sdk, sort_keys=True, separators=(",", ":"))
+        )
     return {"dart_sdk": dart_sdk}
 
 
@@ -4874,11 +5706,18 @@ def _flutter() -> ExactToolchain:
     )
     observed_dart = _output([str(_EXPECTED_FLUTTER_DART), "--version"])
     after = bindings()
-    if before != after or fields != _EXPECTED_FLUTTER_VERSION_FIELDS or observed_dart != _EXPECTED_FLUTTER_DART_VERSION:
+    trees = _flutter_build_tree_identities()
+    if (
+        before != after
+        or fields != _EXPECTED_FLUTTER_VERSION_FIELDS
+        or observed_dart != _EXPECTED_FLUTTER_DART_VERSION
+    ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:flutter:expected=Flutter-3.44.1/Dart-3.12.1:"
             f"observed={fields[0]}/{fields[3]}"
         )
+    closure_sha256 = _flutter_build_closure_sha256(trees)
+    dart_sdk_sha256 = str(trees["dart_sdk"]["sha256"])
     return ExactToolchain(
         "flutter",
         "Flutter 3.44.1 / Dart 3.12.1",
@@ -4890,8 +5729,8 @@ def _flutter() -> ExactToolchain:
             f"flutter-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[1]}",
             f"flutter-engine-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[2]}",
             f"flutter-build-closure-schema={_EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA}",
-            f"flutter-build-closure-sha256={_flutter_build_closure_sha256()}",
-            f"flutter-dart-sdk-tree-sha256={_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256}",
+            f"flutter-build-closure-sha256={closure_sha256}",
+            f"flutter-dart-sdk-tree-sha256={dart_sdk_sha256}",
             "dart-analyzer=10.1.0",
             "_fe_analyzer_shared=95.0.0",
             "repository-build=pure-dart-import-free",
@@ -4919,6 +5758,13 @@ def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, objec
     ):
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_IDENTITY_MISMATCH")
     trees = _flutter_build_tree_identities()
+    closure_sha256 = _flutter_build_closure_sha256(trees)
+    if (
+        f"flutter-build-closure-sha256={closure_sha256}" not in toolchain.profile
+        or f"flutter-dart-sdk-tree-sha256={trees['dart_sdk']['sha256']}"
+        not in toolchain.profile
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
     if toolchain != exact_toolchain("flutter"):
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
     profile_sha256 = hashlib.sha256(
@@ -4933,7 +5779,7 @@ def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, objec
         "kind": "elmos.flutter-dart-build-toolchain-receipt",
         "language": "flutter",
         "version": toolchain.version,
-        "closure_sha256": _flutter_build_closure_sha256(),
+        "closure_sha256": closure_sha256,
         "profile_sha256": profile_sha256,
         "trees": trees,
     }
@@ -4994,7 +5840,75 @@ def _react() -> ExactToolchain:
     )
 
 
+def _vb6() -> ExactToolchain:
+    """Bind an exact, externally governed Windows/x86 VB6 SP6 installation."""
+
+    from .vb6_toolchain import resolve_vb6_toolchain
+
+    binding = resolve_vb6_toolchain(REPOSITORY_ROOT)
+    return ExactToolchain(
+        "vb6",
+        (
+            "Microsoft Visual Basic 6.0 SP6 / "
+            f"compiler {binding.compiler_version} / runtime {binding.runtime_version}"
+        ),
+        str(binding.compiler),
+        str(binding.runtime),
+        profile=(
+            "vb6-dialect=6.0-sp6",
+            "vb6-compiler-architecture=x86",
+            f"vb6-host-architecture={binding.host_architecture}",
+            f"vb6-runner-id={binding.runner_id}",
+            f"vb6-authorization-ref={binding.authorization_ref}",
+            f"vb6-binding-manifest-sha256={binding.manifest_sha256}",
+            "vb6-binding-evidence=GOVERNED_EXTERNAL_SELF_ATTESTED",
+            "vb6-independent-verification=NOT_RUN_UNLESS_SEPARATE_RECEIPT",
+        ),
+        executable_sha256=binding.compiler_sha256,
+        auxiliary_sha256=binding.runtime_sha256,
+    )
+
+
+def _vcpp6() -> ExactToolchain:
+    """Bind an exact, externally governed Windows/x86 VC++ 6 SP6 install."""
+
+    from .vcpp6_toolchain import resolve_vcpp6_toolchain
+
+    binding = resolve_vcpp6_toolchain(REPOSITORY_ROOT)
+    return ExactToolchain(
+        "vcpp6",
+        (
+            "Microsoft Visual C++ 6.0 SP6 / "
+            f"compiler {binding.compiler_version} / linker {binding.linker_version} / "
+            f"runtime {binding.runtime_version}"
+        ),
+        str(binding.compiler),
+        str(binding.linker),
+        profile=(
+            "vcpp6-dialect=6.0-sp6-cpp98-era",
+            "vcpp6-compiler-architecture=x86",
+            f"vcpp6-host-architecture={binding.host_architecture}",
+            f"vcpp6-linker={binding.linker}",
+            f"vcpp6-linker-sha256={binding.linker_sha256}",
+            f"vcpp6-linker-version={binding.linker_version}",
+            f"vcpp6-runtime={binding.runtime}",
+            f"vcpp6-runtime-sha256={binding.runtime_sha256}",
+            f"vcpp6-runtime-version={binding.runtime_version}",
+            f"vcpp6-runner-id={binding.runner_id}",
+            f"vcpp6-authorization-ref={binding.authorization_ref}",
+            f"vcpp6-binding-manifest-sha256={binding.manifest_sha256}",
+            "vcpp6-binding-evidence=GOVERNED_EXTERNAL_SELF_ATTESTED",
+            "vcpp6-independent-verification=NOT_RUN_UNLESS_SEPARATE_RECEIPT",
+        ),
+        executable_sha256=binding.compiler_sha256,
+        auxiliary_sha256=binding.linker_sha256,
+    )
+
+
 def _toolchain_fingerprint() -> tuple[str, ...]:
+    from .vb6_toolchain import binding_fingerprint
+    from .vcpp6_toolchain import binding_fingerprint as vcpp6_binding_fingerprint
+
     tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
     try:
         tsc_stat = tsc.stat(follow_symlinks=True)
@@ -5008,6 +5922,8 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
         os.environ.get("ELMOS_CLANG_HOME", ""),
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        *binding_fingerprint(),
+        *vcpp6_binding_fingerprint(),
         tsc_identity,
     )
 
@@ -5032,6 +5948,8 @@ def _cached_exact_toolchain(
         "kotlin": _kotlin,
         "react": _react,
         "flutter": _flutter,
+        "vb6": _vb6,
+        "vcpp6": _vcpp6,
     }
     try:
         selector = selectors[language]

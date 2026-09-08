@@ -3,7 +3,7 @@
 | Gate | Required evidence | This local target |
 |---|---|---|
 | E0 | exact identity, reproducible inputs, schema and policy conformance | may produce self-attested engineering evidence |
-| E1 | executable unit/contract behavior for the exact handler and environment | only one of the 26 exact local handlers, after successful replay, may qualify locally |
+| E1 | executable unit/contract behavior for the exact handler and environment | one of the 66 exact local handlers may qualify locally after successful replay; a native program still requires its exact host environment and receipt |
 | E2 | real integration and exact technology/version matrix | `NOT_RUN` unless separately executed |
 | E3 | independent shadow environment, verifier and rollback rehearsal | `NOT_RUN` |
 | E4 | bounded production canary, SLO, stop/rollback and customer acceptance | `NOT_RUN` |

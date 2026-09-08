@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "source_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "target_artifact": {
+    "sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f"
+  },
+  "evidence_policy": {
+    "required_evidence_types": [
+      "source_build",
+      "target_build",
+      "source_startup",
+      "target_startup",
+      "behavioral_equivalence",
+      "security",
+      "performance",
+      "operability",
+      "sbom",
+      "rollback",
+      "independent_review",
+      "customer_acceptance",
+      "external_certification"
+    ],
+    "external_evidence_status": "NOT_RUN",
+    "certification_status": "NOT_CERTIFIED",
+    "signature_algorithm": "Ed25519"
+  },
+  "toolchain_bindings": {
+    "source-java": "sha256:51e327f18bbe16526af089b5052fc266fab50d5b5785a162a702127947c7bbfe",
+    "source-maven": "sha256:4b7195b6a4f5c81af4c0212677a32ee8143643401bc6e1e8412e6b06ea82beac",
+    "source-container": "sha256:4ed404d5dea8652846f3c52c094764c2ec018f28a3561f1d27df700f7aa5b376",
+    "target-java": "sha256:7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756",
+    "target-maven": "sha256:4b7195b6a4f5c81af4c0212677a32ee8143643401bc6e1e8412e6b06ea82beac",
+    "target-container": "sha256:c0ca6acafe5ad63cd5de16ec8894318a7b53ea11e3db1bc217fd5f2a9746a790"
+  },
+  "rewrite_recipe_artifact": {
+    "coordinate": "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+    "build_output_timestamp": "2026-09-08T02:18:23Z",
+    "jar_sha256": "sha256:b3dbf5924268f63081d2b387c3aa5110fac4f4554d99f67804f6b948de17285c",
+    "recipe_pom_sha256": "sha256:22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
+    "parent_pom_sha256": "sha256:df02c3191e6ebd1c4c865cb1d589ecb63e104c1dcc9f267162c8cc6b62680b60",
+    "files": [
+      {
+        "path": "io/elmos/elmos-parent/0.1.0-SNAPSHOT/elmos-parent-0.1.0-SNAPSHOT.pom",
+        "bytes": 10628,
+        "sha256": "df02c3191e6ebd1c4c865cb1d589ecb63e104c1dcc9f267162c8cc6b62680b60"
+      },
+      {
+        "path": "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.pom",
+        "bytes": 751,
+        "sha256": "22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a"
+      },
+      {
+        "path": "io/elmos/elmos-java-recipes/0.1.0-SNAPSHOT/elmos-java-recipes-0.1.0-SNAPSHOT.jar",
+        "bytes": 7464,
+        "sha256": "b3dbf5924268f63081d2b387c3aa5110fac4f4554d99f67804f6b948de17285c"
+      }
+    ]
+  }
+}

@@ -9,6 +9,7 @@
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-integrations</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-secret</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-network-policy</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-security</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-persistence</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>com.github.docker-java</groupId><artifactId>docker-java-core</artifactId></dependency>
     <dependency><groupId>com.github.docker-java</groupId><artifactId>docker-java-transport-httpclient5</artifactId></dependency>

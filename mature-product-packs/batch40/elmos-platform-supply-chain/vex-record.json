@@ -2,11 +2,1435 @@
   "schemaVersion": 1,
   "id": "elmos-platform-supply-chain-vex-record",
   "batch": 40,
-  "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
-  "metadata": {},
+  "version": "0.2.0",
+  "owner": "elmos-security-owner",
+  "status": "review",
+  "evidenceRefs": [
+    "b40-dependabot-vex"
+  ],
+  "records": [
+    {
+      "id": "dependabot-296-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 296,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-298-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 298,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-300-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 300,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-302-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 302,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-304-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 304,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-306-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 306,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-308-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 308,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-310-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 310,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-312-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 312,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-314-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 314,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-316-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 316,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-318-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 318,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-320-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 320,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-322-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 322,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-324-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 324,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-326-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 326,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-328-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 328,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-330-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 330,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-332-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 332,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-334-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 334,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-336-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 336,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-338-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 338,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-340-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 340,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-342-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 342,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-344-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 344,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-346-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 346,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-348-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 348,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-350-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 350,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-352-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 352,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-354-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 354,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-356-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 356,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-358-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 358,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-360-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 360,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-362-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 362,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-364-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 364,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-366-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 366,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-368-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 368,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-370-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 370,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-372-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 372,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-374-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 374,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-376-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 376,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-378-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 378,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-380-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 380,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-382-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 382,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-384-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 384,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-386-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 386,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    },
+    {
+      "id": "dependabot-388-ghsa-gh4j-gqv2-49f6",
+      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
+      "alertNumber": 388,
+      "component": {
+        "ecosystem": "npm",
+        "name": "fast-xml-parser",
+        "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "dependencyScope": "development",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+          "bytes": 3620
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T12:30:57Z"
+    }
+  ],
+  "metadata": {
+    "repository": "zpcaiai/elmos",
+    "generatedAt": "2026-09-08T12:30:57.028655Z",
+    "sourceAlertSnapshotDigest": "sha256:83bf7ccc33fb3adeaf7265e0ba17e23ddf7dd38fe9c7e23c06e82e72c5b75519",
+    "exceptionCount": 47,
+    "fixedClaims": [],
+    "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "githubDisposition": "DISMISSED",
+    "dismissedCount": 47,
+    "independentVerification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
   "packKey": "elmos-platform-supply-chain"
 }

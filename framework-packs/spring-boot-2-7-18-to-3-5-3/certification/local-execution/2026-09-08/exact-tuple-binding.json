@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-boot-2-7-18-to-3-5-3",
+  "source": {
+    "commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+    "snapshot_sha256": "sha256:3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+    "framework": "spring-boot",
+    "framework_version": "2.7.18",
+    "java": "17.0.11",
+    "maven": "3.9.11",
+    "servlet_namespace": "javax.servlet",
+    "servlet_api": "4.0.1",
+    "packaging": "executable-jar"
+  },
+  "target": {
+    "artifact_sha256": "sha256:82eba2a499179273db14744f0d7f754ccb0b3644871af4272af78505fcdac62f",
+    "artifact_bytes": 29034806,
+    "framework": "spring-boot",
+    "framework_version": "3.5.3",
+    "spring_framework_version": "6.2.8",
+    "java": "21.0.11",
+    "maven": "3.9.11",
+    "servlet_namespace": "jakarta.servlet",
+    "servlet_api": "6.1",
+    "embedded_tomcat": "10.1.42",
+    "packaging": "executable-jar"
+  },
+  "toolchain": {
+    "source_tomcat_version": "9.0.83"
+  },
+  "transformation": {
+    "target_profile_sha256": "sha256:b782aff2bbf2e7d11dff216d81787c15e3247e18de62b3ab0cccc4d628bd44ad",
+    "custom_recipe_coordinate": "io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT",
+    "custom_recipe_build_output_timestamp": "2026-09-08T02:18:23Z",
+    "custom_recipe_artifact_sha256": "sha256:b3dbf5924268f63081d2b387c3aa5110fac4f4554d99f67804f6b948de17285c",
+    "custom_recipe_pom_sha256": "sha256:22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
+    "custom_recipe_parent_pom_sha256": "sha256:df02c3191e6ebd1c4c865cb1d589ecb63e104c1dcc9f267162c8cc6b62680b60"
+  },
+  "policy": {
+    "sha256": "sha256:1b95b6385556922041f2be30b2631ee65acb0430056e70c022a27f00f7143ed5"
+  },
+  "status_boundary": {
+    "external_evidence": "NOT_RUN",
+    "production_certification": "NOT_CERTIFIED",
+    "local_runner_may_certify": false
+  }
+}

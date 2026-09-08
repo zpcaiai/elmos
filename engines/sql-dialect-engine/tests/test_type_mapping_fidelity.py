@@ -334,6 +334,12 @@ def test_user_defined_type_fails_closed_instead_of_raising_name_error() -> None:
     )
 
 
+def test_unknown_user_defined_type_fails_closed_without_an_internal_error() -> None:
+    assert _blocked("CREATE TABLE t (id custom_type)", "postgres", "mysql") == (
+        "CERTIFIED_DDL_UNSUPPORTED_TYPE"
+    )
+
+
 @pytest.mark.parametrize(
     ("source", "target", "ddl", "expected"),
     [

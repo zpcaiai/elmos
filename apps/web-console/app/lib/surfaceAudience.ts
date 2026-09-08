@@ -1,12 +1,25 @@
 /**
  * Single source of truth for which console surface belongs to which audience.
  *
- * USER  surfaces are the product features a customer reaches after /login.
- * ADMIN surfaces are platform operations and are only reachable after
- *       /admin/login with a verified platform administrator session.
+ * USER  surfaces are the four customer business lines a customer reaches after
+ *       /login: Spring modernization, cross-language translation, project
+ *       generation, and ChinaDB SQL conversion (/migration, including
+ *       /migration/sql). Nothing else is visible to a customer session.
+ * ADMIN surfaces are platform operations plus every other product surface;
+ *       they are only reachable after /admin/login with a verified platform
+ *       administrator session.
  * PUBLIC surfaces stay reachable without any account session.
  */
 export type SurfaceAudience = "PUBLIC" | "USER" | "ADMIN";
+
+export const cendBusinessLineSurfaces = [
+  "/spring",
+  "/translation",
+  "/generation",
+  "/migration",
+] as const;
+
+export type CendBusinessLineSurface = (typeof cendBusinessLineSurfaces)[number];
 
 export const platformOperationsSurfaces = [
   "/admin",
@@ -16,6 +29,15 @@ export const platformOperationsSurfaces = [
   "/proof-loop",
   "/playground",
   "/smoke",
+  // Non-business-line product surfaces: administrators only.
+  "/repositories",
+  "/capabilities",
+  "/intake",
+  "/orchestration",
+  "/frontend",
+  "/pricing",
+  "/account",
+  "/workbench",
 ] as const;
 
 export type PlatformOperationsSurface = (typeof platformOperationsSurfaces)[number];

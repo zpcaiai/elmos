@@ -1,4 +1,4 @@
-"""Exact dispatcher and bounded handlers for all 37 repository Skills."""
+"""Exact dispatcher and bounded handlers for all 54 repository Skills."""
 
 from __future__ import annotations
 
@@ -9,12 +9,30 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
+from .adaptive import (
+    build_hierarchical_plan,
+    build_invariant_ledger,
+    build_repository_graph,
+    build_scenario_graph,
+    capture_baseline,
+    decide_granularity,
+    detect_semantic_conflicts,
+    detect_semantic_seams,
+    diff_plans,
+    generate_proof_obligations,
+    mine_implicit_requirements,
+    plan_exploration,
+    plan_integration_edges,
+    plan_replan,
+    schedule_critical_path,
+    summarize_decomposition_telemetry,
+    verify_plan_graph,
+)
 from .catalog import MODEL_ALIASES, MODEL_ALIAS_SET, SKILL_NAMES, SKILL_SPECS
 from .contracts import (
     ContractError,
     FailureClass,
     HandlerResult,
-    ModelTier,
     SelectionSource,
     Status,
     canonical_json,
@@ -841,4 +859,176 @@ class RuntimeDispatcher:
                 "issues": sorted(set(issues)),
             },
             tuple(sorted(set(issues))),
+        )
+
+    def implicit_requirement_miner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = mine_implicit_requirements(payload)
+        status = (
+            Status.PLANNED
+            if output["exploration_candidates"]
+            else Status.LOCAL_ENGINEERING_VALIDATED
+        )
+        return self._result(skill, status, output)
+
+    def behavioral_scenario_graph(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = build_scenario_graph(payload)
+        reasons = tuple(output["graph_errors"])
+        return self._result(
+            skill,
+            Status.BLOCKED if reasons else Status.LOCAL_ENGINEERING_VALIDATED,
+            output,
+            reasons,
+        )
+
+    def repository_intelligence_graph(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = build_repository_graph(payload)
+        reasons = tuple(output["errors"])
+        return self._result(
+            skill,
+            Status.BLOCKED if reasons else Status.LOCAL_ENGINEERING_VALIDATED,
+            output,
+            reasons,
+        )
+
+    def architecture_invariant_ledger(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = build_invariant_ledger(payload)
+        reasons = tuple(
+            f"unverified_high_risk_invariant:{item}"
+            for item in output["blocking_high_risk"]
+        )
+        return self._result(
+            skill,
+            Status.BLOCKED if reasons else Status.LOCAL_ENGINEERING_VALIDATED,
+            output,
+            reasons,
+        )
+
+    def semantic_seam_detector(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED,
+            detect_semantic_seams(payload),
+        )
+
+    def adaptive_hierarchical_planner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(skill, Status.PLANNED, build_hierarchical_plan(payload))
+
+    def task_granularity_controller(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        indivisible = payload.get("indivisible_invariant", False)
+        unsafe_split = payload.get("unsafe_split_requires_merge", False)
+        if not isinstance(indivisible, bool) or not isinstance(unsafe_split, bool):
+            raise ContractError(
+                "invalid_granularity_override",
+                "granularity overrides must be booleans",
+            )
+        decision = decide_granularity(
+            require_mapping(payload.get("features"), "features"),
+            indivisible_invariant=indivisible,
+            unsafe_split=unsafe_split,
+        )
+        return self._result(
+            skill, Status.LOCAL_ENGINEERING_VALIDATED, decision.to_payload()
+        )
+
+    def plan_graph_verifier(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = verify_plan_graph(payload)
+        reasons = tuple(output["errors"])
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED
+            if output["executable"]
+            else Status.BLOCKED,
+            output,
+            reasons,
+        )
+
+    def uncertainty_exploration_planner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(skill, Status.PLANNED, plan_exploration(payload))
+
+    def proof_obligation_generator(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED,
+            generate_proof_obligations(payload),
+        )
+
+    def integration_edge_planner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = plan_integration_edges(payload)
+        reasons = () if output["all_handoffs_ready"] else ("incomplete_handoff_contract",)
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED
+            if output["all_handoffs_ready"]
+            else Status.BLOCKED,
+            output,
+            reasons,
+        )
+
+    def dynamic_replanner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(skill, Status.PLANNED, plan_replan(payload))
+
+    def semantic_conflict_detector(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        output = detect_semantic_conflicts(payload)
+        reasons = () if output["safe_to_integrate"] else ("semantic_conflicts_detected",)
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED
+            if output["safe_to_integrate"]
+            else Status.BLOCKED,
+            output,
+            reasons,
+        )
+
+    def critical_path_resource_scheduler(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(skill, Status.PLANNED, schedule_critical_path(payload))
+
+    def baseline_golden_snapshotter(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(
+            skill, Status.LOCAL_ENGINEERING_VALIDATED, capture_baseline(payload)
+        )
+
+    def plan_diff_audit_journal(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(
+            skill, Status.LOCAL_ENGINEERING_VALIDATED, diff_plans(payload)
+        )
+
+    def decomposition_telemetry_learner(
+        self, skill: str, payload: Mapping[str, Any], context: DispatchContext
+    ) -> HandlerResult:
+        return self._result(
+            skill,
+            Status.LOCAL_ENGINEERING_VALIDATED,
+            summarize_decomposition_telemetry(payload),
         )

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import styles from "./AccountOrganizationStudio.module.css";
 
@@ -174,7 +175,10 @@ export function AccountOrganizationStudio({ embedded = false }: { embedded?: boo
       <section className={styles.page}>
         <header className="page-header">
           <div><span className="eyebrow">IDENTITY</span><h1>账户与组织</h1>
-            <p>请先使用企业 OIDC 账户登录，再创建或加入组织。</p></div>
+            <p>请先使用已注册邮箱或企业 OIDC 账户登录，再创建或加入组织。</p></div>
+          <Link className="button button-primary" href="/login?returnTo=/account" prefetch={false}>
+            前往登录页面
+          </Link>
         </header>
       </section>
     );

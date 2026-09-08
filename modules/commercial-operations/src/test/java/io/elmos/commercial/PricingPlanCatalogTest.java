@@ -19,7 +19,13 @@ class PricingPlanCatalogTest {
         assertEquals("contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json",
                 catalog.authoritativeSource());
         assertEquals(PricingPlanCatalog.AllowanceScope.ORGANIZATION, catalog.allowanceScope());
-        assertEquals(4, catalog.tokenClasses().size());
+        assertEquals(5, catalog.tokenClasses().size());
+        assertEquals(new BigDecimal("500"),
+                PricingPlanCatalog.requireCreditPack("elmos-credit-500").credits());
+        assertEquals(new BigDecimal("99.00"),
+                PricingPlanCatalog.requireCreditPack("elmos-credit-500").price().amount());
+        assertEquals(new BigDecimal("39.00"),
+                PricingPlanCatalog.requireOneTimeProduct("elmos-project-generation-once").price().amount());
     }
 
     @Test

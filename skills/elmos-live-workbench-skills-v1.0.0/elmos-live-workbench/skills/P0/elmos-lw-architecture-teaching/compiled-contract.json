@@ -1,0 +1,33 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-06",
+  "name": "elmos-lw-architecture-teaching",
+  "priority": "P0",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-project-intelligence-graph",
+  "dependencies": [
+    "elmos-lw-module-teaching"
+  ],
+  "contract_refs": [
+    "contracts/evidence-claim.schema.json",
+    "contracts/runtime-event.schema.json"
+  ],
+  "output_artifacts": [
+    "architecture-model.json",
+    "architecture-lessons.json",
+    "graph-evidence-index.json"
+  ],
+  "acceptance_cases": [
+    "LW-06-AC-01",
+    "LW-06-AC-02",
+    "LW-06-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

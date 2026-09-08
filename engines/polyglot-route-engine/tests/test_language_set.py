@@ -1,6 +1,6 @@
 """Keep engine, repository-route and specialised-proof language sets explicit.
 
-The route matrix has one route record for every ordered pair of the thirteen
+The route matrix has one route record for every ordered pair of the fifteen
 supported languages.  That inventory breadth is deliberately separate from
 three other things, and this module exists to keep them from collapsing into
 each other:
@@ -127,7 +127,7 @@ def test_deprecated_language_keeps_its_engine_machinery_but_leaves_the_matrix() 
         assert repository_language_lifecycle(v3_language, "javascript") is None
 
 
-def test_public_cli_language_choices_are_live_active_thirteen_only() -> None:
+def test_public_cli_language_choices_are_the_live_active_matrix() -> None:
     parser_fields = (
         (cli._migration_parser(), ("source_language", "target_language")),
         (cli._inventory_parser(), ("source_language", "target_language")),
@@ -160,7 +160,10 @@ def test_repository_orchestration_surface_is_exactly_the_completed_repository_se
     # A repository-pending language has no extension, no declaration pattern, no
     # placer and no build file, and adding stubs so this comparison passes
     # would assert support the engine does not have.
-    assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES)
+    # VC++6 intentionally shares C++ source extensions with modern C++; its
+    # exact identity comes from the requested source profile, not a suffix.
+    assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES) - {"vcpp6"}
+    assert _EXTENSIONS[".cpp"] == "cpp"
     assert discovery_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_project_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert target_build_languages == set(REPOSITORY_SURFACE_LANGUAGES)
@@ -171,20 +174,20 @@ def test_repository_orchestration_surface_is_exactly_the_completed_repository_se
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
-    assert len(directed_pairs) == 156
+    assert len(directed_pairs) == 210
 
 
-def test_route_contract_is_complete_thirteen_language_matrix_with_exact_subsets() -> None:
+def test_route_contract_is_complete_fifteen_language_matrix_with_exact_subsets() -> None:
     assert ROUTED_LANGUAGES == COMPLETE_MATRIX_LANGUAGES
-    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 156
+    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 210
     assert len(SPECIALIZED_DIRECTED_PAIRS) == 8
     # Pinned to a literal.  If this ever reads 0 the pin was reverted to a
     # comprehension over the language tuple and javascript's removal silently
     # emptied it -- which would flip requires_concrete_source_spans for all 20.
     assert len(NODEJS_DIRECTED_PAIRS) == 20
-    assert len(COMPLETE_MATRIX_LANGUAGES) == 13
-    assert len(ROUTED_PAIRS) == 156
-    assert len(set(ROUTED_PAIRS)) == 156
+    assert len(COMPLETE_MATRIX_LANGUAGES) == 15
+    assert len(ROUTED_PAIRS) == 210
+    assert len(set(ROUTED_PAIRS)) == 210
     assert all(is_routed_pair(source, target) for source, target in ROUTED_PAIRS)
 
     assert is_routed_pair("php", "java")
@@ -206,6 +209,14 @@ def test_route_contract_is_complete_thirteen_language_matrix_with_exact_subsets(
     assert is_routed_pair("kotlin", "react")
     assert is_routed_pair("react", "flutter")
     assert is_routed_pair("flutter", "kotlin")
+    assert is_routed_pair("vb6", "java")
+    assert is_routed_pair("java", "vb6")
+    assert is_routed_pair("vb6", "flutter")
+    assert is_routed_pair("flutter", "vb6")
+    assert is_routed_pair("vcpp6", "java")
+    assert is_routed_pair("java", "vcpp6")
+    assert is_routed_pair("vcpp6", "vb6")
+    assert is_routed_pair("vb6", "vcpp6")
     assert not is_routed_pair("react", "react")
     # Deprecated: declared once, routed never again.
     assert not is_routed_pair("javascript", "java")
@@ -224,7 +235,56 @@ def test_exact_toolchain_receipt_uses_the_engine_language_tuple() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    assert module.EXPECTED_ACTIVE_LANGUAGES == ROUTED_LANGUAGES
+    # The route tuple includes preparation-only VB6 and VC++6. The exact-toolchain
+    # receipt remains the locally executable thirteen-language tuple until a
+    # governed Windows/x86 vendor provider is available.
+    assert module.EXPECTED_ACTIVE_LANGUAGES == tuple(
+        language for language in ROUTED_LANGUAGES if language not in {"vb6", "vcpp6"}
+    )
+
+
+@pytest.mark.parametrize("language", ("python", "go", "rust", "kotlin"))
+def test_receipt_identity_tokenizes_every_governed_install_root(
+    language: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        f"elmos_runtime_toolchain_receipt_{language}_portability",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    root = (tmp_path / "toolchains").resolve()
+    executable = root / language / "bin" / language
+    auxiliary = root / language / "lib" / f"lib{language}.dylib"
+    original = module.exact_toolchain("kotlin")
+    relocated = replace(
+        original,
+        language=language,
+        executable=str(executable),
+        auxiliary=str(auxiliary),
+        profile=(f"{language}-root={root / language}", "content-sha256=" + "a" * 64),
+    )
+    monkeypatch.setattr(module, "exact_toolchain", lambda selected: relocated)
+    monkeypatch.setattr(
+        module,
+        "configured_polyglot_toolchain_root",
+        lambda: root,
+    )
+
+    record = module._portable_toolchain_record(language)
+
+    serialized = json.dumps(record, sort_keys=True)
+    assert str(root) not in serialized
+    assert record["executable"].startswith("<polyglot-toolchain-root>/")
+    assert record["auxiliary"].startswith("<polyglot-toolchain-root>/")
+    assert record["profile"][0].startswith(
+        f"{language}-root=<polyglot-toolchain-root>/"
+    )
 
 
 def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
@@ -266,9 +326,79 @@ def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
 
     assert record["executable"].startswith("<polyglot-toolchain-root>/")
     assert str(relocated_root) not in json.dumps(record, sort_keys=True)
-    assert module.exact_toolchain_record_sha256(record) == (
-        module.EXACT_TOOLCHAIN_RECORD_SHA256["kotlin"]
+    _, expected_record_sha256 = module._expected_toolchain_identity(
+        "kotlin", record["profile"]
     )
+    assert module.exact_toolchain_record_sha256(record) == (
+        expected_record_sha256
+    )
+
+
+def test_kotlin_temurin_receipt_uses_exact_profile_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_temurin",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    original = module.exact_toolchain("kotlin")
+    temurin = replace(
+        original,
+        version="kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+        profile=tuple(
+            "kotlin-jvm-home=/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+            if item.startswith("kotlin-jvm-home=")
+            else "kotlin-jvm-distribution=temurin"
+            if item == "kotlin-jvm-distribution=homebrew"
+            else "kotlin-jvm-release-sha256=5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
+            if item.startswith("kotlin-jvm-release-sha256=")
+            else item
+            for item in original.profile
+        ),
+    )
+    monkeypatch.setattr(module, "exact_toolchain", lambda language: temurin)
+
+    record = module._portable_toolchain("kotlin")
+
+    assert "kotlin-jvm-home=<java21-home>" in record["profile"]
+    assert "/Users/runner" not in json.dumps(record, sort_keys=True)
+    assert module.exact_toolchain_record_sha256(record) == (
+        module.EXACT_TOOLCHAIN_PROFILE_OVERRIDES["kotlin"][
+            "kotlin-jvm-distribution=temurin"
+        ]["record_sha256"]
+    )
+
+
+@pytest.mark.parametrize(
+    "profile",
+    (
+        [],
+        ["kotlin-jvm-distribution=unknown"],
+        [
+            "kotlin-jvm-distribution=homebrew",
+            "kotlin-jvm-distribution=temurin",
+        ],
+    ),
+)
+def test_kotlin_receipt_rejects_missing_unknown_or_ambiguous_jvm_profile(
+    profile: list[str],
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_invalid_profile",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    with pytest.raises(module.RouteError):
+        module._expected_toolchain_identity("kotlin", profile)
 
 
 def test_batch29_live_schemas_and_historical_module_schema_keep_separate_sets() -> None:
@@ -527,7 +657,7 @@ def test_every_declared_routed_pair_has_a_pack_and_nothing_else_does() -> None:
     present = {path.name for path in ROUTES.iterdir() if path.is_dir()}
     expected = {f"{source}-to-{target}" for source, target in ROUTED_PAIRS}
     deprecated = {f"{source}-to-{target}" for source, target in DEPRECATED_DIRECTED_PAIRS}
-    assert len(expected) == 156
+    assert len(expected) == 210
     assert len(deprecated) == 20
     assert not expected & deprecated
     missing = sorted(expected - present)
@@ -548,7 +678,7 @@ def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> No
 
 
 @pytest.mark.skipif(not (ROUTES / "inventory.json").is_file(), reason="routes/inventory.json is not present")
-def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() -> None:
+def test_inventory_declares_the_complete_210_with_preserved_provenance_sets() -> None:
     """The inventory is generated by ``run_polyglot_routes.py --inventory-only``.
 
     That regeneration requires the pinned macOS toolchain, so after a matrix
@@ -562,11 +692,12 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     assert inventory["deprecated_languages"] == list(DEPRECATED_LANGUAGES)
     assert inventory["pending_analyzer_languages"] == list(PENDING_ANALYZER_LANGUAGES)
     assert inventory["pending_repository_languages"] == list(PENDING_REPOSITORY_LANGUAGES)
-    assert inventory["route_count"] == 156
-    assert len(inventory["routes"]) == 156
+    assert inventory["schema_version"] == "1.5.0"
+    assert inventory["route_count"] == 210
+    assert len(inventory["routes"]) == 210
     assert inventory["route_policy"] == {
-        "cartesian_expansion": "EXPLICIT_THIRTEEN_LANGUAGE_MATRIX",
-        "complete_route_set": "thirteen-language-complete-156",
+        "cartesian_expansion": "EXPLICIT_FIFTEEN_LANGUAGE_MATRIX",
+        "complete_route_set": "fifteen-language-complete-210",
         "completion_route_set": "nine-language-completion-34",
         "deprecated_route_set": "javascript-node26-completion-18",
         "legacy_route_set": "legacy-complete-30",
@@ -578,6 +709,8 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
         "preserved_ten_language_route_set": "ten-language-complete-90",
         "specialized_route_set": "cpp-objc-swift-java-exact-8",
         "v3_route_set": "kotlin-react-flutter-completion-66",
+        "vb6_route_set": "vb6-completion-26",
+        "vcpp6_route_set": "vcpp6-completion-28",
     }
     route_sets = inventory["route_sets"]
 
@@ -587,7 +720,8 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     eleven_languages = legacy_languages | {"javascript", "cpp", "objc", "swift", "php"}
     ten_languages = eleven_languages - {"php"}
     nine_languages = ten_languages - {"javascript"}
-    v3_languages = {"kotlin", "react", "flutter"}
+    vb6_languages = {"vb6"}
+    vcpp6_languages = {"vcpp6"}
 
     def complete(languages: set[str]) -> set[str]:
         return {
@@ -606,12 +740,21 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     php_keys = eleven_language_keys - ten_language_keys
     nodejs_keys = ten_language_keys - nine_language_keys
     completion_keys = nine_language_keys - core_keys - specialized_keys
-    v3_keys = {key for key in active_keys if v3_languages & set(key.split("-to-"))}
+    thirteen_active_languages = set(SUPPORTED_LANGUAGES) - vb6_languages - vcpp6_languages
+    thirteen_active_keys = complete(thirteen_active_languages)
+    v3_keys = thirteen_active_keys - (eleven_language_keys - {
+        key for key in eleven_language_keys if "javascript" in key.split("-to-")
+    })
+    fourteen_active_languages = set(SUPPORTED_LANGUAGES) - vcpp6_languages
+    fourteen_active_keys = complete(fourteen_active_languages)
+    vb6_keys = fourteen_active_keys - thirteen_active_keys
+    vcpp6_keys = active_keys - fourteen_active_keys
 
-    assert len(active_keys) == 156
+    assert len(active_keys) == 210
     assert len(v3_keys) == 66
+    assert len(vb6_keys) == 26
+    assert len(vcpp6_keys) == 28
     assert len(eleven_language_keys) == 110
-    assert active_keys - eleven_language_keys == v3_keys
     javascript_keys = {key for key in eleven_language_keys if "javascript" in key.split("-to-")}
     assert len(javascript_keys) == 20
     assert eleven_language_keys - active_keys == javascript_keys
@@ -627,6 +770,10 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
         "eleven-language-complete-110",
         "kotlin-react-flutter-completion-66",
         "thirteen-language-complete-156",
+        "vb6-completion-26",
+        "fourteen-language-complete-182",
+        "vcpp6-completion-28",
+        "fifteen-language-complete-210",
     }
     assert route_sets["legacy-complete-30"]["policy"] == "complete-directed-permutation"
     assert set(route_sets["legacy-complete-30"]["route_keys"]) == core_keys
@@ -645,7 +792,13 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     assert route_sets["kotlin-react-flutter-completion-66"]["repository_status"] == (
         "LOCAL_REPOSITORY_READY"
     )
-    assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == active_keys
+    assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == thirteen_active_keys
+    assert set(route_sets["vb6-completion-26"]["route_keys"]) == vb6_keys
+    assert route_sets["vb6-completion-26"]["vendor_runtime_status"] == "NOT_RUN"
+    assert set(route_sets["fourteen-language-complete-182"]["route_keys"]) == fourteen_active_keys
+    assert set(route_sets["vcpp6-completion-28"]["route_keys"]) == vcpp6_keys
+    assert route_sets["vcpp6-completion-28"]["vendor_runtime_status"] == "NOT_RUN"
+    assert set(route_sets["fifteen-language-complete-210"]["route_keys"]) == active_keys
 
     # The active inventory carries no deprecated direction.
     assert {route["route_key"] for route in inventory["routes"]} == active_keys

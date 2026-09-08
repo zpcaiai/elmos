@@ -21,8 +21,8 @@ export const generationStages: GenerationStage[] = [
 ];
 
 export const installedSkillInventory = {
-  codexSkillCount: 4319,
-  runtimeSkillCount: 6442,
+  codexSkillCount: 4337,
+  runtimeSkillCount: 6458,
   countingRule: "directories-with-SKILL.md",
 } as const;
 

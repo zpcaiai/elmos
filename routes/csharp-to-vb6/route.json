@@ -1,0 +1,45 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "typed-pure-module-v1",
+    "target_profile": "vb6-long32-pure-module-v1"
+  },
+  "review_date": "2026-11-24",
+  "route_key": "csharp-to-vb6",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli",
+    "language": "csharp",
+    "versions": [
+      "C# 14",
+      ".NET SDK 10.0.301",
+      "Roslyn 5.6.0"
+    ]
+  },
+  "status": "research",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "vb6",
+    "versions": [
+      "Visual Basic 6.0 SP6 source dialect",
+      "typed-pure-module-v1 bounded parser/emitter",
+      "vendor compiler/runtime NOT_RUN"
+    ]
+  },
+  "version": "0.1.0"
+}

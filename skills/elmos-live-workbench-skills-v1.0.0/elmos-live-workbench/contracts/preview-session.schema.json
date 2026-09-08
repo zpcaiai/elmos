@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/preview-session.schema.json",
+  "title": "preview-session",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "preparing",
+        "ready",
+        "expiring",
+        "closed",
+        "failed",
+        "quarantined"
+      ]
+    },
+    "runtime_status": {
+      "type": "string",
+      "enum": [
+        "not-started",
+        "running",
+        "paused",
+        "degraded",
+        "stopped"
+      ]
+    },
+    "created_at": {
+      "type": "number",
+      "minimum": 0
+    },
+    "first_ready_at": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "expires_at": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "window_seconds": {
+      "const": 600
+    },
+    "prepare_budget_seconds": {
+      "const": 600
+    },
+    "cleanup_budget_seconds": {
+      "const": 30
+    },
+    "provider_hard_deadline": {
+      "type": "number",
+      "minimum": 0
+    },
+    "slot_weight": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "readiness_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "client_can_extend": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "session_id",
+    "generation",
+    "state",
+    "runtime_status",
+    "created_at",
+    "first_ready_at",
+    "expires_at",
+    "window_seconds",
+    "prepare_budget_seconds",
+    "cleanup_budget_seconds",
+    "provider_hard_deadline",
+    "slot_weight",
+    "readiness_id",
+    "client_can_extend"
+  ],
+  "additionalProperties": false
+}

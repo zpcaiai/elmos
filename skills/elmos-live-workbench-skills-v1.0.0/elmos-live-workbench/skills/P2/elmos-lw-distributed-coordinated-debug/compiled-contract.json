@@ -1,0 +1,32 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-27",
+  "name": "elmos-lw-distributed-coordinated-debug",
+  "priority": "P2",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-distributed-debug-correlation",
+  "dependencies": [
+    "elmos-lw-differential-debug-lab",
+    "elmos-lw-replay-timeline-inputs"
+  ],
+  "contract_refs": [
+    "contracts/runtime-event.schema.json"
+  ],
+  "output_artifacts": [
+    "coordinated-debug-plan.json",
+    "causal-divergence-report.json"
+  ],
+  "acceptance_cases": [
+    "LW-27-AC-01",
+    "LW-27-AC-02",
+    "LW-27-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

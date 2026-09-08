@@ -22,6 +22,14 @@ public final class CasExceptions {
             return expected;
         }
 
+        /** Size failure can be established without consuming an unbounded remote body. */
+        public CasCorruptionException(String store, CasDigest expected, String detail) {
+            super("cache corruption in " + store + ": expected " + expected.compact() + "; " + detail);
+            this.expected = expected;
+            this.actual = null;
+        }
+
+        /** Actual full digest, or null when a bounded streaming size check rejected the body. */
         public CasDigest actual() {
             return actual;
         }

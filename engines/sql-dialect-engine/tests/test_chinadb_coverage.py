@@ -50,10 +50,14 @@ def test_chinadb_registry_has_the_exact_domestic_target_set() -> None:
         "goldendb",
     ]
     assert set(capabilities["excludedTargetIds"]) == set(CHINADB_EXCLUDED_TARGET_IDS)
-    assert capabilities["implementationStatus"] == "SPEC_ONLY"
+    assert capabilities["implementationStatus"] == "LOCAL_ADAPTER"
     assert capabilities["externalExecution"] == "NOT_RUN"
     assert capabilities["certification"] == "NOT_CERTIFIED"
-    assert capabilities["targetSqlEmission"] == "PROHIBITED_UNTIL_EXACT_ADAPTER_AND_EVIDENCE"
+    assert capabilities["targetSqlEmission"] == "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE"
+    for target in capabilities["targets"]:
+        assert target["implementationStatus"] == "LOCAL_ADAPTER"
+        assert target["externalExecution"] == "NOT_RUN"
+        assert target["certification"] == "NOT_CERTIFIED"
 
 
 def test_every_sql_unit_gets_a_disposition_for_every_chinadb_target(tmp_path: Path) -> None:
@@ -100,3 +104,78 @@ def test_cli_exposes_the_same_domestic_registry(tmp_path: Path, capsys) -> None:
     assert payload["plannedRouteCount"] == 78
     assert payload["externalExecution"] == "NOT_RUN"
     assert payload["certification"] == "NOT_CERTIFIED"
+    assert payload["implementationStatus"] == "LOCAL_ADAPTER"
+    assert payload["targetSqlEmission"] == "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE"
+
+
+_SIMPLE_POSTGRES_TABLE = "CREATE TABLE person (id INTEGER PRIMARY KEY, name VARCHAR(64) NOT NULL);"
+
+
+def test_explicit_compatibility_mode_emits_local_ddl_without_claiming_execution() -> None:
+    from elmos_sql_dialect.chinadb import translate_chinadb_ddl
+    from elmos_sql_dialect.models import RouteError
+
+    report = translate_chinadb_ddl(
+        _SIMPLE_POSTGRES_TABLE,
+        "postgres",
+        "dm8",
+        "oracle-compatible-explicit",
+    )
+    assert report["status"] == "PASSED"
+    assert report["state"] == "LOCAL_EMITTED"
+    assert report["mappedDialect"] == "oracle"
+    assert report["chinadbTargetId"] == "dm8"
+    assert report["compatibilityMode"] == "oracle-compatible-explicit"
+    assert report["implementationStatus"] == "LOCAL_ADAPTER"
+    assert report["externalExecution"] == "NOT_RUN"
+    assert report["certification"] == "NOT_CERTIFIED"
+    assert report["emitted"]
+    assert "PERSON" in report["emitted"].upper() or "person" in report["emitted"].lower()
+
+    blocked = translate_chinadb_ddl(
+        _SIMPLE_POSTGRES_TABLE,
+        "postgres",
+        "dm8",
+        "pg-compatible-explicit",
+    )
+    assert blocked["status"] == "BLOCKED"
+    assert blocked["reasonCode"] == "COMPATIBILITY_MODE_NOT_MAPPED"
+    assert blocked["emitted"] is None
+    assert blocked["externalExecution"] == "NOT_RUN"
+
+    try:
+        translate_chinadb_ddl(_SIMPLE_POSTGRES_TABLE, "postgres", "dm8", "")
+        raise AssertionError("empty compatibility mode must fail closed")
+    except RouteError as exc:
+        assert "CHINADB_COMPATIBILITY_MODE_REQUIRED" in str(exc)
+
+
+def test_cli_chinadb_translate_writes_local_emitted_sql(tmp_path: Path, capsys) -> None:
+    source = tmp_path / "person.sql"
+    source.write_text(_SIMPLE_POSTGRES_TABLE, encoding="utf-8")
+    output = tmp_path / "out"
+    assert (
+        main(
+            [
+                "translate",
+                "--source-file",
+                str(source),
+                "--source-dialect",
+                "postgres",
+                "--chinadb-target",
+                "tidb",
+                "--compatibility-mode",
+                "mysql-compatible-explicit",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+    report = json.loads((output / "translation-report.json").read_text(encoding="utf-8"))
+    assert report["status"] == "PASSED"
+    assert report["state"] == "LOCAL_EMITTED"
+    assert report["mappedDialect"] == "mysql"
+    assert report["externalExecution"] == "NOT_RUN"
+    assert (output / "emitted.sql").read_text(encoding="utf-8").strip()

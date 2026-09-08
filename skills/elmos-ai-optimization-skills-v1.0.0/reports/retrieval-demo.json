@@ -1,0 +1,198 @@
+{
+  "status": "pass",
+  "cases": 12,
+  "answerable": 10,
+  "unanswerable": 2,
+  "model_calls": 0,
+  "embedding_calls": 0,
+  "vector_origin": "handcrafted fixture",
+  "scope_leaks": 0,
+  "production_benchmark": false,
+  "results": [
+    {
+      "id": "Q01",
+      "route": "exact",
+      "returned_ids": [
+        "expiry-java"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.16941600006248336
+    },
+    {
+      "id": "Q02",
+      "route": "exact",
+      "returned_ids": [
+        "refund-ts"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.059459999874889036
+    },
+    {
+      "id": "Q03",
+      "route": "exact",
+      "returned_ids": [
+        "discount-py"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.04954500013809593
+    },
+    {
+      "id": "Q04",
+      "route": "exact",
+      "returned_ids": [
+        "orders-cs"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.04309500013732759
+    },
+    {
+      "id": "Q05",
+      "route": "exact",
+      "returned_ids": [
+        "nullable-sql"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.04126199996790092
+    },
+    {
+      "id": "Q06",
+      "route": "lexical",
+      "returned_ids": [
+        "test-discount",
+        "discount-py"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.930222000079084
+    },
+    {
+      "id": "Q07",
+      "route": "lexical",
+      "returned_ids": [
+        "migration-notes"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.49379400002180773
+    },
+    {
+      "id": "Q08",
+      "route": "lexical",
+      "returned_ids": [
+        "expiry-java"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.48724500015850936
+    },
+    {
+      "id": "Q09",
+      "route": "hybrid",
+      "returned_ids": [
+        "discount-py",
+        "refund-ts",
+        "orders-cs",
+        "nullable-sql",
+        "test-discount"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.7281387876745827,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.738804000093296
+    },
+    {
+      "id": "Q10",
+      "route": "hybrid",
+      "returned_ids": [
+        "migration-notes",
+        "discount-py",
+        "expiry-java",
+        "nullable-sql",
+        "orders-cs"
+      ],
+      "metrics": {
+        "answerable": true,
+        "recall": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "returned_any": true
+      },
+      "elapsed_ms": 0.651251999897795
+    },
+    {
+      "id": "Q11",
+      "route": "exact",
+      "returned_ids": [],
+      "metrics": {
+        "answerable": false,
+        "recall": null,
+        "mrr": null,
+        "ndcg": null,
+        "returned_any": false
+      },
+      "elapsed_ms": 0.02907400016738393
+    },
+    {
+      "id": "Q12",
+      "route": "lexical",
+      "returned_ids": [],
+      "metrics": {
+        "answerable": false,
+        "recall": null,
+        "mrr": null,
+        "ndcg": null,
+        "returned_any": false
+      },
+      "elapsed_ms": 0.4065630000695819
+    }
+  ]
+}

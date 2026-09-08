@@ -1,6 +1,8 @@
 package io.elmos.worker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.FileNonceStore;
+import io.elmos.security.SpringHmacProtocol;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,25 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -47,13 +44,11 @@ public final class EphemeralTransformerController {
     private static final int MAX_REQUEST_BYTES = 128 * 1024;
     private final ObjectMapper json;
     private final Clock clock;
-    private final byte[] secret;
-    private final long authWindowSeconds;
+    private final EphemeralTransformerAuthentication authentication;
     private final LocalSpringUpgradeExecutionPort execution;
     private final Path runRoot;
     private final Path progress;
     private final Object progressLock = new Object();
-    private final Map<String, Long> nonces = new ConcurrentHashMap<>();
 
     public EphemeralTransformerController(
             ObjectMapper json,
@@ -67,18 +62,18 @@ public final class EphemeralTransformerController {
             @Value("${elmos.transformer.allowed-git-hosts:github.com}") String allowedGitHosts,
             @Value("${elmos.transformer.one-time-secret:}") String oneTimeSecret,
             @Value("${elmos.transformer.auth-window-seconds:90}") long authWindowSeconds,
+            @Value("${elmos.transformer.replay-root:/workspace/run/.auth-replay}") String replayRoot,
             @Value("${elmos.transformer.experimental-routes-enabled:false}") boolean experimentalRoutesEnabled
     ) {
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
-        this.secret = Objects.toString(oneTimeSecret, "").getBytes(StandardCharsets.UTF_8);
-        if (secret.length < 32 || secret.length > 4096) {
-            throw new IllegalStateException("ephemeral transformer one-time secret must contain 32-4096 bytes");
-        }
-        if (authWindowSeconds < 30 || authWindowSeconds > 300) {
-            throw new IllegalStateException("ephemeral transformer auth window must be 30-300 seconds");
-        }
-        this.authWindowSeconds = authWindowSeconds;
+        this.authentication = new EphemeralTransformerAuthentication(
+                SpringHmacProtocol.requireSecret(
+                        Objects.toString(oneTimeSecret, "").getBytes(StandardCharsets.UTF_8),
+                        "ephemeral transformer"),
+                clock,
+                authWindowSeconds,
+                new FileNonceStore(Path.of(replayRoot), clock));
         Path root = Path.of(workspaceRoot).toAbsolutePath().normalize();
         this.runRoot = root.resolve("run").normalize();
         if (!runRoot.startsWith(root) || runRoot.equals(root)) {
@@ -110,7 +105,7 @@ public final class EphemeralTransformerController {
             @RequestHeader("X-ELMOS-Transformer-Signature") String signature,
             @RequestBody byte[] body
     ) {
-        authenticate(timestamp, nonce, signature, body);
+        authentication.verify(timestamp, nonce, signature, body);
         TransformationRequest envelope = parse(body);
         if (!"TRANSFORM".equals(envelope.action()) || envelope.request() == null) {
             throw new Rejected("TRANSFORM_REQUEST_REJECTED",
@@ -180,14 +175,18 @@ public final class EphemeralTransformerController {
 
     @ExceptionHandler(Rejected.class)
     ResponseEntity<Map<String, String>> rejected(Rejected error) {
-        HttpStatus status = "UNAUTHORIZED".equals(error.code())
-                ? HttpStatus.UNAUTHORIZED
-                : HttpStatus.UNPROCESSABLE_ENTITY;
+        HttpStatus status = rejectionStatus(error);
         return ResponseEntity.status(status).body(Map.of(
                 "status", "BLOCKED",
                 "code", error.code(),
                 "message", "Transformation request was rejected; use the stable code for controlled diagnostics."
         ));
+    }
+
+    static HttpStatus rejectionStatus(Rejected error) {
+        return "UNAUTHORIZED".equals(error.code())
+                ? HttpStatus.UNAUTHORIZED
+                : HttpStatus.UNPROCESSABLE_ENTITY;
     }
 
     @ExceptionHandler(BlockedException.class)
@@ -215,32 +214,6 @@ public final class EphemeralTransformerController {
             throw error;
         } catch (IOException | IllegalArgumentException error) {
             throw new Rejected("TRANSFORM_REQUEST_REJECTED", "Transformation request is invalid.");
-        }
-    }
-
-    private void authenticate(String timestampValue, String nonce, String signature, byte[] body) {
-        long now = clock.instant().getEpochSecond();
-        long timestamp;
-        try {
-            timestamp = Long.parseLong(Objects.toString(timestampValue, ""));
-        } catch (NumberFormatException error) {
-            throw unauthorized();
-        }
-        if (Math.abs(now - timestamp) > authWindowSeconds
-                || nonce == null
-                || !nonce.matches("[0-9a-fA-F-]{36}")
-                || signature == null
-                || !signature.matches("[0-9a-f]{64}")) {
-            throw unauthorized();
-        }
-        nonces.entrySet().removeIf(entry -> entry.getValue() < now - authWindowSeconds);
-        if (nonces.putIfAbsent(nonce, timestamp) != null) throw unauthorized();
-        String expected = sign(secret, timestampValue, nonce, body);
-        if (!MessageDigest.isEqual(
-                expected.getBytes(StandardCharsets.US_ASCII),
-                signature.getBytes(StandardCharsets.US_ASCII))) {
-            nonces.remove(nonce, timestamp);
-            throw unauthorized();
         }
     }
 
@@ -276,23 +249,6 @@ public final class EphemeralTransformerController {
                 .filter(host -> !host.isBlank())
                 .map(host -> host.toLowerCase(Locale.ROOT))
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    private static String sign(byte[] secret, String timestamp, String nonce, byte[] body) {
-        try {
-            String bodySha = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(body));
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new IllegalStateException("transformer request signing is unavailable", error);
-        }
-    }
-
-    private static Rejected unauthorized() {
-        return new Rejected("UNAUTHORIZED", "Ephemeral transformer authentication failed.");
     }
 
     record TransformationRequest(String action, String runId, StartRequest request) {}

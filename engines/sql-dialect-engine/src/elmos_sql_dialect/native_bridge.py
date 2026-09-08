@@ -5,7 +5,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 _LIB: ctypes.CDLL | None = None
 _TRIED_LOAD = False
@@ -60,8 +60,20 @@ def native_split_statements(source: str, dialect: str | None = None) -> list[dic
         ptr = lib.elmos_sql_split(src_bytes, dialect_bytes)
         if not ptr:
             return None
-        raw_str = ctypes.string_at(ptr).decode("utf-8")
+        raw_bytes = ctypes.string_at(ptr)
         lib.elmos_free_string(ptr)
-        return cast(list[dict[str, Any]], json.loads(raw_str))
+        decoded: object = json.loads(raw_bytes.decode("utf-8"))
+        if not isinstance(decoded, list):
+            return None
+        result: list[dict[str, Any]] = []
+        for item in decoded:
+            if not isinstance(item, dict):
+                return None
+            text = item.get("text")
+            start_line = item.get("start_line")
+            if not isinstance(text, str) or not isinstance(start_line, int) or isinstance(start_line, bool):
+                return None
+            result.append({"text": text, "start_line": start_line})
+        return result
     except Exception:
         return None

@@ -256,6 +256,10 @@ public final class GitRepositoryWorkspaceService {
     );
 
     private final Path root;
+    private final Path coordinationRoot;
+    // Accessed only under the root admission lock; includes in-flight fetch retries.
+    private static final java.util.concurrent.ConcurrentHashMap<Path, Set<String>> RESERVATIONS =
+            new java.util.concurrent.ConcurrentHashMap<>();
     private final int maximumFiles;
     private final long maximumRepositoryBytes;
     private final boolean allowControlledFileRepositories;
@@ -345,6 +349,7 @@ public final class GitRepositoryWorkspaceService {
                     || !Files.isDirectory(this.root, LinkOption.NOFOLLOW_LINKS)) {
                 throw new SecurityException("workspace root must be a regular directory");
             }
+            this.coordinationRoot = this.root.toRealPath();
             setOwnerOnlyDirectory(this.root);
         } catch (IOException error) {
             throw new IllegalArgumentException("workspace root is unavailable", error);
@@ -371,7 +376,7 @@ public final class GitRepositoryWorkspaceService {
         );
     }
 
-    public synchronized Workspace create(
+    public Workspace create(
             CreateRequest request,
             String credentialUsername,
             Optional<EphemeralCredential> credential
@@ -379,10 +384,6 @@ public final class GitRepositoryWorkspaceService {
         validateCreate(request);
         Objects.requireNonNull(credential, "credential");
         if (credential.isPresent()) requireText(credentialUsername, "credentialUsername", 128);
-        purgeExpiredWorkspaces();
-        if (workspaceCount() >= maximumWorkspaces) {
-            throw new IllegalStateException("GIT_WORKSPACE_CAPACITY_EXCEEDED");
-        }
         URI cloneUri = validateCloneUri(request.provider(), request.cloneUrl());
         if (!"file".equalsIgnoreCase(cloneUri.getScheme())
                 && !request.providerInstanceId().equalsIgnoreCase(cloneUri.getHost())) {
@@ -390,6 +391,31 @@ public final class GitRepositoryWorkspaceService {
         }
         String workspaceId = UUID.randomUUID().toString();
         Path directory = workspaceDirectory(workspaceId);
+        try (var workspaceGuard = WorkspaceLocks.acquire(coordinationRoot.resolve(workspaceId))) {
+            try (var admission = WorkspaceLocks.acquire(coordinationRoot)) {
+                purgeExpiredWorkspaces();
+                Set<String> reserved = RESERVATIONS.computeIfAbsent(coordinationRoot, ignored -> new LinkedHashSet<>());
+                if (workspaceCount(reserved) + reserved.size() >= maximumWorkspaces) {
+                    if (reserved.isEmpty()) RESERVATIONS.remove(coordinationRoot);
+                    throw new IllegalStateException("GIT_WORKSPACE_CAPACITY_EXCEEDED");
+                }
+                reserved.add(workspaceId);
+            }
+            try {
+                return createReserved(request, credentialUsername, credential, cloneUri, workspaceId, directory);
+            } finally {
+                try (var admission = WorkspaceLocks.acquire(coordinationRoot)) {
+                    Set<String> reserved = RESERVATIONS.get(coordinationRoot);
+                    reserved.remove(workspaceId);
+                    if (reserved.isEmpty()) RESERVATIONS.remove(coordinationRoot);
+                }
+            }
+        }
+    }
+
+    private Workspace createReserved(CreateRequest request, String credentialUsername,
+                                     Optional<EphemeralCredential> credential, URI cloneUri,
+                                     String workspaceId, Path directory) {
         for (int attempt = 1; attempt <= maximumGitTransportAttempts; attempt++) {
             try {
                 return createWorkspaceAttempt(
@@ -536,7 +562,13 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    public synchronized Workspace inspect(String organizationId, String actorId, String workspaceId) {
+    public Workspace inspect(String organizationId, String actorId, String workspaceId) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return inspectLocked(organizationId, actorId, workspaceId);
+        }
+    }
+
+    private Workspace inspectLocked(String organizationId, String actorId, String workspaceId) {
         Manifest manifest = readManifest(organizationId, workspaceId);
         requireActor(manifest, actorId);
         Path repository = workspaceDirectory(workspaceId).resolve(REPOSITORY);
@@ -599,7 +631,18 @@ public final class GitRepositoryWorkspaceService {
         );
     }
 
-    public synchronized FileContent readFile(
+    public FileContent readFile(
+            String organizationId,
+            String actorId,
+            String workspaceId,
+            String relativePath
+    ) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return readFileLocked(organizationId, actorId, workspaceId, relativePath);
+        }
+    }
+
+    private FileContent readFileLocked(
             String organizationId,
             String actorId,
             String workspaceId,
@@ -633,7 +676,13 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    public synchronized ChangeResult apply(String workspaceId, ChangeRequest request) {
+    public ChangeResult apply(String workspaceId, ChangeRequest request) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return applyLocked(workspaceId, request);
+        }
+    }
+
+    private ChangeResult applyLocked(String workspaceId, ChangeRequest request) {
         if (request == null) throw new IllegalArgumentException("GIT_WORKSPACE_CHANGE_REQUEST_REQUIRED");
         Manifest manifest = readManifest(request.organizationId(), workspaceId);
         requireIdentifier(request.actorId(), "actorId");
@@ -747,13 +796,25 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    public synchronized void delete(String organizationId, String actorId, String workspaceId) {
+    public void delete(String organizationId, String actorId, String workspaceId) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            deleteLocked(organizationId, actorId, workspaceId);
+        }
+    }
+
+    private void deleteLocked(String organizationId, String actorId, String workspaceId) {
         Manifest manifest = readManifest(organizationId, workspaceId);
         requireActor(manifest, actorId);
         safeDelete(workspaceDirectory(workspaceId));
     }
 
-    public synchronized CommitResult commit(String workspaceId, CommitRequest request) {
+    public CommitResult commit(String workspaceId, CommitRequest request) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return commitLocked(workspaceId, request);
+        }
+    }
+
+    private CommitResult commitLocked(String workspaceId, CommitRequest request) {
         Objects.requireNonNull(request, "request");
         Manifest manifest = readManifest(request.organizationId(), workspaceId);
         requireActor(manifest, request.actorId());
@@ -809,7 +870,18 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    public synchronized PushResult push(
+    public PushResult push(
+            String workspaceId,
+            PushRequest request,
+            String credentialUsername,
+            Optional<EphemeralCredential> credential
+    ) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return pushLocked(workspaceId, request, credentialUsername, credential);
+        }
+    }
+
+    private PushResult pushLocked(
             String workspaceId,
             PushRequest request,
             String credentialUsername,
@@ -862,7 +934,18 @@ public final class GitRepositoryWorkspaceService {
         }
     }
 
-    public synchronized PullRequestResult createPullRequest(
+    public PullRequestResult createPullRequest(
+            String workspaceId,
+            PullRequestRequest request,
+            String credentialUsername,
+            Optional<EphemeralCredential> credential
+    ) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return createPullRequestLocked(workspaceId, request, credentialUsername, credential);
+        }
+    }
+
+    private PullRequestResult createPullRequestLocked(
             String workspaceId,
             PullRequestRequest request,
             String credentialUsername,
@@ -913,7 +996,19 @@ public final class GitRepositoryWorkspaceService {
         return result;
     }
 
-    public synchronized WorkspaceMaterialization materialize(
+    public WorkspaceMaterialization materialize(
+            String organizationId,
+            String actorId,
+            String workspaceId,
+            String expectedHeadCommit,
+            Path materializedRoot
+    ) {
+        try (var ignored = lockWorkspace(workspaceId)) {
+            return materializeLocked(organizationId, actorId, workspaceId, expectedHeadCommit, materializedRoot);
+        }
+    }
+
+    private WorkspaceMaterialization materializeLocked(
             String organizationId,
             String actorId,
             String workspaceId,
@@ -1382,6 +1477,10 @@ public final class GitRepositoryWorkspaceService {
                     })
                     .toList()
                     .forEach(directory -> {
+                        // Never wait for a long-running Git operation while holding admission.
+                        try (var workspaceGuard = WorkspaceLocks.tryAcquire(
+                                coordinationRoot.resolve(directory.getFileName()))) {
+                        if (workspaceGuard == null) return;
                         Path manifest = directory.resolve(MANIFEST);
                         Properties properties = new Properties();
                         try (var input = Files.newInputStream(manifest)) {
@@ -1394,16 +1493,18 @@ public final class GitRepositoryWorkspaceService {
                         } catch (RuntimeException | IOException ignored) {
                             // Unknown or corrupt directories are never auto-deleted.
                         }
+                        }
                     });
         } catch (IOException error) {
             throw new IllegalStateException("GIT_WORKSPACE_CLEANUP_FAILED", error);
         }
     }
 
-    private long workspaceCount() {
+    private long workspaceCount(Set<String> reserved) {
         try (var directories = Files.list(root)) {
             return directories.filter(path ->
-                    Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
+                    !reserved.contains(path.getFileName().toString())
+                            && Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
                             && path.getFileName().toString().matches(
                             "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"))
                     .count();
@@ -1417,6 +1518,11 @@ public final class GitRepositoryWorkspaceService {
         Path resolved = root.resolve(workspaceId).normalize();
         if (!resolved.startsWith(root) || resolved.equals(root)) throw new SecurityException("GIT_WORKSPACE_PATH_ESCAPE");
         return resolved;
+    }
+
+    private WorkspaceLocks.Guard lockWorkspace(String workspaceId) {
+        requireUuid(workspaceId, "workspaceId");
+        return WorkspaceLocks.acquire(coordinationRoot.resolve(workspaceId));
     }
 
     private Path resolveFile(String workspaceId, String relativePath) {

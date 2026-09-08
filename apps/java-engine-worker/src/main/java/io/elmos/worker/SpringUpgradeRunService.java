@@ -39,6 +39,7 @@ final class SpringUpgradeRunService {
      */
     private static final Duration TERMINAL_RUN_RETENTION = Duration.ofHours(24);
     private static final Duration RETENTION_SWEEP_INTERVAL = Duration.ofMinutes(10);
+    private static final Duration SHUTDOWN_TIMEOUT = Duration.ofMinutes(1);
     private static final Pattern SECRET = Pattern.compile(
             "(?i)(authorization\\s*[:=]|token\\s*[:=]|password\\s*[:=]|secret\\s*[:=])\\s*\\S+");
     private final SpringUpgradeExecutionPort transformer;
@@ -52,6 +53,8 @@ final class SpringUpgradeRunService {
     private final ConcurrentMap<String, RunState> runs = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, IdempotencyEntry> idempotency = new ConcurrentHashMap<>();
     private final AtomicBoolean closed = new AtomicBoolean();
+    private final Object persistenceLifecycle = new Object();
+    private boolean persistenceClosed;
 
     SpringUpgradeRunService(
             SpringUpgradeExecutionPort transformer,
@@ -439,13 +442,15 @@ final class SpringUpgradeRunService {
             touch(state);
         }
         try {
+            ensureRunActive(state);
             Path executionRoot = state.runRoot.resolve("execution");
             createDirectory(executionRoot);
-            ExecutionResult result = promoteTransformerResult(
-                    state,
-                    executionRoot,
-                    transformer.execute(state.request, executionRoot, control(state))
-            );
+            ensureRunActive(state);
+            ExecutionResult candidate = transformer.execute(
+                    state.request, executionRoot, control(state));
+            ensureRunActive(state);
+            ExecutionResult result = promoteTransformerResult(state, executionRoot, candidate);
+            ensureRunActive(state);
             synchronized (state) {
                 state.selectedPackKey = selectedPackKey(result.fingerprint(), state.request);
                 state.result = result;
@@ -458,7 +463,9 @@ final class SpringUpgradeRunService {
                 state.artifactSize = result.artifactSize();
                 touch(state);
             }
+            ensureRunActive(state);
             IndependentValidationResult decision = verifier.validate(result, state.runRoot, control(state));
+            ensureRunActive(state);
             if (!"PASS".equals(decision.status())
                     || !result.artifactSha256().equals(decision.artifactSha256())) {
                 throw new BlockedException(
@@ -507,20 +514,46 @@ final class SpringUpgradeRunService {
                 case BLOCKED -> "BLOCKED";
                 default -> "FAILED";
             };
+            /*
+             * Future.cancel(true) interrupts the execution thread. A cancelled
+             * runtime can return its remote handle only after observing that
+             * interrupt, and FileChannel.lock then fails immediately with
+             * ClosedByInterruptException if the flag remains set. Clear the
+             * flag only for the mandatory durable lease reconciliation and
+             * restore it afterwards so cancellation does not become a false
+             * QUEUE_LEASE_RELEASE_FAILED result.
+             */
+            boolean interrupted = Thread.interrupted();
             try {
-                lease.release(outcome);
-                synchronized (state) {
-                    state.status = terminalStatus;
-                    touch(state);
+                boolean leaseReleased = true;
+                try {
+                    lease.release(outcome);
+                } catch (RuntimeException error) {
+                    leaseReleased = false;
+                    synchronized (state) {
+                        state.status = RunStatus.BLOCKED;
+                        state.failureCode = "QUEUE_LEASE_RELEASE_FAILED";
+                        state.failureMessage = "Durable execution lease could not be reconciled.";
+                        appendEvent(state, state.stage, "BLOCKED", state.failureMessage);
+                        touch(state);
+                    }
                 }
-            } catch (RuntimeException error) {
-                synchronized (state) {
-                    state.status = RunStatus.BLOCKED;
-                    state.failureCode = "QUEUE_LEASE_RELEASE_FAILED";
-                    state.failureMessage = "Durable execution lease could not be reconciled.";
-                    appendEvent(state, state.stage, "BLOCKED", state.failureMessage);
-                    touch(state);
+                if (leaseReleased) {
+                    synchronized (state) {
+                        state.status = terminalStatus;
+                        try {
+                            touch(state);
+                        } catch (RuntimeException error) {
+                            state.status = RunStatus.BLOCKED;
+                            state.failureCode = "DURABLE_STATE_PERSISTENCE_FAILED";
+                            state.failureMessage =
+                                    "Terminal run state could not be persisted after lease release.";
+                            appendEvent(state, state.stage, "BLOCKED", state.failureMessage);
+                        }
+                    }
                 }
+            } finally {
+                if (interrupted) Thread.currentThread().interrupt();
             }
         }
     }
@@ -948,6 +981,7 @@ final class SpringUpgradeRunService {
         return new SpringUpgradeExecutionPort.Control() {
             @Override public void stage(Stage stage, String message) {
                 synchronized (state) {
+                    ensureRunActive(state);
                     state.stage = stage;
                     appendEvent(state, stage, "RUNNING", message);
                     appendLog(state, stage.name() + " " + message);
@@ -957,18 +991,31 @@ final class SpringUpgradeRunService {
 
             @Override public void log(String line) {
                 synchronized (state) {
+                    ensureRunActive(state);
                     appendLog(state, line);
                 }
             }
 
             @Override public void process(Process process) {
                 state.activeProcess.set(process);
+                if (runtimeStopRequired(state)) {
+                    destroyProcess(state.activeProcess.getAndSet(null));
+                    throw cancelledRun();
+                }
             }
 
             @Override public boolean cancelled() {
                 return state.cancelled.get() || Thread.currentThread().isInterrupted();
             }
         };
+    }
+
+    private void ensureRunActive(RunState state) {
+        if (runtimeStopRequired(state)) throw cancelledRun();
+    }
+
+    private static BlockedException cancelledRun() {
+        return new BlockedException("RUN_CANCELLED", "The migration run was cancelled.");
     }
 
     private void restoreDurableRuns() {
@@ -1309,19 +1356,24 @@ final class SpringUpgradeRunService {
     }
 
     private void persist(RunState state) {
-        try {
-            Path evidence = state.runRoot.resolve("evidence");
-            Files.createDirectories(evidence);
-            Path temporary = evidence.resolve("run-state.json.tmp");
-            json.writerWithDefaultPrettyPrinter().writeValue(temporary.toFile(), viewWithoutRecursion(state));
+        synchronized (persistenceLifecycle) {
+            if (persistenceClosed) return;
             try {
-                Files.move(temporary, evidence.resolve("run-state.json"),
-                        StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException ignored) {
-                Files.move(temporary, evidence.resolve("run-state.json"), StandardCopyOption.REPLACE_EXISTING);
+                Path evidence = state.runRoot.resolve("evidence");
+                Files.createDirectories(evidence);
+                Path temporary = evidence.resolve("run-state.json.tmp");
+                json.writerWithDefaultPrettyPrinter().writeValue(
+                        temporary.toFile(), viewWithoutRecursion(state));
+                try {
+                    Files.move(temporary, evidence.resolve("run-state.json"),
+                            StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                } catch (AtomicMoveNotSupportedException ignored) {
+                    Files.move(temporary, evidence.resolve("run-state.json"),
+                            StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException error) {
+                throw new IllegalStateException("durable Spring run state persistence failed", error);
             }
-        } catch (IOException error) {
-            throw new IllegalStateException("durable Spring run state persistence failed", error);
         }
     }
 
@@ -1522,18 +1574,32 @@ final class SpringUpgradeRunService {
         tasks.shutdownNow();
         scheduler.shutdownNow();
         try {
-            if (!tasks.awaitTermination(10, TimeUnit.SECONDS)) {
-                throw new IllegalStateException("Spring upgrade tasks did not terminate during shutdown");
+            try {
+                if (!tasks.awaitTermination(SHUTDOWN_TIMEOUT.toSeconds(), TimeUnit.SECONDS)) {
+                    throw new IllegalStateException(
+                            "Spring upgrade tasks did not terminate during shutdown");
+                }
+                if (!scheduler.awaitTermination(SHUTDOWN_TIMEOUT.toSeconds(), TimeUnit.SECONDS)) {
+                    throw new IllegalStateException(
+                            "Spring queue scheduler did not terminate during shutdown");
+                }
+            } finally {
+                /*
+                 * Executor termination normally drains every writer. Close the
+                 * queue before publishing the persistence barrier so no late
+                 * callback can reopen its lock file or recreate a lease below
+                 * an owner-managed workspace that is being released. The queue
+                 * and persistence locks then make close() a final writer
+                 * barrier for both durable stores.
+                 */
+                leaseStore.close();
+                synchronized (persistenceLifecycle) {
+                    persistenceClosed = true;
+                }
             }
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();
-        }
-        try {
-            if (!scheduler.awaitTermination(10, TimeUnit.SECONDS)) {
-                throw new IllegalStateException("Spring queue scheduler did not terminate during shutdown");
-            }
-        } catch (InterruptedException error) {
-            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Spring upgrade shutdown was interrupted", error);
         }
     }
 

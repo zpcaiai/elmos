@@ -3,7 +3,7 @@
 > **Deprecated historical partition.** JavaScript/Node.js is no longer an
 > active Batch 29 language identity. The 18 completion routes and their 90/110
 > provenance denominators remain read-only so filed evidence stays
-> addressable; they do not contribute to the current 13-language, 156-route
+> addressable; they do not contribute to the current 15-language, 210-route
 > activity matrix and cannot be prepared, replayed, or certified.
 
 ## Language identity and route set

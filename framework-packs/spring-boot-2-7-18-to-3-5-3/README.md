@@ -36,3 +36,24 @@ ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn \
 
 The runner rejects every Maven version other than 3.9.11 and never executes a
 repository-provided `mvnw`.
+
+## Certification campaign
+
+The checked-in `certification/p0-p11-campaign.json` binds the exact source
+snapshot, JDK 17.0.11, JDK 21.0.11, Maven 3.9.11, the built OpenRewrite recipe,
+the executable Spring Boot 3.5.3 JAR, the target profile and the qualification
+policy by SHA-256. The initial certification subject is deliberately limited to
+`web`, `configuration` and `lifecycle`; all other support-matrix capabilities
+remain excluded until their provider-specific and independent evidence exists.
+
+Validate the immutable plan without accepting external evidence:
+
+```bash
+python3 scripts/batch30/certification_campaign.py \
+  framework-packs/spring-boot-2-7-18-to-3-5-3 --plan-only
+```
+
+The expected plan-only decision is
+`BLOCKED_EXTERNAL_EVIDENCE_REQUIRED / NOT_CERTIFIED`. Promotion requires all 13
+independently signed evidence classes, an explicit trust store and a subsequent
+successful Batch 30 gate; local execution cannot promote this Pack.

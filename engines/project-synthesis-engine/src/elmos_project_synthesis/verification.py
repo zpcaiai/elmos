@@ -263,7 +263,7 @@ def _gradle_user_home() -> Path:
 
 
 #: The command timeout when neither the caller nor the environment sets one.
-_DEFAULT_COMMAND_TIMEOUT_SECONDS = 300
+_DEFAULT_COMMAND_TIMEOUT_SECONDS = 900
 
 #: One retry, and only for a fetch failure. See `_is_transient_dependency_fetch`.
 _MAX_TRANSIENT_DEPENDENCY_RETRIES = 1
@@ -284,8 +284,9 @@ _TRANSIENT_DEPENDENCY_FETCH_MARKERS = (
 def _go_module_cache_roots(cwd: Path) -> tuple[Path, Path]:
     configured_gomod = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOMODCACHE", "").strip()
     configured_gocache = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOCACHE", "").strip()
-    gomod_cache = Path(configured_gomod) if configured_gomod else (cwd / ".elmos-go-cache" / "mod")
-    go_cache = Path(configured_gocache) if configured_gocache else (cwd / ".elmos-go-cache" / "build")
+    cache_root = Path.home() / ".cache" / "elmos" / "project-synthesis" / "go"
+    gomod_cache = Path(configured_gomod) if configured_gomod else (cache_root / "mod")
+    go_cache = Path(configured_gocache) if configured_gocache else (cache_root / "build")
     if not gomod_cache.is_absolute() or gomod_cache.is_symlink():
         raise ValueError("GO_CACHE_PATH_UNSAFE")
     if not go_cache.is_absolute() or go_cache.is_symlink():
@@ -363,6 +364,10 @@ def _run(
             gomod_cache, go_cache = _go_module_cache_roots(cwd)
             process_environment["GOMODCACHE"] = str(gomod_cache)
             process_environment["GOCACHE"] = str(go_cache)
+        if language == "rust":
+            cargo_target = Path.home() / ".cache" / "elmos" / "project-synthesis" / "cargo-target"
+            cargo_target.mkdir(parents=True, mode=0o700, exist_ok=True)
+            process_environment.setdefault("CARGO_TARGET_DIR", str(cargo_target))
         # An ambient virtualenv from the synthesis engine is never the
         # generated workspace's environment. Let uv/direct workspace tools
         # resolve the generated `.venv` without inheriting a misleading path.
@@ -372,6 +377,9 @@ def _run(
             # the uv-supported path behind managed TLS proxies and avoids
             # rustls `close_notify` failures observed on otherwise valid HTTPS.
             process_environment["UV_NATIVE_TLS"] = "true"
+            mypy_cache = Path.home() / ".cache" / "elmos" / "project-synthesis" / "mypy"
+            mypy_cache.mkdir(parents=True, mode=0o700, exist_ok=True)
+            process_environment.setdefault("MYPY_CACHE_DIR", str(mypy_cache))
         if language == "kotlin" and not os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY"):
             # Gradle may consume ambient shell proxy variables even when no JVM
             # proxy properties were requested. Keep the default Maven Central
@@ -513,72 +521,100 @@ def _check_exact_toolchain(
     requirements: list[dict[str, Any]],
 ) -> tuple[bool, list[dict[str, Any]]]:
     results: list[dict[str, Any]] = []
+    grouped: dict[str, list[dict[str, Any]]] = {}
     for requirement in requirements:
-        tool_name = str(requirement["tool"])
-        tool, observations = _matching_tool(requirement)
-        if tool is None and not observations:
+        grouped.setdefault(str(requirement["tool"]), []).append(requirement)
+    for tool_name, tool_requirements in grouped.items():
+        tool, observations = _matching_tool_requirements(tool_requirements)
+        if tool is None and not any(observations):
             results.append(_missing(language, tool_name))
             return False, results
-        arguments = [str(item) for item in requirement["arguments"]]
-        expected = str(requirement["expected"])
         matched = tool is not None
-        results.append(
-            _result(
-                language=language,
-                kind="toolchain",
-                command=[tool or tool_name, *arguments],
-                status="PASSED" if matched else "NOT_RUN",
-                exit_code=0 if matched else 1,
-                output=f"EXPECTED:{expected}\n" + "\n".join(observations),
+        for requirement, requirement_observations in zip(
+            tool_requirements,
+            observations,
+            strict=True,
+        ):
+            arguments = [str(item) for item in requirement["arguments"]]
+            expected = str(requirement["expected"])
+            results.append(
+                _result(
+                    language=language,
+                    kind="toolchain",
+                    command=[tool or tool_name, *arguments],
+                    status="PASSED" if matched else "NOT_RUN",
+                    exit_code=0 if matched else 1,
+                    output=f"EXPECTED:{expected}\n" + "\n".join(requirement_observations),
+                )
             )
-        )
         if not matched:
             return False, results
     return True, results
 
 
-def _matching_tool(requirement: dict[str, Any]) -> tuple[str | None, list[str]]:
-    tool_name = str(requirement["tool"])
-    fallback = str(requirement["fallback"]) if requirement.get("fallback") else None
+def _matching_tool_requirements(
+    requirements: list[dict[str, Any]],
+) -> tuple[str | None, list[list[str]]]:
+    if not requirements:
+        return None, []
+    tool_name = str(requirements[0]["tool"])
+    if any(str(requirement["tool"]) != tool_name for requirement in requirements):
+        raise ValueError("TOOLCHAIN_REQUIREMENT_TOOL_MISMATCH")
     candidates = [
         candidate
-        for candidate in dict.fromkeys((shutil.which(tool_name), fallback))
+        for candidate in dict.fromkeys((
+            shutil.which(tool_name),
+            *(
+                str(requirement["fallback"])
+                for requirement in requirements
+                if requirement.get("fallback")
+            ),
+        ))
         if candidate and Path(candidate).is_file()
     ]
-    arguments = [str(item) for item in requirement["arguments"]]
-    observations: list[str] = []
+    observations: list[list[str]] = [[] for _ in requirements]
     for candidate in candidates:
-        completed = subprocess.run(  # noqa: S603
-            [candidate, *arguments],
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        observed = (completed.stdout + completed.stderr).strip()
-        observations.append(f"OBSERVED:{candidate}:{observed}")
-        if (
-            completed.returncode == 0
-            and re.search(
-                str(requirement["pattern"]),
-                observed,
-                flags=re.MULTILINE,
+        candidate_matches = True
+        for index, requirement in enumerate(requirements):
+            arguments = [str(item) for item in requirement["arguments"]]
+            completed = subprocess.run(  # noqa: S603
+                [candidate, *arguments],
+                text=True,
+                capture_output=True,
+                check=False,
             )
-            is not None
-        ):
+            observed = (completed.stdout + completed.stderr).strip()
+            observations[index].append(f"OBSERVED:{candidate}:{observed}")
+            if (
+                completed.returncode != 0
+                or re.search(
+                    str(requirement["pattern"]),
+                    observed,
+                    flags=re.MULTILINE,
+                )
+                is None
+            ):
+                candidate_matches = False
+        if candidate_matches:
             return candidate, observations
     return None, observations
 
 
+def _matching_tool(requirement: dict[str, Any]) -> tuple[str | None, list[str]]:
+    tool, observations = _matching_tool_requirements([requirement])
+    return tool, observations[0] if observations else []
+
+
 def _runtime_tool(language: str, tool_name: str, fallback: str | None = None) -> str | None:
-    requirements = EXACT_TOOLCHAIN_REQUIREMENTS.get(language, [])
-    selected: str | None = None
-    for requirement in requirements:
-        matched, _ = _matching_tool(requirement)
-        if matched is None:
-            return None
-        if str(requirement["tool"]) == tool_name:
-            selected = matched
-    return selected or _resolve_tool(tool_name, fallback)
+    requirements = [
+        requirement
+        for requirement in EXACT_TOOLCHAIN_REQUIREMENTS.get(language, [])
+        if str(requirement["tool"]) == tool_name
+    ]
+    if requirements:
+        selected, _ = _matching_tool_requirements(requirements)
+        return selected
+    return _resolve_tool(tool_name, fallback)
 
 
 def _planned_runtime_tool(
@@ -694,6 +730,20 @@ def _probe(
     # developer/CI proxy can turn a healthy response into a proxy-generated
     # 502 and is an unnecessary egress path for local test credentials.
     env = _loopback_environment(environment)
+    if language == "python":
+        # The generated workspace owns the environment created by the earlier
+        # locked sync. Never let the synthesis engine's ambient venv redirect
+        # the probe, and never let a runtime probe resolve or rebuild packages.
+        env.pop("VIRTUAL_ENV", None)
+        env["UV_SYSTEM_CERTS"] = "true"
+    elif language == "go":
+        gomod_cache, go_cache = _go_module_cache_roots(cwd)
+        env.setdefault("GOMODCACHE", str(gomod_cache))
+        env.setdefault("GOCACHE", str(go_cache))
+    elif language == "rust":
+        cargo_target = Path.home() / ".cache" / "elmos" / "project-synthesis" / "cargo-target"
+        cargo_target.mkdir(parents=True, mode=0o700, exist_ok=True)
+        env.setdefault("CARGO_TARGET_DIR", str(cargo_target))
     process = subprocess.Popen(  # noqa: S603
         command,
         cwd=cwd,
@@ -718,7 +768,7 @@ def _probe(
         daemon=True,
     )
     reader.start()
-    if not 5 <= startup_timeout_seconds <= 180:
+    if not 5 <= startup_timeout_seconds <= 300:
         raise ValueError("STARTUP_TIMEOUT_OUT_OF_RANGE")
     deadline = time.monotonic() + startup_timeout_seconds
     status = "FAILED"
@@ -890,6 +940,11 @@ _INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
     "java": 240,
 }
 
+_HARNESS_STARTUP_TIMEOUT_SECONDS: dict[str, int] = {
+    "kotlin": 300,
+    "rust": 300,
+}
+
 # Python declares its integration command inline in ``runtime_commands``
 # because it also owns the in-memory runtime shape; every other target is
 # declared in the table above.
@@ -932,7 +987,11 @@ def _harness_environment(language: str, tools: list[str]) -> dict[str, str]:
     whatever happens to be first on the ambient PATH.
     """
     directories = [str(Path(tool).resolve().parent) for tool in tools]
-    postgres = _resolve_tool("postgres", "/opt/homebrew/opt/postgresql@17/bin/postgres")
+    postgres = _runtime_tool(
+        "postgresql",
+        "postgres",
+        "/opt/homebrew/opt/postgresql@17/bin/postgres",
+    )
     if postgres is not None:
         directories.append(str(Path(postgres).resolve().parent))
     environment = {
@@ -976,7 +1035,11 @@ def _harness_runtime_plan(
     interpreter = _resolve_tool("python3", "/usr/bin/python3")
     tools = _language_tool_paths(language)
     integration = _HARNESS_INTEGRATION_COMMANDS.get(language)
-    postgres_ready = _resolve_tool("postgres", "/opt/homebrew/opt/postgresql@17/bin/postgres") is not None
+    postgres_ready = _runtime_tool(
+        "postgresql",
+        "postgres",
+        "/opt/homebrew/opt/postgresql@17/bin/postgres",
+    ) is not None
 
     blocking: str | None = None
     if interpreter is None:
@@ -1035,7 +1098,7 @@ def _harness_runtime_plan(
         },
         "providers": ["postgresql"],
         "port": port,
-        "startup_timeout_seconds": 180,
+        "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
         "requires_integration": True,
         "integration_command": [runner, *runner_arguments],
         "integration_environment": integration_environment,
@@ -1115,9 +1178,9 @@ def runtime_commands(
                 auth_mode = application.get("auth_mode")
                 state = root / "python" / ".elmos-runtime"
                 runtime_arguments = (
-                    ["run", "python", "scripts/local_runtime.py"]
+                    ["run", "--no-sync", "python", "scripts/local_runtime.py"]
                     if storage == "postgresql"
-                    else ["run", "python", "-m", packages[0].parent.name]
+                    else ["run", "--no-sync", "python", "-m", packages[0].parent.name]
                 )
                 plan: dict[str, Any] = {
                     "language": language,
@@ -1144,14 +1207,23 @@ def runtime_commands(
                         integration_environment["ELMOS_OIDC_JWKS_FILE"] = str(state / "oidc-jwks.json")
                         integration_environment["ELMOS_OIDC_PRIVATE_KEY_FILE"] = str(state / "oidc-private-key.pem")
                     plan["requires_integration"] = True
+                    # Initialising an isolated PostgreSQL cluster performs a
+                    # real bootstrap and VACUUM.  Use the same bounded startup
+                    # budget as the compiled production harnesses so a loaded
+                    # workstation cannot turn slow initdb I/O into a false
+                    # application failure.  The probe still fails closed when
+                    # the bound expires or /health never matches exactly.
+                    plan["startup_timeout_seconds"] = 180
                     plan["integration_command"] = [
                         tool,
                         "run",
+                        "--no-sync",
                         "pytest",
                         "-m",
                         "integration",
                     ]
                     plan["integration_environment"] = integration_environment
+                    plan["integration_timeout_seconds"] = 180
                 commands.append(plan)
         elif language == "csharp":
             projects = sorted((root / "dotnet" / "src").glob("*/*.csproj"))
@@ -1218,7 +1290,7 @@ def runtime_commands(
                         **_toolchain_environment("kotlin"),
                     },
                     "port": port,
-                    "startup_timeout_seconds": 120,
+                    "startup_timeout_seconds": 300,
                     **execution,
                 }
             )
@@ -1272,7 +1344,7 @@ def _run_if_available(
             command,
             cwd,
             language=language,
-            timeout_seconds=600 if language in {"kotlin", "rust"} else 300,
+            timeout_seconds=900 if language in {"kotlin", "rust", "go"} else 300,
             environment=_toolchain_environment(language),
         )
         results.append(result)
@@ -1317,7 +1389,7 @@ def verify_workspace(
 
     if "java" in selected:
         if exact_toolchains["java"]:
-            tool = _resolve_tool("mvn", "/opt/homebrew/bin/mvn")
+            tool = _runtime_tool("java", "mvn", "/opt/homebrew/bin/mvn")
             assert tool is not None
             result = _run([tool, "-B", "package"], root / "java", language="java")
             results.append(result)
@@ -1325,7 +1397,7 @@ def verify_workspace(
                 build_passed.add("java")
 
     if "python" in selected:
-        tool = _resolve_tool("uv", "/opt/homebrew/bin/uv")
+        tool = _runtime_tool("python", "uv", "/opt/homebrew/bin/uv")
         if tool is None:
             results.append(_missing("python", "uv"))
         else:
@@ -1353,7 +1425,7 @@ def verify_workspace(
 
     if "csharp" in selected:
         if exact_toolchains["csharp"]:
-            tool = _resolve_tool("dotnet", "/opt/homebrew/bin/dotnet")
+            tool = _runtime_tool("csharp", "dotnet", "/opt/homebrew/bin/dotnet")
             assert tool is not None
             dotnet_commands = (
                 [tool, "restore", "--use-lock-file"],
@@ -1489,7 +1561,7 @@ def verify_workspace(
                 blocking_reason=(
                     str(plan["blocking_reason"]) if isinstance(plan.get("blocking_reason"), str) else None
                 ),
-                startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 30)),
+                startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 120)),
                 integration_timeout_seconds=int(plan.get("integration_timeout_seconds", 120)),
             )
         )

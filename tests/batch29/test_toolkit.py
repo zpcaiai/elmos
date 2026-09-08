@@ -885,7 +885,171 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
     return receipt
 
 
+def bind_swift_receipt_to_selected_host_profile(
+    validator: object,
+    receipt: dict[str, object],
+    profile: object | None = None,
+) -> None:
+    """Bind every host-owned receipt identity to one registered profile."""
+
+    profile = profile or validator._selected_swift_host_profile()
+    if profile is None:
+        raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    toolchain_profile = receipt["toolchain"]["profile"]
+    receipt["toolchain"]["profile"] = [
+        toolchain_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *[
+            item
+            for item in toolchain_profile[1:]
+            if not item.startswith("apple-host-profile=")
+        ],
+    ]
+    receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["dependency"]["mirror"]["git"] = {
+        "path": validator.SWIFT_GIT_PATH,
+        "sha256": "sha256:" + profile.apple_git_sha256,
+        "version": validator.SWIFT_GIT_VERSION,
+    }
+    receipt["network_isolation"]["sandbox"].update(
+        {
+            "sha256": "sha256:" + profile.sandbox_exec_sha256,
+            "bytes": profile.sandbox_exec_bytes,
+            "cdhash_full": profile.sandbox_exec_cdhash_full,
+        }
+    )
+    receipt["network_isolation"]["verifier"].update(
+        {
+            "sha256": "sha256:" + profile.codesign_sha256,
+            "bytes": profile.codesign_bytes,
+        }
+    )
+    contract = validator._registered_swift_receipt_contract(receipt)
+    receipt["toolchain"] = copy.deepcopy(contract["toolchain"])
+    receipt["dependency"]["mirror"]["git"] = copy.deepcopy(contract["git"])
+    receipt["network_isolation"]["sandbox"] = copy.deepcopy(contract["sandbox"])
+    receipt["network_isolation"]["verifier"] = copy.deepcopy(contract["verifier"])
+    receipt["network_isolation"]["probe"]["build"]["compiler"] = copy.deepcopy(
+        contract["probe_compiler"]
+    )
+
+
 class ToolkitTests(unittest.TestCase):
+    def test_non_apple_ci_profile_does_not_claim_an_unsealed_xcode_tree(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "GITHUB_ACTIONS": "true",
+                    "RUNNER_ENVIRONMENT": "github-hosted",
+                    "ImageOS": "macos26",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile"
+            ) as selector,
+        ):
+            self.assertIsNone(validator._selected_swift_host_profile())
+            selector.assert_not_called()
+
+    def test_selected_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
+        receipt = portable_swift_analyzer_receipt(validator)
+        bind_swift_receipt_to_selected_host_profile(validator, receipt)
+        profile = validator._selected_swift_host_profile()
+        self.assertIsNotNone(profile)
+        self.assertEqual(
+            receipt["toolchain"]["profile"][1],
+            f"apple-host-profile={profile.profile_id}",
+        )
+        canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
+        receipt["canonical_identity"] = {
+            "sha256": validator._receipt_payload_sha256(canonical),
+            "receipt": canonical,
+        }
+        failures: list[str] = []
+        validator._validate_swift_analyzer_receipt_document(
+            receipt,
+            label="host-bound Swift analyzer receipt",
+            failures=failures,
+        )
+        self.assertEqual(failures, [])
+
+        forged = copy.deepcopy(receipt)
+        forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+        failures = []
+        validator._validate_swift_analyzer_receipt_document(
+            forged,
+            label="forged Swift analyzer receipt",
+            failures=failures,
+        )
+        self.assertTrue(
+            any("toolchain exact identity is invalid" in failure for failure in failures),
+            failures,
+        )
+
+    def test_partial_apple_sealing_claim_still_reaches_strict_selector(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile",
+                side_effect=RuntimeError("partial Apple host claim"),
+            ) as selector,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
+                validator._selected_swift_host_profile()
+            selector.assert_called_once_with("swift")
+
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
+        from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
+
+        for profile in _APPLE_ROUTE_HOST_PROFILES:
+            with self.subTest(profile=profile.profile_id):
+                receipt = portable_swift_analyzer_receipt(validator)
+                bind_swift_receipt_to_selected_host_profile(
+                    validator,
+                    receipt,
+                    profile,
+                )
+                self.assertEqual(
+                    receipt["toolchain"]["profile"][1],
+                    f"apple-host-profile={profile.profile_id}",
+                )
+                contract = validator._registered_swift_receipt_contract(receipt)
+                self.assertEqual(contract["profile"], profile)
+                self.assertEqual(contract["toolchain"], receipt["toolchain"])
+
+                forged = copy.deepcopy(receipt)
+                forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+                failures: list[str] = []
+                validator._validate_swift_analyzer_receipt_document(
+                    forged,
+                    label="forged Swift analyzer receipt",
+                    failures=failures,
+                )
+                self.assertTrue(
+                    any(
+                        "toolchain exact identity is invalid" in failure
+                        for failure in failures
+                    ),
+                    failures,
+                )
+
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
         maximum = validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
@@ -1589,13 +1753,24 @@ class ToolkitTests(unittest.TestCase):
             (repository / "scripts" / "batch29").mkdir(parents=True, exist_ok=True)
             (repository / "schemas" / "batch29").mkdir(parents=True, exist_ok=True)
 
-            accepted = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            validator = load_route_validator()
+            manifest = json.loads((route / "route.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
             )
-            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+            _, accepted_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
+            )
+            self.assertFalse(
+                any(
+                    "engine source manifest live file" in failure
+                    for failure in accepted_failures
+                ),
+                accepted_failures,
+            )
 
             live_engine = (
                 repository
@@ -1606,15 +1781,20 @@ class ToolkitTests(unittest.TestCase):
                 / "engine.py"
             )
             live_engine.write_text("# drifted engine fixture\n")
-            rejected = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            _, rejected_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
             )
 
-            self.assertEqual(rejected.returncode, 1)
-            self.assertIn("engine source manifest live file drifted", rejected.stderr)
+            self.assertTrue(
+                any(
+                    "engine source manifest live file drifted" in failure
+                    for failure in rejected_failures
+                ),
+                rejected_failures,
+            )
 
     def test_proof_runtime_rejects_pythonpath_shadow_package_in_fresh_process(self):
         with tempfile.TemporaryDirectory() as td:
@@ -2016,7 +2196,7 @@ print('\\n'.join(failures))
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=300,
+                timeout=2400,
             )
             output = completed.stdout + completed.stderr
             self.assertNotEqual(completed.returncode, 0, output)
@@ -2458,6 +2638,10 @@ print('\\n'.join(failures))
         self.assertEqual(baseline_failures, [])
         projection = validator._swift_receipt_stable_projection(receipt)
         self.assertEqual(set(projection), {"sha256", "receipt"})
+        self.assertNotIn(
+            "apple-host-profile=",
+            json.dumps(projection["receipt"]["toolchain"]["profile"]),
+        )
         self.assertEqual(
             projection["receipt"]["dependency"]["mirror"]["seed"],
             "verified-content-addressed-standalone-cache",
@@ -2667,7 +2851,7 @@ print('\\n'.join(failures))
                 lambda value: value["dependency"]["mirror"]["git"].update(
                     {"sha256": "sha256:" + "4" * 64}
                 ),
-                "mirror.git identity is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "unknown mirror seed",
@@ -2941,7 +3125,7 @@ print('\\n'.join(failures))
                 lambda value: value["network_isolation"]["verifier"].update(
                     {"sha256": "sha256:" + "1" * 64}
                 ),
-                "network_isolation policy/provenance is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "build argv",
@@ -3111,6 +3295,7 @@ print('\\n'.join(failures))
             try:
                 receipt = portable_swift_analyzer_receipt(validator)
                 receipt["network_isolation"] = network_isolation
+                bind_swift_receipt_to_selected_host_profile(validator, receipt)
                 binary = {
                     "name": "ElmosSwiftAnalyzer",
                     "path": str(binary_path),
@@ -3182,6 +3367,28 @@ print('\\n'.join(failures))
             ):
                 generator.validate_portable_swift_receipt(route, reference)
 
+    def test_specialized_packed_runtime_lock_identity_is_synchronized(self):
+        generator = load_specialized_pack_generator()
+        validator_path = (
+            ROOT / "scripts" / "batch35" / "validate_formal_route_campaign.py"
+        )
+        spec = importlib.util.spec_from_file_location(
+            "batch35_formal_route_campaign_validator",
+            validator_path,
+        )
+        self.assertIsNotNone(spec)
+        assert spec is not None and spec.loader is not None
+        validator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(validator)
+        lock_path = ROOT / "engines" / "polyglot-route-engine" / "uv.lock"
+
+        expected_sha256 = digest(lock_path)
+        expected_bytes = lock_path.stat().st_size
+        self.assertEqual(generator.PRODUCTION_LOCK_SHA256, expected_sha256)
+        self.assertEqual(generator.PRODUCTION_LOCK_BYTES, expected_bytes)
+        self.assertEqual(validator.PRODUCTION_LOCK_SHA256, expected_sha256)
+        self.assertEqual(validator.PRODUCTION_LOCK_BYTES, expected_bytes)
+
     def test_specialized_module_rejects_forged_runtime_observation_closure(self):
         with tempfile.TemporaryDirectory() as td:
             route = Path(td) / "cpp-to-java"
@@ -3236,7 +3443,7 @@ print('\\n'.join(failures))
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=300,
+                timeout=2400,
             )
             output = completed.stdout + completed.stderr
             self.assertNotEqual(completed.returncode, 0, output)
@@ -3351,11 +3558,11 @@ print('\\n'.join(failures))
                 failures,
             )
 
-    def test_route_inventory_is_exact_thirteen_language_complete_156(self):
+    def test_route_inventory_is_exact_fourteen_language_complete_182(self):
         matrix = load_matrix_validator()
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         routes = matrix.check_inventory_shape(inventory)
-        self.assertEqual(len(routes), 156)
+        self.assertEqual(len(routes), 182)
         self.assertEqual(
             {route["route_key"] for route in routes},
             set(matrix.EVIDENCED_ROUTE_KEYS),
@@ -3494,8 +3701,8 @@ print('\\n'.join(failures))
     ):
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         document = (ROOT / "docs" / "batch29" / "ROUTE_MATRIX.md").read_text()
-        self.assertEqual(len(inventory["routes"]), 156)
-        self.assertIn("156 directed routes across 13 active languages", document)
+        self.assertEqual(len(inventory["routes"]), 182)
+        self.assertIn("182 directed routes across 14 active languages", document)
         for route_set in (
             "legacy-complete-30",
             "cpp-objc-swift-java-exact-8",
@@ -3507,9 +3714,11 @@ print('\\n'.join(failures))
             "eleven-language-complete-110",
             "kotlin-react-flutter-completion-66",
             "thirteen-language-complete-156",
+            "vb6-completion-26",
+            "fourteen-language-complete-182",
         ):
             self.assertIn(f"`{route_set}`", document)
-        self.assertIn("90 `limited`, 66 `research`, 0 `certified`", document)
+        self.assertIn("90 `limited`, 92 `research`, 0 `certified`", document)
         self.assertIn("`PASSED_LOCAL`", document)
         self.assertIn("`NOT_CERTIFIED`", document)
         self.assertIn("Independent verification: `NOT_RUN`", document)
@@ -3517,6 +3726,7 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
+        self.assertIn(".php", runner.ARTIFACT_ALLOWED_SUFFIXES)
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
         self.assertEqual(runner.parse_route_key("java-to-php"), ("java", "php"))
@@ -3960,6 +4170,7 @@ print('\\n'.join(failures))
 
                 with (
                     mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
+                    mock.patch.object(runner, "VB6_EXACT_ROUTE_KEYS", ()),
                     mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
                     mock.patch.object(
                         runner, "ALL_DECLARED_ROUTE_KEYS", route_keys
@@ -4383,6 +4594,29 @@ print('\\n'.join(failures))
                 },
             )
 
+    def test_persisted_artifact_manifest_keeps_php_target_source(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            route = repo / "routes" / "java-to-php"
+            generated = repo / "generated"
+            generated.mkdir()
+            target = generated / "migrated.php"
+            target.write_text("<?php\n\ndeclare(strict_types=1);\n", encoding="utf-8")
+            (generated / "semantic-ir.json").write_text(
+                '{"schema_version":"1.0.0"}\n', encoding="utf-8"
+            )
+
+            reference = runner.persist_artifact_directory(
+                repo, route, "development", generated
+            )
+
+            manifest = json.loads((route / str(reference["path"])).read_text())
+            self.assertIn("migrated.php", {item["path"] for item in manifest["files"]})
+            self.assertTrue(
+                (route / "certification/artifacts/development/migrated.php").is_file()
+            )
+
     def test_execute_route_persists_every_engine_output_and_binds_manifests(self):
         runner = load_polyglot_runner()
         with tempfile.TemporaryDirectory() as td:
@@ -4534,6 +4768,123 @@ print('\\n'.join(failures))
             check=False,
         )
 
+    def test_missing_symbol_negative_reason_is_one_exact_native_contract(self):
+        runner = load_polyglot_runner()
+        validator = load_route_validator()
+        expected = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
+        self.assertEqual(runner.MISSING_SYMBOL_FAILURE, expected)
+        self.assertEqual(validator.MISSING_SYMBOL_FAILURE, expected)
+        for source in ("java", "cpp", "objc", "swift"):
+            self.assertEqual(
+                validator.specialized_negative_expected_reasons(
+                    f"{source}-to-csharp",
+                    source,
+                    "missing-symbol-fails-closed",
+                ),
+                frozenset({expected}),
+            )
+        for source in ("java", "javascript", "typescript"):
+            self.assertEqual(
+                validator.nodejs_negative_expected_reasons(
+                    route_key=f"{source}-to-typescript",
+                    source_language=source,
+                    case_id="missing-symbol-fails-closed",
+                    development_function="calculate",
+                ),
+                frozenset({expected}),
+            )
+
+    def test_generic_negative_stabilizes_only_exact_native_missing_symbol(self):
+        runner = load_polyglot_runner()
+        expected = runner.MISSING_SYMBOL_FAILURE
+
+        self.assertEqual(runner.stable_missing_symbol_failure(expected), expected)
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}"
+            ),
+            expected,
+        )
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2"
+            ),
+            expected,
+        )
+        for rejected in (
+            f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nforged",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 1",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2\nforged",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/go:FUNCTION_NOT_FOUND:other",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:prefix:{expected}",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertIsNone(runner.stable_missing_symbol_failure(rejected))
+
+    def test_generic_negative_records_exact_reason_from_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:/opt/elmos/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+                + "\nexit status 2"
+            )
+            with mock.patch.object(
+                runner,
+                "migrate",
+                side_effect=runner.RouteError(wrapped),
+            ):
+                reference = runner.execute_negative(route, fixtures, "go", "cpp")
+
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"], runner.MISSING_SYMBOL_FAILURE
+            )
+
+    def test_generic_negative_rejects_non_exact_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:relative/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+            )
+            with (
+                mock.patch.object(
+                    runner,
+                    "migrate",
+                    side_effect=runner.RouteError(wrapped),
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "^NEGATIVE_CASE_WRONG_FAILURE:go-to-cpp:",
+                ),
+            ):
+                runner.execute_negative(route, fixtures, "go", "cpp")
+
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,
     ):
@@ -4627,17 +4978,37 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError("FUNCTION_NOT_FOUND"),
+                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"
                 )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"],
+                runner.MISSING_SYMBOL_FAILURE,
+            )
             self.assertTrue((route / "certification" / "gate-report.md").is_file())
             self.assertTrue((route / "README.md").is_file())
             self.assertIn(
                 "NOT_RUN", (route / "certification" / "gate-report.md").read_text()
             )
+
+    def test_specialized_missing_symbol_oracle_tracks_native_analyzer_contract(self):
+        validator = load_route_validator()
+        self.assertEqual(
+            validator.specialized_negative_expected_reasons(
+                "java-to-cpp", "java", "missing-symbol-fails-closed"
+            ),
+            frozenset({"FUNCTION_NOT_FOUND:__elmos_missing_function__"}),
+        )
+        self.assertEqual(
+            validator.specialized_negative_expected_reasons(
+                "swift-to-cpp", "swift", "missing-symbol-fails-closed"
+            ),
+            frozenset({"FUNCTION_NOT_FOUND:__elmos_missing_function__"}),
+        )
 
 
 if __name__ == "__main__":

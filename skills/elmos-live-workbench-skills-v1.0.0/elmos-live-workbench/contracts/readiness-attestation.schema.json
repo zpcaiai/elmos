@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/readiness-attestation.schema.json",
+  "title": "readiness-attestation",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "attestation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "verifier_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issuer_signature_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verified_at": {
+      "type": "number",
+      "minimum": 0
+    },
+    "checks": {
+      "type": "object",
+      "properties": {
+        "route_authenticated": {
+          "const": true
+        },
+        "artifact_matches": {
+          "const": true
+        },
+        "dependencies_ready": {
+          "const": true
+        },
+        "business_smoke_passed": {
+          "const": true
+        },
+        "window_capacity_reserved": {
+          "const": true
+        }
+      },
+      "required": [
+        "route_authenticated",
+        "artifact_matches",
+        "dependencies_ready",
+        "business_smoke_passed",
+        "window_capacity_reserved"
+      ],
+      "additionalProperties": false
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "commit_status": {
+      "const": "committed"
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "attestation_id",
+    "session_id",
+    "generation",
+    "artifact_digest",
+    "verifier_id",
+    "issuer_signature_ref",
+    "verified_at",
+    "checks",
+    "evidence_ids",
+    "commit_status"
+  ],
+  "additionalProperties": false
+}

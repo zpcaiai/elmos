@@ -169,8 +169,8 @@ class PackageIntegrationTests(unittest.TestCase):
                     "local." + row["name"],
                 )
             else:
-                self.assertEqual(row["capability_state"], "PREPARE_ONLY")
-                self.assertEqual(row["semantic_handler_binding"], "UNBOUND")
+                self.assertEqual(row["capability_state"], "NATIVE")
+                self.assertEqual(row["semantic_handler_binding"], "native." + row["name"])
             self.assertEqual(row["external_evidence_status"], "NOT_RUN")
             self.assertEqual(row["certification_status"], "NOT_CERTIFIED")
             self.assertFalse(row["activation_contract"]["corpus_embedded"])
@@ -212,7 +212,8 @@ class PackageIntegrationTests(unittest.TestCase):
         self.assertEqual(report["source_execution"], "NEVER_EXECUTED")
         self.assertEqual(report["counts"]["dependency_edges"], 9_090)
         self.assertEqual(report["evaluation_counts"]["total"], 31_440)
-        self.assertEqual(report["capability_states"], {"PREPARE_ONLY": 1_284, "LOCAL": 26})
+        self.assertEqual(report["capability_states"], {"NATIVE": 1_244, "LOCAL": 66})
+        self.assertEqual(report["counts"]["native_semantic_programs"], 1_244)
         self.assertEqual(report["external_evidence_status"], "NOT_RUN")
         self.assertEqual(report["certification_status"], "NOT_CERTIFIED")
         gap_codes = {gap["code"] for gap in report["gaps"]}

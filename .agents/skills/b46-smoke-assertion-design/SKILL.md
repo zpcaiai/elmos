@@ -1,6 +1,6 @@
 ---
 name: b46-smoke-assertion-design
-description: Define what passing means for a specific project: process, port, readiness, one contract-declared functional call against seeded data, graceful shutdown and lease teardown.
+description: "Define what passing means for a specific project: process, port, readiness, one contract-declared functional call against seeded data, graceful shutdown and lease teardown."
 ---
 
 ## Operating mode

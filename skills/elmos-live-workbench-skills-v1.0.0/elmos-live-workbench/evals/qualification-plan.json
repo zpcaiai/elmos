@@ -1,0 +1,170 @@
+{
+  "schema_version": "lw.v1",
+  "scope": "full-p0-live-workbench",
+  "status": "not_run",
+  "cases": [
+    {
+      "id": "DEP-01",
+      "title": "Node/TS Web完整交互",
+      "surface": "ui-e2e",
+      "procedure": "首次加载、业务动作、API结果、source map一致",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-02",
+      "title": "Python服务教学与断点",
+      "surface": "dap-python",
+      "procedure": "真实框架 fixture breakpoint/stack/primitive/next/terminate",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-03",
+      "title": "JS DAP与前端源码定位",
+      "surface": "dap-javascript",
+      "procedure": "Node+browser selected profiles; breakpoints verified",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-04",
+      "title": "JVM/Spring断点",
+      "surface": "dap-jvm",
+      "procedure": "真实应用+JDT/JDI+构建摘要",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-05",
+      "title": "CoreCLR断点",
+      "surface": "dap-dotnet",
+      "procedure": "真实ASP.NET或CLI+符号匹配",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-06",
+      "title": "真实600秒",
+      "surface": "real-600s",
+      "procedure": "READY后连续墙钟至少600秒；599秒业务仍可用；记录采样缺口",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-07",
+      "title": "deadline撤权",
+      "surface": "expiry-enforcement",
+      "procedure": "600秒起新请求失败且既有WS/SSE关闭，服务器审计时间",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-08",
+      "title": "真实资源清理",
+      "surface": "cleanup",
+      "procedure": "实例/依赖/凭据/端口/卷/adapter成员逐项观测，<=30秒目标",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-09",
+      "title": "不可信执行隔离",
+      "surface": "sandbox-isolation",
+      "procedure": "宿主文件/socket/metadata/fork/CPU/memory/output/egress攻击负测",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-10",
+      "title": "租户隔离",
+      "surface": "tenant-security",
+      "procedure": "资源、源码、图、缓存、解释、事件、签名URL越权拒绝",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-11",
+      "title": "恢复与围栏",
+      "surface": "recovery-fencing",
+      "procedure": "browser/gateway/worker故障；不重复step；旧generation不能commit",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-12",
+      "title": "教学事实与锚点",
+      "surface": "evidence-accuracy",
+      "procedure": "Unicode/CRLF/stale/dynamic候选/运行证据分类/LLM事实抽样",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-13",
+      "title": "隐藏答案和隐私",
+      "surface": "learning-privacy",
+      "procedure": "未Reveal的API、模型上下文和缓存不含答案；PII/secret诱饵不出境",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-14",
+      "title": "失败与不可支持路线",
+      "surface": "failure-transparency",
+      "procedure": "编译失败、缺商业依赖、无UI库、native-only、空白200均如实显示",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-15",
+      "title": "source-target来源对照",
+      "surface": "conversion-mapping",
+      "procedure": "一对多/合成/未映射与不同revision，不能同名即等价",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-16",
+      "title": "并发完整窗口",
+      "surface": "admission-quota",
+      "procedure": "账号3槽原子准入，双实例预算，未超期不得空闲逐出",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-17",
+      "title": "因果与异步缺口",
+      "surface": "trace-correlation",
+      "procedure": "正确上下文传播才连边；时间相邻不推出因果",
+      "status": "not_run",
+      "evidence_ids": []
+    },
+    {
+      "id": "DEP-18",
+      "title": "可访问性",
+      "surface": "accessibility",
+      "procedure": "键盘、屏幕阅读器、缩放、无颜色依赖的核心操作",
+      "status": "not_run",
+      "evidence_ids": []
+    }
+  ],
+  "real_600s_protocol": {
+    "clock": "real elapsed wall clock plus trusted server deadline evidence; not fake clock",
+    "prepare_is_separate": true,
+    "probe_interval_seconds": 10,
+    "required_boundary_points_seconds": [
+      599,
+      600
+    ],
+    "provider_cleanup_budget_seconds": 30,
+    "required_evidence": [
+      "signed readiness",
+      "server deadline enforcement logs",
+      "business probes with monotonic offsets",
+      "open stream closure observations",
+      "provider member inventory before/after",
+      "permission revocation and cleanup receipt"
+    ],
+    "limits": "sampling does not prove unobserved intervals; disclose probe gaps and failure recovery"
+  }
+}

@@ -14,6 +14,8 @@ import {
 } from "node:fs";
 import {
   access,
+  appendFile,
+  chmod,
   mkdir,
   mkdtemp,
   lstat,
@@ -46,6 +48,7 @@ import {
 import { validateVerifiedInsightProjection } from "./generationInsights";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -439,7 +442,7 @@ function configuredToken(): string {
   return value;
 }
 
-function config(): RunnerConfig {
+export function config(): RunnerConfig {
   if (process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true") {
     throw new GenerationRunnerError(503, "LOCAL_RUNNER_NOT_ENABLED");
   }
@@ -611,12 +614,49 @@ function intentContract(request: GenerationAnalyzeRequest): GenerationAnalyzeReq
   };
 }
 
+/**
+ * Single source of truth for the project-intent document persisted next to
+ * every job. The hosted path ships the identical document inside the control
+ * plane payload so a hosted job and a local job describe the same request.
+ */
+export function projectIntentDocument(
+  context: AuthorizedContext,
+  validated: GenerationJobCreateRequest,
+  requestedAt: string,
+): Record<string, unknown> {
+  return {
+    schema_version: "1.1.0",
+    name: validated.name,
+    namespace: validated.namespace,
+    description: validated.description,
+    entity: validated.entity,
+    languages: validated.targets,
+    project_kind: "api",
+    persistence: validated.persistence,
+    auth_mode: validated.authMode,
+    business_rules: [],
+    permissions: [],
+    ...(validated.sources ? { requirement_sources: validated.sources } : {}),
+    ...(validated.sourceBundleSha256
+      ? { source_bundle_sha256: validated.sourceBundleSha256 }
+      : {}),
+    approval_context: {
+      actor: context.actor,
+      tenant_id: context.tenantId,
+      explicitly_approved: true,
+      analysis_digest: validated.analysisDigest,
+      requested_at: requestedAt,
+    },
+  };
+}
+
 export function authorize(
   request: NextRequest,
   permission: AccountPermission = "generation:execute",
 ): AuthorizedContext {
   const hasAccountCookie = Boolean(
-    unsafeCookieValue(request, accountCookieNames.session),
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session),
   );
   if (hasAccountCookie) {
     try {
@@ -1052,10 +1092,31 @@ function generationStoragePolicy(): GenerationStoragePolicy {
   };
 }
 
-async function boundedDirectoryBytes(root: string): Promise<number> {
+type DirectoryUsage = {
+  bytes: number;
+  jobBytes: Map<string, number>;
+};
+
+async function boundedDirectoryUsage(root: string): Promise<DirectoryUsage> {
   const pending = [root];
+  const metadataBatchSize = 64;
   let fileCount = 0;
   let total = 0;
+  const jobBytes = new Map<string, number>();
+  const addBytes = (candidate: string, bytes: number) => {
+    total += bytes;
+    if (!Number.isSafeInteger(total)) {
+      throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
+    }
+    const segments = path.relative(root, candidate).split(path.sep);
+    if (segments[0] === "jobs" && segments[1] && jobIdPattern.test(segments[1])) {
+      const next = (jobBytes.get(segments[1]) ?? 0) + bytes;
+      if (!Number.isSafeInteger(next)) {
+        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
+      }
+      jobBytes.set(segments[1], next);
+    }
+  };
   while (pending.length > 0) {
     const directory = pending.pop();
     if (!directory) break;
@@ -1066,43 +1127,56 @@ async function boundedDirectoryBytes(root: string): Promise<number> {
       if (error instanceof Error && "code" in error && error.code === "ENOENT") continue;
       throw error;
     }
-    for (const entry of entries) {
-      const candidate = confined(root, path.relative(root, directory), entry.name);
-      let info;
-      try {
-        info = await lstat(candidate);
-      } catch (error) {
-        if (error instanceof Error && "code" in error && error.code === "ENOENT") continue;
-        throw error;
-      }
-      if (info.isSymbolicLink()) {
-        // Build tools legitimately create virtual-environment/toolchain links.
-        // Count only the link inode and never resolve or follow its target.
+    // Bound metadata concurrency instead of serially awaiting every file in a
+    // generated virtual environment.  The fixed batch keeps descriptor and
+    // memory pressure predictable while preserving the exact scan limits.
+    for (let offset = 0; offset < entries.length; offset += metadataBatchSize) {
+      const inspected = await Promise.all(
+        entries.slice(offset, offset + metadataBatchSize).map(async (entry) => {
+          const candidate = confined(root, path.relative(root, directory), entry.name);
+          try {
+            return { candidate, info: await lstat(candidate) };
+          } catch (error) {
+            if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+              return undefined;
+            }
+            throw error;
+          }
+        }),
+      );
+      for (const result of inspected) {
+        if (!result) continue;
+        const { candidate, info } = result;
+        if (info.isSymbolicLink()) {
+          // Build tools legitimately create virtual-environment/toolchain links.
+          // Count only the link inode and never resolve or follow its target.
+          fileCount += 1;
+          addBytes(candidate, info.size);
+          if (fileCount > 250_000) {
+            throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
+          }
+          continue;
+        }
+        if (info.isDirectory()) {
+          pending.push(candidate);
+          continue;
+        }
+        if (!info.isFile()) {
+          throw new GenerationRunnerError(409, "GENERATION_STORAGE_SPECIAL_FILE_FORBIDDEN");
+        }
         fileCount += 1;
-        total += info.size;
-        if (fileCount > 250_000 || !Number.isSafeInteger(total)) {
+        if (fileCount > 250_000) {
           throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
         }
-        continue;
-      }
-      if (info.isDirectory()) {
-        pending.push(candidate);
-        continue;
-      }
-      if (!info.isFile()) {
-        throw new GenerationRunnerError(409, "GENERATION_STORAGE_SPECIAL_FILE_FORBIDDEN");
-      }
-      fileCount += 1;
-      if (fileCount > 250_000) {
-        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
-      }
-      total += info.size;
-      if (!Number.isSafeInteger(total)) {
-        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
+        addBytes(candidate, info.size);
       }
     }
   }
-  return total;
+  return { bytes: total, jobBytes };
+}
+
+async function boundedDirectoryBytes(root: string): Promise<number> {
+  return (await boundedDirectoryUsage(root)).bytes;
 }
 
 async function enforceTenantJobStorage(
@@ -1115,7 +1189,12 @@ async function enforceTenantJobStorage(
   await mkdir(jobsRoot, { recursive: true, mode: 0o700 });
   await sweepExpiredTenantInputs(runner, context);
   let retainedJobs = 0;
-  const retainedBytes = await boundedDirectoryBytes(tenantRoot);
+  // Scan the tenant tree exactly once.  A generated workspace can contain a
+  // full virtual environment, so rescanning every job after scanning the
+  // parent makes admission O(2N) in retained files and can consume the whole
+  // client polling window before a job is even accepted.
+  const usage = await boundedDirectoryUsage(tenantRoot);
+  const retainedBytes = usage.bytes;
   let outstandingReservationBytes = 0;
   const allStatuses = new Set<GenerationJob["status"]>([
     "QUEUED", "ANALYZING", "GENERATING", "VERIFYING", "ARCHIVING",
@@ -1147,7 +1226,7 @@ async function enforceTenantJobStorage(
       || record.tenantId !== context.tenantId
       || !allStatuses.has(record.status)
     ) throw new GenerationRunnerError(409, "GENERATION_JOB_RECORD_INVALID");
-    const jobBytes = await boundedDirectoryBytes(root);
+    const jobBytes = usage.jobBytes.get(entry.name) ?? 0;
     retainedJobs += 1;
     if (!terminalStatuses.has(record.status)) {
       outstandingReservationBytes += Math.max(0, policy.reservationBytes - jobBytes);
@@ -1207,16 +1286,17 @@ function runtimeCommandShapeValid(
     case "python":
       return executable === "uv"
         && command[1] === "run"
-        && command[2] === "python"
+        && command[2] === "--no-sync"
+        && command[3] === "python"
         && (
           (
-            command.length === 5
-            && command[3] === "-m"
-            && pythonModulePattern.test(command[4])
+            command.length === 6
+            && command[4] === "-m"
+            && pythonModulePattern.test(command[5])
           )
           || (
-            command.length === 4
-            && command[3] === "scripts/local_runtime.py"
+            command.length === 5
+            && command[4] === "scripts/local_runtime.py"
           )
         );
     case "csharp":
@@ -1700,7 +1780,7 @@ function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRe
   return request;
 }
 
-function validateCreate(
+export function validateCreate(
   request: GenerationJobCreateRequest,
   context: AuthorizedContext,
 ): GenerationJobCreateRequest {
@@ -1734,14 +1814,43 @@ function commandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
   };
 }
 
-function engineCommandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
+function engineCommandEnvironment(
+  runner: RunnerConfig,
+  mypyCache?: string,
+): NodeJS.ProcessEnv {
+  const configuredCommandTimeout =
+    process.env.ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS?.trim();
   return {
     ...commandEnvironment(runner),
     // Load the audited source tree directly. The synthesis CLI intentionally
     // has no third-party runtime dependencies; generated projects own their
     // language-specific dependencies and lockfiles.
     PYTHONPATH: path.join(runner.engineRoot, "src"),
+    ...(configuredCommandTimeout
+      ? { ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS: configuredCommandTimeout }
+      : {}),
+    ...(mypyCache ? { MYPY_CACHE_DIR: mypyCache } : {}),
   };
+}
+
+async function ensureTenantMypyCache(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+): Promise<string> {
+  const tenantDigest = createHash("sha256").update(context.tenantId).digest("hex");
+  const cache = confined(runner.root, "dependency-cache", "mypy", tenantDigest);
+  await mkdir(cache, { recursive: true, mode: 0o700 });
+  await chmod(cache, 0o700);
+  const info = await lstat(cache);
+  if (
+    info.isSymbolicLink()
+    || !info.isDirectory()
+    || (info.mode & 0o077) !== 0
+    || (typeof process.getuid === "function" && info.uid !== process.getuid())
+  ) {
+    throw new GenerationRunnerError(503, "PROJECT_SYNTHESIS_MYPY_CACHE_UNSAFE");
+  }
+  return await realpath(cache);
 }
 
 function rootlessCommandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
@@ -2089,7 +2198,7 @@ export async function analyzeIntent(
   }
 }
 
-async function loadApprovedAnalysis(
+export async function loadApprovedAnalysis(
   runner: RunnerConfig,
   context: AuthorizedContext,
   request: GenerationJobCreateRequest,
@@ -2120,6 +2229,37 @@ async function loadApprovedAnalysis(
   return review;
 }
 
+/**
+ * Marks an approved analysis as consumed by a hosted job. Mirrors the local
+ * rename into the job directory: an analysis review funds exactly one job,
+ * whichever queue executes it. The consumed file is kept (not deleted) so the
+ * funding decision stays auditable.
+ */
+export async function consumeApprovedAnalysisForHosted(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+  requestDigest: string,
+  jobId: string,
+): Promise<void> {
+  if (!digestPattern.test(requestDigest)) {
+    throw new GenerationRunnerError(400, "ANALYSIS_DIGEST_INVALID");
+  }
+  const consumedRoot = confined(runner.root, "tenants", context.tenantId, "analysis-reviews-consumed");
+  await mkdir(consumedRoot, { recursive: true, mode: 0o700 });
+  const source = analysisReviewFile(runner, context, requestDigest);
+  const destination = confined(consumedRoot, path.basename(source));
+  try {
+    await rename(source, destination);
+  } catch {
+    throw new GenerationRunnerError(409, "ANALYSIS_REVIEW_ALREADY_CONSUMED");
+  }
+  await appendFile(
+    confined(consumedRoot, "hosted-consumption.log"),
+    `${new Date().toISOString()} ${jobId} ${requestDigest}\n`,
+    { encoding: "utf-8", mode: 0o600 },
+  ).catch(() => undefined);
+}
+
 async function executeCommand(
   runner: RunnerConfig,
   context: AuthorizedContext,
@@ -2128,6 +2268,9 @@ async function executeCommand(
   args: string[],
 ): Promise<CommandResult> {
   await ensureRunnerHome(runner);
+  const mypyCache = stage === "pipeline"
+    ? await ensureTenantMypyCache(runner, context)
+    : undefined;
   job.stage = stage;
   if (stage === "analyze") {
     job.status = "ANALYZING";
@@ -2141,7 +2284,7 @@ async function executeCommand(
   return new Promise((resolve, reject) => {
     const child = spawn(runner.uv, args, {
       cwd: runner.engineRoot,
-      env: engineCommandEnvironment(runner),
+      env: engineCommandEnvironment(runner, mypyCache),
       detached: true,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -2364,7 +2507,17 @@ async function runJob(
       }
       throw error;
     }
-    metering = await beginMeteredExecution(`generation-${job.id}`);
+    const billingIntent = JSON.parse(
+      await readFile(confined(root, "synthesis-request.json"), "utf-8"),
+    ) as { project?: { name?: unknown } };
+    const billingProjectId = typeof billingIntent.project?.name === "string"
+      ? billingIntent.project.name
+      : job.id;
+    metering = await beginMeteredExecution({
+      taskId: `generation-${job.id}`,
+      projectId: billingProjectId,
+      actorId: context.actor,
+    });
     job.status = "VERIFYING";
     const pipeline = await executeCommand(
       runner,
@@ -2540,30 +2693,10 @@ export async function createJob(
       await mkdir(root, { recursive: true, mode: 0o700 });
       let reviewMoved = false;
       try {
-        await atomicJson(confined(root, "project-intent.json"), {
-          schema_version: "1.1.0",
-          name: validated.name,
-          namespace: validated.namespace,
-          description: validated.description,
-          entity: validated.entity,
-          languages: validated.targets,
-          project_kind: "api",
-          persistence: validated.persistence,
-          auth_mode: validated.authMode,
-          business_rules: [],
-          permissions: [],
-          ...(validated.sources ? { requirement_sources: validated.sources } : {}),
-          ...(validated.sourceBundleSha256
-            ? { source_bundle_sha256: validated.sourceBundleSha256 }
-            : {}),
-          approval_context: {
-            actor: context.actor,
-            tenant_id: context.tenantId,
-            explicitly_approved: true,
-            analysis_digest: validated.analysisDigest,
-            requested_at: now,
-          },
-        });
+        await atomicJson(
+          confined(root, "project-intent.json"),
+          projectIntentDocument(context, validated, now),
+        );
         await atomicJson(confined(root, "synthesis-request.json"), analysisReview.request);
         try {
           await rename(
@@ -3055,8 +3188,9 @@ async function confirmRuntimeHealth(
   port: number,
   expectedService: string,
   leaseDurationMs: number,
+  startupTimeoutSeconds: number,
 ): Promise<void> {
-  const deadline = Date.now() + 30_000;
+  const deadline = Date.now() + startupTimeoutSeconds * 1_000;
   while (Date.now() < deadline && child.exitCode === null && activeRuntimes.get(key) === child) {
     try {
       const response = await fetch(`http://127.0.0.1:${port}/health`, {
@@ -3239,6 +3373,12 @@ async function startRuntimeLocked(
   ) throw new GenerationRunnerError(409, "RUNTIME_ALREADY_RUNNING");
   const plan = job.runtime.plans.find((candidate) => candidate.language === language);
   if (!plan) throw new GenerationRunnerError(409, "RUNTIME_PLAN_NOT_AVAILABLE");
+  const startupTimeoutSeconds = plan.startup_timeout_seconds ?? 30;
+  if (
+    !Number.isSafeInteger(startupTimeoutSeconds)
+    || startupTimeoutSeconds < 5
+    || startupTimeoutSeconds > 180
+  ) throw new GenerationRunnerError(409, "RUNTIME_STARTUP_TIMEOUT_INVALID");
   const workspace = await realpath(confined(jobRoot(runner, context, jobId), "workspace"));
   const blueprint = JSON.parse(
     await readFile(confined(workspace, "requirements", "project-blueprint.json"), "utf-8"),
@@ -3593,6 +3733,7 @@ async function startRuntimeLocked(
     plan.port,
     expectedService,
     leaseDurationMs,
+    startupTimeoutSeconds,
   );
   await persist(runner, context, job);
   return job;

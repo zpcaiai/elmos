@@ -3,11 +3,9 @@ from __future__ import annotations
 import atexit
 import base64
 import binascii
-import fcntl
 import hashlib
 import json
 import os
-import pwd
 import re
 import shutil
 import signal
@@ -22,6 +20,16 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Final, cast
 
+try:
+    import fcntl
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    fcntl = None  # type: ignore[assignment]
+
+try:
+    import pwd
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    pwd = None  # type: ignore[assignment]
+
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
 from .models import (
@@ -35,7 +43,9 @@ from .models import (
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
 from .toolchains import (
+    AppleRouteHostProfile,
     ExactToolchain,
+    apple_route_host_profile,
     exact_toolchain,
     node_closure_profile_id,
     sanitized_subprocess_env,
@@ -52,8 +62,8 @@ NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift", "php"})
 MODULE_INVENTORY_KIND = "elmos.typed-pure-module-inventory"
 MODULE_INVENTORY_PROFILE = "typed-pure-module-v1"
 _JAVASCRIPT_ANALYZER = ENGINE_ROOT / "native" / "javascript" / "analyzer.mjs"
-_JAVASCRIPT_ANALYZER_SHA256 = "22325ea068f0ae28d3602f452c3b6f27be0d1f332a1692655d8bcce986b9e5b0"
-_JAVASCRIPT_ANALYZER_BYTES = 26_923
+_JAVASCRIPT_ANALYZER_SHA256 = "50baa7a855d4b50899da32003f164444db60eb64454ce596d6a6f4e9f1c06a56"
+_JAVASCRIPT_ANALYZER_BYTES = 27_569
 _JAVASCRIPT_TYPESCRIPT_ROOT = ENGINE_ROOT / "native" / "javascript" / "vendor" / "typescript-5.9.2"
 _JAVASCRIPT_TYPESCRIPT_ROOT_MODE = 0o755
 _JAVASCRIPT_TYPESCRIPT_ROOT_NLINK = 6
@@ -85,12 +95,12 @@ _JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
 _JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
 _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-_TYPESCRIPT_ANALYZER_SHA256 = "76c29bcdb1551fc855d6e7d1a72097e0b365a3f875124fc3b775d648c3aa1223"
-_TYPESCRIPT_ANALYZER_BYTES = 50_960
+_TYPESCRIPT_ANALYZER_SHA256 = "23361d1947109049e3b3d22424d0443046402a8e6a9e6e658227dc7f3378604a"
+_TYPESCRIPT_ANALYZER_BYTES = 69_262
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
-_PHP_ANALYZER_BYTES = 63489
+_PHP_ANALYZER_SHA256 = "5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00"
+_PHP_ANALYZER_BYTES = 83852
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -134,7 +144,11 @@ _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
 _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
 _SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
 _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
-_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 2.0
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
+# Normal completion still requires three consecutive empty session snapshots.
+# Keep enough bounded wall-clock budget for every identity scan plus scheduler
+# contention on production developer hosts; exhaustion remains fail-closed.
+_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
 _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS = 3
@@ -710,6 +724,42 @@ _SWIFT_BUILD_TREE_SPECS: tuple[tuple[object, ...], ...] = (
         136_132,
     ),
 )
+
+
+def _apple_native_profile() -> AppleRouteHostProfile:
+    return apple_route_host_profile("swift")
+
+
+def _profiled_swift_build_component_specs() -> tuple[tuple[object, ...], ...]:
+    overrides = {
+        role: (sha256_value, byte_count)
+        for role, sha256_value, byte_count in _apple_native_profile().component_overrides
+    }
+    known_roles = {str(spec[0]) for spec in _SWIFT_BUILD_COMPONENT_SPECS}
+    if not set(overrides) <= known_roles:
+        raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:components")
+    return tuple(
+        (*spec[:4], *overrides[str(spec[0])], *spec[6:])
+        if str(spec[0]) in overrides
+        else spec
+        for spec in _SWIFT_BUILD_COMPONENT_SPECS
+    )
+
+
+def _profiled_swift_build_tree_specs() -> tuple[tuple[object, ...], ...]:
+    overrides = {
+        role: (sha256_value, file_count, byte_count)
+        for role, sha256_value, file_count, byte_count in _apple_native_profile().tree_overrides
+    }
+    known_roles = {str(spec[0]) for spec in _SWIFT_BUILD_TREE_SPECS}
+    if not set(overrides) <= known_roles:
+        raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:trees")
+    return tuple(
+        (*spec[:3], *overrides[str(spec[0])])
+        if str(spec[0]) in overrides
+        else spec
+        for spec in _SWIFT_BUILD_TREE_SPECS
+    )
 _SWIFT_ANALYZER_LOCK = threading.Lock()
 _SWIFT_ANALYZER_TEMPORARY: tempfile.TemporaryDirectory[str] | None = None
 _SWIFT_ANALYZER_BINARY: Path | None = None
@@ -718,9 +768,33 @@ _SWIFT_ANALYZER_FAILURE: tuple[str, str, str] | None = None
 _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
+        "SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TYPE_MISMATCH",
+        "SWIFT_CONDITION_MUST_BE_BOOLEAN",
+        "SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_EXPLICIT_TYPE_REQUIRED",
+        "SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_FOR_CLOSED_RANGE_REJECTED",
+        "SWIFT_FOR_DOWNTO_REJECTED",
+        "SWIFT_FOR_NON_POSITIVE_STEP_REJECTED",
+        "SWIFT_FOR_CONDITION_NON_MONOTONIC",
+        "SWIFT_FOR_VARIABLE_REQUIRED",
+        "SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "SWIFT_BREAK_OUTSIDE_LOOP",
+        "SWIFT_CONTINUE_OUTSIDE_LOOP",
+        "SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LOCAL_INITIALIZER_REQUIRED",
+        "SWIFT_LOCAL_NAME_REQUIRED",
+        "SWIFT_UNDECLARED_VARIABLE",
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
+_GO_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
 _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
@@ -846,11 +920,15 @@ def _canonical_digest(value: object) -> str:
 def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     try:
         package = package.absolute()
-        package_identity = _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        package_identity = _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        )
     except OSError as error:
         raise RouteError("SWIFT_ANALYZER_INPUT_MISSING") from error
     sources = package / "Sources"
-    sources_identity = _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    sources_identity = _stable_secure_directory_chain_identity(
+        _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    )
 
     def discover() -> list[Path]:
         candidates = [
@@ -902,8 +980,14 @@ def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     if [item.relative_to(package).as_posix() for item in discover()] != [item["path"] for item in files]:
         raise RouteError("SWIFT_ANALYZER_INPUT_SET_CHANGED")
     if (
-        _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED") != package_identity
-        or _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED") != sources_identity
+        _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED")
+        )
+        != package_identity
+        or _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED")
+        )
+        != sources_identity
     ):
         raise RouteError("SWIFT_ANALYZER_INPUT_DIRECTORY_CHANGED")
     try:
@@ -1148,6 +1232,8 @@ def _swift_dependency_cache_base() -> Path:
 
 
 def _swift_dependency_cache_home() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir)
 
 
@@ -1245,10 +1331,11 @@ def _capture_apple_git(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[dict[str, str], tuple[object, ...]]:
+    profile = _apple_native_profile()
     file_before, identity_before = _verified_swift_xcode_regular_file(
         _APPLE_GIT,
-        expected_sha256=_APPLE_GIT_SHA256,
-        expected_bytes=_APPLE_GIT_BYTES,
+        expected_sha256=profile.apple_git_sha256,
+        expected_bytes=profile.apple_git_bytes,
         failure="SWIFT_ANALYZER_GIT_PROVENANCE_MISMATCH",
     )
     version = _run_swift_build_step(
@@ -1260,8 +1347,8 @@ def _capture_apple_git(
     ).stdout.strip()
     file_after, identity_after = _verified_swift_xcode_regular_file(
         _APPLE_GIT,
-        expected_sha256=_APPLE_GIT_SHA256,
-        expected_bytes=_APPLE_GIT_BYTES,
+        expected_sha256=profile.apple_git_sha256,
+        expected_bytes=profile.apple_git_bytes,
         failure="SWIFT_ANALYZER_GIT_PROVENANCE_MISMATCH",
     )
     if file_before != file_after or identity_before != identity_after:
@@ -1362,6 +1449,7 @@ def _verified_swift_system_tool(
 
 
 def _verify_swift_sandbox_signature(root: Path, environment: dict[str, str]) -> None:
+    profile = _apple_native_profile()
     _run_swift_build_step(
         [str(_CODESIGN), "--verify", "--strict", str(_SANDBOX_EXEC)],
         cwd=root,
@@ -1381,7 +1469,7 @@ def _verify_swift_sandbox_signature(root: Path, environment: dict[str, str]) -> 
         "Identifier=com.apple.sandbox-exec" not in signature_lines
         or "Authority=Apple Root CA" not in signature_lines
         or "TeamIdentifier=not set" not in signature_lines
-        or f"CandidateCDHashFull sha256={_SANDBOX_EXEC_CDHASH_FULL}" not in signature_lines
+        or f"CandidateCDHashFull sha256={profile.sandbox_exec_cdhash_full}" not in signature_lines
     ):
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:sandbox-exec-signature")
 
@@ -1651,7 +1739,7 @@ def _swift_network_probe_sdk_identity() -> tuple[object, ...]:
 
 
 def _swift_network_probe_compiler_receipt() -> dict[str, Any]:
-    matches = [spec for spec in _SWIFT_BUILD_COMPONENT_SPECS if spec[0] == "clang"]
+    matches = [spec for spec in _profiled_swift_build_component_specs() if spec[0] == "clang"]
     if len(matches) != 1:
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:probe-compiler")
     return _swift_build_component_receipt(matches[0], {})
@@ -1693,6 +1781,7 @@ def _verified_swift_network_isolation(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    profile = _apple_native_profile()
     policy_bytes = _SANDBOX_EXEC_POLICY.encode("utf-8")
     _require_swift_network_probe_build_environment(root, environment)
     source_bytes = _SANDBOX_NETWORK_PROBE_SOURCE.encode("utf-8")
@@ -1704,14 +1793,14 @@ def _verified_swift_network_isolation(
     try:
         sandbox_before, sandbox_identity_before = _verified_swift_system_tool(
             _SANDBOX_EXEC,
-            expected_sha256=_SANDBOX_EXEC_SHA256,
-            expected_bytes=_SANDBOX_EXEC_BYTES,
+            expected_sha256=profile.sandbox_exec_sha256,
+            expected_bytes=profile.sandbox_exec_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
         )
         verifier_before, verifier_identity_before = _verified_swift_system_tool(
             _CODESIGN,
-            expected_sha256=_CODESIGN_SHA256,
-            expected_bytes=_CODESIGN_BYTES,
+            expected_sha256=profile.codesign_sha256,
+            expected_bytes=profile.codesign_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
         )
         _verify_swift_sandbox_signature(root, environment)
@@ -1785,14 +1874,14 @@ def _verified_swift_network_isolation(
         )
         sandbox_after, sandbox_identity_after = _verified_swift_system_tool(
             _SANDBOX_EXEC,
-            expected_sha256=_SANDBOX_EXEC_SHA256,
-            expected_bytes=_SANDBOX_EXEC_BYTES,
+            expected_sha256=profile.sandbox_exec_sha256,
+            expected_bytes=profile.sandbox_exec_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
         )
         verifier_after, verifier_identity_after = _verified_swift_system_tool(
             _CODESIGN,
-            expected_sha256=_CODESIGN_SHA256,
-            expected_bytes=_CODESIGN_BYTES,
+            expected_sha256=profile.codesign_sha256,
+            expected_bytes=profile.codesign_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
         )
         _verify_swift_sandbox_signature(root, environment)
@@ -1815,7 +1904,7 @@ def _verified_swift_network_isolation(
     receipt: dict[str, Any] = {
         "status": "PASSED",
         "scope": "swift-build-process-tree",
-        "sandbox": {**sandbox_after, "cdhash_full": _SANDBOX_EXEC_CDHASH_FULL},
+        "sandbox": {**sandbox_after, "cdhash_full": profile.sandbox_exec_cdhash_full},
         "verifier": verifier_after,
         "policy": {
             "text": _SANDBOX_EXEC_POLICY,
@@ -1862,6 +1951,7 @@ def _require_current_swift_network_execution_identity(
     root: Path,
     environment: dict[str, str],
 ) -> None:
+    profile = _apple_native_profile()
     _require_swift_network_probe_build_environment(root, environment)
     expected_keys = {
         "policy_sha256",
@@ -1882,14 +1972,14 @@ def _require_current_swift_network_execution_identity(
     policy_sha256 = "sha256:" + hashlib.sha256(policy_bytes).hexdigest()
     sandbox_before, sandbox_identity_before = _verified_swift_system_tool(
         _SANDBOX_EXEC,
-        expected_sha256=_SANDBOX_EXEC_SHA256,
-        expected_bytes=_SANDBOX_EXEC_BYTES,
+        expected_sha256=profile.sandbox_exec_sha256,
+        expected_bytes=profile.sandbox_exec_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
     )
     verifier_before, verifier_identity_before = _verified_swift_system_tool(
         _CODESIGN,
-        expected_sha256=_CODESIGN_SHA256,
-        expected_bytes=_CODESIGN_BYTES,
+        expected_sha256=profile.codesign_sha256,
+        expected_bytes=profile.codesign_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
     )
     _verify_swift_sandbox_signature(root, environment)
@@ -1922,14 +2012,14 @@ def _require_current_swift_network_execution_identity(
     )
     sandbox_after, sandbox_identity_after = _verified_swift_system_tool(
         _SANDBOX_EXEC,
-        expected_sha256=_SANDBOX_EXEC_SHA256,
-        expected_bytes=_SANDBOX_EXEC_BYTES,
+        expected_sha256=profile.sandbox_exec_sha256,
+        expected_bytes=profile.sandbox_exec_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
     )
     verifier_after, verifier_identity_after = _verified_swift_system_tool(
         _CODESIGN,
-        expected_sha256=_CODESIGN_SHA256,
-        expected_bytes=_CODESIGN_BYTES,
+        expected_sha256=profile.codesign_sha256,
+        expected_bytes=profile.codesign_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
     )
     _verify_swift_sandbox_signature(root, environment)
@@ -2664,6 +2754,8 @@ def _ensure_swift_dependency_cache(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[Path, dict[str, Any]]:
+    if fcntl is None:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     cache_base = _swift_dependency_cache_base()
     cache_key = _swift_dependency_cache_key()
     cache = cache_base / cache_key
@@ -2928,8 +3020,31 @@ def _run_swift_build_step(
         )
     except OSError as error:
         raise RouteError(failure + ":process") from error
+    effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
+    communication_deadline = time.monotonic() + effective_timeout
+    pending_input = input_text
     try:
-        stdout, stderr = process.communicate(input=input_text, timeout=timeout)
+        while True:
+            remaining = communication_deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(command, effective_timeout)
+            try:
+                stdout, stderr = process.communicate(
+                    input=pending_input,
+                    timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
+                )
+                break
+            except subprocess.TimeoutExpired:
+                # communicate() waits for inherited stdout/stderr pipes even
+                # after the session leader exits.  SwiftPM compiler helpers
+                # have exhibited exactly that leak, which otherwise consumes
+                # the full one-hour cold-build timeout.  Poll the pinned leader
+                # so a completed leader with live pipe holders enters the same
+                # bounded, identity-checked process-tree cleanup as a timeout.
+                pending_input = None
+                poll = getattr(process, "poll", None)
+                if not callable(poll) or poll() is not None:
+                    raise
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -3864,8 +3979,14 @@ def _swift_build_closure_receipt() -> dict[str, Any]:
         "scope": _SWIFT_BUILD_CLOSURE_SCOPE,
         "compiler_runtime_soundness": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
-        "components": [_swift_build_component_receipt(spec, content_cache) for spec in _SWIFT_BUILD_COMPONENT_SPECS],
-        "trees": [_swift_build_tree_receipt(spec) for spec in _SWIFT_BUILD_TREE_SPECS],
+        "components": [
+            _swift_build_component_receipt(spec, content_cache)
+            for spec in _profiled_swift_build_component_specs()
+        ],
+        "trees": [
+            _swift_build_tree_receipt(spec)
+            for spec in _profiled_swift_build_tree_specs()
+        ],
     }
 
 
@@ -3926,7 +4047,12 @@ def _canonical_swift_toolchain_identity(toolchain: dict[str, Any]) -> dict[str, 
         "swiftc_sha256": toolchain.get("swiftc_sha256"),
         "swift_driver_sha256": toolchain.get("swift_driver_sha256"),
         "version": toolchain.get("version"),
-        "profile": [item for item in profile_items if isinstance(item, str) and not item.startswith("sdk-path=")],
+        "profile": [
+            item
+            for item in profile_items
+            if isinstance(item, str)
+            and not item.startswith(("sdk-path=", "apple-host-profile="))
+        ],
         "build_closure": _canonical_swift_build_closure_identity(build_closure),
     }
 
@@ -4550,6 +4676,8 @@ def _csharp_analyzer_input_manifest(engine: Path) -> dict[str, Any]:
 
 
 def _csharp_package_cache_root() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("CSHARP_ANALYZER_PACKAGE_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".nuget" / "packages"
 
 
@@ -5178,6 +5306,8 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
     read-only or hostile home directory degrades to the previous per-call
     temporary directory instead of blocking analysis.
     """
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     try:
         base = (
             Path(pwd.getpwuid(os.getuid()).pw_dir)
@@ -5329,6 +5459,8 @@ def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
         return None
     if _toolchain_build_cache(kind, key, ()) is None:
         return None
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     return (
         Path(pwd.getpwuid(os.getuid()).pw_dir)
         / ".cache"
@@ -5436,11 +5568,320 @@ def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str
     }
 
 
+def _go_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
+    expected = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    if not helper.is_absolute() or helper != expected:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE")
+    guarded_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    content = _stable_read_regular_file(
+        helper,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    final_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    if content != guarded_content or content != final_content:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE_CHANGED")
+    return (
+        {
+            "path": str(helper),
+            "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+            "bytes": len(content),
+        },
+        content,
+    )
+
+
+def _go_analyzer_source_binding(helper: Path) -> dict[str, object]:
+    binding, _ = _go_analyzer_source_snapshot(helper)
+    return binding
+
+
+def _go_analyzer_snapshot_binding(snapshot: Path, root: Path) -> dict[str, object]:
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+        or snapshot.parent != root
+        or snapshot.name != "analyzer.go"
+    ):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    content = _stable_read_regular_file(
+        snapshot,
+        failure="GO_ANALYZER_SNAPSHOT_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    try:
+        metadata = snapshot.lstat()
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    return {
+        "path": str(snapshot),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+
+
+def _write_go_analyzer_snapshot(root: Path, content: bytes) -> tuple[Path, dict[str, object]]:
+    snapshot = root / "analyzer.go"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(snapshot, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                chunk_bytes = os.write(descriptor, content[written:])
+                if chunk_bytes <= 0:
+                    raise OSError("zero-byte Go analyzer snapshot write")
+                written += chunk_bytes
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+    binding = _go_analyzer_snapshot_binding(snapshot, root)
+    if binding["sha256"] != "sha256:" + hashlib.sha256(content).hexdigest() or binding["bytes"] != len(content):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+    return snapshot, binding
+
+
+def _verify_trusted_go_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "go"
+        or expected.version != "1.25.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("go")
+    except RouteError as error:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
+
+
+def _run_trusted_go_analyzer(
+    toolchain: ExactToolchain,
+    helper: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run a source- and toolchain-bound Go analyzer with exact error promotion."""
+
+    promotable = _go_analyzer_arguments(arguments)
+    expected_helper, helper_content = _go_analyzer_source_snapshot(helper)
+    with tempfile.TemporaryDirectory(prefix="elmos-go-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        snapshot, expected_snapshot = _write_go_analyzer_snapshot(root, helper_content)
+        try:
+            current_helper = _go_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        command = [toolchain.executable, "run", str(snapshot), "--", *arguments]
+        environment = _go_build_cache_environment(helper, Path(toolchain.executable))
+        try:
+            value = _run(command, cwd=root, environment_overrides=environment)
+        except RouteError as error:
+            try:
+                current_snapshot = _go_analyzer_snapshot_binding(snapshot, root)
+                current_helper = _go_analyzer_source_binding(helper)
+            except RouteError as changed:
+                raise RouteError("GO_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from changed
+            if current_snapshot != expected_snapshot:
+                raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+            if current_helper != expected_helper:
+                raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+            _verify_trusted_go_toolchain(toolchain)
+            wrapped = str(error)
+            for reason in promotable:
+                if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}\nexit status 2":
+                    raise RouteError(reason) from error
+            raise
+        if _go_analyzer_snapshot_binding(snapshot, root) != expected_snapshot:
+            raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+        if _go_analyzer_source_binding(helper) != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        return value
+
+
+def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
+
+
+def _verify_trusted_rust_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "rust"
+        or expected.version != "1.89.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is None
+        or not Path(expected.auxiliary).is_absolute()
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+        or expected.auxiliary_sha256 is None
+        or digest(expected.auxiliary_sha256) is None
+    ):
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("rust")
+    except RouteError as error:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _rust_analyzer_package_binding(package: Path, cargo: Path) -> str:
+    expected = ENGINE_ROOT / "native" / "rust"
+    if not package.is_absolute() or package != expected or package.is_symlink():
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE")
+    try:
+        return _toolchain_build_cache_key(
+            "rust-analyzer-inputs",
+            cargo,
+            files=(
+                package / "Cargo.toml",
+                package / "Cargo.lock",
+                package / ".cargo" / "config.toml",
+            ),
+            trees=(package / "src", package / "vendor"),
+            salt=("cargo-run=--quiet,--offline,--locked",),
+        )
+    except OSError as error:
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE") from error
+
+
+def _run_trusted_rust_analyzer(
+    toolchain: ExactToolchain,
+    package: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run a package- and toolchain-bound Rust analyzer with exact error promotion."""
+
+    promotable = _rust_analyzer_arguments(arguments)
+    if toolchain.auxiliary is None:
+        raise RouteError("RUST_ANALYZER_CARGO_REQUIRED")
+    cargo = Path(toolchain.auxiliary)
+    expected_package = _rust_analyzer_package_binding(package, cargo)
+    _verify_trusted_rust_toolchain(toolchain)
+    command = [
+        str(cargo),
+        "run",
+        "--quiet",
+        "--offline",
+        "--locked",
+        "--manifest-path",
+        str(package / "Cargo.toml"),
+        "--",
+        *arguments,
+    ]
+    try:
+        value = _run(
+            command,
+            cwd=package,
+            timeout=900,
+            isolated_cargo=True,
+            cargo_package=package,
+        )
+    except RouteError as error:
+        try:
+            current_package = _rust_analyzer_package_binding(package, cargo)
+        except RouteError as changed:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from changed
+        if current_package != expected_package:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_rust_toolchain(toolchain)
+        wrapped = str(error)
+        for reason in promotable:
+            if wrapped == f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}":
+                raise RouteError(reason) from error
+        raise
+    if _rust_analyzer_package_binding(package, cargo) != expected_package:
+        raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION")
+    _verify_trusted_rust_toolchain(toolchain)
+    return value
+
+
 def _run(
     command: list[str],
     *,
     cwd: Path,
-    timeout: int = 120,
+    # Native source analysis accepts files up to the repository contract's
+    # two-megabyte ceiling. Keep its default deadline aligned with target
+    # validation so a valid near-limit source is not classified as NOT_RUN
+    # merely because analysis gets less time than the generated build.
+    timeout: int = 600,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
     environment_overrides: Mapping[str, str] | None = None,
@@ -5531,6 +5972,12 @@ def _run_trusted_swift_analyzer(
         if _verify_swift_execution_seal(binary, receipt) != before:
             raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION") from error
         wrapped = str(error)
+        prefix = f"NATIVE_ANALYZER_FAILED:{binary}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix):]
+            for reason in allowed_domain_errors:
+                if candidate == reason or candidate.startswith(f"{reason}:"):
+                    raise RouteError(candidate) from error
         for reason in allowed_domain_errors:
             if wrapped == f"NATIVE_ANALYZER_FAILED:{binary}:{reason}":
                 raise RouteError(reason) from error
@@ -5578,6 +6025,26 @@ def _javascript_bound_content(
     return content
 
 
+def _verify_trusted_php_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "php"
+        or not expected.version.startswith("PHP 8.5.9 ")
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("php")
+    except RouteError as error:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED")
+
+
 def _run_trusted_php_analyzer(
     toolchain: ExactToolchain,
     source: Path,
@@ -5617,10 +6084,49 @@ def _run_trusted_php_analyzer(
     arguments = [str(resolved), function_name]
     if emitted_target:
         arguments.append("--emitted-target")
-    value = _run(
-        [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
-        cwd=ENGINE_ROOT,
-    )
+    _verify_trusted_php_toolchain(toolchain)
+    try:
+        value = _run(
+            [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
+            cwd=ENGINE_ROOT,
+        )
+    except RouteError as error:
+        analyzer_after = _javascript_bound_content(
+            _PHP_ANALYZER,
+            ENGINE_ROOT,
+            expected_sha256=_PHP_ANALYZER_SHA256,
+            expected_bytes=_PHP_ANALYZER_BYTES,
+            failure="PHP_ANALYZER_ASSET_UNSAFE",
+        )
+        if analyzer_before != analyzer_after:
+            raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_php_toolchain(toolchain)
+        wrapped = str(error)
+        php_reason = f"PHP_FUNCTION_NOT_FOUND:{function_name}"
+        if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{php_reason}":
+            raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}") from error
+        prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix) :].strip()
+            first_line = candidate.splitlines()[0].strip() if candidate else ""
+            public_failures = frozenset(
+                {
+                    "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
+                    "PHP_BREAK_OUTSIDE_LOOP",
+                    "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONTINUE_OUTSIDE_LOOP",
+                    "PHP_DO_WHILE_REJECTED",
+                    "PHP_FOR_CLOSED_RANGE_REJECTED",
+                    "PHP_FOR_DOWNTO_REJECTED",
+                    "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_UNDECLARED_NAME",
+                }
+            )
+            failure_code = first_line.partition(":")[0]
+            if candidate == first_line and failure_code in public_failures:
+                raise RouteError(first_line) from error
+        raise
     analyzer_after = _javascript_bound_content(
         _PHP_ANALYZER,
         ENGINE_ROOT,
@@ -5630,6 +6136,7 @@ def _run_trusted_php_analyzer(
     )
     if analyzer_before != analyzer_after:
         raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+    _verify_trusted_php_toolchain(toolchain)
     if type(value) is not dict:
         raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
     reported = value.get("analyzer_version")
@@ -7415,32 +7922,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                "--inventory",
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(
@@ -7569,45 +8054,24 @@ def _analyze_batch(
             arguments = [str(resolved), selector]
             if emitted_target:
                 arguments.append("--emitted-target")
-            document = _run(
-                [toolchain.executable, "run", str(helper), "--", *arguments],
-                cwd=ENGINE_ROOT,
-                environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-            )
-            # Go has no promotion list: a rejected function fails the analyzer
-            # process, and `_run` wraps whatever it printed.  Reconstructing that
-            # exact wrapping is what keeps a batched rejection indistinguishable
-            # from the individual call it replaced.
+            document = _run_trusted_go_analyzer(toolchain, helper, arguments)
+            promotable = _go_analyzer_arguments(arguments)
+
             def promote(reason: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+                return RouteError(reason) if reason in promotable else None
 
         elif language == "rust":
             package = ENGINE_ROOT / "native" / "rust"
             if toolchain.auxiliary is None:
                 return None
-            cargo = toolchain.auxiliary
-            document = _run(
-                [
-                    cargo,
-                    "run",
-                    "--quiet",
-                    "--offline",
-                    "--locked",
-                    "--manifest-path",
-                    str(package / "Cargo.toml"),
-                    "--",
-                    str(resolved),
-                    selector,
-                    *(["--emitted-target"] if emitted_target else []),
-                ],
-                cwd=package,
-                timeout=900,
-                isolated_cargo=True,
-                cargo_package=package,
-            )
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run_trusted_rust_analyzer(toolchain, package, arguments)
+            promotable = _rust_analyzer_arguments(arguments)
 
             def promote(reason: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
+                return RouteError(reason) if reason in promotable else None
 
         else:
             return None
@@ -7697,8 +8161,49 @@ _KOTLIN_ANALYZER_CLASS_RECEIPT = "kotlin-analyzer-classes.json"
 _KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "KOTLIN_UNSUPPORTED_TYPE:Int",
+        "KOTLIN_UNSUPPORTED_TYPE",
         "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
         "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
+        "KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LOCAL_NAME_REQUIRED",
+        "KOTLIN_LOCAL_INITIALIZER_REQUIRED",
+        "KOTLIN_EXPLICIT_TYPE_REQUIRED",
+        "KOTLIN_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "KOTLIN_ASSIGNMENT_VALUE_REQUIRED",
+        "KOTLIN_WHILE_CONDITION_REQUIRED",
+        "KOTLIN_WHILE_BLOCK_BODY_REQUIRED",
+        "KOTLIN_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_BREAK_OUTSIDE_LOOP",
+        "KOTLIN_CONTINUE_OUTSIDE_LOOP",
+        "KOTLIN_FOR_VARIABLE_REQUIRED",
+        "KOTLIN_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "KOTLIN_FOR_BLOCK_BODY_REQUIRED",
+        "KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_FOR_CONDITION_NON_MONOTONIC",
+        "KOTLIN_UNSUPPORTED_STATEMENT",
+        "KOTLIN_UNSUPPORTED_OPERATOR",
+        "KOTLIN_UNSUPPORTED_EXPRESSION",
+        "KOTLIN_BLOCK_BODY_REQUIRED",
+        "KOTLIN_DEFAULT_ARGUMENT_UNSUPPORTED",
+        "KOTLIN_IF_BLOCK_BODY_REQUIRED",
+        "KOTLIN_IF_CONDITION_REQUIRED",
+        "KOTLIN_IF_THEN_REQUIRED",
+        "KOTLIN_INVALID_ESCAPE",
+        "KOTLIN_INVALID_LITERAL",
+        "KOTLIN_LABELED_RETURN_UNSUPPORTED",
+        "KOTLIN_NON_FINITE_LITERAL",
+        "KOTLIN_PARAMETER_NAME_REQUIRED",
+        "KOTLIN_RETURN_EXPRESSION_REQUIRED",
+        "KOTLIN_STRING_INTERPOLATION_UNSUPPORTED",
+        "KOTLIN_SUSPEND_FUNCTION_UNSUPPORTED",
+        "KOTLIN_VARARG_UNSUPPORTED",
     }
 )
 
@@ -7879,23 +8384,115 @@ def _verify_kotlin_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -
             raise RouteError("KOTLIN_ANALYZER_CLASS_CHANGED")
 
 
+_KOTLIN_ANALYZER_LOCK = threading.Lock()
+_KOTLIN_ANALYZER_TEMPORARY: tempfile.TemporaryDirectory[str] | None = None
+_KOTLIN_ANALYZER_CLASSES: Path | None = None
+_KOTLIN_ANALYZER_RECEIPT: dict[str, Any] | None = None
+
+
+def _cleanup_kotlin_analyzer() -> None:
+    global _KOTLIN_ANALYZER_TEMPORARY, _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+    with _KOTLIN_ANALYZER_LOCK:
+        if _KOTLIN_ANALYZER_TEMPORARY is not None:
+            _KOTLIN_ANALYZER_TEMPORARY.cleanup()
+        _KOTLIN_ANALYZER_TEMPORARY = None
+        _KOTLIN_ANALYZER_CLASSES = None
+        _KOTLIN_ANALYZER_RECEIPT = None
+
+
+atexit.register(_cleanup_kotlin_analyzer)
+
+
 def _kotlin_analyzer_classes(
     helper: Path,
     toolchain: ExactToolchain,
     compiler_jar: Path,
     staging_root: Path,
 ) -> tuple[Path, dict[str, Any]] | None:
-    """Disable persistent analyzer bytecode until provenance is non-forgeable.
-
-    A content-addressed key plus a self-authored class digest does not prove
-    that pre-existing class bytes were produced by the pinned compiler. The
-    callers therefore always take the private-directory compile path. Keeping
-    this small compatibility hook avoids duplicating that fallback between
-    named-function and repository inventory execution.
-    """
-
-    del helper, toolchain, compiler_jar, staging_root
-    return None
+    del staging_root
+    with _KOTLIN_ANALYZER_LOCK:
+        global _KOTLIN_ANALYZER_TEMPORARY, _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+        helper_binding = _kotlin_analyzer_source_binding(helper)
+        helper_sha = str(helper_binding["sha256"])
+        compiler_sha = str(toolchain.executable_sha256)
+        if _KOTLIN_ANALYZER_CLASSES is not None and _KOTLIN_ANALYZER_RECEIPT is not None:
+            if (
+                _KOTLIN_ANALYZER_RECEIPT.get("helper_sha256") == helper_sha
+                and _KOTLIN_ANALYZER_RECEIPT.get("compiler_sha256") == compiler_sha
+            ):
+                try:
+                    _verify_kotlin_analyzer_classes(_KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT)
+                    return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+                except RouteError:
+                    _KOTLIN_ANALYZER_CLASSES = None
+                    _KOTLIN_ANALYZER_RECEIPT = None
+        safe_cache_key = f"{helper_sha}_{compiler_sha}".replace(":", "_")
+        disk_cache_dir = Path.home() / ".cache" / "elmos" / "kotlin-classes" / safe_cache_key
+        disk_receipt_file = disk_cache_dir / "receipt.json"
+        disk_classes_dir = disk_cache_dir / "classes"
+        if disk_receipt_file.is_file() and disk_classes_dir.is_dir():
+            try:
+                disk_receipt = json.loads(disk_receipt_file.read_text(encoding="utf-8"))
+                if (
+                    disk_receipt.get("helper_sha256") == helper_sha
+                    and disk_receipt.get("compiler_sha256") == compiler_sha
+                ):
+                    _verify_kotlin_analyzer_classes(disk_classes_dir, disk_receipt)
+                    _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
+                    _KOTLIN_ANALYZER_RECEIPT = disk_receipt
+                    return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+            except (
+                AttributeError,
+                json.JSONDecodeError,
+                KeyError,
+                OSError,
+                RouteError,
+                TypeError,
+                UnicodeDecodeError,
+            ):
+                disk_receipt = None
+        temp_dir = tempfile.TemporaryDirectory(prefix="elmos-kotlin-classes-")
+        classes_dir = Path(temp_dir.name).resolve(strict=True) / "classes"
+        classes_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+        scratch = Path(temp_dir.name).resolve(strict=True) / "scratch"
+        scratch.mkdir(mode=0o700, parents=True, exist_ok=True)
+        if not _compile_kotlin_analyzer(toolchain, compiler_jar, helper, classes_dir, scratch):
+            temp_dir.cleanup()
+            return None
+        classes_map = {
+            path.relative_to(classes_dir).as_posix(): _sha256_file(path)
+            for path in classes_dir.rglob("*.class")
+            if path.is_file() and not path.is_symlink()
+        }
+        receipt = {
+            "helper_sha256": helper_sha,
+            "compiler_sha256": compiler_sha,
+            "classes": classes_map,
+        }
+        _verify_kotlin_analyzer_classes(classes_dir, receipt)
+        try:
+            disk_cache_dir.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+            staging_disk = disk_cache_dir.parent / f"staging_{os.getpid()}_{time.time_ns()}"
+            staging_disk.mkdir(mode=0o700, parents=True, exist_ok=True)
+            shutil.copytree(classes_dir, staging_disk / "classes")
+            (staging_disk / "receipt.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+            if disk_cache_dir.exists():
+                shutil.rmtree(disk_cache_dir, ignore_errors=True)
+            staging_disk.rename(disk_cache_dir)
+            _verify_kotlin_analyzer_classes(disk_classes_dir, receipt)
+            _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
+            _KOTLIN_ANALYZER_RECEIPT = receipt
+            temp_dir.cleanup()
+            return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+        except Exception:
+            _KOTLIN_ANALYZER_CLASSES = None
+            _KOTLIN_ANALYZER_RECEIPT = None
+        if _KOTLIN_ANALYZER_TEMPORARY is not None:
+            _KOTLIN_ANALYZER_TEMPORARY.cleanup()
+        _KOTLIN_ANALYZER_TEMPORARY = temp_dir
+        _KOTLIN_ANALYZER_CLASSES = classes_dir
+        _KOTLIN_ANALYZER_RECEIPT = receipt
+        return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
 
 
 def _compile_kotlin_analyzer(
@@ -8012,6 +8609,12 @@ def _run_trusted_kotlin_analyzer(
                 raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
             _verify_trusted_kotlin_toolchain(toolchain)
             wrapped = str(error)
+            prefix = f"NATIVE_ANALYZER_FAILED:{java}:"
+            if wrapped.startswith(prefix):
+                candidate = wrapped[len(prefix):]
+                for reason in allowed_domain_errors:
+                    if candidate == reason or candidate.startswith(f"{reason}:"):
+                        raise RouteError(candidate) from error
             for reason in allowed_domain_errors:
                 if wrapped == f"NATIVE_ANALYZER_FAILED:{java}:{reason}":
                     raise RouteError(reason) from error
@@ -8096,7 +8699,7 @@ def analyze(
             ),
             receipt,
         )
-        return SemanticIR.from_mapping(value)
+        return _external_semantic_ir(value)
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         arguments = [str(source), function_name]
@@ -8138,33 +8741,14 @@ def analyze(
         arguments = [str(source), function_name]
         if emitted_target:
             arguments.append("--emitted-target")
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", *arguments],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, arguments)
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                function_name,
-                *(["--emitted-target"] if emitted_target else []),
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        arguments = [str(source), function_name]
+        if emitted_target:
+            arguments.append("--emitted-target")
+        value = _run_trusted_rust_analyzer(toolchain, package, arguments)
     elif language == "javascript":
         value = _run_trusted_javascript_analyzer(
             toolchain,

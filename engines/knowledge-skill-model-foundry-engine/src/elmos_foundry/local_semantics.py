@@ -49,6 +49,46 @@ LOCAL_SEMANTIC_SKILLS: frozenset[str] = frozenset(
         "complexity-risk-cost-latency-routing",
         "model-version-pinning-determinism",
         "tool-call-schema-and-policy-check",
+        "architecture-decision-record",
+        "capability-taxonomy-governance",
+        "compatibility-matrix-manager",
+        "tenancy-scope-contract",
+        "evidence-contract",
+        "policy-contract",
+        "data-usage-consent-contract",
+        "release-bundle-contract",
+        "repo-org-time-split-builder",
+        "dataset-lineage-and-provenance",
+        "dataset-revocation-unlearning-index",
+        "preference-pair-builder",
+        "active-learning-sample-selection",
+        "semantic-and-ast-deduplication",
+        "skill-transaction-and-rollback",
+        "tenant-policy-aware-retrieval",
+        "build-and-dependency-graph",
+        "semantic-ir-reconciliation",
+        "multi-language-ast-extraction",
+        "api-contract-ingestion",
+        "database-metadata-ingestion",
+        "license-and-rights-classification",
+        "repository-incremental-ingestion",
+        "runtime-trace-ingestion",
+        "source-freshness-and-expiry",
+        "contract-migration-manager",
+        "extension-sdk-and-codegen",
+        "archive-and-folder-ingestion",
+        "document-structure-ingestion",
+        "ingestion-quarantine-gate",
+        "multimodal-artifact-ingestion",
+        "symbol-and-reference-graph",
+        "call-graph-construction",
+        "control-flow-graph",
+        "semantic-diff-and-impact-analysis",
+        "skill-efficiency-evaluation",
+        "skill-output-evaluation",
+        "skill-process-evaluation",
+        "skill-robustness-evaluation",
+        "skill-trigger-evaluation",
     }
 )
 
@@ -280,6 +320,29 @@ class LocalSemanticRuntime:
             "model-version-pinning-determinism": self.model_version_pinning_determinism,
             "tool-call-schema-and-policy-check": self.tool_call_schema_and_policy_check,
         }
+        from .foundation_semantics import build_foundation_handlers
+        from .dataset_semantics import build_dataset_handlers
+        from .runtime_semantics import build_runtime_handlers
+        from .build_graph_semantics import build_build_graph_handlers
+        from .ir_reconciliation_semantics import build_ir_reconciliation_handlers
+        from .ast_extraction_semantics import build_ast_extraction_handlers
+        from .ingestion_semantics import build_ingestion_handlers
+        from .foundation_extensions import build_foundation_extension_handlers
+        from .ingestion_extensions import build_ingestion_extension_handlers
+        from .graph_semantics import build_graph_extension_handlers
+        from .evaluation_semantics import build_evaluation_handlers
+
+        handlers.update(build_foundation_handlers(catalog, store))
+        handlers.update(build_dataset_handlers(catalog, store))
+        handlers.update(build_runtime_handlers(catalog, store))
+        handlers.update(build_build_graph_handlers(catalog, store))
+        handlers.update(build_ir_reconciliation_handlers(catalog, store))
+        handlers.update(build_ast_extraction_handlers(catalog, store))
+        handlers.update(build_ingestion_handlers(catalog, store))
+        handlers.update(build_foundation_extension_handlers(catalog, store))
+        handlers.update(build_ingestion_extension_handlers(catalog, store))
+        handlers.update(build_graph_extension_handlers(catalog, store))
+        handlers.update(build_evaluation_handlers(catalog, store))
         if set(handlers) != LOCAL_SEMANTIC_SKILLS:
             raise RuntimeError("local semantic handler registry is not exact")
         missing = sorted(LOCAL_SEMANTIC_SKILLS - set(catalog.atomic_skills))

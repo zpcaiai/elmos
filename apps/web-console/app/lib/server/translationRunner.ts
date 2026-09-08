@@ -134,6 +134,8 @@ const languages = new Set<TranslationLanguageId>([
   "kotlin",
   "react",
   "flutter",
+  "vb6",
+  "vcpp6",
 ]);
 const sensitivePattern = /(authorization|token|secret|password|cookie|api[-_]?key)\s*[:=]\s*\S+/gi;
 
@@ -2264,7 +2266,11 @@ async function execute(
     );
     if (!await persistExecutionIfCurrent(runner, context, job, executionId)) return;
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
-    metering = await beginMeteredExecution(`translation-${job.id}`);
+    metering = await beginMeteredExecution({
+      taskId: `translation-${job.id}`,
+      projectId: job.workspaceId,
+      actorId: context.actor,
+    });
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
     job.status = "RUNNING";
     job.stage = "pipeline";

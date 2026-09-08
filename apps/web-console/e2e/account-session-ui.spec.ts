@@ -1,5 +1,31 @@
 import { expect, test } from "@playwright/test";
 
+test("anonymous user login entries perform a document navigation", async ({ page }) => {
+  await page.goto("/");
+
+  const topLogin = page.locator("header").getByRole("link", {
+    name: "用户登录",
+    exact: true,
+  });
+  await expect(topLogin).toHaveAttribute("href", "/login?returnTo=%2F");
+  await topLogin.click();
+  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+
+  await page.goto("/");
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
+    await page.getByRole("button", { name: "打开导航" }).click();
+    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
+  }
+  const sidebarLogin = page.locator("aside").getByRole("link", {
+    name: /用户登录/,
+  });
+  await expect(sidebarLogin).toHaveAttribute("href", "/login?returnTo=%2F");
+  await sidebarLogin.click();
+  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+});
+
 test("account session discovery represents anonymous state without a console-level 401", async ({
   request,
   page,
@@ -14,24 +40,23 @@ test("account session discovery represents anonymous state without a console-lev
 
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "使用邮箱登录" })).toBeVisible();
-  await expect(page.getByLabel("邮箱")).toHaveAttribute("name", "email");
-  await expect(page.locator('input[name="loginMode"]')).toHaveValue("USER");
-  await expect(page.getByRole("button", { name: "使用邮箱登录" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
-    "href",
-    "/admin/login",
-  );
+  await expect(page.getByRole("heading", { name: "测试账号登录" })).toBeVisible();
+  await expect(page.getByLabel("账号 / 邮箱")).toHaveAttribute("name", "email");
+  // 用户登录页不能携带管理员登录模式；管理员只能导航到独立入口重新认证。
+  await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "使用测试账号登录" })).toBeVisible();
   await expect(page.getByText(/服务端 API 均会拒绝操作/)).toBeVisible();
 });
 
-test("user login directs the platform administrator to the dedicated entry", async ({ page }) => {
+test("user login entry cannot mint administrator mode and links the dedicated entry", async ({ page }) => {
   await page.goto("/login?error=ADMIN_LOGIN_ENTRY_REQUIRED");
 
   await expect(page.locator(".auth-error")).toContainText(
     "管理员账户必须从独立的管理员入口登录",
   );
-  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
+  await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveAttribute(
     "href",
     "/admin/login",
   );
@@ -39,9 +64,9 @@ test("user login directs the platform administrator to the dedicated entry", asy
 
 test("local test account establishes a development-only session", async ({ page }) => {
   await page.goto("/login");
-  await page.getByLabel("邮箱").fill("test@example.test");
+  await page.getByLabel("账号 / 邮箱").fill("test");
   await page.getByLabel("密码").fill("test");
-  await page.getByRole("button", { name: "使用邮箱登录" }).click();
+  await page.getByRole("button", { name: "使用测试账号登录" }).click();
   await expect(page).toHaveURL(/\/$/);
 
   const session = await page.evaluate(async () => {

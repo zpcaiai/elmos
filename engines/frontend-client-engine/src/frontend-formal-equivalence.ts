@@ -135,6 +135,10 @@ const unsupportedSemanticBlocks = [
 ] as const;
 const lockedZ3Version = "Z3 version 4.16.0 - 64 bit";
 const lockedZ3BinaryDigest = "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7";
+const lockedZ3BinaryDigests = new Set<string>([
+  lockedZ3BinaryDigest,
+  "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
+]);
 
 const codePointCompare = (left: string, right: string): number => left < right ? -1 : left > right ? 1 : 0;
 
@@ -1097,7 +1101,7 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
   if (binaryPath === undefined) return rejected("MISSING", "locked Z3 executable is missing");
   const binaryDigest = bytesDigest(readFileSync(binaryPath));
   if (basename(binaryPath) !== "z3") return rejected("ERROR", "solver executable identity is not Z3", binaryPath, binaryDigest);
-  if (binaryDigest !== lockedZ3BinaryDigest) return rejected("ERROR", "solver binary digest is not the locked Z3 4.16.0 artifact", binaryPath, binaryDigest);
+  if (!lockedZ3BinaryDigests.has(binaryDigest)) return rejected("ERROR", "solver binary digest is not the locked Z3 4.16.0 artifact", binaryPath, binaryDigest);
   const versionResult = spawnSync(binaryPath, ["-version"], { encoding: "utf8", timeout: Math.min(timeout, 5_000) });
   const solverVersion = versionResult.status === 0 ? (versionResult.stdout ?? "").trim() : "UNKNOWN";
   if (solverVersion !== lockedZ3Version) {
@@ -1709,7 +1713,7 @@ export function verifyFrontendFormalCampaign(outputDirectory: string): readonly 
         if (solver.identity_status === "VERIFIED") {
           const binaryPath = String(solver.solver_binary_realpath);
           if (solver.solver !== binaryPath || basename(binaryPath) !== "z3" || realpathSync(binaryPath) !== binaryPath
-            || solver.solver_version !== lockedZ3Version || solver.solver_binary_sha256 !== lockedZ3BinaryDigest
+            || solver.solver_version !== lockedZ3Version || !lockedZ3BinaryDigests.has(String(solver.solver_binary_sha256))
             || solver.solver_binary_sha256 !== bytesDigest(readFileSync(binaryPath))
             || canonical(solver.invocation) !== canonical([binaryPath, "-in"]) || solver.exit_code !== 0
             || solver.stderr !== "" || !["unsat\n", "sat\n", "unknown\n"].includes(String(solver.stdout))) throw new Error("locked solver identity/execution drifted");

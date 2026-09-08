@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "go-linux",
+  "language": "Go",
+  "framework": "HTTP/CLI",
+  "runtime": "Go native",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "Delve DAP",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "api",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "build flags and optimized locals qualified",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}

@@ -8,6 +8,7 @@ source and target must compile and execute under the pinned JDK/Kotlin tuple.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -28,6 +29,10 @@ CASES = [
     {"args": [10, 2], "expected": 12},
     {"args": [-1, 2], "expected": 0},
 ]
+EXPECTED_KOTLIN_VERSION = {
+    "homebrew": "kotlinc-jvm 2.2.20 (JRE 21.0.11)",
+    "temurin": "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+}[os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "homebrew")]
 
 
 def test_kotlin_uses_the_exact_standalone_2_2_20_jdk21_tuple() -> None:
@@ -35,7 +40,7 @@ def test_kotlin_uses_the_exact_standalone_2_2_20_jdk21_tuple() -> None:
     active_java_home = Path(exact_toolchain("java").executable).parents[1]
 
     assert toolchain.language == "kotlin"
-    assert toolchain.version == "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+    assert toolchain.version == EXPECTED_KOTLIN_VERSION
     kotlin_root = configured_polyglot_toolchain_root() / "kotlin" / "2.2.20"
     assert toolchain.executable == str(kotlin_root / "bin" / "kotlinc")
     assert toolchain.auxiliary == str(kotlin_root / "bin" / "kotlin")

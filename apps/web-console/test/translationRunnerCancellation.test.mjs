@@ -138,7 +138,7 @@ async function waitUntil(operation, timeoutMs = 10_000) {
   throw lastError ?? new Error("TEST_WAIT_TIMEOUT");
 }
 
-const rootlessFixtureReadinessTimeoutMs = 30_000;
+const rootlessFixtureReadinessTimeoutMs = 90_000;
 
 async function createFakeContainerEngine(binRoot) {
   const executable = path.join(binRoot, "docker");

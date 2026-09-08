@@ -13,8 +13,6 @@ from elmos_sql_transpiler.commercial import assess_commercial, commercial_capabi
 from elmos_sql_transpiler.commercial_request import parse_commercial_request_json
 from elmos_sql_transpiler.production_qualification import production_qualification_draft
 
-_ORIGINAL_ASSESSMENT_HOST_ADMITTED = http_api._assessment_host_admitted
-
 
 def _request(**changes: object) -> dict[str, object]:
     value: dict[str, object] = {
@@ -412,9 +410,13 @@ def test_unknown_http_route_uses_fail_closed_error_envelope(client: TestClient) 
     assert value["certification"] == "NOT_CERTIFIED"
 
 
-def test_isolated_assessment_process_returns_only_bounded_blocked_json() -> None:
-    if not _ORIGINAL_ASSESSMENT_HOST_ADMITTED():
-        pytest.skip("requires a host below the isolated-process load threshold")
+def test_isolated_assessment_process_returns_only_bounded_blocked_json(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Preserve the production fail-closed startup SLO while giving this positive
+    # macOS-spawn integration path enough test-only budget on a saturated host.
+    assert http_api.ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS == 30.0
+    monkeypatch.setattr(http_api, "ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS", 600.0)
     request = parse_commercial_request_json(json.dumps(_request(), separators=(",", ":")).encode())
     payload = http_api._run_assessment_isolated(request)
     value = json.loads(payload)
@@ -423,21 +425,3 @@ def test_isolated_assessment_process_returns_only_bounded_blocked_json() -> None
     assert value["state"] == "LOCAL_EMITTED"
     assert value["targetSql"]
     assert value["certification"] == "NOT_CERTIFIED"
-
-
-def test_assessment_host_load_admission_is_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("ELMOS_CHINADB_MAX_NORMALIZED_LOAD", "1.5")
-    monkeypatch.setattr(http_api.os, "cpu_count", lambda: 8)
-    monkeypatch.setattr(http_api.os, "getloadavg", lambda: (16.0, 12.0, 8.0))
-    assert _ORIGINAL_ASSESSMENT_HOST_ADMITTED() is False
-
-    monkeypatch.setattr(http_api.os, "getloadavg", lambda: (8.0, 8.0, 8.0))
-    assert _ORIGINAL_ASSESSMENT_HOST_ADMITTED() is True
-
-    monkeypatch.setenv("ELMOS_CHINADB_MAX_NORMALIZED_LOAD", "100")
-    assert _ORIGINAL_ASSESSMENT_HOST_ADMITTED() is False
-
-
-@pytest.fixture(autouse=True)
-def _admit_test_host(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(http_api, "_assessment_host_admitted", lambda: True)

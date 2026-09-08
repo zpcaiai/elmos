@@ -30,6 +30,8 @@ __pycache__/
 **/.pytest_cache/
 .mypy_cache/
 **/.mypy_cache/
+*.tsbuildinfo
+**/*.tsbuildinfo
 *.egg-info/
 **/*.egg-info/
 .ruff_cache/
@@ -109,3 +111,9 @@ apps/web-console/test-results/
 apps/web-console/e2e/*.spec.ts-snapshots/
 _cloudstage/
 survey-engines-mac.sh
+.vercel
+.env*
+!deploy/production/.env.example
+!client-packs/**/source-snapshots/**
+.mimosa/
+**/.mimosa/

@@ -74,7 +74,7 @@ def test_java_unannotated_var_rejected(tmp_path: Path) -> None:
         analyze(source, "java", "total")
 
 
-def test_java_mutable_local_rejected(tmp_path: Path) -> None:
+def test_java_mutable_local_accepted(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
         "public static long total(long price) {\n"
@@ -82,8 +82,10 @@ def test_java_mutable_local_rejected(tmp_path: Path) -> None:
         "    return subtotal;\n"
         "}",
     )
-    with pytest.raises(RouteError, match="JAVA_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET"):
-        analyze(source, "java", "total")
+    semantic = analyze(source, "java", "total")
+    statements = semantic.functions[0].body
+    assert statements[0].kind == "let"
+    assert statements[0].name == "subtotal"
 
 
 def test_java_declaration_without_value_rejected(tmp_path: Path) -> None:
@@ -98,17 +100,38 @@ def test_java_declaration_without_value_rejected(tmp_path: Path) -> None:
         analyze(source, "java", "total")
 
 
-def test_java_reassignment_rejected(tmp_path: Path) -> None:
+def test_java_parameter_reassignment_rejected(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
         "public static long total(long price) {\n"
-        "    final long subtotal = price;\n"
+        "    price = price + 1;\n"
+        "    return price;\n"
+        "}",
+    )
+    with pytest.raises(RouteError, match="JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:price"):
+        analyze(source, "java", "total")
+
+
+def test_java_mutable_local_reassignment_accepted(tmp_path: Path) -> None:
+    source = _source(
+        tmp_path,
+        "public static long total(long price) {\n"
+        "    long subtotal = price;\n"
         "    subtotal = price + 1;\n"
+        "    subtotal += 5;\n"
         "    return subtotal;\n"
         "}",
     )
-    with pytest.raises(RouteError, match="JAVA_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET"):
-        analyze(source, "java", "total")
+    semantic = analyze(source, "java", "total")
+    statements = semantic.functions[0].body
+    assert statements[0].kind == "let"
+    assert statements[0].name == "subtotal"
+    assert statements[1].kind == "assign"
+    assert statements[1].name == "subtotal"
+    assert statements[2].kind == "assign"
+    assert statements[2].name == "subtotal"
+    assert statements[2].expression.kind == "binary"
+    assert statements[2].expression.operator == "+"
 
 
 def test_java_unsupported_int_type_rejected(tmp_path: Path) -> None:
@@ -153,3 +176,17 @@ def test_java_shadowing_parameter_rejected(tmp_path: Path) -> None:
     semantic = analyze(source, "java", "total")
     with pytest.raises(RouteError, match="LET_NAME_ALREADY_BOUND:price"):
         types.check(semantic)
+
+
+def test_java_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> None:
+    source = tmp_path / "Subject.java"
+    source.write_text(
+        "public final class Subject { public static long calculate(long value) { return value; } }\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        RouteError,
+        match="^FUNCTION_NOT_FOUND:__elmos_missing_function__$",
+    ):
+        analyze(source, "java", "__elmos_missing_function__")

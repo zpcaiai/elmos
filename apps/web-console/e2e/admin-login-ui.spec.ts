@@ -2,23 +2,48 @@ import { expect, test } from "@playwright/test";
 
 const administratorEmail = "zpchoney@gmail.com";
 
+test("anonymous administrator entries are absent from the homepage and require direct navigation", async ({ page }) => {
+  await page.goto("/");
+
+  const topAdminLogin = page.locator("header").getByRole("link", {
+    name: "管理员入口",
+    exact: true,
+  });
+  await expect(topAdminLogin).toHaveCount(0);
+
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
+    await page.getByRole("button", { name: "打开导航" }).click();
+    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
+  }
+  const sidebarAdminLogin = page.locator("aside").getByRole("link", {
+    name: /管理员登录入口/,
+  });
+  await expect(sidebarAdminLogin).toHaveCount(0);
+
+  await page.goto("/admin/login");
+  await expect(page).toHaveURL(/\/admin\/login$/);
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+});
+
 test("administrator login is visibly separate from user login", async ({ page }) => {
   await page.goto("/admin/login");
 
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
   await expect(page.getByText("管理员专用 · ADMIN ONLY", { exact: true })).toBeVisible();
   await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("管理员身份提供商未配置");
+  await expect(page.getByRole("status")).toHaveCount(0);
   await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
-  await expect(page.getByLabel("密码")).toHaveCount(0);
-  await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "返回用户登录" })).toHaveAttribute("href", "/login");
+  await expect(page.getByLabel("管理员用户名")).toHaveValue(administratorEmail);
+  await expect(page.getByLabel("管理员密码")).toBeVisible();
+  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeVisible();
+  await expect(page.getByText(/仅用于开发测试，生产环境不启用/)).toBeVisible();
+  // 返回用户页只是导航；管理员身份仍只能由这个独立入口重新认证。
+  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveAttribute(
+    "href",
+    "/login",
+  );
+  await expect(page.locator(".admin-auth-card input[name='loginMode']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card")).toBeVisible();
-
-  await page.getByRole("link", { name: "返回用户登录" }).click();
-  await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-  await expect(page.locator(".user-auth-card")).toBeVisible();
 });
 
 test("administrator login reports rejected and unavailable security states", async ({ page }) => {

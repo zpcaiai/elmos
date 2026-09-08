@@ -2,20 +2,16 @@ package io.elmos.worker;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.SpringHmacProtocol;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Duration;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,10 +39,26 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
             ObjectMapper json,
             Clock clock
     ) {
+        this(transformer, workspaceRoot, runtimeBaseUrl, secretFile, json, clock, false);
+    }
+
+    /**
+     * Package-private transport escape hatch for loopback-only protocol tests.
+     * Production configuration always uses the HTTPS-only constructor above.
+     */
+    IsolatedSpringRuntimeExecutionPort(
+            SpringUpgradeExecutionPort transformer,
+            Path workspaceRoot,
+            URI runtimeBaseUrl,
+            Path secretFile,
+            ObjectMapper json,
+            Clock clock,
+            boolean allowLoopbackHttpForTests
+    ) {
         this.transformer = Objects.requireNonNull(transformer);
         this.workspaceRoot = workspaceRoot.toAbsolutePath().normalize();
-        this.endpoint = endpoint(runtimeBaseUrl);
-        this.secret = readSecret(secretFile);
+        this.endpoint = endpoint(runtimeBaseUrl, allowLoopbackHttpForTests);
+        this.secret = SpringHmacProtocol.readSecret(secretFile, "Rootless Runtime");
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
         this.client = HttpClient.newBuilder()
@@ -155,7 +167,8 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
                     .header("Accept", "application/json")
                     .header("X-ELMOS-Runtime-Timestamp", timestamp)
                     .header("X-ELMOS-Runtime-Nonce", nonce)
-                    .header("X-ELMOS-Runtime-Signature", sign(secret, timestamp, nonce, body))
+                    .header("X-ELMOS-Runtime-Signature", SpringHmacProtocol.sign(
+                            secret, SpringHmacProtocol.Role.RUNTIME, timestamp, nonce, body))
                     .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                     .build();
             HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
@@ -233,45 +246,30 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
         }
     }
 
-    private static URI endpoint(URI base) {
+    private static URI endpoint(URI base, boolean allowLoopbackHttpForTests) {
         Objects.requireNonNull(base);
-        if (!List.of("http", "https").contains(base.getScheme())
+        boolean https = "https".equalsIgnoreCase(base.getScheme());
+        boolean testLoopbackHttp = allowLoopbackHttpForTests
+                && "http".equalsIgnoreCase(base.getScheme())
+                && loopbackHost(base.getHost());
+        if (!base.isAbsolute()
+                || (!https && !testLoopbackHttp)
                 || base.getHost() == null
                 || base.getUserInfo() != null
                 || base.getQuery() != null
                 || base.getFragment() != null) {
-            throw new IllegalArgumentException("Rootless Runtime base URL is invalid");
+            throw new IllegalArgumentException(
+                    "Rootless Runtime base URL must use absolute HTTPS");
         }
         String normalized = base.toString().endsWith("/") ? base.toString() : base + "/";
         return URI.create(normalized).resolve("internal/v1/spring-runtimes");
     }
 
-    private static byte[] readSecret(Path path) {
-        try {
-            if (!Files.isRegularFile(path) || Files.isSymbolicLink(path)) {
-                throw new IllegalStateException("Rootless Runtime HMAC secret file is unavailable");
-            }
-            byte[] raw = Files.readAllBytes(path);
-            if (raw.length > 4096) throw new IllegalStateException("Rootless Runtime HMAC secret file is too large");
-            byte[] value = new String(raw, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-            if (value.length < 32) throw new IllegalStateException("Rootless Runtime HMAC secret must contain at least 32 bytes");
-            return value;
-        } catch (IOException error) {
-            throw new IllegalStateException("Rootless Runtime HMAC secret file could not be read", error);
-        }
-    }
-
-    private static String sign(byte[] secret, String timestamp, String nonce, byte[] body) {
-        try {
-            String bodySha = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(body));
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new IllegalStateException("Rootless Runtime request signing failed", error);
-        }
+    private static boolean loopbackHost(String host) {
+        return host != null && ("localhost".equalsIgnoreCase(host)
+                || "127.0.0.1".equals(host)
+                || "::1".equals(host)
+                || "[::1]".equals(host));
     }
 
     private static BlockedException blocked(String code, String message) {

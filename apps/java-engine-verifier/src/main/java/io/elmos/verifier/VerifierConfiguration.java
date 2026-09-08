@@ -1,12 +1,12 @@
 package io.elmos.verifier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.FileNonceStore;
+import io.elmos.security.SpringHmacProtocol;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.LinkedHashMap;
@@ -32,20 +32,23 @@ class VerifierConfiguration {
             @Value("${elmos.verifier.dependency-cache-root:}") String dependencyCacheRoot,
             @Value("${elmos.verifier.timeout-minutes}") int timeoutMinutes,
             @Value("${elmos.verifier.auth-window-seconds}") long authWindowSeconds,
+            @Value("${elmos.verifier.replay-root}") String replayRoot,
             ObjectMapper json,
             Clock clock
     ) {
         byte[] secret = oneTimeSecret.isBlank()
-                ? readSecret(Path.of(secretFile))
-                : oneTimeSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        if (secret.length < 32 || secret.length > 4096) {
-            throw new IllegalStateException("verifier HMAC secret must contain 32-4096 bytes");
-        }
+                ? SpringHmacProtocol.readSecret(Path.of(secretFile), "verifier")
+                : SpringHmacProtocol.requireSecret(
+                        oneTimeSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8), "verifier");
         return new SpringArtifactVerifier(
                 verifierId,
                 Path.of(inputRoot),
                 Path.of(evidenceRoot),
-                new VerifierAuthentication(secret, clock, authWindowSeconds),
+                new VerifierAuthentication(
+                        secret,
+                        clock,
+                        authWindowSeconds,
+                        new FileNonceStore(Path.of(replayRoot), clock)),
                 mavenVerifiers(javaHome, additionalJavaHomes, mavenExecutable,
                         timeoutMinutes, dependencyCacheRoot),
                 json,
@@ -93,20 +96,4 @@ class VerifierConfiguration {
         return Map.copyOf(result);
     }
 
-    private static byte[] readSecret(Path path) {
-        try {
-            if (!Files.isRegularFile(path) || Files.isSymbolicLink(path)) {
-                throw new IllegalStateException("verifier HMAC secret file is unavailable");
-            }
-            byte[] raw = Files.readAllBytes(path);
-            if (raw.length > 4096) throw new IllegalStateException("verifier HMAC secret file is too large");
-            String value = new String(raw, java.nio.charset.StandardCharsets.UTF_8).trim();
-            if (value.getBytes(java.nio.charset.StandardCharsets.UTF_8).length < 32) {
-                throw new IllegalStateException("verifier HMAC secret must contain at least 32 bytes");
-            }
-            return value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        } catch (IOException error) {
-            throw new IllegalStateException("verifier HMAC secret file could not be read", error);
-        }
-    }
 }

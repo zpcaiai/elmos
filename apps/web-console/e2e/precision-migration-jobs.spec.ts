@@ -5,6 +5,8 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const repositoryRoot = path.resolve(__dirname, "../../..");
+const administratorEmail = "zpchoney@gmail.com";
+const temporaryAdminPassword = "elmos-e2e-temporary-admin-password";
 const runnerHeaders = {
   "Content-Type": "application/json",
   "Authorization": "Bearer elmos-e2e-local-token-32-characters",
@@ -148,7 +150,11 @@ test("租户隔离 API 完成真实只读评估并提供内容寻址产物", asy
 
 test("功能能力中心可提交、轮询、重试并下载精密迁移作业", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "浏览器代表旅程只执行一次");
-  await page.goto("/capabilities");
+  await page.goto("/admin/login?returnTo=%2Fcapabilities");
+  await page.getByLabel("管理员用户名").fill(administratorEmail);
+  await page.getByLabel("管理员密码").fill(temporaryAdminPassword);
+  await page.getByRole("button", { name: "登录管理中心" }).click();
+  await expect(page).toHaveURL(/\/capabilities$/);
   const card = page.getByRole("region", { name: "精密迁移作业" });
   await card.getByText("本地开发认证（生产环境使用企业会话）").click();
   await card.getByLabel("本地租户").fill("local-e2e");

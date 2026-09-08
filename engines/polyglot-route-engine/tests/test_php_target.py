@@ -8,6 +8,7 @@ host without the pinned PHP build must not be able to make them pass.
 from __future__ import annotations
 
 import hashlib
+import json
 
 import pytest
 
@@ -474,6 +475,248 @@ def test_the_php_tree_identity_records_symlinks_instead_of_refusing_them(tmp_pat
     identity = php_tree_identity(root, root.parent, "TEST_UNSAFE")
     assert identity["symlinks"] == {"bin/phar": "phar.phar"}
     assert identity["unbound_symlinks"] == {"pecl": str(outside / "pecl")}
+
+
+def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    receipt = root / "INSTALL_RECEIPT.json"
+    document = {
+        "homebrew_version": "6.0.1",
+        "time": 1,
+        "source_modified_time": 100,
+        "installed_on_request": True,
+        "aliases": ["php@8.5"],
+        "arch": "arm64",
+        "source": {
+            "spec": "stable",
+            "tap": "homebrew/core",
+            "tap_git_head": "a" * 40,
+            "path": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+            "versions": {
+                "stable": "8.5.9",
+                "head": None,
+                "version_scheme": 0,
+                "compatibility_version": 1,
+            },
+        },
+        "runtime_dependencies": [
+            {
+                "full_name": "zlib",
+                "version": "1.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0",
+                "declared_directly": False,
+            },
+            {
+                "full_name": "openssl@3",
+                "version": "3.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "3.0_1",
+                "declared_directly": True,
+            },
+        ],
+    }
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document.update({
+        "homebrew_version": "6.1.0",
+        "time": 2,
+        "source_modified_time": 200,
+        "installed_on_request": False,
+        "aliases": [],
+    })
+    document["source"].update({
+        "spec": None,
+        "tap": "elmos/pinned-route-ci",
+        "tap_git_head": "b" * 40,
+        "path": "/opt/homebrew/Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb",
+        "versions": {
+            "stable": "8.5.9",
+            "head": "HEAD",
+            "version_scheme": 0,
+            "compatibility_version": None,
+        },
+    })
+    document["runtime_dependencies"].reverse()
+    document["runtime_dependencies"][0].update(
+        {"version": "3.1", "revision": 2, "pkg_version": "3.1_2"}
+    )
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert invocation_drift == baseline
+
+    document["arch"] = "x86_64"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
+
+    document["arch"] = "arm64"
+    document["aliases"] = ["php8"]
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["aliases"] = ["php@8.5"]
+    document["source"]["versions"]["head"] = "unexpected-head"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["source"]["versions"].update({
+        "head": "HEAD",
+        "compatibility_version": 0,
+    })
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+
+def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    receipt = root / "INSTALL_RECEIPT.json"
+    document = {
+        "homebrew_version": "6.0.1",
+        "time": 1,
+        "source_modified_time": 100,
+        "source": {
+            "tap": "homebrew/core",
+            "path": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+            "versions": {"stable": "8.5.9"},
+        },
+        "runtime_dependencies": [
+            {
+                "full_name": "alpha",
+                "version": "1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1",
+                "declared_directly": True,
+            },
+            {
+                "full_name": "beta",
+                "version": "2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2",
+                "declared_directly": False,
+            },
+        ],
+    }
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    first: dict[str, dict[str, object]] = {}
+    first_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        receipt_field_digests=first,
+    )
+
+    document["runtime_dependencies"].reverse()
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    second: dict[str, dict[str, object]] = {}
+    second_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        receipt_field_digests=second,
+    )
+
+    assert first_identity == second_identity
+    assert first["runtime_dependencies"]["sha256"] != second["runtime_dependencies"]["sha256"]
+    assert first["runtime_dependencies"]["sorted_sha256"] == second[
+        "runtime_dependencies"
+    ]["sorted_sha256"]
+    assert first["runtime_dependencies"]["unique_count"] == 2
+
+
+def test_php_record_diagnostics_localize_exact_tree_drift(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    stable = root / "stable.txt"
+    drifting = root / "drifting.txt"
+    stable.write_text("stable", encoding="utf-8")
+    drifting.write_text("first", encoding="utf-8")
+    first: dict[str, str] = {}
+    first_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        record_digests=first,
+    )
+
+    drifting.write_text("other", encoding="utf-8")
+    second: dict[str, str] = {}
+    second_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        record_digests=second,
+    )
+
+    assert first_identity["sha256"] != second_identity["sha256"]
+    assert first["stable.txt"] == second["stable.txt"]
+    assert first["drifting.txt"] != second["drifting.txt"]
+    assert len(first["drifting.txt"]) == 16
+
+
+def test_php_tree_normalizes_only_the_spdx_generation_time(tmp_path) -> None:
+    from elmos_polyglot_route.models import RouteError
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    sbom = root / "sbom.spdx.json"
+    document = {
+        "spdxVersion": "SPDX-2.3",
+        "dataLicense": "CC0-1.0",
+        "SPDXID": "SPDXRef-DOCUMENT",
+        "name": "SBOM-SPDX-php-8.5.9",
+        "documentNamespace": "https://formulae.brew.sh/spdx/php-8.5.9.json",
+        "creationInfo": {
+            "created": "2026-09-06T07:01:02Z",
+            "creators": ["Tool: https://github.com/Homebrew/brew@6.0.19"],
+        },
+        "packages": [{"name": "php", "checksum": "first"}],
+    }
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["creationInfo"] = {
+        "created": "2026-09-06T07:03:04Z",
+        "creators": ["Tool: https://github.com/Homebrew/brew@6.0.20-100-gabcdef"],
+    }
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert invocation_drift == baseline
+
+    document["packages"][0]["checksum"] = "other"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
+
+    document["creationInfo"]["created"] = "2026-99-06T07:03:04Z"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["creationInfo"] = {
+        "created": "2026-09-06T07:03:04Z",
+        "creators": ["Tool: unexpected-generator@1.0"],
+    }
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
 
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:

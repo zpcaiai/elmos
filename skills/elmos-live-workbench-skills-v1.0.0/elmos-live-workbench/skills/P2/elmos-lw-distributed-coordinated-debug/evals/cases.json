@@ -1,0 +1,23 @@
+{
+  "skill_id": "LW-27",
+  "cases": [
+    {
+      "id": "LW-27-AC-01",
+      "expectation": "暂停消费者不会造成无限消息重投和资源泄漏。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-27-AC-02",
+      "expectation": "单服务故障触发有界终止。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-27-AC-03",
+      "expectation": "报告区分原程序行为与调试扰动。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    }
+  ]
+}

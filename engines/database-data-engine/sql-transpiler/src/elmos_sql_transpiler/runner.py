@@ -1316,22 +1316,56 @@ def runner_capabilities() -> dict[str, Any]:
     for item in catalog["runners"]:
         rendered = dict(item)
         rendered["runtimeEvidence"] = "NOT_RUN"
-        if item["state"] == "LOCAL_RUNNER_READY":
+        runtime_blocker: str | None = None
+        if item["profileId"] == "postgresql-17.5":
+            if platform.system().lower() != "darwin" or platform.machine() != "arm64":
+                runtime_blocker = "PostgreSQL 17.5 Runner requires the declared darwin-arm64 host."
+            elif version("psycopg") != "3.3.4" or version("psycopg-binary") != "3.3.4":
+                runtime_blocker = "PostgreSQL 17.5 Runner requires exact psycopg-binary 3.3.4."
+            try:
+                if runtime_blocker is not None:
+                    raise RunnerBlockedError(runtime_blocker)
+                runner = PostgreSQLRunner()
+                for executable in ("postgres", "initdb", "pg_ctl"):
+                    binary = runner._binary(executable)
+                    completed = subprocess.run(
+                        [str(binary), "--version"],
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=10.0,
+                    )
+                    observed = (completed.stdout or completed.stderr).strip()
+                    if completed.returncode != 0 or "PostgreSQL) 17.5" not in observed:
+                        runtime_blocker = (
+                            f"Exact PostgreSQL 17.5 executable is unavailable: {executable}."
+                        )
+                        break
+            except (OSError, RunnerBlockedError, subprocess.SubprocessError) as error:
+                runtime_blocker = str(error)
+        if item["state"] == "LOCAL_RUNNER_READY" and runtime_blocker is None:
             ready.append(rendered)
         else:
+            if runtime_blocker is not None:
+                rendered["state"] = "BLOCKED"
+                rendered["reason"] = runtime_blocker
             blocked.append(rendered)
+    ready_profile_ids = {
+        item["profileId"] for item in ready if item["profileId"] in _LOCAL_PROFILE_IDS
+    }
+    ready_routes = [
+        f"{source}--to--{target}"
+        for source in _LOCAL_PROFILE_IDS
+        for target in _LOCAL_PROFILE_IDS
+        if source != target and source in ready_profile_ids and target in ready_profile_ids
+    ]
     return {
         "schemaVersion": "1.0",
         "hostContract": catalog["host"],
         "ready": ready,
         "blocked": blocked,
-        "readyDirectedRoutes": [
-            f"{source}--to--{target}"
-            for source in _LOCAL_PROFILE_IDS
-            for target in _LOCAL_PROFILE_IDS
-            if source != target
-        ],
-        "readyDirectedRouteCount": 6,
+        "readyDirectedRoutes": ready_routes,
+        "readyDirectedRouteCount": len(ready_routes),
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
     }

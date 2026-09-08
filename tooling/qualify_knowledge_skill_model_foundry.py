@@ -54,6 +54,46 @@ LOCAL_SEMANTIC_SKILLS = frozenset(
         "typed-skill-contract",
         "uncertainty-and-abstention-evaluation",
         "workspace-attachment-ownership-fencing",
+        "architecture-decision-record",
+        "capability-taxonomy-governance",
+        "compatibility-matrix-manager",
+        "tenancy-scope-contract",
+        "evidence-contract",
+        "policy-contract",
+        "data-usage-consent-contract",
+        "release-bundle-contract",
+        "repo-org-time-split-builder",
+        "dataset-lineage-and-provenance",
+        "dataset-revocation-unlearning-index",
+        "preference-pair-builder",
+        "active-learning-sample-selection",
+        "semantic-and-ast-deduplication",
+        "skill-transaction-and-rollback",
+        "tenant-policy-aware-retrieval",
+        "build-and-dependency-graph",
+        "semantic-ir-reconciliation",
+        "multi-language-ast-extraction",
+        "api-contract-ingestion",
+        "database-metadata-ingestion",
+        "license-and-rights-classification",
+        "repository-incremental-ingestion",
+        "runtime-trace-ingestion",
+        "source-freshness-and-expiry",
+        "contract-migration-manager",
+        "extension-sdk-and-codegen",
+        "archive-and-folder-ingestion",
+        "document-structure-ingestion",
+        "ingestion-quarantine-gate",
+        "multimodal-artifact-ingestion",
+        "symbol-and-reference-graph",
+        "call-graph-construction",
+        "control-flow-graph",
+        "semantic-diff-and-impact-analysis",
+        "skill-efficiency-evaluation",
+        "skill-output-evaluation",
+        "skill-process-evaluation",
+        "skill-robustness-evaluation",
+        "skill-trigger-evaluation",
     }
 )
 
@@ -67,6 +107,13 @@ DOCS_RECEIPT_PATH = DOCS_ROOT / "QUALIFICATION_RECEIPT.json"
 ROOT_TESTS = Path("tests/knowledge-skill-model-foundry-skills")
 IMPORTER_PATH = Path("tooling/integrate_knowledge_skill_model_foundry_skills.py")
 QUALIFIER_PATH = Path("tooling/qualify_knowledge_skill_model_foundry.py")
+READINESS_PATH = Path("tooling/report_foundry_readiness.py")
+NATIVE_GENERATOR_PATH = Path("tooling/generate_foundry_native_semantics.py")
+EXTERNAL_QUALIFIER_PATH = Path("tooling/run_foundry_external_qualification.py")
+ED25519_BACKEND_PATH = Path(
+    "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
+)
+NATIVE_PROGRAMS_PATH = ENGINE_ROOT / "src/elmos_foundry/native-semantic-programs.json"
 
 IMPLEMENTATION_ROOTS = (
     Path("AGENTS.md"),
@@ -76,6 +123,10 @@ IMPLEMENTATION_ROOTS = (
     ROOT_TESTS,
     IMPORTER_PATH,
     QUALIFIER_PATH,
+    READINESS_PATH,
+    NATIVE_GENERATOR_PATH,
+    EXTERNAL_QUALIFIER_PATH,
+    ED25519_BACKEND_PATH,
 )
 EXCLUDED_PATHS = frozenset(
     {
@@ -85,7 +136,9 @@ EXCLUDED_PATHS = frozenset(
         DOCS_RECEIPT_PATH,
     }
 )
-TRANSIENT_NAMES = frozenset({"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache"})
+TRANSIENT_NAMES = frozenset(
+    {"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv"}
+)
 TRANSIENT_SUFFIXES = (".pyc", ".pyo")
 
 ENGINE_SOURCE = "engines/knowledge-skill-model-foundry-engine/src"
@@ -93,6 +146,18 @@ ENGINE_PACKAGE = f"{ENGINE_SOURCE}/elmos_foundry"
 ENGINE_TESTS = "engines/knowledge-skill-model-foundry-engine/tests"
 ROOT_TESTS_TEXT = ROOT_TESTS.as_posix()
 LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "native_semantic_program_check",
+        "command": ["uv", "run", "--quiet", "python", NATIVE_GENERATOR_PATH.as_posix(), "--check"],
+        "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
+        "timeout_seconds": 300,
+    },
+    {
+        "id": "readiness_inventory_check",
+        "command": ["uv", "run", "--quiet", "python", READINESS_PATH.as_posix(), "--check"],
+        "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
+        "timeout_seconds": 300,
+    },
     {
         "id": "direct_zip_importer_check",
         "command": [
@@ -108,7 +173,9 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "--check",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1"},
-        "timeout_seconds": 300,
+        # Full 7,860-document validation exceeds five minutes under concurrent
+        # local workloads. This remains bounded and executes the same checks.
+        "timeout_seconds": 1200,
     },
     {
         "id": "ruff_static_analysis",
@@ -122,6 +189,9 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "check",
             IMPORTER_PATH.as_posix(),
             QUALIFIER_PATH.as_posix(),
+            READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
             ENGINE_SOURCE,
             ENGINE_TESTS,
             ROOT_TESTS_TEXT,
@@ -141,8 +211,11 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "--strict",
             ENGINE_PACKAGE,
             QUALIFIER_PATH.as_posix(),
+            READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
-        "environment": {"PYTHONPATH": ENGINE_SOURCE},
+        "environment": {"PYTHONPATH": f"{ENGINE_SOURCE}:packages/pi-harness/src"},
         "timeout_seconds": 900,
     },
     {
@@ -158,6 +231,9 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             ENGINE_PACKAGE,
             IMPORTER_PATH.as_posix(),
             QUALIFIER_PATH.as_posix(),
+            READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
         "timeout_seconds": 300,
@@ -168,6 +244,8 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "uv",
             "run",
             "--quiet",
+            "--with-requirements",
+            (ENGINE_ROOT / "requirements-runtime.lock").as_posix(),
             "--with",
             "pyyaml==6.0.2",
             "--with",
@@ -190,6 +268,8 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "uv",
             "run",
             "--quiet",
+            "--with-requirements",
+            (ENGINE_ROOT / "requirements-runtime.lock").as_posix(),
             "--with",
             "pyyaml==6.0.2",
             "--with",
@@ -293,20 +373,91 @@ def implementation_tree(repo_root: Path) -> dict[str, Any]:
     }
 
 
-def _baseline_commit(repo_root: Path) -> str | None:
+def _git_read(repo_root: Path, arguments: Sequence[str]) -> subprocess.CompletedProcess[str]:
+    """Read the selected repository without ambient Git paths or replacement objects."""
+
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    environment.update(
+        {
+            "LC_ALL": "C", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_GRAFT_FILE": os.devnull,
+        }
+    )
     try:
-        result = subprocess.run(
-            ["git", "-C", str(repo_root), "rev-parse", "--verify", "HEAD"],
-            check=True,
+        return subprocess.run(
+            ["git", "--no-replace-objects", "-C", str(repo_root), *arguments],
+            check=False,
             capture_output=True,
             text=True,
             timeout=5,
-            env={**os.environ, "LC_ALL": "C"},
+            env=environment,
         )
-    except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise QualificationError("Git provenance could not be verified") from exc
+
+
+def _valid_commit_id(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _baseline_commit(repo_root: Path) -> str | None:
+    root = repo_root.resolve()
+    metadata_present = any(
+        (directory / ".git").exists() or (directory / ".git").is_symlink()
+        or ((directory / "HEAD").is_file() and (directory / "objects").is_dir())
+        for directory in (root, *root.parents)
+    )
+    try:
+        context = _git_read(repo_root, ("rev-parse", "--git-dir"))
+    except QualificationError as exc:
+        if isinstance(exc.__cause__, FileNotFoundError) and not metadata_present:
+            return None
+        raise
+    if context.returncode != 0:
+        if (
+            context.returncode == 128 and "not a git repository" in context.stderr
+            and not metadata_present
+        ):
+            return None
+        raise QualificationError("Git repository context could not be verified")
+    result = _git_read(repo_root, ("rev-parse", "--verify", "HEAD"))
+    if result.returncode != 0:
+        raise QualificationError("Git qualification requires a committed baseline")
+    commit = result.stdout.strip()
+    if not _valid_commit_id(commit):
+        raise QualificationError("Git HEAD does not identify a supported commit")
+    kind = _git_read(repo_root, ("cat-file", "-t", commit))
+    if kind.returncode != 0 or kind.stdout.strip() != "commit":
+        raise QualificationError("Git HEAD does not identify an existing commit")
+    return commit
+
+
+def _verify_recorded_baseline(repo_root: Path, recorded: Any) -> None:
+    """Keep generation provenance while requiring real ancestry when Git is present.
+
+    The baseline is the starting commit, not the later commit that stores the
+    receipt. It grants no authority and cannot replace any content binding.
+    Archive-only distributions may retain a valid recorded ID without Git;
+    a missing baseline is accepted only outside a Git repository.
+    """
+
+    if recorded is not None and not _valid_commit_id(recorded):
+        raise QualificationError("qualification baseline_commit is invalid")
+    current = _baseline_commit(repo_root)
+    if current is None:
         return None
-    commit = result.stdout.strip().lower()
-    return commit if len(commit) == 40 and all(char in "0123456789abcdef" for char in commit) else None
+    if recorded is None:
+        raise QualificationError("Git qualification receipt requires baseline_commit")
+    kind = _git_read(repo_root, ("cat-file", "-t", recorded))
+    if kind.returncode != 0 or kind.stdout.strip() != "commit":
+        raise QualificationError("qualification baseline_commit is not an existing commit")
+    ancestry = _git_read(repo_root, ("merge-base", "--is-ancestor", recorded, current))
+    if ancestry.returncode != 0:
+        raise QualificationError("qualification baseline_commit is not a verified ancestor of HEAD")
 
 
 def recorded_local_checks() -> list[dict[str, Any]]:
@@ -328,6 +479,7 @@ def run_local_checks(repo_root: Path) -> list[dict[str, Any]]:
     """Actually execute the allowlisted, repository-owned local checks."""
 
     for spec in LOCAL_CHECK_SPECS:
+        print(f"[{spec['id']}] RUN", file=sys.stderr, flush=True)
         environment = {**os.environ, "LC_ALL": "C", **spec["environment"]}
         try:
             result = subprocess.run(
@@ -347,6 +499,11 @@ def run_local_checks(repo_root: Path) -> list[dict[str, Any]]:
             raise QualificationError(
                 f"local check failed ({spec['id']}, exit {result.returncode}): {tail}"
             )
+        if result.stdout:
+            print(result.stdout, end="", file=sys.stderr, flush=True)
+        if result.stderr:
+            print(result.stderr, end="", file=sys.stderr, flush=True)
+        print(f"[{spec['id']}] PASS", file=sys.stderr, flush=True)
     return recorded_local_checks()
 
 
@@ -374,7 +531,10 @@ def _validate_catalog_and_report(
     _require(report.get("external_evidence_status") == "NOT_RUN", "external evidence overclaim")
     _require(report.get("certification_status") == "NOT_CERTIFIED", "certification overclaim")
     _require(
-        report.get("capability_states") == {"LOCAL": 26, "PREPARE_ONLY": 1_284},
+        report.get("capability_states") == {
+            "LOCAL": len(LOCAL_SEMANTIC_SKILLS),
+            "NATIVE": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+        },
         "package report capability-state distribution drift",
     )
 
@@ -405,12 +565,12 @@ def _validate_catalog_and_report(
         all(
             isinstance(row, dict)
             and row.get("capability_state")
-            == ("LOCAL" if row.get("name") in LOCAL_SEMANTIC_SKILLS else "PREPARE_ONLY")
+            == ("LOCAL" if row.get("name") in LOCAL_SEMANTIC_SKILLS else "NATIVE")
             and row.get("semantic_handler_binding")
             == (
                 f"local.{str(row.get('name'))}"
                 if row.get("name") in LOCAL_SEMANTIC_SKILLS
-                else "UNBOUND"
+                else f"native.{str(row.get('name'))}"
             )
             and row.get("external_evidence_status") == "NOT_RUN"
             and row.get("certification_status") == "NOT_CERTIFIED"
@@ -475,8 +635,13 @@ def build_receipt(repo_root: Path) -> dict[str, Any]:
             "applies_to": "BOUNDED_LOCAL_ENGINEERING_IMPLEMENTATION_ONLY",
             "capability_scope": {
                 "compiled_contracts_validated": 1_310,
-                "exact_local_semantic_handlers_exercised": 26,
-                "prepare_only_skills": 1_284,
+                "exact_local_semantic_handlers_exercised": len(LOCAL_SEMANTIC_SKILLS),
+                "exact_native_semantic_programs_validated": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "prepare_only_skills": 0,
+                "exact_integration_bindings_validated": 1_310,
+                "host_route_bound_skills": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "integration_unbound_skills": 0,
+                "pipeline_host_routes_validated": 14,
             },
             "evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
             "evidence_capture": "EXECUTED_BY_WRITE_MODE_ONLY",
@@ -526,7 +691,6 @@ def write_receipts(repo_root: Path, receipt: dict[str, Any]) -> None:
 
 
 def verify_receipts(repo_root: Path, expected: dict[str, Any]) -> None:
-    expected_bytes = _canonical_bytes(expected)
     observed: list[bytes] = []
     for relative in (ENGINE_RECEIPT_PATH, DOCS_RECEIPT_PATH):
         path = repo_root / relative
@@ -534,11 +698,22 @@ def verify_receipts(repo_root: Path, expected: dict[str, Any]) -> None:
             payload = path.read_bytes()
         except OSError as exc:
             raise QualificationError(f"qualification receipt is absent: {relative}") from exc
-        if payload != expected_bytes:
-            raise QualificationError(f"qualification receipt is stale or mismatched: {relative}")
         observed.append(payload)
     if observed[0] != observed[1]:
-        raise QualificationError("dual qualification receipts are not byte-identical")
+        raise QualificationError("dual qualification receipts are stale or mismatched: not byte-identical")
+    try:
+        recorded = json.loads(observed[0])
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise QualificationError("qualification receipt is invalid JSON") from exc
+    if not isinstance(recorded, dict):
+        raise QualificationError("qualification receipt must be a JSON object")
+    baseline = recorded.get("baseline_commit")
+    _verify_recorded_baseline(repo_root, baseline)
+    # Only generation provenance survives a later delivery commit. Every
+    # implementation, archive, catalog and executed-check binding stays exact.
+    expected_bytes = _canonical_bytes({**expected, "baseline_commit": baseline})
+    if observed[0] != expected_bytes:
+        raise QualificationError(f"qualification receipt is stale or mismatched: {ENGINE_RECEIPT_PATH}")
 
 
 def _parser() -> argparse.ArgumentParser:

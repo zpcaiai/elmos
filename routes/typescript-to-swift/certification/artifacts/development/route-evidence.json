@@ -1,0 +1,294 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:98dd12b4d988a0f894c89795865ddf1dbd0be80c407cf9dfad43591c0d7dd2b3",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:82742eb0bef7d6c7171c4d7f846f01e5070e79487855baaa4166c223cf2f7fbb",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:d578035382b0a82267bdf9132bd93ca5338afb2557168d4343d2eb4639031429",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / nodejs-es2022-esm-safe-integer-finite-v1",
+    "formal_input_digest": "sha256:220dcdc98783b7a2c5c74ce5bd1857ee8de3bd86a3f4e157e887c70886ec8c7f",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:220dcdc98783b7a2c5c74ce5bd1857ee8de3bd86a3f4e157e887c70886ec8c7f",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:220dcdc98783b7a2c5c74ce5bd1857ee8de3bd86a3f4e157e887c70886ec8c7f",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:8d90bdad5933ecbc5a72a6f1888b73d6ab7b2bdcba0b7432f68d7f27fa044a1c",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:220dcdc98783b7a2c5c74ce5bd1857ee8de3bd86a3f4e157e887c70886ec8c7f",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:d84316567300a8324e30faeb7ad72191ce30c088de6f6d8346e3dc6f429311a4",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:8d90bdad5933ecbc5a72a6f1888b73d6ab7b2bdcba0b7432f68d7f27fa044a1c",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:7ee5213d0caf5da2c103779f2494ecfe58e34b34b98ea4e39913ca1ce585c684",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:ae3ea13de21c6313037ab6c7b52c60359c734e04368990a70a148663769a303f",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:22b3e54bcf10b71d2aaa5c332039e0008694491afd2b0e225f8e4a2c8a1c725c",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_ec83203006ef6bc0",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.ts",
+      "source_sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:a5a7b84578696e03ba2e231b1104e131ebfd6ea568b08744a2f5fe4904bb0f41"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:884f4029dc6aa6dda5c0e5fe18b5fc3a59ecb672e906286470022df465c8297f",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "typescript-to-swift",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:47597f8105a4afb19a72ee7c2bdc647b06e14b8d9299f9847dc78bf7ebe143af",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:aac6ba5741e88a11f7b5794da8f67aab90f22b189919557f0d38dcd5f9f3b60d",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:7ee5213d0caf5da2c103779f2494ecfe58e34b34b98ea4e39913ca1ce585c684"
+  },
+  "semantic_ir_sha256": "sha256:aac6ba5741e88a11f7b5794da8f67aab90f22b189919557f0d38dcd5f9f3b60d",
+  "source": {
+    "analyzer": "TypeScript Compiler API",
+    "analyzer_version": "5.9.2;analyzer=23361d1947109049e3b3d22424d0443046402a8e6a9e6e658227dc7f3378604a;typescript-parser=e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b;typescript-closure=aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9;node=73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb;node-closure=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b;typescript-profile=2c1920d87bbc8e7f643c2b76fae667ba5d49fa1c2403679f69d3061748405bdf",
+    "function_name": "calculate",
+    "language": "typescript",
+    "path": "pricing.ts",
+    "sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.ts",
+    "artifact_sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+          "dist/source_harness.js"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t405e000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4014000000000000\n"
+      }
+    ],
+    "language": "typescript",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "405e000000000000",
+        "status": "RETURNED",
+        "value": 120.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "4014000000000000",
+        "status": "RETURNED",
+        "value": 5.0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+      "auxiliary_sha256": "8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+      "executable": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+      "executable_sha256": "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+      "language": "typescript",
+      "profile": [
+        "typescript-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "typescript-language-version=5.9.2",
+        "typescript-package-root=/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-closure-sha256=aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9",
+        "typescript-closure-file-count=108",
+        "typescript-closure-bytes=19067381",
+        "typescript-source-manifest-sha256=61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-standard-library-file-count=102",
+        "typescript-launcher-sha256=8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+        "typescript-tsc-shim-sha256=2cffde0b8c6760dfb0b5b0382bbb7e00ba6a8b2d981b9205b256a700a481d983",
+        "typescript-compiler-sha256=a040f97c9d0223f64c8ebc380c5e48eb7945f1142f7c1dc9c3ec4acdb6c1c613",
+        "typescript-parser-sha256=e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b",
+        "typescript-package-json-sha256=5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "typescript-license-sha256=a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+        "node-closure-sha256=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "node-closure-profile=homebrew-node26-libada-77917065434c-616512",
+        "node-topology-sha256=2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd",
+        "node-closure-component-count=25",
+        "node-closure-edge-count=49",
+        "node-closure-system-edge-count=43",
+        "otool-system-tool-content-soundness=NOT_RUN",
+        "dyld-system-library-content-soundness=NOT_RUN",
+        "typescript-compiler-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "5.9.2 / Node 26.0.0"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_ec83203006ef6bc0",
+    "language": "swift",
+    "path": "migrated.swift",
+    "sha256": "sha256:e831d1473b67b4e932a37794affb2c389a30a6cef97fe28dbb5e3bbeb6adc857"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "-swift-version",
+          "6",
+          "-sdk",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-warnings-as-errors",
+          "-o",
+          "route_harness",
+          "migrated.swift",
+          "main.swift"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t405e000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4014000000000000\n"
+      }
+    ],
+    "language": "swift",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "405e000000000000",
+        "status": "RETURNED",
+        "value": 120.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "4014000000000000",
+        "status": "RETURNED",
+        "value": 5.0
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "language": "swift",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "swift-language-mode=6",
+        "integer=Int64"
+      ],
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    }
+  }
+}

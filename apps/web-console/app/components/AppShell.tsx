@@ -21,14 +21,15 @@ const navigation: Array<{
   { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home", group: "user" },
   { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow", group: "user" },
   { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code", group: "user" },
-  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file", group: "user" },
   { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark", group: "user" },
-  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "Vue / React / 小程序 / ArkUI / Flutter", icon: "route", group: "user" },
-  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box", group: "user" },
-  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow", group: "user" },
-  { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route", group: "user" },
-  { href: "/capabilities", label: "功能能力中心", enLabel: "Capability center", hint: "平台能做什么", icon: "test", group: "user" },
-  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans / credits", icon: "layers", group: "user" },
+  { href: "/migration", label: "国产数据库 SQL 转换", enLabel: "ChinaDB SQL conversion", hint: "Migration / ChinaDB SQL", icon: "route", group: "user" },
+  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file", group: "operations" },
+  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "Vue / React / 小程序 / ArkUI / Flutter", icon: "route", group: "operations" },
+  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box", group: "operations" },
+  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow", group: "operations" },
+  { href: "/capabilities", label: "功能能力中心", enLabel: "Capability center", hint: "平台能做什么", icon: "test", group: "operations" },
+  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans / credits", icon: "layers", group: "operations" },
+  { href: "/workbench", label: "实时工作台", enLabel: "Live Workbench", hint: "Read / run / debug / learn", icon: "code", group: "operations" },
   { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings", group: "operations" },
   { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield", group: "operations" },
   { href: "/governance", label: "契约治理与变异", enLabel: "Governance & Mutation", hint: "API diff & Mutate", icon: "route", group: "operations" },
@@ -43,14 +44,14 @@ const operationsSurfaces = new Set(
 );
 
 const mobileNavigation = navigation.filter((item) =>
-  ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/capabilities"].includes(item.href),
+  ["/", "/spring", "/translation", "/generation", "/migration"].includes(item.href),
 );
 
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
   { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
   { href: "/translation", label: "选择跨语言方向路线", hint: "13 语言活动矩阵 · 156 条路线", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 156 routes Java C# Go Rust Python TypeScript C++ Objective-C Swift PHP Kotlin React Flutter" },
-  { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "业务线", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
+  { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "能力", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
   { href: "/migration/sql", label: "运行国产数据库 SQL 预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看扩展市场与签名策略", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "Marketplace 扩展 市场 SDK 签名 撤销" },
@@ -58,6 +59,7 @@ const commands = [
   { href: "/commercialization", label: "查看商业化可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "平台运营", keywords: "租户 runner 证据 授权 商业化 控制面" },
   { href: "/pricing", label: "比较人民币套餐", hint: "免费体验 / 月付 / 年付", icon: "layers" as IconName, group: "商业", keywords: "套餐 价格 人民币 token credit 免费 月付 年付" },
   { href: "/generation", label: "创建多语言项目草稿", hint: "8 种语言 · 多实体 PostgreSQL", icon: "spark" as IconName, group: "能力", keywords: "生成 项目 synthesis Java Python C# TypeScript Go Kotlin PHP Rust 多实体" },
+  { href: "/workbench", label: "打开实时工作台", hint: "固定 10 分钟隔离运行与调试", icon: "code" as IconName, group: "能力", keywords: "workbench 实时 阅读 运行 调试 学习 隔离 sandbox" },
   { href: "/frontend", label: "规划前端技术栈转换", hint: "472 项前端转换功能 / 30 条路线", icon: "route" as IconName, group: "能力", keywords: "前端 Vue React 小程序 ArkUI Flutter 迁移 转换" },
   { href: "/repositories", label: "拉取并修改代码仓库", hint: "GitHub / Gitee / 通用 Git", icon: "box" as IconName, group: "能力", keywords: "仓库 repository GitHub Gitee clone 配置 部署 修改" },
   { href: "/capabilities", label: "查看平台已实现的功能", hint: "按业务域列出实现范围与验证状态", icon: "test" as IconName, group: "功能", keywords: "功能 能力 中心 业务域 实现 验证 覆盖范围" },
@@ -292,26 +294,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link className={`secondary-link ${styles.readableSecondary}`} href="/help"><Icon name="help" size={18} />{english ? "Help and readiness" : "帮助与就绪状态"}</Link>
         </nav>
         <div className="profile-area">
-          <button
-            className="profile-row"
-            type="button"
-            aria-expanded={profileOpen}
-            aria-controls="account-profile-menu"
-            onClick={() => setProfileOpen((open) => !open)}
-          >
-            <span className={`avatar ${hasAdminAccess ? "admin-avatar" : ""}`}>{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
-            <div>
-              <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? (english ? "Local development" : "本地开发模式") : (english ? "Signed out" : "未登录"))}</strong>
-              <small>{account.principal
-                ? `${hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}${account.principal.organizationId}`
-                : (english ? "No enterprise session" : "无企业会话")}</small>
-            </div>
-            <Icon name="chevron" size={16} />
-          </button>
-          {profileOpen && (
-            <div className="profile-menu" id="account-profile-menu">
-              {account.status === "authenticated" && account.principal ? (
-                <>
+          {account.status === "authenticated" && account.principal ? (
+            <>
+              <button
+                className="profile-row"
+                type="button"
+                aria-expanded={profileOpen}
+                aria-controls="account-profile-menu"
+                onClick={() => setProfileOpen((open) => !open)}
+              >
+                <span className={`avatar ${hasAdminAccess ? "admin-avatar" : ""}`}>{account.principal.displayName.slice(0, 1)}</span>
+                <div>
+                  <strong>{account.principal.displayName}</strong>
+                  <small>{hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}{account.principal.organizationId}</small>
+                </div>
+                <Icon name="chevron" size={16} />
+              </button>
+              {profileOpen && (
+                <div className="profile-menu" id="account-profile-menu">
                   <div className="profile-menu-summary">
                     <strong>{account.principal.displayName}</strong>
                     <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
@@ -336,18 +336,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </label>
                   )}
                   <button type="button" onClick={() => void logout()}>{english ? "Sign out securely" : "安全退出"}</button>
-                </>
-              ) : (
-                <>
-                  <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`} onClick={closeSidebar}>
-                    {english ? "User sign in" : "用户登录"}
-                  </Link>
-                  <Link className="profile-admin-login-link" href="/admin/login" onClick={closeSidebar}>
-                    {english ? "Administrator entry" : "管理员入口"}
-                  </Link>
-                </>
+                </div>
               )}
-            </div>
+            </>
+          ) : (
+            <>
+              <a
+                className={`profile-row profile-login-row ${pathname === "/login" ? "active" : ""}`}
+                href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
+                onClick={closeSidebar}
+              >
+                <span className="avatar">访</span>
+                <div>
+                  <strong>{english ? "User sign in" : "用户登录"}</strong>
+                  <small>{english ? "Signed out · click to sign in" : "未登录 · 点击进入登录"}</small>
+                </div>
+                <Icon name="chevron" size={16} />
+              </a>
+            </>
           )}
         </div>
       </aside>
@@ -390,12 +396,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </button>
             ) : (
               <div className="anonymous-login-actions">
-                <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>
+                <a
+                  className={`top-login-link ${pathname === "/login" ? "active" : ""}`}
+                  href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
+                >
                   {english ? "User sign in" : "用户登录"}
-                </Link>
-                <Link className="top-login-link top-admin-login-link" href="/admin/login">
-                  {english ? "Admin" : "管理员入口"}
-                </Link>
+                </a>
               </div>
             )}
           </div>

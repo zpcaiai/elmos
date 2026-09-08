@@ -1,9 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
-const routes = ["/", "/frontend", "/capabilities", "/migration/sql", "/help"] as const;
+const routes = [
+  "/",
+  "/help",
+  "/login",
+  "/register",
+  "/admin/login",
+] as const;
+const administratorRoutes = ["/capabilities", "/frontend"] as const;
+const trustedOidcToken = process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim();
 
-test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
+test.beforeEach(async ({ context }) => {
+  if (trustedOidcToken) {
+    await context.setExtraHTTPHeaders({
+      "x-vercel-trusted-oidc-idp-token": trustedOidcToken,
+    });
+  }
+});
+
+test("deployed console renders its critical public routes and protects administrator routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];
   for (const route of routes) {
     const response = await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -20,7 +36,21 @@ test("deployed console renders its critical public routes", async ({ page }, tes
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle("ELMOS 控制中心");
   await expect(page.getByRole("heading", { name: "四类核心工作空间，一套可验证的交付闭环。" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "功能能力中心" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "功能能力中心" })).toHaveCount(0);
+
+  for (const route of administratorRoutes) {
+    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+    expect(response, `${route} must return an HTTP response`).not.toBeNull();
+    expect(response?.status(), `${route} must fail closed into the administrator login surface`).toBe(200);
+    expect(page.url()).toContain("/admin/login");
+    await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+    observations.push({
+      route,
+      status: response?.status() ?? null,
+      finalPath: new URL(page.url()).pathname,
+      access: "ADMINISTRATOR_SESSION_REQUIRED",
+    });
+  }
 
   const reportPath = testInfo.outputPath("deployment-surface.json");
   await writeFile(reportPath, `${JSON.stringify({
@@ -31,33 +61,6 @@ test("deployed console renders its critical public routes", async ({ page }, tes
     boundary: "DEPLOYMENT_SURFACE_ONLY_NOT_PRODUCTION_CERTIFICATION",
   }, null, 2)}\n`, "utf8");
   await testInfo.attach("deployment-surface", { path: reportPath, contentType: "application/json" });
-});
-
-test("SQL preflight deployment routes exist and fail closed", async ({ request }, testInfo) => {
-  const capabilities = await request.get("/api/capabilities/database-sql");
-  expect(capabilities.status(), "SQL capabilities route must be deployed, not missing").not.toBe(404);
-  expect([200, 401, 403, 503]).toContain(capabilities.status());
-
-  const assessment = await request.post("/api/database-sql/preflight", {
-    data: {},
-    headers: { "content-type": "application/json" },
-  });
-  expect(assessment.status(), "SQL preflight route must be deployed, not missing").not.toBe(404);
-  expect([400, 401, 403, 413, 422, 503]).toContain(assessment.status());
-
-  const reportPath = testInfo.outputPath("sql-preflight-surface.json");
-  await writeFile(reportPath, `${JSON.stringify({
-    schemaVersion: "1.0",
-    kind: "VERCEL_SQL_PREFLIGHT_SURFACE_SMOKE",
-    capabilitiesStatus: capabilities.status(),
-    assessmentStatus: assessment.status(),
-    boundary: "ROUTE_EXISTENCE_AND_FAIL_CLOSED_ONLY",
-    sourceExecution: "NOT_RUN",
-    targetExecution: "NOT_RUN",
-    independentVerification: "NOT_RUN",
-    certification: "NOT_CERTIFIED",
-  }, null, 2)}\n`, "utf8");
-  await testInfo.attach("sql-preflight-surface", { path: reportPath, contentType: "application/json" });
 });
 
 test("health reports readiness honestly and never upgrades blocked dependencies", async ({ page }, testInfo) => {
@@ -90,5 +93,58 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
   if (process.env.ELMOS_VERCEL_REQUIRE_HEALTHY === "true") {
     expect(httpStatus).toBe(200);
     expect(["UP", "READY"]).toContain(payload.status);
+  }
+});
+
+test("deployed console exposes separate provider-backed user and administrator entry points", async ({ page }) => {
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "邮箱验证码登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "微信扫码登录" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute("href", "/admin/login");
+  const passwordInputs = page.getByLabel("密码");
+  expect([0, 1]).toContain(await passwordInputs.count());
+
+  await page.goto("/register", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "注册 ELMOS 账户" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "邮箱注册" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "手机号注册" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "微信扫码注册" })).toBeVisible();
+  await expect(page.locator('form[action="/api/auth/descope/otp/start"] input[name="returnTo"]').first()).toHaveValue("/");
+
+  await page.goto("/admin/login", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+  await expect(page.getByLabel("管理员邮箱")).toHaveValue("zpchoney@gmail.com");
+  await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "微信扫码登录" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "管理员邮箱验证码登录" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "发送管理员验证码" })).toBeVisible();
+
+  const session = await page.evaluate(async () => {
+    const response = await fetch("/api/auth/session", { credentials: "same-origin" });
+    return response.json();
+  }) as { authenticated?: boolean; principal?: { actorId?: string } };
+
+  expect(session.authenticated).toBe(false);
+  expect(session.principal?.actorId).toBeUndefined();
+});
+
+test("deployed console authenticates test/test credential and yields customer session", async ({ page }) => {
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  const testLoginButton = page.getByRole("button", { name: "使用测试账号登录" });
+  if (await testLoginButton.count() > 0) {
+    await page.getByLabel("账号 / 邮箱").fill("test");
+    await page.getByLabel("密码").fill("test");
+    await testLoginButton.click();
+    await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
+
+    const session = await page.evaluate(async () => {
+      const response = await fetch("/api/auth/session", { credentials: "same-origin" });
+      return response.json();
+    }) as { authenticated?: boolean; principal?: { actorId?: string } };
+
+    expect(session.authenticated).toBe(true);
+    expect(session.principal?.actorId).toBe("local:test");
   }
 });

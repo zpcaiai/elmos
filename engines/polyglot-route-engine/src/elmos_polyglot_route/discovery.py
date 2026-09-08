@@ -120,6 +120,16 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"^\s*(?i:function)\s+&?\s*([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)\s*\(",
         re.MULTILINE,
     ),
+    "vb6": re.compile(
+        r"^\s*(?:(?:Public|Private|Friend)\s+)?(?:Static\s+)?Function\s+"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE | re.IGNORECASE,
+    ),
+    "vcpp6": re.compile(
+        r"^\s*(?:(?:static|inline)\s+)*(?:__int64|double|bool|std::string)\s+"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE,
+    ),
 }
 
 
@@ -136,7 +146,9 @@ def propose_candidates(source: bytes, language: Language) -> list[str]:
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        return []
+        if language not in {"vb6", "vcpp6"}:
+            return []
+        text = source.decode("cp1252")
     if language == "python":
         try:
             tree = ast.parse(text)
@@ -180,6 +192,7 @@ _COMMON_SOURCE_REJECTION_CODES = frozenset(
     }
 )
 _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
+    "vb6": frozenset(),
     "python": frozenset(
         {
             "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
@@ -233,14 +246,25 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
     "typescript": frozenset(
         {
             "TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE",
+            "TYPESCRIPT_ASSIGNMENT_TARGET_NOT_DECLARED",
             "TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+            "TYPESCRIPT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_DESTRUCTURED_PARAMETER_UNSUPPORTED",
+            "TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_EXPLICIT_TYPE_REQUIRED",
+            "TYPESCRIPT_FOR_CONDITION_NON_MONOTONIC",
+            "TYPESCRIPT_FOR_IN_OUTSIDE_CERTIFIED_SUBSET",
+            "TYPESCRIPT_FOR_OF_OUTSIDE_CERTIFIED_SUBSET",
+            "TYPESCRIPT_FOR_UPDATE_NON_MONOTONIC",
+            "TYPESCRIPT_FOR_VARIABLE_MUST_BE_LET",
+            "TYPESCRIPT_FOR_VARIABLE_TYPE_INVALID",
             "TYPESCRIPT_FUNCTION_BODY_REQUIRED",
+            "TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_NEGATIVE_ZERO_LITERAL_UNSUPPORTED",
             "TYPESCRIPT_NON_FINITE_LITERAL_UNSUPPORTED",
+            "TYPESCRIPT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_RETURN_EXPRESSION_REQUIRED",
             "TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED",
@@ -248,6 +272,7 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "TYPESCRIPT_UNSUPPORTED_OPERATOR",
             "TYPESCRIPT_UNSUPPORTED_STATEMENT",
             "TYPESCRIPT_UNSUPPORTED_TYPE",
+            "TYPESCRIPT_VAR_DECLARATION_OUTSIDE_CERTIFIED_SUBSET",
         }
     ),
     "javascript": frozenset(
@@ -353,22 +378,44 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
     "swift": frozenset(
         {
             "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED",
+            "SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_ASSIGNMENT_TYPE_MISMATCH",
+            "SWIFT_BREAK_OUTSIDE_LOOP",
             "SWIFT_CALL_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_CONDITION_MUST_BE_BOOLEAN",
+            "SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_CONTINUE_OUTSIDE_LOOP",
             "SWIFT_DEFAULT_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_EXPLICIT_RETURN_TYPE_REQUIRED",
             "SWIFT_EXPLICIT_TYPE_REQUIRED",
             "SWIFT_EXPRESSION_TYPE_UNRESOLVED",
             "SWIFT_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_FOR_CLOSED_RANGE_REJECTED",
+            "SWIFT_FOR_CONDITION_NON_MONOTONIC",
+            "SWIFT_FOR_DOWNTO_REJECTED",
+            "SWIFT_FOR_NON_POSITIVE_STEP_REJECTED",
+            "SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_FOR_VARIABLE_REQUIRED",
+            "SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED",
             "SWIFT_FUNCTION_BODY_REQUIRED",
             "SWIFT_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE",
             "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_LOCAL_INITIALIZER_REQUIRED",
+            "SWIFT_LOCAL_NAME_REQUIRED",
             "SWIFT_OPTIONAL_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_PARAMETER_NAME_REQUIRED",
+            "SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_RETURN_WITHOUT_VALUE",
             "SWIFT_STRING_INTERPOLATION_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_THROWING_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_UNDECLARED_VARIABLE",
             "SWIFT_UNSIGNED_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "SWIFT_UNSUPPORTED_CONDITION",
             "SWIFT_UNSUPPORTED_EXPRESSION",
@@ -380,18 +427,34 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
     ),
     "php": frozenset(
         {
+            "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
+            "PHP_BREAK_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_BREAK_OUTSIDE_LOOP",
             "PHP_BY_REFERENCE_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_CLOSURE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_CONTINUE_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_CONTINUE_OUTSIDE_LOOP",
             "PHP_DEFAULT_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_DO_WHILE_REJECTED",
             "PHP_DYNAMIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_EXPLICIT_PARAMETER_TYPE_REQUIRED",
             "PHP_EXPLICIT_RETURN_TYPE_REQUIRED",
+            "PHP_FOR_BLOCK_BODY_REQUIRED",
+            "PHP_FOR_CLOSED_RANGE_REJECTED",
+            "PHP_FOR_CONDITION_NON_MONOTONIC",
+            "PHP_FOR_DOWNTO_REJECTED",
+            "PHP_FOR_NON_POSITIVE_STEP_REJECTED",
+            "PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_FOR_VARIABLE_REQUIRED",
             "PHP_INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE",
             "PHP_LOOSE_COMPARISON_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_REFERENCE_RETURN_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_STRICT_TYPES_DECLARATION_REQUIRED",
             "PHP_STRING_INTERPOLATION_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_UNDECLARED_NAME",
             "PHP_UNION_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "PHP_UNSUPPORTED_CONDITION",
             "PHP_UNSUPPORTED_EXPRESSION",
@@ -399,14 +462,27 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "PHP_UNSUPPORTED_STATEMENT",
             "PHP_UNSUPPORTED_TYPE",
             "PHP_VARIADIC_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_WHILE_BLOCK_BODY_REQUIRED",
         }
     ),
     "kotlin": frozenset(
         {
+            "KOTLIN_ASSIGNMENT_TARGET_NOT_DECLARED",
+            "KOTLIN_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_ASSIGNMENT_VALUE_REQUIRED",
             "KOTLIN_BLOCK_BODY_REQUIRED",
+            "KOTLIN_BREAK_OUTSIDE_LOOP",
+            "KOTLIN_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_CONTINUE_OUTSIDE_LOOP",
             "KOTLIN_DEFAULT_ARGUMENT_UNSUPPORTED",
             "KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
             "KOTLIN_EXPLICIT_TYPE_REQUIRED",
+            "KOTLIN_FOR_BLOCK_BODY_REQUIRED",
+            "KOTLIN_FOR_CONDITION_NON_MONOTONIC",
+            "KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_FOR_VARIABLE_REQUIRED",
+            "KOTLIN_FOR_VARIABLE_TYPE_UNSUPPORTED",
             "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
             "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
             "KOTLIN_IF_BLOCK_BODY_REQUIRED",
@@ -414,12 +490,16 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "KOTLIN_IF_THEN_REQUIRED",
             "KOTLIN_INVALID_ESCAPE",
             "KOTLIN_INVALID_LITERAL",
+            "KOTLIN_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
             "KOTLIN_LABELED_RETURN_UNSUPPORTED",
             "KOTLIN_LOCAL_INITIALIZER_REQUIRED",
             "KOTLIN_LOCAL_NAME_REQUIRED",
             "KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
             "KOTLIN_NON_FINITE_LITERAL",
             "KOTLIN_PARAMETER_NAME_REQUIRED",
+            "KOTLIN_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "KOTLIN_RETURN_EXPRESSION_REQUIRED",
             "KOTLIN_STRING_INTERPOLATION_UNSUPPORTED",
             "KOTLIN_SUSPEND_FUNCTION_UNSUPPORTED",
@@ -428,6 +508,8 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "KOTLIN_UNSUPPORTED_STATEMENT",
             "KOTLIN_UNSUPPORTED_TYPE",
             "KOTLIN_VARARG_UNSUPPORTED",
+            "KOTLIN_WHILE_BLOCK_BODY_REQUIRED",
+            "KOTLIN_WHILE_CONDITION_REQUIRED",
         }
     ),
     "react": frozenset(
@@ -465,21 +547,37 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "DART_BLOCK_BODY_REQUIRED",
             "DART_CONDITION_MUST_BE_BOOLEAN",
             "DART_DIRECTIVE_UNSUPPORTED",
+            "DART_ASSIGNMENT_TARGET_NOT_DECLARED",
+            "DART_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_ASSIGNMENT_TYPE_MISMATCH",
+            "DART_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
             "DART_DUPLICATE_PARAMETER",
             "DART_ELSE_BLOCK_BODY_REQUIRED",
             "DART_EXPLICIT_LOCAL_TYPE_REQUIRED",
             "DART_EXPLICIT_PARAMETER_TYPE_REQUIRED",
             "DART_EXPLICIT_RETURN_TYPE_REQUIRED",
             "DART_EXTERNAL_OR_AUGMENT_FUNCTION_UNSUPPORTED",
+            "DART_FOR_BLOCK_BODY_REQUIRED",
+            "DART_FOR_CONDITION_NON_MONOTONIC",
+            "DART_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_FOR_IN_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_FOR_PARTS_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_FOR_UPDATE_NON_MONOTONIC",
+            "DART_FOR_VARIABLE_TYPE_INVALID",
             "DART_FUNCTION_ANNOTATION_UNSUPPORTED",
             "DART_FUNCTION_BODY_EMPTY",
             "DART_GENERIC_FUNCTION_UNSUPPORTED",
             "DART_IF_BLOCK_BODY_REQUIRED",
             "DART_IF_CASE_UNSUPPORTED",
+            "DART_INCREMENT_REQUIRES_INTEGER",
             "DART_INTEGER_LITERAL_OUT_OF_RANGE",
             "DART_INTEGER_TRUE_DIVISION_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
             "DART_LANGUAGE_VERSION_OVERRIDE_UNSUPPORTED",
             "DART_LOCAL_INITIALIZER_REQUIRED",
+            "DART_LOCAL_MODIFIERS_UNSUPPORTED",
             "DART_LOCAL_MUST_BE_FINAL",
             "DART_LOCAL_NAME_ALREADY_BOUND",
             "DART_LOCAL_TYPE_MISMATCH",
@@ -489,6 +587,7 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "DART_OPERAND_TYPE_MISMATCH",
             "DART_PARAMETER_LIST_REQUIRED",
             "DART_PARAMETER_NAME_REQUIRED",
+            "DART_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "DART_PARAMETER_SHAPE_UNSUPPORTED",
             "DART_PARSE_FAILED",
             "DART_PROPERTY_FUNCTION_UNSUPPORTED",
@@ -498,10 +597,13 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "DART_TRUNCATING_DIVISION_REQUIRES_INTEGER_OPERANDS",
             "DART_UNARY_MINUS_LITERAL_REQUIRED",
             "DART_UNDECLARED_NAME",
+            "DART_UNSUPPORTED_COMPOUND_ASSIGN_OPERATOR",
             "DART_UNSUPPORTED_EXPRESSION",
+            "DART_UNSUPPORTED_INCREMENT_OPERATOR",
             "DART_UNSUPPORTED_OPERATOR",
             "DART_UNSUPPORTED_STATEMENT",
             "DART_UNSUPPORTED_TYPE",
+            "DART_WHILE_BLOCK_BODY_REQUIRED",
             "FLUTTER_UI_OR_EFFECTFUL_CALL_UNSUPPORTED",
             "FLUTTER_UI_SEMANTICS_UNSUPPORTED",
         }
@@ -534,6 +636,14 @@ def _analyzer_failure_verdict(error: Exception, language: Language) -> str:
     primary_code = diagnostic.partition(":")[0]
     if re.fullmatch(r"[A-Z][A-Z0-9_]*", primary_code) is None:
         return Verdict.NOT_RUN
+    if language == "vb6" and primary_code.startswith("VB6_"):
+        if primary_code in {"VB6_SOURCE_CHANGED_DURING_READ", "VB6_EXPRESSION_SOURCE_SPAN_REQUIRED"}:
+            return Verdict.NOT_RUN
+        return Verdict.UNSUPPORTED
+    if language == "vcpp6" and primary_code.startswith("VCPP6_"):
+        if primary_code in {"VCPP6_SOURCE_CHANGED_DURING_READ", "VCPP6_EXPRESSION_SOURCE_SPAN_REQUIRED"}:
+            return Verdict.NOT_RUN
+        return Verdict.UNSUPPORTED
     allowed = _COMMON_SOURCE_REJECTION_CODES | _SOURCE_REJECTION_CODES[language]
     return Verdict.UNSUPPORTED if primary_code in allowed else Verdict.NOT_RUN
 
@@ -716,6 +826,83 @@ def _read_work_unit_source(
         return None
     except ValueError as error:
         raise RouteError(f"WORK_UNIT_PATH_ESCAPES_REPOSITORY:{relative}") from error
+
+    if os.name == "nt":
+        try:
+            path_before = resolved.lstat()
+            if resolved.is_symlink() or not stat.S_ISREG(path_before.st_mode):
+                raise RouteError(f"WORK_UNIT_SOURCE_NOT_REGULAR:{relative}")
+            if path_before.st_size > MAX_FILE_BYTES:
+                raise RouteError(f"WORK_UNIT_SOURCE_TOO_LARGE:{relative}")
+            file_fd = os.open(
+                resolved,
+                os.O_RDONLY | int(getattr(os, "O_BINARY", 0)),
+            )
+            try:
+                before = os.fstat(file_fd)
+                if not stat.S_ISREG(before.st_mode):
+                    raise RouteError(f"WORK_UNIT_SOURCE_NOT_REGULAR:{relative}")
+                chunks: list[bytes] = []
+                remaining = before.st_size
+                while remaining:
+                    chunk = os.read(file_fd, min(remaining, 64 * 1024))
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    remaining -= len(chunk)
+                content = b"".join(chunks)
+                after = os.fstat(file_fd)
+            finally:
+                os.close(file_fd)
+            path_after = resolved.lstat()
+        except OSError as error:
+            raise RouteError(f"WORK_UNIT_SOURCE_OPEN_UNSAFE:{relative}") from error
+        descriptor_identity = (
+            before.st_dev,
+            before.st_ino,
+            before.st_mode,
+            before.st_size,
+            before.st_mtime_ns,
+            before.st_ctime_ns,
+        )
+        path_identity = (
+            path_before.st_dev,
+            path_before.st_ino,
+            path_before.st_mode,
+            path_before.st_size,
+            path_before.st_mtime_ns,
+            path_before.st_ctime_ns,
+        )
+        attachment_identity = descriptor_identity[:-1]
+        if (
+            descriptor_identity
+            != (
+                after.st_dev,
+                after.st_ino,
+                after.st_mode,
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
+            )
+            or path_identity
+            != (
+                path_after.st_dev,
+                path_after.st_ino,
+                path_after.st_mode,
+                path_after.st_size,
+                path_after.st_mtime_ns,
+                path_after.st_ctime_ns,
+            )
+            # Windows reports creation/change time with different precision
+            # through a pathname and an open descriptor.  The stable pathname
+            # identity above retains ctime; attachment uses the fields whose
+            # semantics are identical across both APIs.
+            or attachment_identity != path_identity[:-1]
+            or len(content) != before.st_size
+            or resolved.resolve(strict=True) != resolved
+        ):
+            raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{relative}")
+        return resolved, content
 
     no_follow = int(getattr(os, "O_NOFOLLOW", 0))
     directory_flags = os.O_RDONLY | int(getattr(os, "O_DIRECTORY", 0)) | no_follow
@@ -1333,10 +1520,9 @@ def discover_repository(
                 blocker_verdict = blocker.get("verdict", Verdict.UNSUPPORTED)
                 if blocker_verdict not in {Verdict.UNSUPPORTED, Verdict.NOT_RUN}:
                     raise RouteError("DISCOVERY_BLOCKER_VERDICT_INVALID")
-                blocker_symbol = (
-                    blocker.get("source_symbol")
-                    if isinstance(blocker.get("source_symbol"), dict)
-                    else {}
+                raw_blocker_symbol = blocker.get("source_symbol")
+                blocker_symbol: dict[str, Any] = (
+                    raw_blocker_symbol if isinstance(raw_blocker_symbol, dict) else {}
                 )
                 blocker_name = str(
                     blocker.get("function_name")
@@ -1497,7 +1683,9 @@ def _candidate_inventory(source: bytes, language: Language) -> tuple[list[str], 
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        return [], False, "SOURCE_NOT_UTF8"
+        if language not in {"vb6", "vcpp6"}:
+            return [], False, "SOURCE_NOT_UTF8"
+        text = source.decode("cp1252")
     if language == "python":
         try:
             tree = ast.parse(text)

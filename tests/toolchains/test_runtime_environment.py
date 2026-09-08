@@ -181,7 +181,11 @@ def _valid_route_receipt(monkeypatch: pytest.MonkeyPatch) -> dict:
             "profile": (
                 [f"react-dependency-profile-sha256={dependency_profile_sha256}"]
                 if language == "react"
-                else [f"fixture-profile={language}"]
+                else (
+                    ["kotlin-jvm-distribution=homebrew"]
+                    if language == "kotlin"
+                    else [f"fixture-profile={language}"]
+                )
             ),
             "executable_sha256": "3" * 64,
             "auxiliary_sha256": None,
@@ -241,6 +245,9 @@ def _valid_route_receipt(monkeypatch: pytest.MonkeyPatch) -> dict:
             for language in runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES
         },
         "record_sha256": record_sha256,
+        "profile_overrides": (
+            runtime_environment.EXACT_TOOLCHAIN_PROFILE_OVERRIDES
+        ),
     }
     contract_sha256 = runtime_environment._route_receipt_digest(
         contract_document
@@ -299,6 +306,7 @@ def test_exact_toolchain_contract_authority_is_complete_and_self_consistent() ->
     assert runtime_environment.EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION == "1.1.0"
     assert tuple(runtime_environment.EXACT_TOOLCHAIN_VERSIONS) == active
     assert tuple(runtime_environment.EXACT_TOOLCHAIN_RECORD_SHA256) == active
+    assert set(runtime_environment.EXACT_TOOLCHAIN_PROFILE_OVERRIDES) == {"kotlin"}
     assert runtime_environment.EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES == (
         "javascript",
     )

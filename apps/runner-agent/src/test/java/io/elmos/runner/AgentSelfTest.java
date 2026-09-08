@@ -35,11 +35,13 @@ public final class AgentSelfTest {
             progressProtocolIsParsed();
             backoffStaysInBounds();
             nodeCredentialSurvivesRestart(scratch);
+            ProcessRunnerConcurrencyTest.main(new String[0]);
 
             endToEndSuccess(scratch);
             cancellationKillsTheContainer(scratch);
             stolenLeaseIsAbandonedWithoutReporting(scratch);
             drainStopsClaiming(scratch);
+            capacityIsReservedBeforeClaimAndReleasedOnDrain(scratch);
             workspaceAccessIsProvenAtStartup(scratch);
             networkPartitionFencesTheJob(scratch);
             realContainerRoundTrip(scratch);
@@ -359,6 +361,37 @@ public final class AgentSelfTest {
             check("abandoned job reports nothing", plane.completions.isEmpty());
             check("abandoned job publishes nothing", plane.published.isEmpty());
             check("abandoned job cleans its workspace", !Files.exists(work.resolve("job-stolen")));
+        }
+    }
+
+    static void capacityIsReservedBeforeClaimAndReleasedOnDrain(Path scratch) throws Exception {
+        try (FakeControlPlane plane = new FakeControlPlane()) {
+            Path work = Files.createTempDirectory(scratch, "claim-reservation");
+            AgentConfig config = engineConfig(plane.baseUrl(), work, fakeEngine(scratch, "engine-reserved.sh", 0, 0));
+            var metrics = new AgentMetrics();
+            var client = new ControlPlaneClient(config);
+            var executor = new JobExecutor(config, client,
+                    new ContainerRuntime(config, new ProcessRunner.Os()), new ArtifactPublisher(client, metrics), metrics);
+            var arrived = new java.util.concurrent.CountDownLatch(1);
+            var release = new java.util.concurrent.CountDownLatch(1);
+            plane.beforeClaimResponse = () -> {
+                arrived.countDown();
+                try { release.await(); }
+                catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
+            };
+            plane.enqueueLease("job-reserved", "lease-reserved", pinned(), 60);
+            try (var poller = new LeasePoller(config, client, executor, metrics);
+                 var thread = java.util.concurrent.Executors.newSingleThreadExecutor()) {
+                var future = thread.submit(() -> { poller.pollOnce(); return null; });
+                try {
+                    check("claim reached control plane", arrived.await(10, java.util.concurrent.TimeUnit.SECONDS));
+                    check("capacity reserved before HTTP claim returns", poller.runningJobs() == Math.min(config.maxConcurrency(), config.claimBatchSize()));
+                    poller.requestDrain();
+                } finally { release.countDown(); }
+                future.get(15, java.util.concurrent.TimeUnit.SECONDS);
+                check("late claim after drain releases all reserved capacity", poller.runningJobs() == 0);
+                check("late claim after drain publishes nothing", plane.published.isEmpty() && plane.completions.isEmpty());
+            }
         }
     }
 

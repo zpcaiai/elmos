@@ -586,10 +586,12 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             current = []
             if chunk:
                 try:
-                    stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
-                    if isinstance(stmt, exp.Expression):
-                        statements.append(stmt)
-                    else:  # pragma: no cover - sqlglot currently returns Expression
+                    parsed_statement = sqlglot.parse_one(
+                        chunk, read=source_dialect.value
+                    )
+                    if isinstance(parsed_statement, exp.Expression):
+                        statements.append(parsed_statement)
+                    else:
                         statements.append(exp.Command(this=chunk))
                 except Exception:
                     statements.append(exp.Command(this=chunk))
@@ -597,10 +599,12 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
         chunk = " ".join(current).rstrip(";").strip()
         if chunk:
             try:
-                stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
-                if isinstance(stmt, exp.Expression):
-                    statements.append(stmt)
-                else:  # pragma: no cover - sqlglot currently returns Expression
+                parsed_statement = sqlglot.parse_one(
+                    chunk, read=source_dialect.value
+                )
+                if isinstance(parsed_statement, exp.Expression):
+                    statements.append(parsed_statement)
+                else:
                     statements.append(exp.Command(this=chunk))
             except Exception:
                 statements.append(exp.Command(this=chunk))
@@ -680,18 +684,13 @@ def parse_procedure(
                 "CERTIFIED_ROUTINE_ASSIGNMENT_TARGET",
                 f"{target_name!r} must be an OUT or INOUT parameter",
             )
-            value_expression = item.expression
-            _require(
-                isinstance(value_expression, exp.Expression),
-                "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
-                "procedure assignment value is malformed",
-            )
-            assert isinstance(value_expression, exp.Expression)
-            value = _parse_value(value_expression, parameter_map, source_dialect)
+            value = _parse_value(item.expression, parameter_map, source_dialect)
             assignments.append(RoutineAssignment(target_name, value))
         elif isinstance(item, exp.Rollback):
             sp_id = item.args.get("savepoint")
-            sp_name = str(sp_id.this if sp_id is not None and hasattr(sp_id, "this") else (sp_id or ""))
+            sp_name = str(
+                sp_id.this if isinstance(sp_id, exp.Expression) else (sp_id or "")
+            )
             if not sp_name:
                 tokens = item.sql().split()
                 sp_name = tokens[-1].rstrip(";")
@@ -1572,8 +1571,8 @@ def emit_comment(
                     "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                     f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
                 )
-            function_name = _object_name(comment.schema, comment.object_name, target_dialect)
-            return f"-- COMMENT ON FUNCTION {function_name} IS '{escaped}'"
+            qualified = _object_name(comment.schema, comment.object_name, target_dialect)
+            return f"-- COMMENT ON FUNCTION {qualified} IS '{escaped}'"
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.MYSQL:
@@ -1718,20 +1717,19 @@ def emit_privilege(
         if target_dialect is Dialect.POSTGRES:
             object_clause = f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
         else:
-            if not allow_privilege_shim and (routine_catalog is None or privilege.routine_argument_type_refs is None):
-                raise DialectError(
-                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                    f"{target_dialect.value} routine privileges cannot safely drop the source "
-                    "signature without a target routine-identity catalogue",
-                )
             if not allow_privilege_shim:
-                assert routine_catalog is not None
-                assert privilege.routine_argument_type_refs is not None
+                argument_type_refs = privilege.routine_argument_type_refs
+                if routine_catalog is None or argument_type_refs is None:
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                        f"{target_dialect.value} routine privileges cannot safely drop the source "
+                        "signature without a target routine-identity catalogue",
+                    )
                 if not routine_catalog.has_unique_routine(
                     privilege.object_kind,
                     privilege.schema,
                     privilege.object_name,
-                    privilege.routine_argument_type_refs,
+                    argument_type_refs,
                 ):
                     raise DialectError(
                         "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
@@ -2057,9 +2055,9 @@ def emit_trigger(trigger: Trigger, target_dialect: Dialect, allow_trigger_shim: 
             f"EXECUTE FUNCTION {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}()"
         )
     if target_dialect is Dialect.ORACLE:
-        trigger_name = quote_identifier(trigger.name, target_dialect)
         return (
-            f"CREATE OR REPLACE TRIGGER {trigger_name} {trigger.timing.value} {events} ON "
+            f"CREATE OR REPLACE TRIGGER {quote_identifier(trigger.name, target_dialect)} "
+            f"{trigger.timing.value} {events} ON "
             f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
             f"BEGIN {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}(); END;"
         )

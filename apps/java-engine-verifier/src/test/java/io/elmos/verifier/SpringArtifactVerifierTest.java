@@ -1,6 +1,7 @@
 package io.elmos.verifier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.FileNonceStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -48,7 +49,11 @@ class SpringArtifactVerifierTest {
                 "verifier-a",
                 input,
                 evidence,
-                new VerifierAuthentication(SECRET, clock, 90),
+                new VerifierAuthentication(
+                        SECRET,
+                        clock,
+                        90,
+                        new FileNonceStore(temporary.toRealPath().resolve("auth-replay"), clock)),
                 maven,
                 json,
                 clock
@@ -169,7 +174,12 @@ class SpringArtifactVerifierTest {
                 "verifier-a",
                 input,
                 evidence,
-                new VerifierAuthentication(SECRET, clock, 90),
+                new VerifierAuthentication(
+                        SECRET,
+                        clock,
+                        90,
+                        new FileNonceStore(
+                                temporary.toRealPath().resolve("java17-auth-replay"), clock)),
                 Map.of("17", fakeMaven()),
                 json,
                 clock

@@ -17,20 +17,8 @@ import skill_creator_tools
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "agent-skills" / "runtime"
-SKILL_CREATOR = Path("/Users/stephen/.codex/skills/.system/skill-creator")
-GENERATOR = SKILL_CREATOR / "scripts" / "generate_openai_yaml.py"
-VALIDATOR = SKILL_CREATOR / "scripts" / "quick_validate.py"
-
-
 def load_validator():
-    if not VALIDATOR.is_file():
-        return skill_creator_tools.validate_skill
-    spec = importlib.util.spec_from_file_location("elmos_runtime_skill_validator", VALIDATOR)
-    if spec is None or spec.loader is None:
-        raise SystemExit(f"Cannot load official Skill validator: {VALIDATOR}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.validate_skill
+    return skill_creator_tools.validate_skill
 
 
 def main() -> None:

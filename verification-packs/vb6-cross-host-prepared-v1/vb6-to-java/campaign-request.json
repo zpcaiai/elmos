@@ -1,0 +1,124 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "corpora": [
+    {
+      "artifacts": [
+        {
+          "bytes": 220,
+          "path": "development/inputs/pricing.bas",
+          "sha256": "sha256:ed7bfea8256643c07272b9108923ca220dc21260e83c61438b3cb011c6fbdeed"
+        },
+        {
+          "bytes": 151,
+          "path": "development/inputs/cases.json",
+          "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+        },
+        {
+          "bytes": 221,
+          "path": "development/inputs/Migrated.java",
+          "sha256": "sha256:744207d5e9b5aa6ca5f30f725c2911be9378b4693aee285a0bdaa7e4e6d3abc6"
+        },
+        {
+          "bytes": 3044,
+          "path": "development/inputs/semantic-ir.json",
+          "sha256": "sha256:f8576087de7c72528468c0c09b50ab3df8acced74cca897673b7731ebc5b1c7b"
+        },
+        {
+          "bytes": 3077,
+          "path": "development/inputs/identifier-plan.json",
+          "sha256": "sha256:39fb11ecf48e701e581655294a698395e913750821ad013676c3c5528cbb2da7"
+        },
+        {
+          "bytes": 2058,
+          "path": "development/non-vb6-side/side-report.json",
+          "sha256": "sha256:776fa9c0ee14552ff717edb1b355ae5e06f659bb300b2f81d7be1c8b4da55aef"
+        }
+      ],
+      "corpus": "development",
+      "function_name": "calculate",
+      "local_role": "target"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 276,
+          "path": "holdout/inputs/clamp.bas",
+          "sha256": "sha256:4b22911bb8be106b075b1bf34a941b70468da817ac2f803258ee6050360dd2cd"
+        },
+        {
+          "bytes": 150,
+          "path": "holdout/inputs/cases.json",
+          "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+        },
+        {
+          "bytes": 261,
+          "path": "holdout/inputs/Migrated.java",
+          "sha256": "sha256:3fb0c2e121d3b27e28e4babf13dcbf78e5dcefe87bb3e387f71137f6a527a67d"
+        },
+        {
+          "bytes": 3962,
+          "path": "holdout/inputs/semantic-ir.json",
+          "sha256": "sha256:1ae032a6adb336e9f6e7921abb237ec8b11acfe299c25e18dd24d8217526aee0"
+        },
+        {
+          "bytes": 3064,
+          "path": "holdout/inputs/identifier-plan.json",
+          "sha256": "sha256:765636954a4049b25347b432915e5f409e2d53dd40dd01ff875a513f909c69be"
+        },
+        {
+          "bytes": 2055,
+          "path": "holdout/non-vb6-side/side-report.json",
+          "sha256": "sha256:720ccf15b3237b83170dadbe36af0d004567da0fc29ca9b47d5a458690e3ebd1"
+        }
+      ],
+      "corpus": "holdout",
+      "function_name": "clamp",
+      "local_role": "target"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 218,
+          "path": "real-repository/inputs/difference.bas",
+          "sha256": "sha256:fd03600ba4ecf9abb8ce3d0a5ee05e8656d2b8b88cf76d49abfba5b2b9536590"
+        },
+        {
+          "bytes": 146,
+          "path": "real-repository/inputs/cases.json",
+          "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+        },
+        {
+          "bytes": 222,
+          "path": "real-repository/inputs/Migrated.java",
+          "sha256": "sha256:e7c65dc471e9e060782ef20eadefb53a31658b5eb55e713ede36bead75525971"
+        },
+        {
+          "bytes": 3076,
+          "path": "real-repository/inputs/semantic-ir.json",
+          "sha256": "sha256:547fa5ef45264e63eed2cde332860e39029426c1a98fe7954d36728bd7913fab"
+        },
+        {
+          "bytes": 3076,
+          "path": "real-repository/inputs/identifier-plan.json",
+          "sha256": "sha256:21e4d97c0697bd63e3ef2c1899fd89e22129073437be21bab70a572762e971dd"
+        },
+        {
+          "bytes": 2055,
+          "path": "real-repository/non-vb6-side/side-report.json",
+          "sha256": "sha256:190e90740545fee9fdd5fbe167b2219566a9cf134be8c39fb174fa503b9ca35c"
+        }
+      ],
+      "corpus": "real-repository",
+      "function_name": "difference",
+      "local_role": "target"
+    }
+  ],
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.vb6-cross-host-campaign-request",
+  "prepared_side_status": "PASSED_LOCAL",
+  "route_key": "vb6-to-java",
+  "schema_version": 1,
+  "source_language": "vb6",
+  "target_language": "java",
+  "windows_vb6_side_status": "NOT_RUN"
+}

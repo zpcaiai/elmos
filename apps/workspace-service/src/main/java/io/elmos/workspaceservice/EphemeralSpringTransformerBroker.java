@@ -9,6 +9,7 @@ import com.github.dockerjava.api.model.Capability;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Volume;
 import io.elmos.workspace.WorkspaceInfrastructurePorts;
+import io.elmos.security.SpringHmacProtocol;
 
 import java.io.IOException;
 import java.net.URI;
@@ -196,6 +197,7 @@ final class EphemeralSpringTransformerBroker {
                     .withUser("10001:10001")
                     .withEnv(
                             "ELMOS_TRANSFORMER_HMAC_SECRET_VALUE=" + secretValue,
+                            "ELMOS_TRANSFORMER_REPLAY_ROOT=/workspace/run/.auth-replay",
                             "ELMOS_ALLOWED_GIT_HOSTS=" + allowedGitHosts,
                             "HTTPS_PROXY=" + egressProxyUrl,
                             "https_proxy=" + egressProxyUrl,
@@ -259,7 +261,12 @@ final class EphemeralSpringTransformerBroker {
                 .header("X-ELMOS-Transformer-Timestamp", timestamp)
                 .header("X-ELMOS-Transformer-Nonce", nonce)
                 .header("X-ELMOS-Transformer-Signature",
-                        SpringRuntimeAuthentication.sign(secretBytes, timestamp, nonce, body))
+                        SpringRuntimeAuthentication.sign(
+                                secretBytes,
+                                SpringHmacProtocol.Role.TRANSFORMER,
+                                timestamp,
+                                nonce,
+                                body))
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                 .build();
         try {

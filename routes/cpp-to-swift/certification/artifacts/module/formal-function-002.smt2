@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:d2bcd84e466f1c8fecb8778b03a8b2c5c5226b04415e41dda0e0da5ed1639328
-; formal-input-sha256: sha256:d2bcd84e466f1c8fecb8778b03a8b2c5c5226b04415e41dda0e0da5ed1639328
+; formal_input_digest: sha256:e668a67252937be31740a217287dc4caea0e0e3aa38e0f0a671b87af17d15754
+; formal-input-sha256: sha256:e668a67252937be31740a217287dc4caea0e0e3aa38e0f0a671b87af17d15754
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -22,23 +22,23 @@
 (assert
  (= source_maximum target_maximum))
 (assert
- (let (($x5222 (bvsgt source_value source_maximum)))
- (let ((?x4537 (ite $x5222 0 0)))
- (let ((?x178 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1187 (and (distinct ?x178 0) true)))
- (let (($x5171 (bvslt source_value source_minimum)))
- (let ((?x21 (ite $x5171 0 (ite $x1187 ?x178 ?x4537))))
- (let ((?x5217 (ite $x1187 ?x178 ?x21)))
- (= ?x5217 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
- (let (($x5222 (bvsgt source_value source_maximum)))
- (let ((?x4537 (ite $x5222 0 0)))
- (let ((?x178 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x1187 (and (distinct ?x178 0) true)))
- (let (($x5171 (bvslt source_value source_minimum)))
- (let ((?x21 (ite $x5171 0 (ite $x1187 ?x178 ?x4537))))
- (let ((?x5217 (ite $x1187 ?x178 ?x21)))
- (= ?x5217 0)))))))))
+ (let (($x40 (bvsgt source_value source_maximum)))
+ (let ((?x155 (ite $x40 0 0)))
+ (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x16 (and (distinct ?x73 0) true)))
+ (let (($x67 (bvslt source_value source_minimum)))
+ (let ((?x24 (ite $x67 0 (ite $x16 ?x73 ?x155))))
+ (let ((?x43 (ite $x16 ?x73 ?x24)))
+ (= ?x43 0)))))))))
 (assert
  false)
 (check-sat)

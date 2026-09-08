@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sandbox Network Policy"
+  short_description: "Enforce default deny workspace egress"
+  default_prompt: "Use $sandbox-network-policy to implement or review this ELMOS Batch 2 capability."

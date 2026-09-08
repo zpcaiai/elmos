@@ -19,11 +19,15 @@ class EngineTestRegistryTests(unittest.TestCase):
     def test_registry_covers_every_engine_and_nested_database_test_surface(self) -> None:
         engines = subject.load_registry()
 
-        self.assertEqual(42, len(engines))
-        self.assertEqual(43, sum(len(value["steps"]) for value in engines.values()))
+        self.assertEqual(43, len(engines))
+        self.assertEqual(45, sum(len(value["steps"]) for value in engines.values()))
         self.assertEqual(
             {"maven", "pytest"},
             {step["kind"] for step in engines["database-data-engine"]["steps"]},
+        )
+        self.assertEqual(
+            {"maven", "pytest"},
+            {step["kind"] for step in engines["security-compliance-engine"]["steps"]},
         )
         self.assertEqual(
             "modules/composite-modernization",

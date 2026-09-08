@@ -1,0 +1,17 @@
+{
+  "canonical_types": {
+    "boolean": "EXACT_BOOLEAN",
+    "integer": "SIGNED_INT32",
+    "number": "FINITE_BINARY64",
+    "string": "ASCII_VALUE"
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "implicit_coercions": "BLOCKED",
+  "kind": "elmos.vendor-research-type-mapping",
+  "pointer_reference_ownership": "NOT_APPLICABLE",
+  "route_key": "php-to-vb6",
+  "schema_version": 1,
+  "source_language": "php",
+  "target_language": "vb6",
+  "vendor_runtime_status": "NOT_RUN"
+}

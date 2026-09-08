@@ -132,6 +132,14 @@ _SOURCE_FIXTURES: dict[str, tuple[str, str]] = {
     "kotlin": ("subject.kt", "fun clamp(v: Long): Long {\n    return v\n}\n"),
     "react": ("subject.tsx", "export function clamp(v: number): number {\n  return v;\n}\n"),
     "flutter": ("subject.dart", "int clamp(int v) {\n  return v;\n}\n"),
+    "vb6": (
+        "subject.bas",
+        'Attribute VB_Name = "Subject"\nOption Explicit\n\nPublic Function clamp(ByVal v As Long) As Long\n    clamp = v\nEnd Function\n',
+    ),
+    "vcpp6": (
+        "subject.cpp",
+        "__int64 clamp(__int64 v) {\n    return v;\n}\n",
+    ),
 }
 
 #: Constructs the IR has no representation for. Probed through CPython's ast

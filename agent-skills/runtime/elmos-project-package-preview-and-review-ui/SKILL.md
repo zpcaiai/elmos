@@ -97,8 +97,8 @@ description: "当用户上传文件夹或归档，需要在提交任务前查看
 - Source contract SHA-256: `c6f7c09fe1dfa2abab5b8b2e2a7bb444fb5241ef60514064e263d8e7bf54a845`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_project_package_preview_and_review_ui`
 - Runtime phase: `review`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-multimodal-input-workbench-ui`, `$elmos-project-package-manifest`, `$elmos-project-root-language-framework-detection`, `$elmos-ignore-generated-vendored-file-classification`
 - Acceptance identities: `S50-01`, `S50-02`, `S50-03`, `S50-04`, `S50-05`, `S50-06`
 - Generated contract: `compiled-contract.json`

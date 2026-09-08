@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Execute one declared Spring route end to end and record what actually happened.
 
-The Gradle route in ``SpringRouteCatalog`` now has an execution driver and an
-exact OpenRewrite recipe, but its source tuple still carries ``NOT_RUN`` until
-a real Gradle project passes baseline, rewrite, target build and startup. This
-reference harness records the four Maven routes; the Java Worker is the
-authoritative Gradle execution path. ``scripts/batch30/run_spring_boot_reference.py``
-produced the original recording that exists, but it is hard-wired to Boot
-2.7.18 on Java 17.
+The harness records both Maven and Gradle routes. Gradle routes mirror the
+Java Worker's execution path exactly: the same pinned Gradle driver, the same
+init-script OpenRewrite injection (``org.openrewrite:plugin`` on the initscript
+classpath applying ``org.openrewrite.gradle.RewritePlugin``), and the same
+``rewriteRun`` invocation, so a recorded pass is evidence about the mechanism
+the engine actually ships. ``scripts/batch30/run_spring_boot_reference.py``
+produced the original Boot 2.7.18 recording that exists, but it is hard-wired
+to that one tuple.
 
 Copying that script per route does not work, and the reasons are specific:
 
@@ -19,6 +20,9 @@ Copying that script per route does not work, and the reasons are specific:
   arrives with ``spring-boot-starter-web``.
 * A Boot 3.0-3.4 source is already on the jakarta baseline, so its fixture must
   import ``jakarta.validation``, not ``javax.validation``.
+* A Gradle fixture carries ``build.gradle``/``settings.gradle`` instead of a
+  POM, produces its boot jar under ``build/libs`` instead of ``target``, and
+  runs OpenRewrite through the init-script driver rather than the Maven plugin.
 
 Each route therefore carries its own legacy source, and the health probe path is
 a per-route property rather than a constant.
@@ -31,12 +35,13 @@ evidence about nothing.
 This script records. It does not promote: on success it prints the exact
 ``verifiedSourceBoot`` / ``verifiedSourceJava`` pair to write into
 ``SpringRouteCatalog``, and leaves that edit to a human. A script that flipped
-its own evidence flag would be the executor certifying itself. The two
-Boot 4.1.0 routes currently recorded by this harness remain local engineering
-evidence; every external, holdout and independent role stays unrun.
+its own evidence flag would be the executor certifying itself. Every route
+recorded by this harness remains local engineering evidence; every external,
+holdout and independent role stays unrun.
 
 Usage:
     python3 scripts/operations/run_spring_route_reference.py --route boot-1.5-java-8-maven-to-boot-3.5.3-java-21
+    python3 scripts/operations/run_spring_route_reference.py --route boot-2.x-gradle-to-boot-3.5.3-java-21
     python3 scripts/operations/run_spring_route_reference.py --list
 """
 from __future__ import annotations
@@ -64,6 +69,10 @@ REWRITE_SPRING = "6.35.0"
 TARGET_BOOT = "3.5.3"
 TARGET_JAVA = "21"
 REQUIRED_MAVEN = "Apache Maven 3.9.11"
+# Mirrors SpringRouteCatalog.GRADLE_TOOLCHAIN, which is baked into the
+# ExactTuple the engine reports. Recording a Gradle pass from any other
+# driver would name a toolchain that never ran.
+REQUIRED_GRADLE = "Gradle 8.14.3"
 
 # The identifier probed against both builds. Any value works; 42 keeps the
 # recorded responses comparable with the existing 2.7.18 evidence.
@@ -584,6 +593,9 @@ class Route:
     security: str = ""
     # Optional exact-provider persistence/transaction contract for a route fixture.
     persistence: str = ""
+    # "maven" (POM + rewrite-maven-plugin) or "gradle" (build.gradle + the
+    # Worker's init-script rewrite driver on the pinned Gradle toolchain).
+    build_tool: str = "maven"
 
 
 ROUTES: dict[str, Route] = {
@@ -661,6 +673,21 @@ ROUTES: dict[str, Route] = {
         properties=_PROPERTIES_BOOT2_PLUS,
         health_path="/actuator/health",
         target_boot="4.1.0",
+    ),
+    # First Gradle route. The fixture, rewrite driver and jar discovery mirror
+    # the Java Worker's Gradle execution path; the catalog stays NOT_RUN until
+    # this route passes baseline, rewrite, target build and loopback startup.
+    "boot-2.x-gradle-to-boot-3.5.3-java-21": Route(
+        route_id="boot-2.x-gradle-to-boot-3.5.3-java-21",
+        recipe_file="spring-boot-2.x-gradle-to-3.5.3.yml",
+        recipe_id="io.elmos.openrewrite.SpringBoot2xGradleToBoot3_5_3Java21",
+        source_boot="2.7.18",
+        source_java="17",
+        controller=_CONTROLLER_JAVA11,
+        test=_TEST_JUNIT5,
+        properties=_PROPERTIES_BOOT2_PLUS,
+        health_path="/actuator/health",
+        build_tool="gradle",
     ),
 }
 
@@ -832,6 +859,60 @@ def pom(route: Route) -> str:
 """
 
 
+def gradle_build(route: Route) -> str:
+    """Groovy-DSL build mirroring the POM fixture dependency-for-dependency.
+
+    The Spring Boot Gradle plugin pins the source Boot version (the Gradle
+    counterpart of the POM's ``spring-boot-starter-parent``), and the
+    dependency-management plugin -- the canonical pairing start.spring.io
+    generates for Boot 2.x -- imports the matching BOM so the starters resolve
+    without explicit versions. The boot jar lands in ``build/libs``.
+    """
+
+    starters = "".join(
+        f"\n    implementation 'org.springframework.boot:spring-boot-starter-{name}'"
+        for name in ("web", "actuator", *route.extra_starters)
+    )
+    security_test = (
+        "\n    testImplementation 'org.springframework.security:spring-security-test'"
+        if route.security
+        else ""
+    )
+    persistence_dependencies = (
+        "\n    runtimeOnly 'com.h2database:h2'" if route.persistence else ""
+    )
+    return f"""plugins {{
+    id 'org.springframework.boot' version '{route.source_boot}'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+}}
+
+group = 'io.elmos'
+version = '1.0.0'
+
+java {{
+    sourceCompatibility = '{route.source_java}'
+}}
+
+repositories {{
+    mavenCentral()
+}}
+
+dependencies {{{starters}
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'{security_test}{persistence_dependencies}
+}}
+
+tasks.withType(Test).configureEach {{
+    useJUnitPlatform()
+}}
+"""
+
+
+def gradle_settings(route: Route) -> str:
+    artifact = "spring-reference-" + route.source_boot.replace(".", "-").lower()
+    return f"rootProject.name = '{artifact}'\n"
+
+
 def materialize(project: Path, route: Route) -> None:
     if project.exists():
         shutil.rmtree(project)
@@ -840,7 +921,13 @@ def materialize(project: Path, route: Route) -> None:
     resources = project / "src/main/resources"
     for directory in (source, tests, resources):
         directory.mkdir(parents=True, exist_ok=True)
-    (project / "pom.xml").write_text(pom(route), encoding="utf-8")
+    if route.build_tool == "gradle":
+        (project / "build.gradle").write_text(gradle_build(route), encoding="utf-8")
+        (project / "settings.gradle").write_text(
+            gradle_settings(route), encoding="utf-8"
+        )
+    else:
+        (project / "pom.xml").write_text(pom(route), encoding="utf-8")
     (source / "ReferenceApplication.java").write_text(_APPLICATION, encoding="utf-8")
     (source / "OrderController.java").write_text(route.controller, encoding="utf-8")
     (tests / "OrderControllerTest.java").write_text(route.test, encoding="utf-8")
@@ -898,15 +985,38 @@ def request_json(
         raise RunFailure(f"HTTP_INVALID_JSON:{path}:{exc}") from exc
 
 
+def built_boot_jar(project: Path, build_tool: str) -> Path:
+    """Return the executable jar the build actually produced, or fail loudly.
+
+    Maven's boot jar repackages ``target/*.jar`` and keeps the original as
+    ``*.original``; Gradle's boot jar keeps the plain jar as ``*-plain.jar``
+    next to the repackaged artifact in ``build/libs``.
+    """
+
+    if build_tool == "gradle":
+        jars = sorted(
+            path
+            for path in (project / "build" / "libs").glob("*.jar")
+            if not path.name.endswith("-plain.jar")
+        )
+    else:
+        jars = sorted(
+            path
+            for path in (project / "target").glob("*.jar")
+            if not path.name.endswith(".original")
+        )
+    if not jars:
+        raise RunFailure(f"BOOT_JAR_MISSING:{project.name}:{build_tool}")
+    return jars[0]
+
+
 def start_and_probe(
     project: Path, *, home: Path, health_path: str, log_path: Path,
     security_enabled: bool = False,
     persistence_enabled: bool = False,
+    build_tool: str = "maven",
 ) -> dict[str, Any]:
-    jar = next(
-        path for path in sorted((project / "target").glob("*.jar"))
-        if not path.name.endswith(".original")
-    )
+    jar = built_boot_jar(project, build_tool)
     port = free_port()
     environment = os.environ.copy()
     environment["JAVA_HOME"] = str(home)
@@ -986,17 +1096,76 @@ def start_and_probe(
                 process.wait(timeout=5)
 
 
-def transform(source: Path, target: Path, recipe: Path, route: Route, maven: str,
+GRADLE_REWRITE_INIT_SCRIPT = """initscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "org.openrewrite:plugin:{rewrite_plugin}"
+    }
+}
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+    afterEvaluate { p ->
+        if (p == rootProject || p.plugins.hasPlugin("java") || p.plugins.hasPlugin("java-base")) {
+            if (!p.plugins.hasPlugin("org.openrewrite.rewrite") && !p.plugins.hasPlugin(org.openrewrite.gradle.RewritePlugin)) {
+                p.apply plugin: org.openrewrite.gradle.RewritePlugin
+            }
+            p.dependencies {
+                add("rewrite", "org.openrewrite.recipe:rewrite-spring:{rewrite_spring}")
+            }
+            p.rewrite {
+                configFile = rootProject.file(".elmos/openrewrite.yml")
+                activeRecipe(System.getProperty("rewrite.activeRecipe"))
+                setExportDatatables(true)
+            }
+        }
+    }
+}
+"""
+
+
+def transform(source: Path, target: Path, recipe: Path, route: Route, driver: str,
               home: Path) -> subprocess.CompletedProcess[str]:
     if target.exists():
         shutil.rmtree(target)
     shutil.copytree(source, target,
-                    ignore=shutil.ignore_patterns("target", ".git", ".elmos"))
+                    ignore=shutil.ignore_patterns("target", "build", ".git", ".elmos"))
     installed = target / ".elmos/openrewrite.yml"
     installed.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(recipe, installed)
+    if route.build_tool == "gradle":
+        init_script = target / ".elmos/openrewrite.init.gradle"
+        init_script.write_text(
+            GRADLE_REWRITE_INIT_SCRIPT.format(
+                rewrite_plugin=REWRITE_PLUGIN, rewrite_spring=REWRITE_SPRING
+            ),
+            encoding="utf-8",
+        )
+        result = run(
+            [driver, "--no-daemon", "rewriteRun",
+             "--init-script", ".elmos/openrewrite.init.gradle",
+             f"-Drewrite.activeRecipe={route.recipe_id}"],
+            cwd=target, home=home, timeout=3_600,
+        )
+        if "Recipe validation error" in result.stdout + result.stderr:
+            raise RunFailure("OPENREWRITE_RECIPE_VALIDATION_FAILED")
+        build_script = (target / "build.gradle").read_text(encoding="utf-8")
+        if f"id 'org.springframework.boot' version '{route.target_boot}'" \
+                not in build_script:
+            raise RunFailure("OPENREWRITE_TARGET_BOOT_BINDING_FAILED")
+        if not re.search(
+            r"sourceCompatibility = '" + re.escape(TARGET_JAVA) + r"'"
+            r"|JavaLanguageVersion\.of\(" + re.escape(TARGET_JAVA) + r"\)",
+            build_script,
+        ):
+            raise RunFailure("OPENREWRITE_TARGET_JAVA_BINDING_FAILED")
+        return result
     result = run(
-        [maven, "-B", "--no-transfer-progress",
+        [driver, "-B", "--no-transfer-progress",
          f"org.openrewrite.maven:rewrite-maven-plugin:{REWRITE_PLUGIN}:run",
          "-Drewrite.configLocation=.elmos/openrewrite.yml",
          f"-Drewrite.activeRecipes={route.recipe_id}",
@@ -1019,57 +1188,87 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
     if not recipe.is_file():
         raise RunFailure(f"RECIPE_MISSING:{recipe}")
 
-    maven = os.environ.get("ELMOS_MAVEN_EXECUTABLE") or shutil.which("mvn")
-    if maven is None or not Path(maven).is_file():
-        raise RunFailure("MAVEN_MISSING")
+    if route.build_tool == "gradle":
+        driver = os.environ.get("ELMOS_GRADLE_EXECUTABLE") or shutil.which("gradle")
+        if driver is None or not Path(driver).is_file():
+            raise RunFailure(
+                "GRADLE_MISSING: set ELMOS_GRADLE_EXECUTABLE to the pinned "
+                f"{REQUIRED_GRADLE} distribution's gradle executable")
+    else:
+        driver = os.environ.get("ELMOS_MAVEN_EXECUTABLE") or shutil.which("mvn")
+        if driver is None or not Path(driver).is_file():
+            raise RunFailure("MAVEN_MISSING")
 
     source_home = java_home(route.source_java)
     target_home = java_home(TARGET_JAVA)
 
-    version_line = run([maven, "-version"], cwd=repo, home=target_home,
-                       timeout=120).stdout.splitlines()[0]
-    if REQUIRED_MAVEN not in version_line:
-        # Not pedantry: SpringRouteCatalog.MAVEN_TOOLCHAIN bakes "maven-3.9.11"
-        # into the ExactTuple the engine reports to customers, and the existing
-        # 2.7.18 evidence was produced on that version. Recording a pass from a
-        # different Maven would make the catalog name a toolchain that never ran
-        # and would make the routes incomparable with each other.
-        raise RunFailure(
-            f"EXACT_MAVEN_VERSION_REQUIRED\n"
-            f"  found:    {version_line}\n"
-            f"  required: {REQUIRED_MAVEN}\n"
-            f"  at:       {maven}\n"
-            "\n"
-            "Install it side by side and point the harness at it:\n"
-            "  curl -fsSLO https://archive.apache.org/dist/maven/maven-3/3.9.11/"
-            "binaries/apache-maven-3.9.11-bin.tar.gz\n"
-            "  mkdir -p ~/.local/maven && tar -xzf apache-maven-3.9.11-bin.tar.gz "
-            "-C ~/.local/maven\n"
-            "  export ELMOS_MAVEN_EXECUTABLE=$HOME/.local/maven/"
-            "apache-maven-3.9.11/bin/mvn\n"
-            "\n"
-            "Do not relax this check to match the Maven you happen to have. The "
-            "version is part of the tuple the engine reports.")
+    if route.build_tool == "gradle":
+        version_output = run([driver, "--version"], cwd=repo, home=target_home,
+                             timeout=120)
+        if REQUIRED_GRADLE not in version_output.stdout:
+            raise RunFailure(
+                f"EXACT_GRADLE_VERSION_REQUIRED\n"
+                f"  required: {REQUIRED_GRADLE}\n"
+                f"  at:       {driver}\n"
+                f"  reported:\n{version_output.stdout[:800]}\n"
+                "\n"
+                "SpringRouteCatalog.GRADLE_TOOLCHAIN bakes gradle-8.14.3 into "
+                "the ExactTuple the engine reports. Do not relax this check to "
+                "match the Gradle you happen to have.")
+        driver_version = next(
+            line for line in version_output.stdout.splitlines()
+            if REQUIRED_GRADLE in line
+        ).strip()
+        build_argv = [driver, "--no-daemon", "--console=plain", "build"]
+        driver_key = "gradle"
+    else:
+        version_line = run([driver, "-version"], cwd=repo, home=target_home,
+                           timeout=120).stdout.splitlines()[0]
+        if REQUIRED_MAVEN not in version_line:
+            # Not pedantry: SpringRouteCatalog.MAVEN_TOOLCHAIN bakes "maven-3.9.11"
+            # into the ExactTuple the engine reports to customers, and the existing
+            # 2.7.18 evidence was produced on that version. Recording a pass from a
+            # different Maven would make the catalog name a toolchain that never ran
+            # and would make the routes incomparable with each other.
+            raise RunFailure(
+                f"EXACT_MAVEN_VERSION_REQUIRED\n"
+                f"  found:    {version_line}\n"
+                f"  required: {REQUIRED_MAVEN}\n"
+                f"  at:       {driver}\n"
+                "\n"
+                "Install it side by side and point the harness at it:\n"
+                "  curl -fsSLO https://archive.apache.org/dist/maven/maven-3/3.9.11/"
+                "binaries/apache-maven-3.9.11-bin.tar.gz\n"
+                "  mkdir -p ~/.local/maven && tar -xzf apache-maven-3.9.11-bin.tar.gz "
+                "-C ~/.local/maven\n"
+                "  export ELMOS_MAVEN_EXECUTABLE=$HOME/.local/maven/"
+                "apache-maven-3.9.11/bin/mvn\n"
+                "\n"
+                "Do not relax this check to match the Maven you happen to have. The "
+                "version is part of the tuple the engine reports.")
+        driver_version = version_line
+        build_argv = [driver, "-B", "--no-transfer-progress", "verify"]
+        driver_key = "maven"
 
     source = workspace / "source"
     target = workspace / "migrated"
     logs = workspace / "logs"
 
     materialize(source, route)
-    source_build = run([maven, "-B", "--no-transfer-progress", "verify"],
-                       cwd=source, home=source_home)
-    transformation = transform(source, target, recipe, route, maven, target_home)
-    target_build = run([maven, "-B", "--no-transfer-progress", "verify"],
-                       cwd=target, home=target_home)
+    source_build = run(build_argv, cwd=source, home=source_home)
+    transformation = transform(source, target, recipe, route, driver, target_home)
+    target_build = run(build_argv, cwd=target, home=target_home)
 
     source_runtime = start_and_probe(
         source, home=source_home, health_path=route.health_path,
         log_path=logs / "source-runtime.log", security_enabled=bool(route.security),
-        persistence_enabled=bool(route.persistence))
+        persistence_enabled=bool(route.persistence),
+        build_tool=route.build_tool)
     target_runtime = start_and_probe(
         target, home=target_home, health_path="/actuator/health",
         log_path=logs / "target-runtime.log", security_enabled=bool(route.security),
-        persistence_enabled=bool(route.persistence))
+        persistence_enabled=bool(route.persistence),
+        build_tool=route.build_tool)
 
     if source_runtime["responses"] != target_runtime["responses"]:
         raise RunFailure(
@@ -1097,6 +1296,7 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "target_boot": route.target_boot,
             "target_java": TARGET_JAVA,
         },
+        "build_tool": route.build_tool,
         "source": {
             "boot": route.source_boot,
             "java": run(["java", "-version"], cwd=source, home=source_home,
@@ -1120,10 +1320,10 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "recipe_id": route.recipe_id,
             "recipe_path": str(recipe.relative_to(repo)),
             "recipe_sha256": hashlib.sha256(recipe.read_bytes()).hexdigest(),
-            "maven": version_line,
-            "rewrite_maven_plugin": REWRITE_PLUGIN,
+            "rewrite_plugin": REWRITE_PLUGIN,
             "rewrite_spring": REWRITE_SPRING,
             "output_tail": transformation.stdout[-2_000:],
+            driver_key: driver_version,
         },
         "behavioral_parity": True,
         "probe_ids": PROBE_IDS,
@@ -1208,6 +1408,12 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
     target = evidence["target"]
     source_runtime = source["runtime"]
     target_runtime = target["runtime"]
+    transformation = evidence["transformation"]
+    driver_field = (
+        {"gradle": transformation["gradle"]}
+        if "gradle" in transformation
+        else {"maven": transformation["maven"]}
+    )
     return {
         "schema_version": 2,
         "evidence_class": "LOCAL_REFERENCE_ROUTE_ENGINEERING",
@@ -1232,9 +1438,9 @@ def pack_local_reference_evidence(evidence: dict[str, Any], pack_key: str) -> di
         "migration": {
             "status": "PASSED_LOCAL",
             "production_status": "NOT_RUN",
-            "recipe_id": evidence["transformation"]["recipe_id"],
-            "recipe_sha256": evidence["transformation"]["recipe_sha256"],
-            "maven": evidence["transformation"]["maven"],
+            "recipe_id": transformation["recipe_id"],
+            "recipe_sha256": transformation["recipe_sha256"],
+            **driver_field,
         },
         "equivalence": {
             "status": "PASSED_LOCAL",

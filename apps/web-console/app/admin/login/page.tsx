@@ -2,27 +2,25 @@ import type { Metadata } from "next";
 import {
   ADMINISTRATOR_EMAIL,
   oidcConfigured,
+  temporaryAdministratorConfigured,
 } from "../../lib/server/accountSession";
+import { descopeConfigured } from "../../lib/server/descopeIdentity";
 import { safeOperationsReturnTo } from "../../lib/surfaceAudience";
 
 export const metadata: Metadata = { title: "管理员登录" };
 export const dynamic = "force-dynamic";
 
 const errorMessages: Record<string, string> = {
+  TEMP_ADMIN_INVALID: "管理员账号或密码错误。",
+  TEMP_ADMIN_LOCKED: "尝试次数过多，请在十五分钟后重试。",
+  TEMP_ADMIN_DISABLED: "临时管理员密码登录未启用。",
+  TEMP_ADMIN_LOOPBACK_ONLY: "临时管理员密码登录仅允许本机访问。",
   OIDC_AUTHORIZATION_REJECTED: "身份提供商拒绝了本次管理员登录。",
   OIDC_CALLBACK_INVALID: "管理员登录回调缺少必要参数，请重新开始。",
   OIDC_CALLBACK_FAILED: "管理员身份校验失败，请重新尝试。",
   OIDC_STATE_INVALID: "管理员登录 state 已过期或不匹配，请重新开始。",
   OIDC_NONCE_INVALID: "管理员登录 nonce 校验失败，未建立会话。",
   OIDC_TOKEN_EXCHANGE_REJECTED: "身份提供商拒绝管理员令牌交换。",
-  EMAIL_CREDENTIALS_INVALID: "管理员邮箱或密码错误。",
-  LOCAL_CREDENTIALS_INVALID: "管理员邮箱或密码错误。",
-  LOCAL_CREDENTIALS_DISABLED: "本地管理员凭据未启用。",
-  LOCAL_CREDENTIALS_LOOPBACK_ONLY: "本地管理员登录仅允许从 localhost 使用。",
-  LOCAL_CREDENTIALS_CONFIGURATION_INVALID: "本地管理员凭据配置无效。",
-  LOCAL_CREDENTIALS_LOCKED: "管理员账户暂时锁定，请稍后重试。",
-  LOCAL_CREDENTIALS_UNAVAILABLE: "本地管理员登录当前不可用。",
-  LOGIN_MODE_INVALID: "管理员登录入口无效，请从当前页面重新开始。",
   ADMIN_EMAIL_REQUIRED: "该邮箱不是获准的管理员账户。",
   ADMIN_EMAIL_NOT_VERIFIED: "管理员邮箱尚未通过可信身份提供商验证。",
   ADMIN_LOGIN_ENTRY_REQUIRED: "管理员账户必须从当前专用入口登录。",
@@ -35,15 +33,24 @@ const errorMessages: Record<string, string> = {
   ADMIN_LOGIN_NOTIFICATION_REJECTED: "管理员登录安全通知被邮件服务拒绝，本次未建立管理员会话。",
   ADMIN_LOGIN_NOTIFICATION_RESPONSE_INVALID: "管理员登录安全通知未返回有效投递凭据，本次未建立管理员会话。",
   ADMIN_SESSION_REQUIRED: "请通过管理员专用入口重新登录。",
+  DESCOPE_OTP_START_REJECTED: "管理员邮箱验证码发送失败，请稍后重试。",
+  DESCOPE_OTP_CODE_INVALID: "验证码格式无效。",
+  DESCOPE_OTP_VERIFY_REJECTED: "验证码错误、已过期或尝试次数过多。",
+  DESCOPE_CHALLENGE_EXPIRED: "管理员验证码会话已过期，请重新开始。",
+  DESCOPE_EMAIL_NOT_VERIFIED: "管理员邮箱未完成本次邮箱验证码验证。",
+  DESCOPE_TOKEN_INVALID: "管理员身份提供商会话校验失败。",
+  ACCOUNT_SESSION_SECRET_NOT_CONFIGURED: "管理员会话密钥尚未配置，本次未建立会话。",
 };
 
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; returnTo?: string }>;
+  searchParams: Promise<{ error?: string; returnTo?: string; verify?: string }>;
 }) {
   const parameters = await searchParams;
   const configured = oidcConfigured();
+  const descopeReady = descopeConfigured();
+  const temporaryConfigured = temporaryAdministratorConfigured();
   const error = parameters.error
     ? errorMessages[parameters.error] ?? "管理员登录未完成，未建立管理员会话。"
     : null;
@@ -71,11 +78,47 @@ export default async function AdminLoginPage({
 
         {error && <div className="auth-error" role="alert">{error}</div>}
 
-        {configured && (
+        {temporaryConfigured && (
+          <form action="/api/auth/admin/login" method="post" className="auth-form">
+            <input type="hidden" name="returnTo" value={adminReturnTo} />
+            <label htmlFor="admin-username">管理员用户名</label>
+            <input id="admin-username" name="username" type="email" autoComplete="username"
+              defaultValue={ADMINISTRATOR_EMAIL} required maxLength={254} />
+            <label htmlFor="admin-password">管理员密码</label>
+            <input id="admin-password" name="password" type="password" autoComplete="current-password"
+              required maxLength={1024} />
+            <button className="button admin-login-primary" type="submit">登录管理中心</button>
+            <small>本地临时密码登录：暂不验证邮箱，不发送登录邮件。仅用于开发测试，生产环境不启用。</small>
+          </form>
+        )}
+
+        {parameters.verify === "1" && descopeReady && (
+          <form className="auth-form admin-auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
+            <h2>验证管理员邮箱</h2>
+            <p>请输入发送到 {ADMINISTRATOR_EMAIL} 的一次性验证码。只有本次邮箱验证通过后才会计算管理员权限。</p>
+            <label><span>管理员验证码</span><input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength={4} maxLength={10} required autoFocus /></label>
+            <button className="button admin-login-primary" type="submit">验证并进入管理中心</button>
+            <a className="text-link" href="/admin/login">重新发送验证码</a>
+          </form>
+        )}
+
+        {descopeReady && parameters.verify !== "1" && (
+          <form className="auth-form admin-auth-form" method="post" action="/api/auth/descope/otp/start">
+            <h2>管理员邮箱验证码登录</h2>
+            <p>管理员入口不接受手机号、微信或普通用户会话，只允许唯一管理员邮箱完成本次验证。</p>
+            <input type="hidden" name="channel" value="EMAIL" />
+            <input type="hidden" name="intent" value="LOGIN" />
+            <input type="hidden" name="loginMode" value="ADMIN" />
+            <input type="hidden" name="returnTo" value={adminReturnTo} />
+            <label><span>管理员邮箱</span><input name="loginId" type="email" value={ADMINISTRATOR_EMAIL} readOnly aria-readonly="true" /></label>
+            <button className="button admin-login-primary" type="submit">发送管理员验证码</button>
+          </form>
+        )}
+
+        {configured && !descopeReady && (
           <a
             className="button admin-login-primary"
-            href={`/api/auth/login?${new URLSearchParams({
-              mode: "ADMIN",
+            href={`/api/auth/admin/login?${new URLSearchParams({
               returnTo: adminReturnTo,
             })}`}
           >
@@ -83,7 +126,7 @@ export default async function AdminLoginPage({
           </a>
         )}
 
-        {!configured && (
+        {!descopeReady && !configured && !temporaryConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>管理员身份提供商未配置</strong>
             <span>管理员登录失败关闭：必须先配置受信任的企业 OIDC，不提供本地密码或短期令牌降级入口。</span>
@@ -91,15 +134,15 @@ export default async function AdminLoginPage({
         )}
 
         <div className="admin-login-notification" role="note">
-          <strong>登录安全通知</strong>
-          <span>每次管理员成功登录后，系统都会向 {ADMINISTRATOR_EMAIL} 发送安全通知。</span>
+          <strong>受信任提供商登录安全通知</strong>
+          <span>每次管理员成功登录后（仅限企业 OIDC 或邮箱验证码），系统都会向 {ADMINISTRATOR_EMAIL} 发送安全通知；通知失败时不会建立管理员会话。</span>
         </div>
 
         <div className="auth-links admin-auth-links">
           <span>不是管理员？</span>
           <a className="text-link" href="/login">返回用户登录，使用产品功能</a>
         </div>
-        <small>管理员页面不会通过客户端字段、链接或隐藏表单提升权限；最终授权始终由服务端决定。</small>
+        <small>管理员登录入口不提供普通用户登录功能，也不会通过客户端字段、链接或隐藏表单提升权限；最终授权始终由服务端决定。</small>
       </div>
     </section>
   );

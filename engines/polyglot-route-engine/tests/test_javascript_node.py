@@ -313,6 +313,7 @@ def test_javascript_inventory_only_trusts_exact_canonical_helper_declarations(
         "_elmosRequireBoolean": ("boolean", "boolean"),
         "_elmosRequireString": ("string", "string"),
         "_elmosRequireNonZero": ("number", "number"),
+        "_elmosRequireRecord": ("record", "record"),
     }
 
     assert set(subjects) == set(expected)

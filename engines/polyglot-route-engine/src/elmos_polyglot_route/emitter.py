@@ -83,6 +83,14 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     # so this spelling is the canonical 64-bit signed integer, and `float` is
     # binary64 on every build the probe accepts.
     "php": {"integer": "int", "number": "float", "boolean": "bool", "string": "string"},
+    # VB6 has no 64-bit integer scalar. The bounded target profile therefore
+    # uses Long and rejects literals/results outside the signed 32-bit domain;
+    # it must never be described as the full canonical int64 profile.
+    "vb6": {"integer": "Long", "number": "Double", "boolean": "Boolean", "string": "String"},
+    # Visual C++ 6.0 predates <cstdint>; its exact signed 64-bit scalar is
+    # ``__int64``. The bounded profile is deliberately C++98-era and excludes
+    # MFC, ATL, COM, Win32 handles, pointers, references and object ownership.
+    "vcpp6": {"integer": "__int64", "number": "double", "boolean": "bool", "string": "std::string"},
 }
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
@@ -97,6 +105,7 @@ _BRACE_LANGUAGES = frozenset(
         "go",
         "rust",
         "cpp",
+        "vcpp6",
         "objc",
         "swift",
         "php",
@@ -104,7 +113,7 @@ _BRACE_LANGUAGES = frozenset(
     }
 )
 _SEMICOLON_LANGUAGES = frozenset(
-    {"java", "csharp", "typescript", "react", "javascript", "rust", "cpp", "objc", "php", "flutter"}
+    {"java", "csharp", "typescript", "react", "javascript", "rust", "cpp", "vcpp6", "objc", "php", "flutter"}
 )
 
 #: Targets that place the function body inside a type declaration, so the
@@ -274,7 +283,7 @@ _JAVASCRIPT_HELPERS: dict[str, str] = {
     ),
     "exact_record": (
         "function _elmosRequireRecord(value) {\n"
-        '  if (typeof value !== "object" || value === null) {\n'
+        '  if (typeof value !== "object" || value === null || Array.isArray(value)) {\n'
         '    throw new TypeError("ELMOS_RECORD_REQUIRED");\n'
         "  }\n"
         "  return value;\n"
@@ -608,6 +617,74 @@ _CPP_HELPERS: dict[str, str] = {
 }
 
 
+#: Visual C++ 6.0 has no standard fixed-width integer header, no compiler
+#: overflow builtins and only the pre-standard ``i64`` literal suffix. Each
+#: guard proves the operation is in range before evaluating it, so no signed
+#: overflow is invoked merely while checking for overflow.
+_VCPP6_HELPERS: dict[str, str] = {
+    "checked_add": (
+        "static __int64 ElmosCheckedAdd(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if ((right > 0 && left > maximum - right) || (right < 0 && left < minimum - right)) {\n"
+        f'        throw "{_OVERFLOW_MESSAGE}";\n'
+        "    }\n"
+        "    return left + right;\n"
+        "}"
+    ),
+    "checked_sub": (
+        "static __int64 ElmosCheckedSub(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if ((right < 0 && left > maximum + right) || (right > 0 && left < minimum + right)) {\n"
+        f'        throw "{_OVERFLOW_MESSAGE}";\n'
+        "    }\n"
+        "    return left - right;\n"
+        "}"
+    ),
+    "checked_mul": (
+        "static __int64 ElmosCheckedMul(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        "    const __int64 maximum = 9223372036854775807i64;\n"
+        "    if (left != 0 && right != 0) {\n"
+        "        if ((left == -1 && right == minimum) || (right == -1 && left == minimum)) {\n"
+        f'            throw "{_OVERFLOW_MESSAGE}";\n'
+        "        }\n"
+        "        if ((left > 0 && right > 0 && left > maximum / right) ||\n"
+        "            (left > 0 && right < 0 && right < minimum / left) ||\n"
+        "            (left < 0 && right > 0 && left < minimum / right) ||\n"
+        "            (left < 0 && right < 0 && left < maximum / right)) {\n"
+        f'            throw "{_OVERFLOW_MESSAGE}";\n'
+        "        }\n"
+        "    }\n"
+        "    return left * right;\n"
+        "}"
+    ),
+    "checked_div": (
+        "static __int64 ElmosCheckedDiv(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        f'    if (right == 0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        f'    if (left == minimum && right == -1) throw "{_OVERFLOW_MESSAGE}";\n'
+        "    return left / right;\n"
+        "}"
+    ),
+    "checked_mod": (
+        "static __int64 ElmosCheckedMod(__int64 left, __int64 right) {\n"
+        "    const __int64 minimum = (-9223372036854775807i64 - 1i64);\n"
+        f'    if (right == 0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        f'    if (left == minimum && right == -1) throw "{_OVERFLOW_MESSAGE}";\n'
+        "    return left % right;\n"
+        "}"
+    ),
+    "non_zero_double": (
+        "static double ElmosNonZero(double value) {\n"
+        f'    if (value == 0.0) throw "{_DIVIDE_BY_ZERO_MESSAGE}";\n'
+        "    return value;\n"
+        "}"
+    ),
+}
+
+
 #: Objective-C is C for the scalar arithmetic, so it inherits the same
 #: undefined behaviour and needs the same guards; NSException is the failure
 #: mode that reaches the harness.
@@ -757,6 +834,58 @@ _PHP_HELPERS: dict[str, str] = {
 }
 
 
+_VB6_HELPERS: dict[str, str] = {
+    "checked_add": (
+        "Private Function ElmosCheckedAdd(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) + CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedAdd\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedAdd = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_sub": (
+        "Private Function ElmosCheckedSub(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) - CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedSub\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedSub = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_mul": (
+        "Private Function ElmosCheckedMul(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim resultValue As Double\n"
+        "    resultValue = CDbl(leftValue) * CDbl(rightValue)\n"
+        "    If resultValue < -2147483648# Or resultValue > 2147483647# Then "
+        "Err.Raise 6, \"ElmosCheckedMul\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedMul = CLng(resultValue)\n"
+        "End Function"
+    ),
+    "checked_div": (
+        "Private Function ElmosCheckedDiv(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    If rightValue = 0 Then Err.Raise 11, \"ElmosCheckedDiv\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        "    If leftValue = -2147483648# And rightValue = -1 Then "
+        "Err.Raise 6, \"ElmosCheckedDiv\", \"ELMOS_INTEGER_OVERFLOW\"\n"
+        "    ElmosCheckedDiv = CLng(Fix(CDbl(leftValue) / CDbl(rightValue)))\n"
+        "End Function"
+    ),
+    "checked_mod": (
+        "Private Function ElmosCheckedMod(ByVal leftValue As Long, ByVal rightValue As Long) As Long\n"
+        "    Dim quotientValue As Long\n"
+        "    quotientValue = ElmosCheckedDiv(leftValue, rightValue)\n"
+        "    ElmosCheckedMod = CLng(CDbl(leftValue) - CDbl(quotientValue) * CDbl(rightValue))\n"
+        "End Function"
+    ),
+    "non_zero_double": (
+        "Private Function ElmosNonZero(ByVal value As Double) As Double\n"
+        "    If value = 0# Then Err.Raise 11, \"ElmosNonZero\", \"ELMOS_DIVIDE_BY_ZERO\"\n"
+        "    ElmosNonZero = value\n"
+        "End Function"
+    ),
+}
+
+
 _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
     "kotlin": _KOTLIN_HELPERS,
@@ -769,9 +898,11 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "rust": _RUST_HELPERS,
     "swift": _SWIFT_HELPERS,
     "cpp": _CPP_HELPERS,
+    "vcpp6": _VCPP6_HELPERS,
     "objc": _OBJC_HELPERS,
     "php": _PHP_HELPERS,
     "flutter": _DART_HELPERS,
+    "vb6": _VB6_HELPERS,
 }
 
 #: Deterministic emission order, so the same IR always produces byte-identical
@@ -831,6 +962,7 @@ class _Context:
     imports: set[str] = field(default_factory=set)
     normalization_rules: set[str] = field(default_factory=set)
     records: dict[str, RecordDefinition] = field(default_factory=dict)
+    functions: dict[str, Function] = field(default_factory=dict)
 
 
 def _emitted_file(context: _Context, relative_path: str, content: str) -> EmittedFile:
@@ -969,6 +1101,16 @@ def _integer_literal(language: Language, value: int) -> str:
         # fails to compile -- a bug that only shows up once an integer literal
         # meets a checked-arithmetic call site.
         return f"{value}L"
+    if language == "vb6":
+        if not -(2**31) <= value <= 2**31 - 1:
+            raise RouteError(f"VB6_INTEGER_LITERAL_OUTSIDE_LONG_RANGE:{value}")
+        # VB parses -2147483648 as unary minus applied to an out-of-range
+        # positive literal.  A hexadecimal Long is the one exact spelling.
+        return "&H80000000" if value == -(2**31) else f"{value}&"
+    if language == "vcpp6":
+        if value == types.INTEGER_MIN:
+            return "(-9223372036854775807i64 - 1i64)"
+        return f"{value}i64" if not -(2**31) <= value <= 2**31 - 1 else str(value)
     if language == "flutter":
         return str(value)
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
@@ -1021,6 +1163,11 @@ def _string_literal(language: Language, value: str) -> str:
         # including a literal newline and raw UTF-8 -- stands for itself.
         escaped = value.replace("\\", "\\\\").replace("'", "\\'")
         return f"'{escaped}'"
+    if language in {"vb6", "vcpp6"}:
+        if any(ord(character) > 127 for character in value):
+            raise RouteError(f"{language.upper()}_NON_ASCII_STRING_REQUIRES_EXPLICIT_CODEPAGE_PROFILE")
+    if language == "vb6":
+        return '"' + value.replace('"', '""') + '"'
     if language == "kotlin":
         # `$` opens a string template in Kotlin: `"a$b"` is a reference to `b`,
         # and `"a$"` alone is a compile error. Kotlin understands JSON's other
@@ -1043,7 +1190,7 @@ def _string_literal(language: Language, value: str) -> str:
 
 def _literal(language: Language, value: str | int | float | bool | None) -> str:
     if isinstance(value, bool):
-        if language == "python":
+        if language in {"python", "vb6"}:
             return "True" if value else "False"
         if language == "objc":
             return "YES" if value else "NO"
@@ -1062,7 +1209,8 @@ def _literal(language: Language, value: str | int | float | bool | None) -> str:
             raise RouteError(f"NON_FINITE_LITERAL_OUTSIDE_CERTIFIED_SUBSET:{value}")
         if language in {"typescript", "react", "javascript"} and value == 0.0 and math.copysign(1.0, value) < 0:
             raise RouteError(f"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED")
-        return repr(value)
+        rendered = repr(value)
+        return f"{rendered}#" if language == "vb6" else rendered
     raise RouteError("NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET")
 
 
@@ -1118,6 +1266,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "/": ("elmos_checked_div", ("checked_div",)),
         "%": ("elmos_checked_mod", ("checked_mod",)),
     },
+    "vcpp6": {
+        "+": ("ElmosCheckedAdd", ("checked_add",)),
+        "-": ("ElmosCheckedSub", ("checked_sub",)),
+        "*": ("ElmosCheckedMul", ("checked_mul",)),
+        "/": ("ElmosCheckedDiv", ("checked_div",)),
+        "%": ("ElmosCheckedMod", ("checked_mod",)),
+    },
     "php": {
         "+": ("elmos_checked_add", ("checked_add",)),
         "-": ("elmos_checked_sub", ("checked_sub",)),
@@ -1131,6 +1286,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "*": ("ElmosCheckedMul", ("checked_mul",)),
         "/": ("ElmosCheckedDiv", ("checked_div",)),
         "%": ("ElmosCheckedMod", ("checked_mod",)),
+    },
+    "vb6": {
+        "+": ("ElmosCheckedAdd", ("checked_add",)),
+        "-": ("ElmosCheckedSub", ("checked_sub",)),
+        "*": ("ElmosCheckedMul", ("checked_mul",)),
+        "/": ("ElmosCheckedDiv", ("checked_div",)),
+        "%": ("ElmosCheckedMod", ("checked_div", "checked_mod")),
     },
 }
 
@@ -1157,9 +1319,11 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "swift": ("elmosNonZero", "non_zero_double"),
     "kotlin": ("elmosNonZero", "non_zero_double"),
     "cpp": ("elmos_non_zero", "non_zero_double"),
+    "vcpp6": ("ElmosNonZero", "non_zero_double"),
     "objc": ("ElmosNonZero", "non_zero_double"),
     "php": ("elmos_non_zero_float", "non_zero_float"),
     "flutter": ("_elmosNonZero", "non_zero_double"),
+    "vb6": ("ElmosNonZero", "non_zero_double"),
 }
 
 
@@ -1188,8 +1352,8 @@ def _binary(
     assert expression.left is not None and expression.right is not None
     language = context.language
     operator = expression.operator or ""
-    left_type = types.infer(expression.left, environment, context.records)
-    right_type = types.infer(expression.right, environment, context.records)
+    left_type = types.infer(expression.left, environment, context.records, context.functions)
+    right_type = types.infer(expression.right, environment, context.records, context.functions)
     left = _expression(context, expression.left, environment)
     right = _expression(context, expression.right, environment)
     if language == "rust":
@@ -1340,6 +1504,19 @@ def _binary(
             rendered = {"==": "===", "!=": "!=="}[operator]
             return _group(language, f"{left} {rendered} {right}", top_level)
 
+    if language == "vb6":
+        if operator in {"&&", "||"}:
+            raise RouteError("VB6_SHORT_CIRCUIT_BOOLEAN_OUTSIDE_CERTIFIED_SUBSET")
+        if operator == "+" and left_type == right_type == "string":
+            context.normalization_rules.add("vb6.string.+.ampersand-concatenation")
+            return _group(language, f"{left} & {right}", top_level)
+        if operator == "%":
+            # Integer remainder returned above through ElmosCheckedMod. VB6's
+            # Mod coerces floating operands and is not canonical fmod.
+            raise RouteError("VB6_FLOAT_MODULO_OUTSIDE_CERTIFIED_SUBSET")
+        rendered = {"==": "=", "!=": "<>"}.get(operator, operator)
+        return _group(language, f"{left} {rendered} {right}", top_level)
+
     rendered = operator
     if language == "python":
         rendered = {"&&": "and", "||": "or"}.get(operator, operator)
@@ -1440,6 +1617,16 @@ def _expression(
             args_str = ", ".join(v for _, v in ordered_args)
             return f"new {rec.name}({args_str})"
         raise RouteError(f"UNSUPPORTED_RECORD_CONSTRUCT_TARGET:{lang}")
+    if expression.kind == "call":
+        if expression.function_name is None:
+            raise RouteError("INVALID_CALL_EXPRESSION")
+        if context.functions and expression.function_name not in context.functions:
+            raise RouteError(f"UNKNOWN_FUNCTION:{expression.function_name}")
+        args_str = ", ".join(
+            _expression(context, arg, environment)
+            for arg in expression.call_arguments
+        )
+        return f"{expression.function_name}({args_str})"
     raise RouteError(f"UNSUPPORTED_EMISSION_EXPRESSION:{expression.kind}")
 
 
@@ -1462,12 +1649,43 @@ _LET_SPELLING: dict[Language, str] = {
     "go": "var {name} {type} = {value}",
     "rust": "let {name}: {type} = {value}",
     "cpp": "const {type} {name} = {value}",
+    "vcpp6": "const {type} {name} = {value}",
     "objc": "const {type} {name} = {value}",
     "swift": "let {name}: {type} = {value}",
     "php": "{name} = {value}",
     "kotlin": "val {name}: {type} = {value}",
     "flutter": "final {type} {name} = {value}",
 }
+_MUTABLE_LET_SPELLING: dict[Language, str] = {
+    "java": "{type} {name} = {value}",
+    "csharp": "{type} {name} = {value}",
+    "python": "{name}: {type} = {value}",
+    "typescript": "let {name}: {type} = {value}",
+    "react": "let {name}: {type} = {value}",
+    "javascript": "let {name} = {value}",
+    "go": "var {name} {type} = {value}",
+    "rust": "let mut {name}: {type} = {value}",
+    "cpp": "{type} {name} = {value}",
+    "vcpp6": "{type} {name} = {value}",
+    "objc": "{type} {name} = {value}",
+    "swift": "var {name}: {type} = {value}",
+    "php": "{name} = {value}",
+    "kotlin": "var {name}: {type} = {value}",
+    "flutter": "{type} {name} = {value}",
+}
+
+
+def _collect_assigned_variables(statements: tuple[Statement, ...]) -> set[str]:
+    assigned: set[str] = set()
+    for s in statements:
+        if s.kind == "assign" and s.name is not None:
+            assigned.add(s.name)
+        elif s.kind == "if":
+            assigned.update(_collect_assigned_variables(s.then_body))
+            assigned.update(_collect_assigned_variables(s.else_body))
+        elif s.kind in ("while", "for"):
+            assigned.update(_collect_assigned_variables(s.body))
+    return assigned
 
 
 def _statements(
@@ -1476,17 +1694,23 @@ def _statements(
     environment: dict[str, str],
     indent: int,
     return_type: str,
+    mutable_variables: set[str] | None = None,
 ) -> list[str]:
     unit = "    "
     prefix = unit * indent
     language = context.language
     lines: list[str] = []
+    if mutable_variables is None:
+        mutable_variables = _collect_assigned_variables(statements)
     for statement in statements:
         if statement.kind == "let" and statement.expression is not None:
             if statement.name is None or statement.declared_type is None:
                 raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:let")
             try:
-                spelling = _LET_SPELLING[language]
+                if statement.name in mutable_variables:
+                    spelling = _MUTABLE_LET_SPELLING[language]
+                else:
+                    spelling = _LET_SPELLING[language]
             except KeyError as error:
                 raise RouteError(f"LET_EMISSION_UNSUPPORTED:{language}") from error
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
@@ -1506,13 +1730,26 @@ def _statements(
             # leaking past the branch in targets that would not compile it.
             environment[statement.name] = statement.declared_type
             continue
+        if statement.kind == "assign" and statement.expression is not None:
+            if statement.name is None:
+                raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:assign")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            var_type = environment.get(statement.name)
+            if language in {"typescript", "react", "javascript"} and var_type == "integer":
+                _require_helper(context, "safe_integer")
+                context.normalization_rules.add(f"{language}.assign.integer.safe-integer")
+                value = f"_elmosRequireSafeInteger({value})"
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
+            var_name = _variable(language, statement.name)
+            lines.append(f"{prefix}{var_name} = {value}{suffix}")
+            continue
         if statement.kind == "return" and statement.expression is not None:
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment, top_level=True)
             if (
                 language in {"rust", "swift", "kotlin", "flutter", "python"}
                 and return_type == "number"
-                and types.infer(statement.expression, environment, context.records) == "integer"
+                and types.infer(statement.expression, environment, context.records, context.functions) == "integer"
             ):
                 if language == "rust":
                     context.normalization_rules.add("rust.return.integer-to-number")
@@ -1553,13 +1790,40 @@ def _statements(
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}if {condition}:")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 if statement.else_body:
                     lines.append(f"{prefix}else:")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
             elif language in {"go", "rust"}:
                 lines.append(f"{prefix}if {condition} {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 if statement.else_body:
                     # Go's semicolon rule inserts a `;` at the newline after a
                     # closing brace, which strands the `else` and makes the file
@@ -1573,35 +1837,98 @@ def _statements(
                     else:
                         lines.append(f"{prefix}}}")
                         lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
                     lines.append(f"{prefix}}}")
                 else:
                     lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
                 if statement.else_body:
                     lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
                     lines.append(f"{prefix}}}")
             continue
         if statement.kind == "while" and statement.condition is not None:
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}while {condition}:")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
             elif language == "go":
                 lines.append(f"{prefix}for {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             elif language in {"rust", "swift"}:
                 lines.append(f"{prefix}while {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}while ({condition}) {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             continue
         if statement.kind == "for":
@@ -1610,49 +1937,53 @@ def _statements(
             var_name = _variable(language, statement.name)
             start = _expression(context, statement.start, environment, top_level=True)
             end = _expression(context, statement.end, environment, top_level=True)
-            step = _expression(context, statement.step, environment, top_level=True) if statement.step is not None else None
+            step = (
+                _expression(context, statement.step, environment, top_level=True)
+                if statement.step is not None
+                else None
+            )
             loop_env = dict(environment)
             loop_env[statement.name] = "integer"
             inc = f"{var_name}++" if step is None else f"{var_name} += {step}"
             if language == "python":
                 range_expr = f"range({start}, {end})" if step is None else f"range({start}, {end}, {step})"
                 lines.append(f"{prefix}for {var_name} in {range_expr}:")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
             elif language == "go":
                 lines.append(f"{prefix}for {var_name} := int64({start}); {var_name} < {end}; {inc} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "rust":
                 range_expr = f"{start}..{end}" if step is None else f"({start}..{end}).step_by({step} as usize)"
                 lines.append(f"{prefix}for {var_name} in {range_expr} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "swift":
                 range_expr = f"{start}..<{end}" if step is None else f"stride(from: {start}, to: {end}, by: {step})"
                 lines.append(f"{prefix}for {var_name} in {range_expr} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "kotlin":
                 range_expr = f"{start} until {end}" if step is None else f"{start} until {end} step {step}"
                 lines.append(f"{prefix}for ({var_name} in {range_expr}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language in {"typescript", "react"}:
                 lines.append(f"{prefix}for (let {var_name}: number = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "javascript":
                 lines.append(f"{prefix}for (let {var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "php":
                 lines.append(f"{prefix}for ({var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             else:
                 type_spelling = _type(language, "integer", context.records)
                 lines.append(f"{prefix}for ({type_spelling} {var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             continue
         if statement.kind == "break":
@@ -1678,7 +2009,9 @@ def _signature(language: Language, function: Function, records: dict[str, Record
         return f"export function {function.name}({parameters}): {return_type} {{"
     if language == "javascript":
         documentation = ["/**"]
-        documentation.extend(f" * @param {{{_type(language, item.type, records)}}} {item.name}" for item in function.parameters)
+        documentation.extend(
+            f" * @param {{{_type(language, item.type, records)}}} {item.name}" for item in function.parameters
+        )
         documentation.extend((f" * @returns {{{return_type}}}", " */"))
         parameters = ", ".join(item.name for item in function.parameters)
         return "\n".join([*documentation, f"export function {function.name}({parameters}) {{"])
@@ -1706,7 +2039,9 @@ def _signature(language: Language, function: Function, records: dict[str, Record
         return f"func {function.name}({parameters}) -> {return_type} {{"
     parameters = ", ".join(
         # `NSString *name`, not `NSString * name`.
-        f"{_type(language, item.type, records)}{'' if _type(language, item.type, records).endswith('*') else ' '}{item.name}"
+        f"{_type(language, item.type, records)}"
+        f"{'' if _type(language, item.type, records).endswith('*') else ' '}"
+        f"{item.name}"
         for item in function.parameters
     )
     if language in _WRAPPED_IN_TYPE:
@@ -1714,9 +2049,104 @@ def _signature(language: Language, function: Function, records: dict[str, Record
     return f"{return_type} {function.name}({parameters}) {{"
 
 
+def _vb6_statements(
+    context: _Context,
+    function_name: str,
+    statements: tuple[Statement, ...],
+    environment: dict[str, str],
+    indent: int,
+) -> list[str]:
+    """Render the exact structured subset admitted by the VB6 frontend."""
+
+    prefix = "    " * indent
+    lines: list[str] = []
+    for statement in statements:
+        if statement.kind == "let" and statement.expression is not None:
+            if statement.name is None or statement.declared_type is None:
+                raise RouteError("VB6_LET_INVALID")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}Dim {statement.name} As {_type('vb6', statement.declared_type)}")
+            lines.append(f"{prefix}{statement.name} = {value}")
+            environment[statement.name] = statement.declared_type
+            continue
+        if statement.kind == "assign" and statement.expression is not None:
+            if statement.name is None or statement.name not in environment:
+                raise RouteError("VB6_ASSIGNMENT_TARGET_INVALID")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}{statement.name} = {value}")
+            continue
+        if statement.kind == "return" and statement.expression is not None:
+            value = _expression(context, statement.expression, environment, top_level=True)
+            lines.append(f"{prefix}{function_name} = {value}")
+            lines.append(f"{prefix}Exit Function")
+            continue
+        if statement.kind == "if" and statement.condition is not None:
+            condition = _expression(context, statement.condition, environment, top_level=True)
+            lines.append(f"{prefix}If {condition} Then")
+            lines.extend(
+                _vb6_statements(
+                    context,
+                    function_name,
+                    statement.then_body,
+                    dict(environment),
+                    indent + 1,
+                )
+            )
+            if statement.else_body:
+                lines.append(f"{prefix}Else")
+                lines.extend(
+                    _vb6_statements(
+                        context,
+                        function_name,
+                        statement.else_body,
+                        dict(environment),
+                        indent + 1,
+                    )
+                )
+            lines.append(f"{prefix}End If")
+            continue
+        if statement.kind == "while" and statement.condition is not None:
+            condition = _expression(context, statement.condition, environment, top_level=True)
+            lines.append(f"{prefix}While {condition}")
+            lines.extend(
+                _vb6_statements(
+                    context,
+                    function_name,
+                    statement.body,
+                    dict(environment),
+                    indent + 1,
+                )
+            )
+            lines.append(f"{prefix}Wend")
+            continue
+        # Canonical for-loops are end-exclusive; VB6 For is end-inclusive and
+        # evaluating end-1 can itself overflow. Keep this semantic boundary
+        # explicit until a compatibility iterator is proven.
+        if statement.kind == "for":
+            raise RouteError("VB6_FOR_LOOP_LOWERING_OUTSIDE_CERTIFIED_SUBSET")
+        if statement.kind in {"break", "continue"}:
+            raise RouteError(f"VB6_LOOP_CONTROL_LOWERING_OUTSIDE_CERTIFIED_SUBSET:{statement.kind}")
+        raise RouteError(f"VB6_UNSUPPORTED_EMISSION_STATEMENT:{statement.kind}")
+    return lines
+
+
+def _vb6_function(context: _Context, function: Function) -> str:
+    environment = types.check_function(function, context.records, context.functions)
+    parameters = ", ".join(
+        f"ByVal {parameter.name} As {_type('vb6', parameter.type)}"
+        for parameter in function.parameters
+    )
+    lines = [
+        f"Public Function {function.name}({parameters}) As {_type('vb6', function.return_type)}"
+    ]
+    lines.extend(_vb6_statements(context, function.name, function.body, environment, 1))
+    lines.append("End Function")
+    return "\n".join(lines)
+
+
 def _function(context: _Context, function: Function) -> str:
     language = context.language
-    environment = types.check_function(function, context.records)
+    environment = types.check_function(function, context.records, context.functions)
     lines = [_signature(language, function, context.records)]
     if language in {"typescript", "react"}:
         for parameter in function.parameters:
@@ -1759,7 +2189,8 @@ def _function(context: _Context, function: Function) -> str:
                 context.normalization_rules.add("python.parameter.integer.int64-range")
                 lines.append(f"    _elmos_in_range({parameter.name})")
     body_indent = 2 if language in _WRAPPED_IN_TYPE else 1
-    lines.extend(_statements(context, function.body, environment, body_indent, function.return_type))
+    mutable_variables = _collect_assigned_variables(function.body)
+    lines.extend(_statements(context, function.body, environment, body_indent, function.return_type, mutable_variables))
     if language == "python":
         return "\n".join(lines)
     lines.append("    }" if language in _WRAPPED_IN_TYPE else "}")
@@ -1779,14 +2210,34 @@ def emit(
     if plan.target_language != target:
         raise RouteError("IDENTIFIER_PLAN_TARGET_LANGUAGE_MISMATCH")
     emitter_ir = target_ir_view(ir, plan)
+    sorted_functions = types.topological_sort_functions(emitter_ir.functions)
     context = _Context(
         language=target,
         records={r.name: r for r in emitter_ir.records},
+        functions={f.name: f for f in sorted_functions},
     )
+    if target == "vb6":
+        if emitter_ir.records:
+            raise RouteError("VB6_RECORD_LOWERING_OUTSIDE_CERTIFIED_SUBSET")
+        functions = "\n\n".join(_vb6_function(context, function) for function in sorted_functions)
+        helpers = _helper_sources(context)
+        body = "\n\n".join([functions, *helpers])
+        return _emitted_file(context, "migrated.bas", "Option Explicit\n\n" + body + "\n")
+    if target == "vcpp6":
+        if emitter_ir.records:
+            raise RouteError("VCPP6_RECORD_LOWERING_OUTSIDE_BOUNDED_PROFILE")
+        functions = "\n\n".join(_function(context, function) for function in sorted_functions)
+        helpers = _helper_sources(context)
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(
+            context,
+            "migrated.cpp",
+            "#include <limits.h>\n#include <string>\n\n" + body + "\n",
+        )
     records_defs = [_record_definition(context, record) for record in emitter_ir.records]
     records_str = "\n\n".join(records_defs)
     records_part = [records_str] if records_str else []
-    functions = "\n\n".join(_function(context, function) for function in emitter_ir.functions)
+    functions = "\n\n".join(_function(context, function) for function in sorted_functions)
     helpers = _helper_sources(context)
     if target == "java":
         # Java and C# put helpers inside the type, after the functions, so the
