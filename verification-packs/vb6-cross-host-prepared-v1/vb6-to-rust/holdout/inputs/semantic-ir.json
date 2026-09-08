@@ -1,0 +1,158 @@
+{
+  "analyzer": "elmos-vb6-bounded-parser",
+  "analyzer_version": "1.0.0;dialect=visual-basic-6.0;profile=typed-pure-module-v1",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 101,
+                "file": "clamp.bas",
+                "start_byte": 96
+              },
+              "value": "value"
+            },
+            "operator": ">",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 109,
+                "file": "clamp.bas",
+                "start_byte": 104
+              },
+              "value": "upper"
+            },
+            "source_span": {
+              "end_byte": 109,
+              "file": "clamp.bas",
+              "start_byte": 96
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 169,
+            "file": "clamp.bas",
+            "start_byte": 89
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "name",
+                "source_span": {
+                  "end_byte": 136,
+                  "file": "clamp.bas",
+                  "start_byte": 131
+                },
+                "value": "upper"
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 136,
+                "file": "clamp.bas",
+                "start_byte": 115
+              }
+            }
+          ]
+        },
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 182,
+                "file": "clamp.bas",
+                "start_byte": 177
+              },
+              "value": "value"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 187,
+                "file": "clamp.bas",
+                "start_byte": 185
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 187,
+              "file": "clamp.bas",
+              "start_byte": 177
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 244,
+            "file": "clamp.bas",
+            "start_byte": 170
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 211,
+                  "file": "clamp.bas",
+                  "start_byte": 209
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 211,
+                "file": "clamp.bas",
+                "start_byte": 193
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "name",
+            "source_span": {
+              "end_byte": 262,
+              "file": "clamp.bas",
+              "start_byte": 257
+            },
+            "value": "value"
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 262,
+            "file": "clamp.bas",
+            "start_byte": 245
+          }
+        }
+      ],
+      "name": "clamp",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "integer"
+        },
+        {
+          "name": "upper",
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 275,
+        "file": "clamp.bas",
+        "start_byte": 17
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "clamp.bas",
+  "source_language": "vb6"
+}

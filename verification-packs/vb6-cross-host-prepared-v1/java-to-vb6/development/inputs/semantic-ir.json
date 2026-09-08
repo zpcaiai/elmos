@@ -1,0 +1,131 @@
+{
+  "analyzer": "JDK JavacTask Tree API",
+  "analyzer_version": "21.0.11",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 135,
+                "file": "Pricing.java",
+                "start_byte": 127
+              },
+              "value": "subtotal"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 139,
+                "file": "Pricing.java",
+                "start_byte": 138
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 140,
+              "file": "Pricing.java",
+              "start_byte": 126
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 174,
+            "file": "Pricing.java",
+            "start_byte": 123
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 163,
+                  "file": "Pricing.java",
+                  "start_byte": 162
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 164,
+                "file": "Pricing.java",
+                "start_byte": 155
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 198,
+                "file": "Pricing.java",
+                "start_byte": 190
+              },
+              "value": "subtotal"
+            },
+            "operator": "+",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 204,
+                "file": "Pricing.java",
+                "start_byte": 201
+              },
+              "value": "tax"
+            },
+            "source_span": {
+              "end_byte": 204,
+              "file": "Pricing.java",
+              "start_byte": 190
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 205,
+            "file": "Pricing.java",
+            "start_byte": 183
+          }
+        }
+      ],
+      "name": "calculate",
+      "parameters": [
+        {
+          "name": "subtotal",
+          "source_span": {
+            "end_byte": 101,
+            "file": "Pricing.java",
+            "start_byte": 88
+          },
+          "type": "integer"
+        },
+        {
+          "name": "tax",
+          "source_span": {
+            "end_byte": 111,
+            "file": "Pricing.java",
+            "start_byte": 103
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 211,
+        "file": "Pricing.java",
+        "start_byte": 59
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "Pricing.java",
+  "source_language": "java"
+}

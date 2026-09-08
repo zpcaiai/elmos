@@ -1,0 +1,69 @@
+{
+  "artifact_path": "Clamp.java",
+  "artifact_sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "Clamp.java",
+        "RouteHarness.java"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "-cp",
+        ".",
+        "RouteHarness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+    }
+  ],
+  "language": "java",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "10",
+      "status": "RETURNED",
+      "value": 10
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "7",
+      "status": "RETURNED",
+      "value": 7
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+    "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
+    "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+    "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
+    "language": "java",
+    "profile": [
+      "platform=Darwin/arm64",
+      "distribution=Homebrew-openjdk@21",
+      "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+      "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+      "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+      "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+      "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+    ],
+    "version": "21.0.11"
+  }
+}

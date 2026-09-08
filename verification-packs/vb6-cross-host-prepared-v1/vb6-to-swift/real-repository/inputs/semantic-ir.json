@@ -1,0 +1,121 @@
+{
+  "analyzer": "elmos-vb6-bounded-parser",
+  "analyzer_version": "1.0.0;dialect=visual-basic-6.0;profile=typed-pure-module-v1",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 104,
+                "file": "difference.bas",
+                "start_byte": 100
+              },
+              "value": "left"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 112,
+                "file": "difference.bas",
+                "start_byte": 107
+              },
+              "value": "right"
+            },
+            "source_span": {
+              "end_byte": 112,
+              "file": "difference.bas",
+              "start_byte": 100
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 174,
+            "file": "difference.bas",
+            "start_byte": 93
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 141,
+                  "file": "difference.bas",
+                  "start_byte": 139
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 141,
+                "file": "difference.bas",
+                "start_byte": 118
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 196,
+                "file": "difference.bas",
+                "start_byte": 192
+              },
+              "value": "left"
+            },
+            "operator": "-",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 204,
+                "file": "difference.bas",
+                "start_byte": 199
+              },
+              "value": "right"
+            },
+            "source_span": {
+              "end_byte": 204,
+              "file": "difference.bas",
+              "start_byte": 192
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 204,
+            "file": "difference.bas",
+            "start_byte": 175
+          }
+        }
+      ],
+      "name": "difference",
+      "parameters": [
+        {
+          "name": "left",
+          "type": "integer"
+        },
+        {
+          "name": "right",
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 217,
+        "file": "difference.bas",
+        "start_byte": 17
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "difference.bas",
+  "source_language": "vb6"
+}

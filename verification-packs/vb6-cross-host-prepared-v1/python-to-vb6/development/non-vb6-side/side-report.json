@@ -1,0 +1,78 @@
+{
+  "artifact_path": "pricing.py",
+  "artifact_sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+        "-m",
+        "py_compile",
+        "pricing.py",
+        "_elmos_source_module.py",
+        "source_harness.py"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+        "source_harness.py"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":120}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":5}\n"
+    }
+  ],
+  "language": "python",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "json",
+      "raw": "{\"case_id\":0,\"value\":120}",
+      "status": "RETURNED",
+      "value": 120
+    },
+    {
+      "case_id": 1,
+      "encoding": "json",
+      "raw": "{\"case_id\":1,\"value\":0}",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "json",
+      "raw": "{\"case_id\":2,\"value\":5}",
+      "status": "RETURNED",
+      "value": 5
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/lib/libpython3.12.dylib",
+    "auxiliary_sha256": "6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+    "executable": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+    "executable_sha256": "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
+    "language": "python",
+    "profile": [
+      "python-toolchain-closure-schema=v1",
+      "platform=Darwin/arm64",
+      "distribution=python-build-standalone-20260211-install-only-stripped",
+      "python-root=/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python",
+      "python-source-archive-sha256=22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84",
+      "python-source-archive-bytes=17667661",
+      "python-source-tree-sha256=1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154",
+      "python-runtime-tree-sha256=49eb47a1e6f1a8803ef3686da328abf2e18f1d31b6447190c3455640e4df9adf",
+      "python-runtime-tree-record-count=1899",
+      "python-runtime-tree-file-count=1890",
+      "python-runtime-tree-bytes=47880708",
+      "python-runtime-identity-sha256=8776314c1c57bbf83332a98d947144d329c8e6e57d2fe1cd850875f27d807d0a",
+      "libpython-sha256=6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+      "math-runtime=built-in-via-libpython3.12.dylib",
+      "python-runtime-semantic-soundness=NOT_RUN"
+    ],
+    "version": "3.12.12+20260211"
+  }
+}

@@ -121,6 +121,11 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"^\s*(?i:function)\s+&?\s*([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)\s*\(",
         re.MULTILINE,
     ),
+    "vb6": re.compile(
+        r"^\s*(?:(?:Public|Private|Friend)\s+)?(?:Static\s+)?Function\s+"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE | re.IGNORECASE,
+    ),
 }
 
 
@@ -137,7 +142,9 @@ def propose_candidates(source: bytes, language: Language) -> list[str]:
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        return []
+        if language != "vb6":
+            return []
+        text = source.decode("cp1252")
     if language == "python":
         try:
             tree = ast.parse(text)
@@ -181,6 +188,7 @@ _COMMON_SOURCE_REJECTION_CODES = frozenset(
     }
 )
 _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
+    "vb6": frozenset(),
     "python": frozenset(
         {
             "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
@@ -624,6 +632,10 @@ def _analyzer_failure_verdict(error: Exception, language: Language) -> str:
     primary_code = diagnostic.partition(":")[0]
     if re.fullmatch(r"[A-Z][A-Z0-9_]*", primary_code) is None:
         return Verdict.NOT_RUN
+    if language == "vb6" and primary_code.startswith("VB6_"):
+        if primary_code in {"VB6_SOURCE_CHANGED_DURING_READ", "VB6_EXPRESSION_SOURCE_SPAN_REQUIRED"}:
+            return Verdict.NOT_RUN
+        return Verdict.UNSUPPORTED
     allowed = _COMMON_SOURCE_REJECTION_CODES | _SOURCE_REJECTION_CODES[language]
     return Verdict.UNSUPPORTED if primary_code in allowed else Verdict.NOT_RUN
 
@@ -1589,7 +1601,9 @@ def _candidate_inventory(source: bytes, language: Language) -> tuple[list[str], 
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        return [], False, "SOURCE_NOT_UTF8"
+        if language != "vb6":
+            return [], False, "SOURCE_NOT_UTF8"
+        text = source.decode("cp1252")
     if language == "python":
         try:
             tree = ast.parse(text)

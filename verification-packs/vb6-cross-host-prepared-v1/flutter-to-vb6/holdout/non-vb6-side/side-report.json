@@ -1,0 +1,86 @@
+{
+  "artifact_path": "clamp.dart",
+  "artifact_sha256": "sha256:318ce420a8d40fb7532cd399e778b635bd44ec0e91344a43ac4bf7e0ab8fd063",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+        "analyze",
+        "--fatal-infos",
+        "--fatal-warnings",
+        "clamp.dart",
+        "source_harness.dart"
+      ],
+      "stderr": "",
+      "stdout": "Analyzing clamp.dart, source_harness.dart...\nNo issues found!\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+        "compile",
+        "kernel",
+        "source_harness.dart",
+        "-o",
+        "source_harness.dill"
+      ],
+      "stderr": "",
+      "stdout": "Compiling source_harness.dart to kernel file source_harness.dill.\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+        "source_harness.dill"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+    }
+  ],
+  "language": "flutter",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "10",
+      "status": "RETURNED",
+      "value": 10
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "7",
+      "status": "RETURNED",
+      "value": 7
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",
+    "auxiliary_sha256": "657c6a1779596306b30c59e589762287ad75b5fd8f008c7873864622a8865152",
+    "executable": "/opt/homebrew/share/flutter/bin/flutter",
+    "executable_sha256": "7d486c33b30a0cf1ea5146231c68bb8f966cdb4e087c5cd8b37e14513f536e7d",
+    "language": "flutter",
+    "profile": [
+      "platform=Darwin/arm64",
+      "flutter-root=/opt/homebrew/share/flutter",
+      "flutter-revision=924134a44c189315be2148659913dda1671cbe99",
+      "flutter-engine-revision=c416acfeb8126e097f758c664aaa3da929e27da0",
+      "flutter-build-closure-schema=v1",
+      "flutter-build-closure-sha256=10512434c92961f94fb2af7fbfbcbd60ef9d287eb8bed6e5e268ed0a1b632176",
+      "flutter-dart-sdk-tree-sha256=04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50",
+      "dart-analyzer=10.1.0",
+      "_fe_analyzer_shared=95.0.0",
+      "repository-build=pure-dart-import-free",
+      "flutter-ui-semantics=UNSUPPORTED"
+    ],
+    "version": "Flutter 3.44.1 / Dart 3.12.1"
+  }
+}

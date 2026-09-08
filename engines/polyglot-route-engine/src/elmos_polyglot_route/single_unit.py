@@ -68,6 +68,7 @@ _SOURCE_EXTENSION: dict[Language, str] = {
     "react": ".tsx",
     "flutter": ".dart",
     "javascript": ".mjs",
+    "vb6": ".bas",
 }
 
 _TARGET_FILE: dict[Language, str] = {
@@ -85,6 +86,7 @@ _TARGET_FILE: dict[Language, str] = {
     "react": "migrated.tsx",
     "flutter": "migrated.dart",
     "javascript": "migrated.mjs",
+    "vb6": "migrated.bas",
 }
 
 _AUXILIARY_COMPILER_LANGUAGES: frozenset[Language] = frozenset(
@@ -329,6 +331,37 @@ def _write_flutter_static_project(output: Path) -> None:
     )
 
 
+def _write_vb6_static_project(output: Path) -> None:
+    """Create the smallest executable project that forces VB6 to compile a module."""
+
+    (output / "elmos_main.bas").write_text(
+        'Attribute VB_Name = "ElmosMain"\n'
+        "Option Explicit\n\n"
+        "Public Sub Main()\n"
+        "End Sub\n",
+        encoding="ascii",
+        newline="\r\n",
+    )
+    (output / "elmos-static-check.vbp").write_text(
+        "Type=Exe\n"
+        "Module=Migrated; migrated.bas\n"
+        "Module=ElmosMain; elmos_main.bas\n"
+        'Startup="Sub Main"\n'
+        'Name="ElmosStaticCheck"\n'
+        'ExeName32="elmos-static-check.exe"\n'
+        'Path32="."\n'
+        'Command32=""\n'
+        'HelpContextID="0"\n'
+        'CompatibleMode="0"\n'
+        "MajorVer=1\nMinorVer=0\nRevisionVer=0\nAutoIncrementVer=0\n"
+        "CompilationType=0\nOptimizationType=0\nBoundsCheck=0\nOverflowCheck=0\n"
+        "FlPointCheck=0\nFDIVCheck=0\nUnroundedFP=0\nStartMode=0\nUnattended=0\n"
+        "Retained=0\nThreadPerObject=0\nMaxNumberOfThreads=1\n",
+        encoding="ascii",
+        newline="\r\n",
+    )
+
+
 def _static_check_command(
     target_language: Language,
     content: str,
@@ -476,6 +509,15 @@ def _static_check_command(
             "--sdk-path=" + str(Path(dart).resolve().parent.parent),
             target_name,
         )
+    if target_language == "vb6":
+        _write_vb6_static_project(output)
+        return [
+            toolchain.executable,
+            "/Make",
+            "elmos-static-check.vbp",
+            "/Out",
+            "vb6-build.log",
+        ]
     raise RouteError(f"STATIC_CHECK_LANGUAGE_UNSUPPORTED:{target_language}")
 
 
@@ -502,6 +544,11 @@ def check_only(target_language: Language, content: str, output: Path) -> dict[st
     completed = _run(command, output, toolchain=toolchain)
 
     passed = completed.returncode == 0
+    if target_language == "vb6" and passed:
+        compiled = output / "elmos-static-check.exe"
+        if compiled.is_symlink() or not compiled.is_file() or compiled.stat().st_size <= 0:
+            passed = False
+            diagnostics.append("compiled artifact elmos-static-check.exe is missing")
     if target_language == "flutter":
         receipt_after = verify_flutter_build_toolchain(toolchain)
         if receipt_after != flutter_receipt:

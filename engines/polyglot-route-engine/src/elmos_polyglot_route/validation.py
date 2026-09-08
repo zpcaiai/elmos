@@ -242,6 +242,165 @@ def _expected(value: object, language: Language) -> str:
     return _argument(value, language)
 
 
+def _vb6_literal(value: object, value_type: str) -> str:
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**31) <= value <= 2**31 - 1:
+            raise RouteError("VB6_CASE_INTEGER_OUTSIDE_LONG32")
+        return "&H80000000" if value == -(2**31) else f"{value}&"
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
+            raise RouteError("VB6_CASE_NUMBER_OUTSIDE_FINITE_BINARY64")
+        rendered = repr(float(value))
+        return rendered + ("#" if "." in rendered or "e" in rendered.lower() else ".0#")
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("VB6_CASE_BOOLEAN_REQUIRED")
+        return "True" if value else "False"
+    if value_type == "string":
+        if not isinstance(value, str) or any(ord(character) > 127 for character in value):
+            raise RouteError("VB6_CASE_STRING_OUTSIDE_ASCII_PROFILE")
+        return '"' + value.replace('"', '""') + '"'
+    raise RouteError(f"VB6_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
+def _vb6_harness(function: Function, cases: list[dict[str, Any]]) -> str:
+    """Render a no-dialog VB6 harness with locale-independent observations."""
+
+    vb_type = {
+        "integer": "Long",
+        "number": "Double",
+        "boolean": "Boolean",
+        "string": "String",
+    }.get(function.return_type)
+    if vb_type is None:
+        raise RouteError(f"VB6_CASE_TYPE_UNSUPPORTED:{function.return_type}")
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        values = case.get("args")
+        if not isinstance(values, list) or len(values) != len(function.parameters):
+            raise RouteError("VB6_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(
+            _vb6_literal(value, parameter.type)
+            for value, parameter in zip(values, function.parameters, strict=True)
+        )
+        expected = _vb6_literal(_returned_case_value(case), function.return_type)
+        actual_name = f"actual{index}"
+        expected_name = f"expected{index}"
+        checks.extend(
+            [
+                f"    Dim {actual_name} As {vb_type}",
+                f"    Dim {expected_name} As {vb_type}",
+                f"    {actual_name} = {function.name}({args})",
+                f"    {expected_name} = {expected}",
+            ]
+        )
+        if function.return_type == "number":
+            checks.extend(
+                [
+                    f"    If ElmosFP64Hex({actual_name}) <> ElmosFP64Hex({expected_name}) Then GoTo Failed",
+                    f'    Print #channel, "ELMOS_OBSERVATION" & vbTab & "{index}" '
+                    f'& vbTab & "fp64-hex" & vbTab & ElmosFP64Hex({actual_name})',
+                ]
+            )
+        elif function.return_type == "boolean":
+            checks.extend(
+                [
+                    f"    If {actual_name} <> {expected_name} Then GoTo Failed",
+                    f'    Print #channel, "ELMOS_OBSERVATION" & vbTab & "{index}" '
+                    f'& vbTab & "bool" & vbTab & LCase$(CStr({actual_name}))',
+                ]
+            )
+        elif function.return_type == "string":
+            checks.extend(
+                [
+                    f"    If StrComp({actual_name}, {expected_name}, vbBinaryCompare) <> 0 Then GoTo Failed",
+                    f'    Print #channel, "ELMOS_OBSERVATION" & vbTab & "{index}" '
+                    f'& vbTab & "hex-utf8" & vbTab & ElmosASCIIHex({actual_name})',
+                ]
+            )
+        else:
+            checks.extend(
+                [
+                    f"    If {actual_name} <> {expected_name} Then GoTo Failed",
+                    f'    Print #channel, "ELMOS_OBSERVATION" & vbTab & "{index}" '
+                    f'& vbTab & "i64-dec" & vbTab & CStr({actual_name})',
+                ]
+            )
+    return (
+        'Attribute VB_Name = "ElmosHarness"\n'
+        "Option Explicit\n\n"
+        'Private Declare Sub ElmosCopyMemory Lib "kernel32" Alias "RtlMoveMemory" '
+        "(ByRef destination As Any, ByRef source As Any, ByVal length As Long)\n\n"
+        "Private Function ElmosHexLong(ByVal value As Long) As String\n"
+        '    ElmosHexLong = LCase$(Right$("00000000" & Hex$(value), 8))\n'
+        "End Function\n\n"
+        "Private Function ElmosFP64Hex(ByVal value As Double) As String\n"
+        "    Dim words(0 To 1) As Long\n"
+        "    ElmosCopyMemory words(0), value, 8&\n"
+        "    ElmosFP64Hex = ElmosHexLong(words(1)) & ElmosHexLong(words(0))\n"
+        "End Function\n\n"
+        "Private Function ElmosASCIIHex(ByVal value As String) As String\n"
+        "    Dim index As Long\n"
+        "    Dim code As Long\n"
+        "    For index = 1& To Len(value)\n"
+        "        code = AscW(Mid$(value, index, 1&))\n"
+        "        If code < 0& Or code > 127& Then Err.Raise vbObjectError + 761&\n"
+        '        ElmosASCIIHex = ElmosASCIIHex & LCase$(Right$("0" & Hex$(code), 2))\n'
+        "    Next index\n"
+        "End Function\n\n"
+        "Public Sub Main()\n"
+        "    Dim channel As Integer\n"
+        "    On Error GoTo Failed\n"
+        "    channel = FreeFile\n"
+        '    Open App.Path & "\\observations.tsv" For Output As #channel\n'
+        + "\n".join(checks)
+        + "\n    Close #channel\n"
+        "    Exit Sub\n"
+        "Failed:\n"
+        "    On Error Resume Next\n"
+        '    Print #channel, "ELMOS_FAILURE" & vbTab & CStr(Err.Number)\n'
+        "    Close #channel\n"
+        "End Sub\n"
+    )
+
+
+def _write_vb6_validation_project(
+    output: Path,
+    *,
+    compiler: str,
+    subject_file: str,
+    function: Function,
+    cases: list[dict[str, Any]],
+) -> list[list[str]]:
+    (output / "elmos_harness.bas").write_text(
+        _vb6_harness(function, cases),
+        encoding="ascii",
+        newline="\r\n",
+    )
+    (output / "elmos-route-harness.vbp").write_text(
+        "Type=Exe\n"
+        f"Module=ElmosSubject; {subject_file}\n"
+        "Module=ElmosHarness; elmos_harness.bas\n"
+        'Startup="Sub Main"\n'
+        'Name="ElmosRouteHarness"\n'
+        'ExeName32="elmos-route-harness.exe"\n'
+        'Path32="."\n'
+        'Command32=""\n'
+        'HelpContextID="0"\n'
+        'CompatibleMode="0"\n'
+        "MajorVer=1\nMinorVer=0\nRevisionVer=0\nAutoIncrementVer=0\n"
+        "CompilationType=0\nOptimizationType=0\nBoundsCheck=0\nOverflowCheck=0\n"
+        "FlPointCheck=0\nFDIVCheck=0\nUnroundedFP=0\nStartMode=0\nUnattended=0\n"
+        "Retained=0\nThreadPerObject=0\nMaxNumberOfThreads=1\n",
+        encoding="ascii",
+        newline="\r\n",
+    )
+    return [
+        [compiler, "/Make", "elmos-route-harness.vbp", "/Out", "vb6-build.log"],
+        ["./elmos-route-harness.exe"],
+    ]
+
+
 def _returned_case_value(case: dict[str, Any]) -> object:
     if "expected_error" in case:
         # Error/trap equivalence requires one isolated process per case so a
@@ -2024,6 +2183,14 @@ def validate_source(
             ],
             [toolchain.auxiliary, "source_harness.dill"],
         ]
+    elif language == "vb6":
+        commands = _write_vb6_validation_project(
+            output,
+            compiler=toolchain.executable,
+            subject_file=source.name,
+            function=function,
+            cases=cases,
+        )
     else:
         raise RouteError(f"SOURCE_RUNTIME_UNSUPPORTED:{language}")
     logs: list[dict[str, Any]] = []
@@ -2050,6 +2217,14 @@ def validate_source(
         )
         if index == len(commands) - 1:
             runtime_stdout = completed.stdout
+    if language == "vb6":
+        executable = output / "elmos-route-harness.exe"
+        observations_path = output / "observations.tsv"
+        if executable.is_symlink() or not executable.is_file() or executable.stat().st_size <= 0:
+            raise RouteError("VB6_COMPILED_HARNESS_MISSING")
+        if observations_path.is_symlink() or not observations_path.is_file():
+            raise RouteError("VB6_RUNTIME_OBSERVATIONS_MISSING")
+        runtime_stdout = observations_path.read_text(encoding="ascii")
     if javascript_descriptor is not None:
         current_descriptor = javascript_esm_descriptor(source)
         if (
@@ -2270,6 +2445,14 @@ def validate(
             [toolchain.auxiliary, "-p", "tsconfig.json"],
             [toolchain.executable, "dist/route_harness.js"],
         ]
+    elif language == "vb6":
+        commands = _write_vb6_validation_project(
+            output,
+            compiler=toolchain.executable,
+            subject_file=emitted.relative_path,
+            function=function,
+            cases=cases,
+        )
     else:
         raise RouteError(f"TARGET_RUNTIME_UNSUPPORTED:{language}")
     logs = []
@@ -2290,6 +2473,14 @@ def validate(
         logs.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
         if index == len(commands) - 1:
             runtime_stdout = completed.stdout
+    if language == "vb6":
+        executable = output / "elmos-route-harness.exe"
+        observations_path = output / "observations.tsv"
+        if executable.is_symlink() or not executable.is_file() or executable.stat().st_size <= 0:
+            raise RouteError("VB6_COMPILED_HARNESS_MISSING")
+        if observations_path.is_symlink() or not observations_path.is_file():
+            raise RouteError("VB6_RUNTIME_OBSERVATIONS_MISSING")
+        runtime_stdout = observations_path.read_text(encoding="ascii")
     observations = _observations(runtime_stdout, function, len(cases))
     report = {
         "status": "PASSED",

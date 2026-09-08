@@ -255,6 +255,7 @@ _BUILD_FILES: dict[Language, tuple[str, ...]] = {
         "analysis_options.yaml",
         ".dart_tool/package_config.json",
     ),
+    "vb6": ("elmos-migrated.vbp",),
 }
 
 _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
@@ -272,6 +273,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "php": ("src", ".php", frozenset()),
     "kotlin": ("src/main/kotlin", ".kt", frozenset()),
     "flutter": ("lib", ".dart", frozenset({"lib/main.dart"})),
+    "vb6": ("src", ".bas", frozenset({"src/ElmosMain.bas"})),
 }
 
 # These generated source files participate in the whole-project compiler input
@@ -280,6 +282,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
 _AUXILIARY_BUILD_INPUTS: dict[Language, tuple[str, ...]] = {
     "python": ("src/elmos_generated/__init__.py",),
     "flutter": ("lib/main.dart",),
+    "vb6": ("src/ElmosMain.bas",),
 }
 
 
@@ -1283,6 +1286,25 @@ def _place_swift(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_vb6(destination: Path, namespace: str, content: str) -> str:
+    """Place one dependency-free VB6 standard module.
+
+    The VBP descriptor assigns the module identity. Source-supplied Attribute
+    declarations are refused so generated assembly owns that identity and two
+    repository units cannot silently alias the same VB_Name.
+    """
+
+    if re.search(r"(?im)^\s*Attribute\s+VB_Name\s*=", content):
+        raise RouteError("ASSEMBLY_VB6_MODULE_ATTRIBUTE_UNEXPECTED")
+    if not re.search(r"(?im)^\s*Option\s+Explicit\s*$", content):
+        raise RouteError("ASSEMBLY_VB6_OPTION_EXPLICIT_REQUIRED")
+    relative = f"src/{namespace}/migrated.bas"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8", newline="\r\n")
+    return relative
+
+
 _PLACERS = {
     "java": _place_java,
     "csharp": _place_csharp,
@@ -1298,6 +1320,7 @@ _PLACERS = {
     "php": _place_php,
     "kotlin": _place_kotlin,
     "flutter": _place_flutter,
+    "vb6": _place_vb6,
 }
 
 
@@ -1317,6 +1340,7 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "php": f"src/{namespace}/migrated.php",
         "kotlin": f"src/main/kotlin/elmos/generated/{namespace}/migrated.kt",
         "flutter": f"lib/generated/{namespace}/migrated.dart",
+        "vb6": f"src/{namespace}/migrated.bas",
     }
     return paths[target_language]
 
@@ -1561,6 +1585,38 @@ def _validate_build_verification(
             != _exact_toolchain_identity_sha256(expected_identity)
         ):
             raise RouteError("ASSEMBLY_KOTLIN_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
+    if target_language == "vb6":
+        expected_identity = _exact_toolchain_identity(current_toolchain)
+        if (
+            verification.get("vb6_exact_toolchain") != expected_identity
+            or verification.get("vb6_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
+            raise RouteError("ASSEMBLY_VB6_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
+        artifact = verification.get("vb6_compiled_artifact")
+        if (
+            not isinstance(artifact, Mapping)
+            or artifact.get("path") != "elmos-migrated.exe"
+            or type(artifact.get("bytes")) is not int
+            or int(artifact["bytes"]) <= 0
+            or not isinstance(artifact.get("sha256"), str)
+            or _RAW_SHA256_PATTERN.fullmatch(
+                str(artifact["sha256"]).removeprefix("sha256:")
+            )
+            is None
+        ):
+            raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_INVALID")
+        if destination is not None:
+            compiled = _confined_regular_file(
+                destination,
+                str(artifact["path"]),
+                "ASSEMBLY_VB6_COMPILED_ARTIFACT_INVALID",
+            )
+            if _stable_file_binding(
+                compiled,
+                "ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED",
+            ) != (artifact["bytes"], artifact["sha256"]):
+                raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED")
     for record in commands:
         if (
             not isinstance(record, Mapping)
@@ -2582,6 +2638,40 @@ def _write_build_files(
             )
             + "\n",
             encoding="utf-8",
+        )
+    elif target_language == "vb6":
+        vb6_modules: list[str] = []
+        for unit in sorted(included_units, key=lambda item: str(item["namespace"])):
+            namespace = str(unit.get("namespace", ""))
+            relative = str(unit.get("assembled_path", ""))
+            if (
+                re.fullmatch(r"wu[0-9a-z]+", namespace) is None
+                or relative != f"src/{namespace}/migrated.bas"
+            ):
+                raise RouteError("ASSEMBLY_VB6_SOURCE_SET_INVALID")
+            vb6_modules.append(f"Module={namespace}; {relative}")
+        if not vb6_modules:
+            raise RouteError("ASSEMBLY_VB6_SOURCE_SET_INVALID")
+        (destination / "src" / "ElmosMain.bas").write_text(
+            'Attribute VB_Name = "ElmosMain"\n'
+            "Option Explicit\n\n"
+            "Public Sub Main()\n"
+            "End Sub\n",
+            encoding="ascii",
+            newline="\r\n",
+        )
+        (destination / "elmos-migrated.vbp").write_text(
+            "Type=Exe\n"
+            + "\n".join(vb6_modules)
+            + "\nModule=ElmosMain; src/ElmosMain.bas\n"
+            + "Name=\"ElmosMigrated\"\n"
+            + "Startup=\"Sub Main\"\n"
+            + "ExeName32=\"elmos-migrated.exe\"\n"
+            + "Path32=\".\"\n"
+            + "CompatibleMode=\"0\"\n"
+            + "MajorVer=1\nMinorVer=0\nRevisionVer=0\nAutoIncrementVer=0\n",
+            encoding="ascii",
+            newline="\r\n",
         )
     else:
         raise RouteError(f"ASSEMBLY_UNSUPPORTED_TARGET_LANGUAGE:{target_language}")
@@ -4003,6 +4093,7 @@ def verify_assembled_project(
 
     toolchain = exact_toolchain(target_language)
     commands: list[dict[str, Any]] = []
+    vb6_compiled_artifact: dict[str, object] | None = None
     toolchain_dirs = tuple(
         dict.fromkeys(
             Path(path).resolve().parent for path in (toolchain.executable, toolchain.auxiliary) if path is not None
@@ -4133,6 +4224,39 @@ def verify_assembled_project(
         flutter_build_receipt_after = verify_flutter_build_toolchain(toolchain)
         if flutter_build_receipt_after != flutter_build_receipt:
             raise RouteError("ASSEMBLY_FLUTTER_BUILD_TOOLCHAIN_CHANGED")
+    elif target_language == "vb6":
+        command = [
+            toolchain.executable,
+            "/Make",
+            "elmos-migrated.vbp",
+            "/Out",
+            "vb6-build.log",
+        ]
+        completed = _run(
+            command,
+            destination,
+            timeout=900,
+            executable_dirs=toolchain_dirs,
+        )
+        compiled = destination / "elmos-migrated.exe"
+        if compiled.is_symlink() or not compiled.is_file() or compiled.stat().st_size <= 0:
+            raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_MISSING")
+        compiled_bytes, compiled_sha256 = _stable_file_binding(
+            compiled,
+            "ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED",
+        )
+        commands.append(
+            {
+                "command": command,
+                "stdout": completed.stdout[-2_000:],
+                "stderr": completed.stderr[-2_000:],
+            }
+        )
+        vb6_compiled_artifact = {
+            "path": "elmos-migrated.exe",
+            "bytes": compiled_bytes,
+            "sha256": compiled_sha256,
+        }
     elif target_language == "python":
         source_directory = destination / "src"
         command = [toolchain.executable, "-m", "compileall", "-q", str(source_directory)]
@@ -4322,6 +4446,16 @@ def verify_assembled_project(
         )
         manifest["build_verification"]["kotlin_exact_toolchain_sha256"] = (
             _exact_toolchain_identity_sha256(kotlin_identity)
+        )
+    if target_language == "vb6":
+        assert vb6_compiled_artifact is not None
+        vb6_identity = _exact_toolchain_identity(toolchain)
+        manifest["build_verification"]["vb6_exact_toolchain"] = vb6_identity
+        manifest["build_verification"]["vb6_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(vb6_identity)
+        )
+        manifest["build_verification"]["vb6_compiled_artifact"] = (
+            vb6_compiled_artifact
         )
     if target_language == "react":
         manifest["build_verification"]["react_runtime_receipt"] = runtime_receipt
