@@ -37,6 +37,7 @@ export const platformOperationsSurfaces = [
   "/frontend",
   "/pricing",
   "/account",
+  "/workbench",
 ] as const;
 
 export type PlatformOperationsSurface = (typeof platformOperationsSurfaces)[number];
