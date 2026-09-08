@@ -779,10 +779,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for target in configured_sources
             if source != target
         }
-        self.assertEqual(len(expected_matrix_nodes), 312)
-        self.assertEqual(len(expected_matrix_nodes) + len(invariant_tests), 315)
+        self.assertEqual(len(expected_matrix_nodes), 364)
+        self.assertEqual(len(expected_matrix_nodes) + len(invariant_tests), 367)
         self.assertIn(
-            'if len(selectors) != 24 or len(set(selectors)) != 24:',
+            'if len(selectors) != 26 or len(set(selectors)) != 26:',
             route_matrix_job,
         )
         self.assertIn(
