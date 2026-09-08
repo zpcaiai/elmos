@@ -367,6 +367,7 @@ class RepositoryGateTests(unittest.TestCase):
             tuple(ROUTE_SETS.THIRTEEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
             GATE.EXPECTED_ROUTE_KEYS,
         )
+        self.assertNotIn("vb6", GATE.LANGUAGES)
         self.assertNotIn("javascript", GATE.LANGUAGES)
         self.assertTrue(
             all("javascript" not in route for route in GATE.EXPECTED_ROUTE_KEYS)
