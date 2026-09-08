@@ -759,6 +759,29 @@ _SWIFT_ANALYZER_FAILURE: tuple[str, str, str] | None = None
 _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
+        "SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TYPE_MISMATCH",
+        "SWIFT_CONDITION_MUST_BE_BOOLEAN",
+        "SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_EXPLICIT_TYPE_REQUIRED",
+        "SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_FOR_CLOSED_RANGE_REJECTED",
+        "SWIFT_FOR_DOWNTO_REJECTED",
+        "SWIFT_FOR_NON_POSITIVE_STEP_REJECTED",
+        "SWIFT_FOR_CONDITION_NON_MONOTONIC",
+        "SWIFT_FOR_VARIABLE_REQUIRED",
+        "SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "SWIFT_BREAK_OUTSIDE_LOOP",
+        "SWIFT_CONTINUE_OUTSIDE_LOOP",
+        "SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LOCAL_INITIALIZER_REQUIRED",
+        "SWIFT_LOCAL_NAME_REQUIRED",
+        "SWIFT_UNDECLARED_VARIABLE",
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
@@ -5588,6 +5611,12 @@ def _run_trusted_swift_analyzer(
         if _verify_swift_execution_seal(binary, receipt) != before:
             raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION") from error
         wrapped = str(error)
+        prefix = f"NATIVE_ANALYZER_FAILED:{binary}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix):]
+            for reason in allowed_domain_errors:
+                if candidate == reason or candidate.startswith(f"{reason}:"):
+                    raise RouteError(candidate) from error
         for reason in allowed_domain_errors:
             if wrapped == f"NATIVE_ANALYZER_FAILED:{binary}:{reason}":
                 raise RouteError(reason) from error
