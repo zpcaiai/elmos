@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "commercial" / "bootstrap_empty_neon_via_psql.py"
 MIGRATE_SCRIPT = ROOT / "scripts" / "commercial" / "migrate_neon.sh"
+ROLE_SCRIPT = ROOT / "scripts" / "commercial" / "configure_billing_runtime_role.sh"
 SPEC = importlib.util.spec_from_file_location("empty_neon_bootstrap", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
@@ -74,6 +75,36 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
 
         self.assertEqual(1, source.count(pending_aware_validation))
         self.assertEqual(1, source.count(strict_validation))
+
+    def test_runtime_role_restores_the_post_migration_function_allowlist(self) -> None:
+        source = ROLE_SCRIPT.read_text(encoding="utf-8")
+        for function in (
+            "elmos_reserve_usage_v2",
+            "elmos_settle_usage_v2",
+            "elmos_release_usage_v2",
+            "elmos_commercial_create_order",
+            "elmos_commercial_fulfill_order",
+            "elmos_commercial_mark_order_handoff",
+            "elmos_commercial_mark_order_prepare_failed",
+            "elmos_commercial_reserve_generation",
+            "elmos_commercial_settle_generation",
+            "elmos_commercial_release_generation",
+        ):
+            self.assertIn(f"'{function}'", source)
+
+        read_only_start = source.index("GRANT SELECT ON TABLE\n  commercial_products,")
+        read_only_end = source.index('TO "$runtime_role";', read_only_start)
+        read_only_grant = source[read_only_start:read_only_end]
+        for table in (
+            "commercial_orders",
+            "commercial_credit_accounts",
+            "commercial_credit_lots",
+            "commercial_credit_ledger_entries",
+            "project_generation_entitlements",
+            "commercial_credit_reservations",
+            "commercial_credit_reservation_lots",
+        ):
+            self.assertIn(table, read_only_grant)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,8 @@
 - 数据库：PostgreSQL 17.5
 - Flyway：V1–V91；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V91__commercial_credit_and_one_time_orders.sql`
-- 目录版本：`2026-09-08.1`
+- 目录版本：`2026-09-08.1`；V91 以前向追加方式保存三档订阅快照并重绑定试用/
+  账期函数，V49 与旧目录版本保持不可变
 - 数量：`numeric(30,0)`，只接受非负整数
 - 金额：人民币分，`numeric(19,0)`；提供方成本使用 `numeric(30,6)` 并带显式币种
 

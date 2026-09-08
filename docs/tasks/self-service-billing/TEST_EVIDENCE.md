@@ -16,6 +16,7 @@
 | 定价 JSON Schema | `jsonschema 4.25.1` 校验目录 | `PASS` |
 | 目录发布门禁 | DRAFT 结构验证；缺少真实外部证据时拒绝发布 | `PASS`（预期 `PUBLICATION_BLOCKED`） |
 | 最小权限运行角色 | `NOSUPERUSER`、`NOBYPASSRLS`、函数白名单、跨租户失败关闭 | `PASS` |
+| 迁移后角色恢复与 API readiness | V1–V91 后创建运行时角色、恢复精确授权、持久层/API 旅程 | `PASS` |
 | 负向数据库验证 | 跨租户、缺租户、重复试用、追加事实修改、超额并发 | `PASS` |
 | Neon 生产迁移 | 精确项目/分支/数据库未知 | `NOT_RUN` |
 | 支付宝/微信生产商户真实付款与退款 | 商户、证书与回调域名未注入 | `NOT_RUN` |

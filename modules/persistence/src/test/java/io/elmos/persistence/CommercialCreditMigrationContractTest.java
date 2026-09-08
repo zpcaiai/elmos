@@ -14,6 +14,13 @@ class CommercialCreditMigrationContractTest {
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
+        assertTrue(sql.contains("INSERT INTO self_service_pricing_plan_versions"));
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-free-trial'"));
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-monthly'"));
+        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-annual'"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_activate_subscription_period"));
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_grant_trial"));
+        assertFalse(sql.contains("2026-07-28.2"));
         assertTrue(sql.contains("'elmos-credit-500', 'CREDIT_PACK', '2026-09-08.1'"));
         assertTrue(sql.contains("'elmos-project-generation-once', 'PROJECT_GENERATION_ONCE'"));
         assertTrue(sql.contains("ELMOS_COMMERCIAL_PRODUCT_IMMUTABLE"));
