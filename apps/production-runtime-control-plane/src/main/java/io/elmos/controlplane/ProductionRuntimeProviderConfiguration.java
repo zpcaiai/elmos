@@ -47,6 +47,7 @@ class ProductionRuntimeProviderConfiguration {
             TransactionTemplate transactions,
             Clock clock,
             @Value("${elmos.production-runtime.provider.object-storage.backend-id}") String backendId,
+            @Value("${elmos.production-runtime.provider.object-storage.backend-kind:S3}") String backendKind,
             @Value("${elmos.production-runtime.provider.object-storage.endpoint}") URI endpoint,
             @Value("${elmos.production-runtime.provider.object-storage.bucket}") String bucket,
             @Value("${elmos.production-runtime.provider.object-storage.region}") String region,
@@ -54,6 +55,7 @@ class ProductionRuntimeProviderConfiguration {
             @Value("${elmos.production-runtime.provider.object-storage.server-side-encryption:SSE_KMS}") String encryption,
             @Value("${elmos.production-runtime.provider.object-storage.cmk-reference:}") String cmkReference,
             @Value("${elmos.production-runtime.provider.object-storage.max-object-bytes:16777216}") long maxObjectBytes,
+            @Value("${elmos.production-runtime.provider.object-storage.upload-fencing-protocol:LEGACY_UNFENCED}") String uploadFencingProtocol,
             @Value("${elmos.production-runtime.provider.object-storage.access-key-file}") Path accessKeyFile,
             @Value("${elmos.production-runtime.provider.object-storage.secret-key-file}") Path secretKeyFile,
             @Value("${elmos.production-runtime.provider.object-storage.session-token-file:}") String sessionTokenFile,
@@ -62,6 +64,9 @@ class ProductionRuntimeProviderConfiguration {
         requireStorageEndpoint(endpoint, serviceMeshHttp);
         if (!backendId.matches("[A-Za-z0-9][A-Za-z0-9._-]{1,159}")) {
             throw new IllegalArgumentException("object storage backend id is invalid");
+        }
+        if (!Set.of("S3", "MINIO", "OSS").contains(backendKind)) {
+            throw new IllegalArgumentException("object storage backend kind is invalid");
         }
         if (!bucket.matches("[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]")
                 || bucket.contains("..")) {
@@ -79,6 +84,20 @@ class ProductionRuntimeProviderConfiguration {
         if (maxObjectBytes < 1 || maxObjectBytes > 5L * 1024 * 1024 * 1024) {
             throw new IllegalArgumentException("object storage maximum size is invalid");
         }
+        if (!Set.of(
+                S3ObjectStore.LEGACY_UNFENCED,
+                S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1)
+                .contains(uploadFencingProtocol)) {
+            throw new IllegalArgumentException(
+                    "object storage upload fencing protocol is invalid");
+        }
+        if (S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1.equals(
+                uploadFencingProtocol)) {
+            requireVerifiedUploadFencingBackend(
+                    jdbc, backendId, backendKind, endpoint, bucket, region,
+                    pathStyle, encryption, cmkReference, maxObjectBytes,
+                    uploadFencingProtocol);
+        }
         String accessKey = new OwnerOnlyProviderCredentialFile(accessKeyFile).read();
         String secretKey = new OwnerOnlyProviderCredentialFile(secretKeyFile).read();
         String sessionToken = sessionTokenFile == null || sessionTokenFile.isBlank()
@@ -89,9 +108,9 @@ class ProductionRuntimeProviderConfiguration {
             throw new IllegalArgumentException("object storage credential is malformed");
         }
         var backend = new S3ObjectStore.Backend(
-                backendId, "ACTIVE", endpoint.toString(), bucket, region, pathStyle,
+                backendId, backendKind, "ACTIVE", endpoint.toString(), bucket, region, pathStyle,
                 encryption, "SSE_KMS".equals(encryption) ? cmkReference : "",
-                maxObjectBytes,
+                maxObjectBytes, uploadFencingProtocol,
                 new SigV4Presigner.Credentials(accessKey, secretKey, sessionToken));
         return new S3ObjectStore(
                 backend, new JdbcProductionObjectStorageMetadata(jdbc, transactions), clock);
@@ -165,6 +184,59 @@ class ProductionRuntimeProviderConfiguration {
                     "PROVIDER_PROFILE_FILE_INVALID", "provider profile field is invalid: " + field);
         }
         return text;
+    }
+
+    /**
+     * A deployment flag cannot manufacture a provider capability. The exact
+     * backend tuple must already have an operator-bound verification record.
+     */
+    private static void requireVerifiedUploadFencingBackend(
+            JdbcClient jdbc,
+            String backendId,
+            String backendKind,
+            URI endpoint,
+            String bucket,
+            String region,
+            boolean pathStyle,
+            String encryption,
+            String cmkReference,
+            long maxObjectBytes,
+            String uploadFencingProtocol
+    ) {
+        Integer matches = jdbc.sql("""
+                select count(*)
+                  from object_storage_backends
+                 where backend_id = :backendId
+                   and backend_kind = :backendKind
+                   and backend_state = 'ACTIVE'
+                   and endpoint = :endpoint
+                   and bucket = :bucket
+                   and region = :region
+                   and path_style = :pathStyle
+                   and server_side_encryption = :encryption
+                   and coalesce(cmk_reference, '') = :cmkReference
+                   and max_object_bytes >= :maxObjectBytes
+                   and upload_fencing_protocol = :uploadFencingProtocol
+                   and upload_fencing_verified_at is not null
+                   and upload_fencing_verified_by_actor_id is not null
+                """)
+                .param("backendId", backendId)
+                .param("backendKind", backendKind)
+                .param("endpoint", endpoint.toString())
+                .param("bucket", bucket)
+                .param("region", region)
+                .param("pathStyle", pathStyle)
+                .param("encryption", encryption)
+                .param("cmkReference", "SSE_KMS".equals(encryption)
+                        ? cmkReference : "")
+                .param("maxObjectBytes", maxObjectBytes)
+                .param("uploadFencingProtocol", uploadFencingProtocol)
+                .query(Integer.class)
+                .single();
+        if (matches == null || matches != 1) {
+            throw new IllegalArgumentException(
+                    "object storage upload fencing backend is not verified");
+        }
     }
 
     private static void requireStorageEndpoint(URI endpoint, boolean serviceMeshHttp) {
