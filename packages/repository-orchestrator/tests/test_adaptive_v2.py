@@ -257,6 +257,10 @@ class AdaptiveV2RuntimeTests(unittest.TestCase):
                 ]
             },
         )
+        self.assertEqual(Status.BLOCKED.value, result["status"])
+        self.assertFalse(result["output"]["safe_to_integrate"])
+        self.assertEqual("semantic_conflicts_detected", result["reasons"][0])
+
     def test_example_hierarchical_plan_e2e(self) -> None:
         plan_path = (
             ROOT

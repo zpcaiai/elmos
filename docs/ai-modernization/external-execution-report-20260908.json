@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "gate_id": "elmos-ai-modernization-production-v1",
+  "repository_revision": "1ff0440adc73bf1fa8ef08cfa8dd8a994e7a3628",
+  "artifact_digest": "sha256:14675708143951e037bbb964d0427b472651589e0372677f243a22710df7d176",
+  "environment": "local-operator-with-vercel-project-readonly-inventory",
+  "producer_actor": "elmos-ai-release-operator",
+  "generated_at": "2026-09-08T10:05:28Z",
+  "operations": {
+    "elasticsearch": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "search-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "dify": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "workflow-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "model_provider": {
+      "status": "UNKNOWN",
+      "evidence_role": "model-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-provider-observations-20260908.json", "sha256": "sha256:b153207032753b6fcd50124588a77a1d5f910a2f605407983f5886fb7ce41a57"}]
+    },
+    "otel_collector": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "telemetry-collector-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "multimodal_ocr": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "ocr-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "multimodal_asr": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "asr-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "multimodal_vision": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "vision-provider-runtime",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "representative_workload": {
+      "status": "NOT_CONFIGURED",
+      "evidence_role": "approved-representative-corpus",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "production_deployment": {
+      "status": "NOT_RUN",
+      "evidence_role": "production-deployment-and-rollback",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    },
+    "independent_verification": {
+      "status": "NOT_RUN",
+      "evidence_role": "independent-e0-e5-verification",
+      "executor_actor": "codex-external-probe-20260908",
+      "verifier_actor": "elmos-local-contract-verifier",
+      "authorization_id": "user-request-20260908",
+      "synthetic": false,
+      "evidence": [{"path": "external-configuration-observations-20260908.json", "sha256": "sha256:4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"}]
+    }
+  },
+  "production_certification": "NOT_CERTIFIED"
+}
