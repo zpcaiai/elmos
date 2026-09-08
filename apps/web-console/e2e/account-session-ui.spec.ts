@@ -42,21 +42,29 @@ test("account session discovery represents anonymous state without a console-lev
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "测试账号登录" })).toBeVisible();
   await expect(page.getByLabel("账号 / 邮箱")).toHaveAttribute("name", "email");
-  // 用户登录表单不携带管理员登录模式；管理员入口只是独立页面链接。
+  // 用户登录页不能携带管理员登录模式；管理员只能导航到独立入口重新认证。
   await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
-  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveText("进入管理员登录");
+  const adminLoginLink = page.locator(".user-auth-card a[href='/admin/login']");
+  await expect(adminLoginLink).toHaveCount(1);
+  await expect(adminLoginLink).toHaveText("进入管理员登录");
   await expect(page.getByRole("button", { name: "使用测试账号登录" })).toBeVisible();
   await expect(page.getByText(/服务端 API 均会拒绝操作/)).toBeVisible();
 });
 
-test("user login entry sends administrator accounts to the isolated administrator entry", async ({ page }) => {
+test("user login entry cannot mint administrator mode and links the dedicated entry", async ({ page }) => {
   await page.goto("/login?error=ADMIN_LOGIN_ENTRY_REQUIRED");
 
   await expect(page.locator(".auth-error")).toContainText(
     "管理员账户必须从独立的管理员入口登录",
   );
-  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveText("进入管理员登录");
   await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveAttribute(
+    "href",
+    "/admin/login",
+  );
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveText(
+    "进入管理员登录",
+  );
 });
 
 test("local test account establishes a development-only session", async ({ page }) => {
