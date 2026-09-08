@@ -1,11 +1,11 @@
 ---
 name: elmos-35-database-engine-adapters
-description: Route the 35-database-engine-adapters capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 35-database-engine-adapters capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 35-database-engine-adapters
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 7fd09c28aa5d2da422ee211ebb2532f6668b9d992aad38214b6278dbec17f1a7

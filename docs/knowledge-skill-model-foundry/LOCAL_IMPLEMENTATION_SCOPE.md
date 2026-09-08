@@ -1,6 +1,6 @@
 # Exact local implementation scope
 
-The runtime now binds 51 exact local algorithms. `LOCAL` describes bounded
+The runtime now binds 66 exact local algorithms. `LOCAL` describes bounded
 repository-owned behavior; no whole-Skill completion, independent verification,
 provider execution or certification follows from registration or local tests.
 
@@ -85,8 +85,8 @@ multi-host concurrency, backups/DR, KMS signing or production deployment.
 
 The unchanged source denominator is 1,310 atomic Skills, 41 packs, 9,090
 dependency edges and 14 pipelines. The exhaustive implementation matrix keeps
-native semantic gaps separate from the 1,249 exact host integration routes and
-from unexecuted verification. Adding a local handler must also update the
+the 66 local handlers and 1,244 exact native programs separate from unexecuted
+provider and verification evidence. Adding a local handler must also update the
 three explicit allowlists, regenerate and re-pin the compiled catalog, add
 public service acceptance and negative cases, refresh the matrix, and execute
 the qualification writer before the package gate can pass.

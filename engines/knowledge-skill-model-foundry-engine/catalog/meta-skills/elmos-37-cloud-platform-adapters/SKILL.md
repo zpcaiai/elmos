@@ -1,11 +1,11 @@
 ---
 name: elmos-37-cloud-platform-adapters
-description: Route the 37-cloud-platform-adapters capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 37-cloud-platform-adapters capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 37-cloud-platform-adapters
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 68bd23ed6095be8d524bda791fbc2044b99d92f1ce16cc17eee2f28d31fe22be

@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "bc9a9e14bd1e746014d3e8aa2eff0653fbe4d0d7",
+  "baseline_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -10,14 +10,14 @@
   },
   "generated_artifacts": {
     "compiled_catalog": {
-      "bytes": 15949103,
+      "bytes": 15980332,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/compiled-catalog.json",
-      "sha256": "b1d8907ac5ea9434f7c4107966a0f74d9ca7bb47d1ed31576227c71ef871331f"
+      "sha256": "19051857bdb5ce5437b1a67ef965465579ea7ae34ffe4b27a3859a3b716f9145"
     },
     "package_report": {
-      "bytes": 6116,
+      "bytes": 6148,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
-      "sha256": "093bf6f55d4346d7d8bd9e37006543ecd52a6a884cdc933b657ca143e9d654a7"
+      "sha256": "ab13ae44842ac79da94f6161314b0b1a1e7f70f3a7cc819441e2105269e56a2e"
     }
   },
   "implementation_tree": {
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 127,
+    "file_count": 131,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -36,9 +36,10 @@
       "tests/knowledge-skill-model-foundry-skills",
       "tooling/integrate_knowledge_skill_model_foundry_skills.py",
       "tooling/qualify_knowledge_skill_model_foundry.py",
-      "tooling/report_foundry_readiness.py"
+      "tooling/report_foundry_readiness.py",
+      "tooling/generate_foundry_native_semantics.py"
     ],
-    "sha256": "6b3d4c2107114f69c6dae79c9c10da4972a3ea4ce68f0ced69e6702c48fcd438",
+    "sha256": "1a8b1ec8fde367c8beab6d5cbc4a3f88051600f8981864195c2b79630c9b8df8",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
@@ -55,12 +56,30 @@
       "compiled_contracts_validated": 1310,
       "exact_integration_bindings_validated": 1310,
       "exact_local_semantic_handlers_exercised": 66,
+      "exact_native_semantic_programs_validated": 1244,
       "host_route_bound_skills": 1244,
       "integration_unbound_skills": 0,
       "pipeline_host_routes_validated": 14,
-      "prepare_only_skills": 1244
+      "prepare_only_skills": 0
     },
     "checks": [
+      {
+        "command": [
+          "uv",
+          "run",
+          "--quiet",
+          "python",
+          "tooling/generate_foundry_native_semantics.py",
+          "--check"
+        ],
+        "environment": {
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"
+        },
+        "id": "native_semantic_program_check",
+        "status": "PASS",
+        "timeout_seconds": 300
+      },
       {
         "command": [
           "uv",
@@ -110,6 +129,7 @@
           "tooling/integrate_knowledge_skill_model_foundry_skills.py",
           "tooling/qualify_knowledge_skill_model_foundry.py",
           "tooling/report_foundry_readiness.py",
+          "tooling/generate_foundry_native_semantics.py",
           "engines/knowledge-skill-model-foundry-engine/src",
           "engines/knowledge-skill-model-foundry-engine/tests",
           "tests/knowledge-skill-model-foundry-skills"
@@ -130,7 +150,8 @@
           "--strict",
           "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry",
           "tooling/qualify_knowledge_skill_model_foundry.py",
-          "tooling/report_foundry_readiness.py"
+          "tooling/report_foundry_readiness.py",
+          "tooling/generate_foundry_native_semantics.py"
         ],
         "environment": {
           "PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"
@@ -151,7 +172,8 @@
           "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry",
           "tooling/integrate_knowledge_skill_model_foundry_skills.py",
           "tooling/qualify_knowledge_skill_model_foundry.py",
-          "tooling/report_foundry_readiness.py"
+          "tooling/report_foundry_readiness.py",
+          "tooling/generate_foundry_native_semantics.py"
         ],
         "environment": {
           "PYTHONDONTWRITEBYTECODE": "1",

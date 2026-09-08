@@ -1,11 +1,11 @@
 ---
 name: elmos-21-project-generation-product-engineering
-description: Route the 21-project-generation-product-engineering capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 21-project-generation-product-engineering capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 21-project-generation-product-engineering
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 8e5b74f6e08f7a3cb2cf0becdfd1ea00040bc3cb176a5524e0cc2da37fd2185f

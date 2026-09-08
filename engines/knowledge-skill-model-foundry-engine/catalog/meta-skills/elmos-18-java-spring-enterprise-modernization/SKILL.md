@@ -1,11 +1,11 @@
 ---
 name: elmos-18-java-spring-enterprise-modernization
-description: Route the 18-java-spring-enterprise-modernization capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 18-java-spring-enterprise-modernization capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 18-java-spring-enterprise-modernization
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 45d69737834dff89151643feb71240c874936502b13e29c1241cfe3016dbbd5d

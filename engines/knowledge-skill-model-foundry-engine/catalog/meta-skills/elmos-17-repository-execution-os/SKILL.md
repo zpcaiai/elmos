@@ -1,11 +1,11 @@
 ---
 name: elmos-17-repository-execution-os
-description: Route the 17-repository-execution-os capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 17-repository-execution-os capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 17-repository-execution-os
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: f5bff30979c30922d1b3ffe4a4bd153b039ed4675ad66d520876709e65449021

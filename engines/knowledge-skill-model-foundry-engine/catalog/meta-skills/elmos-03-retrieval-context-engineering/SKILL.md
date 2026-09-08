@@ -1,11 +1,11 @@
 ---
 name: elmos-03-retrieval-context-engineering
-description: Route the 03-retrieval-context-engineering capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 03-retrieval-context-engineering capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 03-retrieval-context-engineering
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 8254583b26e4aa7b8a17ae6c73e4d7184956b0b72d632c1360cea2198063f98c

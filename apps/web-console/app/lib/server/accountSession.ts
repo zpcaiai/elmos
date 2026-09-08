@@ -598,11 +598,15 @@ export function temporaryAdministratorConfigured(): boolean {
 }
 
 function assertTemporaryAdministratorRequest(request: Request): void {
-  const url = new URL(request.url);
+  // Next development mode may normalize request.url to localhost even when
+  // the browser and Host use 127.0.0.1. The already-validated public origin is
+  // the authority; binding Host to it keeps proxy rewriting from becoming an
+  // authentication bypass or a false loopback rejection.
+  const publicOrigin = new URL(trustedPublicOrigin(request));
   const host = request.headers.get("host");
   if (
-    !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
-    || host !== url.host
+    !["localhost", "127.0.0.1", "[::1]"].includes(publicOrigin.hostname)
+    || host !== publicOrigin.host
   ) {
     throw new AccountSessionError(403, "TEMP_ADMIN_LOOPBACK_ONLY", "临时管理员密码登录仅允许本机访问。");
   }

@@ -1,9 +1,10 @@
-"""Tests for the Universal Typed 7-Stage Semantic Contract Program Interpreter."""
+"""Tests for the typed local semantic workflow runner."""
 
 from __future__ import annotations
 
 import unittest
 
+from elmos_foundry.canonical import canonical_digest
 from elmos_foundry.kernel import ExecutionKernel, KernelSecurityError
 from elmos_foundry.semantic_program_runner import SemanticProgramRunner
 from elmos_foundry.skills import SkillCatalog, load_compiled_catalog
@@ -33,7 +34,7 @@ class SemanticProgramRunnerTests(unittest.TestCase):
         self.catalog = load_compiled_catalog()
         self.runner = SemanticProgramRunner(self.kernel)
 
-    def test_run_program_typed_synthesis_all_7_stages(self) -> None:
+    def test_run_program_without_exact_handler_fails_closed(self) -> None:
         skill_record = self.catalog.atomic_skills["dataset-lineage-and-provenance"]
         payload = {
             "inputs": {
@@ -43,36 +44,14 @@ class SemanticProgramRunnerTests(unittest.TestCase):
                 "verification evidence": {"passed": True},
             }
         }
-        res = self.runner.run_program(
-            skill=skill_record,
-            payload=payload,
-            tenant_scope=self.scope,
-            invocation_id="inv-workflow-001",
-            catalog_digest=self.catalog.content_sha256,
-        )
-        self.assertEqual(res.status, "SUCCESS")
-        self.assertFalse(res.external_effects_performed)
-
-        # Check declared outputs were synthesized
-        for out_name in skill_record["outputs"]:
-            self.assertIn(out_name, res.outputs)
-            doc = res.outputs[out_name]
-            self.assertEqual(doc["output_name"], out_name)
-            self.assertEqual(doc["tenant_id"], self.scope.tenant_id)
-            self.assertEqual(doc["certification_status"], "NOT_CERTIFIED")
-            self.assertEqual(doc["external_evidence_status"], "NOT_RUN")
-
-        # Check 7-stage workflow execution metadata
-        workflow_meta = res.outputs["_workflow_execution"]
-        self.assertEqual(workflow_meta["total_stages"], 7)
-        self.assertEqual(
-            workflow_meta["stages_completed"],
-            ["authorize", "snapshot", "plan", "execute", "verify", "emit-evidence", "commit-or-rollback"],
-        )
-        self.assertEqual(workflow_meta["evidence_status"], "LOCAL_EXECUTED_SELF_ATTESTED")
-        self.assertEqual(workflow_meta["external_evidence_status"], "NOT_RUN")
-        self.assertEqual(workflow_meta["certification_status"], "NOT_CERTIFIED")
-        self.assertEqual(workflow_meta["local_maximum_decision"], "READY_FOR_EXTERNAL_GATE")
+        with self.assertRaisesRegex(KernelSecurityError, "no exact local semantic handler"):
+            self.runner.run_program(
+                skill=skill_record,
+                payload=payload,
+                tenant_scope=self.scope,
+                invocation_id="inv-workflow-001",
+                catalog_digest=self.catalog.content_sha256,
+            )
 
     def test_run_program_mismatched_invocation_fails_authorize(self) -> None:
         skill_record = self.catalog.atomic_skills["dataset-lineage-and-provenance"]
@@ -102,13 +81,36 @@ class SemanticProgramRunnerTests(unittest.TestCase):
 
     def test_catalog_execute_skill_with_workflow_operation(self) -> None:
         skill_catalog = SkillCatalog(self.kernel)
+        episode = {
+            "nodes": [
+                {
+                    "tenant_id": self.scope.tenant_id,
+                    "project_id": self.scope.project_id,
+                    "node_id": "source-a",
+                    "kind": "object",
+                    "version": "1.0.0",
+                    "content_digest": "sha256:" + "1" * 64,
+                },
+                {
+                    "tenant_id": self.scope.tenant_id,
+                    "project_id": self.scope.project_id,
+                    "node_id": "sample-a",
+                    "kind": "sample",
+                    "version": "1.0.0",
+                    "content_digest": "sha256:" + "2" * 64,
+                },
+            ],
+            "edges": [
+                {"parent": "source-a", "child": "sample-a", "relation": "derived-from"}
+            ],
+        }
         payload = {
             "operation": "workflow",
             "inputs": {
-                "experience episode": {"id": "ds-02"},
-                "knowledge object": {"source": "s3"},
-                "human feedback": {"decision": "accepted"},
-                "verification evidence": {"passed": True},
+                "experience episode": episode,
+                "knowledge object": {"experience_digest": canonical_digest(episode)},
+                "human feedback": {"status": "NOT_RUN"},
+                "verification evidence": {"status": "NOT_RUN"},
             },
         }
         res = skill_catalog.execute_skill(

@@ -30,7 +30,7 @@ class EngineServiceIntegrationTests(unittest.TestCase):
             ttl_seconds=600,
         )
 
-    def test_meta_route_and_atomic_binding_are_bounded_prepare_only(self) -> None:
+    def test_meta_route_and_atomic_preparation_remains_bounded(self) -> None:
         atomic = self.service.route_meta_skill("elmos-00-foundation-contracts")
         self.assertGreater(len(atomic), 0)
         self.assertLessEqual(len(atomic), 8)

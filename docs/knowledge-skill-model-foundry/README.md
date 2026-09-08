@@ -1,8 +1,8 @@
 # Knowledge-Skill-Model Foundry v3 integration
 
 This integration turns the pinned 16,007-entry ZIP into a typed control plane
-with 61 exact provider-free semantic handlers, 1,249 conservative catalog
-contracts with distinct host integration routes, and a separately gated
+with 66 exact provider-free semantic handlers and 1,244 exact repository-owned
+native semantic programs with distinct host integration routes, and a separately gated
 external-effect boundary. It does not
 reinterpret the archive as trusted instructions and does not claim that its
 1,310 specifications already have native provider or customer evidence.
@@ -28,10 +28,10 @@ executable Python files remain inert input.
 - deterministic compiled-contract v2 catalog binding all 7,860 authoritative
   per-Skill source documents, with 458 BASIC and 852 ENHANCED contracts;
 - 41 pack handlers and 1,310 explicit allowlisted atomic bindings;
-- 61 exact local semantic handlers covering contract/hash/graph, registry and
+- 66 exact local semantic handlers covering contract/hash/graph, registry and
   routing, trust and audit, normalization/provenance, durable experience replay,
   knowledge ingestion, dataset, evidence and serving controls;
-- 1,249 distinct source-digest-bound external adapter identities and privileged
+- 1,244 distinct source-digest-bound external adapter identities and privileged
   Broker operations, with no wildcard dispatcher and no execution fallback;
 - request-bound, policy-gated, durable and non-replayable Broker execution for
   external semantics; direct external Python callbacks are forbidden, route
@@ -48,9 +48,9 @@ executable Python files remain inert input.
 
 ## Status vocabulary
 
-`LOCAL` identifies one of the 61 exact repository-owned semantic handlers;
-`PREPARE_ONLY` remains the catalog semantic state for the 1,249 Skills whose
-native behavior is host-owned. `HOST_ROUTE_BOUND` means an exact route exists,
+`LOCAL` identifies one of the 66 exact provider-free handlers. `NATIVE` identifies
+one of the 1,244 exact repository-owned semantic programs whose provider effects
+cross the host Broker boundary. No atomic Skill remains `PREPARE_ONLY`. `HOST_ROUTE_BOUND` means an exact route exists,
 not that its provider ran. `REQUIRES_ADAPTER` means the requested semantic or
 external effect did not run. `LOCAL_EXECUTED_SELF_ATTESTED` is local engineering
 evidence. `READY_FOR_EXTERNAL_GATE` is not certification. `NOT_RUN`,
