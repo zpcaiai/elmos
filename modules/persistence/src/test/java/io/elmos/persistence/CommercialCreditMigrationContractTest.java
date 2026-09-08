@@ -13,6 +13,8 @@ class CommercialCreditMigrationContractTest {
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
     private static final Path DIGEST_TRIGGER_REPAIR = Path.of(
             "src/main/resources/db/migration/V85__elmpay_digest_trigger_catalog_hashing.sql");
+    private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
+            "../../scripts/commercial/configure_billing_runtime_role.sh");
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
@@ -83,5 +85,30 @@ class CommercialCreditMigrationContractTest {
         assertTrue(sql.contains("pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to("));
         assertFalse(sql.contains("public.encode("));
         assertFalse(sql.contains("public.digest("));
+    }
+
+    @Test void postMigrationRoleProvisioningIncludesEveryCommercialBoundary() throws Exception {
+        String script = Files.readString(RUNTIME_ROLE_CONFIGURATION);
+        for (String table : new String[]{
+                "payment_order_directory", "wallet_topup_order_directory",
+                "commercial_order_directory", "commercial_products",
+                "commercial_credit_accounts", "project_generation_entitlements"}) {
+            assertTrue(script.contains(table), table + " must be granted after Flyway");
+        }
+        for (String function : new String[]{
+                "elmos_wallet_credit_topup", "elmos_wallet_create_topup_order",
+                "elmos_reserve_usage_v2", "elmos_settle_usage_v2", "elmos_release_usage_v2",
+                "elmos_commercial_create_order", "elmos_commercial_fulfill_order",
+                "elmos_commercial_mark_order_handoff", "elmos_commercial_mark_order_prepare_failed",
+                "elmos_commercial_reserve_generation", "elmos_commercial_settle_generation",
+                "elmos_commercial_release_generation"}) {
+            assertTrue(script.contains("'" + function + "'"),
+                    function + " must be granted when the runtime role is created after Flyway");
+        }
+        assertTrue(script.contains("GRANT SELECT ON TABLE\n  commercial_products,"));
+        assertTrue(script.contains("payment_unmatched_callbacks_payment_unmatched_callback_id_seq"));
+        assertTrue(script.contains("GRANT UPDATE (processing_status, attempt_count, updated_at)"));
+        assertFalse(script.contains("GRANT INSERT ON TABLE commercial_credit_accounts"));
+        assertFalse(script.contains("GRANT DELETE ON TABLE commercial_credit_ledger_entries"));
     }
 }
