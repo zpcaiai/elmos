@@ -1,11 +1,11 @@
 ---
 name: elmos-24-api-event-integration-modernization
-description: Route the 24-api-event-integration-modernization capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 24-api-event-integration-modernization capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 24-api-event-integration-modernization
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: e70aa472c751b402ade07240d05732a58cf221630fcbd47a5c64e81062a2c0b0

@@ -1071,8 +1071,8 @@
     "exceptionCount": 35,
     "fixedClaims": [],
     "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "githubDisposition": "PREPARED",
-    "dismissedCount": 0,
+    "githubDisposition": "DISMISSED",
+    "dismissedCount": 35,
     "independentVerification": "NOT_RUN",
     "certification": "NOT_CERTIFIED"
   },

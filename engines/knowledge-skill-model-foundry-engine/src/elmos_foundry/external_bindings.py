@@ -1,10 +1,10 @@
-"""Exact fail-closed host integration routes for non-local Foundry Skills.
+"""Exact fail-closed native semantic routes for brokered Foundry Skills.
 
-The source package does not provide executable adapters.  This module turns
-each repository-validated non-local catalog identity into its own digest-bound
-host route.  A route is configuration, not an implementation or evidence: it
-cannot run without an explicitly injected broker, durable store, exact permit,
-and trusted permit/result verifiers.
+The source package does not provide executable adapters. This module binds each
+repository-owned native semantic program to one digest-bound host route. The
+repository controls workflow, inputs, outputs, tools, gates and result
+validation; provider effects still require an injected broker, durable store,
+exact permit and trusted permit/result verifiers.
 """
 
 from __future__ import annotations
@@ -19,10 +19,11 @@ from .adapters import (
     ExternalAdapterRoute,
 )
 from .canonical import canonical_digest
+from .native_semantics import native_program_for
 
 
 EXTERNAL_BINDING_VERSION = "1.0.0"
-EXTERNAL_INTEGRATION_STATUS = "HOST_BROKER_REQUIRED"
+EXTERNAL_INTEGRATION_STATUS = "NATIVE_IMPLEMENTED_HOST_RUNTIME_REQUIRED"
 
 
 class ExternalBindingCatalog(Protocol):
@@ -47,8 +48,12 @@ def _binding_document(name: str, record: Mapping[str, Any]) -> Mapping[str, Any]
         "outputs": list(record["outputs"]),
         "allowed_tools": list(record["allowed_tools"]),
         "required_gates": list(record["required_gates"]),
+        "workflow": list(record["workflow"]),
+        "dependencies": list(record["dependencies"]),
+        "invariants": list(record["invariants"]),
         "effect_class": EffectClass.PRIVILEGED_EXTERNAL.value,
         "operation": f"foundry.skill.{name}.execute",
+        "semantic_handler_binding": f"native.{name}",
         "integration_status": EXTERNAL_INTEGRATION_STATUS,
     }
 
@@ -59,13 +64,17 @@ def exact_external_binding(
 ) -> tuple[AdapterBinding, ExternalAdapterRoute]:
     """Compile one catalog row into a unique adapter and broker route."""
 
-    document = _binding_document(name, record)
+    program = native_program_for(name, record)
+    document = dict(_binding_document(name, record))
+    document["semantic_program_digest"] = "sha256:" + program.digest
     binding_digest = _plain_digest(document)
     route_document = {
         "schema_version": "elmos.foundry.external-skill-route.v1",
         "binding_digest": binding_digest,
         "skill_name": name,
         "operation": document["operation"],
+        "semantic_handler_binding": program.handler_id,
+        "semantic_program_digest": "sha256:" + program.digest,
     }
     binding = AdapterBinding(
         adapter_id=f"external.{name}",
@@ -81,6 +90,8 @@ def exact_external_binding(
                 "pack": str(record["pack"]),
                 "risk_class": str(record["risk_class"]),
                 "skill_source_sha256": str(record["source_sha256"]),
+                "semantic_handler_binding": program.handler_id,
+                "semantic_program_digest": "sha256:" + program.digest,
             }
         ),
     )
@@ -89,6 +100,7 @@ def exact_external_binding(
         version=EXTERNAL_BINDING_VERSION,
         digest=_plain_digest(route_document),
         operation=str(document["operation"]),
+        semantic_program=program,
     )
     return binding, route
 
