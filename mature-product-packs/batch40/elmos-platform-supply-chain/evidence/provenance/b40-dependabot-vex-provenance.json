@@ -18,9 +18,9 @@
   },
   "analyzer": {
     "path": "scripts/dependabot_governance.py",
-    "sha256": "sha256:0b5c6c316c5276bfe6edfec4538f5d0af21d74479093e80b0d4158bb8d0296aa"
+    "sha256": "sha256:58657f6661e54b0085b2b8fb5bf3344aa0f04da6a6af21db0e7a274f0ae046b6"
   },
-  "externalOperationExecuted": false,
+  "externalOperationExecuted": true,
   "independentVerification": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

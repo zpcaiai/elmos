@@ -3,10 +3,9 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
-from unittest import mock
 from datetime import datetime, timezone
 from pathlib import Path
-
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "dependabot_governance.py"
@@ -121,11 +120,13 @@ class DependabotGovernanceTest(unittest.TestCase):
             "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/"
             "examples/project-output-example/project/package.json",
         )
-        with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaisesRegex(ValueError, "manifest is unavailable"):
-                MODULE.build_registry(
-                    "zpcaiai/elmos", [value], repo_root=Path(directory)
-                )
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            self.assertRaisesRegex(ValueError, "manifest is unavailable"),
+        ):
+            MODULE.build_registry(
+                "zpcaiai/elmos", [value], repo_root=Path(directory)
+            )
 
     def test_apply_resume_skips_an_already_closed_alert(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -153,6 +154,57 @@ class DependabotGovernanceTest(unittest.TestCase):
                     ),
                 )
                 run.assert_not_called()
+
+    def test_resume_uses_full_source_snapshot_after_runtime_fix(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            immutable_manifest = "client-packs/evidence/package.json"
+            runtime_manifest = "apps/web-console/package.json"
+            for manifest in (immutable_manifest, runtime_manifest):
+                path = root / manifest
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("{}\n", encoding="utf-8")
+            immutable = alert(225, "vite", immutable_manifest)
+            runtime = alert(226, "next", runtime_manifest)
+            now = datetime(2026, 9, 8, tzinfo=timezone.utc)
+            registry = MODULE.build_registry(
+                "zpcaiai/elmos", [immutable, runtime], now=now, repo_root=root
+            )
+            source_digest = MODULE.normalized_alert_snapshot_digest(
+                [MODULE.alert_key(immutable), MODULE.alert_key(runtime)]
+            )
+
+            immutable["state"] = "dismissed"
+            MODULE.validate_registry(
+                registry,
+                [immutable],
+                now=now,
+                repo_root=root,
+                source_snapshot_digest=source_digest,
+            )
+            with mock.patch.object(MODULE.subprocess, "run") as run:
+                self.assertEqual(
+                    0,
+                    MODULE.dismiss_eligible(
+                        "zpcaiai/elmos",
+                        registry,
+                        [immutable],
+                        repo_root=root,
+                        source_snapshot_digest=source_digest,
+                    ),
+                )
+                run.assert_not_called()
+
+            with self.assertRaisesRegex(ValueError, "different alert snapshot"):
+                MODULE.validate_registry(
+                    registry,
+                    [immutable],
+                    now=now,
+                    repo_root=root,
+                    source_snapshot_digest=MODULE.normalized_alert_snapshot_digest(
+                        [MODULE.alert_key(immutable)]
+                    ),
+                )
 
 
 if __name__ == "__main__":

@@ -42,6 +42,20 @@ VUE2_COMPATIBILITY_MANIFESTS = frozenset(
 )
 EOL_PACKAGES = {"vue", "vue-template-compiler", "vue-server-renderer"}
 SCHEMA_VERSION = "2.0"
+ALERT_KEY_FIELDS = frozenset(
+    {
+        "alert_number",
+        "ecosystem",
+        "package",
+        "manifest_path",
+        "dependency_scope",
+        "relationship",
+        "ghsa_id",
+        "severity",
+        "vulnerable_version_range",
+        "first_patched_version",
+    }
+)
 
 
 def canonical(value: Any) -> bytes:
@@ -55,12 +69,30 @@ def digest(value: Any) -> str:
 
 
 def alert_snapshot_digest(alerts: Sequence[Mapping[str, Any]]) -> str:
-    return digest(
-        sorted(
-            (alert_key(alert) for alert in alerts),
-            key=lambda item: int(item["alert_number"]),
+    return normalized_alert_snapshot_digest([alert_key(alert) for alert in alerts])
+
+
+def normalized_alert_snapshot_digest(
+    snapshot: Sequence[Mapping[str, Any]],
+) -> str:
+    normalized: list[dict[str, Any]] = []
+    for item in snapshot:
+        if not isinstance(item, Mapping) or set(item) != ALERT_KEY_FIELDS:
+            raise ValueError("Dependabot normalized alert snapshot shape is not exact")
+        normalized.append(
+            {
+                "alert_number": int(item["alert_number"]),
+                **{
+                    field: str(item[field])
+                    for field in ALERT_KEY_FIELDS
+                    if field != "alert_number"
+                },
+            }
         )
-    )
+    numbers = [item["alert_number"] for item in normalized]
+    if len(numbers) != len(set(numbers)):
+        raise ValueError("Dependabot normalized alert snapshot contains duplicates")
+    return digest(sorted(normalized, key=lambda item: item["alert_number"]))
 
 
 def alert_key(alert: Mapping[str, Any]) -> dict[str, Any]:
@@ -200,6 +232,7 @@ def validate_registry(
     *,
     now: datetime | None = None,
     repo_root: Path | None = None,
+    source_snapshot_digest: str | None = None,
 ) -> None:
     if set(registry) != {
         "schema_version",
@@ -220,7 +253,7 @@ def validate_registry(
     by_number = {int(alert["number"]): alert for alert in alerts}
     if len(by_number) != len(alerts):
         raise ValueError("Dependabot snapshot contains duplicate alert numbers")
-    expected_snapshot = alert_snapshot_digest(alerts)
+    expected_snapshot = source_snapshot_digest or alert_snapshot_digest(alerts)
     if registry["source_alert_snapshot_digest"] != expected_snapshot:
         raise ValueError(
             "Dependabot exception registry is bound to a different alert snapshot"
@@ -441,8 +474,14 @@ def dismiss_eligible(
     alerts: Sequence[Mapping[str, Any]],
     *,
     repo_root: Path | None = None,
+    source_snapshot_digest: str | None = None,
 ) -> int:
-    validate_registry(registry, alerts, repo_root=repo_root)
+    validate_registry(
+        registry,
+        alerts,
+        repo_root=repo_root,
+        source_snapshot_digest=source_snapshot_digest,
+    )
     by_number = {int(alert["number"]): alert for alert in alerts}
     count = 0
     for exception in registry["exceptions"]:
@@ -514,12 +553,14 @@ def main() -> int:
     args = parser.parse_args()
     open_alerts = fetch_open_alerts(args.repo)
     snapshot_path = Path(args.snapshot)
-    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
     registry_path = Path(args.registry)
+    source_snapshot_digest: str | None = None
     if args.refresh:
         alerts = open_alerts
         registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
         validate_registry(registry, alerts, repo_root=args.repo_root)
+        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+        snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
             json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
@@ -527,6 +568,16 @@ def main() -> int:
         )
     elif registry_path.exists():
         registry = json.loads(registry_path.read_bytes())
+        if not snapshot_path.is_file():
+            raise ValueError("Dependabot source alert snapshot is unavailable")
+        stored_snapshot = json.loads(snapshot_path.read_bytes())
+        if not isinstance(stored_snapshot, list):
+            raise TypeError("Dependabot source alert snapshot must be a list")
+        source_snapshot_digest = normalized_alert_snapshot_digest(stored_snapshot)
+        if source_snapshot_digest != registry.get("source_alert_snapshot_digest"):
+            raise ValueError(
+                "Dependabot exception registry is bound to a different source snapshot"
+            )
         registered_numbers = {
             int(exception["alert_number"]) for exception in registry.get("exceptions", [])
         }
@@ -546,12 +597,19 @@ def main() -> int:
     else:
         alerts = open_alerts
         registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
+        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+        snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
             json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-    validate_registry(registry, alerts, repo_root=args.repo_root)
+    validate_registry(
+        registry,
+        alerts,
+        repo_root=args.repo_root,
+        source_snapshot_digest=source_snapshot_digest,
+    )
     eligible = len(registry["exceptions"])
     print(
         json.dumps(
@@ -571,6 +629,7 @@ def main() -> int:
             registry,
             alerts,
             repo_root=args.repo_root,
+            source_snapshot_digest=source_snapshot_digest,
         )
         print(
             json.dumps(
