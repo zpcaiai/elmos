@@ -35,6 +35,15 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
+  // Exercise the administrator entry from a fresh document.  On mobile the
+  // preceding link intentionally closes the drawer, and in development mode
+  // a stale Next overlay from that navigation can otherwise intercept the
+  // next pointer action instead of testing the link itself.
+  await page.goto("/");
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
+    await page.getByRole("button", { name: "打开导航" }).click();
+    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
+  }
   const sidebarAdminLogin = page.locator("aside").getByRole("link", {
     name: "管理员登录",
     exact: true,
