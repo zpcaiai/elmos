@@ -47,6 +47,8 @@ REJECTED_TAX_PRESENTATION = "UNSPECIFIED"
 
 FREE_TRIAL_PLAN_ID = "elmos-free-trial"
 REQUIRED_PLAN_IDS = {FREE_TRIAL_PLAN_ID, "elmos-pro-monthly", "elmos-pro-annual"}
+REQUIRED_CREDIT_PACK_IDS = {"elmos-credit-500"}
+REQUIRED_ONE_TIME_PRODUCT_IDS = {"elmos-project-generation-once"}
 
 # D-01（2026-07-28）选择了中国大陆主体 + 支付宝/微信支付。
 # 目录 Schema 目前仍把 paymentProvider 写成 const STRIPE_CHECKOUT，扩为 enum 的影响面
@@ -54,8 +56,8 @@ REQUIRED_PLAN_IDS = {FREE_TRIAL_PLAN_ID, "elmos-pro-monthly", "elmos-pro-annual"
 # 以便 Schema 与 Java/TS 契约改造期间目录不会被悄悄发布。
 KNOWN_PAYMENT_PROVIDERS = {
     "STRIPE_CHECKOUT",       # 已实现，D-01 后不启用
-    "ALIPAY_CHECKOUT",       # 待实现
-    "WECHAT_PAY_NATIVE",     # 待实现
+    "ALIPAY_CHECKOUT",       # 适配器已实现；商户与发布证据仍独立门禁
+    "WECHAT_PAY_NATIVE",     # 适配器已实现；商户与发布证据仍独立门禁
 }
 CHINA_MAINLAND_PROVIDERS = {"ALIPAY_CHECKOUT", "WECHAT_PAY_NATIVE"}
 
@@ -140,6 +142,44 @@ def structural_findings(catalog: dict) -> list[str]:
                       "artifactRetentionDays"):
             if not isinstance(plan.get(quota), int) or plan[quota] < 0:
                 findings.append(f"{plan_id}: {quota} 缺失或非法")
+
+    credit_packs = catalog.get("creditPacks")
+    if not isinstance(credit_packs, list) or not credit_packs:
+        findings.append("creditPacks 必须是非空数组")
+    elif any(not isinstance(product, dict) for product in credit_packs):
+        findings.append("creditPacks 的每一项都必须是对象")
+    else:
+        skus = {product.get("sku") for product in credit_packs}
+        if skus != REQUIRED_CREDIT_PACK_IDS:
+            findings.append(f"Credit 商品集合不符：{sorted(str(sku) for sku in skus)}")
+        for product in credit_packs:
+            sku = product.get("sku", "<unknown>")
+            if not isinstance(product.get("priceFen"), int) or product["priceFen"] <= 0:
+                findings.append(f"{sku}: priceFen 必须为正整数")
+            if not isinstance(product.get("credits"), int) or product["credits"] <= 0:
+                findings.append(f"{sku}: credits 必须为正整数")
+            expiry = product.get("expiryDays")
+            if not isinstance(expiry, int) or expiry < 1 or expiry > 3650:
+                findings.append(f"{sku}: expiryDays 必须在 1..3650")
+
+    one_time_products = catalog.get("oneTimeProducts")
+    if not isinstance(one_time_products, list) or not one_time_products:
+        findings.append("oneTimeProducts 必须是非空数组")
+    elif any(not isinstance(product, dict) for product in one_time_products):
+        findings.append("oneTimeProducts 的每一项都必须是对象")
+    else:
+        skus = {product.get("sku") for product in one_time_products}
+        if skus != REQUIRED_ONE_TIME_PRODUCT_IDS:
+            findings.append(f"一次性商品集合不符：{sorted(str(sku) for sku in skus)}")
+        for product in one_time_products:
+            sku = product.get("sku", "<unknown>")
+            if not isinstance(product.get("priceFen"), int) or product["priceFen"] <= 0:
+                findings.append(f"{sku}: priceFen 必须为正整数")
+            if product.get("operationKey") != "verified-generation-or-migration":
+                findings.append(f"{sku}: operationKey 非法")
+            minutes = product.get("maxRunnerMinutes")
+            if not isinstance(minutes, int) or minutes < 1 or minutes > 1440:
+                findings.append(f"{sku}: maxRunnerMinutes 必须在 1..1440")
 
     if catalog.get("overagePolicy") != "HARD_STOP_NO_AUTOMATIC_CHARGE":
         findings.append(

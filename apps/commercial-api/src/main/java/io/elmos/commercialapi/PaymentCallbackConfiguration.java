@@ -3,6 +3,7 @@ package io.elmos.commercialapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.commercial.PricingPlanCatalog;
 import io.elmos.commercialadapter.payment.AlipayCallbackAdapter;
+import io.elmos.commercialadapter.payment.AlipayCheckoutGateway;
 import io.elmos.commercialadapter.payment.AlipaySignatureVerifier;
 import io.elmos.commercialadapter.payment.CallbackReplayGuard;
 import io.elmos.commercialadapter.payment.JdbcCallbackPorts;
@@ -13,6 +14,7 @@ import io.elmos.commercialadapter.payment.PaymentCallbackPorts;
 import io.elmos.commercialadapter.payment.PaymentProviderRouter;
 import io.elmos.commercialadapter.payment.WechatPayCallbackAdapter;
 import io.elmos.commercialadapter.payment.WechatPayCallbackCipher;
+import io.elmos.commercialadapter.payment.WechatPayNativeGateway;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -25,12 +27,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Clock;
 import java.time.Duration;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Base64;
 
 /**
@@ -147,6 +155,13 @@ public class PaymentCallbackConfiguration {
         return JdbcOrderPorts.walletCreditor(commercialBillingDataSource, CALLBACK_SYSTEM_ACTOR);
     }
 
+    @Bean
+    PaymentCallbackPipeline.CommercialOrderFulfiller paymentCommercialOrderFulfiller(
+            DataSource commercialBillingDataSource) {
+        return JdbcOrderPorts.commercialOrderFulfiller(
+                commercialBillingDataSource, CALLBACK_SYSTEM_ACTOR);
+    }
+
     // -----------------------------------------------------------------------
     // 路由器与回调适配器
     // -----------------------------------------------------------------------
@@ -164,7 +179,15 @@ public class PaymentCallbackConfiguration {
             ObjectMapper objectMapper,
             @Value("${elmos.billing.alipay.app-id:}") String alipayAppId,
             @Value("${elmos.billing.alipay.public-key-file:}") String alipayPublicKeyFile,
+            @Value("${elmos.billing.alipay.private-key-file:}") String alipayPrivateKeyFile,
+            @Value("${elmos.billing.alipay.gateway-url:https://openapi.alipay.com/gateway.do}") String alipayGatewayUrl,
+            @Value("${elmos.billing.alipay.notify-url:}") String alipayNotifyUrl,
+            @Value("${elmos.billing.alipay.return-url:}") String alipayReturnUrl,
             @Value("${elmos.billing.wechatpay.mch-id:}") String wechatMerchantId,
+            @Value("${elmos.billing.wechatpay.app-id:}") String wechatAppId,
+            @Value("${elmos.billing.wechatpay.cert-serial-no:}") String wechatCertSerialNo,
+            @Value("${elmos.billing.wechatpay.private-key-file:}") String wechatPrivateKeyFile,
+            @Value("${elmos.billing.wechatpay.notify-url:}") String wechatNotifyUrl,
             @Value("${elmos.billing.wechatpay.platform-certificate-file:}") String wechatCertificateFile,
             @Value("${elmos.billing.wechatpay.api-v3-key:}") String wechatApiV3Key) {
         var catalog = PricingPlanCatalog.chinaSelfServeDraft();
@@ -177,6 +200,12 @@ public class PaymentCallbackConfiguration {
                     paymentCallbackReplayGuard,
                     alipayAppId));
         }
+        if (!alipayAppId.isBlank() && !alipayPrivateKeyFile.isBlank()
+                && !alipayNotifyUrl.isBlank() && !alipayReturnUrl.isBlank()) {
+            router.register(new AlipayCheckoutGateway(
+                    alipayAppId, alipayGatewayUrl, alipayNotifyUrl, alipayReturnUrl,
+                    privateKeyFromPem(alipayPrivateKeyFile), Clock.systemDefaultZone()));
+        }
 
         if (!wechatMerchantId.isBlank() && !wechatCertificateFile.isBlank()
                 && !wechatApiV3Key.isBlank()) {
@@ -187,6 +216,31 @@ public class PaymentCallbackConfiguration {
                     paymentCallbackReplayGuard,
                     new JacksonWechatNotificationReader(objectMapper),
                     wechatMerchantId));
+        }
+        if (!wechatMerchantId.isBlank() && !wechatAppId.isBlank()
+                && !wechatCertSerialNo.isBlank() && !wechatPrivateKeyFile.isBlank()
+                && !wechatNotifyUrl.isBlank()) {
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(5)).build();
+            WechatPayNativeGateway.HttpTransport transport = (url, authorization, body) -> {
+                HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                        .timeout(Duration.ofSeconds(10))
+                        .header("Authorization", authorization)
+                        .header("Accept", "application/json")
+                        .header("Content-Type", "application/json; charset=utf-8")
+                        .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                        .build();
+                HttpResponse<String> response = client.send(
+                        request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                    throw new IllegalStateException(
+                            "微信支付下单返回 HTTP " + response.statusCode());
+                }
+                return response.body();
+            };
+            router.register(new WechatPayNativeGateway(
+                    wechatMerchantId, wechatAppId, wechatCertSerialNo, wechatNotifyUrl,
+                    privateKeyFromPem(wechatPrivateKeyFile), transport));
         }
 
         return router;
@@ -213,6 +267,7 @@ public class PaymentCallbackConfiguration {
             PaymentCallbackPipeline.ProviderEventStore paymentProviderEventStore,
             PaymentCallbackPipeline.SubscriptionActivator paymentSubscriptionActivator,
             PaymentCallbackPipeline.WalletCreditor paymentWalletCreditor,
+            PaymentCallbackPipeline.CommercialOrderFulfiller paymentCommercialOrderFulfiller,
             PaymentCallbackPipeline.ReconciliationCases paymentReconciliationCases) {
         return new PaymentCallbackPorts(
                 paymentProviderRouter,
@@ -221,6 +276,7 @@ public class PaymentCallbackConfiguration {
                 paymentProviderEventStore,
                 paymentSubscriptionActivator,
                 paymentWalletCreditor,
+                paymentCommercialOrderFulfiller,
                 paymentReconciliationCases);
     }
 
@@ -240,6 +296,16 @@ public class PaymentCallbackConfiguration {
             return KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(der));
         } catch (Exception failure) {
             throw new IllegalStateException("支付宝公钥文件无法解析: " + path, failure);
+        }
+    }
+
+    /** 从 PKCS#8 PEM 文件读应用/商户私钥。 */
+    private static PrivateKey privateKeyFromPem(String path) {
+        byte[] der = Base64.getMimeDecoder().decode(stripPemArmour(readText(path)));
+        try {
+            return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(der));
+        } catch (Exception failure) {
+            throw new IllegalStateException("支付私钥文件无法解析: " + path, failure);
         }
     }
 

@@ -26,7 +26,11 @@ export async function GET(request: NextRequest) {
         status: "ERROR",
       }, { status: 400, headers });
     }
-    const query = new URLSearchParams({ from, to, bucket });
+    const scope = request.nextUrl.searchParams.get("scope") ?? "SELF";
+    if (!["SELF", "ORGANIZATION"].includes(scope)) {
+      return NextResponse.json({ code: "USAGE_HISTORY_SCOPE_INVALID" }, { status: 400, headers });
+    }
+    const query = new URLSearchParams({ from, to, bucket, scope });
     const response = await commercialBillingRequest(
       request,
       `/commercial/v1/billing/usage/history?${query}`,

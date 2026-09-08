@@ -2265,7 +2265,11 @@ async function execute(
     );
     if (!await persistExecutionIfCurrent(runner, context, job, executionId)) return;
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
-    metering = await beginMeteredExecution(`translation-${job.id}`);
+    metering = await beginMeteredExecution({
+      taskId: `translation-${job.id}`,
+      projectId: job.workspaceId,
+      actorId: context.actor,
+    });
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
     job.status = "RUNNING";
     job.stage = "pipeline";
