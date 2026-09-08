@@ -55,6 +55,7 @@ test("user login entry never offers the administrator entry", async ({ page }) =
   await expect(page.locator(".auth-error")).toContainText(
     "管理员账户必须从独立的管理员入口登录",
   );
+  await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
   await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(0);
 });
 

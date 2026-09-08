@@ -37,6 +37,13 @@ executable Python files remain inert input.
   external semantics; direct external Python callbacks are forbidden, route
   operations and effect classes are exact, and successful receipts must carry
   every declared output;
+- a production host adapter for shell-free, digest-pinned provider processes,
+  with minimal inherited environment, bounded time/output, process-group
+  cleanup, exact response contracts and injected provider-signature checking;
+- typed training/deployment, independent acceptance and certification
+  protocols that verify complete digest-bound evidence chains, separated roles,
+  reconciliation, revocation, expiry and external signatures without a local
+  receipt issuer or self-certification fallback;
 - authenticated scope, capability lease, exact idempotency, durable lifecycle,
   checkpoints, append-only audit/evidence, outbox reconciliation, and private
   content-addressed artifacts on the injected execution-control path;
