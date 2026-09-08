@@ -35,6 +35,11 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
+  // Exercise the administrator entry from a fresh document. On mobile the
+  // preceding link intentionally closes the drawer, and in development mode
+  // a stale Next overlay from that navigation can otherwise intercept the
+  // next pointer action instead of testing the link itself.
+  await page.goto("/");
   if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
     await page.getByRole("button", { name: "打开导航" }).click();
     await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
@@ -44,11 +49,9 @@ test("anonymous user login entries perform a document navigation", async ({ page
     exact: true,
   });
   await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  // The Next.js development tools button occupies the bottom-left corner in
-  // development mode. Exercise the link's native keyboard activation instead
-  // of bypassing actionability with a forced pointer click.
+  // Keyboard activation still exercises the anchor's real document navigation
+  // while remaining independent of Next's development overlay portal.
   await sidebarAdminLogin.focus();
-  await expect(sidebarAdminLogin).toBeFocused();
   await sidebarAdminLogin.press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();

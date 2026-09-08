@@ -688,8 +688,14 @@ def test_reference_pack_preserves_named_swift_component_read_bound() -> None:
     captured_validator = (
         REFERENCE_ENGINE_SOURCES / "scripts/batch29/validate_route.py"
     ).read_text(encoding="utf-8")
-    assert "SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000" in captured_validator
-    assert "if total > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES:" in captured_validator
+    assert (
+        "SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000"
+        in captured_validator
+    )
+    assert (
+        "if total > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES:"
+        in captured_validator
+    )
 
 
 def test_private_locked_interpreter_rejects_repository_venv(

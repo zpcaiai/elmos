@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "independence": "production operator and independent verifier required",
+  "cases": [
+    {"id": "representative-vercel-health", "workload": "Vercel /api/health observes Cloud Run readiness"},
+    {"id": "representative-authenticated-account", "workload": "Descope login reaches one tenant-scoped Java API"},
+    {"id": "representative-neon-restart", "workload": "scale-from-zero reconnects to Neon with TLS"},
+    {"id": "representative-rollback", "workload": "traffic returns to the previous healthy revision"}
+  ],
+  "status": "NOT_RUN"
+}

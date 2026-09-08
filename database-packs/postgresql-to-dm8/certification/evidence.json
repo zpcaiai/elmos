@@ -41,5 +41,10 @@
   "evidence_digests": {
     "certification/local-postgresql-dm8-query-evidence.json": "sha256:a4c44558539ae4497dfdcaf0d09e500f2b97cb427b3d75138ce861755fba1b17"
   },
+  "evidence_roles": {
+    "executor": "ELMOS local typed SQL adapter self-attestation",
+    "independent_verifier": "NOT_RUN",
+    "certification_authority": "NOT_RUN"
+  },
   "evidence_scope": "Local typed parse, exact-route emission, and target-dialect reparse only; all database execution and equivalence metrics remain zero."
 }
