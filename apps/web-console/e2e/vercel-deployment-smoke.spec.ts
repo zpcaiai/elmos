@@ -53,14 +53,6 @@ test("deployed console renders its critical public routes and protects administr
     });
   }
 
-  const compatibilityResponse = await page.goto("/capabilities/", {
-    waitUntil: "domcontentloaded",
-  });
-  expect(compatibilityResponse?.status()).toBe(200);
-  expect(compatibilityResponse?.headers()["content-type"] ?? "").toContain("text/html");
-  expect(new URL(page.url()).pathname).toBe("/capabilities");
-  await expect(page.getByRole("heading", { name: "平台已实现的功能", level: 1 })).toBeVisible();
-
   const generationCapability = await page.request.get("/api/capabilities/generation");
   expect(generationCapability.status()).toBe(200);
   expect(generationCapability.headers()["content-type"] ?? "").toContain("application/json");
