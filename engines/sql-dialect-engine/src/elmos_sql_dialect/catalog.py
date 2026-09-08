@@ -83,9 +83,7 @@ class ColumnCatalog:
                 # catalogue with 9 tables and zero keys on northwind, which is
                 # exactly the corpus where MySQL then demanded the referenced
                 # column list it could no longer supply.
-                self.primary_keys[alter.table.lower()] = tuple(
-                    c.lower() for c in action.primary_key
-                )
+                self.primary_keys[alter.table.lower()] = tuple(c.lower() for c in action.primary_key)
 
     def primary_key_of(self, table: str) -> tuple[str, ...] | None:
         """The table's declared primary key, or None when unknown.
@@ -107,9 +105,7 @@ class ColumnCatalog:
     def known_columns(self, table: str, columns: tuple[str, ...]) -> tuple[str, ...]:
         return tuple(c for c in columns if self.type_of(table, c) is not None)
 
-    def columns_of_type(
-        self, table: str, columns: tuple[str, ...], wanted: CanonicalType
-    ) -> tuple[str, ...]:
+    def columns_of_type(self, table: str, columns: tuple[str, ...], wanted: CanonicalType) -> tuple[str, ...]:
         return tuple(c for c in columns if self.type_of(table, c) is wanted)
 
     def __bool__(self) -> bool:

@@ -111,10 +111,10 @@ paths:
     get:
       operationId: getChinaDbSqlPreflightCapabilities
       summary: Read the immutable ChinaDB commercial planning snapshot.
-      description: Returns SPEC_ONLY planning metadata. It does not contact a database or prove a target renderer.
+      description: Returns exact planning metadata and bounded compatibility-mode capability. It does not contact a database or prove a vendor-native renderer.
       responses:
         "200":
-          description: Exact 13-target and 78-route planning snapshot.
+          description: Exact 13-target and 78-route planning snapshot; compatibility-mode availability is not vendor-runtime evidence.
           headers:
             Cache-Control: { schema: { type: string, const: "private, no-store" } }
           content:
@@ -127,7 +127,7 @@ paths:
     post:
       operationId: assessChinaDbSourceSql
       summary: Parse source SQL into typed AST and unresolved migration obligations.
-      description: Always fails closed with state BLOCKED and targetSql null; target execution and certification remain NOT_RUN and NOT_CERTIFIED.
+      description: Unsupported requests fail closed with state BLOCKED and targetSql null. Exact allowlisted requests may return LOCAL_EMITTED compatibility SQL; target execution and certification remain NOT_RUN and NOT_CERTIFIED.
       parameters:
         - $ref: "#/components/parameters/OrganizationId"
         - $ref: "#/components/parameters/ActorId"
@@ -139,7 +139,7 @@ paths:
               $ref: "../../schemas/batch31/chinadb-sql-preflight-request.schema.json"
       responses:
         "200":
-          description: Typed source assessment with explicit blockers and no target SQL.
+          description: Typed source assessment with explicit blockers or bounded compatibility-mode target SQL.
           headers:
             Cache-Control: { schema: { type: string, const: "private, no-store" } }
           content:

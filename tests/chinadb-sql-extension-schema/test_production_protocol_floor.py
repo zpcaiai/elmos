@@ -98,7 +98,7 @@ def _module_literals():
 class ChinaDbProductionProtocolFloorTests(unittest.TestCase):
     def test_runtime_protocol_cannot_regress_below_complete_evidence_identity(self):
         values = _module_literals()
-        self.assertEqual("1.1.0", values["PROTOCOL_VERSION"])
+        self.assertEqual("1.2.0", values["PROTOCOL_VERSION"])
         self.assertEqual(
             ARTIFACT_DIGEST_FIELDS,
             values["REQUIRED_EXECUTION_ARTIFACT_DIGESTS"],
@@ -111,14 +111,16 @@ class ChinaDbProductionProtocolFloorTests(unittest.TestCase):
         source = PRODUCTION_MODULE.read_text(encoding="utf-8")
         self.assertIn("must use one role-specific digest per field", source)
         self.assertIn("artifact and evidence digests must not alias", source)
+        self.assertIn("must remain 75.0", source)
+        self.assertIn("DM8 must reach PRODUCTION_DEFINITION_OF_DONE", source)
 
     def test_schemas_preserve_protocol_floor_and_exact_digest_roles(self):
         request = _json(REQUEST_SCHEMA)
         requirements = _json(REQUIREMENTS_SCHEMA)
         result = _json(RESULT_SCHEMA)
 
-        self.assertEqual("1.1.0", requirements["properties"]["protocolVersion"]["const"])
-        self.assertEqual("1.1.0", result["properties"]["protocolVersion"]["const"])
+        self.assertEqual("1.2.0", requirements["properties"]["protocolVersion"]["const"])
+        self.assertEqual("1.2.0", result["properties"]["protocolVersion"]["const"])
 
         requirement_target = requirements["properties"]["targets"]["items"]
         self.assertEqual(
@@ -148,14 +150,20 @@ class ChinaDbProductionProtocolFloorTests(unittest.TestCase):
         execution_required = set(definitions["executionPayload"]["required"])
         self.assertIn("artifactDigests", execution_required)
         self.assertIn("evidenceDigests", execution_required)
+        self.assertIn("performanceSummary", execution_required)
         self.assertNotIn("rawEvidenceDigest", execution_required)
         self.assertNotIn("targetSqlDigest", execution_required)
+        performance = definitions["performanceSummary"]
+        self.assertFalse(performance["additionalProperties"])
+        self.assertEqual(75.0, performance["properties"]["sloP95Milliseconds"]["const"])
+        self.assertEqual(2, performance["properties"]["measurementAttemptCount"]["maximum"])
 
     def test_operator_documentation_exposes_the_protocol_floor(self):
         documentation = PROTOCOL_DOCUMENTATION.read_text(encoding="utf-8")
-        self.assertIn("Protocol `1.1.0`", documentation)
+        self.assertIn("Protocol `1.2.0`", documentation)
         self.assertIn("role-specific digest sets", documentation)
         self.assertIn("aliased digest roles fail closed", documentation)
+        self.assertIn("dedicated Runner", documentation)
 
 
 if __name__ == "__main__":

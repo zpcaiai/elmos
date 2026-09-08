@@ -442,6 +442,22 @@ def execution_payload():
         "vendorToolDigests": [DIGEST],
         "artifactDigests": artifact_digests,
         "evidenceDigests": evidence_digests,
+        "performanceSummary": {
+            "runnerClass": "DEDICATED",
+            "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+            "measurementClock": "MONOTONIC_HIGH_RESOLUTION",
+            "runnerAttestationDigest": "sha256:" + "f" * 64,
+            "runnerAttestationVerified": True,
+            "sloP95Milliseconds": 75.0,
+            "maximumMeasurementAttempts": 2,
+            "measurementAttemptCount": 1,
+            "warmupCountPerQuery": 5,
+            "sampleCountPerQuery": 40,
+            "queryCount": 6,
+            "normalizedOneMinuteLoad": 0.25,
+            "maximumObservedSourceP95Milliseconds": 20.0,
+            "maximumObservedTargetP95Milliseconds": 25.0,
+        },
         "executedAt": "2026-08-28T12:00:00Z",
         "checks": {
             "capabilityProbe": "PASSED",
@@ -522,7 +538,7 @@ def exact_tuple():
 def production_requirements():
     return {
         "schemaVersion": "1.0",
-        "protocolVersion": "1.1.0",
+        "protocolVersion": "1.2.0",
         "package": "chinadb-commercial-migration-skills",
         "capabilitySnapshotDigest": DIGEST,
         "targetCount": 13,
@@ -540,6 +556,18 @@ def production_requirements():
                 ],
                 "requiredArtifactDigests": list(ARTIFACT_DIGEST_FIELDS),
                 "requiredEvidenceDigests": list(EVIDENCE_DIGEST_FIELDS),
+                "performanceContract": {
+                    "runnerClass": "DEDICATED",
+                    "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+                    "measurementClock": "MONOTONIC_HIGH_RESOLUTION",
+                    "sloP95Milliseconds": 75.0,
+                    "maximumMeasurementAttempts": 2,
+                    "warmupCountPerQuery": 5,
+                    "sampleCountPerQuery": 40,
+                    "maximumNormalizedOneMinuteLoad": 1.0,
+                    "invalidEnvironmentState": "NOT_RUN_ENVIRONMENT_INVALID",
+                },
+                "rolloutPrerequisiteTargetId": None if target_id == "dm8" else "dm8",
                 "currentState": "BLOCKED_EXTERNAL_INPUT",
             }
             for target_id, label in TARGETS
@@ -569,7 +597,7 @@ def production_requirements():
 def production_result():
     return {
         "schemaVersion": "1.0",
-        "protocolVersion": "1.1.0",
+        "protocolVersion": "1.2.0",
         "package": "chinadb-commercial-migration-skills",
         "scope": production_request()["scope"],
         "scopeDigest": DIGEST,

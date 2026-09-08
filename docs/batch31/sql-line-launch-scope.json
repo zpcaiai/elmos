@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "kind": "elmos.batch31.sql-line-launch-scope",
+  "release_channel": "MIGRATION_PILOT",
+  "routes": [
+    {
+      "route_id": "sqlite-3.53.3-to-postgresql-17.5",
+      "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+      "source": {
+        "engine": "sqlite",
+        "versions": ["3.53.3"],
+        "edition": "public-domain",
+        "dialect": "sqlite",
+        "driver_versions": ["python-stdlib:3.14.6"],
+        "charset": "UTF-8",
+        "collation": "BINARY",
+        "timezone": "UTC-text-ISO8601",
+        "extensions": []
+      },
+      "target": {
+        "engine": "postgresql",
+        "versions": ["17.5"],
+        "edition": "community",
+        "dialect": "postgresql",
+        "driver_versions": ["psql:17.5"],
+        "charset": "UTF8",
+        "collation": "C",
+        "timezone": "UTC",
+        "extensions": []
+      },
+      "scope": [
+        "typed-ddl",
+        "tenant-query",
+        "constraint-negative",
+        "transaction-rollback",
+        "offline-backfill",
+        "backup-restore"
+      ],
+      "status": "experimental",
+      "release_eligible": false
+    }
+  ],
+  "excluded_claims": [
+    "production-writes",
+    "online-cdc",
+    "production-cutover",
+    "independent-verification",
+    "external-certification",
+    "all-42-core-routes",
+    "all-78-chinadb-routes"
+  ]
+}

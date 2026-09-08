@@ -18,16 +18,14 @@ The support table is backed by execution against real servers (PostgreSQL
 -- including the refusal: real MySQL answers `CREATE INDEX IF NOT EXISTS` with
 error 1064.
 """
+
 from __future__ import annotations
 
 import pytest
 
 from elmos_sql_dialect.engine import translate_ddl
 
-_TABLE = (
-    "CREATE TABLE IF NOT EXISTS orders ("
-    "id BIGINT PRIMARY KEY, total DECIMAL(12,2) NOT NULL)"
-)
+_TABLE = "CREATE TABLE IF NOT EXISTS orders (id BIGINT PRIMARY KEY, total DECIMAL(12,2) NOT NULL)"
 _INDEX = "CREATE INDEX IF NOT EXISTS idx_orders_total ON orders (total)"
 _PLAIN_TABLE = "CREATE TABLE orders (id BIGINT PRIMARY KEY, total DECIMAL(12,2) NOT NULL)"
 
@@ -36,9 +34,7 @@ _PLAIN_TABLE = "CREATE TABLE orders (id BIGINT PRIMARY KEY, total DECIMAL(12,2) 
     ("source", "target"),
     [("mysql", "postgres"), ("oracle", "postgres"), ("tsql", "postgres"), ("postgres", "mysql")],
 )
-def test_table_if_not_exists_survives_to_targets_that_can_say_it(
-    source: str, target: str
-) -> None:
+def test_table_if_not_exists_survives_to_targets_that_can_say_it(source: str, target: str) -> None:
     report = translate_ddl(_TABLE, source, target, statement_kind="TABLE")
     assert report["status"] == "PASSED", report["reasonCode"]
     assert report["emitted"].startswith("CREATE TABLE IF NOT EXISTS orders")
@@ -78,9 +74,7 @@ def test_index_if_not_exists_fails_closed_including_mysql(target: str) -> None:
     ("source", "target"),
     [("postgres", "oracle"), ("postgres", "tsql"), ("mysql", "oracle"), ("oracle", "tsql")],
 )
-def test_a_statement_without_the_modifier_is_unaffected_on_every_target(
-    source: str, target: str
-) -> None:
+def test_a_statement_without_the_modifier_is_unaffected_on_every_target(source: str, target: str) -> None:
     """The widening must not narrow anything: no modifier, no new refusal."""
 
     report = translate_ddl(_PLAIN_TABLE, source, target, statement_kind="TABLE")

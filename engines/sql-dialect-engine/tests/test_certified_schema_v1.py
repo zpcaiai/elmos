@@ -1,4 +1,5 @@
 """The minimal, side-effect-free CREATE SCHEMA profile."""
+
 from __future__ import annotations
 
 import pytest
@@ -14,21 +15,15 @@ def test_a_bare_schema_is_emitted_on_engines_with_logical_namespaces(dialect: Di
     assert emit_create_schema(Schema("app"), dialect) == "CREATE SCHEMA app"
 
 
-@pytest.mark.parametrize(
-    ("source", "dialect"), [("mysql", Dialect.POSTGRES), ("postgres", Dialect.MYSQL)]
-)
+@pytest.mark.parametrize(("source", "dialect"), [("mysql", Dialect.POSTGRES), ("postgres", Dialect.MYSQL)])
 def test_if_not_exists_is_preserved_where_the_target_spells_it(source: str, dialect: Dialect) -> None:
-    report = translate_ddl(
-        "CREATE SCHEMA IF NOT EXISTS app", source, dialect.value, statement_kind="SCHEMA"
-    )
+    report = translate_ddl("CREATE SCHEMA IF NOT EXISTS app", source, dialect.value, statement_kind="SCHEMA")
     assert report["status"] == "PASSED", report
     assert report["emitted"] == "CREATE SCHEMA IF NOT EXISTS app"
 
 
 def test_sql_server_does_not_silently_drop_schema_rerun_semantics() -> None:
-    report = translate_ddl(
-        "CREATE SCHEMA IF NOT EXISTS app", "postgres", "tsql", statement_kind="SCHEMA"
-    )
+    report = translate_ddl("CREATE SCHEMA IF NOT EXISTS app", "postgres", "tsql", statement_kind="SCHEMA")
     assert report["status"] == "BLOCKED"
     assert report["reasonCode"] == "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET"
 

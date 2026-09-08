@@ -9,6 +9,7 @@ The rule under test is deliberately asymmetric: a catalogue that KNOWS the
 column is TEXT refuses; a catalogue that has not seen the column says nothing.
 Absence of evidence must not become evidence of absence.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -49,22 +50,16 @@ def test_lookup_is_case_folded() -> None:
 
 def test_add_column_extends_the_catalog() -> None:
     catalog = _catalog(TEXT_TABLE)
-    catalog.apply_alter(
-        parse_alter_table("ALTER TABLE access_tokens ADD COLUMN note TEXT", Dialect.POSTGRES)
-    )
+    catalog.apply_alter(parse_alter_table("ALTER TABLE access_tokens ADD COLUMN note TEXT", Dialect.POSTGRES))
     assert catalog.type_of("access_tokens", "note") is CanonicalType.TEXT
 
 
 def test_drop_and_rename_keep_the_catalog_truthful() -> None:
     catalog = _catalog(TEXT_TABLE)
-    catalog.apply_alter(
-        parse_alter_table("ALTER TABLE access_tokens DROP COLUMN token", Dialect.POSTGRES)
-    )
+    catalog.apply_alter(parse_alter_table("ALTER TABLE access_tokens DROP COLUMN token", Dialect.POSTGRES))
     assert catalog.type_of("access_tokens", "token") is None
     catalog.apply_alter(
-        parse_alter_table(
-            "ALTER TABLE access_tokens RENAME COLUMN user_id TO owner_id", Dialect.POSTGRES
-        )
+        parse_alter_table("ALTER TABLE access_tokens RENAME COLUMN user_id TO owner_id", Dialect.POSTGRES)
     )
     assert catalog.type_of("access_tokens", "owner_id") is CanonicalType.VARCHAR
     assert catalog.type_of("access_tokens", "user_id") is None
@@ -88,9 +83,7 @@ def test_without_a_catalog_the_engine_does_not_guess(ddl: str, kind: str) -> Non
 
 @pytest.mark.parametrize(("ddl", "kind"), [(INDEX_ON_TEXT, "INDEX"), (UNIQUE_ON_TEXT, "ALTER")])
 def test_with_a_catalog_a_text_key_fails_closed_for_mysql(ddl: str, kind: str) -> None:
-    report = translate_ddl(
-        ddl, "postgres", "mysql", statement_kind=kind, catalog=_catalog(TEXT_TABLE)
-    )
+    report = translate_ddl(ddl, "postgres", "mysql", statement_kind=kind, catalog=_catalog(TEXT_TABLE))
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX"
 
@@ -120,9 +113,7 @@ def test_a_non_text_key_is_unaffected_by_the_catalog() -> None:
 
 @pytest.mark.parametrize("target", ["postgres", "oracle", "tsql"])
 def test_the_catalog_rule_is_mysql_only(target: str) -> None:
-    report = translate_ddl(
-        INDEX_ON_TEXT, "mysql", target, statement_kind="INDEX", catalog=_catalog(TEXT_TABLE)
-    )
+    report = translate_ddl(INDEX_ON_TEXT, "mysql", target, statement_kind="INDEX", catalog=_catalog(TEXT_TABLE))
     assert report["status"] == "PASSED", report["reasonCode"]
 
 
