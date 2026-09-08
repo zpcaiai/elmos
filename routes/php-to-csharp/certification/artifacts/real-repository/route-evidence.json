@@ -1,0 +1,363 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:ad361886217386a451a338e1a1c2a904981a070de6fb0112ebca05dda1e8a0a4",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:82affc03f83e798c78dc561651a6609f26cbf6abebeed5d34e41426b57cccc75",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:7dd94fce9f5f45f348c8cd168b148f6854e77f4bdc7eae48839841adef00917f",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:b31e0a698d96f42a494caec73f36b1a2c4c43ba6181e6c8c056143880d38722e",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:b31e0a698d96f42a494caec73f36b1a2c4c43ba6181e6c8c056143880d38722e",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:b31e0a698d96f42a494caec73f36b1a2c4c43ba6181e6c8c056143880d38722e",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:e85e7b8ec9fbb089b3812b43ffe90a347a247a2d0e8dd68db1d5820952bb06ac",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:b31e0a698d96f42a494caec73f36b1a2c4c43ba6181e6c8c056143880d38722e",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:067a0184edf97e872cc8b99d52a8b7e77151f073822628521970b81080438d7b",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:e85e7b8ec9fbb089b3812b43ffe90a347a247a2d0e8dd68db1d5820952bb06ac",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:057875d11e3bd835796261abdc932e31c0e3604b417e2ea6a9cc6f4a0cfe530e",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:a926b651dd9d57a128e3a99b33e3927cacb3a986784e35dcd7bddd09de6484c5",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:9b9be00d5edbc01a1a96ee9ee6e793dadabdb59e5f6799cc4670227fb427cf78",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:22047c4cb2def7d85de24b8777385fa09eb92ab5a06b9709ab4ffe31cab18988",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "difference",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_35dc49dbc6e69233",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "difference.php",
+      "source_sha256": "sha256:bcd25c8035b954db0eb191206e4ffbbe80d3b91f437ab3fa9fd49d99ff0bfbc9",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:e495fc8e0025404cabc0c6cb697173ca7887905a10349e66d2260d95c5f1660c"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:17abc9f1e7699370d2ed1915a40a53fe169f4d24bc58651ca4426f14c55c96b2",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "php-to-csharp",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:d23087011ca84d41a9c4a3e8853c7a7cedc87eecdec2871e7bfb299d91de81a3",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:057875d11e3bd835796261abdc932e31c0e3604b417e2ea6a9cc6f4a0cfe530e"
+  },
+  "semantic_ir_sha256": "sha256:d23087011ca84d41a9c4a3e8853c7a7cedc87eecdec2871e7bfb299d91de81a3",
+  "source": {
+    "analyzer": "php/ext-tokenizer Zend token stream",
+    "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+    "function_name": "difference",
+    "language": "php",
+    "path": "difference.php",
+    "sha256": "sha256:bcd25c8035b954db0eb191206e4ffbbe80d3b91f437ab3fa9fd49d99ff0bfbc9"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "difference.php",
+    "artifact_sha256": "sha256:bcd25c8035b954db0eb191206e4ffbbe80d3b91f437ab3fa9fd49d99ff0bfbc9",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "difference.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in difference.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in source_harness.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t13\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\n"
+      }
+    ],
+    "language": "php",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "13",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+      "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+      "language": "php",
+      "profile": [
+        "php-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "php-root=/opt/homebrew/Cellar/php/8.5.9",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+        "php-tree-record-count=643",
+        "php-tree-file-count=532",
+        "php-tree-directory-count=109",
+        "php-tree-bytes=129937220",
+        "php-tree-symlink-count=1",
+        "php-tree-unbound-symlink-count=1",
+        "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+        "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+        "integer=int64",
+        "number=binary64",
+        "strict-types=1",
+        "php-zts=False",
+        "php-debug=False",
+        "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+        "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
+        "php-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_35dc49dbc6e69233",
+    "language": "csharp",
+    "path": "Migrated.cs",
+    "sha256": "sha256:25aade3ef9af00addd201b25de9486244a12cf616f024c917d4a534987b44279"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "build",
+          "RouteHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-php-to-csharp-ktcmune7/real-repository/RouteHarness.csproj (in 45 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-php-to-csharp-ktcmune7/real-repository/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.75\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "run",
+          "--project",
+          "RouteHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTM=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tMA==\n"
+      }
+    ],
+    "language": "csharp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTM=",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+      "executable_sha256": "b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+      "language": "csharp",
+      "profile": [
+        "dotnet-profile-schema=v1",
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-dotnet",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "dotnet-root=/opt/homebrew/Cellar/dotnet/10.0.301/libexec",
+        "sdk-version=10.0.301",
+        "hostfxr-version=10.0.9",
+        "runtime-framework=Microsoft.NETCore.App",
+        "runtime-version=10.0.9",
+        "rid=osx-arm64",
+        "targeting-pack-version=10.0.9",
+        "apphost-pack-version=10.0.9",
+        "wrapper-path=/opt/homebrew/Cellar/dotnet/10.0.301/bin/dotnet",
+        "wrapper-sha256=135ed085e642e17a1cf55cd61a039c53d79998579b5fafa607e8e731d18ab85e",
+        "wrapper-bytes=136",
+        "muxer-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+        "muxer-sha256=b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+        "muxer-bytes=140432",
+        "sdk-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/sdk/10.0.301",
+        "sdk-tree-sha256=bef3d3ea1d59cea9886bb8b9bc5c52174da2d923fdaa634e98395250b2d274ab",
+        "sdk-tree-file-count=3031",
+        "sdk-tree-bytes=360219604",
+        "hostfxr-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/host/fxr/10.0.9",
+        "hostfxr-tree-sha256=617b873814d0013e3005da134b7b1432c91d8a42407cd4554ceabc29cc0a0f3c",
+        "hostfxr-tree-file-count=1",
+        "hostfxr-tree-bytes=449376",
+        "runtime-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/shared/Microsoft.NETCore.App/10.0.9",
+        "runtime-tree-sha256=bd69ee3fb7f237deedb6f99532afc8023a9b8ab016dd60b101e4f5a95e0884b9",
+        "runtime-tree-file-count=188",
+        "runtime-tree-bytes=81526751",
+        "reference-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Ref/10.0.9",
+        "reference-pack-tree-sha256=da4febffbad4f86171e05436ad91885096c9a7d8a177a5480c1b4856e1d6e845",
+        "reference-pack-tree-file-count=348",
+        "reference-pack-tree-bytes=40730732",
+        "apphost-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Host.osx-arm64/10.0.9",
+        "apphost-pack-tree-sha256=af2915a0316b1a6715304aaebd2b6dadda66463cdd296eeff42977cb2ace0789",
+        "apphost-pack-tree-file-count=7",
+        "apphost-pack-tree-bytes=11573800",
+        "hostfxr-sha256=9387e328807ac3d29fb0f203bbefdf07d10d4e2200e307515ac16273657267a2",
+        "hostpolicy-sha256=145952fb2f06831089127216152a3e4c47ab7ffb74ddaaf4cd06410314de57ff"
+      ],
+      "version": "10.0.301"
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "allowed_suffixes": [
+    ".bas",
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".php",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/php-to-objc/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1486,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:0e798700cafe622ef0423b60d5c06a9b2d1f040680878e7be647985d6a688e85"
+    },
+    {
+      "bytes": 11851,
+      "path": "chunk-map.json",
+      "sha256": "sha256:23f2e0127cc9b9a7934a15355724ba6bc25ee260ef3cfb65825275601fc92d3b"
+    },
+    {
+      "bytes": 3038,
+      "path": "formal-composition.json",
+      "sha256": "sha256:47782e3663b1be93a4e8a90224930585f305cdd4e22faf27d6af4a8097431c30"
+    },
+    {
+      "bytes": 1010,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:e3dd12fd2f852d9b9fc3bfb7fe5de1e16b9da9a2ca32a507ccbe8ab4140b62a7"
+    },
+    {
+      "bytes": 13693,
+      "path": "formal-input.json",
+      "sha256": "sha256:8440cae8763fd163af90ffc6cf54e2c1a4d41751172f32a5ca6f486df72166c1"
+    },
+    {
+      "bytes": 2380,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:1ad9c20dad41b172df94fcc8f24b452c1705413ce1013bc02553d4fa8538d626"
+    },
+    {
+      "bytes": 2685,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:c2d006dc70139c21293283bc0a7a9c9fc0741a3dc451a0d54593b46ba9c9580e"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 162,
+      "path": "inputs/difference.php",
+      "sha256": "sha256:bcd25c8035b954db0eb191206e4ffbbe80d3b91f437ab3fa9fd49d99ff0bfbc9"
+    },
+    {
+      "bytes": 3793,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:a3afcee813c29873dfaee57e6efe6389be00e4d5b9eee3f5492b2371e69a7c03"
+    },
+    {
+      "bytes": 598,
+      "path": "migrated.m",
+      "sha256": "sha256:2ca31d0ea411d3e4eaaeb5ac9eba7f297f4e5691b4b2844f6329f59fd46811fb"
+    },
+    {
+      "bytes": 12338,
+      "path": "route-evidence.json",
+      "sha256": "sha256:41b157d59151a4ee40f74e40f2e58b007baa9458c3b8f6ea67dae753ac66f1af"
+    },
+    {
+      "bytes": 1776,
+      "path": "route_harness.m",
+      "sha256": "sha256:f98bae8d37763baa03d2c0868da74b70fae0969cf3ac9c6efea1298a40f08729"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 1883,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:d23087011ca84d41a9c4a3e8853c7a7cedc87eecdec2871e7bfb299d91de81a3"
+    },
+    {
+      "bytes": 162,
+      "path": "source-runtime/difference.php",
+      "sha256": "sha256:bcd25c8035b954db0eb191206e4ffbbe80d3b91f437ab3fa9fd49d99ff0bfbc9"
+    },
+    {
+      "bytes": 944,
+      "path": "source-runtime/source_harness.php",
+      "sha256": "sha256:8ff0fae4f8e193085c55888e9acaa796322102d22c708222244e7efd5fc5d78a"
+    },
+    {
+      "bytes": 1883,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:d23087011ca84d41a9c4a3e8853c7a7cedc87eecdec2871e7bfb299d91de81a3"
+    },
+    {
+      "bytes": 1588,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:89107f261efcc8e8df0dbc0f24ca43c039e2c7d017a4308410fca22b6c7930ac"
+    },
+    {
+      "bytes": 1738,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:a8868deddf1202ff69f02424bc451851600b3a2acde5217f4dfead0be50d5d2c"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "php-to-objc",
+  "schema_version": 1,
+  "total_bytes": 63463
+}

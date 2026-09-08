@@ -1,0 +1,346 @@
+{
+  "artifact_manifest": {
+    "bytes": 4720,
+    "path": "certification/artifacts/development/artifact-manifest.json",
+    "sha256": "sha256:3d51a790f44654abbca93591ab38bf76ba4f33c257cb902d223328aefb5d28fb"
+  },
+  "artifact_root": "certification/artifacts/development",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:0dfc873b12792b58c5abe80555f5df5b80ad00245e5784e8cc0e164dba337879",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:6cd047a3422918fc9406ad6355e878493d0dc990bb02b3d81d0ac6598182d48c",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / nodejs-es2022-esm-safe-integer-finite-v1",
+    "formal_input_digest": "sha256:7ebb79bdb9a76709a057082d650ec45ad3d4689a236b1bc928ed65a082ef9137",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:7ebb79bdb9a76709a057082d650ec45ad3d4689a236b1bc928ed65a082ef9137",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:7ebb79bdb9a76709a057082d650ec45ad3d4689a236b1bc928ed65a082ef9137",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:5b9e0884d9dd7004083a97d63bc608198199c036644999ecf533c3567fd640d2",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:7ebb79bdb9a76709a057082d650ec45ad3d4689a236b1bc928ed65a082ef9137",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:779c43acab5286919a34fa93f5633b6eba775a17afeb963c264f104386117dab",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:5b9e0884d9dd7004083a97d63bc608198199c036644999ecf533c3567fd640d2",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:2da4c4459e06042209a9bfca45705d3668a284a14670536577dfe47d1098c660",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:0f0d65e180bc4b3cf152faf67e5a6d4f073fb32b5e524e49a191d7f12903273e",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:f57391051b3376216b27919dd1700725da31d4083eea079235fee0b15bc94312",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:2da4c4459e06042209a9bfca45705d3668a284a14670536577dfe47d1098c660",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "calculate",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.php",
+      "source_sha256": "sha256:61a3e35865aaa34dc1a56812d82450d5e58725f1201f0dcf4a0cf69e927b7c06",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:2ce0833b0b9a5c1bedab8385f201b460e408141781e3364f0b750da49d5b3873"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:12bdaa5a2eff16491cf836cdca6e13a5473541ecbccae7b989b073c1984740c0",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "php-to-typescript",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:ce7cb1caffe5cc4c5a404839b5f5f2164cb78d722c51865977a62e8814e2ce23",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:2da4c4459e06042209a9bfca45705d3668a284a14670536577dfe47d1098c660"
+  },
+  "semantic_ir_sha256": "sha256:ce7cb1caffe5cc4c5a404839b5f5f2164cb78d722c51865977a62e8814e2ce23",
+  "source": {
+    "analyzer": "php/ext-tokenizer Zend token stream",
+    "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+    "function_name": "calculate",
+    "language": "php",
+    "path": "pricing.php",
+    "sha256": "sha256:61a3e35865aaa34dc1a56812d82450d5e58725f1201f0dcf4a0cf69e927b7c06"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.php",
+    "artifact_sha256": "sha256:61a3e35865aaa34dc1a56812d82450d5e58725f1201f0dcf4a0cf69e927b7c06",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "pricing.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in pricing.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in source_harness.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "php",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+      "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+      "language": "php",
+      "profile": [
+        "php-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "php-root=/opt/homebrew/Cellar/php/8.5.9",
+        "php-tree-sha256=60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+        "php-tree-record-count=643",
+        "php-tree-file-count=532",
+        "php-tree-directory-count=109",
+        "php-tree-bytes=129937220",
+        "php-tree-symlink-count=1",
+        "php-tree-unbound-symlink-count=1",
+        "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+        "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+        "integer=int64",
+        "number=binary64",
+        "strict-types=1",
+        "php-zts=False",
+        "php-debug=False",
+        "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+        "php-tokenizer=builtin",
+        "php-homebrew-installer-metadata=NOT_BOUND",
+        "php-homebrew-runtime-dependency-versions=NOT_RUN",
+        "php-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "calculate",
+    "language": "typescript",
+    "path": "migrated.ts",
+    "sha256": "sha256:a8f82867edeb7d13d7007a1ee84b61f3fec7fd5de29fb0010bad226b77b05eb4"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+          "dist/route_harness.js"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "typescript",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+      "auxiliary_sha256": "8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+      "executable": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+      "executable_sha256": "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+      "language": "typescript",
+      "profile": [
+        "typescript-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "typescript-language-version=5.9.2",
+        "typescript-package-root=/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-closure-sha256=aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9",
+        "typescript-closure-file-count=108",
+        "typescript-closure-bytes=19067381",
+        "typescript-source-manifest-sha256=61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-standard-library-file-count=102",
+        "typescript-launcher-sha256=8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+        "typescript-tsc-shim-sha256=2cffde0b8c6760dfb0b5b0382bbb7e00ba6a8b2d981b9205b256a700a481d983",
+        "typescript-compiler-sha256=a040f97c9d0223f64c8ebc380c5e48eb7945f1142f7c1dc9c3ec4acdb6c1c613",
+        "typescript-parser-sha256=e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b",
+        "typescript-package-json-sha256=5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "typescript-license-sha256=a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+        "node-closure-sha256=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "node-closure-profile=homebrew-node26-libada-77917065434c-616512",
+        "node-topology-sha256=2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd",
+        "node-closure-component-count=25",
+        "node-closure-edge-count=49",
+        "node-closure-system-edge-count=43",
+        "otool-system-tool-content-soundness=NOT_RUN",
+        "dyld-system-library-content-soundness=NOT_RUN",
+        "typescript-compiler-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "5.9.2 / Node 26.0.0"
+    }
+  }
+}

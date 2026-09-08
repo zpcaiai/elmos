@@ -1,5 +1,5 @@
-# php-to-objc -- customer support profile
+# php-to-objc customer support profile
 
-`NOT_RUN`. This direction is declared, not demonstrated, so there is
-nothing here yet to profile or to inventory gaps against. Writing this
-document is part of what a first execution of this route produces.
+Status: `limited / NOT_CERTIFIED`.
+
+Only the exact typed-pure-function-v1 and evidenced typed-pure-module-v1 subsets may be used. Pointers, ownership, heap state, dynamic dispatch, exceptions outside the canonical arithmetic contract, concurrency, I/O, frameworks, and undeclared routes remain unsupported.

@@ -1,0 +1,25 @@
+{
+  "route_key": "php-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 572,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:8973d43c02ac80407f1b61fca6873a654bb5f60d87d392fad5b5002d7500c419"
+    },
+    {
+      "bytes": 383,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:04d5e8065739f42dedc54adbddbe65aec425bad0e9ddd72ab3ada6d54b274c2b"
+    },
+    {
+      "bytes": 598,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:2ca31d0ea411d3e4eaaeb5ac9eba7f297f4e5691b4b2844f6329f59fd46811fb"
+    }
+  ]
+}

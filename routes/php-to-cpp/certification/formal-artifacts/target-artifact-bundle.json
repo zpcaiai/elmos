@@ -1,0 +1,25 @@
+{
+  "route_key": "php-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 596,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:fbc1aedadaff5a4f50366bd3b07a65eb3d629c121485bccb72254acdcdd91387"
+    },
+    {
+      "bytes": 416,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:06aec55fe7c89132bbfb8f8427f79e0df7fc883a633984df82a1b35526e80603"
+    },
+    {
+      "bytes": 622,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:3593ac3c3da93fdfe16ffc7103879fbc24dc12718e48f8397584b934fff75fed"
+    }
+  ]
+}
