@@ -167,9 +167,7 @@ def test_row_security_control_is_typed_and_postgres_target_bound(action: str) ->
     assert command.action is RowSecurityAction(action)
     assert command.schema == "dbo"
     assert command.table == "Order"
-    assert emit_row_security(command, Dialect.POSTGRES) == (
-        f'ALTER TABLE dbo."Order" {action} ROW LEVEL SECURITY'
-    )
+    assert emit_row_security(command, Dialect.POSTGRES) == (f'ALTER TABLE dbo."Order" {action} ROW LEVEL SECURITY')
 
 
 def test_row_security_is_not_downgraded_to_privileges_on_other_targets() -> None:
@@ -190,9 +188,7 @@ def test_postgres_role_comment_is_typed_without_cross_target_fallback() -> None:
         Dialect.POSTGRES,
     )
     assert comment.object_kind is CommentObjectKind.ROLE
-    assert emit_comment(comment, Dialect.POSTGRES) == (
-        "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'"
-    )
+    assert emit_comment(comment, Dialect.POSTGRES) == ("COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'")
     report = translate_ddl(
         "COMMENT ON ROLE elmos_scheduler IS 'non-login scheduler role'",
         "postgres",
@@ -253,9 +249,7 @@ def test_routine_identity_catalog_gates_signatureless_target_routes() -> None:
     )
     assert privilege.routine_argument_type_refs
     assert emit_privilege(privilege, Dialect.ORACLE, catalog) == "REVOKE EXECUTE ON dbo.audit_row FROM PUBLIC"
-    assert emit_privilege(privilege, Dialect.TSQL, catalog) == (
-        "REVOKE EXECUTE ON OBJECT::dbo.audit_row FROM PUBLIC"
-    )
+    assert emit_privilege(privilege, Dialect.TSQL, catalog) == ("REVOKE EXECUTE ON OBJECT::dbo.audit_row FROM PUBLIC")
     with pytest.raises(DialectError, match="CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET"):
         emit_privilege(privilege, Dialect.MYSQL, catalog)
 

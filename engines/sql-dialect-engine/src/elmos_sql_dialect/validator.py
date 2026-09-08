@@ -17,6 +17,7 @@
 Both legs report independently in `ValidationReport` -- a syntax pass never
 gets silently upgraded to "execution verified".
 """
+
 from __future__ import annotations
 
 import uuid
@@ -52,8 +53,10 @@ def _routine_parser_fallback(sql: str, dialect: Dialect) -> tuple[str, ...] | No
     if dialect is Dialect.ORACLE and upper.startswith(
         ("CREATE PROCEDURE ", "CREATE OR REPLACE PROCEDURE ", "CREATE FUNCTION ", "CREATE OR REPLACE FUNCTION ")
     ):
-        if " IS " in upper and upper.endswith(" END;") and (
-            " RETURN " in upper or upper.startswith("CREATE PROCEDURE ")
+        if (
+            " IS " in upper
+            and upper.endswith(" END;")
+            and (" RETURN " in upper or upper.startswith("CREATE PROCEDURE "))
         ):
             return (
                 "sqlglot exposes this PL/SQL routine as an opaque command; "
@@ -106,10 +109,9 @@ def validate_syntax(sql: str, dialect: Dialect, *, routine: bool = False) -> tup
             )
     if len(statements) != 1:
         if routine and dialect is Dialect.TSQL:
-            if (
-                type(statements[0]).__name__ == "Command"
-                and statements[0].sql(dialect=dialect.value).lstrip().upper().startswith("CREATE FUNCTION")
-            ):
+            if type(statements[0]).__name__ == "Command" and statements[0].sql(
+                dialect=dialect.value
+            ).lstrip().upper().startswith("CREATE FUNCTION"):
                 return "PASSED", (
                     "sqlglot exposes target T-SQL CREATE FUNCTION as Command; "
                     "real SQL Server execution is still required for syntax/semantic evidence",
@@ -212,7 +214,9 @@ def validate(
     routine: bool = False,
 ) -> ValidationReport:
     syntax_status, syntax_diagnostics = validate_syntax(sql, dialect, routine=routine)
-    execution_status, execution_diagnostics = validate_execution(sql, dialect, dsn) if syntax_status == "PASSED" else (
-        "EXECUTION_NOT_ATTEMPTED", ("skipped because syntax validation failed first",)
+    execution_status, execution_diagnostics = (
+        validate_execution(sql, dialect, dsn)
+        if syntax_status == "PASSED"
+        else ("EXECUTION_NOT_ATTEMPTED", ("skipped because syntax validation failed first",))
     )
     return ValidationReport(syntax_status, syntax_diagnostics, execution_status, execution_diagnostics)

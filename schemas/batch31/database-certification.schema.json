@@ -10,6 +10,8 @@
     "metrics",
     "restrictions",
     "evidence_refs",
+    "evidence_digests",
+    "external_certification",
     "approved_by"
   ],
   "properties": {
@@ -43,9 +45,25 @@
     },
     "evidence_refs": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "string"
       }
+    },
+    "evidence_digests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
+    },
+    "external_certification": {
+      "enum": [
+        "NOT_RUN",
+        "PASSED_INDEPENDENT",
+        "FAILED",
+        "BLOCKED"
+      ]
     },
     "approved_by": {
       "type": "array",

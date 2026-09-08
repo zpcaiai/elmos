@@ -62,7 +62,7 @@ class PaymentCallbackBindingTest {
                     @Override
                     public NormalizedCallback normalize(RawCallback raw) {
                         return new NormalizedCallback(raw.provider(), "evt-1",
-                                "ord-1", 12900, "SUCCESS");
+                                raw.provider().name(), 12900, "SUCCESS");
                     }
                 };
         router.register(PaymentProvider.ALIPAY_CHECKOUT, adapter);
@@ -73,7 +73,9 @@ class PaymentCallbackBindingTest {
                         router,
                         key -> seenKeys.add(key),
                         outTradeNo -> Optional.of(new LocalOrder("ord-1", "org-1",
-                                "elmos-pro-monthly", 12900)),
+                                "elmos-pro-monthly", 12900,
+                                PaymentCallbackPipeline.OrderKind.SUBSCRIPTION,
+                                PaymentProvider.parse(outTradeNo))),
                         (order, callback, rawBody) -> { },
                         (order, callback) -> { },
                         (reason, callback, order, detail) -> { }));

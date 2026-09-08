@@ -14,6 +14,7 @@ These three are operators, not function calls: SQL-92 core, spelled and meant
 identically by PostgreSQL, MySQL, Oracle and SQL Server. That is why they need
 no per-dialect rendering, while the ones that genuinely diverge stay out.
 """
+
 from __future__ import annotations
 
 import itertools
@@ -74,9 +75,7 @@ def test_predicates_compose_with_the_existing_binary_comparisons() -> None:
 
 @pytest.mark.parametrize("source", ["postgres", "mysql"])
 @pytest.mark.parametrize("target", ["postgres", "mysql", "oracle", "tsql"])
-def test_default_space_trim_is_a_typed_cross_dialect_check_value(
-    source: str, target: str
-) -> None:
+def test_default_space_trim_is_a_typed_cross_dialect_check_value(source: str, target: str) -> None:
     if source == target:
         pytest.skip("same-dialect translation is not a supported route")
     spelling = "btrim" if source == "postgres" else "trim"
@@ -179,8 +178,7 @@ def test_postgres_nonfinite_double_check_literals_remain_fail_closed(target: str
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_same_typed_numeric_column_addition_is_preserved_in_checks(target: str) -> None:
     report = translate_ddl(
-        "CREATE TABLE t (a DECIMAL(30,0), b DECIMAL(30,0), limit_value DECIMAL(30,0), "
-        "CHECK (a + b <= limit_value))",
+        "CREATE TABLE t (a DECIMAL(30,0), b DECIMAL(30,0), limit_value DECIMAL(30,0), CHECK (a + b <= limit_value))",
         "postgres",
         target,
         statement_kind="TABLE",
@@ -241,9 +239,7 @@ def test_the_genuinely_divergent_predicates_are_still_refused(label: str, sql: s
         ("^[0-9]+$", "DATALENGTH(CONVERT(nvarchar(max), s)) >= 2"),
     ],
 )
-def test_bounded_ascii_regexes_have_a_binary_collation_sql_server_lowering(
-    pattern: str, fragment: str
-) -> None:
+def test_bounded_ascii_regexes_have_a_binary_collation_sql_server_lowering(pattern: str, fragment: str) -> None:
     report = translate_ddl(
         f"CREATE TABLE t (s TEXT, CHECK (s ~ '{pattern}'))",
         "postgres",
@@ -345,14 +341,10 @@ def test_boolean_checks_are_type_checked_in_the_canonical_model() -> None:
 
 
 @pytest.mark.parametrize(("source", "target"), [("postgres", "mysql"), ("mysql", "oracle")])
-def test_redundant_parentheses_around_a_check_are_unwrapped(
-    source: str, target: str
-) -> None:
+def test_redundant_parentheses_around_a_check_are_unwrapped(source: str, target: str) -> None:
     """Purely syntactic: 19 occurrences in the measured corpus, no semantics."""
 
-    report = translate_ddl(
-        "CREATE TABLE t (a INT, CHECK ((a > 0)))", source, target, statement_kind="TABLE"
-    )
+    report = translate_ddl("CREATE TABLE t (a INT, CHECK ((a > 0)))", source, target, statement_kind="TABLE")
     assert report["status"] == "PASSED", report["reasonCode"]
     assert _check_line(report) == "CHECK (a > 0)"
 

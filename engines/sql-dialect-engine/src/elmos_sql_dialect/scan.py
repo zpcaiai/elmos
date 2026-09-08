@@ -617,6 +617,7 @@ def discover_sql_files(repository: str | os.PathLike[str]) -> list[Path]:
         for name in filenames:
             if name.endswith(".sql"):
                 found.append(Path(dirpath) / name)
+
     def order(path: Path) -> tuple[int, int, str]:
         match = re.match(r"^V(\d+)(?:__|_)", path.name, re.IGNORECASE)
         if match is None:
@@ -680,19 +681,13 @@ class SourceSchemaCatalog:
     columns: dict[tuple[str, str], dict[str, CanonicalType]] = field(default_factory=dict)
     type_refs: dict[tuple[str, str], dict[str, CanonicalTypeRef]] = field(default_factory=dict)
     unique_keys: dict[tuple[str, str], set[tuple[str, ...]]] = field(default_factory=dict)
-    routine_signatures: dict[tuple[str, str, str], set[tuple[CanonicalTypeRef, ...]]] = field(
-        default_factory=dict
-    )
+    routine_signatures: dict[tuple[str, str, str], set[tuple[CanonicalTypeRef, ...]]] = field(default_factory=dict)
     evidence: list[dict[str, object]] = field(default_factory=list)
 
     def add_table(self, table: Table) -> None:
         key = _catalog_key(table.schema, table.name)
-        self.type_refs[key] = {
-            column.name.casefold(): column.type_ref for column in table.columns
-        }
-        self.columns[key] = {
-            column.name.casefold(): column.type_ref.canonical_type for column in table.columns
-        }
+        self.type_refs[key] = {column.name.casefold(): column.type_ref for column in table.columns}
+        self.columns[key] = {column.name.casefold(): column.type_ref.canonical_type for column in table.columns}
         self.unique_keys[key] = {
             tuple(column.casefold() for column in table.primary_key),
             *(tuple(column.casefold() for column in unique) for unique in table.unique_constraints),
@@ -972,14 +967,10 @@ def _classify(
                     # header has been removed.
                     raw_sql = normalized_raw
         command_sql = statement.sql() if isinstance(statement, exp.Command) else None
-        if isinstance(statement, exp.Command) and looks_like_row_security(
-            raw_sql or command_sql or "", dialect
-        ):
+        if isinstance(statement, exp.Command) and looks_like_row_security(raw_sql or command_sql or "", dialect):
             parse_row_security(raw_sql or command_sql or "", dialect, namespace_map)
             return "IN_SUBSET", None, None
-        if isinstance(statement, exp.Command) and looks_like_role_comment(
-            raw_sql or command_sql or "", dialect
-        ):
+        if isinstance(statement, exp.Command) and looks_like_role_comment(raw_sql or command_sql or "", dialect):
             parse_comment(raw_sql or command_sql or "", dialect, namespace_map)
             return "IN_SUBSET", None, None
         if (raw_sql or command_sql or "").lstrip().upper().startswith("DO"):
@@ -1023,9 +1014,9 @@ def _classify(
             parse_comment(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Grant | exp.Revoke):
             parse_privilege(raw_sql or statement, dialect, namespace_map)
-        elif (
-            isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "POLICY"
-        ) or (raw_sql is not None and raw_sql.lstrip().upper().startswith("CREATE POLICY")):
+        elif (isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "POLICY") or (
+            raw_sql is not None and raw_sql.lstrip().upper().startswith("CREATE POLICY")
+        ):
             parse_row_policy(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Alter):
             # certified-alter-v1. Routed here so the coverage number tracks
@@ -1378,9 +1369,7 @@ def _build_report(
     # An admitted source statement is therefore an explicit target-adapter
     # review, not an automatic conversion claim.
     domestic_disposition_counts = {
-        "TARGET_ADAPTER_REVIEW_REQUIRED": disposition_counts.get(
-            "AUTOMATED_TRANSLATION_CANDIDATE", 0
-        ),
+        "TARGET_ADAPTER_REVIEW_REQUIRED": disposition_counts.get("AUTOMATED_TRANSLATION_CANDIDATE", 0),
         "MANUAL_MIGRATION_REQUIRED": disposition_counts.get("MANUAL_MIGRATION_REQUIRED", 0),
         "SOURCE_FORMAT_REVIEW": disposition_counts.get("SOURCE_FORMAT_REVIEW", 0),
         "ENGINE_DEFECT": disposition_counts.get("ENGINE_DEFECT", 0),
@@ -1389,9 +1378,7 @@ def _build_report(
     domestic_route_units = domestic_source_units * len(CHINADB_TARGETS)
     domestic_source_route_covered = sum(domestic_disposition_counts.values())
     domestic_route_covered = domestic_source_route_covered * len(CHINADB_TARGETS)
-    domestic_route_coverage = (
-        round(domestic_route_covered / domestic_route_units, 3) if domestic_route_units else 0.0
-    )
+    domestic_route_coverage = round(domestic_route_covered / domestic_route_units, 3) if domestic_route_units else 0.0
     domestic_target_rows = [
         {
             "targetId": target.id,

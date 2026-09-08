@@ -111,15 +111,17 @@ public final class JdbcOrderPorts {
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupCommercialOrder(
             Connection connection, LookupKey key) throws SQLException {
         String sql = key.digest() ? """
-                SELECT order_id, organization_id, order_type, amount_minor
+                SELECT order_id, organization_id, order_type, amount_minor, provider
                   FROM commercial_order_directory
                  WHERE business_order_sha256 = ?
-                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED')
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED',
+                                  'RECONCILIATION_REQUIRED')
                 """ : """
-                SELECT order_id, organization_id, order_type, amount_minor
+                SELECT order_id, organization_id, order_type, amount_minor, provider
                   FROM commercial_order_directory
                  WHERE out_trade_no = ?
-                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED')
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED',
+                                  'RECONCILIATION_REQUIRED')
         """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, key.value());
@@ -128,7 +130,8 @@ public final class JdbcOrderPorts {
                 return Optional.of(new PaymentCallbackPipeline.LocalOrder(
                         rows.getString("order_id"), rows.getString("organization_id"), null,
                         rows.getLong("amount_minor"),
-                        PaymentCallbackPipeline.OrderKind.valueOf(rows.getString("order_type"))));
+                        PaymentCallbackPipeline.OrderKind.valueOf(rows.getString("order_type")),
+                        PaymentProvider.parse(rows.getString("provider"))));
             }
         }
     }
@@ -136,12 +139,12 @@ public final class JdbcOrderPorts {
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupSubscriptionOrder(
             Connection connection, LookupKey key) throws SQLException {
         String sql = key.digest() ? """
-                SELECT checkout_session_id, organization_id, plan_id, amount_minor
+                SELECT checkout_session_id, organization_id, plan_id, amount_minor, provider
                   FROM payment_order_directory
                  WHERE business_order_sha256 = ?
                    AND status IN ('CREATING', 'OPEN', 'COMPLETED')
                 """ : """
-                SELECT checkout_session_id, organization_id, plan_id, amount_minor
+                SELECT checkout_session_id, organization_id, plan_id, amount_minor, provider
                   FROM payment_order_directory
                  WHERE checkout_session_id = ?
                    AND status IN ('CREATING', 'OPEN', 'COMPLETED')
@@ -157,7 +160,8 @@ public final class JdbcOrderPorts {
                         rows.getString("organization_id"),
                         rows.getString("plan_id"),
                         rows.getLong("amount_minor"),
-                        PaymentCallbackPipeline.OrderKind.SUBSCRIPTION));
+                        PaymentCallbackPipeline.OrderKind.SUBSCRIPTION,
+                        PaymentProvider.parse(rows.getString("provider"))));
             }
         }
     }
@@ -174,15 +178,17 @@ public final class JdbcOrderPorts {
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupTopupOrder(
             Connection connection, LookupKey key) throws SQLException {
         String sql = key.digest() ? """
-                SELECT topup_order_id, organization_id, amount_minor
+                SELECT topup_order_id, organization_id, amount_minor, provider
                   FROM wallet_topup_order_directory
                  WHERE business_order_sha256 = ?
-                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED')
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED',
+                                  'RECONCILIATION_REQUIRED')
                 """ : """
-                SELECT topup_order_id, organization_id, amount_minor
+                SELECT topup_order_id, organization_id, amount_minor, provider
                   FROM wallet_topup_order_directory
                  WHERE out_trade_no = ?
-                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED')
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED',
+                                  'RECONCILIATION_REQUIRED')
         """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, key.value());
@@ -195,9 +201,20 @@ public final class JdbcOrderPorts {
                         rows.getString("organization_id"),
                         null,
                         rows.getLong("amount_minor"),
-                        PaymentCallbackPipeline.OrderKind.TOPUP));
+                        PaymentCallbackPipeline.OrderKind.TOPUP,
+                        paymentProvider(rows.getString("provider"))));
             }
         }
+    }
+
+    private static PaymentProvider paymentProvider(String storedProvider) {
+        return switch (storedProvider) {
+            case "ALIPAY" -> PaymentProvider.ALIPAY_CHECKOUT;
+            case "WECHAT_PAY" -> PaymentProvider.WECHAT_PAY_NATIVE;
+            case "STRIPE" -> PaymentProvider.STRIPE_CHECKOUT;
+            default -> throw new IllegalArgumentException(
+                    "回调目录包含不支持的支付渠道: " + storedProvider);
+        };
     }
 
     private record LookupKey(boolean digest, String value) {

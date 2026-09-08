@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = SelfServiceBillingController.class)
+@RestControllerAdvice(assignableTypes = {
+        SelfServiceBillingController.class,
+        WalletTopupController.class,
+        CommercialOrderController.class
+})
 public final class BillingApiErrorAdvice {
     private final BillingMetrics metrics;
 

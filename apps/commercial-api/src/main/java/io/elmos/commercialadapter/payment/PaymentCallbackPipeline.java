@@ -44,6 +44,8 @@ public final class PaymentCallbackPipeline {
         DUPLICATE_IGNORED,
         /** 本地找不到该订单。开对账案件。 */
         ORDER_UNKNOWN,
+        /** 回调渠道与创建订单时绑定的渠道不一致。开对账案件。 */
+        PROVIDER_MISMATCH,
         /** 回调金额与本地订单不一致。开对账案件，绝不更新订阅。 */
         AMOUNT_MISMATCH,
         /**
@@ -82,19 +84,16 @@ public final class PaymentCallbackPipeline {
 
     /** 本地订单。充值订单没有套餐，{@code planId} 为 {@code null}。 */
     public record LocalOrder(String orderId, String organizationId, String planId,
-                             long expectedAmountFen, OrderKind kind) {
+                             long expectedAmountFen, OrderKind kind,
+                             PaymentProvider expectedProvider) {
         public LocalOrder {
             requireNonNull(kind, "kind");
+            requireNonNull(expectedProvider, "expectedProvider");
             if (kind == OrderKind.SUBSCRIPTION && (planId == null || planId.isEmpty())) {
                 throw new IllegalArgumentException("订阅订单必须带套餐");
             }
         }
 
-        /** 既有订阅路径的构造形态，逐字保持不变。 */
-        public LocalOrder(String orderId, String organizationId, String planId,
-                          long expectedAmountFen) {
-            this(orderId, organizationId, planId, expectedAmountFen, OrderKind.SUBSCRIPTION);
-        }
     }
 
     /** 提供方相关的验签与归一化。实现见各自的 Verifier / Cipher。 */
@@ -292,7 +291,11 @@ public final class PaymentCallbackPipeline {
 
         try {
             Outcome outcome = processClaimed(raw, callback);
-            processedEvents.markCompleted(idempotencyKey);
+            if (requiresReconciliation(outcome)) {
+                processedEvents.markFailed(idempotencyKey);
+            } else {
+                processedEvents.markCompleted(idempotencyKey);
+            }
             return outcome;
         } catch (RuntimeException | Error failure) {
             try {
@@ -313,6 +316,12 @@ public final class PaymentCallbackPipeline {
             return Outcome.ORDER_UNKNOWN;
         }
         LocalOrder order = found.get();
+        if (order.expectedProvider() != callback.provider()) {
+            reconciliation.open("PROVIDER_MISMATCH", callback, order,
+                    "订单渠道 " + order.expectedProvider() + "，回调渠道 "
+                            + callback.provider());
+            return Outcome.PROVIDER_MISMATCH;
+        }
         if (!MoneyConversion.matchesExpected(order.expectedAmountFen(), callback.amountFen())) {
             reconciliation.open("AMOUNT_MISMATCH", callback, order,
                     "期望 " + order.expectedAmountFen() + " 分，回调 "
@@ -335,6 +344,12 @@ public final class PaymentCallbackPipeline {
             case SUBSCRIPTION -> subscriptions.activate(order, callback);
         }
         return Outcome.ACCEPTED;
+    }
+
+    private static boolean requiresReconciliation(Outcome outcome) {
+        return outcome == Outcome.ORDER_UNKNOWN
+                || outcome == Outcome.PROVIDER_MISMATCH
+                || outcome == Outcome.AMOUNT_MISMATCH;
     }
 
     /**

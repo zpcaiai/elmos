@@ -17,6 +17,7 @@
 | 真实支付代码路径 | 支付宝电脑网站支付、微信 Native 下单及双方验签回调 | 真实密钥加解密向量、金额/币种、回放、路由和 Spring 装配自检 | `DONE_LOCAL` |
 | 回调故障恢复 | PROCESSING/FAILED/COMPLETED claim；原始事件同事实幂等 | 履约首试失败后二试成功、完成后拒绝重放 | `DONE_LOCAL` |
 | 租户和操作者隔离 | JWT scope、委托 scope、FORCE RLS、SECURITY DEFINER 白名单 | 最小权限角色、跨租户/跨 actor 负向测试 | `DONE_LOCAL` |
+| 用户充值可见闭环 | 定价页展示组织 Credit 可用/冻结/总额、本人订单和本人流水；二维码订单轮询终态 | 付款前保持 0、`FULFILLED` 后显示 500 Credit 与 `PURCHASE` 流水的桌面/移动旅程 | `DONE_LOCAL` |
 | 生产商户收款 | 商户号、证书、回调域名、真实资金与退款/对账 | 尚无提供方/资金凭证 | `NOT_RUN` |
 | 法务税务开票 | 中国大陆主体、协议、隐私、发票、税率 | 尚无责任人签核证据 | `NOT_RUN` |
 | 生产发布 | 生产数据库迁移、密钥注入、域名、监控、回滚演练 | 尚未获得部署授权 | `NOT_RUN` |
@@ -35,6 +36,8 @@
    `PAYMENT_AFTER_LOCAL_EXPIRY` 并进入对账。
 7. Credit 只允许通过购买、预留、结算、释放函数变更；账本追加写，余额不允许直接改。
 8. SELF 历史只返回当前 actor；组织视图必须具备管理 scope。
+9. 浏览器返回页、二维码和 `PAID` 状态不增加余额；只有 `FULFILLED` 与服务端账本才显示到账。
+10. `RECONCILIATION_REQUIRED` 停止自动购买重试并提示用户不要重复付款。
 
 ## 发布门禁
 

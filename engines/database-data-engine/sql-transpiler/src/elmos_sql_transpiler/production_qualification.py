@@ -19,8 +19,10 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+import math
 import re
 from collections.abc import Mapping
+from copy import deepcopy
 from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Any, Literal
@@ -32,7 +34,7 @@ from .commercial import commercial_capabilities
 from .skill_runtime import MAX_REQUEST_BYTES, parse_skill_request_json
 
 SCHEMA_VERSION = "1.0"
-PROTOCOL_VERSION = "1.1.0"
+PROTOCOL_VERSION = "1.2.0"
 TRUST_DOMAIN = "elmos.chinadb.production-qualification.v1"
 EXPECTED_TARGET_COUNT = 13
 
@@ -89,6 +91,18 @@ _EXECUTION_CHECKS = (
     "versionProbe",
 )
 
+PERFORMANCE_CONTRACT: dict[str, Any] = {
+    "runnerClass": "DEDICATED",
+    "isolation": "EXCLUSIVE_SINGLE_QUALIFICATION",
+    "measurementClock": "MONOTONIC_HIGH_RESOLUTION",
+    "sloP95Milliseconds": 75.0,
+    "maximumMeasurementAttempts": 2,
+    "warmupCountPerQuery": 5,
+    "sampleCountPerQuery": 40,
+    "maximumNormalizedOneMinuteLoad": 1.0,
+    "invalidEnvironmentState": "NOT_RUN_ENVIRONMENT_INVALID",
+}
+
 REQUIRED_EXECUTION_ARTIFACT_DIGESTS = (
     "sourceSnapshotDigest",
     "sourceCatalogDigest",
@@ -110,6 +124,25 @@ REQUIRED_EXECUTION_ARTIFACT_DIGESTS = (
     "targetSqlDigest",
     "acceptanceProfileDigest",
     "gateResultDigest",
+)
+
+REQUIRED_EXECUTION_INPUT_DIGESTS = (
+    "sourceSnapshotDigest",
+    "sourceCatalogDigest",
+    "sourceDataDigest",
+    "sourceWorkloadDigest",
+    "canonicalIrDigest",
+    "transformationDigest",
+    "compatibilityRuntimeDigest",
+    "runnerDigest",
+    "toolchainDigest",
+    "developmentCorpusDigest",
+    "negativeCorpusDigest",
+    "holdoutCorpusDigest",
+    "representativeWorkloadDigest",
+    "dataFixtureDigest",
+    "targetSqlDigest",
+    "acceptanceProfileDigest",
 )
 
 REQUIRED_EXECUTION_EVIDENCE_DIGESTS = (
@@ -135,9 +168,7 @@ _ROLE_AUTHORIZER = "environment-authorizer"
 _ROLE_EXECUTOR = "external-target-executor"
 _ROLE_VERIFIER = "independent-verifier"
 _ROLE_CERTIFIER = "certification-authority"
-_TRUST_ROLES = frozenset(
-    {_ROLE_AUTHORIZER, _ROLE_EXECUTOR, _ROLE_VERIFIER, _ROLE_CERTIFIER}
-)
+_TRUST_ROLES = frozenset({_ROLE_AUTHORIZER, _ROLE_EXECUTOR, _ROLE_VERIFIER, _ROLE_CERTIFIER})
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -210,12 +241,106 @@ def _digest_set(
 ) -> dict[str, str]:
     raw = _object(value, name)
     _exact_fields(raw, set(fields), name)
-    result = {
-        field: _required_digest(raw[field], f"{name}.{field}") for field in fields
-    }
+    result = {field: _required_digest(raw[field], f"{name}.{field}") for field in fields}
     if len(set(result.values())) != len(result):
         raise ValueError(f"{name} must use one role-specific digest per field")
     return result
+
+
+def _finite_number(value: object, name: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise ValueError(f"{name} must be a finite number")
+    try:
+        result = float(value)
+    except OverflowError as error:
+        raise ValueError(f"{name} must be a finite number") from error
+    if not math.isfinite(result):
+        raise ValueError(f"{name} must be a finite number")
+    return result
+
+
+def _validate_performance_summary(value: object) -> dict[str, Any]:
+    name = "execution receipt payload.performanceSummary"
+    raw = _object(value, name)
+    fields = {
+        "runnerClass",
+        "isolation",
+        "measurementClock",
+        "runnerAttestationDigest",
+        "runnerAttestationVerified",
+        "sloP95Milliseconds",
+        "maximumMeasurementAttempts",
+        "measurementAttemptCount",
+        "warmupCountPerQuery",
+        "sampleCountPerQuery",
+        "queryCount",
+        "normalizedOneMinuteLoad",
+        "maximumObservedSourceP95Milliseconds",
+        "maximumObservedTargetP95Milliseconds",
+    }
+    _exact_fields(raw, fields, name)
+    for field in ("runnerClass", "isolation", "measurementClock"):
+        if raw[field] != PERFORMANCE_CONTRACT[field]:
+            raise ValueError(f"{name}.{field} does not satisfy the dedicated Runner contract")
+    if raw["runnerAttestationVerified"] is not True:
+        raise ValueError(f"{name}.runnerAttestationVerified must be true")
+    attestation_digest = _required_digest(
+        raw["runnerAttestationDigest"], f"{name}.runnerAttestationDigest"
+    )
+    exact_integer_fields = {
+        "maximumMeasurementAttempts": PERFORMANCE_CONTRACT["maximumMeasurementAttempts"],
+        "warmupCountPerQuery": PERFORMANCE_CONTRACT["warmupCountPerQuery"],
+        "sampleCountPerQuery": PERFORMANCE_CONTRACT["sampleCountPerQuery"],
+    }
+    for field, expected in exact_integer_fields.items():
+        if isinstance(raw[field], bool) or raw[field] != expected:
+            raise ValueError(f"{name}.{field} must equal {expected}")
+    attempt_count = raw["measurementAttemptCount"]
+    if (
+        isinstance(attempt_count, bool)
+        or not isinstance(attempt_count, int)
+        or not 1 <= attempt_count <= int(PERFORMANCE_CONTRACT["maximumMeasurementAttempts"])
+    ):
+        raise ValueError(f"{name}.measurementAttemptCount must be between 1 and 2")
+    query_count = raw["queryCount"]
+    if (
+        isinstance(query_count, bool)
+        or not isinstance(query_count, int)
+        or not 1 <= query_count <= 10_000
+    ):
+        raise ValueError(f"{name}.queryCount must be a positive bounded integer")
+    slo = _finite_number(raw["sloP95Milliseconds"], f"{name}.sloP95Milliseconds")
+    if slo != PERFORMANCE_CONTRACT["sloP95Milliseconds"]:
+        raise ValueError(f"{name}.sloP95Milliseconds must remain 75.0")
+    load = _finite_number(raw["normalizedOneMinuteLoad"], f"{name}.normalizedOneMinuteLoad")
+    if not 0.0 <= load <= PERFORMANCE_CONTRACT["maximumNormalizedOneMinuteLoad"]:
+        raise ValueError(f"{name}.normalizedOneMinuteLoad exceeds the qualified-host threshold")
+    source_p95 = _finite_number(
+        raw["maximumObservedSourceP95Milliseconds"],
+        f"{name}.maximumObservedSourceP95Milliseconds",
+    )
+    target_p95 = _finite_number(
+        raw["maximumObservedTargetP95Milliseconds"],
+        f"{name}.maximumObservedTargetP95Milliseconds",
+    )
+    if min(source_p95, target_p95) < 0 or max(source_p95, target_p95) > slo:
+        raise ValueError(f"{name} contains a p95 measurement above the 75 ms SLO")
+    return {
+        "runnerClass": raw["runnerClass"],
+        "isolation": raw["isolation"],
+        "measurementClock": raw["measurementClock"],
+        "runnerAttestationDigest": attestation_digest,
+        "runnerAttestationVerified": True,
+        "sloP95Milliseconds": slo,
+        "maximumMeasurementAttempts": raw["maximumMeasurementAttempts"],
+        "measurementAttemptCount": attempt_count,
+        "warmupCountPerQuery": raw["warmupCountPerQuery"],
+        "sampleCountPerQuery": raw["sampleCountPerQuery"],
+        "queryCount": query_count,
+        "normalizedOneMinuteLoad": load,
+        "maximumObservedSourceP95Milliseconds": source_p95,
+        "maximumObservedTargetP95Milliseconds": target_p95,
+    }
 
 
 def _timestamp(value: object, name: str) -> datetime:
@@ -312,6 +437,10 @@ def production_qualification_requirements() -> dict[str, Any]:
             ],
             "requiredArtifactDigests": list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS),
             "requiredEvidenceDigests": list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS),
+            "performanceContract": dict(PERFORMANCE_CONTRACT),
+            "rolloutPrerequisiteTargetId": None
+            if target["targetId"] == "dm8"
+            else "dm8",
             "currentState": "BLOCKED_EXTERNAL_INPUT",
         }
         for target in _catalog_targets()
@@ -348,9 +477,7 @@ def production_qualification_draft(
     actor_id: str,
     implementer_organization_id: str,
 ) -> dict[str, Any]:
-    scope = _scope(
-        {"tenantId": tenant_id, "projectId": project_id, "actorId": actor_id}
-    )
+    scope = _scope({"tenantId": tenant_id, "projectId": project_id, "actorId": actor_id})
     implementer_org = _required_string(
         implementer_organization_id,
         "implementer.organizationId",
@@ -435,9 +562,7 @@ def parse_production_trust_store_json(payload: bytes) -> dict[str, Any]:
         not_after = _timestamp(key["notAfter"], f"trust store keys[{index}].notAfter")
         if not_before >= not_after:
             raise ValueError(f"trust store keys[{index}] validity window is invalid")
-        public_key = _decode_public_key(
-            key["publicKey"], f"trust store keys[{index}].publicKey"
-        )
+        public_key = _decode_public_key(key["publicKey"], f"trust store keys[{index}].publicKey")
         if not isinstance(key["revoked"], bool):
             raise ValueError(f"trust store keys[{index}].revoked must be a Boolean")
         keys.append(
@@ -527,12 +652,8 @@ def _validate_exact_tuple(value: object, name: str, *, target_id: str) -> dict[s
         "productId": product_id,
         "productVersion": _exact_token(raw["productVersion"], f"{name}.productVersion"),
         "edition": _exact_token(raw["edition"], f"{name}.edition"),
-        "compatibilityMode": _exact_token(
-            raw["compatibilityMode"], f"{name}.compatibilityMode"
-        ),
-        "deploymentTopology": _exact_token(
-            raw["deploymentTopology"], f"{name}.deploymentTopology"
-        ),
+        "compatibilityMode": _exact_token(raw["compatibilityMode"], f"{name}.compatibilityMode"),
+        "deploymentTopology": _exact_token(raw["deploymentTopology"], f"{name}.deploymentTopology"),
         "provider": _exact_token(raw["provider"], f"{name}.provider"),
         "serviceTier": _exact_token(raw["serviceTier"], f"{name}.serviceTier"),
         "region": _exact_token(raw["region"], f"{name}.region"),
@@ -649,9 +770,7 @@ def _validate_vendor_tools(
                 "artifactDigest": _required_digest(
                     tool["artifactDigest"], f"{name}[{index}].artifactDigest"
                 ),
-                "licenseRef": _exact_token(
-                    tool["licenseRef"], f"{name}[{index}].licenseRef"
-                ),
+                "licenseRef": _exact_token(tool["licenseRef"], f"{name}[{index}].licenseRef"),
                 "adapterId": adapter_id,
                 "operations": operations,
             }
@@ -814,8 +933,10 @@ def _target_input(
     verifier = parsed.get("independentVerifier")
     if blockers:
         return None, blockers
-    if not isinstance(exact_tuple, dict) or not isinstance(environment, dict) or not isinstance(
-        verifier, dict
+    if (
+        not isinstance(exact_tuple, dict)
+        or not isinstance(environment, dict)
+        or not isinstance(verifier, dict)
     ):
         raise RuntimeError("qualification target input normalization failed")
     tool_digests = [_digest(tool) for tool in tools]
@@ -948,6 +1069,7 @@ def _execution(
         "vendorToolDigests",
         "artifactDigests",
         "evidenceDigests",
+        "performanceSummary",
         "executedAt",
         "checks",
         "criticalUnknowns",
@@ -982,6 +1104,13 @@ def _execution(
         raise ValueError("execution receipt artifact and evidence digests must not alias")
     payload["artifactDigests"] = artifact_digests
     payload["evidenceDigests"] = evidence_digests
+    performance_summary = _validate_performance_summary(payload["performanceSummary"])
+    if performance_summary["runnerAttestationDigest"] in {
+        *artifact_digests.values(),
+        *evidence_digests.values(),
+    }:
+        raise ValueError("dedicated Runner attestation digest must not alias another evidence role")
+    payload["performanceSummary"] = performance_summary
     checks = _object(payload["checks"], "execution receipt payload.checks")
     _exact_fields(checks, set(_EXECUTION_CHECKS), "execution receipt payload.checks")
     if any(checks[field] != "PASSED" for field in _EXECUTION_CHECKS):
@@ -1069,9 +1198,7 @@ def _independent_verification(
     }
     for field, expected_value in expected.items():
         if payload[field] != expected_value:
-            raise ValueError(
-                f"independent verification receipt payload {field} binding mismatch"
-            )
+            raise ValueError(f"independent verification receipt payload {field} binding mismatch")
     verified_at = _timestamp(
         payload["verifiedAt"], "independent verification receipt payload.verifiedAt"
     )
@@ -1118,20 +1245,15 @@ def _certification(
         "expiresAt",
     }
     _exact_fields(payload, fields, "certification receipt payload")
-    if (
-        identity["actorId"]
-        in {
-            verifier_identity["actorId"],
-            executor_identity["actorId"],
-            implementer["actorId"],
-        }
-        or identity["organizationId"]
-        in {
-            verifier_identity["organizationId"],
-            executor_identity["organizationId"],
-            implementer["organizationId"],
-        }
-    ):
+    if identity["actorId"] in {
+        verifier_identity["actorId"],
+        executor_identity["actorId"],
+        implementer["actorId"],
+    } or identity["organizationId"] in {
+        verifier_identity["organizationId"],
+        executor_identity["organizationId"],
+        implementer["organizationId"],
+    }:
         raise ValueError("certification authority is not sufficiently separated")
     expected = {
         "scopeDigest": target_input["scopeDigest"],
@@ -1147,8 +1269,7 @@ def _certification(
     certified_at = _timestamp(payload["certifiedAt"], "certification receipt payload.certifiedAt")
     expires_at = _timestamp(payload["expiresAt"], "certification receipt payload.expiresAt")
     if (
-        certified_at
-        < _timestamp(verification["verifiedAt"], "independent verification.verifiedAt")
+        certified_at < _timestamp(verification["verifiedAt"], "independent verification.verifiedAt")
         or certified_at > now
         or expires_at <= now
     ):
@@ -1290,9 +1411,7 @@ def _target_result(
         result["evidenceEnvelopeDigests"].append(verification_digest)
     except ValueError as error:
         result["state"] = "BLOCKED_EVIDENCE"
-        result["blockers"].append(
-            _blocker("INDEPENDENT_VERIFICATION_RECEIPT_INVALID", str(error))
-        )
+        result["blockers"].append(_blocker("INDEPENDENT_VERIFICATION_RECEIPT_INVALID", str(error)))
         return result
     certification_value = receipts["certification"]
     if certification_value is None:
@@ -1441,9 +1560,7 @@ def evaluate_production_qualification(
     )
     authorized = sum(result["authorization"] == "VERIFIED" for result in target_results)
     executed = sum(result["externalExecution"] == "PASSED" for result in target_results)
-    verified = sum(
-        result["independentVerification"] == "PASSED" for result in target_results
-    )
+    verified = sum(result["independentVerification"] == "PASSED" for result in target_results)
     certified = sum(result["certification"] == "CERTIFIED" for result in target_results)
     global_certification = (
         "CERTIFIED"
@@ -1480,6 +1597,103 @@ def evaluate_production_qualification(
     }
     result["resultDigest"] = _digest(result)
     return result
+
+
+def prepare_vendor_execution_request(
+    request: Mapping[str, Any],
+    *,
+    trust_store: Mapping[str, Any],
+    target_id: str,
+    input_artifact_digests: Mapping[str, Any],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Create an exact, secret-free handoff for an authorized external Runner."""
+    evaluated_at = now or datetime.now(UTC)
+    if evaluated_at.tzinfo is None:
+        raise ValueError("vendor execution request evaluation time must be timezone-aware")
+    evaluated_at = evaluated_at.astimezone(UTC)
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=evaluated_at)
+    matches = [item for item in result["targets"] if item["targetId"] == target_id]
+    if len(matches) != 1:
+        raise ValueError("targetId must identify exactly one catalog target")
+    target_result = matches[0]
+    if target_result["state"] != "READY_FOR_EXTERNAL_EXECUTION":
+        raise ValueError(
+            f"target {target_id} is not READY_FOR_EXTERNAL_EXECUTION: {target_result['state']}"
+        )
+    if target_id != "dm8":
+        dm8_result = next(item for item in result["targets"] if item["targetId"] == "dm8")
+        if dm8_result["state"] != "PRODUCTION_DEFINITION_OF_DONE":
+            raise ValueError(
+                "DM8 must reach PRODUCTION_DEFINITION_OF_DONE with the dedicated "
+                "Runner 75 ms contract before another ChinaDB target can execute"
+            )
+
+    target_ids = [item["targetId"] for item in request["targets"]]
+    target_index = target_ids.index(target_id)
+    request_target = request["targets"][target_index]
+    catalog_target = next(item for item in _catalog_targets() if item["targetId"] == target_id)
+    scope = _scope(request["scope"])
+    implementer = _object(request["implementer"], "implementer")
+    normalized, blockers = _target_input(
+        request_target,
+        index=target_index,
+        catalog_target=catalog_target,
+        implementer=implementer,
+        scope_digest=result["scopeDigest"],
+        capability_snapshot_digest=result["capabilitySnapshotDigest"],
+        now=evaluated_at,
+    )
+    if normalized is None or blockers:
+        raise ValueError("authorized target input could not be normalized")
+    artifacts = _digest_set(
+        input_artifact_digests,
+        "inputArtifactDigests",
+        REQUIRED_EXECUTION_INPUT_DIGESTS,
+    )
+    authorization = _receipt_object(request_target, target_index)["authorization"]
+    authorization_digest = _digest(authorization)
+    idempotency_key = _digest(
+        {
+            "qualificationInputDigest": normalized["qualificationInputDigest"],
+            "authorizationEnvelopeDigest": authorization_digest,
+            "inputArtifactDigests": artifacts,
+            "performanceContract": PERFORMANCE_CONTRACT,
+        }
+    )
+    broker_request: dict[str, Any] = {
+        "schemaVersion": SCHEMA_VERSION,
+        "protocolVersion": PROTOCOL_VERSION,
+        "kind": "CHINADB_VENDOR_EXECUTION_REQUEST",
+        "idempotencyKey": idempotency_key,
+        "scope": scope,
+        "scopeDigest": result["scopeDigest"],
+        "targetId": target_id,
+        "adapterId": normalized["adapterId"],
+        "qualificationInputDigest": normalized["qualificationInputDigest"],
+        "exactTuple": normalized["exactTuple"],
+        "exactTupleDigest": normalized["exactTupleDigest"],
+        "disposableEnvironment": normalized["disposableEnvironment"],
+        "environmentDigest": normalized["environmentDigest"],
+        "vendorTools": normalized["vendorTools"],
+        "vendorToolDigests": normalized["vendorToolDigests"],
+        "allowedOperations": list(REQUIRED_EXTERNAL_OPERATIONS),
+        "inputArtifactDigests": artifacts,
+        "authorizationEnvelope": authorization,
+        "authorizationEnvelopeDigest": authorization_digest,
+        "performanceContract": dict(PERFORMANCE_CONTRACT),
+        "safety": {
+            "productionData": False,
+            "writeScope": "DISPOSABLE_ONLY",
+            "secretTransport": "OPAQUE_REFERENCE_ONLY",
+            "cleanupRequired": True,
+            "unknownOutcomePolicy": "RECONCILE_BEFORE_RETRY",
+        },
+        "externalExecution": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+    }
+    broker_request["requestDigest"] = _digest(broker_request)
+    return broker_request
 
 
 def qualification_result_is_currently_fail_closed(value: Mapping[str, Any]) -> bool:
@@ -1543,3 +1757,62 @@ def target_qualification_input_digest(
             )
         return str(digest)
     raise ValueError(f"unknown ChinaDB target id: {target_id}")
+
+
+def merge_target_qualification_input(
+    request: Mapping[str, Any],
+    target_input: Mapping[str, Any],
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Populate exactly one empty target slot without manufacturing receipts.
+
+    This is intentionally create-only at the target-slot level.  Replacing an
+    existing tuple or environment would invalidate authorization and evidence,
+    so callers must start from a new qualification draft for changed inputs.
+    """
+
+    raw_input = _object(target_input, "target qualification input")
+    _walk_untrusted(raw_input)
+    _exact_fields(
+        raw_input,
+        {
+            "targetId",
+            "exactTuple",
+            "disposableEnvironment",
+            "vendorTools",
+            "independentVerifier",
+        },
+        "target qualification input",
+    )
+    target_id = _required_string(raw_input["targetId"], "target qualification input.targetId")
+    if target_id not in {item["targetId"] for item in _catalog_targets()}:
+        raise ValueError(f"unknown ChinaDB target id: {target_id}")
+    merged = deepcopy(_object(request, "qualification request"))
+    targets = merged.get("targets")
+    if not isinstance(targets, list):
+        raise ValueError("qualification request.targets must be an array")
+    matches = [
+        item
+        for item in targets
+        if isinstance(item, dict) and item.get("targetId") == target_id
+    ]
+    if len(matches) != 1:
+        raise ValueError("qualification request must contain exactly one matching target slot")
+    target = matches[0]
+    if any(
+        target.get(field) not in (None, [])
+        for field in ("exactTuple", "disposableEnvironment", "vendorTools", "independentVerifier")
+    ):
+        raise ValueError(f"target {target_id} input slot is not empty; replacement is prohibited")
+    receipts = _receipt_object(target, targets.index(target))
+    if any(receipts.values()):
+        raise ValueError(f"target {target_id} already has receipts; replacement is prohibited")
+    for field in ("exactTuple", "disposableEnvironment", "vendorTools", "independentVerifier"):
+        target[field] = deepcopy(raw_input[field])
+    evaluated_at = now or datetime.now(UTC)
+    if evaluated_at.tzinfo is None:
+        raise ValueError("target-input merge evaluation time must be timezone-aware")
+    evaluated_at = evaluated_at.astimezone(UTC)
+    target_qualification_input_digest(merged, target_id, now=evaluated_at)
+    return merged

@@ -1,0 +1,78 @@
+name: SQL dedicated performance qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_profile:
+        description: Exact source profile
+        required: true
+        default: sqlite-3.53.3
+        type: choice
+        options:
+          - sqlite-3.53.3
+          - postgresql-17.5
+          - duckdb-1.5.4
+      target_profile:
+        description: Exact target profile
+        required: true
+        default: postgresql-17.5
+        type: choice
+        options:
+          - postgresql-17.5
+          - sqlite-3.53.3
+          - duckdb-1.5.4
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sql-dedicated-performance-qualification
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Dedicated Runner 75 ms gate
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macOS, ARM64, elmos-sql-perf-dedicated]
+    environment: sql-performance-qualification
+    timeout-minutes: 20
+    env:
+      ELMOS_PERFORMANCE_QUALIFICATION: "1"
+      ELMOS_PERFORMANCE_RUNNER_CLASS: DEDICATED
+      ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST: ${{ vars.ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST }}
+      ELMOS_PERFORMANCE_MAX_NORMALIZED_LOAD: "1.0"
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify dedicated Runner identity contract
+        shell: bash
+        env:
+          ELMOS_PERFORMANCE_RUNNER_ID: ${{ runner.name }}
+        run: |
+          test "$ELMOS_PERFORMANCE_RUNNER_CLASS" = "DEDICATED"
+          test -n "$ELMOS_PERFORMANCE_RUNNER_ID"
+          [[ "$ELMOS_PERFORMANCE_RUNNER_ATTESTATION_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+
+      - name: Execute exact local route gate
+        working-directory: engines/database-data-engine/sql-transpiler
+        env:
+          ELMOS_PERFORMANCE_RUNNER_ID: ${{ runner.name }}
+          ELMOS_PERFORMANCE_EVIDENCE_DIR: ${{ runner.temp }}/sql-performance-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          uv sync --locked
+          uv run --locked elmos-sql-transpiler verify-route \
+            "${{ inputs.source_profile }}" \
+            "${{ inputs.target_profile }}" \
+            "$ELMOS_PERFORMANCE_EVIDENCE_DIR"
+
+      - name: Preserve content-addressed evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sql-performance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sql-performance-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30

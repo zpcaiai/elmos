@@ -67,6 +67,7 @@ class ElmPayIntegrationTest {
         assertEquals("order-99", request.get("business_order_no"));
         assertEquals(9_900, request.get("amount"));
         assertEquals("CNY", request.get("currency"));
+        assertEquals("alipay", request.get("payment_method"));
         assertEquals("elmos-payment-complete", request.get("return_route_id"));
         assertTrue(gateway.contactsProviderDuringPrepare());
     }

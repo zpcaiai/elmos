@@ -104,6 +104,7 @@ import * as route100 from "./billing/orders/_route";
 import * as route101 from "./billing/credits/_route";
 import * as route102 from "./billing/credits/ledger/_route";
 import * as route103 from "./usage/events/_route";
+import * as route104 from "./billing/orders/[orderId]/_route";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type ApiHandler = (
@@ -151,6 +152,7 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "billing/orders/credit-packs", value: route098 as ApiRouteModule },
   { template: "billing/orders/project-generations", value: route099 as ApiRouteModule },
   { template: "billing/orders", value: route100 as ApiRouteModule },
+  { template: "billing/orders/[orderId]", value: route104 as ApiRouteModule },
   { template: "billing/credits", value: route101 as ApiRouteModule },
   { template: "billing/credits/ledger", value: route102 as ApiRouteModule },
   { template: "capabilities/database-sql", value: route028 as ApiRouteModule },

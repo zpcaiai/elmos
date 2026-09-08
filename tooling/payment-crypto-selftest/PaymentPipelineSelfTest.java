@@ -237,7 +237,9 @@ public final class PaymentPipelineSelfTest {
                     ports.calls.add("findByOutTradeNo");
                     return ports.orderExists
                             ? Optional.of(new LocalOrder("order-1", "org-1",
-                                    "elmos-pro-monthly", 12900))
+                                    "elmos-pro-monthly", 12900,
+                                    PaymentCallbackPipeline.OrderKind.SUBSCRIPTION,
+                                    PaymentProvider.ALIPAY_CHECKOUT))
                             : Optional.empty();
                 },
                 (order, callback, body) -> {
