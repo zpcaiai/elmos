@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
  * runtimes cannot silently maintain different prices or allowances.</p>
  */
 public final class PricingPlanCatalog {
-    public static final String CATALOG_VERSION = "2026-07-28.2";
+    public static final String CATALOG_VERSION = "2026-09-08.1";
     private static final String RESOURCE = "/pricing/elmos-cny-self-serve-v1.json";
     private static final ObjectMapper JSON = new ObjectMapper();
 
@@ -30,7 +30,7 @@ public final class PricingPlanCatalog {
     public enum AllowanceWindow { TRIAL_TERM, MONTHLY }
     public enum AllowanceScope { ORGANIZATION, ACTOR }
     public enum MeterKind { MODEL_TOKEN, PLATFORM_CREDIT }
-    public enum TokenClass { INPUT, OUTPUT, CACHE_READ, CACHE_WRITE }
+    public enum TokenClass { INPUT, OUTPUT, CACHE_READ, CACHE_WRITE, REASONING }
     public enum UsageDecisionType { ALLOW, DENY_TOKEN_LIMIT, DENY_CREDIT_LIMIT }
 
     public record Money(String currency, BigDecimal amount) {
@@ -113,6 +113,34 @@ public final class PricingPlanCatalog {
         }
     }
 
+    public record CreditPack(String sku, String displayName, String description,
+                             Money price, BigDecimal credits, int expiryDays) {
+        public CreditPack {
+            require(sku, "sku");
+            require(displayName, "displayName");
+            require(description, "description");
+            Objects.requireNonNull(price, "price");
+            credits = positiveQuantity(credits, "credits");
+            if (expiryDays <= 0 || expiryDays > 3650) {
+                throw new IllegalArgumentException("expiryDays must be between 1 and 3650");
+            }
+        }
+    }
+
+    public record OneTimeProduct(String sku, String displayName, String description,
+                                 Money price, String operationKey, int maxRunnerMinutes) {
+        public OneTimeProduct {
+            require(sku, "sku");
+            require(displayName, "displayName");
+            require(description, "description");
+            Objects.requireNonNull(price, "price");
+            require(operationKey, "operationKey");
+            if (maxRunnerMinutes <= 0 || maxRunnerMinutes > 120) {
+                throw new IllegalArgumentException("maxRunnerMinutes must be between 1 and 120");
+            }
+        }
+    }
+
     public record UsageDecision(UsageDecisionType decision, String planId,
                                 BigDecimal requestedTokens, BigDecimal requestedCredits,
                                 BigDecimal remainingTokens, BigDecimal remainingCredits,
@@ -135,7 +163,8 @@ public final class PricingPlanCatalog {
                           String paymentProvider, String costValidationStatus,
                           String overagePolicy, AllowanceScope allowanceScope,
                           List<Plan> plans, List<TokenClassDefinition> tokenClasses,
-                          List<CreditRate> creditRates, List<MeterDefinition> meters,
+                          List<CreditRate> creditRates, List<CreditPack> creditPacks,
+                          List<OneTimeProduct> oneTimeProducts, List<MeterDefinition> meters,
                           List<String> limitations) {
         public Catalog {
             require(schemaVersion, "schemaVersion");
@@ -155,6 +184,8 @@ public final class PricingPlanCatalog {
             plans = List.copyOf(plans);
             tokenClasses = List.copyOf(tokenClasses);
             creditRates = List.copyOf(creditRates);
+            creditPacks = List.copyOf(creditPacks);
+            oneTimeProducts = List.copyOf(oneTimeProducts);
             meters = List.copyOf(meters);
             limitations = List.copyOf(limitations);
         }
@@ -183,6 +214,20 @@ public final class PricingPlanCatalog {
                 || !"VALIDATED".equals(CHINA_SELF_SERVE_DRAFT.costValidationStatus())) {
             throw new IllegalStateException("pricing catalog is not orderable");
         }
+    }
+
+    public static CreditPack requireCreditPack(String sku) {
+        return CHINA_SELF_SERVE_DRAFT.creditPacks().stream()
+                .filter(item -> item.sku().equals(sku))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("unknown credit pack"));
+    }
+
+    public static OneTimeProduct requireOneTimeProduct(String sku) {
+        return CHINA_SELF_SERVE_DRAFT.oneTimeProducts().stream()
+                .filter(item -> item.sku().equals(sku))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("unknown one-time product"));
     }
 
     /**
@@ -241,6 +286,18 @@ public final class PricingPlanCatalog {
             List<CreditRate> creditRates = stream(root.path("creditRates"))
                     .map(PricingPlanCatalog::creditRate)
                     .toList();
+            List<CreditPack> creditPacks = stream(root.path("creditPacks"))
+                    .map(node -> new CreditPack(
+                            text(node, "sku"), text(node, "name"), text(node, "description"),
+                            money(currency, node.path("priceFen").longValue()),
+                            integer(node, "credits"), positiveInt(node, "expiryDays")))
+                    .toList();
+            List<OneTimeProduct> oneTimeProducts = stream(root.path("oneTimeProducts"))
+                    .map(node -> new OneTimeProduct(
+                            text(node, "sku"), text(node, "name"), text(node, "description"),
+                            money(currency, node.path("priceFen").longValue()),
+                            text(node, "operationKey"), positiveInt(node, "maxRunnerMinutes")))
+                    .toList();
             List<MeterDefinition> meters = List.of(
                     new MeterDefinition(
                             "model-token-v1",
@@ -276,6 +333,8 @@ public final class PricingPlanCatalog {
                     plans,
                     tokenClasses,
                     creditRates,
+                    creditPacks,
+                    oneTimeProducts,
                     meters,
                     stream(root.path("limitations")).map(JsonNode::asText).toList()
             );

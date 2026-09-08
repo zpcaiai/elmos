@@ -3,7 +3,10 @@
 
 from __future__ import annotations
 
-import fcntl
+try:
+    import fcntl
+except ModuleNotFoundError:  # Windows vendor-route hosts use a separate governed runner.
+    fcntl = None  # type: ignore[assignment]
 import hashlib
 import io
 import json
@@ -331,6 +334,8 @@ def _safe_cache_directory(path: Path, *, create: bool = False) -> None:
 
 @contextmanager
 def _cache_lock(root: Path, name: str) -> Iterator[None]:
+    if fcntl is None or not hasattr(os, "getuid"):
+        raise RuntimeError("Batch29 POSIX fresh-runtime lock unavailable on this host")
     _safe_cache_directory(root, create=True)
     lock = root / name
     try:

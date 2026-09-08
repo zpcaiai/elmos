@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:71d1ea86f55fec022e1057817eea8c653e1d38c1f6fd1e1afbea8bd9034473b1
-; formal-input-sha256: sha256:71d1ea86f55fec022e1057817eea8c653e1d38c1f6fd1e1afbea8bd9034473b1
+; formal_input_digest: sha256:ef17766e59c08ac56d21fb91eda1b56d2ae4edceb968fa3c4eec6a136e428741
+; formal-input-sha256: sha256:ef17766e59c08ac56d21fb91eda1b56d2ae4edceb968fa3c4eec6a136e428741
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -18,15 +18,15 @@
 (assert
  (= source_right target_right))
 (assert
- (let ((?x4211 (ite source_left 0 0)))
- (let (($x3430 (and (distinct 0 0) true)))
- (let ((?x1837 (ite $x3430 0 ?x4211)))
- (= ?x1837 0)))))
+ (let ((?x20 (ite source_left 0 0)))
+ (let (($x18 (and (distinct 0 0) true)))
+ (let ((?x17 (ite $x18 0 ?x20)))
+ (= ?x17 0)))))
 (assert
- (let ((?x4211 (ite source_left 0 0)))
- (let (($x3430 (and (distinct 0 0) true)))
- (let ((?x1837 (ite $x3430 0 ?x4211)))
- (= ?x1837 0)))))
+ (let ((?x20 (ite source_left 0 0)))
+ (let (($x18 (and (distinct 0 0) true)))
+ (let ((?x17 (ite $x18 0 ?x20)))
+ (= ?x17 0)))))
 (assert
  false)
 (check-sat)

@@ -33,9 +33,31 @@ type UsageHistoryPoint = {
   tokenClass: "INPUT" | "OUTPUT" | "CACHE_READ" | "CACHE_WRITE" | null;
   actorId: string;
   provider: string | null;
+  projectId: string | null;
+  jobId: string | null;
+  model: string | null;
   debited: number;
   credited: number;
   net: number;
+};
+
+type UsageEventDetail = {
+  usageEventId: string;
+  occurredAt: string;
+  recordedAt: string;
+  actorId: string;
+  projectId: string | null;
+  jobId: string | null;
+  operationKey: string;
+  meterId: "model-token-v1" | "platform-credit-v1";
+  tokenClass: "INPUT" | "OUTPUT" | "CACHE_READ" | "CACHE_WRITE" | null;
+  provider: string | null;
+  model: string | null;
+  providerReceiptRef: string | null;
+  quantity: number;
+  reconciliationStatus: "RECONCILED" | "UNRECONCILED";
+  providerCostCurrency: string | null;
+  providerCostMinor: number | null;
 };
 
 type AlertPreference = {
@@ -50,7 +72,7 @@ type AlertPreference = {
 
 type InsightsState =
   | { kind: "idle" | "loading" }
-  | { kind: "ready"; history: UsageHistoryPoint[]; preference: AlertPreference }
+  | { kind: "ready"; history: UsageHistoryPoint[]; events: UsageEventDetail[]; preference: AlertPreference }
   | { kind: "error"; message: string };
 
 const emptyCredentials: Credentials = { tenantId: "", actorId: "", token: "" };
@@ -146,6 +168,14 @@ function parsePreference(value: unknown): AlertPreference {
     throw new Error("USAGE_ALERT_CONTRACT_INVALID");
   }
   return value as AlertPreference;
+}
+
+function parseEvents(value: unknown): UsageEventDetail[] {
+  if (typeof value !== "object" || value === null || !("items" in value)
+    || !Array.isArray((value as { items: unknown }).items)) {
+    throw new Error("USAGE_EVENTS_CONTRACT_INVALID");
+  }
+  return (value as { items: UsageEventDetail[] }).items;
 }
 
 export function UsageDashboard({
@@ -276,22 +306,32 @@ export function UsageDashboard({
         to: to.toISOString(),
         bucket: "DAY",
       });
+      const eventsQuery = new URLSearchParams({
+        from: from.toISOString(),
+        to: to.toISOString(),
+        scope: "SELF",
+        limit: "100",
+        offset: "0",
+      });
       try {
-        const [historyResponse, alertResponse] = await Promise.all([
+        const [historyResponse, eventsResponse, alertResponse] = await Promise.all([
           fetch(`/api/usage/history?${query}`, { cache: "no-store" }),
+          fetch(`/api/usage/events?${eventsQuery}`, { cache: "no-store" }),
           fetch("/api/usage/alerts", { cache: "no-store" }),
         ]);
-        const [historyBody, alertBody]: [unknown, unknown] = await Promise.all([
+        const [historyBody, eventsBody, alertBody]: [unknown, unknown, unknown] = await Promise.all([
           historyResponse.json(),
+          eventsResponse.json(),
           alertResponse.json(),
         ]);
-        if (!historyResponse.ok || !alertResponse.ok) {
+        if (!historyResponse.ok || !eventsResponse.ok || !alertResponse.ok) {
           throw new Error("USAGE_INSIGHTS_UNAVAILABLE");
         }
         if (!disposed) {
           setInsights({
             kind: "ready",
             history: parseHistory(historyBody),
+            events: parseEvents(eventsBody),
             preference: parsePreference(alertBody),
           });
         }
@@ -563,7 +603,7 @@ export function UsageDashboard({
                   <div
                     className={styles.historyRow}
                     role="row"
-                    key={`${point.bucketStartsAt}-${point.meterId}-${point.tokenClass}-${point.actorId}`}
+                    key={`${point.bucketStartsAt}-${point.meterId}-${point.tokenClass}-${point.actorId}-${point.projectId}-${point.jobId}-${point.model}`}
                   >
                     <span role="cell">{localDate(point.bucketStartsAt)}</span>
                     <span role="cell" title={point.operationKey}>
@@ -577,6 +617,36 @@ export function UsageDashboard({
                 {insights.history.length === 0 && (
                   <p className={styles.emptyHistory}>近 30 天暂无已结算用量。</p>
                 )}
+              </div>
+
+              <div>
+                <strong className={styles.detailTitle}>逐笔 Token 消耗事件（最近 100 条）</strong>
+                <div className={styles.historyTable} role="table" aria-label="逐笔 Token 消耗事件">
+                  <div className={styles.eventHead} role="row">
+                    <span role="columnheader">时间</span>
+                    <span role="columnheader">项目 / 任务</span>
+                    <span role="columnheader">模型</span>
+                    <span role="columnheader">类别</span>
+                    <span role="columnheader">数量</span>
+                    <span role="columnheader">对账</span>
+                  </div>
+                  {insights.events.filter((event) => event.meterId === "model-token-v1")
+                    .slice(0, 100).map((event) => (
+                      <div className={styles.eventRow} role="row" key={event.usageEventId}>
+                        <span role="cell">{localTime(event.occurredAt)}</span>
+                        <span role="cell" title={`${event.projectId ?? "—"} / ${event.jobId ?? "—"}`}>
+                          {event.projectId ?? "—"} / {event.jobId ?? "—"}
+                        </span>
+                        <span role="cell" title={event.model ?? "—"}>{event.model ?? "—"}</span>
+                        <span role="cell">{event.tokenClass ?? "—"}</span>
+                        <strong role="cell">{Number(event.quantity).toLocaleString("zh-CN")}</strong>
+                        <span role="cell">{event.reconciliationStatus}</span>
+                      </div>
+                    ))}
+                  {insights.events.every((event) => event.meterId !== "model-token-v1") && (
+                    <p className={styles.emptyHistory}>近 30 天暂无逐笔 Token 消耗事件。</p>
+                  )}
+                </div>
               </div>
 
               <div className={styles.alertPanel}>

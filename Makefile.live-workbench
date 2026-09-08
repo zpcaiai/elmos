@@ -1,5 +1,8 @@
-.PHONY: live-workbench
+.PHONY: live-workbench live-workbench-certify
 live-workbench:
 	PYTHONDONTWRITEBYTECODE=1 python3 scripts/live_workbench/validate_archive.py
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/live-workbench -p 'test_*.py'
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -q -pl modules/live-workbench -am test
+
+live-workbench-certify:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/live_workbench/run_production_gate.py --evidence docs/live-workbench/production-evidence.json

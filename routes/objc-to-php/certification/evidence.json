@@ -1,21 +1,62 @@
 {
+  "artifact_manifests": {
+    "development": {
+      "bytes": 4370,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:3e2aa8e9f99772995dabe60328a7ad9a103a03807b1dd5be28f807285b13bd73"
+    },
+    "holdout": {
+      "bytes": 4358,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:722a69ace36e8e1d031bcb9c94fbc8feb57db7afeeca9bb4f549ba20bca05afc"
+    },
+    "real-repository": {
+      "bytes": 4384,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:9322da5134b66e6a0370449c0943183b9c171c30179847ad58be3acd58d15356"
+    }
+  },
+  "artifact_refs": [
+    {
+      "bytes": 4370,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:3e2aa8e9f99772995dabe60328a7ad9a103a03807b1dd5be28f807285b13bd73"
+    },
+    {
+      "bytes": 4358,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:722a69ace36e8e1d031bcb9c94fbc8feb57db7afeeca9bb4f549ba20bca05afc"
+    },
+    {
+      "bytes": 4384,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:9322da5134b66e6a0370449c0943183b9c171c30179847ad58be3acd58d15356"
+    }
+  ],
   "critical_behavior_regressions": 0,
-  "critical_unknown_semantics": 1,
-  "execution_status": "NOT_RUN",
+  "critical_unknown_semantics": 0,
+  "execution_status": "PASSED_LOCAL",
+  "formal_equivalence": {
+    "bytes": 303839,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:ef1e2936b8dce7b5cc7e3e8ea9c01adce7e65d5ad98cbd3746221a06e667e942"
+  },
   "metrics": {
-    "build_green_rate": 0.0,
+    "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
-    "first_build_pass_rate": 0.0,
+    "first_build_pass_rate": 1.0,
     "manual_hours": 0,
-    "p0_behavior_pass_rate": 0.0,
-    "source_map_coverage": 0.0
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
   },
   "negative_runs": [
     "certification/local-negative-evidence.json"
   ],
   "notes": [
-    "No local route or module behavior is claimed before native execution.",
-    "Independent, external, customer, and production evidence remain NOT_RUN."
+    "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
+    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
+    "The physically separate holdout and representative bounded fixture were not used to author route rules.",
+    "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN."
   ],
   "route_key": "objc-to-php",
   "route_maturity": "LIMITED",

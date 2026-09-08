@@ -55,15 +55,17 @@ def test_route_authority_partition_preserves_history_and_covers_all_declared() -
         "javascript-node26-completion-18": 18,
         "php-php85-completion-20": 20,
         "kotlin-react-flutter-completion-66": 66,
+        "vb6-completion-26": 26,
+        "vcpp6-completion-28": 28,
     }
     flattened = [
         route_key
         for route_keys in ROUTE_PROVENANCE_PARTITIONS.values()
         for route_key in route_keys
     ]
-    assert len(flattened) == len(set(flattened)) == 176
+    assert len(flattened) == len(set(flattened)) == 230
     assert set(flattened) == set(ALL_DECLARED_ROUTE_KEYS)
-    assert len(COMPLETE_ROUTE_KEYS) == 156
+    assert len(COMPLETE_ROUTE_KEYS) == 210
 
 
 def test_legacy_campaign_authority_binds_campaign_schema_validator_and_method() -> None:

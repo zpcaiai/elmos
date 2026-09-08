@@ -12504,9 +12504,9 @@ def v3_research_route_manifest_document(route_key: str) -> dict[str, Any]:
         V3_RESEARCH_ROUTE_VERSION,
         VERSIONS,
     )
-    from route_sets import V3_EXACT_ROUTE_KEYS, split_route_key
+    from route_sets import V3_EXACT_ROUTE_KEYS, VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS, split_route_key
 
-    if route_key not in V3_EXACT_ROUTE_KEYS:
+    if route_key not in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
         raise ValueError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
     source, target = split_route_key(route_key)
     return {
@@ -12527,7 +12527,19 @@ def v3_research_route_manifest_document(route_key: str) -> dict[str, Any]:
             "versions": list(VERSIONS[target]),
             "engine_path": V3_TARGET_EMITTER_RELATIVE_PATH,
         },
-        "profiles": {"semantic_profile": "", "target_profile": ""},
+        "profiles": (
+            {
+                "semantic_profile": "typed-pure-module-v1",
+                "target_profile": "vb6-long32-pure-module-v1",
+            }
+            if route_key in VB6_EXACT_ROUTE_KEYS
+            else {
+                "semantic_profile": "typed-pure-module-v1",
+                "target_profile": "vcpp6-cpp98-pure-module-v1",
+            }
+            if route_key in VCPP6_EXACT_ROUTE_KEYS
+            else {"semantic_profile": "", "target_profile": ""}
+        ),
         "framework_profiles": [],
         "paths": {
             "support_matrix": "support-matrix.json",
@@ -12558,10 +12570,14 @@ def validate_v3_research_route_contract(
         v3_research_certification_document,
         v3_research_evidence_document,
     )
-    from route_sets import V3_EXACT_ROUTE_KEYS
+    from route_sets import V3_EXACT_ROUTE_KEYS, VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS
 
     route_key = manifest.get("route_key")
-    if not isinstance(route_key, str) or route_key not in V3_EXACT_ROUTE_KEYS:
+    if not isinstance(route_key, str) or route_key not in {
+        *V3_EXACT_ROUTE_KEYS,
+        *VB6_EXACT_ROUTE_KEYS,
+        *VCPP6_EXACT_ROUTE_KEYS,
+    }:
         failures.append("V3 route key is outside the exact research partition")
         return
 
@@ -12612,6 +12628,174 @@ def validate_v3_research_route_contract(
         failures.append("V3 support matrix capability ids are duplicated")
 
 
+def validate_vb6_prepared_route_outputs(route: Path, failures: list[str]) -> None:
+    """Validate materialized corpora and customer-facing NOT_RUN boundaries."""
+
+    from route_runtime_metadata import (
+        vb6_vendor_campaign_document,
+        vendor_research_lowering_document,
+        vendor_research_type_mapping_document,
+    )
+    from route_sets import VB6_EXACT_ROUTE_KEYS
+
+    route_key = route.name
+    if route_key not in VB6_EXACT_ROUTE_KEYS:
+        failures.append("VB6 prepared-output validator received a non-VB6 route")
+        return
+    campaign_path = route / "certification" / "vendor-campaign.json"
+    if not campaign_path.is_file():
+        failures.append("VB6 vendor campaign plan is missing")
+    else:
+        try:
+            campaign = load(campaign_path)
+        except Exception:
+            failures.append("VB6 vendor campaign plan is invalid")
+        else:
+            if campaign != vb6_vendor_campaign_document(route_key):
+                failures.append("VB6 vendor campaign plan drift")
+    for path, expected, label in (
+        (
+            route / "lowering" / "profile.json",
+            vendor_research_lowering_document(route_key),
+            "lowering profile",
+        ),
+        (
+            route / "mappings" / "types.json",
+            vendor_research_type_mapping_document(route_key),
+            "type mapping",
+        ),
+    ):
+        try:
+            if load(path) != expected:
+                failures.append(f"VB6 {label} drift")
+        except Exception:
+            failures.append(f"VB6 {label} is missing or invalid")
+    for name in (
+        "customer-support-profile.md",
+        "gate-report.md",
+        "gap-inventory.md",
+    ):
+        path = route / "certification" / name
+        if not path.is_file() or path.stat().st_size == 0:
+            failures.append(f"VB6 certification file is missing: {name}")
+    expected_source, _ = route_key.split("-to-", 1)
+    expected_independence = {
+        "development": (True, False),
+        "holdout": (False, True),
+        "real-repository": (False, True),
+    }
+    for corpus, (rule_authoring, independent) in expected_independence.items():
+        corpus_root = route / "corpus" / corpus
+        manifest_path = corpus_root / "manifest.json"
+        if not manifest_path.is_file():
+            failures.append(f"VB6 {corpus} corpus manifest is missing")
+            continue
+        try:
+            corpus_manifest = load(manifest_path)
+        except Exception:
+            failures.append(f"VB6 {corpus} corpus manifest is invalid")
+            continue
+        if (
+            corpus_manifest.get("corpus") != corpus
+            or corpus_manifest.get("source_language") != expected_source
+            or corpus_manifest.get("rule_authoring_input") is not rule_authoring
+            or corpus_manifest.get("independent") is not independent
+        ):
+            failures.append(f"VB6 {corpus} corpus independence contract drift")
+        for field in ("source_file", "cases_file"):
+            relative = corpus_manifest.get(field)
+            if (
+                not isinstance(relative, str)
+                or not relative
+                or Path(relative).is_absolute()
+                or ".." in Path(relative).parts
+                or not (corpus_root / relative).is_file()
+            ):
+                failures.append(f"VB6 {corpus} {field} is missing or unsafe")
+
+
+def validate_vcpp6_prepared_route_outputs(route: Path, failures: list[str]) -> None:
+    """Validate VC++6 corpora and the conservative vendor-runtime boundary."""
+
+    from route_runtime_metadata import (
+        vcpp6_vendor_campaign_document,
+        vendor_research_lowering_document,
+        vendor_research_type_mapping_document,
+    )
+    from route_sets import VCPP6_EXACT_ROUTE_KEYS
+
+    route_key = route.name
+    if route_key not in VCPP6_EXACT_ROUTE_KEYS:
+        failures.append("VC++6 prepared-output validator received a non-VC++6 route")
+        return
+    campaign_path = route / "certification" / "vendor-campaign.json"
+    if not campaign_path.is_file():
+        failures.append("VC++6 vendor campaign plan is missing")
+    else:
+        try:
+            campaign = load(campaign_path)
+        except Exception:
+            failures.append("VC++6 vendor campaign plan is invalid")
+        else:
+            if campaign != vcpp6_vendor_campaign_document(route_key):
+                failures.append("VC++6 vendor campaign plan drift")
+    for path, expected, label in (
+        (
+            route / "lowering" / "profile.json",
+            vendor_research_lowering_document(route_key),
+            "lowering profile",
+        ),
+        (
+            route / "mappings" / "types.json",
+            vendor_research_type_mapping_document(route_key),
+            "type mapping",
+        ),
+    ):
+        try:
+            if load(path) != expected:
+                failures.append(f"VC++6 {label} drift")
+        except Exception:
+            failures.append(f"VC++6 {label} is missing or invalid")
+    for name in ("customer-support-profile.md", "gate-report.md", "gap-inventory.md"):
+        path = route / "certification" / name
+        if not path.is_file() or path.stat().st_size == 0:
+            failures.append(f"VC++6 certification file is missing: {name}")
+    expected_source, _ = route_key.split("-to-", 1)
+    expected_independence = {
+        "development": (True, False),
+        "holdout": (False, True),
+        "real-repository": (False, True),
+    }
+    for corpus, (rule_authoring, independent) in expected_independence.items():
+        corpus_root = route / "corpus" / corpus
+        manifest_path = corpus_root / "manifest.json"
+        if not manifest_path.is_file():
+            failures.append(f"VC++6 {corpus} corpus manifest is missing")
+            continue
+        try:
+            corpus_manifest = load(manifest_path)
+        except Exception:
+            failures.append(f"VC++6 {corpus} corpus manifest is invalid")
+            continue
+        if (
+            corpus_manifest.get("corpus") != corpus
+            or corpus_manifest.get("source_language") != expected_source
+            or corpus_manifest.get("rule_authoring_input") is not rule_authoring
+            or corpus_manifest.get("independent") is not independent
+        ):
+            failures.append(f"VC++6 {corpus} corpus independence contract drift")
+        for field in ("source_file", "cases_file"):
+            relative = corpus_manifest.get(field)
+            if (
+                not isinstance(relative, str)
+                or not relative
+                or Path(relative).is_absolute()
+                or ".." in Path(relative).parts
+                or not (corpus_root / relative).is_file()
+            ):
+                failures.append(f"VC++6 {corpus} {field} is missing or unsafe")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("route_dir", nargs="?")
@@ -12656,6 +12840,8 @@ def main() -> int:
             NODEJS_EXACT_ROUTE_KEYS,
             SPECIALIZED_ROUTE_KEYS,
             V3_EXACT_ROUTE_KEYS,
+            VB6_EXACT_ROUTE_KEYS,
+            VCPP6_EXACT_ROUTE_KEYS,
             split_route_key,
         )
 
@@ -12673,7 +12859,7 @@ def main() -> int:
                 errors.append("route source/target tuple does not match route_key")
             specialized = route_key in SPECIALIZED_ROUTE_KEYS
             nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
-            v3 = route_key in V3_EXACT_ROUTE_KEYS
+            v3 = route_key in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}
             module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
         for key in REQUIRED_ROUTE:
             if key not in manifest:
@@ -12927,6 +13113,10 @@ def main() -> int:
                 certification,
                 errors,
             )
+            if route_key in VB6_EXACT_ROUTE_KEYS:
+                validate_vb6_prepared_route_outputs(route, errors)
+            if route_key in VCPP6_EXACT_ROUTE_KEYS:
+                validate_vcpp6_prepared_route_outputs(route, errors)
         _, strict_errors = validate_formal_equivalence(
             route,
             manifest,

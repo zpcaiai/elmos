@@ -70,19 +70,44 @@ def test_shared_host_performance_confirmation_preserves_initial_failure(
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     capabilities = runner_capabilities()
 
-    assert capabilities["readyDirectedRouteCount"] == 6
-    assert {item["profileId"] for item in capabilities["ready"]} == {
-        "postgresql-17.5",
-        "sqlite-3.53.3",
-        "duckdb-1.5.4",
-    }
-    assert {item["profileId"] for item in capabilities["blocked"]} == {
+    ready = {item["profileId"] for item in capabilities["ready"]}
+    blocked = {item["profileId"] for item in capabilities["blocked"]}
+    assert {"sqlite-3.53.3", "duckdb-1.5.4"} <= ready
+    assert {
         "postgresql-18.4",
         "mysql-8.4.10-lts",
         "sqlserver-2022-cu26",
         "oracle-26ai-ee",
+    } <= blocked
+    assert ("postgresql-17.5" in ready) != ("postgresql-17.5" in blocked)
+    ready_local = ready & {"postgresql-17.5", "sqlite-3.53.3", "duckdb-1.5.4"}
+    expected_routes = {
+        f"{source}--to--{target}"
+        for source in ready_local
+        for target in ready_local
+        if source != target
     }
+    assert set(capabilities["readyDirectedRoutes"]) == expected_routes
+    assert capabilities["readyDirectedRouteCount"] == len(expected_routes)
     assert all(item["runtimeEvidence"] == "NOT_RUN" for item in capabilities["blocked"])
+    assert capabilities["certification"] == "NOT_CERTIFIED"
+
+
+def test_runner_capabilities_downgrade_missing_postgresql_without_claiming_execution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("POSTGRESQL_17_BIN", raising=False)
+    monkeypatch.setattr(runner_module, "_POSTGRES_CANDIDATE_DIRS", ())
+    monkeypatch.setattr(runner_module.shutil, "which", lambda _name: None)
+
+    capabilities = runner_capabilities()
+    ready = {item["profileId"] for item in capabilities["ready"]}
+    blocked = {item["profileId"]: item for item in capabilities["blocked"]}
+
+    assert "postgresql-17.5" not in ready
+    assert blocked["postgresql-17.5"]["state"] == "BLOCKED"
+    assert "required PostgreSQL executable is unavailable" in blocked["postgresql-17.5"]["reason"]
+    assert capabilities["runtimeEvidence"] == "NOT_RUN"
     assert capabilities["certification"] == "NOT_CERTIFIED"
 
 

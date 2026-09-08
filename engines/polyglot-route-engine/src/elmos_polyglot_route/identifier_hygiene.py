@@ -143,6 +143,17 @@ _CPP_RESERVED = _words(
     """
 )
 
+_VCPP6_RESERVED = _CPP_RESERVED | _words(
+    """
+    __asm __based __cdecl __declspec __except __fastcall __finally __inline
+    __int8 __int16 __int32 __int64 __leave __multiple_inheritance __single_inheritance
+    __stdcall __try __uuidof __virtual_inheritance _asm _based _cdecl _declspec
+    _except _fastcall _finally _inline _int8 _int16 _int32 _int64 _leave
+    _multiple_inheritance _single_inheritance _stdcall _try _uuidof
+    _virtual_inheritance
+    """
+)
+
 _OBJC_RESERVED = _words(
     """
     auto break case char const continue default do double else enum extern float
@@ -229,6 +240,24 @@ _DART_RESERVED = _words(
     """
 )
 
+_VB6_RESERVED = _words(
+    """
+    AddressOf Alias And As Attribute Base Begin Binary Boolean ByRef Byte ByVal
+    Call Case CBool CByte CCur CDate CDbl CDec CInt CLng Const CSng CStr Currency
+    Date Decimal Declare DefBool DefByte DefCur DefDate DefDbl DefDec DefInt
+    DefLng DefObj DefSng DefStr DefVar Dim Do Double Each Else ElseIf Empty End
+    Enum Eqv Erase Error Event Exit Explicit False For Friend Function Get Global
+    GoSub GoTo If Imp Implements In Input Integer Is LBound Let Lib Like Line
+    Load Lock Long Loop LSet Mid Mod New Next Not Nothing Null Object On Open
+    Option Optional Or Output ParamArray Preserve Print Private Property Public
+    Put Random Read ReDim Resume Return RSet Seek Select Set Single Static Step
+    Stop String Sub Then To True Type UBound Unlock Variant Wend While With
+    Write Xor
+    """
+)
+
+_VB6_DIALECT = "visual-basic-6.0-sp6-typed-pure-module-v1"
+
 _FLUTTER_DART_DIALECT = "flutter-3.44.1-dart-3.12.1-native-pure-module"
 
 _FORBIDDEN: dict[Language, frozenset[str]] = {
@@ -290,6 +319,15 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         main elmos_checked_add elmos_checked_sub elmos_checked_mul
         std
         elmos_checked_div elmos_checked_mod elmos_non_zero
+        elmos_harness_fp64_bits elmos_harness_same_fp64
+        elmos_harness_fp64 elmos_harness_hex_utf8 actual_0
+        """
+    ),
+    "vcpp6": _words(
+        """
+        main std migrated
+        ElmosCheckedAdd ElmosCheckedSub ElmosCheckedMul ElmosCheckedDiv
+        ElmosCheckedMod ElmosNonZero
         elmos_harness_fp64_bits elmos_harness_same_fp64
         elmos_harness_fp64 elmos_harness_hex_utf8 actual_0
         """
@@ -361,6 +399,13 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         actual0
         """
     ),
+    "vb6": _words(
+        """
+        ElmosCheckedAdd ElmosCheckedSub ElmosCheckedMul ElmosCheckedDiv
+        ElmosCheckedMod ElmosNonZero Err Fix CDbl CLng migrated
+        leftValue rightValue resultValue quotientValue value
+        """
+    ),
 }
 
 _RESERVED: dict[Language, frozenset[str]] = {
@@ -373,11 +418,13 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "go": _GO_RESERVED,
     "rust": _RUST_RESERVED,
     "cpp": _CPP_RESERVED,
+    "vcpp6": _VCPP6_RESERVED,
     "objc": _OBJC_RESERVED,
     "swift": _SWIFT_RESERVED,
     "php": _PHP_RESERVED,
     "kotlin": _KOTLIN_RESERVED,
     "flutter": _DART_RESERVED,
+    "vb6": _VB6_RESERVED,
 }
 
 _DIALECT: dict[Language, str] = {
@@ -390,15 +437,18 @@ _DIALECT: dict[Language, str] = {
     "go": "go-1.25.0",
     "rust": "rust-1.89.0-edition-2021",
     "cpp": "cpp-20-apple-clang-21.0.0",
+    "vcpp6": "visual-cpp-6.0-sp6-typed-pure-module-v1",
     "objc": "objective-c-c17-apple-clang-21.0.0",
     "swift": "swift-6.3.3",
     "php": _PHP_DIALECT,
     "kotlin": _KOTLIN_DIALECT,
     "flutter": _FLUTTER_DART_DIALECT,
+    "vb6": _VB6_DIALECT,
 }
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
     "cpp": (r"^__", r"^_[A-Z]"),
+    "vcpp6": (r"^__", r"^_[A-Z]"),
     "objc": (r"^__", r"^_[A-Z]"),
     # A leading underscore is library-private in Dart. Repository assembly
     # imports every generated function from ``lib/main.dart`` to force it into
@@ -410,6 +460,8 @@ _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
         r"(?i)\A(?:" + "|".join(sorted(_PHP_RESERVED)) + r")\Z",
         r"^__",
     ),
+    # VB6 identifiers and keywords are case-insensitive.
+    "vb6": (r"(?i)\A(?:" + "|".join(sorted(_VB6_RESERVED)) + r")\Z",),
 }
 
 

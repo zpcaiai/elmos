@@ -1,0 +1,25 @@
+{
+  "route_key": "python-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 572,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:9c7e9733b6570b15f4f1f357ae9dc8582f0f8e1871a58fcd84e0b899c59a0117"
+    },
+    {
+      "bytes": 383,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:27e93ef31b69e43406ed2708207a0570406c606c6ebc47d1eec1f90c0f5b14af"
+    },
+    {
+      "bytes": 598,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:cc316eae514c0f0055fe1f826affaaa626756dc390e48b06aa6f6e44c42957ca"
+    }
+  ]
+}

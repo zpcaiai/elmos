@@ -2,14 +2,16 @@
 
 ## Purpose and evidence boundary
 
-This gate defines the repository-level capability target for the thirteen
-active languages recognized by the Batch 29 route authority: Java, C#, Go,
+This frozen gate defines the repository-level capability target for the thirteen
+locally executable pre-VB6 languages recognized by the Batch 29 route authority: Java, C#, Go,
 Rust, Python, TypeScript, C++, Objective-C, Swift, PHP, Kotlin, React, and
 Flutter. It does not infer support from an analyzer, emitter, single-function
 corpus, historical campaign, or reverse direction.
 
 The contract covers all `13 × 12 = 156` active ordered source-to-target
-directions. Each direction carries its own status and both a `SMALL` and
+directions. The current route inventory also declares 26 preparation-only VB6
+directions, but those require a separate Windows/x86 vendor campaign and are
+not silently added to this historical gate. Each covered direction carries its own status and both a `SMALL` and
 `MEDIUM` workload. Existing per-route evidence is not rewritten or promoted by
 this gate.
 

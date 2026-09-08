@@ -4,22 +4,22 @@
   "semantic_profile": "typed-pure-function-v1",
   "target_artifacts": [
     {
-      "bytes": 475,
+      "bytes": 596,
       "corpus": "development",
       "path": "certification/artifacts/development/migrated.cpp",
-      "sha256": "sha256:e116fef17eda17739a30548135250fbbb07dba3f271bdd875e7389ec4b3587d9"
+      "sha256": "sha256:50f2e94d16d3fb881d460c1e0bbb47bd0603d4e780a5eb721444bd807e47e498"
     },
     {
-      "bytes": 113,
+      "bytes": 172,
       "corpus": "holdout",
       "path": "certification/artifacts/holdout/migrated.cpp",
-      "sha256": "sha256:4265f2dea09998905a394840e7c2edfd1c621a8d8a3c9db24556e5bc2ebfb694"
+      "sha256": "sha256:c0d48f2e39b494f02c51d904ca876a8cb66dc4c3e16e42bbdcf72add8bbe55b7"
     },
     {
-      "bytes": 201,
+      "bytes": 346,
       "corpus": "real-repository",
       "path": "certification/artifacts/real-repository/migrated.cpp",
-      "sha256": "sha256:8e2b69d618fde49a2d899b8eb3e34ebc0ba9438aedc811fd688b9eedd16b71b0"
+      "sha256": "sha256:d1d3bde5d8be46815e0aebf9cc5c054a19f53257fe92426847b14ea2f0efac27"
     }
   ]
 }

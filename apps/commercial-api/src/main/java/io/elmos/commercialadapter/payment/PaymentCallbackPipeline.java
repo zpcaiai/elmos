@@ -78,7 +78,7 @@ public final class PaymentCallbackPipeline {
      * 但"套餐为空所以是充值"是一条只存在于某个人脑子里的规则，
      * 下一个加订单类型的人不会知道它，而编译器也不会提醒他。
      */
-    public enum OrderKind { SUBSCRIPTION, TOPUP }
+    public enum OrderKind { SUBSCRIPTION, TOPUP, CREDIT_PACK, PROJECT_GENERATION_ONCE }
 
     /** 本地订单。充值订单没有套餐，{@code planId} 为 {@code null}。 */
     public record LocalOrder(String orderId, String organizationId, String planId,
@@ -143,6 +143,12 @@ public final class PaymentCallbackPipeline {
          * <p>用"先查后插"实现会在并发重发下同时返回 true，必须用唯一约束。
          */
         boolean registerIfAbsent(String idempotencyKey);
+
+        /** Mark the claim durable only after all required effects succeeded. */
+        default void markCompleted(String idempotencyKey) {}
+
+        /** Make a failed claim reclaimable by a provider retry. */
+        default void markFailed(String idempotencyKey) {}
     }
 
     /** 第 3 步：订单查询。 */
@@ -182,6 +188,11 @@ public final class PaymentCallbackPipeline {
         void credit(LocalOrder order, NormalizedCallback callback);
     }
 
+    /** 第 5 步（Credit 包或一次性项目生成）：履约已确认付款的商品订单。 */
+    public interface CommercialOrderFulfiller {
+        void fulfill(LocalOrder order, NormalizedCallback callback);
+    }
+
     /**
      * 金额不符 / 订单未知时开对账案件。
      *
@@ -200,6 +211,7 @@ public final class PaymentCallbackPipeline {
     private final ProviderEventStore events;
     private final SubscriptionActivator subscriptions;
     private final WalletCreditor wallet;
+    private final CommercialOrderFulfiller commercialOrders;
     private final ReconciliationCases reconciliation;
 
     public PaymentCallbackPipeline(ProviderAdapter adapter,
@@ -208,6 +220,7 @@ public final class PaymentCallbackPipeline {
                                    ProviderEventStore events,
                                    SubscriptionActivator subscriptions,
                                    WalletCreditor wallet,
+                                   CommercialOrderFulfiller commercialOrders,
                                    ReconciliationCases reconciliation) {
         this.adapter = requireNonNull(adapter, "adapter");
         this.processedEvents = requireNonNull(processedEvents, "processedEvents");
@@ -215,7 +228,22 @@ public final class PaymentCallbackPipeline {
         this.events = requireNonNull(events, "events");
         this.subscriptions = requireNonNull(subscriptions, "subscriptions");
         this.wallet = requireNonNull(wallet, "wallet");
+        this.commercialOrders = requireNonNull(commercialOrders, "commercialOrders");
         this.reconciliation = requireNonNull(reconciliation, "reconciliation");
+    }
+
+    /** Backwards-compatible construction for the subscription/top-up surface. */
+    public PaymentCallbackPipeline(ProviderAdapter adapter,
+                                   ProcessedEventLog processedEvents,
+                                   OrderLookup orders,
+                                   ProviderEventStore events,
+                                   SubscriptionActivator subscriptions,
+                                   WalletCreditor wallet,
+                                   ReconciliationCases reconciliation) {
+        this(adapter, processedEvents, orders, events, subscriptions, wallet,
+                (order, callback) -> {
+                    throw new IllegalStateException("COMMERCIAL_ORDER_FULFILLER_NOT_CONFIGURED");
+                }, reconciliation);
     }
 
     /**
@@ -262,6 +290,21 @@ public final class PaymentCallbackPipeline {
             return Outcome.DUPLICATE_IGNORED;
         }
 
+        try {
+            Outcome outcome = processClaimed(raw, callback);
+            processedEvents.markCompleted(idempotencyKey);
+            return outcome;
+        } catch (RuntimeException | Error failure) {
+            try {
+                processedEvents.markFailed(idempotencyKey);
+            } catch (RuntimeException markFailure) {
+                failure.addSuppressed(markFailure);
+            }
+            throw failure;
+        }
+    }
+
+    private Outcome processClaimed(RawCallback raw, NormalizedCallback callback) {
         // 第 3 步 · 订单查询与金额比对
         Optional<LocalOrder> found = orders.findByOutTradeNo(callback.outTradeNo());
         if (found.isEmpty()) {
@@ -286,10 +329,10 @@ public final class PaymentCallbackPipeline {
         }
 
         // 第 5 步 · 最后才动客户可见状态，按订单类型分派
-        if (order.kind() == OrderKind.TOPUP) {
-            wallet.credit(order, callback);
-        } else {
-            subscriptions.activate(order, callback);
+        switch (order.kind()) {
+            case TOPUP -> wallet.credit(order, callback);
+            case CREDIT_PACK, PROJECT_GENERATION_ONCE -> commercialOrders.fulfill(order, callback);
+            case SUBSCRIPTION -> subscriptions.activate(order, callback);
         }
         return Outcome.ACCEPTED;
     }

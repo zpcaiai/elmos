@@ -59,6 +59,32 @@ test("Descope email OTP start uses the provisioned public API contract", async (
   assert.deepEqual(JSON.parse(calls[0].init.body), { loginId: "user@example.com" });
 });
 
+test("Descope email registration creates a pending user with the normalized profile", async () => {
+  configure("PtestEmailSignup123456789012345");
+  let captured;
+  globalThis.fetch = async (url, init) => {
+    captured = { url: url.toString(), init };
+    return jsonResponse({ maskedEmail: "n***@example.com" });
+  };
+
+  const result = await startDescopeOtp({
+    channel: "EMAIL",
+    intent: "REGISTER",
+    loginId: " New.User@Example.COM ",
+    displayName: " New ELMOS User ",
+  });
+
+  assert.deepEqual(result, {
+    loginId: "new.user@example.com",
+    maskedDestination: "n***@example.com",
+  });
+  assert.equal(captured.url, "https://descope.example.test/v1/auth/otp/signup/email");
+  assert.deepEqual(JSON.parse(captured.init.body), {
+    loginId: "new.user@example.com",
+    user: { email: "new.user@example.com", name: "New ELMOS User" },
+  });
+});
+
 test("Descope phone registration sends normalized identity and profile", async () => {
   configure("PtestPhoneOtp12345678901234567");
   let captured;

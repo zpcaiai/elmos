@@ -1,0 +1,77 @@
+{
+  "artifact_path": "difference.rs",
+  "artifact_sha256": "sha256:96556b66668b47f0a6efc9c06af7e653abae65a5796e42fc7f65686ee5393f91",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
+        "--edition=2021",
+        "-D",
+        "warnings",
+        "-o",
+        "source_harness",
+        "source_harness.rs"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "./source_harness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\trust-debug\t13\nELMOS_OBSERVATION\t1\trust-debug\t0\nELMOS_OBSERVATION\t2\trust-debug\t0\n"
+    }
+  ],
+  "language": "rust",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "rust-debug",
+      "raw": "13",
+      "status": "RETURNED",
+      "value": 13
+    },
+    {
+      "case_id": 1,
+      "encoding": "rust-debug",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "rust-debug",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/cargo",
+    "auxiliary_sha256": "798a97c06e6fc3a63f1b7e3141f87e515e6bc8da1527bc32e19ba27d86bb89c5",
+    "executable": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
+    "executable_sha256": "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c",
+    "language": "rust",
+    "profile": [
+      "rust-toolchain-closure-schema=v1",
+      "platform=Darwin/arm64",
+      "rustup-home=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup",
+      "cargo-home=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/cargo",
+      "rust-sysroot=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin",
+      "rust-wrapper-tree-sha256=aa5baa526cfd7d7d2b8c55d98582265ee8ff1d90582ec49f4775111c2abd4141",
+      "rust-wrapper-tree-record-count=3",
+      "rust-wrapper-tree-bytes=1963",
+      "rust-sysroot-tree-sha256=93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a",
+      "rust-sysroot-tree-record-count=157",
+      "rust-sysroot-tree-file-count=135",
+      "rust-sysroot-tree-bytes=531383469",
+      "rustup-sha256=aeb4105778ca1bd3c6b0e75768f581c656633cd51368fa61289b6a71696ac7e1",
+      "rust-runtime-semantic-soundness=NOT_RUN"
+    ],
+    "version": "1.89.0"
+  }
+}

@@ -110,8 +110,8 @@ class NodeJsRouteMatrixTests(unittest.TestCase):
         self.assertEqual(len(NODEJS_EXACT_ROUTE_KEYS), 18)
         self.assertEqual(len(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS), 90)
         self.assertEqual(len(TEN_LANGUAGE_MATRIX_LANGUAGES), 10)
-        self.assertEqual(len(COMPLETE_ROUTE_KEYS), 156)
-        self.assertEqual(len(SUPPORTED_ROUTE_LANGUAGES), 13)
+        self.assertEqual(len(COMPLETE_ROUTE_KEYS), 210)
+        self.assertEqual(len(SUPPORTED_ROUTE_LANGUAGES), 15)
         self.assertNotIn("javascript", SUPPORTED_ROUTE_LANGUAGES)
         self.assertEqual(
             set(NINE_LANGUAGE_COMPLETE_ROUTE_KEYS) | set(NODEJS_EXACT_ROUTE_KEYS),

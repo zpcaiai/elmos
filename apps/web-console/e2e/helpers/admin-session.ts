@@ -6,18 +6,19 @@ export const administratorEmail = "zpchoney@gmail.com";
 const localSessionSecret = "elmos-local-e2e-session-secret-at-least-32-characters";
 const productionSessionSecret = "elmos-production-e2e-session-secret-at-least-32-characters";
 
-type AdministratorSessionOptions = {
-  actorId?: string;
-  organizationId?: string;
-};
-
 function base64url(value: Buffer): string {
   return value.toString("base64url");
 }
 
+type AdministratorSessionOptions = {
+  actorId?: string;
+  organizationId?: string;
+  permissions?: string[];
+};
+
 function sealedAdministratorSession(
   accessToken: string,
-  options: AdministratorSessionOptions,
+  options: AdministratorSessionOptions = {},
 ): string {
   const secret = process.env.ELMOS_E2E_WEB_SERVER_MODE === "production"
     ? productionSessionSecret
@@ -25,18 +26,16 @@ function sealedAdministratorSession(
   const key = createHash("sha256").update(secret, "utf8").digest();
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
-  const permissions = [
+  const permissions = options.permissions ?? [
     "workspace:view",
     "admin:read",
     "admin:operate",
     "admin:approve",
     "configuration:manage",
-    "usage:read",
   ];
-  const actorId = options.actorId ?? "oidc-e2e-admin";
   const organizationId = options.organizationId ?? "tenant-operations-a";
   const principal = {
-    actorId,
+    actorId: options.actorId ?? "oidc-e2e-admin",
     displayName: "ELMOS E2E Administrator",
     email: administratorEmail,
     emailVerified: true,

@@ -1,0 +1,168 @@
+{
+  "analyzer": "Dart package:analyzer AST",
+  "analyzer_version": "package:analyzer 10.1.0; Dart 3.12.1",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 45,
+                "file": "clamp.dart",
+                "start_byte": 40
+              },
+              "value": "value"
+            },
+            "operator": ">",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 53,
+                "file": "clamp.dart",
+                "start_byte": 48
+              },
+              "value": "upper"
+            },
+            "source_span": {
+              "end_byte": 53,
+              "file": "clamp.dart",
+              "start_byte": 40
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 78,
+            "file": "clamp.dart",
+            "start_byte": 36
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "name",
+                "source_span": {
+                  "end_byte": 73,
+                  "file": "clamp.dart",
+                  "start_byte": 68
+                },
+                "value": "upper"
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 74,
+                "file": "clamp.dart",
+                "start_byte": 61
+              }
+            }
+          ]
+        },
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 90,
+                "file": "clamp.dart",
+                "start_byte": 85
+              },
+              "value": "value"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 94,
+                "file": "clamp.dart",
+                "start_byte": 93
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 94,
+              "file": "clamp.dart",
+              "start_byte": 85
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 115,
+            "file": "clamp.dart",
+            "start_byte": 81
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 110,
+                  "file": "clamp.dart",
+                  "start_byte": 109
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 111,
+                "file": "clamp.dart",
+                "start_byte": 102
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "name",
+            "source_span": {
+              "end_byte": 130,
+              "file": "clamp.dart",
+              "start_byte": 125
+            },
+            "value": "value"
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 131,
+            "file": "clamp.dart",
+            "start_byte": 118
+          }
+        }
+      ],
+      "name": "clamp",
+      "parameters": [
+        {
+          "name": "value",
+          "source_span": {
+            "end_byte": 19,
+            "file": "clamp.dart",
+            "start_byte": 10
+          },
+          "type": "integer"
+        },
+        {
+          "name": "upper",
+          "source_span": {
+            "end_byte": 30,
+            "file": "clamp.dart",
+            "start_byte": 21
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 133,
+        "file": "clamp.dart",
+        "start_byte": 0
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "clamp.dart",
+  "source_language": "flutter"
+}

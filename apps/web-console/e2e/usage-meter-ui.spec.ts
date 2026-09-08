@@ -179,6 +179,7 @@ test.describe.serial("实时账户用量", () => {
     await installAdministratorSession(page, {
       actorId,
       organizationId: tenantId,
+      permissions: ["workspace:view", "admin:read", "usage:read"],
     });
     await page.goto("/pricing");
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();

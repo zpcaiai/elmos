@@ -62,6 +62,9 @@ public interface SelfServiceBillingPort {
             String tokenClass,
             String actorId,
             String provider,
+            String projectId,
+            String jobId,
+            String model,
             BigDecimal debited,
             BigDecimal credited,
             BigDecimal net
@@ -81,6 +84,15 @@ public interface SelfServiceBillingPort {
             BigDecimal consumedCredits,
             BigDecimal remainingTokens,
             BigDecimal remainingCredits
+    ) {}
+
+    record UsageEventDetail(
+            String usageEventId, Instant occurredAt, Instant recordedAt,
+            String actorId, String projectId, String jobId, String operationKey,
+            String meterId, String tokenClass, String provider, String model,
+            String providerReceiptRef, BigDecimal quantity,
+            String reconciliationStatus, String providerCostCurrency,
+            BigDecimal providerCostMinor
     ) {}
 
     record AlertPreference(
@@ -203,13 +215,23 @@ public interface SelfServiceBillingPort {
 
     UsageSnapshot currentUsage(String organizationId, String actorId);
 
-    List<UsageHistoryPoint> usageHistory(
+    default List<UsageHistoryPoint> usageHistory(
             String organizationId,
             String actorId,
             Instant fromInclusive,
             Instant toExclusive,
             String bucket
-    );
+    ) {
+        return usageHistory(organizationId, actorId, fromInclusive, toExclusive, bucket, false);
+    }
+
+    List<UsageHistoryPoint> usageHistory(
+            String organizationId, String actorId, Instant fromInclusive,
+            Instant toExclusive, String bucket, boolean organizationScope);
+
+    List<UsageEventDetail> usageEvents(
+            String organizationId, String actorId, Instant fromInclusive,
+            Instant toExclusive, int limit, int offset, boolean organizationScope);
 
     UsageReservation reserve(
             String organizationId,
@@ -222,6 +244,16 @@ public interface SelfServiceBillingPort {
             BigDecimal requestedCredits,
             Instant expiresAt
     );
+
+    default UsageReservation reserveDetailed(
+            String organizationId, String actorId, String subscriptionId,
+            String reservationId, String idempotencyKey, String operationKey,
+            BigDecimal requestedTokens, BigDecimal requestedCredits, Instant expiresAt,
+            String projectId, String jobId, String model
+    ) {
+        return reserve(organizationId, actorId, subscriptionId, reservationId,
+                idempotencyKey, operationKey, requestedTokens, requestedCredits, expiresAt);
+    }
 
     UsageSettlement settle(
             String organizationId,

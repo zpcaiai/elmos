@@ -8,29 +8,23 @@
   "owner": "elmos-platform-maintainers",
   "source": {
     "repository": "zpcaiai/elmos",
-    "commit": "6299f7dabcd162fbe0904df59dace6e53e7cb08c",
+    "commit": "d4d275f229585e181b6fb277c0625aac4f248a8f",
     "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-    "queriedAt": "2026-09-06T18:55:03Z",
+    "queriedAt": "2026-09-08T12:34:20Z",
     "rawSnapshot": {
       "path": "evidence/execution/b40-dependabot-alerts.raw.json",
-      "sha256": "sha256:3f9f28842d7c21a89a17f0e8120ed0d621d4821b7767f3c2da0a45b426afbdea",
-      "bytes": 1269668
+      "sha256": "sha256:aee8a965a94f8cc90f7d9e790dcb32ad0ca23328bc521a97f01794597266263c",
+      "bytes": 1892792
     }
-  },
-  "runReport": {
-    "path": "evidence/execution/b40-dependabot-alerts.json",
-    "sha256": "sha256:9cdd8404e1dbca980fe87fe78af760ebf2043aa62c697d223c7c0e9036945ee9",
-    "bytes": 65564
   },
   "analyzer": {
     "path": "scripts/batch40_dependabot_alerts.py",
-    "sha256": "sha256:10c89ff8061c4d8fdf8777d1abec7816f1bd0ca9f56cab79445f2c6193e15858"
+    "sha256": "sha256:bd6c4bd5912df4801a18be124546dc510326e37d46e69ffa8b03b8409560fd5f"
   },
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
     "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
-    "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
-    "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant."
+    "The snapshot is self-attested evidence until an independently authorized verifier signs it."
   ],
   "externalOperationExecuted": true,
   "independentVerification": "NOT_RUN"

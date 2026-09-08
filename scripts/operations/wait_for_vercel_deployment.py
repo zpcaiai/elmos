@@ -28,6 +28,7 @@ API_ROOT = "https://api.github.com"
 REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 COMMIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 TERMINAL_FAILURES = frozenset({"error", "failure", "inactive"})
+DEFAULT_TIMEOUT_SECONDS = 1_800
 
 
 class DeploymentResolutionError(RuntimeError):
@@ -74,6 +75,7 @@ def wait_for_deployment(
     timeout_seconds: float,
     poll_seconds: float,
     production_url: str | None = None,
+    required_environment: str | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
 ) -> str:
@@ -93,6 +95,14 @@ def wait_for_deployment(
                 and item.get("task") == "deploy"
                 and isinstance(item.get("creator"), dict)
                 and item["creator"].get("login") == "vercel[bot]"
+                and (
+                    required_environment is None
+                    or (
+                        isinstance(item.get("environment"), str)
+                        and item["environment"].casefold()
+                        == required_environment.casefold()
+                    )
+                )
             ),
             key=lambda item: str(item.get("created_at", "")),
             reverse=True,
@@ -148,9 +158,19 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--repository", required=True)
     parser.add_argument("--sha", required=True)
     parser.add_argument("--github-env", type=Path, required=True)
-    parser.add_argument("--timeout-seconds", type=float, default=900)
+    parser.add_argument(
+        "--timeout-seconds",
+        type=float,
+        default=DEFAULT_TIMEOUT_SECONDS,
+        help="bounded wait for an exact-SHA deployment (default: 1800 seconds)",
+    )
     parser.add_argument("--poll-seconds", type=float, default=10)
     parser.add_argument("--production-url")
+    parser.add_argument(
+        "--required-environment",
+        choices=("Production", "Preview"),
+        help="accept only the exact SHA's Vercel Production or Preview deployment",
+    )
     return parser.parse_args()
 
 
@@ -173,6 +193,7 @@ def main() -> int:
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
         production_url=args.production_url,
+        required_environment=args.required_environment,
     )
     with args.github_env.open("a", encoding="utf-8") as output:
         output.write(f"ELMOS_E2E_BASE_URL={url}\n")

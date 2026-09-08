@@ -3,15 +3,16 @@
   "batch": 40,
   "status": "PASS",
   "repository": "zpcaiai/elmos",
-  "commit": "6299f7dabcd162fbe0904df59dace6e53e7cb08c",
+  "commit": "d4d275f229585e181b6fb277c0625aac4f248a8f",
   "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-  "queriedAt": "2026-09-06T18:55:03Z",
+  "queriedAt": "2026-09-08T12:34:20Z",
   "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts --paginate --slurp",
-  "inputSha256": "sha256:3f9f28842d7c21a89a17f0e8120ed0d621d4821b7767f3c2da0a45b426afbdea",
-  "alertCount": 290,
+  "inputSha256": "sha256:aee8a965a94f8cc90f7d9e790dcb32ad0ca23328bc521a97f01794597266263c",
+  "alertCount": 385,
   "stateCounts": {
-    "dismissed": 105,
-    "fixed": 185
+    "auto_dismissed": 48,
+    "dismissed": 145,
+    "fixed": 192
   },
   "openCount": 0,
   "openBySeverity": {
@@ -23,162 +24,586 @@
   "maxOpen": 0,
   "metrics": {
     "criticalVulnerabilityCount": 0,
-    "highVulnerabilityCount": 0,
-    "vulnerabilitySlaCompliance": 0.9027
-  },
-  "vulnerabilitySla": {
-    "policySeconds": {
-      "critical": 86400,
-      "high": 604800,
-      "medium": 2592000,
-      "low": 7776000
-    },
-    "population": "fixed Dependabot alerts with created_at and fixed_at",
-    "evaluatedCount": 185,
-    "metCount": 167,
-    "breachCount": 18,
-    "incompleteAlertNumbers": [],
-    "breaches": [
-      {
-        "number": 41,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 39,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 36,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 35,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 34,
-        "severity": "high",
-        "elapsedSeconds": 609986,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 29,
-        "severity": "high",
-        "elapsedSeconds": 609986,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 23,
-        "severity": "high",
-        "elapsedSeconds": 609984,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 22,
-        "severity": "high",
-        "elapsedSeconds": 609984,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 21,
-        "severity": "high",
-        "elapsedSeconds": 609984,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 20,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 19,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 18,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 12,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 11,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 6,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 5,
-        "severity": "high",
-        "elapsedSeconds": 609985,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 2,
-        "severity": "high",
-        "elapsedSeconds": 839603,
-        "limitSeconds": 604800,
-        "met": false
-      },
-      {
-        "number": 1,
-        "severity": "high",
-        "elapsedSeconds": 609984,
-        "limitSeconds": 604800,
-        "met": false
-      }
-    ],
-    "excludedStateCounts": {
-      "dismissed": 105
-    }
+    "highVulnerabilityCount": 0
   },
   "openAlerts": [],
   "blockers": [],
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
     "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
-    "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
-    "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant."
+    "The snapshot is self-attested evidence until an independently authorized verifier signs it."
   ],
   "alerts": [
+    {
+      "number": 388,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 387,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 386,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 385,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 384,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 383,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 382,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 381,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 380,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 379,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 378,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 377,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 376,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 375,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 374,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 373,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 372,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 371,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 370,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 369,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 368,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 367,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 366,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 365,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 364,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 363,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 362,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 361,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 360,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 359,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 358,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 357,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 356,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 355,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 354,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 353,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 352,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 351,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 350,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 349,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 348,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 347,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 346,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 345,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 344,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 343,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 342,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 341,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 340,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 339,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 338,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 337,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 336,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 335,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 334,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 333,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 332,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 331,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 330,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 329,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 328,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 327,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 326,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 325,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 324,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 323,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 322,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 321,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 320,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 319,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 318,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 317,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 316,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 315,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 314,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 313,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 312,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 311,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 310,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 309,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 308,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 307,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 306,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 305,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 304,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 303,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 302,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 301,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 300,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 299,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 298,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 297,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 296,
+      "state": "dismissed",
+      "package": "fast-xml-parser",
+      "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 295,
+      "state": "auto_dismissed",
+      "package": "diff",
+      "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
+    },
+    {
+      "number": 294,
+      "state": "fixed",
+      "package": "pytest",
+      "manifestPath": "packages/repository-orchestrator/uv.lock"
+    },
     {
       "number": 293,
       "state": "fixed",
@@ -403,7 +828,7 @@
     },
     {
       "number": 253,
-      "state": "dismissed",
+      "state": "auto_dismissed",
       "package": "diff",
       "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
@@ -979,13 +1404,13 @@
     },
     {
       "number": 157,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
       "number": 156,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
@@ -1051,13 +1476,13 @@
     },
     {
       "number": 145,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
       "number": 144,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
@@ -1159,13 +1584,13 @@
     },
     {
       "number": 127,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
     {
       "number": 126,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },

@@ -17,7 +17,7 @@ BATCHES = {
     # counts recorded by the provenance manifests under docs/. Later formal,
     # production-qualification, and evidence-protocol extensions are additive
     # members of the same batch namespaces and must be validated here too.
-    29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 11},
+    29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 13},
     30: {"skills": 20, "first_id": 1161, "last_id": 1180, "schemas": 15},
     31: {"skills": 22, "first_id": 1181, "last_id": 1202, "schemas": 19},
     32: {"skills": 20, "first_id": 1203, "last_id": 1222, "schemas": 20},
@@ -199,7 +199,7 @@ def main() -> int:
         )
 
     require(total_skills == 372, f"Expected 372 Skills, found {total_skills}", errors)
-    require(total_schemas == 281, f"Expected 281 Schemas, found {total_schemas}", errors)
+    require(total_schemas == 283, f"Expected 283 Schemas, found {total_schemas}", errors)
     common_schema_root = ROOT / "schemas" / "mature-product"
     common_schema_files = sorted(common_schema_root.glob("*.json"))
     require(

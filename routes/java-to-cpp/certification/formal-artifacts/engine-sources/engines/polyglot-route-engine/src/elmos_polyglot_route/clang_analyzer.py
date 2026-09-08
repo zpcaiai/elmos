@@ -165,6 +165,7 @@ def _run_clang(
     source: Path,
     language: Language,
     sdk_path: str | None,
+    timeout: int = 600,
 ) -> dict[str, Any]:
     mode = "c++" if language == "cpp" else "objective-c"
     standard = "-std=c++20" if language == "cpp" else "-std=c17"
@@ -195,7 +196,7 @@ def _run_clang(
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=timeout,
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,
@@ -236,8 +237,12 @@ def _strip(type_name: str) -> str:
     return cleaned.replace(" *", " *").strip()
 
 
-def _canonical_type(type_name: str, language: Language) -> str:
+def _canonical_type(type_name: str, language: Language, record_names: set[str] | None = None) -> str:
     cleaned = _strip(type_name)
+    if cleaned.startswith("struct "):
+        cleaned = cleaned[7:].strip()
+    if record_names and cleaned in record_names:
+        return cleaned
     integer_types = _CPP_INTEGER_TYPES if language == "cpp" else _OBJC_INTEGER_TYPES
     if cleaned in integer_types:
         return "integer"
@@ -253,6 +258,8 @@ def _canonical_type(type_name: str, language: Language) -> str:
         return "string"
     if cleaned == "float":
         raise RouteError(f"{language.upper()}_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:{type_name}")
+    if record_names and cleaned in record_names:
+        return cleaned
     raise RouteError(f"{language.upper()}_UNSUPPORTED_TYPE:{type_name}")
 
 
@@ -270,9 +277,9 @@ def _desugared_type(node: dict[str, Any]) -> str | None:
     return str(value["desugaredQualType"])
 
 
-def _canonical_node_type(node: dict[str, Any], language: Language) -> str:
+def _canonical_node_type(node: dict[str, Any], language: Language, record_names: set[str] | None = None) -> str:
     source_type = _qual_type(node)
-    canonical = _canonical_type(source_type, language)
+    canonical = _canonical_type(source_type, language, record_names)
     if canonical != "integer":
         return canonical
     cleaned = _strip(source_type)
@@ -546,29 +553,61 @@ def _expression(
                 },
             )
 
-    if kind == "CallExpr" and emitted_target:
+    if kind == "MemberExpr":
+        member_name = str(node.get("name", "")).strip()
         children = _inner(node)
-        if not children:
-            raise RouteError(f"{language.upper()}_EMITTED_HELPER_CALLEE_REQUIRED")
-        name = _callee_name(children[0])
-        helper = _EMITTED_HELPERS[language].get(name)
-        if helper is None:
-            raise RouteError(f"{language.upper()}_EMITTED_HELPER_UNRECOGNIZED:{name}")
-        operator, arity = helper
-        arguments = children[1:]
-        if len(arguments) != arity:
-            raise RouteError(f"{language.upper()}_EMITTED_HELPER_ARITY:{name}")
-        if operator == "identity":
-            mapped_expression = _expression(arguments[0], language, source_file, emitted_target)
-            return {**mapped_expression, "source_span": _source_span(node, source_file)}
+        if not member_name or len(children) != 1:
+            raise RouteError(f"{language.upper()}_MALFORMED_MEMBER_EXPR")
+        target_expr = _expression(children[0], language, source_file, emitted_target)
         return _mapped(
             node,
             source_file,
             {
-                "kind": "binary",
-                "operator": operator,
-                "left": _expression(arguments[0], language, source_file, emitted_target),
-                "right": _expression(arguments[1], language, source_file, emitted_target),
+                "kind": "member_access",
+                "target": target_expr,
+                "member": member_name,
+            },
+        )
+
+    if kind == "CallExpr":
+        children = _inner(node)
+        if not children:
+            raise RouteError(f"{language.upper()}_CALL_CALLEE_REQUIRED")
+        callee_name = _callee_name(children[0])
+        if emitted_target:
+            helper = _EMITTED_HELPERS[language].get(callee_name)
+            if helper is None:
+                raise RouteError(f"{language.upper()}_EMITTED_HELPER_UNRECOGNIZED:{callee_name}")
+            operator, arity = helper
+            arguments = children[1:]
+            if len(arguments) != arity:
+                raise RouteError(f"{language.upper()}_EMITTED_HELPER_ARITY:{callee_name}")
+            if operator == "identity":
+                mapped_expression = _expression(arguments[0], language, source_file, emitted_target)
+                return {**mapped_expression, "source_span": _source_span(node, source_file)}
+            return _mapped(
+                node,
+                source_file,
+                {
+                    "kind": "binary",
+                    "operator": operator,
+                    "left": _expression(arguments[0], language, source_file, emitted_target),
+                    "right": _expression(arguments[1], language, source_file, emitted_target),
+                },
+            )
+        if not callee_name:
+            raise RouteError(f"{language.upper()}_CALL_WITHOUT_NAME")
+        call_arguments = [
+            _expression(arg, language, source_file, emitted_target)
+            for arg in children[1:]
+        ]
+        return _mapped(
+            node,
+            source_file,
+            {
+                "kind": "call",
+                "function_name": callee_name,
+                "arguments": call_arguments,
             },
         )
 
@@ -581,8 +620,12 @@ def _statements(
     source_file: str,
     emitted_target: bool,
     return_type: str,
+    known_variables: set[str] | None = None,
+    parameter_names: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
+    known = set(known_variables) if known_variables is not None else set()
+    params = set(parameter_names) if parameter_names is not None else set()
     for node in nodes:
         kind = node.get("kind")
         if kind == "ReturnStmt":
@@ -631,6 +674,8 @@ def _statements(
                             source_file,
                             emitted_target,
                             return_type,
+                            known_variables=set(known),
+                            parameter_names=params,
                         ),
                         "else": (
                             _statement_body(
@@ -639,6 +684,8 @@ def _statements(
                                 source_file,
                                 emitted_target,
                                 return_type,
+                                known_variables=set(known),
+                                parameter_names=params,
                             )
                             if else_branch
                             else []
@@ -646,6 +693,222 @@ def _statements(
                     },
                 )
             )
+            continue
+        if kind == "DeclStmt":
+            var_decls = [child for child in _inner(node) if child.get("kind") == "VarDecl"]
+            if not var_decls:
+                raise RouteError(f"{language.upper()}_UNSUPPORTED_DECLARATION:DeclStmt")
+            for var_decl in var_decls:
+                var_name = str(var_decl.get("name", "")).strip()
+                if not var_name:
+                    raise RouteError(f"{language.upper()}_LOCAL_VARIABLE_NAME_REQUIRED")
+                declared_type = _canonical_node_type(var_decl, language)
+                inits = _inner(var_decl)
+                if len(inits) != 1:
+                    raise RouteError(f"{language.upper()}_LOCAL_VARIABLE_INITIALIZER_REQUIRED:{var_name}")
+                init_expr = _expression(inits[0], language, source_file, emitted_target, declared_type)
+                known.add(var_name)
+                result.append(
+                    _mapped(
+                        var_decl,
+                        source_file,
+                        {
+                            "kind": "let",
+                            "name": var_name,
+                            "type": declared_type,
+                            "expression": init_expr,
+                        },
+                    )
+                )
+            continue
+        if kind == "BinaryOperator" and node.get("opcode") == "=":
+            operands = _inner(node)
+            if len(operands) != 2:
+                raise RouteError("CLANG_MALFORMED_ASSIGNMENT")
+            left = _unwrap(operands[0])
+            if left.get("kind") != "DeclRefExpr":
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            ref = left.get("referencedDecl")
+            target_name = str(ref.get("name", "")).strip() if isinstance(ref, dict) else ""
+            if not target_name:
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_NAME_REQUIRED")
+            if target_name in params:
+                raise RouteError(f"{language.upper()}_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}")
+            if target_name not in known:
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_NOT_DECLARED:{target_name}")
+            assigned_expr = _expression(operands[1], language, source_file, emitted_target)
+            result.append(
+                _mapped(
+                    node,
+                    source_file,
+                    {
+                        "kind": "assign",
+                        "name": target_name,
+                        "expression": assigned_expr,
+                    },
+                )
+            )
+            continue
+        if kind == "CompoundAssignOperator":
+            opcode = str(node.get("opcode", ""))
+            if opcode not in {"+=", "-=", "*=", "/=", "%="}:
+                raise RouteError(f"{language.upper()}_UNSUPPORTED_COMPOUND_ASSIGN_OPERATOR:{opcode}")
+            operands = _inner(node)
+            if len(operands) != 2:
+                raise RouteError("CLANG_MALFORMED_COMPOUND_ASSIGNMENT")
+            left = _unwrap(operands[0])
+            if left.get("kind") != "DeclRefExpr":
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            ref = left.get("referencedDecl")
+            target_name = str(ref.get("name", "")).strip() if isinstance(ref, dict) else ""
+            if not target_name:
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_NAME_REQUIRED")
+            if target_name in params:
+                raise RouteError(f"{language.upper()}_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}")
+            if target_name not in known:
+                raise RouteError(f"{language.upper()}_ASSIGNMENT_TARGET_NOT_DECLARED:{target_name}")
+            rhs_expr = _expression(operands[1], language, source_file, emitted_target)
+            lhs_ref = _mapped(left, source_file, {"kind": "name", "value": target_name})
+            binary_expr = _mapped(
+                node,
+                source_file,
+                {
+                    "kind": "binary",
+                    "operator": opcode[:-1],
+                    "left": lhs_ref,
+                    "right": rhs_expr,
+                },
+            )
+            result.append(
+                _mapped(
+                    node,
+                    source_file,
+                    {
+                        "kind": "assign",
+                        "name": target_name,
+                        "expression": binary_expr,
+                    },
+                )
+            )
+            continue
+        if kind == "WhileStmt":
+            children = _inner(node)
+            if len(children) != 2:
+                raise RouteError(f"{language.upper()}_MALFORMED_WHILE_STMT")
+            condition, body = children[0], children[1]
+            result.append(
+                _mapped(
+                    node,
+                    source_file,
+                    {
+                        "kind": "while",
+                        "condition": _expression(
+                            condition,
+                            language,
+                            source_file,
+                            emitted_target,
+                            "boolean",
+                        ),
+                        "body": _statement_body(
+                            body,
+                            language,
+                            source_file,
+                            emitted_target,
+                            return_type,
+                            known_variables=set(known),
+                            parameter_names=params,
+                        ),
+                    },
+                )
+            )
+            continue
+        if kind == "ForStmt":
+            raw_children = node.get("inner", [])
+            if len(raw_children) < 5:
+                raise RouteError(f"{language.upper()}_MALFORMED_FOR_STMT")
+            init, cond, inc, body = raw_children[0], raw_children[2], raw_children[3], raw_children[4]
+            if not isinstance(init, dict) or init.get("kind") != "DeclStmt":
+                raise RouteError(f"{language.upper()}_FOR_INIT_MUST_BE_DECL_STMT")
+            var_decls = [c for c in _inner(init) if c.get("kind") == "VarDecl"]
+            if len(var_decls) != 1:
+                raise RouteError(f"{language.upper()}_FOR_INIT_SINGLE_VAR_REQUIRED")
+            for_var = var_decls[0]
+            var_name = str(for_var.get("name", "")).strip()
+            if not var_name:
+                raise RouteError(f"{language.upper()}_FOR_VAR_NAME_REQUIRED")
+            var_type = _canonical_node_type(for_var, language)
+            if var_type != "integer":
+                raise RouteError(f"{language.upper()}_FOR_NON_INTEGER_TYPE:{var_type}")
+            init_children = _inner(for_var)
+            if len(init_children) != 1:
+                raise RouteError(f"{language.upper()}_FOR_INIT_VALUE_REQUIRED")
+            start_expr = _expression(init_children[0], language, source_file, emitted_target, var_type)
+
+            if not isinstance(cond, dict) or cond.get("kind") != "BinaryOperator":
+                raise RouteError(f"{language.upper()}_FOR_COND_BINARY_OPERATOR_REQUIRED")
+            if cond.get("opcode") != "<":
+                raise RouteError(f"{language.upper()}_FOR_COND_OPCODE_MUST_BE_LESS_THAN:{cond.get('opcode')}")
+            cond_operands = _inner(cond)
+            if len(cond_operands) != 2:
+                raise RouteError(f"{language.upper()}_FOR_COND_MALFORMED")
+            cond_lhs = _unwrap(cond_operands[0])
+            if cond_lhs.get("kind") != "DeclRefExpr" or str(cond_lhs.get("referencedDecl", {}).get("name", "")) != var_name:
+                raise RouteError(f"{language.upper()}_FOR_COND_LHS_MUST_BE_LOOP_VAR")
+            end_expr = _expression(cond_operands[1], language, source_file, emitted_target, var_type)
+
+            if not isinstance(inc, dict):
+                raise RouteError(f"{language.upper()}_FOR_INC_REQUIRED")
+            inc_kind = inc.get("kind")
+            step_expr: dict[str, Any] | None = None
+            if inc_kind == "UnaryOperator" and inc.get("opcode") == "++":
+                step_expr = None
+            elif inc_kind == "CompoundAssignOperator" and inc.get("opcode") == "+=":
+                inc_operands = _inner(inc)
+                if len(inc_operands) != 2:
+                    raise RouteError(f"{language.upper()}_FOR_INC_MALFORMED")
+                step_expr = _expression(inc_operands[1], language, source_file, emitted_target, var_type)
+            elif inc_kind == "BinaryOperator" and inc.get("opcode") == "=":
+                inc_operands = _inner(inc)
+                if len(inc_operands) != 2:
+                    raise RouteError(f"{language.upper()}_FOR_INC_MALFORMED")
+                rhs_op = _unwrap(inc_operands[1])
+                if rhs_op.get("kind") != "BinaryOperator" or rhs_op.get("opcode") != "+":
+                    raise RouteError(f"{language.upper()}_FOR_INC_OP_UNSUPPORTED")
+                rhs_children = _inner(rhs_op)
+                if len(rhs_children) != 2:
+                    raise RouteError(f"{language.upper()}_FOR_INC_MALFORMED")
+                step_expr = _expression(rhs_children[1], language, source_file, emitted_target, var_type)
+            else:
+                raise RouteError(f"{language.upper()}_FOR_INC_UNSUPPORTED:{inc_kind}")
+
+            loop_known = set(known)
+            loop_known.add(var_name)
+            parsed_body = _statement_body(
+                body,
+                language,
+                source_file,
+                emitted_target,
+                return_type,
+                known_variables=loop_known,
+                parameter_names=params,
+            )
+            for_dict: dict[str, Any] = {
+                "kind": "for",
+                "name": var_name,
+                "type": var_type,
+                "start": start_expr,
+                "end": end_expr,
+                "body": parsed_body,
+            }
+            if step_expr is not None:
+                for_dict["step"] = step_expr
+            result.append(_mapped(node, source_file, for_dict))
+            continue
+        if kind == "BreakStmt":
+            result.append(_mapped(node, source_file, {"kind": "break"}))
+            continue
+        if kind == "ContinueStmt":
+            result.append(_mapped(node, source_file, {"kind": "continue"}))
             continue
         raise RouteError(f"{language.upper()}_UNSUPPORTED_STATEMENT:{kind}")
     return result
@@ -657,10 +920,28 @@ def _statement_body(
     source_file: str,
     emitted_target: bool,
     return_type: str,
+    known_variables: set[str] | None = None,
+    parameter_names: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if node.get("kind") == "CompoundStmt":
-        return _statements(_inner(node), language, source_file, emitted_target, return_type)
-    return _statements([node], language, source_file, emitted_target, return_type)
+        return _statements(
+            _inner(node),
+            language,
+            source_file,
+            emitted_target,
+            return_type,
+            known_variables=known_variables,
+            parameter_names=parameter_names,
+        )
+    return _statements(
+        [node],
+        language,
+        source_file,
+        emitted_target,
+        return_type,
+        known_variables=known_variables,
+        parameter_names=parameter_names,
+    )
 
 
 def _function(
@@ -668,26 +949,29 @@ def _function(
     language: Language,
     source_file: str,
     emitted_target: bool,
+    record_names: set[str] | None = None,
 ) -> dict[str, Any]:
     parameters = []
+    param_names: set[str] = set()
     body: dict[str, Any] | None = None
     for child in _inner(node):
         if child.get("kind") == "ParmVarDecl":
             name = str(child.get("name", "")).strip()
             if not name:
                 raise RouteError(f"{language.upper()}_PARAMETER_NAME_REQUIRED")
+            param_names.add(name)
             parameters.append(
                 _mapped(
                     child,
                     source_file,
-                    {"name": name, "type": _canonical_node_type(child, language)},
+                    {"name": name, "type": _canonical_node_type(child, language, record_names)},
                 )
             )
         elif child.get("kind") == "CompoundStmt":
             body = child
     if body is None:
         raise RouteError(f"{language.upper()}_FUNCTION_BODY_REQUIRED")
-    canonical_return_type = _canonical_type(_return_type(node), language)
+    canonical_return_type = _canonical_type(_return_type(node), language, record_names)
     _verify_integer_return_width(body, language, canonical_return_type)
     return _mapped(
         node,
@@ -696,7 +980,15 @@ def _function(
             "name": str(node["name"]),
             "parameters": parameters,
             "return_type": canonical_return_type,
-            "body": _statements(_inner(body), language, source_file, emitted_target, canonical_return_type),
+            "body": _statements(
+                _inner(body),
+                language,
+                source_file,
+                emitted_target,
+                canonical_return_type,
+                known_variables=set(),
+                parameter_names=param_names,
+            ),
         },
     )
 
@@ -715,12 +1007,29 @@ def analyze_clang(
     if language not in ("cpp", "objc"):
         raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
     tree = _run_clang(executable, source, language, sdk_path)
+    def _is_in_source_file(node: dict[str, Any]) -> bool:
+        loc = node.get("loc")
+        if not isinstance(loc, dict):
+            return False
+        for nested in ("expansionLoc", "spellingLoc"):
+            nested_loc = loc.get(nested)
+            if isinstance(nested_loc, dict):
+                loc = nested_loc
+                break
+        if "includedFrom" in loc:
+            return False
+        file_path = loc.get("file")
+        if isinstance(file_path, str):
+            return Path(file_path).name == source.name
+        return True
+
     candidates = [
         node
         for node in _inner(tree)
         if node.get("kind") == "FunctionDecl"
         and node.get("name") == function_name
         and not node.get("isImplicit")
+        and _is_in_source_file(node)
         and any(child.get("kind") == "CompoundStmt" for child in _inner(node))
     ]
     if not candidates:
@@ -733,17 +1042,39 @@ def analyze_clang(
             f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
             + ",".join(semantic_markers)
         )
-    return SemanticIR.from_mapping(
-        {
-            "schema_version": "1.0.0",
-            "source_language": language,
-            "source_file": source.name,
-            "analyzer": "clang AST (JSON)",
-            "analyzer_version": version,
-            "functions": [_function(candidates[0], language, source.name, emitted_target)],
-            "diagnostics": [],
-        }
-    )
+    record_candidates = [
+        node
+        for node in _inner(tree)
+        if node.get("kind") in ("CXXRecordDecl", "RecordDecl")
+        and node.get("name")
+        and not node.get("isImplicit")
+        and _is_in_source_file(node)
+        and any(child.get("kind") == "FieldDecl" for child in _inner(node))
+    ]
+    record_names = {str(rec["name"]).strip() for rec in record_candidates}
+    records = []
+    for rec in record_candidates:
+        rec_name = str(rec["name"]).strip()
+        fields = []
+        for field in _inner(rec):
+            if field.get("kind") == "FieldDecl" and not field.get("isImplicit"):
+                field_name = str(field.get("name", "")).strip()
+                field_type = _canonical_node_type(field, language, record_names)
+                fields.append(_mapped(field, source.name, {"name": field_name, "type": field_type}))
+        records.append(_mapped(rec, source.name, {"name": rec_name, "fields": fields}))
+
+    mapping: dict[str, Any] = {
+        "schema_version": "1.0.0",
+        "source_language": language,
+        "source_file": source.name,
+        "analyzer": "clang AST (JSON)",
+        "analyzer_version": version,
+        "functions": [_function(candidates[0], language, source.name, emitted_target, record_names)],
+        "diagnostics": [],
+    }
+    if records:
+        mapping["records"] = records
+    return SemanticIR.from_mapping(mapping)
 
 
 def _inventory_span(

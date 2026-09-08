@@ -1,0 +1,124 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "corpora": [
+    {
+      "artifacts": [
+        {
+          "bytes": 122,
+          "path": "development/inputs/pricing.rs",
+          "sha256": "sha256:ca052d633572faa15dbbe178c5c51088a2de5a93cdb84a3148f04384407dcc4f"
+        },
+        {
+          "bytes": 151,
+          "path": "development/inputs/cases.json",
+          "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+        },
+        {
+          "bytes": 610,
+          "path": "development/inputs/migrated.bas",
+          "sha256": "sha256:feb1447a25cef4af916da286f1924d03a622834e06f9f3a6f590405da52e0e85"
+        },
+        {
+          "bytes": 1388,
+          "path": "development/inputs/semantic-ir.json",
+          "sha256": "sha256:38ffc193dd8817975f20bcf747ba4457146262c45acc17ba9a47c0960470c766"
+        },
+        {
+          "bytes": 2850,
+          "path": "development/inputs/identifier-plan.json",
+          "sha256": "sha256:6bccde59aecdb58adecc3fc46e5496406d08fd4063491d86d0386f10c219e65d"
+        },
+        {
+          "bytes": 2654,
+          "path": "development/non-vb6-side/side-report.json",
+          "sha256": "sha256:e750e5a18a9f468d5396844db0b5edeffa94595c1042abb097da1c6720cad486"
+        }
+      ],
+      "corpus": "development",
+      "function_name": "calculate",
+      "local_role": "source"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 156,
+          "path": "holdout/inputs/clamp.rs",
+          "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+        },
+        {
+          "bytes": 150,
+          "path": "holdout/inputs/cases.json",
+          "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+        },
+        {
+          "bytes": 386,
+          "path": "holdout/inputs/migrated.bas",
+          "sha256": "sha256:1ccc648ae403649b0105b8cbe632518c28a475216e3be292b0e8a9afe6dd1729"
+        },
+        {
+          "bytes": 1742,
+          "path": "holdout/inputs/semantic-ir.json",
+          "sha256": "sha256:589f0fc4a1a2f7ef30411ae1ea503696ac7d02fedc081692473d9bd93d484311"
+        },
+        {
+          "bytes": 3049,
+          "path": "holdout/inputs/identifier-plan.json",
+          "sha256": "sha256:882143d30a67b5ecdcd12a0b3fa07a499824bd939f1aa906b2c559a86c4f3018"
+        },
+        {
+          "bytes": 2649,
+          "path": "holdout/non-vb6-side/side-report.json",
+          "sha256": "sha256:71fa0e229d9b446316e48a5992d1ba92f050f85f9041f8972323cb38aedeb742"
+        }
+      ],
+      "corpus": "holdout",
+      "function_name": "clamp",
+      "local_role": "source"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 119,
+          "path": "real-repository/inputs/difference.rs",
+          "sha256": "sha256:96556b66668b47f0a6efc9c06af7e653abae65a5796e42fc7f65686ee5393f91"
+        },
+        {
+          "bytes": 146,
+          "path": "real-repository/inputs/cases.json",
+          "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+        },
+        {
+          "bytes": 608,
+          "path": "real-repository/inputs/migrated.bas",
+          "sha256": "sha256:a3e59f1c1c9a7b4c5d22adad9581ccf70c7a58400566b276bb117d231d7f782b"
+        },
+        {
+          "bytes": 1387,
+          "path": "real-repository/inputs/semantic-ir.json",
+          "sha256": "sha256:0647cd1d2dc48ee88e4507d68d6f5a8fe483dce77ff47116dc8e9338170863c5"
+        },
+        {
+          "bytes": 2850,
+          "path": "real-repository/inputs/identifier-plan.json",
+          "sha256": "sha256:b7af02bc2fbbc21fa142da8f79d4d73a59a9afeafda3d87c4b1649a3f1e215fd"
+        },
+        {
+          "bytes": 2654,
+          "path": "real-repository/non-vb6-side/side-report.json",
+          "sha256": "sha256:cfa37a213b0e5158ad5a248b10a95e229a2b52397ba6c92ba1ef6f9a87bcd8b5"
+        }
+      ],
+      "corpus": "real-repository",
+      "function_name": "difference",
+      "local_role": "source"
+    }
+  ],
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.vb6-cross-host-campaign-request",
+  "prepared_side_status": "PASSED_LOCAL",
+  "route_key": "rust-to-vb6",
+  "schema_version": 1,
+  "source_language": "rust",
+  "target_language": "vb6",
+  "windows_vb6_side_status": "NOT_RUN"
+}

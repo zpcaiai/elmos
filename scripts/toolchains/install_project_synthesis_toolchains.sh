@@ -276,46 +276,20 @@ write_rust_wrapper() {
   chmod 0755 "${wrapper}"
 }
 
-normalize_rust_component_inventory() {
-  local components_file="$1"
-  local canonical_file="${components_file}.elmos-canonical"
-  local expected_sorted
-  local observed_sorted
-  expected_sorted="$(
-    printf '%s\n' \
-      'cargo-aarch64-apple-darwin' \
-      'rust-std-aarch64-apple-darwin' \
-      'rustc-aarch64-apple-darwin' \
-      'clippy-preview-aarch64-apple-darwin' \
-      'rustfmt-preview-aarch64-apple-darwin' \
-      | LC_ALL=C /usr/bin/sort
-  )"
-  if [[ ! -f "${components_file}" || -L "${components_file}" \
-    || -e "${canonical_file}" || -L "${canonical_file}" ]]; then
-    printf 'Rust component inventory is unavailable or unsafe: %s\n' \
-      "${components_file}" >&2
-    return 3
+seal_rust_sysroot() {
+  local target="$1"
+  local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
+  if [[ ! -d "${sysroot}" || -L "${sysroot}" ]]; then
+    printf 'Rust %s sysroot is unavailable or unsafe.\n' "${RUST_VERSION}" >&2
+    exit 3
   fi
-  observed_sorted="$(LC_ALL=C /usr/bin/sort "${components_file}")"
-  if [[ "${observed_sorted}" != "${expected_sorted}" ]]; then
-    printf 'Rust component inventory is not the exact pinned closure.\n' >&2
-    return 3
-  fi
-  # rustup-init can emit the three core components in a different order on
-  # otherwise byte-identical hosts. The inventory is a set, so validate that
-  # set exactly and then publish one canonical serialization before the tree
-  # is moved into its immutable, digest-bound location.
-  (
-    umask 022
-    printf '%s\n' \
-      'cargo-aarch64-apple-darwin' \
-      'rust-std-aarch64-apple-darwin' \
-      'rustc-aarch64-apple-darwin' \
-      'clippy-preview-aarch64-apple-darwin' \
-      'rustfmt-preview-aarch64-apple-darwin' \
-      >"${canonical_file}"
-  )
-  mv "${canonical_file}" "${components_file}"
+  # Compiler and analyzer outputs belong in their isolated CARGO_HOME and
+  # CARGO_TARGET_DIR. The installed compiler closure is immutable input: make
+  # every payload read-only so a long route campaign cannot silently mutate a
+  # previously qualified sysroot and poison later route identities.
+  find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
+  find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
+  find "${sysroot}" -type d -exec chmod 0555 {} +
 }
 
 install_rust() {
@@ -340,8 +314,6 @@ install_rust() {
     RUSTUP_HOME="${stage}/rustup" CARGO_HOME="${stage}/cargo" \
       "${stage}/cargo/bin/rustup" component add \
       --toolchain "${RUST_VERSION}" clippy rustfmt
-    normalize_rust_component_inventory \
-      "${stage}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin/lib/rustlib/components"
     mv "${stage}" "${target}"
   fi
   # Wrapper semantics are part of the qualified route-toolchain identity. A
@@ -354,6 +326,7 @@ install_rust() {
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"
+  seal_rust_sysroot "${target}"
 }
 
 if [[ ",${INSTALL_ONLY}," == *',go,'* ]]; then

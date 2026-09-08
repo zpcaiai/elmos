@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -16,6 +18,7 @@ from elmos_polyglot_route.models import (
 )
 from elmos_polyglot_route.repository import plan_repository
 from elmos_polyglot_route.source_analyzer import analyze
+from elmos_polyglot_route.toolchains import exact_toolchain
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTENSIONS = {
@@ -33,6 +36,8 @@ EXTENSIONS = {
     "kotlin": "kt",
     "react": "tsx",
     "flutter": "dart",
+    "vb6": "bas",
+    "vcpp6": "cpp",
 }
 FILES = {
     "java": "Pricing",
@@ -49,7 +54,39 @@ FILES = {
     "kotlin": "pricing",
     "react": "pricing",
     "flutter": "pricing",
+    "vb6": "pricing",
+    "vcpp6": "pricing",
 }
+
+
+def _require_vendor_runtime(source: Language, target: Language) -> None:
+    for language, product in (
+        ("vb6", "VB6 SP6"),
+        ("vcpp6", "Visual C++ 6.0 SP6"),
+    ):
+        if language not in {source, target}:
+            continue
+        try:
+            exact_toolchain(language)
+        except RouteError as error:
+            pytest.skip(f"governed Windows {product} runtime unavailable: {error}")
+
+
+@pytest.fixture
+def route_tmp_path(tmp_path: Path) -> Iterator[Path]:
+    """Release native build output after every route cell.
+
+    The complete matrix materializes hundreds of source and target builds.  Pytest
+    normally retains the whole session tree until shutdown, which can exhaust a
+    constrained runner before later cells execute.  A route report is asserted
+    before this fixture tears down, so keeping every rebuildable binary has no
+    evidentiary value.
+    """
+
+    try:
+        yield tmp_path
+    finally:
+        shutil.rmtree(tmp_path, ignore_errors=True)
 
 
 def test_route_fixture_catalog_covers_the_complete_repository_surface() -> None:
@@ -85,12 +122,13 @@ def test_source_analyzers_emit_the_same_typed_semantic_slice(language: Language)
     ],
 )
 def test_every_repository_direction_compiles_and_matches_behavior(
-    tmp_path: Path,
+    route_tmp_path: Path,
     source_language: Language,
     target_language: Language,
 ) -> None:
+    _require_vendor_runtime(source_language, target_language)
     source = ROOT / "fixtures" / source_language / f"{FILES[source_language]}.{EXTENSIONS[source_language]}"
-    output = tmp_path / f"{source_language}-to-{target_language}"
+    output = route_tmp_path / f"{source_language}-to-{target_language}"
     source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
     report = migrate(
         source,
@@ -135,13 +173,14 @@ def test_every_repository_direction_compiles_and_matches_behavior(
     ],
 )
 def test_independent_corpora_compile_and_match_behavior(
-    tmp_path: Path,
+    route_tmp_path: Path,
     corpus: str,
     function_name: str,
     file_name: str,
     source_language: Language,
     target_language: Language,
 ) -> None:
+    _require_vendor_runtime(source_language, target_language)
     source_base = file_name if source_language in {"java", "csharp"} else file_name.lower()
     source = ROOT / "fixtures" / corpus / source_language / f"{source_base}.{EXTENSIONS[source_language]}"
     source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
@@ -151,7 +190,7 @@ def test_independent_corpora_compile_and_match_behavior(
         target_language,
         function_name,
         ROOT / "fixtures" / corpus / "cases.json",
-        tmp_path / corpus / f"{source_language}-to-{target_language}",
+        route_tmp_path / corpus / f"{source_language}-to-{target_language}",
         repository_execution_mode=True,
         identifier_unit_namespace=repository_work_unit_namespace(
             repository_snapshot_sha256="sha256:" + hashlib.sha256(

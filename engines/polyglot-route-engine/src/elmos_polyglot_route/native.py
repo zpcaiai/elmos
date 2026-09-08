@@ -3,11 +3,9 @@ from __future__ import annotations
 import atexit
 import base64
 import binascii
-import fcntl
 import hashlib
 import json
 import os
-import pwd
 import re
 import shutil
 import signal
@@ -21,6 +19,16 @@ import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Final, cast
+
+try:
+    import fcntl
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    fcntl = None  # type: ignore[assignment]
+
+try:
+    import pwd
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    pwd = None  # type: ignore[assignment]
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
@@ -91,8 +99,8 @@ _TYPESCRIPT_ANALYZER_SHA256 = "23361d1947109049e3b3d22424d0443046402a8e6a9e6e658
 _TYPESCRIPT_ANALYZER_BYTES = 69_262
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "a1b25481540d475bebca446ee596ac65b0f21cc9d08391910a11430aee50994a"
-_PHP_ANALYZER_BYTES = 83848
+_PHP_ANALYZER_SHA256 = "5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00"
+_PHP_ANALYZER_BYTES = 83852
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -786,6 +794,7 @@ _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
+_GO_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
 _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
@@ -1223,6 +1232,8 @@ def _swift_dependency_cache_base() -> Path:
 
 
 def _swift_dependency_cache_home() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir)
 
 
@@ -2743,6 +2754,8 @@ def _ensure_swift_dependency_cache(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[Path, dict[str, Any]]:
+    if fcntl is None:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     cache_base = _swift_dependency_cache_base()
     cache_key = _swift_dependency_cache_key()
     cache = cache_base / cache_key
@@ -3030,18 +3043,8 @@ def _run_swift_build_step(
                 # bounded, identity-checked process-tree cleanup as a timeout.
                 pending_input = None
                 poll = getattr(process, "poll", None)
-                if not callable(poll):
+                if not callable(poll) or poll() is not None:
                     raise
-                if poll() is not None:
-                    # The leader may finish in the narrow interval between
-                    # communicate() timing out and poll(). Give its already
-                    # closed pipes one final bounded drain before treating an
-                    # exited leader as evidence of inherited live pipe holders.
-                    stdout, stderr = process.communicate(
-                        input=None,
-                        timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
-                    )
-                    break
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -4673,6 +4676,8 @@ def _csharp_analyzer_input_manifest(engine: Path) -> dict[str, Any]:
 
 
 def _csharp_package_cache_root() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("CSHARP_ANALYZER_PACKAGE_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".nuget" / "packages"
 
 
@@ -5301,6 +5306,8 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
     read-only or hostile home directory degrades to the previous per-call
     temporary directory instead of blocking analysis.
     """
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     try:
         base = (
             Path(pwd.getpwuid(os.getuid()).pw_dir)
@@ -5452,6 +5459,8 @@ def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
         return None
     if _toolchain_build_cache(kind, key, ()) is None:
         return None
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     return (
         Path(pwd.getpwuid(os.getuid()).pw_dir)
         / ".cache"
@@ -5559,27 +5568,144 @@ def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str
     }
 
 
-def _go_analyzer_source_binding(helper: Path) -> tuple[int, str]:
-    try:
-        resolved = helper.resolve(strict=True)
-        if (
-            not helper.is_absolute()
-            or helper != resolved
-            or helper.is_symlink()
-            or not helper.is_file()
-        ):
-            raise OSError("unsafe Go analyzer source")
-        content = helper.read_bytes()
-    except OSError as error:
-        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE") from error
-    if not content or len(content) > 2_000_000:
+def _go_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
+    expected = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    if not helper.is_absolute() or helper != expected:
         raise RouteError("GO_ANALYZER_SOURCE_UNSAFE")
-    return len(content), hashlib.sha256(content).hexdigest()
+    guarded_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    content = _stable_read_regular_file(
+        helper,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    final_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    if content != guarded_content or content != final_content:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE_CHANGED")
+    return (
+        {
+            "path": str(helper),
+            "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+            "bytes": len(content),
+        },
+        content,
+    )
 
 
-def _promote_go_domain_error(reason: str, function_name: str) -> RouteError | None:
-    expected = f"FUNCTION_NOT_FOUND:{function_name}"
-    return RouteError(expected) if reason == expected else None
+def _go_analyzer_source_binding(helper: Path) -> dict[str, object]:
+    binding, _ = _go_analyzer_source_snapshot(helper)
+    return binding
+
+
+def _go_analyzer_snapshot_binding(snapshot: Path, root: Path) -> dict[str, object]:
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+        or snapshot.parent != root
+        or snapshot.name != "analyzer.go"
+    ):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    content = _stable_read_regular_file(
+        snapshot,
+        failure="GO_ANALYZER_SNAPSHOT_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    try:
+        metadata = snapshot.lstat()
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    return {
+        "path": str(snapshot),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+
+
+def _write_go_analyzer_snapshot(root: Path, content: bytes) -> tuple[Path, dict[str, object]]:
+    snapshot = root / "analyzer.go"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(snapshot, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                chunk_bytes = os.write(descriptor, content[written:])
+                if chunk_bytes <= 0:
+                    raise OSError("zero-byte Go analyzer snapshot write")
+                written += chunk_bytes
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+    binding = _go_analyzer_snapshot_binding(snapshot, root)
+    if binding["sha256"] != "sha256:" + hashlib.sha256(content).hexdigest() or binding["bytes"] != len(content):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+    return snapshot, binding
+
+
+def _verify_trusted_go_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "go"
+        or expected.version != "1.25.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("go")
+    except RouteError as error:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
 
 
 def _run_trusted_go_analyzer(
@@ -5587,77 +5713,163 @@ def _run_trusted_go_analyzer(
     helper: Path,
     arguments: list[str],
 ) -> dict[str, Any]:
-    """Run the Go analyzer and promote only its exact missing-symbol result.
+    """Run a source- and toolchain-bound Go analyzer with exact error promotion."""
 
-    ``go run`` appends ``exit status 2`` after a program deliberately rejects a
-    source input. The generic process boundary must continue treating arbitrary
-    multi-line stderr as an analyzer failure, so this language-specific boundary
-    unwraps only the one reason tied to the requested function. Helper and
-    toolchain identities are rechecked before that promotion is trusted.
-    """
+    promotable = _go_analyzer_arguments(arguments)
+    expected_helper, helper_content = _go_analyzer_source_snapshot(helper)
+    with tempfile.TemporaryDirectory(prefix="elmos-go-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        snapshot, expected_snapshot = _write_go_analyzer_snapshot(root, helper_content)
+        try:
+            current_helper = _go_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        command = [toolchain.executable, "run", str(snapshot), "--", *arguments]
+        environment = _go_build_cache_environment(helper, Path(toolchain.executable))
+        try:
+            value = _run(command, cwd=root, environment_overrides=environment)
+        except RouteError as error:
+            try:
+                current_snapshot = _go_analyzer_snapshot_binding(snapshot, root)
+                current_helper = _go_analyzer_source_binding(helper)
+            except RouteError as changed:
+                raise RouteError("GO_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from changed
+            if current_snapshot != expected_snapshot:
+                raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+            if current_helper != expected_helper:
+                raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+            _verify_trusted_go_toolchain(toolchain)
+            wrapped = str(error)
+            for reason in promotable:
+                if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}\nexit status 2":
+                    raise RouteError(reason) from error
+            raise
+        if _go_analyzer_snapshot_binding(snapshot, root) != expected_snapshot:
+            raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+        if _go_analyzer_source_binding(helper) != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        return value
 
+
+def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
     if (
         len(arguments) not in {2, 3}
-        or any(
-            not isinstance(argument, str) or not argument
-            for argument in arguments
-        )
-        or any(
-            "\n" in argument or "\r" in argument or "\x00" in argument
-            for argument in arguments
-        )
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
         or (len(arguments) == 3 and arguments[2] != "--emitted-target")
-        or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", arguments[1]) is None
+        or arguments[1] in {"--inventory", "--emitted-target"}
     ):
-        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
     source = Path(arguments[0])
     try:
-        resolved_source = source.resolve(strict=True)
+        resolved = source.resolve(strict=True)
     except OSError as error:
-        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
-    if (
-        not source.is_absolute()
-        or source != resolved_source
-        or source.is_symlink()
-        or not source.is_file()
-    ):
-        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
 
-    expected_helper = _go_analyzer_source_binding(helper)
-    expected_reason = f"FUNCTION_NOT_FOUND:{arguments[1]}"
-    command = [toolchain.executable, "run", str(helper), "--", *arguments]
+
+def _verify_trusted_rust_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "rust"
+        or expected.version != "1.89.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is None
+        or not Path(expected.auxiliary).is_absolute()
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+        or expected.auxiliary_sha256 is None
+        or digest(expected.auxiliary_sha256) is None
+    ):
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("rust")
+    except RouteError as error:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _rust_analyzer_package_binding(package: Path, cargo: Path) -> str:
+    expected = ENGINE_ROOT / "native" / "rust"
+    if not package.is_absolute() or package != expected or package.is_symlink():
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE")
+    try:
+        return _toolchain_build_cache_key(
+            "rust-analyzer-inputs",
+            cargo,
+            files=(
+                package / "Cargo.toml",
+                package / "Cargo.lock",
+                package / ".cargo" / "config.toml",
+            ),
+            trees=(package / "src", package / "vendor"),
+            salt=("cargo-run=--quiet,--offline,--locked",),
+        )
+    except OSError as error:
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE") from error
+
+
+def _run_trusted_rust_analyzer(
+    toolchain: ExactToolchain,
+    package: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run a package- and toolchain-bound Rust analyzer with exact error promotion."""
+
+    promotable = _rust_analyzer_arguments(arguments)
+    if toolchain.auxiliary is None:
+        raise RouteError("RUST_ANALYZER_CARGO_REQUIRED")
+    cargo = Path(toolchain.auxiliary)
+    expected_package = _rust_analyzer_package_binding(package, cargo)
+    _verify_trusted_rust_toolchain(toolchain)
+    command = [
+        str(cargo),
+        "run",
+        "--quiet",
+        "--offline",
+        "--locked",
+        "--manifest-path",
+        str(package / "Cargo.toml"),
+        "--",
+        *arguments,
+    ]
     try:
         value = _run(
             command,
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(
-                helper, Path(toolchain.executable)
-            ),
+            cwd=package,
+            timeout=900,
+            isolated_cargo=True,
+            cargo_package=package,
         )
     except RouteError as error:
-        if _go_analyzer_source_binding(helper) != expected_helper:
-            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
         try:
-            current_toolchain = exact_toolchain("go")
-        except RouteError as verification_error:
-            raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from verification_error
-        if current_toolchain != toolchain:
-            raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+            current_package = _rust_analyzer_package_binding(package, cargo)
+        except RouteError as changed:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from changed
+        if current_package != expected_package:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_rust_toolchain(toolchain)
         wrapped = str(error)
-        prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{expected_reason}"
-        if wrapped in {prefix, prefix + "\nexit status 2"}:
-            promoted = _promote_go_domain_error(expected_reason, arguments[1])
-            assert promoted is not None
-            raise promoted from error
+        for reason in promotable:
+            if wrapped == f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}":
+                raise RouteError(reason) from error
         raise
-    if _go_analyzer_source_binding(helper) != expected_helper:
-        raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
-    try:
-        current_toolchain = exact_toolchain("go")
-    except RouteError as error:
-        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
-    if current_toolchain != toolchain:
-        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
+    if _rust_analyzer_package_binding(package, cargo) != expected_package:
+        raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION")
+    _verify_trusted_rust_toolchain(toolchain)
     return value
 
 
@@ -5665,7 +5877,11 @@ def _run(
     command: list[str],
     *,
     cwd: Path,
-    timeout: int = 120,
+    # Native source analysis accepts files up to the repository contract's
+    # two-megabyte ceiling. Keep its default deadline aligned with target
+    # validation so a valid near-limit source is not classified as NOT_RUN
+    # merely because analysis gets less time than the generated build.
+    timeout: int = 600,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
     environment_overrides: Mapping[str, str] | None = None,
@@ -5809,6 +6025,26 @@ def _javascript_bound_content(
     return content
 
 
+def _verify_trusted_php_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "php"
+        or not expected.version.startswith("PHP 8.5.9 ")
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("php")
+    except RouteError as error:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED")
+
+
 def _run_trusted_php_analyzer(
     toolchain: ExactToolchain,
     source: Path,
@@ -5848,6 +6084,7 @@ def _run_trusted_php_analyzer(
     arguments = [str(resolved), function_name]
     if emitted_target:
         arguments.append("--emitted-target")
+    _verify_trusted_php_toolchain(toolchain)
     try:
         value = _run(
             [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
@@ -5863,12 +6100,31 @@ def _run_trusted_php_analyzer(
         )
         if analyzer_before != analyzer_after:
             raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_php_toolchain(toolchain)
         wrapped = str(error)
+        php_reason = f"PHP_FUNCTION_NOT_FOUND:{function_name}"
+        if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{php_reason}":
+            raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}") from error
         prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:"
         if wrapped.startswith(prefix):
             candidate = wrapped[len(prefix) :].strip()
             first_line = candidate.splitlines()[0].strip() if candidate else ""
-            if first_line.startswith("PHP_"):
+            public_failures = frozenset(
+                {
+                    "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
+                    "PHP_BREAK_OUTSIDE_LOOP",
+                    "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONTINUE_OUTSIDE_LOOP",
+                    "PHP_DO_WHILE_REJECTED",
+                    "PHP_FOR_CLOSED_RANGE_REJECTED",
+                    "PHP_FOR_DOWNTO_REJECTED",
+                    "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_UNDECLARED_NAME",
+                }
+            )
+            failure_code = first_line.partition(":")[0]
+            if candidate == first_line and failure_code in public_failures:
                 raise RouteError(first_line) from error
         raise
     analyzer_after = _javascript_bound_content(
@@ -5880,6 +6136,7 @@ def _run_trusted_php_analyzer(
     )
     if analyzer_before != analyzer_after:
         raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+    _verify_trusted_php_toolchain(toolchain)
     if type(value) is not dict:
         raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
     reported = value.get("analyzer_version")
@@ -7665,32 +7922,10 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, [str(source), "--inventory"])
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
-        assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                "--inventory",
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        value = _run_trusted_rust_analyzer(toolchain, package, [str(source), "--inventory"])
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
         value = _bind_swift_analyzer_identity(
@@ -7811,7 +8046,7 @@ def _analyze_batch(
             # Java promotes only an explicit allow-list; every other failure has
             # to stay a hard failure, which is what the forged-stack-trace tests
             # in `test_native_validation.py` exist to guarantee.
-            def promote(reason: str, function_name: str) -> RouteError | None:
+            def promote(reason: str) -> RouteError | None:
                 return RouteError(reason) if reason in _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS else None
 
         elif language == "go":
@@ -7819,44 +8054,24 @@ def _analyze_batch(
             arguments = [str(resolved), selector]
             if emitted_target:
                 arguments.append("--emitted-target")
-            document = _run(
-                [toolchain.executable, "run", str(helper), "--", *arguments],
-                cwd=ENGINE_ROOT,
-                environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-            )
-            # The individual boundary promotes only the exact missing-function
-            # verdict bound to the requested symbol; the batch path must be
-            # identical and must not interpret any other analyzer diagnostic.
-            def promote(reason: str, function_name: str) -> RouteError | None:
-                return _promote_go_domain_error(reason, function_name)
+            document = _run_trusted_go_analyzer(toolchain, helper, arguments)
+            promotable = _go_analyzer_arguments(arguments)
+
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(reason) if reason in promotable else None
 
         elif language == "rust":
             package = ENGINE_ROOT / "native" / "rust"
             if toolchain.auxiliary is None:
                 return None
-            cargo = toolchain.auxiliary
-            document = _run(
-                [
-                    cargo,
-                    "run",
-                    "--quiet",
-                    "--offline",
-                    "--locked",
-                    "--manifest-path",
-                    str(package / "Cargo.toml"),
-                    "--",
-                    str(resolved),
-                    selector,
-                    *(["--emitted-target"] if emitted_target else []),
-                ],
-                cwd=package,
-                timeout=900,
-                isolated_cargo=True,
-                cargo_package=package,
-            )
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run_trusted_rust_analyzer(toolchain, package, arguments)
+            promotable = _rust_analyzer_arguments(arguments)
 
-            def promote(reason: str, function_name: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(reason) if reason in promotable else None
 
         else:
             return None
@@ -7892,7 +8107,7 @@ def _analyze_batch(
             # produced may be reconstructed here; anything else means the batch
             # saw a failure mode this fast path is not entitled to interpret,
             # and the whole file drops to the per-function path.
-            promoted = promote(reason, name)
+            promoted = promote(reason)
             if promoted is None:
                 return None
             results[name] = promoted
@@ -8209,7 +8424,8 @@ def _kotlin_analyzer_classes(
                     _verify_kotlin_analyzer_classes(_KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT)
                     return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
                 except RouteError:
-                    pass
+                    _KOTLIN_ANALYZER_CLASSES = None
+                    _KOTLIN_ANALYZER_RECEIPT = None
         safe_cache_key = f"{helper_sha}_{compiler_sha}".replace(":", "_")
         disk_cache_dir = Path.home() / ".cache" / "elmos" / "kotlin-classes" / safe_cache_key
         disk_receipt_file = disk_cache_dir / "receipt.json"
@@ -8225,8 +8441,16 @@ def _kotlin_analyzer_classes(
                     _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
                     _KOTLIN_ANALYZER_RECEIPT = disk_receipt
                     return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
-            except Exception:
-                pass
+            except (
+                AttributeError,
+                json.JSONDecodeError,
+                KeyError,
+                OSError,
+                RouteError,
+                TypeError,
+                UnicodeDecodeError,
+            ):
+                disk_receipt = None
         temp_dir = tempfile.TemporaryDirectory(prefix="elmos-kotlin-classes-")
         classes_dir = Path(temp_dir.name).resolve(strict=True) / "classes"
         classes_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -8261,7 +8485,8 @@ def _kotlin_analyzer_classes(
             temp_dir.cleanup()
             return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
         except Exception:
-            pass
+            _KOTLIN_ANALYZER_CLASSES = None
+            _KOTLIN_ANALYZER_RECEIPT = None
         if _KOTLIN_ANALYZER_TEMPORARY is not None:
             _KOTLIN_ANALYZER_TEMPORARY.cleanup()
         _KOTLIN_ANALYZER_TEMPORARY = temp_dir
@@ -8520,25 +8745,10 @@ def analyze(
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                function_name,
-                *(["--emitted-target"] if emitted_target else []),
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        arguments = [str(source), function_name]
+        if emitted_target:
+            arguments.append("--emitted-target")
+        value = _run_trusted_rust_analyzer(toolchain, package, arguments)
     elif language == "javascript":
         value = _run_trusted_javascript_analyzer(
             toolchain,

@@ -623,7 +623,9 @@ export type TranslationLanguageId =
   | "php"
   | "kotlin"
   | "react"
-  | "flutter";
+  | "flutter"
+  | "vb6"
+  | "vcpp6";
 
 /**
  * Repository inventory retains deprecated JavaScript files for digest-bound

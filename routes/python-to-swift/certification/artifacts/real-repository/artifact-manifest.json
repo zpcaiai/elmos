@@ -1,0 +1,170 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/python-to-swift/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/__pycache__/_elmos_source_module.cpython-312.pyc",
+    "source-runtime/__pycache__/difference.cpython-312.pyc",
+    "source-runtime/__pycache__/source_harness.cpython-312.pyc"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 21,
+  "files": [
+    {
+      "bytes": 1555,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:6e4df6f5852f4179e8352a014301de0abbcdd5de479e8d0cca1043cf3aab6975"
+    },
+    {
+      "bytes": 11065,
+      "path": "chunk-map.json",
+      "sha256": "sha256:0ef8b5a8a2f56a35ed72b4f6bfc17fffecbd779bde0e701b0fcb9b41044d2a80"
+    },
+    {
+      "bytes": 3048,
+      "path": "formal-composition.json",
+      "sha256": "sha256:ab63aad811168db39cf039c73cd8cdaa91b786d4327df3484d735c13c81ca523"
+    },
+    {
+      "bytes": 1010,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:58e32c3cd9feb3df446b83c8ed43734b1ad24774f941fc18f781d2243e65e4ec"
+    },
+    {
+      "bytes": 13133,
+      "path": "formal-input.json",
+      "sha256": "sha256:0cbefe11d24f242c5310aa457aa0f049ff910ef98a0f80397c77e69bbd6e8020"
+    },
+    {
+      "bytes": 2390,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:9acd6f692c69c9625620436d0c18a13329aa0f0fda0899226dfb0d7fdd1e3725"
+    },
+    {
+      "bytes": 2372,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:ebdad2a08184c546d2c276f647713c516a38ff4524e81a2b7a558985c3cfc053"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 108,
+      "path": "inputs/difference.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 4156,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:fe2d26a9396e4674007f1964e8cd685aaaea08c793427d7196ed3e294f691fd9"
+    },
+    {
+      "bytes": 982,
+      "path": "main.swift",
+      "sha256": "sha256:0b1c49a291a7fc3b2a1483b71f44cd2689dcca43f10d4265e4d57a1d425adff1"
+    },
+    {
+      "bytes": 157,
+      "path": "migrated.swift",
+      "sha256": "sha256:6da2ec736fe5e46dbb2f59e50bd2c7e5709e962da6f09e7a4a71db11f4c06b2e"
+    },
+    {
+      "bytes": 11911,
+      "path": "route-evidence.json",
+      "sha256": "sha256:e6d8c54c4d77746d2e4894de53e13ce5679da7f9378fbd490115f8414cbfb41c"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 664,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052"
+    },
+    {
+      "bytes": 108,
+      "path": "source-runtime/_elmos_source_module.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 108,
+      "path": "source-runtime/difference.py",
+      "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+    },
+    {
+      "bytes": 803,
+      "path": "source-runtime/source_harness.py",
+      "sha256": "sha256:b2e702f4328f842cf222f2095d3ad0983b4e5740d74b380e4bcca448faa55923"
+    },
+    {
+      "bytes": 664,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052"
+    },
+    {
+      "bytes": 2272,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a"
+    },
+    {
+      "bytes": 2287,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:637cf2ebc66b442083bd0b2612d37e81f8da82544f2dcfb491e47b9fd739582b"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "python-to-swift",
+  "schema_version": 1,
+  "total_bytes": 59248
+}

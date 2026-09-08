@@ -85,6 +85,40 @@ internal static class EmittedMapper
         {
             switch (statement)
             {
+                case LocalDeclarationStatementSyntax localDecl:
+                {
+                    var declaredType = Type(localDecl.Declaration.Type.ToString());
+                    foreach (var variable in localDecl.Declaration.Variables)
+                    {
+                        if (variable.Initializer is null) throw new InvalidOperationException("CSHARP_DECLARATION_WITHOUT_VALUE");
+                        result.Add(new()
+                        {
+                            ["kind"] = "let",
+                            ["name"] = variable.Identifier.ValueText,
+                            ["type"] = declaredType,
+                            ["expression"] = Expression(variable.Initializer.Value),
+                        });
+                    }
+                    break;
+                }
+                case ExpressionStatementSyntax exprStmt:
+                {
+                    if (exprStmt.Expression is AssignmentExpressionSyntax assign)
+                    {
+                        var targetName = ((IdentifierNameSyntax)assign.Left).Identifier.ValueText;
+                        result.Add(new()
+                        {
+                            ["kind"] = "assign",
+                            ["name"] = targetName,
+                            ["expression"] = Expression(assign.Right),
+                        });
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"CSHARP_UNSUPPORTED_STATEMENT:{exprStmt.Expression.Kind()}");
+                    }
+                    break;
+                }
                 case ReturnStatementSyntax returning when returning.Expression is not null:
                     result.Add(new()
                     {
@@ -102,6 +136,44 @@ internal static class EmittedMapper
                             ? new List<Dictionary<string, object?>>()
                             : StatementBody(conditional.Else.Statement),
                     });
+                    break;
+                case WhileStatementSyntax whileLoop:
+                    result.Add(new()
+                    {
+                        ["kind"] = "while",
+                        ["condition"] = Expression(whileLoop.Condition),
+                        ["body"] = StatementBody(whileLoop.Statement),
+                    });
+                    break;
+                case ForStatementSyntax forLoop:
+                {
+                    var initVar = forLoop.Declaration!.Variables[0];
+                    var varName = initVar.Identifier.ValueText;
+                    var start = Expression(initVar.Initializer!.Value);
+                    var end = Expression(((BinaryExpressionSyntax)forLoop.Condition!).Right);
+                    Dictionary<string, object?>? step = null;
+                    if (forLoop.Incrementors.Count > 0 && forLoop.Incrementors[0] is AssignmentExpressionSyntax compAssign)
+                    {
+                        step = Expression(compAssign.Right);
+                    }
+                    var item = new Dictionary<string, object?>
+                    {
+                        ["kind"] = "for",
+                        ["name"] = varName,
+                        ["type"] = Type(forLoop.Declaration.Type.ToString()),
+                        ["start"] = start,
+                        ["end"] = end,
+                        ["body"] = StatementBody(forLoop.Statement),
+                    };
+                    if (step != null) item["step"] = step;
+                    result.Add(item);
+                    break;
+                }
+                case BreakStatementSyntax:
+                    result.Add(new() { ["kind"] = "break" });
+                    break;
+                case ContinueStatementSyntax:
+                    result.Add(new() { ["kind"] = "continue" });
                     break;
                 default:
                     throw new InvalidOperationException(

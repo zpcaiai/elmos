@@ -38,6 +38,10 @@ _EXTENSIONS: dict[str, Language] = {
     ".swift": "swift",
     ".php": "php",
     ".dart": "flutter",
+    ".bas": "vb6",
+    ".cls": "vb6",
+    ".frm": "vb6",
+    ".ctl": "vb6",
 }
 _IGNORED_DIRECTORIES = {
     ".git",
@@ -254,6 +258,8 @@ def plan_repository(
             language = (
                 "react"
                 if suffix == ".tsx" or source_language == "react" and suffix == ".ts"
+                else "vcpp6"
+                if source_language == "vcpp6" and suffix in {".cc", ".cpp", ".cxx", ".hh", ".hpp", ".hxx"}
                 else _EXTENSIONS.get(suffix)
             )
             if language is None:
