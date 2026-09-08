@@ -52,15 +52,16 @@ class JdbcTranslationExecutionInputLiveTest {
 
     @Test void uploadRegistrationCannotReissuePurgedKeysOrChangeContentIdentity() {
         String org=tenant();var store=new JdbcObjectStorageStore(jdbc,transactions,reference->{throw new AssertionError("no provider credentials needed");});
-        String id=store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key");
-        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"));
-        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),101,"application/zip","primary","tenant-fixture/key"));
-        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","changed-key"));
+        String protocol=io.elmos.storage.S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1;
+        String id=store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key",protocol);
+        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key",protocol));
+        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),101,"application/zip","primary","tenant-fixture/key",protocol));
+        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","changed-key",protocol));
         store.markAvailable(org,id);
-        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"),"available exact content dedup remains compatible");
+        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key",protocol),"available exact content dedup remains compatible");
         for(String state:java.util.List.of("PURGE_PENDING","PURGED")) {
             jdbc.sql("UPDATE content_objects SET object_state=:state WHERE content_object_id=:id").param("state",state).param("id",id).update();
-            assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"));
+            assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key",protocol));
         }
     }
 
@@ -270,7 +271,9 @@ class JdbcTranslationExecutionInputLiveTest {
         String id="obj-"+UUID.randomUUID();
         jdbc.sql("""
             INSERT INTO content_objects(content_object_id,organization_id,content_sha256,byte_size,backend_id,storage_key,
-              object_state,uploaded_at,verified_at) VALUES(:id,:org,:sha,100,'primary',:id,'AVAILABLE',now(),now())
+              upload_protocol,object_state,uploaded_at,verified_at)
+            VALUES(:id,:org,:sha,100,'primary',:id,
+              'WRITE_ONCE_RECLAIM_FENCE_V1','AVAILABLE',now(),now())
             """).param("id",id).param("org",org).param("sha",digest(n)).update(); return id;
     }
     static void bind(String org) {

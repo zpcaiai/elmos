@@ -140,7 +140,8 @@ class HostedExecutionConfiguration {
 
 /**
  * Retention worker. Metadata first becomes non-downloadable, then each object is
- * physically deleted, and only a confirmed 2xx/404 advances it to PURGED.
+ * physically replaced by a verified non-resurrectable fence, and only its
+ * durable provider receipt advances metadata to PURGED.
  */
 @org.springframework.stereotype.Component
 @ConditionalOnProperty(prefix = "elmos.object-storage", name = "host-gc-enabled", havingValue = "true")
@@ -154,10 +155,11 @@ class ObjectRetentionScheduler {
             JdbcTenantObjectRetentionStore retention,
             Clock clock
     ) {
-        // Fail during enabled-bean construction, BEFORE reading metadata,
-        // changing retention state, or invoking a provider. A caller flag,
-        // tenant role, backend row or URL timeout cannot supply this proof.
-        S3ObjectStore.hostedPhysicalGcCapability().requireWriterQuiescence();
+        // Fail during enabled-bean construction before changing retention state
+        // or invoking a provider. The backend row must carry independently
+        // verified support for the code-owned write-once fence protocol.
+        S3ObjectStore.hostedPhysicalGcCapability(
+                metadata.activeBackend()).requireWriterQuiescence();
         this.metadata = metadata;
         this.retention = retention;
         this.clock = clock;
@@ -169,15 +171,20 @@ class ObjectRetentionScheduler {
             private S3ObjectStore.Backend backend;
             private S3ObjectStore provider;
 
-            @Override public void delete(JdbcTenantObjectRetentionStore.Purge purge) {
+            @Override public S3ObjectStore.ReclaimReceipt reclaim(
+                    JdbcTenantObjectRetentionStore.Purge purge) {
                 // Capture once per round, after the metadata connection has
                 // been returned. Reuse one bounded HTTP client for the round.
                 if (backend == null) {
                     backend = metadata.activeBackend();
                     provider = new S3ObjectStore(backend, metadata, clock);
                 }
+                S3ObjectStore.hostedPhysicalGcCapability(
+                        backend).requireWriterQuiescence();
                 validateBinding(backend, purge);
-                provider.deleteObject(purge.organizationId(), purge.contentSha256());
+                return provider.reclaimObject(
+                        purge.organizationId(), purge.contentSha256(),
+                        purge.storageKey());
             }
         });
     }

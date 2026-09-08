@@ -77,6 +77,8 @@ _NON_CANONICAL_INTEGER_TYPES = frozenset(
 )
 _STRING_TYPES = frozenset({"std::string", "string", "NSString *", "NSString"})
 _BOOLEAN_TYPES = frozenset({"bool", "BOOL"})
+_SIMPLE_RECORD_TYPE = re.compile(r"^(?:struct\s+)?([A-Za-z_][A-Za-z0-9_]*)$")
+_MAX_REFERENCED_RECORD_TYPES = 16
 
 _OPERATOR_METHOD = re.compile(r"^operator(==|!=|\+|-|\*|/|%|<=|>=|<|>)$")
 _LATER_HEADER_DIRECTIVE = re.compile(
@@ -1287,6 +1289,65 @@ def _is_unqualified_cpp_function(node: dict[str, Any]) -> bool:
     return bool(source_name) and source_name[0].isdigit()
 
 
+def _referenced_record_type_names(tree: dict[str, Any]) -> tuple[str, ...]:
+    """Return bounded, compiler-resolved simple type names used by one function.
+
+    The function AST is already bounded by ``-ast-dump-filter``.  Record
+    declarations are loaded separately by the same compiler filter so SDK
+    declarations never need to cross the subprocess output boundary.  Primitive
+    and unsupported simple spellings may be present here; only an exact
+    source-owned record declaration can promote one into ``record_names``.
+    """
+
+    names: set[str] = set()
+    pending = [tree]
+    while pending:
+        node = pending.pop()
+        raw_type = node.get("type")
+        if isinstance(raw_type, dict):
+            source_type = raw_type.get("qualType")
+            if isinstance(source_type, str):
+                match = _SIMPLE_RECORD_TYPE.fullmatch(_strip(source_type))
+                if match is not None:
+                    names.add(match.group(1))
+                    if len(names) > _MAX_REFERENCED_RECORD_TYPES:
+                        raise RouteError("CLANG_REFERENCED_RECORD_TYPE_LIMIT")
+        pending.extend(_inner(node))
+    return tuple(sorted(names))
+
+
+def _load_referenced_records(
+    tree: dict[str, Any],
+    source: Path,
+    language: Language,
+    executable: str,
+    sdk_path: str | None,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for record_name in _referenced_record_type_names(tree):
+        record_tree = _run_clang(
+            executable,
+            source,
+            language,
+            sdk_path,
+            declaration_filter=record_name,
+            precompile_system_prelude=True,
+        )
+        matches = [
+            node
+            for node in _inner(record_tree)
+            if node.get("kind") in ("CXXRecordDecl", "RecordDecl")
+            and node.get("name") == record_name
+            and not node.get("isImplicit")
+            and _inventory_span(node, source) is not None
+            and any(child.get("kind") == "FieldDecl" for child in _inner(node))
+        ]
+        if len(matches) > 1:
+            raise RouteError(f"AMBIGUOUS_RECORD_DEFINITION:{record_name}")
+        records.extend(matches)
+    return records
+
+
 def analyze_clang(
     source: Path,
     language: Language,
@@ -1305,6 +1366,7 @@ def analyze_clang(
         source,
         language,
         sdk_path,
+        declaration_filter=function_name,
         precompile_system_prelude=True,
     )
     candidates = [
@@ -1330,15 +1392,13 @@ def analyze_clang(
             f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
             + ",".join(unsupported_markers)
         )
-    record_candidates = [
-        node
-        for node in _inner(tree)
-        if node.get("kind") in ("CXXRecordDecl", "RecordDecl")
-        and node.get("name")
-        and not node.get("isImplicit")
-        and _inventory_span(node, source) is not None
-        and any(child.get("kind") == "FieldDecl" for child in _inner(node))
-    ]
+    record_candidates = _load_referenced_records(
+        tree,
+        source,
+        language,
+        executable,
+        sdk_path,
+    )
     record_names = {str(rec["name"]).strip() for rec in record_candidates}
     records = []
     for rec in record_candidates:

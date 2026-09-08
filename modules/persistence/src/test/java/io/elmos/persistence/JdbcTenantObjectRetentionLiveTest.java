@@ -1,5 +1,6 @@
 package io.elmos.persistence;
 
+import io.elmos.storage.S3ObjectStore;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class JdbcTenantObjectRetentionLiveTest {
     static DriverManagerDataSource data;
     static final String PREPARE="elmos_object_gc_host_prepare(varchar,integer,integer,integer)";
-    static final String CONFIRM="elmos_object_gc_host_confirm(varchar,varchar,varchar,varchar,varchar,varchar)";
+    static final String CONFIRM="elmos_object_gc_host_confirm(varchar,varchar,varchar,varchar,varchar,varchar,varchar,varchar,bigint)";
     static final String UNKNOWN="elmos_object_gc_host_unknown(varchar,varchar)";
 
     @BeforeAll static void database() {
@@ -132,11 +133,46 @@ class JdbcTenantObjectRetentionLiveTest {
                 assertEquals(item,prepare(c,1,1,1).getFirst(),"age is not evidence of provider termination");
                 assertEquals("PURGE_PENDING",state(c,item.contentObjectId()));
                 denied(c,"ELMOS_OBJECT_GC_HOST_BINDING_MISMATCH",
-                        "SELECT elmos_object_gc_host_confirm(?,?,?,?,?,?)",item.runId(),item.contentObjectId(),org,item.contentSha256(),"wrong-backend",item.storageKey());
+                        "SELECT elmos_object_gc_host_confirm(?,?,?,?,?,?,?,?,?)",
+                        item.runId(),item.contentObjectId(),org,item.contentSha256(),
+                        "wrong-backend",item.storageKey(),"request",
+                        "d835c506a9a8f23ea6cacb3272645449d3063d9e11720b92adff6fac0dd4739e",25);
+                denied(c,"ELMOS_OBJECT_GC_HOST_RECEIPT_INVALID",
+                        "SELECT elmos_object_gc_host_confirm(?,?,?,?,?,?,?,?,?)",
+                        item.runId(),item.contentObjectId(),org,item.contentSha256(),
+                        item.backendId(),item.storageKey(),"request",
+                        String.format("%064x",9),25);
                 assertEquals("true",confirm(c,item));assertEquals("true",confirm(c,item));
                 assertEquals("false",scalar(c,"SELECT elmos_object_gc_host_unknown(?,?)",item.runId(),item.contentObjectId()));
                 assertEquals("CONFIRMED:1",scalar(c,"SELECT item_state||':'||unknown_count FROM object_gc_host_items WHERE run_id=?",item.runId()));
                 assertEquals("COMPLETED:1",scalar(c,"SELECT run_state||':'||purged_count FROM object_gc_runs WHERE gc_run_id=?",item.runId()));
+            } finally {c.rollback();}
+        }
+    }
+
+    @Test void legacyUploadsNeverBecomePhysicalReclaimCandidates() throws Exception {
+        try(Connection c=data.getConnection()) {
+            c.setAutoCommit(false);
+            try {
+                String prefix=prefix(),org=prefix+"a";
+                tenant(c,org);
+                objects(c,org,1);
+                execute(c,"""
+                    INSERT INTO content_objects(
+                        content_object_id,organization_id,content_sha256,byte_size,
+                        backend_id,storage_key,upload_protocol,object_state,
+                        uploaded_at,verified_at)
+                    VALUES (?,?,repeat('f',64),100,'primary',?,
+                            'LEGACY_UNFENCED','AVAILABLE',now(),now())
+                    """,org+"-legacy",org,org+"/obj/legacy");
+                scalar(c,"SELECT set_config('app.organization_id',?,true)",org);
+                scalar(c,"SELECT elmos_expire_artifacts(?,100)",prefix+"expire");
+                assertEquals("PURGE_PENDING",state(c,org+"-o1"));
+                assertEquals("AVAILABLE",state(c,org+"-legacy"),
+                        "backend reconfiguration cannot promote an unfenced upload");
+                denied(c,"content_objects_purge_pending_requires_fence",
+                        "UPDATE content_objects SET object_state='PURGE_PENDING' "
+                                + "WHERE content_object_id=?",org+"-legacy");
             } finally {c.rollback();}
         }
     }
@@ -225,7 +261,7 @@ class JdbcTenantObjectRetentionLiveTest {
         var store=new JdbcTenantObjectRetentionStore(JdbcClient.create(tracking),transactions);
         AtomicInteger callbacks=new AtomicInteger();
         transactions.executeWithoutResult(status -> assertThrows(IllegalStateException.class,
-                ()->store.collect(purge->callbacks.incrementAndGet())));
+                ()->store.collect(purge->{callbacks.incrementAndGet();return receipt();})));
         assertEquals(0,callbacks.get());
         CountDownLatch entered=new CountDownLatch(1),release=new CountDownLatch(1);
         try(var pool=Executors.newSingleThreadExecutor()) {
@@ -247,7 +283,8 @@ class JdbcTenantObjectRetentionLiveTest {
             assertEquals("UNKNOWN",scalar(c,"SELECT item_state FROM object_gc_host_items WHERE organization_id=?",org));
             cursor(c,prefix);
         }
-        var confirmed=store.collect(purge->assertEquals(0,tracking.open.get()));
+        var confirmed=store.collect(purge->{
+            assertEquals(0,tracking.open.get());return receipt();});
         assertTrue(confirmed.confirmed()>=1);
         try(Connection c=data.getConnection()){assertEquals("PURGED",state(c,org+"-o1"));}
     }
@@ -268,10 +305,16 @@ class JdbcTenantObjectRetentionLiveTest {
     static void tenant(Connection c,String org) throws SQLException {execute(c,"INSERT INTO organizations(organization_id) VALUES(?)",org);}
     static void objects(Connection c,String org,int count) throws SQLException {
         execute(c,"""
-            INSERT INTO content_objects(content_object_id,organization_id,content_sha256,byte_size,backend_id,storage_key,object_state,uploaded_at,verified_at)
-            SELECT ?||'-o'||n,?,lpad(to_hex(n),64,'0'),100,'primary',?||'/obj/'||lpad(to_hex(n),64,'0'),'AVAILABLE',now(),now()
+            INSERT INTO content_objects(content_object_id,organization_id,content_sha256,byte_size,backend_id,storage_key,upload_protocol,object_state,uploaded_at,verified_at)
+            SELECT ?||'-o'||n,?,lpad(to_hex(n),64,'0'),100,'primary',?||'/obj/'||lpad(to_hex(n),64,'0'),'WRITE_ONCE_RECLAIM_FENCE_V1','AVAILABLE',now(),now()
             FROM generate_series(1,?) n
             """,org,org,org,count);
+    }
+    static S3ObjectStore.ReclaimReceipt receipt() {
+        return new S3ObjectStore.ReclaimReceipt(
+                "provider-request-fixture",
+                "d835c506a9a8f23ea6cacb3272645449d3063d9e11720b92adff6fac0dd4739e",
+                25);
     }
     static void artifacts(Connection c,String org,int count) throws SQLException {
         execute(c,"""
@@ -294,7 +337,10 @@ class JdbcTenantObjectRetentionLiveTest {
         }
     }
     static String confirm(Connection c,JdbcTenantObjectRetentionStore.Purge p) throws SQLException {
-        return scalar(c,"SELECT elmos_object_gc_host_confirm(?,?,?,?,?,?)",p.runId(),p.contentObjectId(),p.organizationId(),p.contentSha256(),p.backendId(),p.storageKey());
+        return scalar(c,"SELECT elmos_object_gc_host_confirm(?,?,?,?,?,?,?,?,?)",
+                p.runId(),p.contentObjectId(),p.organizationId(),p.contentSha256(),
+                p.backendId(),p.storageKey(),"provider-request-fixture",
+                "d835c506a9a8f23ea6cacb3272645449d3063d9e11720b92adff6fac0dd4739e",25);
     }
     static void denied(Connection c,String code,String sql,Object...args) throws SQLException {
         var savepoint=c.setSavepoint();

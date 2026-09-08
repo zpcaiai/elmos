@@ -87,10 +87,6 @@ final class TranslationExecutionPreparation {
     }
 
     private Map<String, Object> prepareAdmitted(ControlPlanePrincipal principal, Map<String, Object> request, String key) {
-        // The existing wallet and the legacy credit producer are different price
-        // contracts. Until an approved host adapter exists, never double-charge
-        // or silently substitute one for the other.
-        if (billingEnforced) fail("TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED");
         requireRuntimeAuthority();
         if (!request.keySet().equals(java.util.Set.of("repositoryWorkspaceId", "casesBundleId", "sourceLanguage", "targetLanguage"))) {
             fail("TRANSLATION_HOSTED_REQUEST_INVALID");
@@ -194,16 +190,14 @@ final class TranslationExecutionPreparation {
     }
 
     private void requireRuntimeAuthority() {
-        if(billingEnforced)fail("TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED");
         if(!jdbc.sql("""
             SELECT has_table_privilege(current_user,'public.execution_input_bindings','SELECT')
                 AND has_function_privilege(current_user,'public.elmos_prepare_execution_input(varchar,varchar,varchar,varchar,varchar,bigint)','EXECUTE')
                 AND has_function_privilege(current_user,'public.elmos_attach_execution_input(varchar,varchar,varchar)','EXECUTE')
                 AND has_function_privilege(current_user,'public.elmos_translation_billing_guard()','EXECUTE')
+                AND has_function_privilege(current_user,'public.elmos_translation_billing_guard(boolean)','EXECUTE')
             """).query(Boolean.class).single()) fail("TRANSLATION_RUNTIME_DATABASE_AUTHORITY_REQUIRED");
-        // This preflight avoids effects under an already enabled wallet. The
-        // enqueue transaction repeats and holds the guard to close a later flip.
-        jdbc.sql("SELECT elmos_translation_billing_guard()").query(Boolean.class).single();
+        billingGuard();
     }
 
     void attach(String organization, String job, Map<String, Object> payload) {
@@ -221,11 +215,46 @@ final class TranslationExecutionPreparation {
         return transactions.execute(status -> {
             // Holds the actual DB billing switch row through admission/commit;
             // the legacy Node flag alone cannot establish an unbilled contract.
-            jdbc.sql("SELECT elmos_translation_billing_guard()").query(Boolean.class).single();
+            billingGuard();
             String job = jobs.enqueue(command);
             attach(command.organizationId(), job, command.requestPayload());
             return job;
         });
+    }
+
+    private void billingGuard() {
+        try {
+            Boolean accepted = jdbc.sql(
+                    "SELECT elmos_translation_billing_guard(:required)")
+                    .param("required", billingEnforced)
+                    .query(Boolean.class).single();
+            if (!Boolean.TRUE.equals(accepted)) {
+                fail("TRANSLATION_HOSTED_BILLING_STATE_UNKNOWN");
+            }
+        } catch (ExecutionJobPort.ExecutionStateException error) {
+            throw error;
+        } catch (RuntimeException error) {
+            String message = error.getMessage();
+            for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+                if (cause.getMessage() != null) {
+                    message = cause.getMessage();
+                    if (message.contains(
+                            "TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED")) {
+                        fail("TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED");
+                    }
+                    if (message.contains(
+                            "TRANSLATION_HOSTED_BILLING_NOT_ENABLED")) {
+                        fail("TRANSLATION_HOSTED_BILLING_NOT_ENABLED");
+                    }
+                    if (message.contains(
+                            "TRANSLATION_HOSTED_BILLING_STATE_UNKNOWN")) {
+                        fail("TRANSLATION_HOSTED_BILLING_STATE_UNKNOWN");
+                    }
+                }
+            }
+            throw new ExecutionJobPort.ExecutionStateException(
+                    "TRANSLATION_HOSTED_BILLING_STATE_UNKNOWN");
+        }
     }
 
     private Map<String, Object> gate(String source, String target) {

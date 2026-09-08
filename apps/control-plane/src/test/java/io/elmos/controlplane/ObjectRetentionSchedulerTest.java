@@ -32,7 +32,7 @@ class ObjectRetentionSchedulerTest {
         verifyNoInteractions(metadata,retention);
     }
 
-    @Test void enablingCurrentS3FailsStartupBeforeAnyMetadataOrProviderEffect() throws Exception {
+    @Test void enablingUnfencedS3FailsStartupBeforeProviderEffect() throws Exception {
         AtomicInteger calls=new AtomicInteger();
         HttpServer server=server(204,calls,new AtomicReference<>());
         try {
@@ -44,8 +44,24 @@ class ObjectRetentionSchedulerTest {
                 assertEquals("PHYSICAL_GC_BLOCKED_UPLOAD_FENCING",failure.getMessage());
             });
             assertEquals(S3ObjectStore.HostedPhysicalGcCapability.BLOCKED_UPLOAD_FENCING,
-                    S3ObjectStore.hostedPhysicalGcCapability());
-            verifyNoInteractions(metadata,retention);assertEquals(0,calls.get());
+                    S3ObjectStore.hostedPhysicalGcCapability(backend(server)));
+            verify(metadata).activeBackend();verifyNoInteractions(retention);
+            assertEquals(0,calls.get());
+        } finally {server.stop(0);}
+    }
+
+    @Test void verifiedWriteOnceBackendAllowsSchedulerConstruction() throws Exception {
+        AtomicInteger calls=new AtomicInteger();
+        HttpServer server=server(204,calls,new AtomicReference<>());
+        try {
+            when(metadata.activeBackend()).thenReturn(fencedBackend(server));
+            context().withPropertyValues("elmos.object-storage.host-gc-enabled=true")
+                    .run(c->{assertNull(c.getStartupFailure());assertEquals(1,
+                            c.getBeansOfType(ObjectRetentionScheduler.class).size());});
+            assertEquals(S3ObjectStore.HostedPhysicalGcCapability.WRITE_ONCE_RECLAIM_FENCE_V1,
+                    S3ObjectStore.hostedPhysicalGcCapability(fencedBackend(server)));
+            verify(metadata).activeBackend();verifyNoInteractions(retention);
+            assertEquals(0,calls.get());
         } finally {server.stop(0);}
     }
 
@@ -71,7 +87,9 @@ class ObjectRetentionSchedulerTest {
             if(status==500) assertThrows(S3ObjectStore.ObjectStorageException.class,()->provider.deleteObject("org-gc",sha));
             else {provider.deleteObject("org-gc",sha);provider.deleteObject("org-gc",sha);assertEquals(2,calls.get());}
             assertEquals("DELETE /bucket/org-gc/obj/"+sha,request.get());
-            assertThrows(IllegalStateException.class,()->S3ObjectStore.hostedPhysicalGcCapability().requireWriterQuiescence());
+            assertThrows(IllegalStateException.class,()->S3ObjectStore
+                    .hostedPhysicalGcCapability(backend(server))
+                    .requireWriterQuiescence());
             verifyNoInteractions(metadata,retention);
         } finally {server.stop(0);}
     }
@@ -84,8 +102,19 @@ class ObjectRetentionSchedulerTest {
     }
 
     S3ObjectStore.Backend backend(HttpServer server) {
-        return new S3ObjectStore.Backend("primary","ACTIVE","http://127.0.0.1:"+server.getAddress().getPort(),
-                "bucket","us-east-1",true,"NONE",null,1024,SigV4Presigner.Credentials.of("fixture-access","fixture-secret"));
+        return new S3ObjectStore.Backend("primary","S3","ACTIVE",
+                "http://127.0.0.1:"+server.getAddress().getPort(),
+                "bucket","us-east-1",true,"NONE",null,1024,
+                S3ObjectStore.LEGACY_UNFENCED,
+                SigV4Presigner.Credentials.of("fixture-access","fixture-secret"));
+    }
+    S3ObjectStore.Backend fencedBackend(HttpServer server) {
+        var backend=backend(server);
+        return new S3ObjectStore.Backend(backend.backendId(),backend.backendKind(),
+                backend.state(),backend.endpoint(),backend.bucket(),backend.region(),
+                backend.pathStyle(),backend.serverSideEncryption(),backend.cmkReference(),
+                backend.maxObjectBytes(),S3ObjectStore.WRITE_ONCE_RECLAIM_FENCE_V1,
+                backend.credentials());
     }
     static HttpServer server(int status,AtomicInteger count,AtomicReference<String> request) throws Exception {
         var server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0);

@@ -41,12 +41,23 @@ Only a newly inserted PREPARED binding grants a PUT attempt. Reusing an unknown
 preparation fails closed; an existing queued/terminal idempotent job returns
 without another PUT, so one writer cannot release another writer's protection.
 
-Legacy credit pricing and canonical wallet pricing differ. Until an approved
-host-owned billing adapter exists, setting `ELMOS_BILLING_ENFORCEMENT_ENABLED=true`
-refuses hosted translation. It never silently substitutes or double-charges.
-The database wallet switch is checked too, with a shared row lock through enqueue;
-an enabled wallet also refuses this unapproved translation pricing contract.
-Local fixture execution is engineering evidence, not production certification.
+Hosted translation now binds to the existing canonical prepaid-wallet job
+contract rather than introducing a second credit producer. The billable measure
+is server-recorded runtime wall seconds: `SUCCEEDED` and `PARTIAL` settle actual
+elapsed seconds up to the reservation ceiling; cancellation before start,
+ordinary platform failure, and `LOST` release the hold; cancellation after start
+settles measured work. Customer stdout cannot change the meter. The exact CNY
+minor-unit rate, floor, reserve, effective window, and catalog version must be an
+exact `PUBLISHED` `TRANSLATION/translate-pipeline-v1` price. Wildcard or `DRAFT`
+prices are rejected. `ELMOS_BILLING_ENFORCEMENT_ENABLED=true` additionally
+requires the database wallet switch to be enabled. Enqueue holds the billing
+switch row and takes the wallet reservation in the same transaction as the job;
+terminal settlement remains idempotent through the existing outbox and ledger.
+Unknown pricing or settlement remains unresolved instead of being guessed.
+The repository ships only a `DRAFT` example, so commercial charging stays
+disabled until Finance publishes and activates an exact catalog version. Local
+fixture execution is engineering evidence, not accounting or production
+certification.
 
 `test/launcher.test.mjs` runs a real Python-to-TypeScript fixture only when
 `ELMOS_TRANSLATION_TEST_PYTHON` names the intended project interpreter. It retains
@@ -57,3 +68,28 @@ native rebuild or provider call:
 node --loader ./apps/translation-runtime-runner/ts-loader.mjs \
   ./apps/translation-runtime-runner/replay.mjs /absolute/retained/fixture
 ```
+
+For repeatable local OCI qualification, build the digest-pinned development
+base and then the runtime contract. The qualification base is deliberately not
+a deployable production base or provider attestation:
+
+```
+docker build -f apps/translation-runtime-runner/Dockerfile.qualification-base \
+  -t elmos/translation-qualification-base:local .
+docker build -f apps/translation-runtime-runner/Dockerfile \
+  --build-arg ELMOS_TRANSLATION_BASE_IMAGE=elmos/translation-qualification-base:local \
+  -t elmos/translation-runtime:local .
+docker image inspect elmos/translation-runtime:local --format '{{.Id}}'
+engines/polyglot-route-engine/.venv/bin/python \
+  tools/performance/hosted_translation_container_profile.py \
+  --docker-context <context> --image-id sha256:<64-hex-image-id> \
+  --jobs 4 --concurrency 2 \
+  --output tools/performance/hosted-translation-container-local.json
+```
+
+Pass that immutable image ID to
+`tools/performance/hosted_translation_container_profile.py`. The harness uses
+non-root containers, a read-only root, no network, all capabilities dropped,
+bounded CPU/memory/PIDs and read-only inputs. Its JSON remains local
+self-attested evidence with production/provider/independent/certification fields
+explicitly blocked.

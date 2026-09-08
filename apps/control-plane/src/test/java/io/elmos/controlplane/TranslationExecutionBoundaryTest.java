@@ -113,17 +113,33 @@ class TranslationExecutionBoundaryTest {
         verify(storage,never()).organizationForLease(anyString());
     }
 
-    @Test void billingCannotSilentlySwitchToTheWalletContract() {
+    @Test @SuppressWarnings("unchecked")
+    void billingRequiresTheExactDatabaseContractBeforeExternalEffects() {
         var provider = new org.springframework.beans.factory.support.StaticListableBeanFactory()
                 .getBeanProvider(GitRepositoryWorkspaceService.class);
         var stores = mock(ArtifactController.ObjectStoreFactory.class);
         var jdbc = mock(JdbcClient.class);
+        JdbcClient.StatementSpec authority = mock(JdbcClient.StatementSpec.class);
+        JdbcClient.StatementSpec billing = mock(JdbcClient.StatementSpec.class);
+        JdbcClient.MappedQuerySpec<Boolean> authorityQuery =
+                mock(JdbcClient.MappedQuerySpec.class);
+        JdbcClient.MappedQuerySpec<Boolean> billingQuery =
+                mock(JdbcClient.MappedQuerySpec.class);
+        when(jdbc.sql(contains("has_table_privilege"))).thenReturn(authority);
+        when(authority.query(Boolean.class)).thenReturn(authorityQuery);
+        when(authorityQuery.single()).thenReturn(true);
+        when(jdbc.sql(contains("elmos_translation_billing_guard(:required)")))
+                .thenReturn(billing);
+        when(billing.param("required", true)).thenReturn(billing);
+        when(billing.query(Boolean.class)).thenReturn(billingQuery);
+        when(billingQuery.single()).thenThrow(new IllegalStateException(
+                "TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED"));
         var preparation = new TranslationExecutionPreparation(provider,stores,jdbc,
                 mock(TransactionTemplate.class),new ObjectMapper(),mock(io.elmos.integrations.TrustedTranslationAdmissionRunner.class),"","",true);
         var error=assertThrows(ExecutionJobPort.ExecutionStateException.class,
                 () -> preparation.prepare(principal(Set.of("translation:execute","repository:read")),Map.of(),"idempotent"));
         assertEquals("TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED",error.code());
-        verifyNoInteractions(stores,jdbc);
+        verifyNoInteractions(stores);
     }
 
     @Test void identityIsRequiredBeforeAnyPreparationEffect() {

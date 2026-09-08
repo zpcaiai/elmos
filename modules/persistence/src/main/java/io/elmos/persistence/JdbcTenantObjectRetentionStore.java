@@ -1,5 +1,6 @@
 package io.elmos.persistence;
 
+import io.elmos.storage.S3ObjectStore;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -28,9 +29,9 @@ public final class JdbcTenantObjectRetentionStore {
     public record Purge(String runId, String organizationId, String contentObjectId,
                         String contentSha256, String backendId, String storageKey) { }
 
-    /** Return normally ONLY after an exact provider DELETE was confirmed (2xx/404). */
+    /** Return normally only with an exact, read-back-verified reclaim-fence receipt. */
     @FunctionalInterface public interface ConfirmedDeleter {
-        void delete(Purge purge);
+        S3ObjectStore.ReclaimReceipt reclaim(Purge purge);
     }
 
     public record RoundResult(int attempted, int confirmed, int unknown) { }
@@ -51,7 +52,24 @@ public final class JdbcTenantObjectRetentionStore {
             // A REQUIRED/ambient transaction would keep its connection during provider I/O.
             requireNoTransaction();
             try {
-                deleter.delete(purge);
+                S3ObjectStore.ReclaimReceipt receipt =
+                        Objects.requireNonNull(deleter.reclaim(purge));
+                Boolean accepted = transactions.execute(status -> jdbc.sql("""
+                        SELECT elmos_object_gc_host_confirm(
+                            :run,:object,:org,:sha,:backend,:key,
+                            :providerRequest,:fenceSha,:fenceBytes)
+                        """).param("run",purge.runId()).param("object",purge.contentObjectId())
+                        .param("org",purge.organizationId()).param("sha",purge.contentSha256())
+                        .param("backend",purge.backendId()).param("key",purge.storageKey())
+                        .param("providerRequest",receipt.providerRequestId())
+                        .param("fenceSha",receipt.fenceSha256())
+                        .param("fenceBytes",receipt.fenceBytes())
+                        .query(Boolean.class).single());
+                if (!Boolean.TRUE.equals(accepted)) {
+                    throw new IllegalStateException(
+                            "ELMOS_OBJECT_GC_HOST_CONFIRM_UNACKNOWLEDGED");
+                }
+                confirmed++;
             } catch (RuntimeException providerFailure) {
                 unknown++;
                 transactions.executeWithoutResult(status -> jdbc.sql(
@@ -59,17 +77,6 @@ public final class JdbcTenantObjectRetentionStore {
                         .param("run",purge.runId()).param("object",purge.contentObjectId()).query(Boolean.class).single());
                 continue;
             }
-            // If this commit fails, leave the exact item unresolved. Never retry
-            // a metadata transaction around the external call or invent success.
-            Boolean accepted = transactions.execute(status -> jdbc.sql("""
-                    SELECT elmos_object_gc_host_confirm(:run,:object,:org,:sha,:backend,:key)
-                    """).param("run",purge.runId()).param("object",purge.contentObjectId())
-                    .param("org",purge.organizationId()).param("sha",purge.contentSha256())
-                    .param("backend",purge.backendId()).param("key",purge.storageKey()).query(Boolean.class).single());
-            if (!Boolean.TRUE.equals(accepted)) {
-                throw new IllegalStateException("ELMOS_OBJECT_GC_HOST_CONFIRM_UNACKNOWLEDGED");
-            }
-            confirmed++;
         }
         return new RoundResult(pending.size(), confirmed, unknown);
     }

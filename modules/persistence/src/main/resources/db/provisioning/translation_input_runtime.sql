@@ -18,6 +18,8 @@ END $$;
 GRANT USAGE ON SCHEMA public TO elmos_translation_input_runtime;
 GRANT SELECT ON public.execution_input_bindings TO elmos_translation_input_runtime;
 GRANT EXECUTE ON FUNCTION public.elmos_prepare_execution_input(varchar,varchar,varchar,varchar,varchar,bigint),
-    public.elmos_attach_execution_input(varchar,varchar,varchar), public.elmos_translation_billing_guard()
+    public.elmos_attach_execution_input(varchar,varchar,varchar),
+    public.elmos_translation_billing_guard(),
+    public.elmos_translation_billing_guard(boolean)
     TO elmos_translation_input_runtime;
 -- No access to private counters, no tenant-policy changes, no wallet writes.

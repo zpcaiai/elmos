@@ -85,6 +85,28 @@ public final class SigV4Presigner {
                               Instant signingTime,
                               Duration expiresIn,
                               Map<String, String> extraQuery) {
+        return presign(method, endpoint, bucket, key, region, pathStyle,
+                credentials, signingTime, expiresIn, extraQuery, Map.of());
+    }
+
+    /**
+     * Presigns a request whose safety depends on exact HTTP headers.
+     *
+     * <p>The returned URI is valid only when the caller sends every supplied
+     * header with the same value. This is used by write-once uploads so a bearer
+     * URL cannot remove the overwrite-prevention condition.</p>
+     */
+    public static URI presign(String method,
+                              String endpoint,
+                              String bucket,
+                              String key,
+                              String region,
+                              boolean pathStyle,
+                              Credentials credentials,
+                              Instant signingTime,
+                              Duration expiresIn,
+                              Map<String, String> extraQuery,
+                              Map<String, String> requiredHeaders) {
 
         long expiresSeconds = expiresIn.toSeconds();
         if (expiresSeconds < 1 || expiresSeconds > 604800) {
@@ -118,19 +140,34 @@ public final class SigV4Presigner {
         query.put(encode("X-Amz-Credential"), encode(credentials.accessKeyId() + "/" + scope));
         query.put(encode("X-Amz-Date"), encode(amzDateTime));
         query.put(encode("X-Amz-Expires"), encode(Long.toString(expiresSeconds)));
-        query.put(encode("X-Amz-SignedHeaders"), encode("host"));
+        TreeMap<String, String> canonicalHeaderValues = new TreeMap<>();
+        canonicalHeaderValues.put("host", host);
+        requiredHeaders.forEach((name, value) -> {
+            String normalizedName = name.toLowerCase(Locale.ROOT);
+            if (normalizedName.equals("host")) {
+                throw new IllegalArgumentException("PRESIGN_HOST_HEADER_RESERVED");
+            }
+            if (!normalizedName.matches("[a-z0-9-]+") || value == null) {
+                throw new IllegalArgumentException("PRESIGN_HEADER_INVALID");
+            }
+            canonicalHeaderValues.put(normalizedName, normalizeHeaderValue(value));
+        });
+        String signedHeaders = String.join(";", canonicalHeaderValues.keySet());
+        query.put(encode("X-Amz-SignedHeaders"), encode(signedHeaders));
         if (credentials.sessionToken() != null && !credentials.sessionToken().isBlank()) {
             query.put(encode("X-Amz-Security-Token"), encode(credentials.sessionToken()));
         }
 
         String canonicalQuery = joinQuery(query);
-        String canonicalHeaders = "host:" + host + "\n";
+        StringBuilder canonicalHeaders = new StringBuilder();
+        canonicalHeaderValues.forEach((name, value) -> canonicalHeaders
+                .append(name).append(':').append(value).append('\n'));
         String canonicalRequest = String.join("\n",
                 method.toUpperCase(Locale.ROOT),
                 canonicalUri,
                 canonicalQuery,
-                canonicalHeaders,
-                "host",
+                canonicalHeaders.toString(),
+                signedHeaders,
                 UNSIGNED_PAYLOAD);
 
         String stringToSign = String.join("\n",
@@ -208,7 +245,7 @@ public final class SigV4Presigner {
                                              Instant signingTime) {
         TreeMap<String, String> canonicalHeaders = new TreeMap<>();
         headers.forEach((name, value) -> canonicalHeaders.put(
-                name.toLowerCase(Locale.ROOT), value.trim().replaceAll("\\s+", " ")));
+                name.toLowerCase(Locale.ROOT), normalizeHeaderValue(value)));
         String signedHeaders = String.join(";", canonicalHeaders.keySet());
 
         StringBuilder headerBlock = new StringBuilder();
@@ -268,6 +305,10 @@ public final class SigV4Presigner {
 
     static String hex(byte[] bytes) {
         return HexFormat.of().formatHex(bytes).toLowerCase(Locale.ROOT);
+    }
+
+    private static String normalizeHeaderValue(String value) {
+        return value.trim().replaceAll("\\s+", " ");
     }
 
     // ---- canonical encoding ------------------------------------------------
