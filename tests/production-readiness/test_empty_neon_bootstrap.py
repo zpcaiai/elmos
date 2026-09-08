@@ -92,7 +92,12 @@ class EmptyNeonBootstrapTests(unittest.TestCase):
         ):
             self.assertIn(f"'{function}'", source)
 
-        read_only_start = source.index("GRANT SELECT ON TABLE\n  commercial_products,")
+        self.assertIn(
+            "GRANT SELECT ON TABLE self_service_pricing_plan_versions, commercial_products "
+            'TO "$runtime_role";',
+            source,
+        )
+        read_only_start = source.index("GRANT SELECT ON TABLE\n  payment_order_directory,")
         read_only_end = source.index('TO "$runtime_role";', read_only_start)
         read_only_grant = source[read_only_start:read_only_end]
         for table in (
