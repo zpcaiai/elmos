@@ -1627,6 +1627,9 @@ def verify_engine_campaign_v2(
         cwd=repo_root,
         capture_output=True,
         text=True,
+        # The complete 72-route/864-block verification routinely exceeds three
+        # minutes on the pinned Node 26 macOS runner. Keep the replay bounded
+        # through the validated caller-supplied timeout.
         timeout=timeout_seconds,
         check=False,
     )

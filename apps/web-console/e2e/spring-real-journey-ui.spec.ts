@@ -51,7 +51,7 @@ async function establishProductionOidcSession(page: Page) {
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
-  // The seven Spring UI journeys use browser-level business API fixtures. Keep
+  // The eight Spring UI journeys use browser-level business API fixtures. Keep
   // the authenticated GitHub catalog in that same explicit mock boundary; the
   // separate production OIDC boundary suite does not install this route.
   await page.route("**/api/github-repositories", (route) =>
@@ -161,7 +161,7 @@ const capabilities = {
     },
     {
       routeId: "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
-      packKey: "spring-boot-1-5-3-5-15-to-3-5-16-inventory-only",
+      packKey: "spring-boot-1-5-3-5-15-to-3-5-16",
       label: "Spring Boot 1.5–3.5.15 / Java 8, 11, 17, 21 / Maven → Boot 3.5.16 / Java 21",
       sourceFrameworkFamily: "spring-boot",
       buildTool: "maven",
@@ -170,11 +170,28 @@ const capabilities = {
       sourceJavaVersions: ["8", "11", "17", "21"],
       targetSpringBoot: "3.5.16",
       targetJava: "21",
-      recipeId: "",
-      evidenceStatus: "NOT_IMPLEMENTED",
+      recipeId: "io.elmos.openrewrite.SpringBoot1_5To3_5_15ToBoot3_5_16Java21",
+      evidenceStatus: "NOT_RUN",
       verifiedSourceSpringBoot: "",
       verifiedSourceJava: "",
-      notes: "Inventory gap; no executable recipe is available.",
+      notes: "Executable recipe is available; exact source and target runtime evidence remains NOT_RUN.",
+    },
+    {
+      routeId: "spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21",
+      packKey: "spring-framework-3-2-5-2-mvc-to-spring-boot-3-5-3",
+      label: "Spring MVC non-Boot 3.2–5.2 / Maven → Boot 3.5.3 / Java 21",
+      sourceFrameworkFamily: "spring-mvc",
+      buildTool: "maven",
+      sourceBootMinInclusive: "3.2.0",
+      sourceBootMaxExclusive: "5.3.0",
+      sourceJavaVersions: ["8", "11", "17"],
+      targetSpringBoot: "3.5.3",
+      targetJava: "21",
+      recipeId: "io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21",
+      evidenceStatus: "NOT_RUN",
+      verifiedSourceSpringBoot: "",
+      verifiedSourceJava: "",
+      notes: "Executable recipe is available; exact source and target runtime evidence remains NOT_RUN.",
     },
     {
       routeId: "boot-1.5-maven-to-boot-4.1.0-java-21",
@@ -453,6 +470,26 @@ async function configureJourneyApi(page: Page) {
   };
 }
 
+test("Spring 路由目录公开两条新增可执行路线并保持实验性门禁", async ({ page }) => {
+  await configureJourneyApi(page);
+  await page.goto("/spring");
+
+  const catalog = page.getByRole("table", { name: "Spring 遗留版本路线目录" });
+  await expect(
+    catalog.getByRole("cell", { name: "Spring Boot [1.5.0, 3.5.16)" }),
+  ).toBeVisible();
+  await expect(
+    catalog.getByRole("cell", { name: "Spring Framework MVC [3.2.0, 5.3.0)" }),
+  ).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(0);
+  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Framework MVC" })).toHaveCount(0);
+
+  const targetSelector = page.getByLabel("Spring 目标精确版本");
+  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(0);
+  await page.getByLabel("允许实验性升级路线").check();
+  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(1);
+});
+
 test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、健康检查与停止", async ({
   page,
 }) => {
@@ -475,7 +512,7 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   await expect(
     catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Framework MVC 5.3.39 / Java 11" }),
   ).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(1);
+  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(0);
   await expect(page.getByText("NOT_IMPLEMENTED 仅记录 inventory gap", { exact: false })).toBeVisible();
   await expect(
     catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Boot 2.7.18 / Java 17" }),
@@ -484,6 +521,7 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(0);
   await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(0);
   await page.getByLabel("允许实验性升级路线").check();
+  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(1);
   await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(1);
 
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/legacy-orders.git");

@@ -3,15 +3,16 @@
   "batch": 40,
   "status": "PASS",
   "repository": "zpcaiai/elmos",
-  "commit": "c30b3297457b5dd1312ba2b6fb0ea7d744971395",
+  "commit": "20b4df0182d3e440b450b821cde6fd5a3de7b940",
   "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-  "queriedAt": "2026-09-05T04:24:30Z",
+  "queriedAt": "2026-09-08T05:00:23Z",
   "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts --paginate --slurp",
-  "inputSha256": "sha256:f99ce7f2fa8fe5199d008d89e505515fe49fa84f5bb0ca74dbd09e7abc4a9edf",
+  "inputSha256": "sha256:aeb9ea181e568f4926c654185b907d74446230f4d9f6f47a1163afbc7e722b38",
   "alertCount": 290,
   "stateCounts": {
-    "dismissed": 108,
-    "fixed": 182
+    "auto_dismissed": 1,
+    "dismissed": 104,
+    "fixed": 185
   },
   "openCount": 0,
   "openBySeverity": {
@@ -59,7 +60,7 @@
     },
     {
       "number": 288,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "@xmldom/xmldom",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
@@ -71,7 +72,7 @@
     },
     {
       "number": 286,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "@xmldom/xmldom",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
@@ -257,7 +258,7 @@
     },
     {
       "number": 253,
-      "state": "dismissed",
+      "state": "auto_dismissed",
       "package": "diff",
       "manifestPath": "routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json"
     },
@@ -947,7 +948,7 @@
     },
     {
       "number": 138,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
