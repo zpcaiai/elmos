@@ -10,13 +10,13 @@
   ],
   "records": [
     {
-      "id": "dependabot-296-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 296,
+      "id": "dependabot-395-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 395,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/jquery/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -27,9 +27,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/jquery/project/package.json",
+          "sha256": "sha256:6e5f46db7067fcfead72c93694d33f83a75a423daabdcd7273e15992d2a4de45",
+          "bytes": 444
         }
       },
       "controls": [
@@ -37,16 +37,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-298-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 298,
+      "id": "dependabot-396-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 396,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/react/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -57,9 +57,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/react/project/package.json",
+          "sha256": "sha256:acdeaf0eada145ab10be44d3c474dbeb964a3251aeafe08955f861ff76156441",
+          "bytes": 576
         }
       },
       "controls": [
@@ -67,16 +67,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-300-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 300,
+      "id": "dependabot-397-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 397,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/svelte/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -87,9 +87,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/svelte/project/package.json",
+          "sha256": "sha256:00e4966a6e93ad809b774273192577d0306d0101c8cd02a56c3281fa3d95ccf3",
+          "bytes": 495
         }
       },
       "controls": [
@@ -97,16 +97,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-302-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 302,
+      "id": "dependabot-398-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 398,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -117,9 +117,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:d972172ae695b56009b44a8574b92eccae30841c936e1e6e9a2dd90576f1f68e",
+          "bytes": 436
         }
       },
       "controls": [
@@ -127,16 +127,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-304-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 304,
+      "id": "dependabot-399-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 399,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue3/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -147,9 +147,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/engine/profiles/vue3/project/package.json",
+          "sha256": "sha256:dcac914fd7d98ea734c8e9e9ffa39ff620b24a71e29a52f372b88451c456c80d",
+          "bytes": 528
         }
       },
       "controls": [
@@ -157,16 +157,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-306-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 306,
+      "id": "dependabot-400-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 400,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/jquery/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -177,9 +177,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/jquery/project/package.json",
+          "sha256": "sha256:312d56d801f6121f8b55fd6ab977f2f75396b1bb3f48c940965af9028a9e7229",
+          "bytes": 449
         }
       },
       "controls": [
@@ -187,16 +187,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-308-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 308,
+      "id": "dependabot-401-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 401,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/react/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -207,9 +207,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/cpp-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/react/project/package.json",
+          "sha256": "sha256:c61b9a419f8dc2463e062fa7340035f20417d2a5c262954cb26a330ad5a87cd7",
+          "bytes": 581
         }
       },
       "controls": [
@@ -217,16 +217,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-310-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 310,
+      "id": "dependabot-402-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 402,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/svelte/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -237,9 +237,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/csharp-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/svelte/project/package.json",
+          "sha256": "sha256:f8567e6ac0b387e6b1f2ed36f69bd2cef27f5f11bfa4270a4592f31a78ea7c1f",
+          "bytes": 500
         }
       },
       "controls": [
@@ -247,16 +247,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-312-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 312,
+      "id": "dependabot-403-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 403,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -267,9 +267,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/csharp-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:4fab55df4c4c9032699a09740648a4be208d5fc7ead24731feacd7cea041356a",
+          "bytes": 441
         }
       },
       "controls": [
@@ -277,16 +277,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-314-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 314,
+      "id": "dependabot-404-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 404,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue3/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -297,9 +297,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/csharp-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue3/project/package.json",
+          "sha256": "sha256:64b96463b6ace4722536ce10a98ac46fea90a359383068aca1b7083fa8e2cc10",
+          "bytes": 533
         }
       },
       "controls": [
@@ -307,17 +307,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-316-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 316,
+      "id": "dependabot-405-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 405,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -327,9 +327,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/csharp-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
+          "bytes": 4988
         }
       },
       "controls": [
@@ -337,17 +337,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-318-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 318,
+      "id": "dependabot-406-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 406,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -357,9 +357,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/go-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
+          "bytes": 4988
         }
       },
       "controls": [
@@ -367,18 +367,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-320-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 320,
+      "id": "dependabot-407-ghsa-w5vr-8v7q-w6rv",
+      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
+      "alertNumber": 407,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "baseline-browser-mapping",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -387,9 +387,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/go-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -397,17 +397,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-322-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 322,
+      "id": "dependabot-408-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 408,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -417,9 +417,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/go-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -427,17 +427,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-324-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 324,
+      "id": "dependabot-409-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 409,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -447,9 +447,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/go-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -457,18 +457,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-326-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 326,
+      "id": "dependabot-410-ghsa-rgj7-g3m4-5g8c",
+      "vulnerabilityId": "GHSA-rgj7-g3m4-5g8c",
+      "alertNumber": 410,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "sharp",
+        "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -477,9 +477,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/java-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -487,17 +487,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-328-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 328,
+      "id": "dependabot-411-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 411,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -507,9 +507,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/java-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/package.json",
+          "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448",
+          "bytes": 3113
         }
       },
       "controls": [
@@ -517,17 +517,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-330-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 330,
+      "id": "dependabot-412-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 412,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -537,9 +537,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/java-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/package.json",
+          "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448",
+          "bytes": 3113
         }
       },
       "controls": [
@@ -547,18 +547,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-332-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 332,
+      "id": "dependabot-413-ghsa-4w3w-2rp5-g8jm",
+      "vulnerabilityId": "GHSA-4w3w-2rp5-g8jm",
+      "alertNumber": 413,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -567,9 +567,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/java-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -577,18 +577,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-334-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 334,
+      "id": "dependabot-414-ghsa-w2rr-34g9-rvrj",
+      "vulnerabilityId": "GHSA-w2rr-34g9-rvrj",
+      "alertNumber": 414,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -597,9 +597,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -607,18 +607,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-336-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 336,
+      "id": "dependabot-415-ghsa-w5vr-8v7q-w6rv",
+      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
+      "alertNumber": 415,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "baseline-browser-mapping",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -627,9 +627,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -637,17 +637,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-338-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 338,
+      "id": "dependabot-416-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 416,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -657,9 +657,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -667,18 +667,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-340-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 340,
+      "id": "dependabot-417-ghsa-93r5-fhx6-vmg9",
+      "vulnerabilityId": "GHSA-93r5-fhx6-vmg9",
+      "alertNumber": 417,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -687,9 +687,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -697,18 +697,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-342-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 342,
+      "id": "dependabot-418-ghsa-965w-775f-mr7g",
+      "vulnerabilityId": "GHSA-965w-775f-mr7g",
+      "alertNumber": 418,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -717,9 +717,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -727,18 +727,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-344-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 344,
+      "id": "dependabot-419-ghsa-x4fp-j954-r2f4",
+      "vulnerabilityId": "GHSA-x4fp-j954-r2f4",
+      "alertNumber": 419,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -747,9 +747,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -757,18 +757,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-346-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 346,
+      "id": "dependabot-420-ghsa-8344-3jmq-59r6",
+      "vulnerabilityId": "GHSA-8344-3jmq-59r6",
+      "alertNumber": 420,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -777,9 +777,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -787,18 +787,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-348-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 348,
+      "id": "dependabot-421-ghsa-6h8r-xr42-gp59",
+      "vulnerabilityId": "GHSA-6h8r-xr42-gp59",
+      "alertNumber": 421,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -807,9 +807,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -817,18 +817,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-350-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 350,
+      "id": "dependabot-422-ghsa-27p8-2357-5qqv",
+      "vulnerabilityId": "GHSA-27p8-2357-5qqv",
+      "alertNumber": 422,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -837,9 +837,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/objc-to-typescript/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -847,18 +847,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-352-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 352,
+      "id": "dependabot-423-ghsa-c7q8-3ch8-vqpv",
+      "vulnerabilityId": "GHSA-c7q8-3ch8-vqpv",
+      "alertNumber": 423,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "@xmldom/xmldom",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -867,9 +867,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/python-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -877,17 +877,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-354-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 354,
+      "id": "dependabot-424-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 424,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -897,9 +897,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/python-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -907,18 +907,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-356-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 356,
+      "id": "dependabot-425-ghsa-rgj7-g3m4-5g8c",
+      "vulnerabilityId": "GHSA-rgj7-g3m4-5g8c",
+      "alertNumber": 425,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "sharp",
+        "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -927,9 +927,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/python-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9",
+          "bytes": 35371
         }
       },
       "controls": [
@@ -937,16 +937,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-358-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 358,
+      "id": "dependabot-428-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 428,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -957,9 +957,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/python-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/examples/project-output-example/project/package.json",
+          "sha256": "sha256:aca63992cc7aee76ceb7f5d27695038cfc58010295ff12b440860b759166769f",
+          "bytes": 285
         }
       },
       "controls": [
@@ -967,18 +967,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-360-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 360,
+      "id": "dependabot-429-ghsa-w5vr-8v7q-w6rv",
+      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
+      "alertNumber": 429,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "baseline-browser-mapping",
+        "manifestPath": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -987,9 +987,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/rust-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json",
+          "sha256": "sha256:114a16ec2b425e49e3aba42e14ff34f5a73912402888fa9b96e740e35287ab50",
+          "bytes": 35193
         }
       },
       "controls": [
@@ -997,16 +997,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-362-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 362,
+      "id": "dependabot-430-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 430,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/jquery/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1017,9 +1017,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/rust-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/jquery/project/package.json",
+          "sha256": "sha256:6e5f46db7067fcfead72c93694d33f83a75a423daabdcd7273e15992d2a4de45",
+          "bytes": 444
         }
       },
       "controls": [
@@ -1027,16 +1027,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-364-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 364,
+      "id": "dependabot-431-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 431,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/react/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1047,9 +1047,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/rust-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/react/project/package.json",
+          "sha256": "sha256:acdeaf0eada145ab10be44d3c474dbeb964a3251aeafe08955f861ff76156441",
+          "bytes": 576
         }
       },
       "controls": [
@@ -1057,16 +1057,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-366-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 366,
+      "id": "dependabot-432-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 432,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/svelte/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1077,9 +1077,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/rust-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/svelte/project/package.json",
+          "sha256": "sha256:00e4966a6e93ad809b774273192577d0306d0101c8cd02a56c3281fa3d95ccf3",
+          "bytes": 495
         }
       },
       "controls": [
@@ -1087,16 +1087,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-368-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 368,
+      "id": "dependabot-433-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 433,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1107,9 +1107,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:d972172ae695b56009b44a8574b92eccae30841c936e1e6e9a2dd90576f1f68e",
+          "bytes": 436
         }
       },
       "controls": [
@@ -1117,16 +1117,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-370-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 370,
+      "id": "dependabot-434-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 434,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue3/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1137,9 +1137,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-csharp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/engine/profiles/vue3/project/package.json",
+          "sha256": "sha256:dcac914fd7d98ea734c8e9e9ffa39ff620b24a71e29a52f372b88451c456c80d",
+          "bytes": 528
         }
       },
       "controls": [
@@ -1147,16 +1147,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-372-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 372,
+      "id": "dependabot-435-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 435,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/jquery/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1167,9 +1167,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-go/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/jquery/project/package.json",
+          "sha256": "sha256:312d56d801f6121f8b55fd6ab977f2f75396b1bb3f48c940965af9028a9e7229",
+          "bytes": 449
         }
       },
       "controls": [
@@ -1177,16 +1177,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-374-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 374,
+      "id": "dependabot-436-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 436,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/react/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1197,9 +1197,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-java/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/react/project/package.json",
+          "sha256": "sha256:c61b9a419f8dc2463e062fa7340035f20417d2a5c262954cb26a330ad5a87cd7",
+          "bytes": 581
         }
       },
       "controls": [
@@ -1207,16 +1207,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-376-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 376,
+      "id": "dependabot-437-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 437,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/svelte/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1227,9 +1227,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/svelte/project/package.json",
+          "sha256": "sha256:f8567e6ac0b387e6b1f2ed36f69bd2cef27f5f11bfa4270a4592f31a78ea7c1f",
+          "bytes": 500
         }
       },
       "controls": [
@@ -1237,16 +1237,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-378-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 378,
+      "id": "dependabot-438-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 438,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1257,9 +1257,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-python/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue2/project/package.json",
+          "sha256": "sha256:4fab55df4c4c9032699a09740648a4be208d5fc7ead24731feacd7cea041356a",
+          "bytes": 441
         }
       },
       "controls": [
@@ -1267,16 +1267,16 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-380-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 380,
+      "id": "dependabot-439-ghsa-82fw-gwwq-j7x9",
+      "vulnerabilityId": "GHSA-82fw-gwwq-j7x9",
+      "alertNumber": 439,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
+        "name": "vitest",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue3/project/package.json",
         "dependencyScope": "development",
         "relationship": "direct"
       },
@@ -1287,9 +1287,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/swift-to-rust/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/artifacts/engine/profiles/vue3/project/package.json",
+          "sha256": "sha256:64b96463b6ace4722536ce10a98ac46fea90a359383068aca1b7083fa8e2cc10",
+          "bytes": 533
         }
       },
       "controls": [
@@ -1297,17 +1297,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-382-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 382,
+      "id": "dependabot-440-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 440,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -1317,9 +1317,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/typescript-to-cpp/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
+          "bytes": 4988
         }
       },
       "controls": [
@@ -1327,17 +1327,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-384-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 384,
+      "id": "dependabot-441-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 441,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -1347,9 +1347,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/typescript-to-objc/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/package.json",
+          "sha256": "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7",
+          "bytes": 4988
         }
       },
       "controls": [
@@ -1357,18 +1357,18 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-386-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 386,
+      "id": "dependabot-442-ghsa-w5vr-8v7q-w6rv",
+      "vulnerabilityId": "GHSA-w5vr-8v7q-w6rv",
+      "alertNumber": 442,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
-        "relationship": "direct"
+        "name": "baseline-browser-mapping",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
       },
       "analysis": {
         "state": "NOT_AFFECTED",
@@ -1377,9 +1377,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/typescript-to-php/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -1387,17 +1387,17 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
     },
     {
-      "id": "dependabot-388-ghsa-gh4j-gqv2-49f6",
-      "vulnerabilityId": "GHSA-gh4j-gqv2-49f6",
-      "alertNumber": 388,
+      "id": "dependabot-443-ghsa-p293-qw3h-jr36",
+      "vulnerabilityId": "GHSA-p293-qw3h-jr36",
+      "alertNumber": 443,
       "component": {
         "ecosystem": "npm",
-        "name": "fast-xml-parser",
-        "manifestPath": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-        "dependencyScope": "development",
+        "name": "next",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
         "relationship": "direct"
       },
       "analysis": {
@@ -1407,9 +1407,9 @@
       },
       "evidence": {
         "manifest": {
-          "path": "routes/typescript-to-swift/certification/formal-artifacts/engine-sources/runtime/typescript/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/package.json",
-          "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
-          "bytes": 3620
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
         }
       },
       "controls": [
@@ -1417,18 +1417,78 @@
         "no-runtime-install-or-production-deployment",
         "revalidate-on-every-release-and-before-expiry"
       ],
-      "expiresAt": "2026-12-07T12:30:57Z"
+      "expiresAt": "2026-12-07T23:01:32Z"
+    },
+    {
+      "id": "dependabot-444-ghsa-2xp9-vwfh-vxw4",
+      "vulnerabilityId": "GHSA-2xp9-vwfh-vxw4",
+      "alertNumber": 444,
+      "component": {
+        "ecosystem": "npm",
+        "name": "next",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "direct"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T23:01:32Z"
+    },
+    {
+      "id": "dependabot-445-ghsa-rgj7-g3m4-5g8c",
+      "vulnerabilityId": "GHSA-rgj7-g3m4-5g8c",
+      "alertNumber": 445,
+      "component": {
+        "ecosystem": "npm",
+        "name": "sharp",
+        "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+        "dependencyScope": "runtime",
+        "relationship": "transitive"
+      },
+      "analysis": {
+        "state": "NOT_AFFECTED",
+        "justification": "component_not_present_in_runtime",
+        "detail": "The manifest is retained as immutable evidence, source material, or an isolated EOL compatibility fixture. It is not an installable production dependency and is not declared fixed."
+      },
+      "evidence": {
+        "manifest": {
+          "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml",
+          "sha256": "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21",
+          "bytes": 35334
+        }
+      },
+      "controls": [
+        "immutable-byte-digest-and-source-corpus-retained",
+        "no-runtime-install-or-production-deployment",
+        "revalidate-on-every-release-and-before-expiry"
+      ],
+      "expiresAt": "2026-12-07T23:01:32Z"
     }
   ],
   "metadata": {
     "repository": "zpcaiai/elmos",
-    "generatedAt": "2026-09-08T12:30:57.028655Z",
-    "sourceAlertSnapshotDigest": "sha256:83bf7ccc33fb3adeaf7265e0ba17e23ddf7dd38fe9c7e23c06e82e72c5b75519",
-    "exceptionCount": 47,
+    "generatedAt": "2026-09-08T23:01:32.760768Z",
+    "sourceAlertSnapshotDigest": "sha256:f3033fd9176e3165d0e4c2ed885b4d79816a381c83b7c4334afa14fcecddb43a",
+    "exceptionCount": 49,
     "fixedClaims": [],
     "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "githubDisposition": "DISMISSED",
-    "dismissedCount": 47,
+    "githubDisposition": "PREPARED",
+    "dismissedCount": 0,
     "independentVerification": "NOT_RUN",
     "certification": "NOT_CERTIFIED"
   },
