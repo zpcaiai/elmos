@@ -55,7 +55,8 @@ class QualificationReceiptTests(unittest.TestCase):
             {
                 "compiled_contracts_validated": 1_310,
                 "exact_local_semantic_handlers_exercised": 66,
-                "prepare_only_skills": 1_244,
+                "exact_native_semantic_programs_validated": 1_244,
+                "prepare_only_skills": 0,
                 "exact_integration_bindings_validated": 1_310,
                 "host_route_bound_skills": 1_244,
                 "integration_unbound_skills": 0,
@@ -67,7 +68,7 @@ class QualificationReceiptTests(unittest.TestCase):
         self.assertEqual(receipt["evidence_boundaries"]["certification"], "NOT_CERTIFIED")
         self.assertFalse(receipt["side_effects"]["performed"])
         self.assertEqual(receipt["local_qualification"]["evidence_capture"], "EXECUTED_BY_WRITE_MODE_ONLY")
-        self.assertEqual(len(receipt["local_qualification"]["checks"]), 7)
+        self.assertEqual(len(receipt["local_qualification"]["checks"]), 8)
         self.assertTrue(all(row["status"] == "PASS" for row in receipt["local_qualification"]["checks"]))
 
     def test_receipt_files_and_caches_are_excluded_from_tree_digest(self) -> None:

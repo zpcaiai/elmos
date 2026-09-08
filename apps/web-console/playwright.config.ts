@@ -5,6 +5,7 @@ import {
   createPrivateKey,
   generateKeyPairSync,
   randomBytes,
+  scryptSync,
   X509Certificate,
 } from "node:crypto";
 import {
@@ -28,6 +29,13 @@ const repositoryRoot = path.resolve(__dirname, "../..");
 const translationSourceFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
 const translationCasesFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
 const runnerToken = "elmos-e2e-local-token-32-characters";
+const temporaryAdminPassword = "elmos-e2e-temporary-admin-password";
+const temporaryAdminPasswordSalt = randomBytes(16).toString("hex");
+const temporaryAdminPasswordHash = scryptSync(
+  temporaryAdminPassword,
+  Buffer.from(temporaryAdminPasswordSalt, "hex"),
+  64,
+).toString("hex");
 
 function resolveExecutableOnPath(name: string): string | null {
   for (const directory of (process.env.PATH ?? "").split(path.delimiter)) {
@@ -434,6 +442,9 @@ export default defineConfig({
           ELMOS_LOCAL_CREDENTIALS_PASSWORD: "test",
           ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID: "local-e2e",
           ELMOS_LOCAL_CREDENTIALS_STORE_PATH: path.join(runnerRoot, "local-accounts.json"),
+          ELMOS_TEMP_ADMIN_ENABLED: "true",
+          ELMOS_TEMP_ADMIN_PASSWORD_SALT: temporaryAdminPasswordSalt,
+          ELMOS_TEMP_ADMIN_PASSWORD_HASH: temporaryAdminPasswordHash,
           ELMOS_SESSION_SECRET: "elmos-local-e2e-session-secret-at-least-32-characters",
           ELMOS_PUBLIC_ORIGIN: baseURL,
         } : {}),

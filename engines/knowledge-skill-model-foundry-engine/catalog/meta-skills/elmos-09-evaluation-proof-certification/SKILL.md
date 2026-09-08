@@ -1,11 +1,11 @@
 ---
 name: elmos-09-evaluation-proof-certification
-description: Route the 09-evaluation-proof-certification capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 09-evaluation-proof-certification capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 09-evaluation-proof-certification
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 5ead17ff05e1161bd773e72b597c90e1e9f142b2b321b19d406f5638027b7c33

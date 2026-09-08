@@ -1,11 +1,11 @@
 ---
 name: elmos-29-performance-reliability-cost-engineering
-description: Route the 29-performance-reliability-cost-engineering capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 29-performance-reliability-cost-engineering capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 29-performance-reliability-cost-engineering
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: ac6091a4de8adfab8201bbd47bf7a715682f1119e114eeef354e19cbe7bce16d

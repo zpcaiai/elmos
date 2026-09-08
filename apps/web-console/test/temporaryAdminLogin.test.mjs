@@ -75,6 +75,27 @@ test("password login yields a real admin session without claiming mailbox verifi
   assert.equal((await sessionResponse.json()).authenticated, true);
 });
 
+test("trusted loopback origin survives Next development URL normalization", async () => {
+  process.env.ELMOS_PUBLIC_ORIGIN = "http://127.0.0.1:3291";
+  const response = await POST(new NextRequest(
+    "http://localhost:3000/api/auth/admin/login",
+    {
+      method: "POST",
+      headers: {
+        host: "127.0.0.1:3291",
+        origin: "http://127.0.0.1:3291",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        username: account.ADMINISTRATOR_EMAIL,
+        password,
+      }),
+    },
+  ));
+  assert.equal(response.status, 200);
+  assert.ok(response.cookies.get(account.localAccountCookieNames.administratorSession));
+});
+
 test("wrong password and wrong username cannot create a session", async () => {
   for (const fields of [{ password: "incorrect" }, { username: "other@example.test" }]) {
     const response = await POST(request(fields));
