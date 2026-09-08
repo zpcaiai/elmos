@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "authorization": {
+    "authorization_id": "REPLACE_WITH_UNIQUE_AUTHORIZATION_ID",
+    "approved_operations": ["elasticsearch", "dify"],
+    "actor_id": "REPLACE_WITH_ACTOR_ID",
+    "tenant_id": "REPLACE_WITH_TENANT_ID",
+    "project_id": "REPLACE_WITH_PROJECT_ID",
+    "purpose": "provider-qualification",
+    "idempotency_key": "REPLACE_WITH_UNIQUE_IDEMPOTENCY_KEY",
+    "synthetic": true,
+    "expires_at": "REPLACE_WITH_NEAR_FUTURE_RFC3339_TIMESTAMP"
+  },
+  "elasticsearch": {
+    "documents": [
+      {
+        "document_id": "qualification-document-1",
+        "tenant_id": "REPLACE_WITH_TENANT_ID",
+        "project_id": "REPLACE_WITH_PROJECT_ID",
+        "revision_id": "REPLACE_WITH_UNIQUE_REVISION_ID",
+        "content": "Synthetic Elasticsearch and Dify qualification record.",
+        "anchor": {
+          "uri": "qualification://elmos/elastic-dify/1",
+          "kind": "synthetic-text",
+          "content_sha256": "a914b865ebba9be8defb8b931485622b0aa00227264c6b3a1fdb89d016d618ff",
+          "start": 1,
+          "end": 1,
+          "locator": {"fixture": "elastic-dify-v1"}
+        },
+        "allowed_principals": ["REPLACE_WITH_ACTOR_ID"],
+        "vector": [1.0, 0.0, 0.0],
+        "modality": "text",
+        "metadata": {"data_classification": "synthetic"}
+      }
+    ],
+    "query": {
+      "text": "Elasticsearch Dify qualification",
+      "vector": [1.0, 0.0, 0.0],
+      "top_k": 5,
+      "modalities": ["text"]
+    },
+    "cleanup_revision": true
+  },
+  "dify": {
+    "inputs": {"question": "Return the configured qualification token."}
+  }
+}

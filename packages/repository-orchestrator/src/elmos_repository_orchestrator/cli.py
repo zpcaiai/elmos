@@ -10,8 +10,10 @@ from typing import Any, Mapping, Sequence
 
 from .catalog import MODEL_ALIASES, SKILL_NAMES, SKILL_SPECS
 from .contracts import ContractError, Status, canonical_json, require_mapping
+from .external_execution import execute_external_integrations
 from .external_gate import external_preflight, evaluate_production_certification
 from .gates import run_package_gate
+from .production_runtime import probe_production_runtime, runtime_preflight
 from .runtime import dispatch, handler_names
 
 
@@ -54,7 +56,12 @@ def _emit(payload: Mapping[str, Any]) -> None:
 
 
 def _result_exit(status: str) -> int:
-    if status in {Status.LOCAL_ENGINEERING_VALIDATED.value, Status.READY.value, Status.PLANNED.value}:
+    if status in {
+        Status.LOCAL_ENGINEERING_VALIDATED.value,
+        Status.READY.value,
+        Status.PLANNED.value,
+        "EXECUTED_UNVERIFIED",
+    }:
         return 0
     if status in {Status.BLOCKED.value, Status.FAILED.value}:
         return 2
@@ -86,6 +93,18 @@ def _parser() -> JsonArgumentParser:
     external_preflight_parser = subcommands.add_parser("external-preflight")
     external_preflight_parser.add_argument("--plan", required=True)
     external_preflight_parser.add_argument("--expect-blocked", action="store_true")
+
+    external_execute = subcommands.add_parser("external-execute")
+    external_execute.add_argument("--input", required=True)
+    external_execute.add_argument("--execute", action="store_true")
+
+    runtime_preflight_parser = subcommands.add_parser("runtime-preflight")
+    runtime_preflight_parser.add_argument("--plan", required=True)
+    runtime_preflight_parser.add_argument("--expect-blocked", action="store_true")
+
+    runtime_probe = subcommands.add_parser("runtime-probe")
+    runtime_probe.add_argument("--plan", required=True)
+    runtime_probe.add_argument("--execute", action="store_true")
 
     external_certify = subcommands.add_parser("external-certify")
     external_certify.add_argument("--plan", required=True)
@@ -155,6 +174,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             ).to_payload()
         elif args.command == "external-preflight":
             result = external_preflight(_read_json(args.plan, "external_plan"))
+        elif args.command == "external-execute":
+            if not args.execute:
+                raise ContractError("execution_flag_required", "external-execute requires --execute")
+            result = execute_external_integrations(_read_json(args.input, "external_execution_request"))
+        elif args.command == "runtime-preflight":
+            result = runtime_preflight(_read_json(args.plan, "runtime_plan"))
+        elif args.command == "runtime-probe":
+            if not args.execute:
+                raise ContractError("execution_flag_required", "runtime-probe requires --execute")
+            result = probe_production_runtime(_read_json(args.plan, "runtime_plan"))
         else:
             certificate = None if args.certificate is None else _read_json(args.certificate, "certificate")
             public_key = None if args.public_key is None else Path(args.public_key)
@@ -166,7 +195,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 public_key=public_key,
             )
         _emit(result)
-        if args.command == "external-preflight" and args.expect_blocked and result.get("status") == "BLOCKED":
+        if (
+            args.command in {"external-preflight", "runtime-preflight"}
+            and args.expect_blocked
+            and result.get("status") == "BLOCKED"
+        ):
             return 0
         return _result_exit(str(result.get("status")))
     except ContractError as exc:
@@ -179,6 +212,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             }
         )
         return 2
+    except Exception:
+        if getattr(args, "command", None) not in {"external-execute", "runtime-probe"}:
+            raise
+        _emit(
+            {
+                "status": Status.UNKNOWN.value,
+                "certification": Status.NOT_CERTIFIED.value,
+                "certified": False,
+                "reasons": ["external_result_unknown:reconcile before retry"],
+            }
+        )
+        return 3
 
 
 if __name__ == "__main__":  # pragma: no cover
