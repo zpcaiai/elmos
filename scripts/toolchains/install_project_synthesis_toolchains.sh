@@ -316,6 +316,7 @@ install_rust() {
       --toolchain "${RUST_VERSION}" clippy rustfmt
     mv "${stage}" "${target}"
   fi
+  seal_rust_sysroot "${target}"
   # Wrapper semantics are part of the qualified route-toolchain identity. A
   # cached Rust payload can remain byte-identical while an older installer has
   # left stale wrappers behind, so refresh the three repository-owned launchers

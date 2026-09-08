@@ -527,12 +527,6 @@ LOCKED_Z3_VERSION = "Z3 version 4.16.0 - 64 bit"
 LOCKED_Z3_BINARY_SHA256 = (
     "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
 )
-LOCKED_Z3_BINARY_SHA256S = frozenset(
-    {
-        LOCKED_Z3_BINARY_SHA256,
-        "sha256:edae32f9e37ea4b5bb35310d72f0e352d0dc07626cac4e9e30bc1ea9a5bc8efb",
-    }
-)
 LOCKED_Z3_ARGS = ["-in"]
 INTERACTION_ENGINE_ROOT = REPOSITORY_ROOT / "engines/frontend-client-engine"
 INTERACTION_ENGINE_SOURCE_ROOT = INTERACTION_ENGINE_ROOT / "src"
@@ -594,10 +588,8 @@ LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT = 67
 LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256 = (
     "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
 )
-# The exact 72-route verifier routinely needs more than two minutes on the
-# current Node 26 / Z3 closure, and macOS sandbox enforcement materially slows
-# that replay. Keep a finite fail-closed ceiling, but leave enough room for a
-# real full-campaign replay on a contended CI host.
+# The fixed 72-route/864-block campaign is intentionally bounded but exceeds
+# the former two-minute budget on the pinned Node 26 macOS runner.
 INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 900
 SOLVER_RESULT_KEYS = {
     "schema_version",
@@ -4939,7 +4931,7 @@ def validate_solver_result(
         or not os.access(binary_path, os.X_OK)
         or binary_path.name != "z3"
         or solver.get("solver") != binary_value
-        or solver.get("solver_binary_sha256") not in LOCKED_Z3_BINARY_SHA256S
+        or solver.get("solver_binary_sha256") != LOCKED_Z3_BINARY_SHA256
         or solver.get("solver_version") != LOCKED_Z3_VERSION
         or solver.get("invocation") != [binary_value, *LOCKED_Z3_ARGS]
     ):
@@ -4948,7 +4940,7 @@ def validate_solver_result(
     cached_identity = verified_binaries.get(binary_value)
     if cached_identity is None:
         actual_digest = sha256_bytes(binary_path.read_bytes())
-        if actual_digest not in LOCKED_Z3_BINARY_SHA256S:
+        if actual_digest != LOCKED_Z3_BINARY_SHA256:
             raise ValidationError(f"{route_id} locked solver binary digest drifted")
         try:
             version_result = subprocess.run(
@@ -4975,7 +4967,7 @@ def validate_solver_result(
             raise ValidationError(f"{route_id} locked solver version drifted")
         cached_identity = (actual_digest, LOCKED_Z3_VERSION)
         verified_binaries[binary_value] = cached_identity
-    if cached_identity != (solver.get("solver_binary_sha256"), LOCKED_Z3_VERSION):
+    if cached_identity != (LOCKED_Z3_BINARY_SHA256, LOCKED_Z3_VERSION):
         raise ValidationError(f"{route_id} locked solver cached identity drifted")
 
     outcome = solver.get("outcome")
@@ -5030,7 +5022,7 @@ def validate_solver_result(
             "exit_code": replay.returncode,
             "stdout": replay.stdout.decode("utf-8"),
             "stderr": replay.stderr.decode("utf-8"),
-            "solver_binary_sha256": cached_identity[0],
+            "solver_binary_sha256": LOCKED_Z3_BINARY_SHA256,
             "solver_version": LOCKED_Z3_VERSION,
             "solver_input_digest": smt_digest,
         },
@@ -10335,9 +10327,6 @@ def execute_flutter_browser_runtime(
         flutter_identity = runtime_tool_identity(
             Path(policy.flutter_path), flutter_version
         )
-        python_identity = runtime_tool_identity(
-            Path(sys.executable), platform.python_version()
-        )
         integration_identity = file_identity(
             workspace / "integration_test/elmos_bounded_interaction_test.dart",
             "Flutter integration test source",
@@ -10354,7 +10343,6 @@ def execute_flutter_browser_runtime(
             "integration_test_sha256": integration_identity["sha256"],
             "integration_driver_sha256": driver_source_identity["sha256"],
         }
-        closure_digest = digest_json(closure)
         acquisition_relative, acquisition_sha, acquisition_bytes = (
             write_content_addressed_runtime_json(
                 evidence_root,

@@ -99,6 +99,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             runtime_runner.BLOCK_OBSERVER_SPECS,
             validator.BLOCK_OBSERVER_SPECS,
         )
+
         self.assertEqual(
             runtime_runner.INTERACTION_BLOCK_ACTUAL_KEYS,
             generator.RUNTIME_ACTUAL_KEYS_V2,
@@ -173,6 +174,19 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 validator.LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_SHA256,
             ),
         )
+
+    def test_engine_verifier_timeout_is_bounded_before_repository_io(self) -> None:
+        self.assertEqual(900, generator.DEFAULT_V2_ENGINE_VERIFY_TIMEOUT_SECONDS)
+        nonexistent = ROOT / "does-not-exist-v2-timeout-boundary"
+        for invalid in (True, 29, 3_601):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                RuntimeError, "^V2_ENGINE_VERIFY_TIMEOUT_OUT_OF_RANGE$"
+            ):
+                generator.verify_engine_campaign_v2(
+                    nonexistent,
+                    nonexistent,
+                    timeout_seconds=invalid,
+                )
 
     def test_vendored_engine_verifier_type_closure_is_git_tracked(self) -> None:
         pack_roots = (

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/private/tmp/elmos-pr82-complete-20260908.xIFjDN/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
-  "solver_binary_realpath": "/private/tmp/elmos-pr82-complete-20260908.xIFjDN/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/private/tmp/elmos-pr82-complete-20260908.xIFjDN/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "react-native--to--jquery",
-  "formal_input_digest": "sha256:35ff5da48ca26114bd8dc3efaf3c7ad83acfe05ec46e26c9f2417effae083ebd",
-  "solver_input_digest": "sha256:20c5e72362ca1cbac531e0d902d96d7c711889ce93ab21bc40a01e48ac2f28ba",
-  "smt2_digest": "sha256:20c5e72362ca1cbac531e0d902d96d7c711889ce93ab21bc40a01e48ac2f28ba"
+  "formal_input_digest": "sha256:3e9f5f7acc5470dbd4817c13e593127fccc45b2c64cc6ca9b363a5fb1211ec6c",
+  "solver_input_digest": "sha256:a056c8d36662170313c9d9952acd231d2fc83e13e79d27c9422e8566c1831ed4",
+  "smt2_digest": "sha256:a056c8d36662170313c9d9952acd231d2fc83e13e79d27c9422e8566c1831ed4"
 }

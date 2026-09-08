@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { StatusChip } from "../components/StatusChip";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 
 type Artifact = { uri?: string; digest?: string; size_bytes?: number; media_type?: string };
 type PrecisionJob = {
@@ -133,12 +134,7 @@ export function PrecisionMigrationJobs() {
         const payload = await response.json().catch(() => ({})) as { reason?: string };
         throw new Error(payload.reason ?? "ARTIFACT_DOWNLOAD_FAILED");
       }
-      const url = URL.createObjectURL(await response.blob());
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = name;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      triggerBrowserDownload(await response.blob(), name);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "ARTIFACT_DOWNLOAD_FAILED");
     }

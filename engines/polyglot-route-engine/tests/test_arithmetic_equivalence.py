@@ -38,7 +38,7 @@ import pytest
 
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers, target_ir_view
-from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, SemanticIR
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
 
 INTEGER_MAX = 2**63 - 1
 INTEGER_MIN = -(2**63)
@@ -190,6 +190,8 @@ _CHECKED_ADD_SPELLING: dict[Language, str] = {
     "php": "elmos_checked_add($a, $b)",
     "kotlin": "Math.addExact(a, b)",
     "flutter": "_elmosCheckedAdd(a, b)",
+    "vb6": "ElmosCheckedAdd(a, b)",
+    "vcpp6": "ElmosCheckedAdd(a, b)",
 }
 
 
@@ -258,6 +260,8 @@ _FLOAT_DIVISION_GUARDS: dict[Language, str] = {
     "objc": "ElmosNonZero(b)",
     "php": "elmos_non_zero_float($b)",
     "flutter": "_elmosNonZero(b)",
+    "vb6": "ElmosNonZero(b)",
+    "vcpp6": "ElmosNonZero(b)",
 }
 
 
@@ -455,14 +459,19 @@ def test_rust_groups_boolean_connectives() -> None:
     assert "(a || b) && c" in content
 
 
-@pytest.mark.parametrize("language", ALL_TARGETS)
-def test_every_target_groups_boolean_connectives(language: Language) -> None:
+@pytest.mark.parametrize("language", [target for target in ALL_TARGETS if target != "vb6"])
+def test_every_short_circuit_target_groups_boolean_connectives(language: Language) -> None:
     content, planned = _emitted(_ir(_OR_THEN_AND), language)
     spelling = {
         "python": "(a or b) and c",
         "php": "($a || $b) && $c",
     }.get(language, "(a || b) && c")
     assert planned(spelling) in content
+
+
+def test_vb6_short_circuit_boolean_lowering_fails_closed() -> None:
+    with pytest.raises(RouteError, match="VB6_SHORT_CIRCUIT_BOOLEAN_OUTSIDE_CERTIFIED_SUBSET"):
+        emit(_ir(_OR_THEN_AND), "vb6")
 
 
 def test_python_rejects_arguments_outside_the_canonical_range() -> None:

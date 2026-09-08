@@ -26,7 +26,7 @@ from elmos_polyglot_route.native import SemanticIR
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
 
 _BRACE_TARGETS: tuple[Language, ...] = tuple(
-    language for language in ROUTED_LANGUAGES if language != "python"
+    language for language in ROUTED_LANGUAGES if language not in {"python", "vb6"}
 )
 
 
@@ -175,13 +175,28 @@ def test_a_nested_else_chain_emits_three_branches_for_every_brace_target(
         assert any(value in line for line in returns), value
 
 
+def test_vb6_nested_else_chain_uses_structured_if_blocks() -> None:
+    lines = [line.strip() for line in emit(_chain_ir(), "vb6").content.splitlines()]
+
+    for threshold in ("90", "80", "70"):
+        assert any(
+            line.casefold().startswith("if ")
+            and threshold in line
+            and line.casefold().endswith(" then")
+            for line in lines
+        )
+    assert sum(line.casefold() == "else" for line in lines) == 3
+    assert sum(line.casefold() == "end if" for line in lines) == 3
+
+
 def test_the_go_frontend_no_longer_rejects_an_else_if_chain() -> None:
     source = (ENGINE_ROOT / "native" / "go" / "analyzer.go").read_text(encoding="utf-8")
 
     assert "GO_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET" not in source
     assert "func ifStatement(" in source
     assert (
-        "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records, functionNames)}"
+        "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, "
+        "records, functionNames, paramNames, scopeVars)}"
         in source
     )
     # The init-statement boundary is unchanged and must stay unchanged: hoisting
@@ -193,7 +208,10 @@ def test_the_rust_frontend_no_longer_rejects_an_else_if_chain() -> None:
     source = (ENGINE_ROOT / "native" / "rust" / "src" / "main.rs").read_text(encoding="utf-8")
 
     assert "fn lift_if(" in source
-    assert "Expr::If(chained) => vec![lift_if(chained, emitted_target)]" in source
+    assert (
+        "Expr::If(chained) => vec![lift_if(chained, emitted_target, scope_vars, param_names)]"
+        in source
+    )
     # Anything else in the else position is still outside the profile.
     assert "RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET" in source
 

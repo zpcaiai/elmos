@@ -99,6 +99,58 @@ test("跨语言整库入口在路线证据未通过时保持关闭", async ({ pa
   )).toBeVisible();
 });
 
+test("已保存的跨语言交接可下载且保持未执行状态", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("elmos.translation-handoff.v3", JSON.stringify({
+      schemaVersion: "1.1.0",
+      repositoryRef: "local:e2e-customer-repository",
+      routeId: "java-to-python",
+      scope: "single-module",
+      requestedStatus: "EXPERIMENTAL_EVALUATION",
+      executionStatus: "NOT_RUN",
+      certificationStatus: "NOT_CERTIFIED",
+      blockers: ["Independent verification NOT_RUN"],
+      createdAt: "2026-09-09T00:00:00.000Z",
+    }));
+  });
+  await page.goto("/translation");
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "导出 JSON" }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toBe("java-to-python-handoff.json");
+  await expect(page.getByText(/NOT_RUN \/ NOT_CERTIFIED/)).toBeVisible();
+});
+
+test("迁移工坊标签与内容面板通过无障碍关系绑定", async ({ page }) => {
+  await page.goto("/migration");
+  const marketplaceTab = page.getByRole("tab", { name: "扩展 Marketplace" });
+  await marketplaceTab.click();
+
+  await expect(marketplaceTab).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: "扩展 Marketplace" })).toBeVisible();
+});
+
+test("SQL 预检明确显示部署运行器缺失而不是泛化失败", async ({ page }) => {
+  await page.route("**/api/database-sql/preflight", (route) => route.fulfill({
+    status: 503,
+    contentType: "application/json",
+    body: JSON.stringify({
+      status: "BLOCKED",
+      errorCode: "CHINADB_SQL_LOCAL_RUNNER_UNAVAILABLE",
+      message: "Local runner unavailable",
+    }),
+  }));
+  await page.goto("/migration/sql");
+  await page.getByRole("button", { name: "运行 SQL 预检" }).click();
+
+  await expect(page.getByRole("alert").filter({ hasText: "预检未执行" })).toContainText(
+    "当前部署未安装已锁定的 SQL 本地运行器",
+  );
+  await expect(page.getByText("预检未执行", { exact: true })).toBeVisible();
+});
+
 test("发现报告在权威路线本地 Profile 未通过时由服务端拒绝", async ({ request }) => {
   const digest = "c".repeat(64);
   const snapshot = "d".repeat(64);
