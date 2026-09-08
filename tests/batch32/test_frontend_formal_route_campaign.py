@@ -175,12 +175,18 @@ class FrontendFormalCampaignTests(unittest.TestCase):
         return validator.validate_campaign(pack, execute_replay=False)
 
     def assert_invalid(self, pack: Path, contains: str | None = None) -> None:
-        result = self.validate(pack)
-        self.assertEqual("invalid", result["status"], result)
-        if contains is not None:
-            self.assertTrue(
-                any(contains in error for error in result["errors"]), result["errors"]
-            )
+        try:
+            result = self.validate(pack)
+            self.assertEqual("invalid", result["status"], result)
+            if contains is not None:
+                self.assertTrue(
+                    any(contains in error for error in result["errors"]),
+                    result["errors"],
+                )
+        finally:
+            # Each negative case copies a production-sized formal pack. Release
+            # it immediately so the full mutation matrix has bounded disk use.
+            shutil.rmtree(pack, ignore_errors=True)
 
     def test_valid_aggregate_separates_bounded_profile_from_full_formal_readiness(
         self,
