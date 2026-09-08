@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:a48289453500a47a9fed622950bcdb6f3e46c3faa1ea45d1dfecc6552bc1065b",
+    "artifact_sha256": "sha256:e4914471cfb13155623c9f11215765464e732c7e569b0f1cc07eee3ef11c9385",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:51ceb92b85ab7424f7345464c7a5fdc8b8b8bbe9b276c7960fbea9582ac6f81b",
+    "formal_input_digest": "sha256:167cacd89aee7953cd6e5a807d929d6363253b530127234adc92a2a126f95e0d",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:51ceb92b85ab7424f7345464c7a5fdc8b8b8bbe9b276c7960fbea9582ac6f81b",
+    "formal_input_sha256": "sha256:167cacd89aee7953cd6e5a807d929d6363253b530127234adc92a2a126f95e0d",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:51ceb92b85ab7424f7345464c7a5fdc8b8b8bbe9b276c7960fbea9582ac6f81b",
+        "formal_input_sha256": "sha256:167cacd89aee7953cd6e5a807d929d6363253b530127234adc92a2a126f95e0d",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:94838a600ab7dec02ddffdc16027976e3419253942f5af9329032dd0d42416ed",
+        "sha256": "sha256:11148a6ea6e6f0665fadfc0b1c1f5c2bf0f6532acdd23a7caf5418dcae4d56f1",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:51ceb92b85ab7424f7345464c7a5fdc8b8b8bbe9b276c7960fbea9582ac6f81b",
+        "formal_input_sha256": "sha256:167cacd89aee7953cd6e5a807d929d6363253b530127234adc92a2a126f95e0d",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:a08c15e38ff66b44545f8816459344797d0fcb95c86391a70a645cc078466c34",
+        "sha256": "sha256:9b0cfa1041f1b2fd15a8cddf46a7a4f733df6f07d1a329a6e4b885d13803a6b3",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:94838a600ab7dec02ddffdc16027976e3419253942f5af9329032dd0d42416ed",
+    "solver_input_digest": "sha256:11148a6ea6e6f0665fadfc0b1c1f5c2bf0f6532acdd23a7caf5418dcae4d56f1",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,16 +66,16 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:e3582d8d06bcc77e181d0d36581dd00954e77a489eeeccd6111eac35ab737e20",
+      "sha256": "sha256:2900736ac12e420fa20a5121319ea2cc4d844cb50e1f5605491a6801313be094",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
-    "plan_sha256": "sha256:5bbdc6b31d953f46f94b7edb0071244b45ea385b846ac03e96f4fc2ad49f59a0",
+    "plan_sha256": "sha256:cec567efe1c589e9ccd4f260e041b3f3161d9eb623b0a6d59e86ca737031d1a7",
     "policy_id": "typed-alpha-hygiene-v2",
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:b118644c2c563d80ce0882b1656007b938e48dbdcfd7d30d67270d9231f7ced9",
+      "sha256": "sha256:014938fd60a02701030455d82ac909498e09360d660bd5c14174b2ef3dcce3a9",
       "status": "PASSED"
     },
     "renamed": true,
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:0ba145ae1ce04cb20032936bbca7f371653d5b776459973d1283989eb3257257",
+    "artifact_sha256": "sha256:bdd800bf8b65fc9eef067579c98a897f3f18c4ca5278f607f37a7fc684a362c7",
     "status": "PASSED"
   },
   "limitations": [
@@ -115,15 +115,15 @@
     "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
     "difference_count": 0,
     "source_ir_path": "source-semantic-ir.json",
-    "source_ir_sha256": "sha256:d43fc00145dc0d2dd233431b67084e11c1dbaa4bca91490fd6f53324862583c9",
+    "source_ir_sha256": "sha256:84d458c8adf45276a75cfa22f66431b96cc572703137d8346109d0538e279902",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:e3582d8d06bcc77e181d0d36581dd00954e77a489eeeccd6111eac35ab737e20"
+    "target_ir_sha256": "sha256:2900736ac12e420fa20a5121319ea2cc4d844cb50e1f5605491a6801313be094"
   },
-  "semantic_ir_sha256": "sha256:d43fc00145dc0d2dd233431b67084e11c1dbaa4bca91490fd6f53324862583c9",
+  "semantic_ir_sha256": "sha256:84d458c8adf45276a75cfa22f66431b96cc572703137d8346109d0538e279902",
   "source": {
     "analyzer": "Microsoft.CodeAnalysis.CSharp",
-    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:fadb28bac19852f79991f515862815efaa2b9d63196db0061d5c349646471908",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:8764e829c65738c8809ea486a876eeb6a986fb17a1080ddd33e0d3a0a8ef6bf6",
     "function_name": "clamp",
     "language": "csharp",
     "path": "Clamp.cs",
@@ -144,7 +144,7 @@
           "Release"
         ],
         "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
-        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-swift-gl5mipe_/holdout/source-runtime/SourceHarness.csproj (in 64 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-swift-gl5mipe_/holdout/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.90\n"
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-swift-fs2ez94j/holdout/source-runtime/SourceHarness.csproj (in 71 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-swift-fs2ez94j/holdout/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:01.54\n"
       },
       {
         "command": [
