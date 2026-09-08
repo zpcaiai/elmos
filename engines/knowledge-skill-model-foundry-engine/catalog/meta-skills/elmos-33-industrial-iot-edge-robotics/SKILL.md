@@ -1,11 +1,11 @@
 ---
 name: elmos-33-industrial-iot-edge-robotics
-description: Route the 33-industrial-iot-edge-robotics capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 33-industrial-iot-edge-robotics capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 33-industrial-iot-edge-robotics
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 761199254d0fff8afdf94733975de26f5b93aae0d8e7e997bf2f713a4c7b322b

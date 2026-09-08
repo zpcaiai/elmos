@@ -36,6 +36,30 @@ from .domain import (
     TenantScope,
 )
 from .evidence import EvidenceBoundaryError, EvidenceIntegrityError, EvidenceLedger
+from .external_assurance import (
+    CertificationDecision,
+    CertificationRequest,
+    ExternalAssuranceError,
+    ExternalRunKind,
+    ExternalRunRequest,
+    IndependentAcceptanceRequest,
+    ProviderCommandRoute,
+    SignatureVerifier,
+    build_subprocess_broker,
+    evaluate_certification,
+    verify_external_run_receipt,
+    verify_independent_acceptance,
+    verify_signed_external_receipt,
+)
+from .external_qualification import (
+    ExternalQualificationDecision,
+    ExternalTrustKey,
+    ExternalTrustStore,
+    ProviderEvidenceRequest,
+    SignatureBackend,
+    verify_external_qualification_chain,
+    verify_provider_evidence_receipt,
+)
 from .kernel import (
     ExecutionKernel,
     HostContextAuthority,
@@ -47,6 +71,12 @@ from .knowledge import KnowledgeManager
 from .local_semantics import LOCAL_SEMANTIC_SKILLS, LOCAL_SEMANTIC_VERSION
 from .memory import ExperienceMemoryStore
 from .model import ModelFoundry
+from .native_semantics import (
+    NATIVE_SEMANTIC_VERSION,
+    NativeSemanticError,
+    NativeSemanticProgram,
+    load_native_programs,
+)
 from .pipelines import PipelineOrchestrator
 from .policies import PolicyEngine
 from .semantic_program_runner import SemanticProgramRunner, StageResult
@@ -63,6 +93,8 @@ __all__ = [
     "AuthorizationRequest",
     "AuthorizationVerifier",
     "CertificationStatus",
+    "CertificationDecision",
+    "CertificationRequest",
     "ConsentStatus",
     "ContentAddressedArtifactStore",
     "ContentDigest",
@@ -77,7 +109,13 @@ __all__ = [
     "EvidenceState",
     "EffectClass",
     "ExternalAdapterRoute",
+    "ExternalAssuranceError",
     "ExternalExecutionBroker",
+    "ExternalQualificationDecision",
+    "ExternalRunKind",
+    "ExternalRunRequest",
+    "ExternalTrustKey",
+    "ExternalTrustStore",
     "ExecutionKernel",
     "ExecutionResult",
     "ExperienceEpisode",
@@ -88,6 +126,7 @@ __all__ = [
     "HostContextAuthority",
     "InvocationPermit",
     "InvocationRequest",
+    "IndependentAcceptanceRequest",
     "KernelSecurityError",
     "KernelStateError",
     "KnowledgeManager",
@@ -98,15 +137,30 @@ __all__ = [
     "ModelFoundry",
     "ModelRelease",
     "ModelServingGateway",
+    "NATIVE_SEMANTIC_VERSION",
+    "NativeSemanticError",
+    "NativeSemanticProgram",
     "OutboxReceiptVerifier",
     "PipelineOrchestrator",
     "PolicyEngine",
+    "ProviderCommandRoute",
+    "ProviderEvidenceRequest",
     "RightsClass",
     "RollbackError",
     "SchemaInspectionError",
     "SemanticProgramRunner",
     "SkillCatalog",
     "SkillContract",
+    "SignatureVerifier",
+    "SignatureBackend",
     "StageResult",
     "TenantScope",
+    "build_subprocess_broker",
+    "evaluate_certification",
+    "load_native_programs",
+    "verify_external_run_receipt",
+    "verify_external_qualification_chain",
+    "verify_independent_acceptance",
+    "verify_provider_evidence_receipt",
+    "verify_signed_external_receipt",
 ]

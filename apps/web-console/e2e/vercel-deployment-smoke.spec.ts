@@ -3,13 +3,12 @@ import { writeFile } from "node:fs/promises";
 
 const routes = [
   "/",
-  "/frontend",
-  "/capabilities",
   "/help",
   "/login",
   "/register",
   "/admin/login",
 ] as const;
+const administratorRoutes = ["/capabilities", "/frontend"] as const;
 const trustedOidcToken = process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim();
 
 test.beforeEach(async ({ context }) => {
@@ -20,7 +19,7 @@ test.beforeEach(async ({ context }) => {
   }
 });
 
-test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
+test("deployed console renders its critical public routes and protects administrator routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];
   for (const route of routes) {
     const response = await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -37,7 +36,21 @@ test("deployed console renders its critical public routes", async ({ page }, tes
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle("ELMOS 控制中心");
   await expect(page.getByRole("heading", { name: "四类核心工作空间，一套可验证的交付闭环。" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "功能能力中心" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "功能能力中心" })).toHaveCount(0);
+
+  for (const route of administratorRoutes) {
+    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+    expect(response, `${route} must return an HTTP response`).not.toBeNull();
+    expect(response?.status(), `${route} must fail closed into the administrator login surface`).toBe(200);
+    expect(page.url()).toContain("/admin/login");
+    await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+    observations.push({
+      route,
+      status: response?.status() ?? null,
+      finalPath: new URL(page.url()).pathname,
+      access: "ADMINISTRATOR_SESSION_REQUIRED",
+    });
+  }
 
   const reportPath = testInfo.outputPath("deployment-surface.json");
   await writeFile(reportPath, `${JSON.stringify({
@@ -98,13 +111,15 @@ test("deployed console exposes separate provider-backed user and administrator e
   await expect(page.getByRole("heading", { name: "邮箱注册" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "手机号注册" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "微信扫码注册" })).toBeVisible();
+  await expect(page.locator('form[action="/api/auth/descope/otp/start"] input[name="returnTo"]').first()).toHaveValue("/");
 
   await page.goto("/admin/login", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
   await expect(page.getByLabel("管理员邮箱")).toHaveValue("zpchoney@gmail.com");
   await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "微信扫码登录" })).toHaveCount(0);
-  await expect(page.getByText("每次管理员成功登录后")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "管理员邮箱验证码登录" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "发送管理员验证码" })).toBeVisible();
 
   const session = await page.evaluate(async () => {
     const response = await fetch("/api/auth/session", { credentials: "same-origin" });

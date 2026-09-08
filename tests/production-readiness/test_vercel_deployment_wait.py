@@ -155,7 +155,14 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertLess(install, smoke)
         self.assertIn("deployments: read", workflow)
         self.assertIn("github.event.pull_request.head.sha || github.sha", workflow)
+        self.assertEqual(1_800, MODULE.DEFAULT_TIMEOUT_SECONDS)
+        self.assertIn("timeout-minutes: 45", workflow)
+        self.assertIn("--timeout-seconds 1800", workflow)
         self.assertIn('--production-url "${ELMOS_PRODUCTION_SMOKE_URL}"', workflow)
+        trigger_block = workflow.split("permissions:", 1)[0]
+        self.assertIn("push:\n    branches: [main]", trigger_block)
+        self.assertIn("pull_request:\n    branches: [main]", trigger_block)
+        self.assertNotIn("paths:", trigger_block)
 
     def test_workflow_uses_short_lived_oidc_for_protected_preview(self) -> None:
         workflow = (

@@ -795,7 +795,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     }
 
 
-def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_path() -> None:
+def test_fresh_child_selects_hosted_repository_language_ids_with_a_sanitized_path() -> None:
     runtime = _runtime()
 
     assert (
@@ -819,3 +819,18 @@ def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
         '    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"'
         in full_profile
     )
+
+
+def test_full_ci_profile_hydrates_the_locked_csharp_analyzer_packages() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    full_profile = installer.split('if [[ "${CI_PROFILE}" == "full" ]]; then', 1)[1]
+    project = (
+        "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+        "Elmos.Dotnet.SemanticCli.csproj"
+    )
+
+    assert project in full_profile
+    assert 'NUGET_PACKAGES="${PINNED_HOME}/.nuget/packages"' in full_profile
+    assert '"${HOMEBREW_CELLAR}/dotnet/10.0.301/libexec/dotnet" restore' in full_profile
+    assert "--locked-mode" in full_profile
+    assert "--disable-parallel" in full_profile

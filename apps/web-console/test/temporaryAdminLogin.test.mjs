@@ -14,6 +14,7 @@ const { POST: logout } = await import("../app/api/auth/logout/_route.ts");
 const { GET: sessionRoute } = await import("../app/api/auth/session/_route.ts");
 const { authorizeAdmin } = await import("../app/lib/server/operationsProxy.ts");
 const { requireRunnerFleetOidcAdmin } = await import("../app/lib/server/runnerFleetPolicy.ts");
+const { requireFinancialOidcAdmin } = await import("../app/lib/server/billingReconciliationPolicy.ts");
 const password = randomBytes(24).toString("hex");
 const salt = randomBytes(16).toString("hex");
 const environment = {
@@ -68,11 +69,33 @@ test("password login yields a real admin session without claiming mailbox verifi
   assert.equal(admin.authentication, "TEMPORARY_ADMIN_PASSWORD");
   assert.equal(admin.accessToken, undefined);
   assert.throws(() => requireRunnerFleetOidcAdmin(admin, "OPERATOR"), /企业账户/);
+  assert.throws(() => requireFinancialOidcAdmin(admin, "VIEWER"), /企业账户/);
   const sessionResponse = await sessionRoute(new NextRequest("http://localhost:3000/api/auth/session", {
     headers: { host: "localhost:3000", cookie },
   }));
   assert.equal(sessionResponse.status, 200);
   assert.equal((await sessionResponse.json()).authenticated, true);
+});
+
+test("trusted loopback origin survives Next development URL normalization", async () => {
+  process.env.ELMOS_PUBLIC_ORIGIN = "http://127.0.0.1:3291";
+  const response = await POST(new NextRequest(
+    "http://localhost:3000/api/auth/admin/login",
+    {
+      method: "POST",
+      headers: {
+        host: "127.0.0.1:3291",
+        origin: "http://127.0.0.1:3291",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        username: account.ADMINISTRATOR_EMAIL,
+        password,
+      }),
+    },
+  ));
+  assert.equal(response.status, 200);
+  assert.ok(response.cookies.get(account.localAccountCookieNames.administratorSession));
 });
 
 test("wrong password and wrong username cannot create a session", async () => {

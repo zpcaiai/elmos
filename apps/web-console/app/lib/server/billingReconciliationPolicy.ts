@@ -8,10 +8,15 @@ const idempotencyKeyPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/;
 
 export const reconciliationBodyLimitBytes = 4_096;
 
-export type FinancialAdminPrincipal = {
+export type FinancialAdminCandidate = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
   authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
   accessToken?: string;
+};
+
+export type FinancialAdminPrincipal = FinancialAdminCandidate & {
+  authentication: "OIDC_SESSION";
+  accessToken: string;
 };
 
 export type ReconciliationResolution = {
@@ -37,9 +42,9 @@ export class BillingReconciliationPolicyError extends Error {
 }
 
 export function requireFinancialOidcAdmin(
-  principal: FinancialAdminPrincipal,
+  principal: FinancialAdminCandidate,
   requiredRole: "VIEWER" | "APPROVER",
-): void {
+): asserts principal is FinancialAdminPrincipal {
   if (
     principal.authentication !== "OIDC_SESSION"
     || typeof principal.accessToken !== "string"

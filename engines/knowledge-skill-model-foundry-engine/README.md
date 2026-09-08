@@ -12,16 +12,22 @@ catalog in the same archive is retained only as a diagnosed source defect.
 ## Runtime guarantees
 
 - unknown Skills and unregistered adapters fail closed;
-- all 1,310 Skills have exact compiled contracts and runtime bindings; 51
-  provider-free Skills have exact local semantic handlers and 1,259 have
-  distinct digest-bound host Broker routes while retaining catalog state
-  `PREPARE_ONLY`;
+- all 1,310 Skills have exact compiled contracts and runtime bindings; 66
+  provider-free Skills have exact local semantic handlers and 1,244 have exact
+  repository-owned native programs with digest-bound host Broker routes;
 - external-effect mutations bind authenticated tenant, project, actor, purpose,
   environment, workspace, revision, capability lease, exact payload, expiry,
   one-time permit, policy decision, and durable idempotency key;
 - external execution accepts only a host-owned Broker route, never a direct
   Python callback; route operation/effect, permit, request, provider receipt and
   declared outputs must match exactly;
+- production hosts can bind those routes to exact digest-pinned executables via
+  `build_subprocess_broker`; command execution is shell-free, environment/time/
+  output bounded, drift checked, and provider receipts require an injected
+  trusted signature verifier;
+- `ExternalRunRequest`, `IndependentAcceptanceRequest`, and
+  `CertificationRequest` bind training, deployment, independent holdout and
+  authority decisions to exact artifacts, roles and external signatures;
 - SQLite state transitions, checkpoints, evidence, audit events, and outbox
   records are durable and tenant/project scoped;
 - artifacts are immutable, content addressed, private, and verified on read;
@@ -43,18 +49,26 @@ qualify a production deployment.
 ## Capability truth
 
 The package contains 41 Meta-Skills and 1,310 atomic specifications. Every
-atomic identity has an exact runtime binding. Exactly 51 provider-free Skills
-are `LOCAL`; the remaining 1,259 retain source/catalog state `PREPARE_ONLY` but
-are no longer integration-unbound: each has its own source-digest-bound adapter
-identity, privileged operation and non-executable Broker route. The host must
+atomic identity has an exact runtime binding. Exactly 66 provider-free Skills are `LOCAL`; the remaining 1,244 are `NATIVE` and
+each has an exact source-digest-bound semantic program, adapter identity,
+privileged operation and non-executable Broker route. No atomic Skill is
+`PREPARE_ONLY` or integration-unbound. The host must
 still supply and attest the concrete provider implementation, environment,
-durable store, permit and result verifier. Binding coverage therefore closes
-the generic integration-dispatch gap; it does not complete native semantics or
-prove the business effect.
+durable store, permit and result verifier. The native programs close the repository code gap; they do not prove that a
+provider business effect occurred.
 
 Local qualification may report only `LOCAL_EXECUTED_SELF_ATTESTED` and
 `READY_FOR_EXTERNAL_GATE`. External evidence remains `NOT_RUN`; certification
 remains `NOT_CERTIFIED`.
+
+The external assurance API validates evidence supplied by real providers,
+independent verifiers and certification authorities. It intentionally contains
+no local issuer, signing key, synthetic success path or default trust decision.
+`ExternalTrustStore` and `verify_external_qualification_chain` add role-scoped
+Ed25519 verification, key validity/revocation, authority separation, exact
+scope/executor bindings, ordered training/deployment checks, and complete
+receipt-chain validation. The repository command is documented in
+`docs/knowledge-skill-model-foundry/EXTERNAL_QUALIFICATION.md`.
 
 Run the repository integration target:
 

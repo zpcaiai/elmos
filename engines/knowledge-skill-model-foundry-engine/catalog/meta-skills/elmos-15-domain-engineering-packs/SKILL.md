@@ -1,11 +1,11 @@
 ---
 name: elmos-15-domain-engineering-packs
-description: Route the 15-domain-engineering-packs capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 15-domain-engineering-packs capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 15-domain-engineering-packs
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: dc4923406ab78a9c21a44c3f5f41ffe5795e611192f6d9be4a62d442a19911be

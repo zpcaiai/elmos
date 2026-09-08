@@ -1,11 +1,11 @@
 ---
 name: elmos-16-self-evolution-release-engineering
-description: Route the 16-self-evolution-release-engineering capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 16-self-evolution-release-engineering capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 16-self-evolution-release-engineering
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 7c101c1d8710c3182681edcbe22290518ec7ad99673496b71e65c322cb13f2f3

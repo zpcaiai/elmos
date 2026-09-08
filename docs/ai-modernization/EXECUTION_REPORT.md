@@ -2,11 +2,13 @@
 
 ## Outcome
 
-Repository-owned P0-P2 foundations are implemented and locally validated in
-`packages/repository-orchestrator`. The implementation is
-`LOCAL_ENGINEERING_VALIDATED`; external Elastic, Dify, embedding/model, OCR,
-ASR, vision, collector, and independent-verifier execution remains `NOT_RUN`,
-and certification remains `NOT_CERTIFIED`.
+Repository-owned P0-P2 foundations and the fail-closed external production gate
+are implemented and locally validated in `packages/repository-orchestrator`.
+The implementation is `LOCAL_ENGINEERING_VALIDATED`. A bounded live external
+probe was also run: OpenAI inventory passed, OpenAI generation is `UNKNOWN`
+after HTTP 429, and Gemini inventory/generation failed with HTTP 400. The other
+required external services are not configured or not run, so production
+certification correctly remains `NOT_CERTIFIED`.
 
 ## P0-P2 closure
 
@@ -19,6 +21,7 @@ and certification remains `NOT_CERTIFIED`.
 | P1 Dify | blocking Workflow API adapter, trusted scope injection, reserved-field forgery rejection, request digest, no policy authority | request/secret-boundary tests |
 | P2 multimodal + memory | text/image/audio locators, modality retrieval, SQLite Bronze/Silver/Gold memory, independent promotion and consent gate | locator, isolation, integrity, promotion tests |
 | P2 multi-agent | dependency waves, role/tool allowlists, bounded concurrency, approval, idempotency, independent verifier | DAG/permission/cycle/dedup tests |
+| External production gate | exact ten-operation inventory, environment-only secret bindings, immutable evidence digests, executor/verifier separation, signed certificate and trust-root binding | fail-closed preflight/report/certificate/tamper tests |
 
 ## Performance 1-6
 
@@ -44,23 +47,26 @@ certification. The machine was concurrently running other Git and Java tasks.
 ## Verification
 
 - `ruff check ...`: passed for all task-owned Python and test files.
-- Full package tests with pinned extras: `36 passed`, `0 skipped`, `0 failed`.
-- System-Python optional-dependency path: `36 cases`: `33 passed`, `3 skipped`,
-  `0 failed`.
+- Repository Orchestrator locked test dependency group: `36 passed`, `0 skipped`,
+  `0 failed`. LangGraph and OpenTelemetry coverage now runs unconditionally.
 - Repository Skill importer: `INSTALLATION_VERIFIED`, 54 handlers, 142 DAG edges,
   external evidence `NOT_RUN`, certification `NOT_CERTIFIED`.
-- Project Intelligence runtime suite: `154 passed`, `1 skipped`; its following
-  qualification check failed closed because the committed local receipt has
-  drifted from the concurrently updated engine. The repository-owned refresh
-  also rejected the current installed manifest because its digest is not in the
-  trusted set, so no receipt or generated documentation was force-updated.
+- Project Intelligence runtime suite: `154 passed`, `0 skipped`, `0 failed`.
+  JSON Schema parity coverage now runs unconditionally from its locked test
+  dependency group. The local qualification check and importer both pass with
+  the refreshed digest-bound receipt; external evidence remains `NOT_RUN` and
+  certification remains `NOT_CERTIFIED`.
+- Project Intelligence source-package integration suite: `51 passed`,
+  `0 skipped`, `0 failed`.
 - Source-package integration suite with its declared YAML/JSON Schema tooling:
   `13 passed`, `0 failed`.
 
-Observed machine wall-clock: full extras test run `30.975 s`; final benchmark
-process `19.204 s`. A statistically valid end-to-end machine p50/p90 was not
-established from one suite run. Human review remains separately required for
-provider provisioning, production corpus approval, deployment, and independent
+Observed zero-skip rerun wall-clock: Repository Orchestrator `4.331 s` and
+Project Intelligence runtime `20.188 s`. The complete Project Intelligence
+source-package integration run took `1262.001 s`. The benchmark process took
+`19.204 s`. A statistically valid end-to-end machine p50/p90 was not established
+from one suite run. Human review remains separately required for provider
+provisioning, production corpus approval, deployment, and independent
 verification.
 
 ## External completion boundary
@@ -71,9 +77,30 @@ credential, index, workflow, collector, or model was fabricated. Real external
 closure requires authorized endpoints and must retain evidence from those
 systems.
 
+The repository now provides `external-preflight` and `external-certify` CLI
+commands plus a checked-in exact plan. The certificate path requires all ten
+operations to pass and requires a fresh signature from the pinned independent
+trust root. Status-only input, synthetic evidence, self-verification, path
+escape, symlink evidence, tampering, stale certificates, and partial external
+execution cannot produce `CERTIFIED`.
+
+On 2026-09-08 the read-only/minimal live probe observed:
+
+- OpenAI model inventory: `PASS`, HTTP 200.
+- OpenAI `gpt-5.6-sol` generation: `UNKNOWN`, HTTP 429, one attempt, no blind retry.
+- Gemini model inventory: `FAIL`, HTTP 400.
+- Gemini `gemini-2.5-flash` generation: `FAIL`, HTTP 400.
+- Elasticsearch, Dify, OTel collector, OCR, ASR, vision, representative workload,
+  production deployment and independent verification: not configured or not run.
+
+The sanitized evidence is in `external-provider-observations-20260908.json`,
+`external-configuration-observations-20260908.json`, and
+`external-execution-report-20260908.json`. No credential value or provider
+response body is stored.
+
 ## Rollback
 
 Search projections are disposable and rebuildable from immutable source
 records. Local runtime rollback removes the new modules, their tests, benchmark
-script, optional dependency groups, and lock file. No production data, schema,
-deployment, or provider resource was mutated by this work.
+script, locked test dependency groups, and lock files. No production data,
+schema, deployment, or provider resource was mutated by this work.

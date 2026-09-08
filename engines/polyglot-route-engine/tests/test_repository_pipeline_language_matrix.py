@@ -22,7 +22,11 @@ from typing import Any, cast
 
 import pytest
 
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language
+from elmos_polyglot_route.models import (
+    HOSTED_REPOSITORY_MATRIX_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+)
 from elmos_polyglot_route.pipeline import (
     ARTIFACT_MANIFEST_NAME,
     ARTIFACT_NAME,
@@ -30,12 +34,22 @@ from elmos_polyglot_route.pipeline import (
     run_repository_pipeline,
 )
 
+EXECUTABLE_REPOSITORY_LANGUAGES: tuple[Language, ...] = (
+    HOSTED_REPOSITORY_MATRIX_LANGUAGES
+)
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target) for source, target in product(SUPPORTED_LANGUAGES, repeat=2) if source != target
+    (source, target)
+    for source, target in product(EXECUTABLE_REPOSITORY_LANGUAGES, repeat=2)
+    if source != target
 )
 MEDIUM_LANGUAGE_RING: tuple[tuple[Language, Language], ...] = tuple(
-    (source, SUPPORTED_LANGUAGES[(index + 1) % len(SUPPORTED_LANGUAGES)])
-    for index, source in enumerate(SUPPORTED_LANGUAGES)
+    (
+        source,
+        EXECUTABLE_REPOSITORY_LANGUAGES[
+            (index + 1) % len(EXECUTABLE_REPOSITORY_LANGUAGES)
+        ],
+    )
+    for index, source in enumerate(EXECUTABLE_REPOSITORY_LANGUAGES)
 )
 
 _SMALL_MAXIMUM_BYTES = 8 * 1024 * 1024
@@ -1269,14 +1283,15 @@ def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> Non
     # Live repository execution is exactly the governed active matrix. The
     # lower-level repository inventory surface retains JavaScript only for
     # explicit archived replay and must never expand this executable matrix.
-    assert len(SUPPORTED_LANGUAGES) == 13
+    assert len(SUPPORTED_LANGUAGES) == 14
     assert "javascript" not in SUPPORTED_LANGUAGES
+    assert "vb6" in SUPPORTED_LANGUAGES
     assert len(DIRECTED_LANGUAGE_PAIRS) == 156
     assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 156
     assert set(DIRECTED_LANGUAGE_PAIRS) == {
         (source, target)
-        for source in SUPPORTED_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
+        for source in EXECUTABLE_REPOSITORY_LANGUAGES
+        for target in EXECUTABLE_REPOSITORY_LANGUAGES
         if source != target
     }
     _assert_javascript_typescript_fixture_contract()
@@ -1286,8 +1301,8 @@ def test_medium_language_ring_covers_every_source_and_target_once() -> None:
     assert len(MEDIUM_LANGUAGE_RING) == 13
     assert len(set(MEDIUM_LANGUAGE_RING)) == 13
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
-    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
-    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
+    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(EXECUTABLE_REPOSITORY_LANGUAGES)
+    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(EXECUTABLE_REPOSITORY_LANGUAGES)
     content = _SOURCE_FILES["php"][0][1]
     source = _medium_source_with_filler("php", content)
 

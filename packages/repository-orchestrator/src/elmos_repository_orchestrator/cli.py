@@ -10,6 +10,7 @@ from typing import Any, Mapping, Sequence
 
 from .catalog import MODEL_ALIASES, SKILL_NAMES, SKILL_SPECS
 from .contracts import ContractError, Status, canonical_json, require_mapping
+from .external_gate import external_preflight, evaluate_production_certification
 from .gates import run_package_gate
 from .runtime import dispatch, handler_names
 
@@ -81,6 +82,17 @@ def _parser() -> JsonArgumentParser:
     gate.add_argument("--input", required=True)
     gate.add_argument("--evidence-root", required=True)
     gate.add_argument("--registry", default=str(DEFAULT_HANDLER_REGISTRY))
+
+    external_preflight_parser = subcommands.add_parser("external-preflight")
+    external_preflight_parser.add_argument("--plan", required=True)
+    external_preflight_parser.add_argument("--expect-blocked", action="store_true")
+
+    external_certify = subcommands.add_parser("external-certify")
+    external_certify.add_argument("--plan", required=True)
+    external_certify.add_argument("--report", required=True)
+    external_certify.add_argument("--evidence-root", required=True)
+    external_certify.add_argument("--certificate")
+    external_certify.add_argument("--public-key")
     return parser
 
 
@@ -125,7 +137,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result = dispatch("elmos-plan-graph-verifier", plan_input)
             else:
                 result = dispatch("elmos-task-dag-builder", plan_input)
-        else:
+        elif args.command == "gate":
             request = _read_json(args.input, "gate_request")
             registry = _read_json(args.registry, "handler_registry")
             evidence_root = Path(args.evidence_root)
@@ -141,7 +153,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 static_registry=registry,
                 handler_names=handler_names(),
             ).to_payload()
+        elif args.command == "external-preflight":
+            result = external_preflight(_read_json(args.plan, "external_plan"))
+        else:
+            certificate = None if args.certificate is None else _read_json(args.certificate, "certificate")
+            public_key = None if args.public_key is None else Path(args.public_key)
+            result = evaluate_production_certification(
+                _read_json(args.plan, "external_plan"),
+                _read_json(args.report, "external_report"),
+                evidence_root=Path(args.evidence_root),
+                certificate_value=certificate,
+                public_key=public_key,
+            )
         _emit(result)
+        if args.command == "external-preflight" and args.expect_blocked and result.get("status") == "BLOCKED":
+            return 0
         return _result_exit(str(result.get("status")))
     except ContractError as exc:
         _emit(

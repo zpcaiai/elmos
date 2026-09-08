@@ -1,26 +1,21 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-09-08T02:19:37Z",
+  "generated_at": "2026-09-08T10:05:28Z",
   "subject": "ELMOS governed RAG, agentic orchestration, integrations, memory, and performance P0-P2",
-  "evaluated_repository_revision": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "evaluated_repository_revision": "1ff0440adc73bf1fa8ef08cfa8dd8a994e7a3628",
   "implementation_commits": [
     "ac43ad8be8980f2b210a50773fb741d27e273348",
-    "3e748ecff8c77cc50409c1895ef665880faa40b0"
+    "3e748ecff8c77cc50409c1895ef665880faa40b0",
+    "ec993306b721714f413d3a4894b0809826de52ed"
   ],
   "engineering_state": "LOCAL_ENGINEERING_VALIDATED",
   "certification_state": "NOT_CERTIFIED",
   "tests": {
-    "pinned_extras": {
-      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src .venv/bin/python -m unittest discover -s packages/repository-orchestrator/tests -p test_*.py",
-      "cases": 36,
-      "passed": 36,
+    "locked_test_dependency_group": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src uv run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s packages/repository-orchestrator/tests -p test_*.py",
+      "cases": 45,
+      "passed": 45,
       "skipped": 0,
-      "failed": 0
-    },
-    "system_python_optional_dependencies": {
-      "cases": 36,
-      "passed": 33,
-      "skipped": 3,
       "failed": 0
     },
     "repository_task_router_source_integration": {
@@ -30,14 +25,39 @@
       "failed": 0
     },
     "project_intelligence_runtime": {
-      "cases": 155,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src uv run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s engines/project-intelligence-engine/tests -p test_*.py",
+      "cases": 154,
       "passed": 154,
-      "skipped": 1,
+      "skipped": 0,
       "failed": 0,
-      "following_qualification_gate": "FAIL_CLOSED_RECEIPT_DRIFT"
+      "following_qualification_gate": "PASS",
+      "importer_gate": "PASS"
+    },
+    "project_intelligence_source_integration": {
+      "cases": 51,
+      "passed": 51,
+      "skipped": 0,
+      "failed": 0
     },
     "ruff": {
       "state": "PASS"
+    },
+    "external_gate_contract": {
+      "cases": 9,
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "coverage": [
+        "configuration preflight",
+        "inline-secret rejection",
+        "exact operation inventory",
+        "evidence path and digest integrity",
+        "executor-verifier separation",
+        "partial-result blocking",
+        "independent certificate requirement",
+        "pinned public-key verification",
+        "stale-certificate rejection"
+      ]
     }
   },
   "benchmark": {
@@ -70,11 +90,22 @@
   "external_evidence": {
     "elasticsearch": "NOT_CONFIGURED",
     "dify": "NOT_CONFIGURED",
-    "embedding_or_model_provider": "NOT_CONFIGURED",
-    "ocr_asr_vision": "NOT_CONFIGURED",
-    "representative_workload": "NOT_RUN",
+    "model_provider": {
+      "overall": "UNKNOWN",
+      "openai_model_inventory": "PASS_HTTP_200",
+      "openai_generation": "UNKNOWN_HTTP_429_ONE_ATTEMPT",
+      "gemini_model_inventory": "FAIL_HTTP_400",
+      "gemini_generation": "FAIL_HTTP_400_ONE_ATTEMPT"
+    },
+    "otel_collector": "NOT_CONFIGURED",
+    "multimodal_ocr": "NOT_CONFIGURED",
+    "multimodal_asr": "NOT_CONFIGURED",
+    "multimodal_vision": "NOT_CONFIGURED",
+    "representative_workload": "NOT_CONFIGURED",
     "independent_verification": "NOT_RUN",
-    "production_deployment": "NOT_RUN"
+    "production_deployment": "NOT_RUN",
+    "gate_decision": "BLOCKED",
+    "production_certification": "NOT_CERTIFIED"
   },
   "artifact_sha256": {
     "retrieval.py": "af33898bf3b8f5740bda22df70a1870caa300aca2fafafaa80b48e06cfd1f683",
@@ -85,7 +116,14 @@
     "multiagent.py": "db846b6ced9e92a3d74f760cedceb74d8f28f41835a46f868da91319c981a87f",
     "performance.py": "a8ccc08fbaa3cabde3a2c682619a7d168adde6a73b30683e97d24e0ccee1ab22",
     "semantic.py": "f52025b5a171b50bf74b91db5874dd2af69c9b9677565f16efedc23e73335508",
-    "uv.lock": "d2d0032342de232db0ebb4e7e2b7c74a3c04b3932aef1f6b9c915db890fc1dad",
-    "execution_report.md": "9d08f90e6e40981fb5b8b953e7a97025de55e6bc6486638e650abc3179e630de"
+    "repository_orchestrator_uv.lock": "eb8670dcf9bf06b5e75a1a60c34312d957b02f0640e0cc1ee4115399227e88bd",
+    "project_intelligence_uv.lock": "aed6f14d43e0bfcb00874300f598dd0bee3767acc8fcd5fcfc60d2b74fb66217",
+    "project_intelligence_local_qualification.json": "9964a2cb487252d5ca98209f3b4fed4f3766fe8b8f2c0e3ac1ab4f0caf38cb94",
+    "execution_report.md": "568507de36b2269617da6c530217a630000ab2e2a29a3e306562062d6ffaef71",
+    "external_gate.py": "14675708143951e037bbb964d0427b472651589e0372677f243a22710df7d176",
+    "ai_external_gate_plan.json": "8bc3274dd42dda855132665145236028476a02ad3b73d4689378d3b050ffbbb2",
+    "external_execution_report_20260908.json": "fb8a18da562c64a488d0c9b6f6d22448140a2b3e418bef43ff442728d46bbeae",
+    "external_provider_observations_20260908.json": "b153207032753b6fcd50124588a77a1d5f910a2f605407983f5886fb7ce41a57",
+    "external_configuration_observations_20260908.json": "4c66e2daa99bac73834216cc1ee724332e5b81d7e7e3b398cef17281b8ed66b6"
   }
 }

@@ -108,6 +108,12 @@ ROOT_TESTS = Path("tests/knowledge-skill-model-foundry-skills")
 IMPORTER_PATH = Path("tooling/integrate_knowledge_skill_model_foundry_skills.py")
 QUALIFIER_PATH = Path("tooling/qualify_knowledge_skill_model_foundry.py")
 READINESS_PATH = Path("tooling/report_foundry_readiness.py")
+NATIVE_GENERATOR_PATH = Path("tooling/generate_foundry_native_semantics.py")
+EXTERNAL_QUALIFIER_PATH = Path("tooling/run_foundry_external_qualification.py")
+ED25519_BACKEND_PATH = Path(
+    "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
+)
+NATIVE_PROGRAMS_PATH = ENGINE_ROOT / "src/elmos_foundry/native-semantic-programs.json"
 
 IMPLEMENTATION_ROOTS = (
     Path("AGENTS.md"),
@@ -118,6 +124,9 @@ IMPLEMENTATION_ROOTS = (
     IMPORTER_PATH,
     QUALIFIER_PATH,
     READINESS_PATH,
+    NATIVE_GENERATOR_PATH,
+    EXTERNAL_QUALIFIER_PATH,
+    ED25519_BACKEND_PATH,
 )
 EXCLUDED_PATHS = frozenset(
     {
@@ -137,6 +146,12 @@ ENGINE_PACKAGE = f"{ENGINE_SOURCE}/elmos_foundry"
 ENGINE_TESTS = "engines/knowledge-skill-model-foundry-engine/tests"
 ROOT_TESTS_TEXT = ROOT_TESTS.as_posix()
 LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "native_semantic_program_check",
+        "command": ["uv", "run", "--quiet", "python", NATIVE_GENERATOR_PATH.as_posix(), "--check"],
+        "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
+        "timeout_seconds": 300,
+    },
     {
         "id": "readiness_inventory_check",
         "command": ["uv", "run", "--quiet", "python", READINESS_PATH.as_posix(), "--check"],
@@ -175,6 +190,8 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             IMPORTER_PATH.as_posix(),
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
             ENGINE_SOURCE,
             ENGINE_TESTS,
             ROOT_TESTS_TEXT,
@@ -195,8 +212,10 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             ENGINE_PACKAGE,
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
-        "environment": {"PYTHONPATH": ENGINE_SOURCE},
+        "environment": {"PYTHONPATH": f"{ENGINE_SOURCE}:packages/pi-harness/src"},
         "timeout_seconds": 900,
     },
     {
@@ -213,6 +232,8 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             IMPORTER_PATH.as_posix(),
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
+            NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
         "timeout_seconds": 300,
@@ -510,7 +531,10 @@ def _validate_catalog_and_report(
     _require(report.get("external_evidence_status") == "NOT_RUN", "external evidence overclaim")
     _require(report.get("certification_status") == "NOT_CERTIFIED", "certification overclaim")
     _require(
-        report.get("capability_states") == {"LOCAL": len(LOCAL_SEMANTIC_SKILLS), "PREPARE_ONLY": 1_310 - len(LOCAL_SEMANTIC_SKILLS)},
+        report.get("capability_states") == {
+            "LOCAL": len(LOCAL_SEMANTIC_SKILLS),
+            "NATIVE": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+        },
         "package report capability-state distribution drift",
     )
 
@@ -541,12 +565,12 @@ def _validate_catalog_and_report(
         all(
             isinstance(row, dict)
             and row.get("capability_state")
-            == ("LOCAL" if row.get("name") in LOCAL_SEMANTIC_SKILLS else "PREPARE_ONLY")
+            == ("LOCAL" if row.get("name") in LOCAL_SEMANTIC_SKILLS else "NATIVE")
             and row.get("semantic_handler_binding")
             == (
                 f"local.{str(row.get('name'))}"
                 if row.get("name") in LOCAL_SEMANTIC_SKILLS
-                else "UNBOUND"
+                else f"native.{str(row.get('name'))}"
             )
             and row.get("external_evidence_status") == "NOT_RUN"
             and row.get("certification_status") == "NOT_CERTIFIED"
@@ -612,7 +636,8 @@ def build_receipt(repo_root: Path) -> dict[str, Any]:
             "capability_scope": {
                 "compiled_contracts_validated": 1_310,
                 "exact_local_semantic_handlers_exercised": len(LOCAL_SEMANTIC_SKILLS),
-                "prepare_only_skills": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "exact_native_semantic_programs_validated": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "prepare_only_skills": 0,
                 "exact_integration_bindings_validated": 1_310,
                 "host_route_bound_skills": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
                 "integration_unbound_skills": 0,

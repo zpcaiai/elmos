@@ -188,7 +188,11 @@ def test_php_local_bindings_emit_across_targets_and_relift(tmp_path: Path) -> No
     # Target: Python
     py_code = emit(semantic, "python").content
     assert "subtotal: int = price" in py_code
-    assert "subtotal = subtotal + tax" in py_code or "subtotal += tax" in py_code or "_elmos_checked_add(subtotal, tax)" in py_code
+    assert (
+        "subtotal = subtotal + tax" in py_code
+        or "subtotal += tax" in py_code
+        or "_elmos_checked_add(subtotal, tax)" in py_code
+    )
 
     # Target: TypeScript
     ts_code = emit(semantic, "typescript").content

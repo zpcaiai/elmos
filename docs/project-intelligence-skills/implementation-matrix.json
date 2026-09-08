@@ -503,7 +503,7 @@
       "name": "elmos-data-architecture-lineage",
       "ordinal": 16,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+      "qualification_result_digest": "sha256:9a1c37389088bb890dbe1c78521fde5968d3f8e45abd78f27fe0dbcbc4e4e582",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -533,7 +533,7 @@
       "name": "elmos-api-event-topology",
       "ordinal": 17,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+      "qualification_result_digest": "sha256:4b0506805488e0c8bcd302818ecc504c1d6f34cca152a887e07069ecd7019614",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -1521,17 +1521,17 @@
     "qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
     "qualification_runtime_environment": {
       "byteorder": "little",
-      "cache_tag": "cpython-312",
-      "executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
-      "executable_sha256": "sha256:30b2a6bf9706029b609327ca5db722cd458239df96efc87e1f8e37beed49db2e",
-      "hexversion": 51121904,
+      "cache_tag": "cpython-314",
+      "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+      "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
+      "hexversion": 51250672,
       "implementation": "cpython",
       "machine": "arm64",
       "platform": "darwin",
       "release_level": "final",
-      "resolved_executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
       "serial": 0,
-      "version": "3.12.14"
+      "version": "3.14.5"
     },
     "skill_interface_status": "INSTALLED",
     "skills": 50,

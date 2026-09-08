@@ -1,11 +1,11 @@
 ---
 name: elmos-23-repository-refactoring-technical-debt
-description: Route the 23-repository-refactoring-technical-debt capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 23-repository-refactoring-technical-debt capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 23-repository-refactoring-technical-debt
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 07fc2ef6c4262e75155b906b79bfafc4f8a0337b995cfabd972d6cde818b932d
