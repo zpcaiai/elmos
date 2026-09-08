@@ -65,7 +65,8 @@ public class CommercialSecurityConfiguration {
                                 // 而新增路径未必带验签。放行范围必须与验签实现一一对应。
                                 "/commercial/v1/billing/webhooks/stripe",
                                 "/commercial/v1/billing/callbacks/alipay",
-                                "/commercial/v1/billing/callbacks/wechat")
+                                "/commercial/v1/billing/callbacks/wechat",
+                                "/commercial/v1/billing/callbacks/elmpay")
                         .permitAll()
                         // 注意顺序：上面的精确路径先匹配先生效。
                         // 这条规则覆盖 /commercial/v1/billing/** 全部其余路径，

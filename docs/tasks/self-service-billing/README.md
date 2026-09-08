@@ -2,6 +2,7 @@
 
 - [P0/P1 收口清单](P0_P1_CLOSURE.md)
 - [Credit 与单项目订单闭环](COMMERCIAL_ORDER_CLOSURE.md)
+- [ELMPay 支付对接](ELMPAY_INTEGRATION.md)
 - [架构设计](ARCHITECTURE.md)
 - [数据库设计](DATABASE_DESIGN.md)
 - [迁移与发布](MIGRATION_GUIDE.md)
