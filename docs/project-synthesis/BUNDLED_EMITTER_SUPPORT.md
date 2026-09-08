@@ -41,10 +41,10 @@ owner-only JWKS file. `scripts/run_production_matrix.py` runs all 16
 language/auth-mode cases with real migrations, startup, authorization, CRUD,
 negative token checks, and PostgreSQL RLS tenant isolation. Java, Python, C#,
 TypeScript, Go, Kotlin, PHP, and Rust now all accept multi-entity production
-requests. The committed July local matrix ran multi-entity cases only for Java
-and Python and single-entity cases for the other six; it remains valid for the
-cases it actually ran, but it is not current-SHA multi-entity evidence for those
-six targets. A fresh receipt must retain `NOT_RUN` until replayed.
+requests. The committed September local matrix ran all 16 language/auth-mode
+cases with multi-entity requests. It remains bounded local engineering evidence
+for the exact revision and environment recorded by that receipt; a fresh
+current-SHA receipt must retain `NOT_RUN` until replayed.
 
 Every generated workspace now contains a CycloneDX 1.6 dependency SBOM and a
 Generation Manifest binding for its digest and P0 scope. The initial SBOM keeps

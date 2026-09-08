@@ -22,9 +22,7 @@
     "committed_local_matrix_coverage": {
       "multi_entity": [
         "java",
-        "python"
-      ],
-      "single_entity_only_in_that_receipt": [
+        "python",
         "csharp",
         "typescript",
         "go",
@@ -32,6 +30,7 @@
         "php",
         "rust"
       ],
+      "single_entity_only_in_that_receipt": [],
       "fresh_current_sha_evidence_status": "NOT_RUN"
     }
   },
