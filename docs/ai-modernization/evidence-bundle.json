@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-09-08T02:19:37Z",
+  "subject": "ELMOS governed RAG, agentic orchestration, integrations, memory, and performance P0-P2",
+  "evaluated_repository_revision": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "implementation_commits": [
+    "ac43ad8be8980f2b210a50773fb741d27e273348",
+    "3e748ecff8c77cc50409c1895ef665880faa40b0"
+  ],
+  "engineering_state": "LOCAL_ENGINEERING_VALIDATED",
+  "certification_state": "NOT_CERTIFIED",
+  "tests": {
+    "pinned_extras": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src .venv/bin/python -m unittest discover -s packages/repository-orchestrator/tests -p test_*.py",
+      "cases": 36,
+      "passed": 36,
+      "skipped": 0,
+      "failed": 0
+    },
+    "system_python_optional_dependencies": {
+      "cases": 36,
+      "passed": 33,
+      "skipped": 3,
+      "failed": 0
+    },
+    "repository_task_router_source_integration": {
+      "cases": 13,
+      "passed": 13,
+      "skipped": 0,
+      "failed": 0
+    },
+    "project_intelligence_runtime": {
+      "cases": 155,
+      "passed": 154,
+      "skipped": 1,
+      "failed": 0,
+      "following_qualification_gate": "FAIL_CLOSED_RECEIPT_DRIFT"
+    },
+    "ruff": {
+      "state": "PASS"
+    }
+  },
+  "benchmark": {
+    "kind": "LOCAL_SYNTHETIC_NON_REPRESENTATIVE",
+    "documents": 500,
+    "queries": 25,
+    "repetitions": 3,
+    "index_ms": {
+      "mean": 225.085722,
+      "p50": 223.950875,
+      "p95": 284.2278872,
+      "p99": 289.58584384
+    },
+    "query_ms": {
+      "mean": 155.180854933,
+      "p50": 136.383625,
+      "p95": 343.8541331,
+      "p99": 408.07612458
+    },
+    "recall_at_10": 0.416,
+    "ndcg_at_10": 0.8794964988616342,
+    "duplicate_side_effects": 0,
+    "same_machine_improvement_percent": {
+      "mean_index": 79.31,
+      "mean_query": 35.04,
+      "p95_index": 76.84,
+      "p95_query": 54.36
+    }
+  },
+  "external_evidence": {
+    "elasticsearch": "NOT_CONFIGURED",
+    "dify": "NOT_CONFIGURED",
+    "embedding_or_model_provider": "NOT_CONFIGURED",
+    "ocr_asr_vision": "NOT_CONFIGURED",
+    "representative_workload": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_deployment": "NOT_RUN"
+  },
+  "artifact_sha256": {
+    "retrieval.py": "af33898bf3b8f5740bda22df70a1870caa300aca2fafafaa80b48e06cfd1f683",
+    "agentic.py": "24ef4cf18bc023f57f8a5c4e6d13afac6c08aafb96e506b526e6ce42d580feaf",
+    "integrations.py": "e68c0706a3f61082e5c68219d20a442e76abbcf34b74f40c9bd204acf2dd1392",
+    "incremental.py": "597771bb0d8b6aa863466ca75f2d22cd712a5ae8bc2110ff142f3603d8791d2c",
+    "memory.py": "5d95ed1f6e37853316121f214ac4819c09cc97c448422c4d501a151f947b76aa",
+    "multiagent.py": "db846b6ced9e92a3d74f760cedceb74d8f28f41835a46f868da91319c981a87f",
+    "performance.py": "a8ccc08fbaa3cabde3a2c682619a7d168adde6a73b30683e97d24e0ccee1ab22",
+    "semantic.py": "f52025b5a171b50bf74b91db5874dd2af69c9b9677565f16efedc23e73335508",
+    "uv.lock": "d2d0032342de232db0ebb4e7e2b7c74a3c04b3932aef1f6b9c915db890fc1dad",
+    "execution_report.md": "9d08f90e6e40981fb5b8b953e7a97025de55e6bc6486638e650abc3179e630de"
+  }
+}
