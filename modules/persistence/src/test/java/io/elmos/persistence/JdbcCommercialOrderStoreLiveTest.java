@@ -87,6 +87,9 @@ class JdbcCommercialOrderStoreLiveTest {
                     + RUNTIME_USER);
             statement.execute("GRANT EXECUTE ON FUNCTION "
                     + "elmos_commercial_release_generation(varchar,varchar) TO " + RUNTIME_USER);
+            statement.execute("GRANT EXECUTE ON FUNCTION "
+                    + "elmos_commercial_expire_generation_reservations(integer) TO "
+                    + RUNTIME_USER);
             statement.execute("GRANT EXECUTE ON FUNCTION elmos_expire_current_trial() TO "
                     + RUNTIME_USER);
             statement.execute("GRANT EXECUTE ON FUNCTION elmos_current_organization_id() TO "
@@ -118,6 +121,9 @@ class JdbcCommercialOrderStoreLiveTest {
         assertEquals("PENDING_PAYMENT", orders.findOrder(
                 organization, creditOrder).orElseThrow().status());
         assertEquals(organization, runtime.sql("select organization_id "
+                        + "from commercial_order_directory where out_trade_no = ?")
+                .param(creditOrder).query(String.class).single());
+        assertEquals("ALIPAY_CHECKOUT", runtime.sql("select provider "
                         + "from commercial_order_directory where out_trade_no = ?")
                 .param(creditOrder).query(String.class).single());
 
@@ -174,6 +180,45 @@ class JdbcCommercialOrderStoreLiveTest {
                 organization, "actor-a", 20, 0, false).stream()
                 .filter(order -> order.orderType().equals("CREDIT_PACK"))
                 .findFirst().orElseThrow().orderId());
+    }
+
+    @Test
+    void expiredGenerationReservationReleasesCreditsAndEntitlements() {
+        String suffix = UUID.randomUUID().toString();
+        String organization = "commercial-expiry-" + suffix;
+        insertOrganization(organization);
+
+        String creditOrder = createOrder(organization, "actor-a", "expiry-credit-" + suffix,
+                "elmos-credit-500", null, "expiry-credit-idem-" + suffix);
+        fulfill(organization, creditOrder, "expiry-credit-provider-" + suffix);
+        var creditHold = orders.reserveGeneration(
+                "expiry-credit-res-" + suffix, organization, "actor-a", "project-a", "job-a",
+                new BigDecimal("60"), "expiry-credit-res-idem-" + suffix, 600);
+        admin.sql("update commercial_credit_reservations set expires_at = now() - interval '1 second' "
+                        + "where reservation_id = ?")
+                .param(creditHold.reservationId()).update();
+
+        assertBalance(organization, "500", "0", "500");
+        assertEquals("EXPIRED", inTenant(organization, "select status "
+                + "from commercial_credit_reservations where reservation_id = ?",
+                creditHold.reservationId()));
+
+        String oneTimeOrder = createOrder(organization, "actor-a", "expiry-once-" + suffix,
+                "elmos-project-generation-once", "project-once", "expiry-once-idem-" + suffix);
+        fulfill(organization, oneTimeOrder, "expiry-once-provider-" + suffix);
+        var entitlementHold = orders.reserveGeneration(
+                "expiry-once-res-" + suffix, organization, "actor-a", "project-once", "job-once",
+                new BigDecimal("1"), "expiry-once-res-idem-" + suffix, 600);
+        admin.sql("update commercial_credit_reservations set expires_at = now() - interval '1 second' "
+                        + "where reservation_id = ?")
+                .param(entitlementHold.reservationId()).update();
+
+        orders.creditBalance(organization);
+        assertEquals("EXPIRED", inTenant(organization, "select status "
+                + "from commercial_credit_reservations where reservation_id = ?",
+                entitlementHold.reservationId()));
+        assertEquals("AVAILABLE", inTenant(organization, "select status "
+                + "from project_generation_entitlements where source_order_id = ?", oneTimeOrder));
     }
 
     @Test

@@ -5,16 +5,24 @@ import io.elmos.commercialadapter.BillingDatabaseErrorAdvice;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BillingApiErrorAdviceTest {
     private final BillingMetrics metrics = new BillingMetrics(new SimpleMeterRegistry());
     private final BillingApiErrorAdvice advice = new BillingApiErrorAdvice(metrics);
     private final BillingDatabaseErrorAdvice databaseAdvice = new BillingDatabaseErrorAdvice(metrics);
+
+    @Test
+    void adviceCoversEveryAuthenticatedBillingController() {
+        assertAdviceScope(BillingApiErrorAdvice.class);
+        assertAdviceScope(BillingDatabaseErrorAdvice.class);
+    }
 
     @Test
     void mapsAllowlistedPostgresStateRuleWithoutLeakingSql() {
@@ -69,5 +77,13 @@ class BillingApiErrorAdviceTest {
         );
         assertFalse(application.getBody().toString().contains("private provider"));
         assertFalse(state.getBody().toString().contains("private subscription"));
+    }
+
+    private static void assertAdviceScope(Class<?> adviceType) {
+        var scope = adviceType.getAnnotation(RestControllerAdvice.class).assignableTypes();
+        var types = java.util.Set.of(scope);
+        assertTrue(types.contains(SelfServiceBillingController.class));
+        assertTrue(types.contains(WalletTopupController.class));
+        assertTrue(types.contains(CommercialOrderController.class));
     }
 }
