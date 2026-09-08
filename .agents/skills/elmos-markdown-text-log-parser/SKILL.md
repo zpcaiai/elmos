@@ -81,8 +81,8 @@ description: "解析 Markdown/MDX、TXT、配置和日志文件；当任务涉�
 - Source contract SHA-256: `207d5f683d62eea24e8f770d185eb08fe23616aacc4d611a5f2dbd64ac355959`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_markdown_text_log_parser`
 - Runtime phase: `secure-intake`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S11-01`, `S11-02`, `S11-03`, `S11-04`
 - Generated contract: `compiled-contract.json`

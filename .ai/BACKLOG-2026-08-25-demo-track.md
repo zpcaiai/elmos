@@ -63,7 +63,7 @@ A/B 线才抢 Mac。所以 **A/B 与 C 可以真正并行，不互相排队**。
 | B2 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
 | B3 | Claude/Cowork | 2026-09-01 | `DONE` —— 口径重量为 **44 条**（上游 30 / 可规避 14），6 个可上报缺陷带最小复现；**分诊的覆盖率收益实测 = 0**。见 `FINDINGS-2026-09-01-b3.md` |
 | B4 | Claude/Cowork | 2026-09-01 | `DONE` —— 选 Matrix Synapse（重量 **89.93%**，schema 口径 94.46%）；结论不变但理由已换 |
-| C1 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
+| C1 | Claude/Cowork | 2026-08-25 | `DONE`（2026-09-08 Java CFG + lineage/topology origin） |
 | C2 | Claude/Cowork | 2026-09-01 | `DONE` —— 定自绘 SVG（不做 Mermaid）；确定性与横向滚动均已实测闭合 |
 | C3 | Claude/Cowork | 2026-09-01 | `DONE` —— 纯标准库 OOXML，矢量三重机器验证已闭合；**Mac 上真打开过：5 页齐、未报修复**。缩放/选中两项渲染细节未逐项核，记为已知边界 |
 | C4 | | | 本轮不做（C0 已定 CLI + 静态报告） |
@@ -221,7 +221,14 @@ namespace / class / method / 属性 / 语句。**画图走这层，不要走 rou
 - 这条线是 **web-console 的新页面**，还是先做 **CLI + 静态 HTML 报告**？
   后者能把 C4 从 EPIC 降成小活，先演示先反馈。**建议先 CLI + 报告。**
 
-### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `IN-PROGRESS`（只做完一半）—— 云端
+### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `DONE`（2026-09-08）—— 云端
+
+> **2026-09-08 收口**：Python 继续走 `ast`（`origin=PARSED`）。Java 新增
+> `java_flowgraph.py`：注释/字符串遮蔽 + 花括号匹配的方法级控制流，产出与 Python
+> 相同的 decision/loop/merge 节点；解析失败记 `origin=REGEX` / `parse_status=FAILED`。
+> `derive_data_lineage` 与 `reconcile_api_event_topology` 仍是正则扫描，但每条结果
+> 带 `origin=REGEX`，解析与推断不再混在无标记输出里。其余 11 门语言的控制流仍未做，
+> 超出本条「先做 1–2 门」的验收范围。
 
 > **2026-09-01 实测状态**：Python 侧是**真 `ast` 解析器**（`origin=PARSED`，控制流与 import 边都是，
 > 08-31 已在树上）。**Java 及其余 12 门语言仍是正则**；`derive_data_lineage` 与

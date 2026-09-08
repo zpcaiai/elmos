@@ -1,0 +1,14 @@
+{
+  "schema_version": "ao.v1",
+  "request_id": "q1",
+  "query": "",
+  "mode": "exact",
+  "selector": {
+    "symbol": "order"
+  },
+  "snapshot_refs": [
+    "host-ref"
+  ],
+  "top_k": 5,
+  "context_token_budget": 4096
+}

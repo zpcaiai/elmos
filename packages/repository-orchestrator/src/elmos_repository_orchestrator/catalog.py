@@ -70,11 +70,27 @@ _SPECS: tuple[SkillSpec, ...] = (
     SkillSpec("elmos-telemetry-learner", "telemetry_learner", "canonical.elmos.execution-intelligence"),
     SkillSpec("elmos-routing-policy-optimizer", "routing_policy_optimizer", "canonical.elmos.model-gateway"),
     SkillSpec("elmos-model-selection-controller", "model_selection_controller", "canonical.elmos.model-gateway"),
+    SkillSpec("elmos-implicit-requirement-miner", "implicit_requirement_miner", "canonical.elmos.requirement-baseline"),
+    SkillSpec("elmos-behavioral-scenario-graph", "behavioral_scenario_graph", "canonical.elmos.scenario-graph"),
+    SkillSpec("elmos-repository-intelligence-graph", "repository_intelligence_graph", "canonical.elmos.semantic-index"),
+    SkillSpec("elmos-architecture-invariant-ledger", "architecture_invariant_ledger", "canonical.elmos.invariant-ledger"),
+    SkillSpec("elmos-semantic-seam-detector", "semantic_seam_detector", "canonical.elmos.impact-graph"),
+    SkillSpec("elmos-adaptive-hierarchical-planner", "adaptive_hierarchical_planner", "canonical.elmos.durable-runtime"),
+    SkillSpec("elmos-task-granularity-controller", "task_granularity_controller", "canonical.elmos.durable-runtime"),
+    SkillSpec("elmos-plan-graph-verifier", "plan_graph_verifier", "canonical.elmos.local-verification-gate"),
+    SkillSpec("elmos-uncertainty-exploration-planner", "uncertainty_exploration_planner", "canonical.elmos.execution-intelligence"),
+    SkillSpec("elmos-proof-obligation-generator", "proof_obligation_generator", "canonical.elmos.verification-fabric"),
+    SkillSpec("elmos-integration-edge-planner", "integration_edge_planner", "canonical.elmos.contract-registry"),
+    SkillSpec("elmos-dynamic-replanner", "dynamic_replanner", "canonical.elmos.durable-runtime"),
+    SkillSpec("elmos-semantic-conflict-detector", "semantic_conflict_detector", "canonical.elmos.verification-fabric"),
+    SkillSpec("elmos-critical-path-resource-scheduler", "critical_path_resource_scheduler", "canonical.elmos.execution-intelligence"),
+    SkillSpec("elmos-baseline-golden-snapshotter", "baseline_golden_snapshotter", "canonical.elmos.verification-fabric"),
+    SkillSpec("elmos-plan-diff-audit-journal", "plan_diff_audit_journal", "canonical.elmos.durable-runtime"),
+    SkillSpec("elmos-decomposition-telemetry-learner", "decomposition_telemetry_learner", "canonical.elmos.execution-intelligence"),
 )
 
 SKILL_SPECS = {spec.name: spec for spec in _SPECS}
 SKILL_NAMES: tuple[str, ...] = tuple(spec.name for spec in _SPECS)
 
-if len(SKILL_NAMES) != 37 or len(SKILL_SPECS) != 37:
-    raise RuntimeError("repository-orchestrator catalog must contain exactly 37 unique Skills")
-
+if len(SKILL_NAMES) != 54 or len(SKILL_SPECS) != 54:
+    raise RuntimeError("repository-orchestrator catalog must contain exactly 54 unique Skills")

@@ -1406,7 +1406,7 @@ def _build_report(
             "manualMigrationRequired": domestic_disposition_counts["MANUAL_MIGRATION_REQUIRED"],
             "sourceFormatReview": domestic_disposition_counts["SOURCE_FORMAT_REVIEW"],
             "engineDefects": domestic_disposition_counts["ENGINE_DEFECT"],
-            "targetSqlEmission": "PROHIBITED_UNTIL_EXACT_ADAPTER_AND_EVIDENCE",
+            "targetSqlEmission": "LOCAL_ONLY_UNDER_EXPLICIT_COMPATIBILITY_MODE",
             "externalExecution": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
         }
@@ -1427,9 +1427,10 @@ def _build_report(
     )
     caveats.append(
         "ChinaDB coverage is a route-disposition ledger: all exact domestic target identities are "
-        "counted, but no compatibility label is treated as an exact renderer. Admitted source units "
-        "remain TARGET_ADAPTER_REVIEW_REQUIRED until a versioned target adapter and independent "
-        "evidence exist."
+        "counted, and no compatibility label is treated as a silent dialect alias. Scan never emits "
+        "target SQL (automaticTargetEmissions stays 0). Local DDL emission requires "
+        "`elmos-sql-dialect translate --chinadb-target ... --compatibility-mode ...` and remains "
+        "LOCAL_EMITTED with externalExecution NOT_RUN and certification NOT_CERTIFIED."
     )
     if scan_errors:
         caveats.insert(
@@ -1531,8 +1532,10 @@ def render_markdown(report: FeasibilityReport) -> str:
             f"units ({pct(cast(float, china['routeDispositionCoverage']))}) have an explicit disposition "
             "across 13 exact target identities.**",
             "",
-            "This is complete route accounting, not a claim that every unit emits target SQL. "
-            "The registry is `SPEC_ONLY`; unverified target adapters remain explicit review work.",
+            "This is complete route accounting, not a claim that scan emits target SQL. "
+            "Local DDL emission exists only under an explicit `--compatibility-mode` allow-list "
+            "and maps onto existing postgres/mysql/oracle emitters (`LOCAL_ADAPTER`); live "
+            "execution and certification stay `NOT_RUN` / `NOT_CERTIFIED`.",
             "",
             "| | Count |",
             "|---|---|",

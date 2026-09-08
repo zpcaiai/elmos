@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:agent-subflow-request",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "run_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subflow": {
+      "type": "string",
+      "enum": [
+        "evidence_tutor",
+        "bounded_repair",
+        "conversion_differential"
+      ]
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "budget_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checkpoint_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_ref",
+    "subflow",
+    "graph_version",
+    "scope_ref",
+    "evidence_refs",
+    "budget_ref",
+    "checkpoint_ref"
+  ],
+  "additionalProperties": false
+}

@@ -1,6 +1,6 @@
 ---
 name: b46-runtime-lease-quota-reclaim
-description: Enforce the ten-minute free runtime quota: an independent watchdog, process-group termination, container and volume removal, explicit-only attributable extension, and a result written on every path.
+description: "Enforce the ten-minute free runtime quota: an independent watchdog, process-group termination, container and volume removal, explicit-only attributable extension, and a result written on every path."
 ---
 
 ## Operating mode

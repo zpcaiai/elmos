@@ -1,0 +1,51 @@
+version: 1
+default_mode: smart
+modes:
+  smart:
+    description: System selects the best value model per atomic task from the fixed
+      10-model allowlist.
+    optimization_profile: cost_performance
+    allowed_profiles:
+    - cost_performance
+    - lowest_cost
+    - max_quality
+    - fastest
+    respect_router_risk_gates: true
+    per_task_selection: true
+    fallback: router_policy
+  manual:
+    description: User selects one of the ten models for primary implementation calls.
+    requires_selected_model: true
+    default_fallback_policy: strict
+    allowed_fallback_policies:
+    - strict
+    - smart_within_allowlist
+    default_verification_policy: system_required_verifiers
+    allowed_verification_policies:
+    - system_required_verifiers
+    - selected_model_only
+    primary_execution_model_locked: true
+    hard_incompatibility_behavior: preflight_block
+ui:
+  show_smart_first: true
+  smart_label: Smart — Best value per task
+  show_exactly_allowlisted_models: true
+  show_disabled_models: true
+  disabled_models_selectable: false
+  show_live_availability: true
+  show_relative_cost: true
+  show_strength_tags: true
+  show_estimated_run_cost_and_eta: true
+  show_routing_explanation: true
+  show_actual_model_per_task: true
+  show_model_switch_events: true
+invariants:
+- No UI option, API value, fallback, reviewer, or executor may name a model outside
+  config/model-registry.yaml.
+- Manual strict mode never silently switches the primary implementation model.
+- Manual smart_within_allowlist fallback may switch only after a classified failure
+  or hard model incompatibility and must emit an auditable switch event.
+- Security, budget, forbidden-path, and deterministic validation gates cannot be disabled
+  by manual model selection.
+- If selected_model_only verification conflicts with a mandatory independent-review
+  gate, final production certification must not claim an unconditional pass.

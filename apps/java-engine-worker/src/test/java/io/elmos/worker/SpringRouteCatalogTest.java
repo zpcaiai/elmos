@@ -162,7 +162,7 @@ class SpringRouteCatalogTest {
             assertTrue(recipeIds.add(route.recipeId()), "recipe ids must be unique: " + route.recipeId());
             assertNotNull(SpringRouteCatalog.class.getResourceAsStream(route.recipeResource()),
                     "missing recipe resource for " + route.routeId());
-            assertTrue(Set.of("2.7.18/17", "3.2.12/17", "3.5.3/21", "4.1.0/21", "4.1.1/21")
+            assertTrue(Set.of("2.7.18/17", "3.2.12/17", "3.5.3/21", "3.5.16/21", "4.1.0/21", "4.1.1/21")
                             .contains(route.targetBoot() + "/" + route.targetJava()),
                     "unexpected target tuple for " + route.routeId());
         }
@@ -261,37 +261,47 @@ class SpringRouteCatalogTest {
         }
     }
 
-    @Test void olderSpringMvcLinesRemainDeclaredButCannotBeSelected() {
+    @Test void olderSpringMvcLinesSelectTheUnverifiedPreparationEdge() {
         SpringRoute inventory = SpringRouteCatalog
                 .byId("spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21").orElseThrow();
-        assertEquals(EvidenceStatus.NOT_IMPLEMENTED, inventory.routeEvidence());
-        assertFalse(inventory.implemented());
-        assertTrue(inventory.recipeResource().isBlank());
-        assertTrue(inventory.recipeId().isBlank());
+        assertEquals(EvidenceStatus.NOT_RUN, inventory.routeEvidence());
+        assertTrue(inventory.implemented());
+        assertEquals("/rewrite/spring-framework-3.2-5.2-mvc-to-spring-boot-3.5.3.yml",
+                inventory.recipeResource());
+        assertEquals("io.elmos.openrewrite.SpringFramework3_2To5_2MvcToSpringBoot3_5_3Java21",
+                inventory.recipeId());
+        assertTrue(inventory.verifiedSourceBoot().isBlank());
+        assertTrue(inventory.verifiedSourceJava().isBlank());
 
-        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
-                assertThrows(BlockedException.class,
-                        () -> SpringRouteCatalog.selectSpringMvc(
-                                "5.2.22.RELEASE", "8", "maven", "3.5.3", "21")).code());
+        var selection = SpringRouteCatalog.selectSpringMvc(
+                "5.2.22.RELEASE", "8", "maven", "3.5.3", "21");
+        assertEquals("spring-mvc-3.2-5.2-maven-to-boot-3.5.3-java-21",
+                selection.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, selection.evidence());
+        assertTrue(selection.requiresExperimentalOptIn());
+        assertEquals(SpringRouteCatalog.LaunchStatus.EXPERIMENTAL, selection.launchStatus());
     }
 
-    @Test void currentMaintenanceInventoryRemainsBlocked() {
+    @Test void currentMaintenancePinSelectsTheUnverifiedBootThreeFiveSixteenEdge() {
         SpringRoute threeFive = SpringRouteCatalog
                 .byId("boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21").orElseThrow();
 
-        assertEquals(EvidenceStatus.NOT_IMPLEMENTED, threeFive.routeEvidence());
-        assertFalse(threeFive.implemented());
-        assertTrue(threeFive.recipeResource().isBlank());
-        assertTrue(threeFive.recipeId().isBlank());
+        assertEquals(EvidenceStatus.NOT_RUN, threeFive.routeEvidence());
+        assertTrue(threeFive.implemented());
+        assertEquals("/rewrite/spring-boot-to-3.5.16.yml", threeFive.recipeResource());
+        assertEquals("io.elmos.openrewrite.SpringBoot1_5To3_5_15ToBoot3_5_16Java21",
+                threeFive.recipeId());
         assertTrue(threeFive.verifiedSourceBoot().isBlank());
         assertTrue(threeFive.verifiedSourceJava().isBlank());
         assertEquals("3.5.16", threeFive.targetBoot());
         assertEquals("21", threeFive.targetJava());
 
-        assertEquals("SPRING_ROUTE_NOT_IMPLEMENTED",
-                assertThrows(BlockedException.class,
-                        () -> SpringRouteCatalog.select(
-                                "3.5.3", "21", "maven", "3.5.16", "21")).code());
+        var selection = SpringRouteCatalog.select("3.5.3", "21", "maven", "3.5.16", "21");
+        assertEquals("boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
+                selection.route().routeId());
+        assertEquals(EvidenceStatus.NOT_RUN, selection.evidence());
+        assertTrue(selection.requiresExperimentalOptIn());
+        assertEquals(SpringRouteCatalog.LaunchStatus.EXPERIMENTAL, selection.launchStatus());
     }
 
     @Test void bootVersionsSelectTheDirectBootFourMavenEdges() {

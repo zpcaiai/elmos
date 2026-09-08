@@ -1479,6 +1479,35 @@ _LET_SPELLING: dict[Language, str] = {
     "kotlin": "val {name}: {type} = {value}",
     "flutter": "final {type} {name} = {value}",
 }
+_MUTABLE_LET_SPELLING: dict[Language, str] = {
+    "java": "{type} {name} = {value}",
+    "csharp": "{type} {name} = {value}",
+    "python": "{name}: {type} = {value}",
+    "typescript": "let {name}: {type} = {value}",
+    "react": "let {name}: {type} = {value}",
+    "javascript": "let {name} = {value}",
+    "go": "var {name} {type} = {value}",
+    "rust": "let mut {name}: {type} = {value}",
+    "cpp": "{type} {name} = {value}",
+    "objc": "{type} {name} = {value}",
+    "swift": "var {name}: {type} = {value}",
+    "php": "{name} = {value}",
+    "kotlin": "var {name}: {type} = {value}",
+    "flutter": "{type} {name} = {value}",
+}
+
+
+def _collect_assigned_variables(statements: tuple[Statement, ...]) -> set[str]:
+    assigned: set[str] = set()
+    for s in statements:
+        if s.kind == "assign" and s.name is not None:
+            assigned.add(s.name)
+        elif s.kind == "if":
+            assigned.update(_collect_assigned_variables(s.then_body))
+            assigned.update(_collect_assigned_variables(s.else_body))
+        elif s.kind in ("while", "for"):
+            assigned.update(_collect_assigned_variables(s.body))
+    return assigned
 
 
 def _statements(
@@ -1487,17 +1516,23 @@ def _statements(
     environment: dict[str, str],
     indent: int,
     return_type: str,
+    mutable_variables: set[str] | None = None,
 ) -> list[str]:
     unit = "    "
     prefix = unit * indent
     language = context.language
     lines: list[str] = []
+    if mutable_variables is None:
+        mutable_variables = _collect_assigned_variables(statements)
     for statement in statements:
         if statement.kind == "let" and statement.expression is not None:
             if statement.name is None or statement.declared_type is None:
                 raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:let")
             try:
-                spelling = _LET_SPELLING[language]
+                if statement.name in mutable_variables:
+                    spelling = _MUTABLE_LET_SPELLING[language]
+                else:
+                    spelling = _LET_SPELLING[language]
             except KeyError as error:
                 raise RouteError(f"LET_EMISSION_UNSUPPORTED:{language}") from error
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
@@ -1516,6 +1551,19 @@ def _statements(
             # handed a copy, which is what keeps a branch-local binding from
             # leaking past the branch in targets that would not compile it.
             environment[statement.name] = statement.declared_type
+            continue
+        if statement.kind == "assign" and statement.expression is not None:
+            if statement.name is None:
+                raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:assign")
+            value = _expression(context, statement.expression, environment, top_level=True)
+            var_type = environment.get(statement.name)
+            if language in {"typescript", "react", "javascript"} and var_type == "integer":
+                _require_helper(context, "safe_integer")
+                context.normalization_rules.add(f"{language}.assign.integer.safe-integer")
+                value = f"_elmosRequireSafeInteger({value})"
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
+            var_name = _variable(language, statement.name)
+            lines.append(f"{prefix}{var_name} = {value}{suffix}")
             continue
         if statement.kind == "return" and statement.expression is not None:
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
@@ -1564,13 +1612,13 @@ def _statements(
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}if {condition}:")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
                 if statement.else_body:
                     lines.append(f"{prefix}else:")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
             elif language in {"go", "rust"}:
                 lines.append(f"{prefix}if {condition} {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
                 if statement.else_body:
                     # Go's semicolon rule inserts a `;` at the newline after a
                     # closing brace, which strands the `else` and makes the file
@@ -1584,35 +1632,35 @@ def _statements(
                     else:
                         lines.append(f"{prefix}}}")
                         lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
                     lines.append(f"{prefix}}}")
                 else:
                     lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
                 if statement.else_body:
                     lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
+                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
                     lines.append(f"{prefix}}}")
             continue
         if statement.kind == "while" and statement.condition is not None:
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}while {condition}:")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
             elif language == "go":
                 lines.append(f"{prefix}for {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language in {"rust", "swift"}:
                 lines.append(f"{prefix}while {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}while ({condition}) {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             continue
         if statement.kind == "for":
@@ -1632,42 +1680,42 @@ def _statements(
             if language == "python":
                 range_expr = f"range({start}, {end})" if step is None else f"range({start}, {end}, {step})"
                 lines.append(f"{prefix}for {var_name} in {range_expr}:")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
             elif language == "go":
                 lines.append(f"{prefix}for {var_name} := int64({start}); {var_name} < {end}; {inc} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "rust":
                 range_expr = f"{start}..{end}" if step is None else f"({start}..{end}).step_by({step} as usize)"
                 lines.append(f"{prefix}for {var_name} in {range_expr} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "swift":
                 range_expr = f"{start}..<{end}" if step is None else f"stride(from: {start}, to: {end}, by: {step})"
                 lines.append(f"{prefix}for {var_name} in {range_expr} {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "kotlin":
                 range_expr = f"{start} until {end}" if step is None else f"{start} until {end} step {step}"
                 lines.append(f"{prefix}for ({var_name} in {range_expr}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language in {"typescript", "react"}:
                 lines.append(f"{prefix}for (let {var_name}: number = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "javascript":
                 lines.append(f"{prefix}for (let {var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             elif language == "php":
                 lines.append(f"{prefix}for ({var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             else:
                 type_spelling = _type(language, "integer", context.records)
                 lines.append(f"{prefix}for ({type_spelling} {var_name} = {start}; {var_name} < {end}; {inc}) {{")
-                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type, mutable_variables))
                 lines.append(f"{prefix}}}")
             continue
         if statement.kind == "break":
@@ -1778,7 +1826,8 @@ def _function(context: _Context, function: Function) -> str:
                 context.normalization_rules.add("python.parameter.integer.int64-range")
                 lines.append(f"    _elmos_in_range({parameter.name})")
     body_indent = 2 if language in _WRAPPED_IN_TYPE else 1
-    lines.extend(_statements(context, function.body, environment, body_indent, function.return_type))
+    mutable_variables = _collect_assigned_variables(function.body)
+    lines.extend(_statements(context, function.body, environment, body_indent, function.return_type, mutable_variables))
     if language == "python":
         return "\n".join(lines)
     lines.append("    }" if language in _WRAPPED_IN_TYPE else "}")

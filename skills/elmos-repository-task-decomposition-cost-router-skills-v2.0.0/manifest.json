@@ -1,0 +1,52 @@
+{
+  "package": "elmos-repository-task-decomposition-cost-router-skills",
+  "version": "2.0.0",
+  "skills_count": 54,
+  "hard_model_allowlist": [
+    "gpt-5.6-sol-max",
+    "claude-opus-5-max",
+    "claude-fable-5",
+    "grok-4.6",
+    "kimi-k3-max",
+    "glm-5.3-max",
+    "qwen3.8-max",
+    "deepseek-v4-pro-0813",
+    "gemini-3.7-flash-high",
+    "claude-sonnet-5"
+  ],
+  "entry_skill": "skills/00-repository-orchestrator/SKILL.md",
+  "compatibility": [
+    "Codex AGENTS.md workflow",
+    "Claude Code CLAUDE.md workflow",
+    "provider-neutral orchestrator"
+  ],
+  "features": [
+    "adaptive coarse-to-fine hierarchical planning",
+    "implicit requirement recovery",
+    "behavioral scenario graph",
+    "repository intelligence graph",
+    "architecture invariant ledger",
+    "semantic seam detection",
+    "adaptive split/merge granularity",
+    "typed task DAG",
+    "deterministic plan graph verification",
+    "validated handoff contracts",
+    "proof obligations",
+    "bounded uncertainty exploration",
+    "dynamic local/global replanning",
+    "semantic integration conflict detection",
+    "critical-path resource scheduling",
+    "baseline/golden snapshots",
+    "immutable plan revision journal",
+    "decomposition telemetry learning",
+    "risk-aware model routing",
+    "expected completed-task cost optimization",
+    "isolated worktrees",
+    "bounded retry/escalation",
+    "repository certification",
+    "durable resume",
+    "Smart/manual UI model selection",
+    "manual strict or allowlisted smart fallback",
+    "auditable planned-versus-actual model usage"
+  ]
+}

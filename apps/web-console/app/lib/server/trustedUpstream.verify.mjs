@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
 import {
   configuredControlPlaneBaseUrl,
-  configuredLiveWorkbenchBaseUrl,
   configuredWorkspaceServiceBaseUrl,
   UpstreamConfigurationError,
   validateCommercialApiBaseUrl,
   validateControlPlaneBaseUrl,
-  validateLiveWorkbenchBaseUrl,
   validateRepositoryWorkspaceBaseUrl,
 } from "./trustedUpstream.ts";
 
@@ -49,10 +47,6 @@ accepted(
   "http://workspace-service:8082",
 );
 accepted(
-  validateLiveWorkbenchBaseUrl("http://live-workbench:8092", trustedProduction),
-  "http://live-workbench:8092",
-);
-accepted(
   validateControlPlaneBaseUrl("http://127.0.0.1:8080", { NODE_ENV: "development" }),
   "http://127.0.0.1:8080",
 );
@@ -65,8 +59,6 @@ rejected(() => validateControlPlaneBaseUrl(
 ));
 rejected(() => validateControlPlaneBaseUrl("http://commercial-api:8085", trustedProduction));
 rejected(() => validateCommercialApiBaseUrl("http://control-plane:8080", trustedProduction));
-rejected(() => validateLiveWorkbenchBaseUrl("http://control-plane:8080", trustedProduction));
-rejected(() => validateLiveWorkbenchBaseUrl("http://live-workbench:8092", production));
 rejected(() => validateControlPlaneBaseUrl("http://control-plane.example:8080", trustedProduction));
 rejected(() => validateControlPlaneBaseUrl("http://control-plane.:8080", trustedProduction));
 rejected(() => validateControlPlaneBaseUrl("http://control-plane-evil:8080", trustedProduction));
@@ -91,13 +83,6 @@ rejected(() => configuredWorkspaceServiceBaseUrl({
   ELMOS_TRUSTED_INTERNAL_HTTP: "true",
   ELMOS_WORKSPACE_SERVICE_URL: "http://control-plane:8080",
 }));
-accepted(
-  configuredLiveWorkbenchBaseUrl({
-    NODE_ENV: "production",
-    ELMOS_LIVE_WORKBENCH_BASE_URL: "https://workbench.example.test",
-  }),
-  "https://workbench.example.test",
-);
 
 const secret = "do-not-leak-this-secret";
 try {

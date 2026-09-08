@@ -1,13 +1,13 @@
 ---
 name: "elmos-incremental-regression-gate"
-description: "Run impact-based regression after each wave so defects are caught before the final expensive full-suite gate."
+description: "Run graph/scenario-based regression after each integration checkpoint and use unexpected failures as impact-model feedback."
 metadata:
   package: "elmos-repository-task-decomposition-cost-router-skills"
-  package_version: "1.1.0"
-  source_version: "1.0.0"
-  source_path: "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/30-incremental-regression-gate/SKILL.md"
-  source_sha256: "sha256:33d977773bc2e57dcd5a523aa3436f5f8297b257768d8a2b3991fc2602d6d8b6"
-  namespace: "repository-task-router-v1"
+  package_version: "2.0.0"
+  source_version: "2.0.0"
+  source_path: "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/30-incremental-regression-gate/SKILL.md"
+  source_sha256: "sha256:ffb78c6cbfb9fe0dccf40a21cf01d4b05e9472c65b69b6e0c87e5e55381a267b"
+  namespace: "repository-task-router-v2"
   runtime_module: "elmos_repository_orchestrator.runtime"
   runtime_callable: "dispatch"
   runtime_handler: "incremental_regression_gate"
@@ -20,41 +20,43 @@ metadata:
 
 ## Repository runtime binding
 
-- Immutable package source: `skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/30-incremental-regression-gate/SKILL.md` (`sha256:33d977773bc2e57dcd5a523aa3436f5f8297b257768d8a2b3991fc2602d6d8b6`).
-- Shared source policy and schemas: `skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/config/` and `skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/schemas/`.
-- Repository-corrected contracts and the exact 37-node DAG: `docs/repository-task-router-skills/compiled-schemas/` and `docs/repository-task-router-skills/dependency-dag.json`.
+- Immutable package source: `skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/30-incremental-regression-gate/SKILL.md` (`sha256:ffb78c6cbfb9fe0dccf40a21cf01d4b05e9472c65b69b6e0c87e5e55381a267b`).
+- Shared source policy and schemas: `skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/config/` and `skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/schemas/`.
+- Repository-corrected contracts and the exact 54-node DAG: `docs/repository-task-router-skills/compiled-schemas/` and `docs/repository-task-router-skills/dependency-dag.json`.
 - Bounded dispatch binding: `elmos_repository_orchestrator.runtime:dispatch`; implementation state is `IMPLEMENTED` and local execution evidence is `NOT_RUN`.
 - Package-authored instructions below describe the capability; they do not authorize provider, SCM, worktree, network, secret, merge, deployment, or certification side effects.
 - Provider/SCM/worktree external evidence remains `NOT_RUN` and certification remains `NOT_CERTIFIED`.
 - Missing, blocked, partial, skipped, synthetic, or self-verified evidence never passes a required gate.
 
 ## Immutable package guidance
-# Incremental Regression Gate
+# Incremental Regression Gate v2
 
-Run impact-based regression after each wave so defects are caught before the final expensive full-suite gate.
-
-## Trigger conditions
-- wave integrated
+Detect incorrect impact assumptions as early as possible.
 
 ## Inputs
-- `impact map`
-- `changed paths`
+- `repository graph delta`
+- `scenario graph`
+- `changed paths/symbols`
+- `baseline evidence`
 - `test catalog`
 
 ## Outputs
-- `wave regression evidence`
+- `checkpoint regression evidence`
+- `unexpected-impact findings`
 
 ## Procedure
-1. Select tests by changed modules and dependency reach.
-2. Always include previously failed related tests.
-3. Track new failures to wave/task.
-4. Block next dependent wave on unresolved regressions.
+1. Select tests from changed nodes, typed dependency reach and affected scenarios.
+2. Include baseline comparison and previously failing related tests.
+3. Add contract/invariant-specific probes for high-risk boundaries.
+4. Attribute failures to integration checkpoint/task where evidence permits.
+5. When a failure occurs outside predicted impact, update RIG/impact confidence and trigger local replan.
+6. Block downstream dependent work on unresolved regressions.
 
 ## Guardrails
-- Do not rely solely on changed-file tests for high-centrality modules.
+- High-centrality or global-invariant changes require broader regression than changed-file selection.
 
 ## Acceptance criteria
-- wave passes selected regression set
+- checkpoint passes its graph-derived regression/proof set
 
 ## Integration contract
 - Read global configuration from `config/` and schemas from `schemas/`.

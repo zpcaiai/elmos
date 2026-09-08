@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:benchmark-report",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "dataset_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "environment_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "scope_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "model_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "warm_state": {
+      "type": "string",
+      "enum": [
+        "cold",
+        "warm",
+        "mixed_separately_reported"
+      ]
+    },
+    "n_independent_cases": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total_attempt_cost": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "accepted_jobs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "production_claim": {
+      "const": false
+    },
+    "raw_artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_digest",
+    "environment_digest",
+    "scope_digest",
+    "model_profile",
+    "warm_state",
+    "n_independent_cases",
+    "total_attempt_cost",
+    "accepted_jobs",
+    "production_claim",
+    "raw_artifact_refs"
+  ],
+  "additionalProperties": false
+}

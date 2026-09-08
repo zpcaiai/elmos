@@ -63,7 +63,7 @@ SOURCE_ARCHIVE_PATH = ROOT / "skills/subskills/elmos-knowledge-skill-model-found
 SOURCE_ARCHIVE_PREFIX = "elmos-knowledge-skill-model-foundry-v3.0.0/"
 CATALOG_SCHEMA_VERSION = "elmos.knowledge-skill-model-foundry.compiled-catalog.v2"
 EXPECTED_COMPILED_CATALOG_SHA256 = (
-    "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
+    "b1d8907ac5ea9434f7c4107966a0f74d9ca7bb47d1ed31576227c71ef871331f"
 )
 EXPECTED_PACKAGE = {
     "id": "elmos-knowledge-skill-model-foundry-v3.0.0",
@@ -1096,6 +1096,11 @@ class SkillCatalog:
                     raise CatalogValidationError(
                         f"{name}: default adapter registry/catalog binding mismatch"
                     )
+        from .semantic_program_runner import SemanticProgramRunner
+        self.program_runner = SemanticProgramRunner(
+            self.kernel,
+            local_handlers=getattr(self.adapters, "_implementations", None),
+        )
         self._records = self.snapshot.atomic_skills
         self._meta_skills = self.snapshot.meta_skills
         self._pipelines = self.snapshot.pipelines
@@ -1266,6 +1271,20 @@ class SkillCatalog:
             outputs = dict(prepared.outputs)
             outputs["outcome"] = prepared.status
             return _result(operation=canonical, status=prepared.status, outputs=outputs, error=prepared.error)
+        if operation in {"workflow", "contract_execute", "program_execute"}:
+            effective_invocation = invocation_id or scope.invocation_id
+            if effective_invocation != scope.invocation_id:
+                return _result(operation=canonical, status="NOT_RUN", outputs={"skill": canonical, "outcome": "INVOCATION_SCOPE_MISMATCH", "execution_status": "NOT_RUN", "external_evidence_status": EXTERNAL_EVIDENCE_STATUS, "certification_status": CERTIFICATION_STATUS}, error="invocation_id does not match the host-minted context")
+            try:
+                return self.program_runner.run_program(
+                    skill=record,
+                    payload=inputs,
+                    tenant_scope=scope,
+                    invocation_id=effective_invocation,
+                    catalog_digest=self.snapshot.content_sha256,
+                )
+            except Exception as exc:
+                return _result(operation=canonical, status="FAILED", outputs={"skill": canonical, "outcome": "FAILED", "execution_status": "FAILED", "error": str(exc), "external_evidence_status": EXTERNAL_EVIDENCE_STATUS, "certification_status": CERTIFICATION_STATUS}, error=str(exc))
         if not invocation_id:
             return _result(operation=canonical, status="NOT_RUN", outputs={"skill": canonical, "outcome": "NOT_RUN", "execution_status": "NOT_RUN", "reason": "non-prepare operations require an invocation_id", "external_evidence_status": EXTERNAL_EVIDENCE_STATUS, "certification_status": CERTIFICATION_STATUS}, error="missing invocation_id")
         if invocation_id != scope.invocation_id:

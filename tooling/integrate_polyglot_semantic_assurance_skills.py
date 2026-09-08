@@ -121,11 +121,11 @@ COLLISIONS: Mapping[str, Mapping[str, str]] = {
         "skill_sha256": "7467e1994fc851144b05700da86db4544e98672dd308fe1595b55aa45540776d",
     },
     "elmos-proof-obligation-generator": {
-        "owner": "Knowledge Skill Model Foundry:09-evaluation-proof-certification",
+        "owner": "elmos-repository-task-decomposition-cost-router-skills:2.0.0",
         "owner_file": "SKILL.md",
-        "owner_field": "metadata.pack",
-        "owner_value": "09-evaluation-proof-certification",
-        "skill_sha256": "dd43e21b823a73c4654f7d86f44a7b04d820fb6860e65c5152fc13f54b7b6ded",
+        "owner_field": "metadata.package",
+        "owner_value": "elmos-repository-task-decomposition-cost-router-skills",
+        "skill_sha256": "96be774c3b290d3f12aba5e11c8292c4bcc8e6a9b57b351881448a0982b9cf4f",
     },
     "elmos-proof-cache-invalidation": {
         "owner": "elmos-formal-assurance-kernel-v1.0.0",
@@ -290,7 +290,7 @@ COLLISIONS = {
 }
 
 SEMANTIC_OWNER_MANIFEST_SHA256 = (
-    "3020d3a70410f5b81bdc02c2ded3504e1642813c6aa536d2901e1dded195aba4"
+    "1644741b2677c60056b5807205b3c28ddb5f995f8b218bc20f5c4f9a59578e61"
 )
 SEMANTIC_OWNER_ARCHIVE_SHA256 = (
     "sha256:0e470c927bf2840214d0e11d04ff0dbf914385b55c68c36370a5209e61994f60"

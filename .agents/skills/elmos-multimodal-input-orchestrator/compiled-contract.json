@@ -114,7 +114,7 @@
     },
     "canonical_skill_member": "skills/elmos-multimodal-input-orchestrator/SKILL.md",
     "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
-    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "compiler_sha256": "c3b23e4057122d3abeaad2f770a20b2aca996d9d4ab241f4647869e8aa41be5c",
     "mirrors_verified_byte_identical": [
       "skills",
       ".agents/skills",
@@ -124,9 +124,9 @@
   "runtime": {
     "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
     "handler_id": "execute_multimodal_input_orchestrator",
-    "implementation_sha256": "c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1",
+    "implementation_sha256": "acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87",
     "phase": "secure-intake",
-    "tests_sha256": "0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183"
+    "tests_sha256": "300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f"
   },
   "schema_version": "1.0.0",
   "skill": {

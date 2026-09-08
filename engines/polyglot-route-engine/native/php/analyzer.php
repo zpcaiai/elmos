@@ -665,8 +665,15 @@ function parseExpression(Cursor $cursor, int $minimumPrecedence, bool $emittedTa
     }
 }
 
-function parseBlock(Cursor $cursor, bool $emittedTarget): array
-{
+function parseBlock(
+    Cursor $cursor,
+    bool $emittedTarget,
+    array &$environment,
+    array $parameterNames,
+    array &$loopValNames,
+    string $returnType,
+    bool $inLoop
+): array {
     $cursor->expect('{', 'PHP_UNSUPPORTED_STATEMENT');
     $statements = [];
     while (true) {
@@ -678,7 +685,15 @@ function parseBlock(Cursor $cursor, bool $emittedTarget): array
             $cursor->next();
             return $statements;
         }
-        $statements[] = parseStatement($cursor, $emittedTarget);
+        $statements[] = parseStatement(
+            $cursor,
+            $emittedTarget,
+            $environment,
+            $parameterNames,
+            $loopValNames,
+            $returnType,
+            $inLoop
+        );
     }
 }
 
@@ -710,13 +725,20 @@ function skipBalancedBlock(Cursor $cursor): Tok
     }
 }
 
-
-function parseStatement(Cursor $cursor, bool $emittedTarget): array
-{
+function parseStatement(
+    Cursor $cursor,
+    bool $emittedTarget,
+    array &$environment,
+    array $parameterNames,
+    array &$loopValNames,
+    string $returnType,
+    bool $inLoop
+): array {
     $token = $cursor->peek();
     if ($token === null) {
         fail('PHP_UNEXPECTED_END_OF_INPUT');
     }
+
     if ($token->kind === T_RETURN) {
         $cursor->next();
         if ($cursor->peek() !== null && $cursor->peek()->kind === ';') {
@@ -724,23 +746,30 @@ function parseStatement(Cursor $cursor, bool $emittedTarget): array
         }
         $expression = parseExpression($cursor, 0, $emittedTarget);
         $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+        $actual = inferType($expression, $environment);
+        if ($actual !== $returnType && !($actual === 'integer' && $returnType === 'number')) {
+            fail('PHP_RETURN_TYPE_MISMATCH', "$returnType:$actual");
+        }
         return [
             'kind' => 'return',
             'expression' => $expression,
             'source_span' => span($cursor->file(), $token->start, $semicolon->end),
         ];
     }
+
     if ($token->kind === T_IF) {
         $cursor->next();
         $cursor->expect('(', 'PHP_UNSUPPORTED_CONDITION');
         $condition = parseExpression($cursor, 0, $emittedTarget);
         $cursor->expect(')', 'PHP_UNSUPPORTED_CONDITION');
-        $then = parseBlock($cursor, $emittedTarget);
+        if (inferType($condition, $environment) !== 'boolean') {
+            fail('PHP_CONDITION_MUST_BE_BOOLEAN');
+        }
+        $thenEnv = $environment;
+        $then = parseBlock($cursor, $emittedTarget, $thenEnv, $parameterNames, $loopValNames, $returnType, $inLoop);
         $else = [];
         $end = $cursor->peek(-1);
         if ($cursor->peek() !== null && $cursor->peek()->kind === T_ELSEIF) {
-            // `elseif` is expressible as a nested `if`, but rewriting it would
-            // make the emitted shape differ from the source shape for no gain.
             fail('PHP_UNSUPPORTED_STATEMENT', 'elseif');
         }
         if ($cursor->peek() !== null && $cursor->peek()->kind === T_ELSE) {
@@ -748,7 +777,8 @@ function parseStatement(Cursor $cursor, bool $emittedTarget): array
             if ($cursor->peek() !== null && $cursor->peek()->kind === T_IF) {
                 fail('PHP_UNSUPPORTED_STATEMENT', 'else-if');
             }
-            $else = parseBlock($cursor, $emittedTarget);
+            $elseEnv = $environment;
+            $else = parseBlock($cursor, $emittedTarget, $elseEnv, $parameterNames, $loopValNames, $returnType, $inLoop);
             $end = $cursor->peek(-1);
         }
         return [
@@ -759,6 +789,384 @@ function parseStatement(Cursor $cursor, bool $emittedTarget): array
             'source_span' => span($cursor->file(), $token->start, $end === null ? $token->end : $end->end),
         ];
     }
+
+    if ($token->kind === T_WHILE) {
+        $cursor->next();
+        $cursor->expect('(', 'PHP_UNSUPPORTED_CONDITION');
+        $condition = parseExpression($cursor, 0, $emittedTarget);
+        $cursor->expect(')', 'PHP_UNSUPPORTED_CONDITION');
+        if (inferType($condition, $environment) !== 'boolean') {
+            fail('PHP_CONDITION_MUST_BE_BOOLEAN');
+        }
+        $peekNext = $cursor->peek();
+        if ($peekNext === null || $peekNext->kind !== '{') {
+            fail('PHP_WHILE_BLOCK_BODY_REQUIRED');
+        }
+        $loopEnv = $environment;
+        $body = parseBlock($cursor, $emittedTarget, $loopEnv, $parameterNames, $loopValNames, $returnType, true);
+        $end = $cursor->peek(-1);
+        return [
+            'kind' => 'while',
+            'condition' => $condition,
+            'body' => $body,
+            'source_span' => span($cursor->file(), $token->start, $end === null ? $token->end : $end->end),
+        ];
+    }
+
+    if ($token->kind === T_DO) {
+        fail('PHP_DO_WHILE_REJECTED');
+    }
+
+    if ($token->kind === T_FOR) {
+        $cursor->next();
+        $cursor->expect('(', 'PHP_UNSUPPORTED_STATEMENT');
+
+        $varToken = $cursor->expect(T_VARIABLE, 'PHP_FOR_VARIABLE_REQUIRED');
+        $varName = substr($varToken->text, 1);
+        if (in_array($varName, $parameterNames, true)) {
+            fail('PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+        }
+        if (isset($loopValNames[$varName])) {
+            fail('PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+        }
+        $cursor->expect('=', 'PHP_UNSUPPORTED_STATEMENT');
+        $startExpr = parseExpression($cursor, 0, $emittedTarget);
+        if (inferType($startExpr, $environment) !== 'integer') {
+            fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+
+        $condVarToken = $cursor->expect(T_VARIABLE, 'PHP_FOR_VARIABLE_REQUIRED');
+        $condVarName = substr($condVarToken->text, 1);
+        if ($condVarName !== $varName) {
+            fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+        }
+        $cmpToken = $cursor->peek();
+        if ($cmpToken !== null && $cmpToken->kind === T_IS_SMALLER_OR_EQUAL) {
+            fail('PHP_FOR_CLOSED_RANGE_REJECTED');
+        }
+        if ($cmpToken !== null && ($cmpToken->kind === '>' || $cmpToken->kind === T_IS_GREATER_OR_EQUAL)) {
+            fail('PHP_FOR_DOWNTO_REJECTED');
+        }
+        if ($cmpToken === null || $cmpToken->kind !== '<') {
+            fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+        }
+        $cursor->next();
+
+        $endExpr = parseExpression($cursor, 0, $emittedTarget);
+        if (inferType($endExpr, $environment) !== 'integer') {
+            fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+
+        $stepExpr = null;
+        $stepToken = $cursor->peek();
+        if ($stepToken !== null && $stepToken->kind === T_INC) {
+            $cursor->next();
+            $upVar = $cursor->expect(T_VARIABLE, 'PHP_FOR_VARIABLE_REQUIRED');
+            if (substr($upVar->text, 1) !== $varName) {
+                fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+            }
+        } elseif ($stepToken !== null && $stepToken->kind === T_DEC) {
+            fail('PHP_FOR_DOWNTO_REJECTED');
+        } elseif ($stepToken !== null && $stepToken->kind === T_VARIABLE) {
+            $upVar = $cursor->next();
+            if (substr($upVar->text, 1) !== $varName) {
+                fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+            }
+            $opToken = $cursor->peek();
+            if ($opToken !== null && $opToken->kind === T_INC) {
+                $cursor->next();
+            } elseif ($opToken !== null && $opToken->kind === T_DEC) {
+                fail('PHP_FOR_DOWNTO_REJECTED');
+            } elseif ($opToken !== null && $opToken->kind === T_MINUS_EQUAL) {
+                fail('PHP_FOR_DOWNTO_REJECTED');
+            } elseif ($opToken !== null && $opToken->kind === T_PLUS_EQUAL) {
+                $cursor->next();
+                $stepExpr = parseExpression($cursor, 0, $emittedTarget);
+                if (inferType($stepExpr, $environment) !== 'integer') {
+                    fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+                }
+                if ($stepExpr['kind'] === 'literal' && is_int($stepExpr['value']) && $stepExpr['value'] <= 0) {
+                    fail('PHP_FOR_NON_POSITIVE_STEP_REJECTED');
+                }
+                if ($stepExpr['kind'] === 'literal' && $stepExpr['value'] === 1) {
+                    $stepExpr = null;
+                }
+            } elseif ($opToken !== null && $opToken->kind === '=') {
+                $cursor->next();
+                $assignRight = parseExpression($cursor, 0, $emittedTarget);
+                if ($assignRight['kind'] !== 'binary') {
+                    fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+                }
+                if ($assignRight['operator'] === '-') {
+                    fail('PHP_FOR_DOWNTO_REJECTED');
+                }
+                if ($assignRight['operator'] !== '+') {
+                    fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+                }
+                if ($assignRight['left']['kind'] !== 'name' || $assignRight['left']['value'] !== $varName) {
+                    fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+                }
+                $stepExpr = $assignRight['right'];
+                if (inferType($stepExpr, $environment) !== 'integer') {
+                    fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+                }
+                if ($stepExpr['kind'] === 'literal' && is_int($stepExpr['value']) && $stepExpr['value'] <= 0) {
+                    fail('PHP_FOR_NON_POSITIVE_STEP_REJECTED');
+                }
+                if ($stepExpr['kind'] === 'literal' && $stepExpr['value'] === 1) {
+                    $stepExpr = null;
+                }
+            } else {
+                fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+            }
+        } else {
+            fail('PHP_FOR_CONDITION_NON_MONOTONIC');
+        }
+        $cursor->expect(')', 'PHP_UNSUPPORTED_STATEMENT');
+
+        $bodyPeek = $cursor->peek();
+        if ($bodyPeek === null || $bodyPeek->kind !== '{') {
+            fail('PHP_FOR_BLOCK_BODY_REQUIRED');
+        }
+
+        $loopEnv = $environment;
+        $loopEnv[$varName] = 'integer';
+        $subLoopVals = $loopValNames;
+        $subLoopVals[$varName] = true;
+
+        $body = parseBlock($cursor, $emittedTarget, $loopEnv, $parameterNames, $subLoopVals, $returnType, true);
+        $end = $cursor->peek(-1);
+
+        $forNode = [
+            'kind' => 'for',
+            'name' => $varName,
+            'type' => 'integer',
+            'start' => $startExpr,
+            'end' => $endExpr,
+            'body' => $body,
+            'source_span' => span($cursor->file(), $token->start, $end === null ? $token->end : $end->end),
+        ];
+        if ($stepExpr !== null) {
+            $forNode['step'] = $stepExpr;
+        }
+        return $forNode;
+    }
+
+    if ($token->kind === T_BREAK) {
+        $cursor->next();
+        if (!$inLoop) {
+            fail('PHP_BREAK_OUTSIDE_LOOP');
+        }
+        if ($cursor->peek() !== null && $cursor->peek()->kind !== ';') {
+            fail('PHP_BREAK_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+        return [
+            'kind' => 'break',
+            'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+        ];
+    }
+
+    if ($token->kind === T_CONTINUE) {
+        $cursor->next();
+        if (!$inLoop) {
+            fail('PHP_CONTINUE_OUTSIDE_LOOP');
+        }
+        if ($cursor->peek() !== null && $cursor->peek()->kind !== ';') {
+            fail('PHP_CONTINUE_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+        return [
+            'kind' => 'continue',
+            'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+        ];
+    }
+
+    if ($token->kind === T_GOTO) {
+        fail('PHP_UNSUPPORTED_STATEMENT', 'goto');
+    }
+
+    if ($token->kind === T_STRING) {
+        if ($cursor->peek(1) !== null && $cursor->peek(1)->kind === ':') {
+            fail('PHP_UNSUPPORTED_STATEMENT', 'label');
+        }
+        fail('PHP_CALL_OUTSIDE_CERTIFIED_SUBSET', $token->text);
+    }
+
+    if ($token->kind === T_INC || $token->kind === T_DEC) {
+        $cursor->next();
+        $varToken = $cursor->expect(T_VARIABLE, 'PHP_UNSUPPORTED_STATEMENT');
+        $varName = substr($varToken->text, 1);
+        if (in_array($varName, $parameterNames, true)) {
+            fail('PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+        }
+        if (isset($loopValNames[$varName])) {
+            fail('PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+        }
+        if (!array_key_exists($varName, $environment)) {
+            fail('PHP_ASSIGNMENT_TARGET_NOT_DECLARED', $varName);
+        }
+        if ($environment[$varName] !== 'integer') {
+            fail('PHP_OPERAND_TYPE_MISMATCH', ($token->kind === T_INC ? '++' : '--') . ':' . $environment[$varName]);
+        }
+        $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+        $op = ($token->kind === T_INC) ? '+' : '-';
+        return [
+            'kind' => 'assign',
+            'name' => $varName,
+            'expression' => [
+                'kind' => 'binary',
+                'operator' => $op,
+                'left' => [
+                    'kind' => 'name',
+                    'value' => $varName,
+                    'source_span' => span($cursor->file(), $varToken->start, $varToken->end),
+                ],
+                'right' => [
+                    'kind' => 'literal',
+                    'value' => 1,
+                    'source_span' => span($cursor->file(), $token->start, $token->end),
+                ],
+                'source_span' => span($cursor->file(), $token->start, $varToken->end),
+            ],
+            'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+        ];
+    }
+
+    if ($token->kind === T_VARIABLE) {
+        $cursor->next();
+        $varName = substr($token->text, 1);
+        $nextTok = $cursor->peek();
+        if ($nextTok === null) {
+            fail('PHP_UNEXPECTED_END_OF_INPUT');
+        }
+
+        if ($nextTok->kind === T_INC || $nextTok->kind === T_DEC) {
+            $cursor->next();
+            if (in_array($varName, $parameterNames, true)) {
+                fail('PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            if (isset($loopValNames[$varName])) {
+                fail('PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            if (!array_key_exists($varName, $environment)) {
+                fail('PHP_ASSIGNMENT_TARGET_NOT_DECLARED', $varName);
+            }
+            if ($environment[$varName] !== 'integer') {
+                fail('PHP_OPERAND_TYPE_MISMATCH', ($nextTok->kind === T_INC ? '++' : '--') . ':' . $environment[$varName]);
+            }
+            $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+            $op = ($nextTok->kind === T_INC) ? '+' : '-';
+            return [
+                'kind' => 'assign',
+                'name' => $varName,
+                'expression' => [
+                    'kind' => 'binary',
+                    'operator' => $op,
+                    'left' => [
+                        'kind' => 'name',
+                        'value' => $varName,
+                        'source_span' => span($cursor->file(), $token->start, $token->end),
+                    ],
+                    'right' => [
+                        'kind' => 'literal',
+                        'value' => 1,
+                        'source_span' => span($cursor->file(), $nextTok->start, $nextTok->end),
+                    ],
+                    'source_span' => span($cursor->file(), $token->start, $nextTok->end),
+                ],
+                'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+            ];
+        }
+
+        $compoundOps = [
+            T_PLUS_EQUAL => '+',
+            T_MINUS_EQUAL => '-',
+            T_MUL_EQUAL => '*',
+            T_DIV_EQUAL => '/',
+            T_MOD_EQUAL => '%',
+        ];
+        if (array_key_exists($nextTok->kind, $compoundOps)) {
+            $opToken = $cursor->next();
+            $op = $compoundOps[$nextTok->kind];
+            if (in_array($varName, $parameterNames, true)) {
+                fail('PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            if (isset($loopValNames[$varName])) {
+                fail('PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            if (!array_key_exists($varName, $environment)) {
+                fail('PHP_ASSIGNMENT_TARGET_NOT_DECLARED', $varName);
+            }
+            $rightExpr = parseExpression($cursor, 0, $emittedTarget);
+            $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+
+            $binaryNode = [
+                'kind' => 'binary',
+                'operator' => $op,
+                'left' => [
+                    'kind' => 'name',
+                    'value' => $varName,
+                    'source_span' => span($cursor->file(), $token->start, $token->end),
+                ],
+                'right' => $rightExpr,
+                'source_span' => span($cursor->file(), $token->start, $rightExpr['source_span']['end_byte']),
+            ];
+            $resType = inferType($binaryNode, $environment);
+            $varType = $environment[$varName];
+            if ($resType !== $varType && !($resType === 'integer' && $varType === 'number')) {
+                fail('PHP_OPERAND_TYPE_MISMATCH', "$op:$varType:$resType");
+            }
+            return [
+                'kind' => 'assign',
+                'name' => $varName,
+                'expression' => $binaryNode,
+                'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+            ];
+        }
+
+        if ($nextTok->kind === '=') {
+            $cursor->next();
+            if (in_array($varName, $parameterNames, true)) {
+                fail('PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            if (isset($loopValNames[$varName])) {
+                fail('PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET', $varName);
+            }
+            $rightExpr = parseExpression($cursor, 0, $emittedTarget);
+            $semicolon = $cursor->expect(';', 'PHP_UNSUPPORTED_STATEMENT');
+
+            $isFirstAssignment = !array_key_exists($varName, $environment);
+            if ($isFirstAssignment) {
+                $inferredType = inferType($rightExpr, $environment);
+                $environment[$varName] = $inferredType;
+                return [
+                    'kind' => 'let',
+                    'name' => $varName,
+                    'type' => $inferredType,
+                    'expression' => $rightExpr,
+                    'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+                ];
+            } else {
+                $varType = $environment[$varName];
+                $inferredType = inferType($rightExpr, $environment);
+                if ($inferredType !== $varType && !($inferredType === 'integer' && $varType === 'number')) {
+                    fail('PHP_OPERAND_TYPE_MISMATCH', "=:$varType:$inferredType");
+                }
+                return [
+                    'kind' => 'assign',
+                    'name' => $varName,
+                    'expression' => $rightExpr,
+                    'source_span' => span($cursor->file(), $token->start, $semicolon->end),
+                ];
+            }
+        }
+
+        fail('PHP_UNSUPPORTED_STATEMENT', is_int($nextTok->kind) ? token_name($nextTok->kind) : $nextTok->kind);
+    }
+
     fail('PHP_UNSUPPORTED_STATEMENT', is_int($token->kind) ? token_name($token->kind) : $token->kind);
 }
 
@@ -859,11 +1267,61 @@ function checkStatements(array $statements, array $environment, string $returnTy
             }
             continue;
         }
-        if (inferType($statement['condition'], $environment) !== 'boolean') {
-            fail('PHP_CONDITION_MUST_BE_BOOLEAN');
+        if ($statement['kind'] === 'if') {
+            if (inferType($statement['condition'], $environment) !== 'boolean') {
+                fail('PHP_CONDITION_MUST_BE_BOOLEAN');
+            }
+            checkStatements($statement['then'], $environment, $returnType);
+            checkStatements($statement['else'], $environment, $returnType);
+            continue;
         }
-        checkStatements($statement['then'], $environment, $returnType);
-        checkStatements($statement['else'], $environment, $returnType);
+        if ($statement['kind'] === 'let') {
+            $actual = inferType($statement['expression'], $environment);
+            if ($actual !== $statement['type'] && !($actual === 'integer' && $statement['type'] === 'number')) {
+                fail('PHP_OPERAND_TYPE_MISMATCH', $statement['type'] . ':' . $actual);
+            }
+            $environment[$statement['name']] = $statement['type'];
+            continue;
+        }
+        if ($statement['kind'] === 'assign') {
+            $varType = $environment[$statement['name']] ?? null;
+            if ($varType === null) {
+                fail('PHP_ASSIGNMENT_TARGET_NOT_DECLARED', $statement['name']);
+            }
+            $actual = inferType($statement['expression'], $environment);
+            if ($actual !== $varType && !($actual === 'integer' && $varType === 'number')) {
+                fail('PHP_OPERAND_TYPE_MISMATCH', "$varType:$actual");
+            }
+            continue;
+        }
+        if ($statement['kind'] === 'while') {
+            if (inferType($statement['condition'], $environment) !== 'boolean') {
+                fail('PHP_CONDITION_MUST_BE_BOOLEAN');
+            }
+            checkStatements($statement['body'], $environment, $returnType);
+            continue;
+        }
+        if ($statement['kind'] === 'for') {
+            if (inferType($statement['start'], $environment) !== 'integer') {
+                fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+            }
+            if (inferType($statement['end'], $environment) !== 'integer') {
+                fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+            }
+            if (isset($statement['step']) && $statement['step'] !== null) {
+                if (inferType($statement['step'], $environment) !== 'integer') {
+                    fail('PHP_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET');
+                }
+            }
+            $loopEnv = $environment;
+            $loopEnv[$statement['name']] = 'integer';
+            checkStatements($statement['body'], $loopEnv, $returnType);
+            continue;
+        }
+        if ($statement['kind'] === 'break' || $statement['kind'] === 'continue') {
+            continue;
+        }
+        fail('PHP_UNSUPPORTED_STATEMENT', $statement['kind']);
     }
 }
 
@@ -968,6 +1426,18 @@ function lift(Cursor $cursor, string $functionName, bool $emittedTarget): array
         }
         $cursor->next();
         $returnType = canonicalType($cursor, 'PHP_EXPLICIT_RETURN_TYPE_REQUIRED');
+
+        $environment = [];
+        $parameterNames = [];
+        foreach ($parameters as $parameter) {
+            if (array_key_exists($parameter['name'], $environment)) {
+                fail('PHP_DUPLICATE_PARAMETER', $parameter['name']);
+            }
+            $environment[$parameter['name']] = $parameter['type'];
+            $parameterNames[] = $parameter['name'];
+        }
+        $loopValNames = [];
+
         if ($emittedTarget
             && in_array($folded, EMITTED_HELPER_NAMES, true)
             && $folded !== strtolower($functionName)
@@ -975,7 +1445,7 @@ function lift(Cursor $cursor, string $functionName, bool $emittedTarget): array
             skipBalancedBlock($cursor);
             continue;
         }
-        $body = parseBlock($cursor, $emittedTarget);
+        $body = parseBlock($cursor, $emittedTarget, $environment, $parameterNames, $loopValNames, $returnType, false);
         $closing = $cursor->peek(-1);
         if ($folded === strtolower($functionName)) {
             if ($found !== null) {
@@ -1086,15 +1556,32 @@ function crossCheckWithZendAst(string $path, array $function): ?array
             ? \ast\get_kind_name($statement->kind)
             : 'NON_NODE';
     }
-    $liftedKinds = array_map(
-        static fn(array $statement): string => $statement['kind'] === 'return' ? 'AST_RETURN' : 'AST_IF',
-        $function['body'],
-    );
-    if ($observedKinds !== $liftedKinds) {
+    $liftedKinds = [];
+    foreach ($function['body'] as $statement) {
+        $liftedKinds[] = match ($statement['kind']) {
+            'return' => ['AST_RETURN'],
+            'if' => ['AST_IF'],
+            'while' => ['AST_WHILE'],
+            'for' => ['AST_FOR'],
+            'break' => ['AST_BREAK'],
+            'continue' => ['AST_CONTINUE'],
+            'let', 'assign' => ['AST_ASSIGN', 'AST_ASSIGN_OP', 'AST_PRE_INC', 'AST_POST_INC', 'AST_PRE_DEC', 'AST_POST_DEC'],
+            default => ['AST_OTHER'],
+        };
+    }
+    if (count($observedKinds) !== count($liftedKinds)) {
         fail(
             'PHP_ZEND_AST_STATEMENT_SHAPE_MISMATCH',
-            $function['name'] . ':' . implode(',', $observedKinds) . ':' . implode(',', $liftedKinds),
+            $function['name'] . ':' . implode(',', $observedKinds) . ':count_mismatch',
         );
+    }
+    for ($i = 0; $i < count($observedKinds); $i++) {
+        if (!in_array($observedKinds[$i], $liftedKinds[$i], true)) {
+            fail(
+                'PHP_ZEND_AST_STATEMENT_SHAPE_MISMATCH',
+                $function['name'] . ':' . implode(',', $observedKinds) . ':kind_mismatch',
+            );
+        }
     }
     return ['version' => PHP_AST_VERSION, 'statements' => count($observedKinds)];
 }

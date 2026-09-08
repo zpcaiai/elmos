@@ -115,3 +115,5 @@ survey-engines-mac.sh
 .env*
 !deploy/production/.env.example
 !client-packs/**/source-snapshots/**
+.mimosa/
+**/.mimosa/

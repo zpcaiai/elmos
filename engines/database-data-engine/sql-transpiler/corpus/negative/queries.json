@@ -46,21 +46,24 @@
       "expected": "BLOCKED"
     },
     {
-      "id": "NEG-MY-SQ-GROUP-CONCAT",
+      "id": "NEG-OR-TRUNC-AMBIGUOUS",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT TRUNC(created_at) FROM orders",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-OR-TRUNC-QUARTER",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT TRUNC(created_at, 'Q') FROM orders",
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "NEG-MY-SQ-GROUP-CONCAT-DISTINCT",
       "sourceProfile": "mysql-8.4.10-lts",
       "targets": [
         "sqlite-3.53.3"
       ],
-      "sql": "SELECT GROUP_CONCAT(name ORDER BY name SEPARATOR ',') FROM customers",
-      "expected": "BLOCKED"
-    },
-    {
-      "id": "NEG-OR-MY-DATE-TRUNC",
-      "sourceProfile": "oracle-26ai-ee",
-      "targets": [
-        "mysql-8.4.10-lts"
-      ],
-      "sql": "SELECT TRUNC(created_at, 'MM') FROM orders",
+      "sql": "SELECT GROUP_CONCAT(DISTINCT name ORDER BY name) FROM customers",
       "expected": "BLOCKED"
     }
   ]

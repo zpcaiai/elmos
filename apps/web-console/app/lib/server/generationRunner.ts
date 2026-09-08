@@ -14,6 +14,7 @@ import {
 } from "node:fs";
 import {
   access,
+  appendFile,
   chmod,
   mkdir,
   mkdtemp,
@@ -47,6 +48,7 @@ import {
 import { validateVerifiedInsightProjection } from "./generationInsights";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -440,7 +442,7 @@ function configuredToken(): string {
   return value;
 }
 
-function config(): RunnerConfig {
+export function config(): RunnerConfig {
   if (process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true") {
     throw new GenerationRunnerError(503, "LOCAL_RUNNER_NOT_ENABLED");
   }
@@ -612,12 +614,49 @@ function intentContract(request: GenerationAnalyzeRequest): GenerationAnalyzeReq
   };
 }
 
+/**
+ * Single source of truth for the project-intent document persisted next to
+ * every job. The hosted path ships the identical document inside the control
+ * plane payload so a hosted job and a local job describe the same request.
+ */
+export function projectIntentDocument(
+  context: AuthorizedContext,
+  validated: GenerationJobCreateRequest,
+  requestedAt: string,
+): Record<string, unknown> {
+  return {
+    schema_version: "1.1.0",
+    name: validated.name,
+    namespace: validated.namespace,
+    description: validated.description,
+    entity: validated.entity,
+    languages: validated.targets,
+    project_kind: "api",
+    persistence: validated.persistence,
+    auth_mode: validated.authMode,
+    business_rules: [],
+    permissions: [],
+    ...(validated.sources ? { requirement_sources: validated.sources } : {}),
+    ...(validated.sourceBundleSha256
+      ? { source_bundle_sha256: validated.sourceBundleSha256 }
+      : {}),
+    approval_context: {
+      actor: context.actor,
+      tenant_id: context.tenantId,
+      explicitly_approved: true,
+      analysis_digest: validated.analysisDigest,
+      requested_at: requestedAt,
+    },
+  };
+}
+
 export function authorize(
   request: NextRequest,
   permission: AccountPermission = "generation:execute",
 ): AuthorizedContext {
   const hasAccountCookie = Boolean(
-    unsafeCookieValue(request, accountCookieNames.session),
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session),
   );
   if (hasAccountCookie) {
     try {
@@ -1741,7 +1780,7 @@ function validateAnalyze(request: GenerationAnalyzeRequest): GenerationAnalyzeRe
   return request;
 }
 
-function validateCreate(
+export function validateCreate(
   request: GenerationJobCreateRequest,
   context: AuthorizedContext,
 ): GenerationJobCreateRequest {
@@ -2159,7 +2198,7 @@ export async function analyzeIntent(
   }
 }
 
-async function loadApprovedAnalysis(
+export async function loadApprovedAnalysis(
   runner: RunnerConfig,
   context: AuthorizedContext,
   request: GenerationJobCreateRequest,
@@ -2188,6 +2227,37 @@ async function loadApprovedAnalysis(
     throw new GenerationRunnerError(409, "OPEN_QUESTIONS_UNRESOLVED");
   }
   return review;
+}
+
+/**
+ * Marks an approved analysis as consumed by a hosted job. Mirrors the local
+ * rename into the job directory: an analysis review funds exactly one job,
+ * whichever queue executes it. The consumed file is kept (not deleted) so the
+ * funding decision stays auditable.
+ */
+export async function consumeApprovedAnalysisForHosted(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+  requestDigest: string,
+  jobId: string,
+): Promise<void> {
+  if (!digestPattern.test(requestDigest)) {
+    throw new GenerationRunnerError(400, "ANALYSIS_DIGEST_INVALID");
+  }
+  const consumedRoot = confined(runner.root, "tenants", context.tenantId, "analysis-reviews-consumed");
+  await mkdir(consumedRoot, { recursive: true, mode: 0o700 });
+  const source = analysisReviewFile(runner, context, requestDigest);
+  const destination = confined(consumedRoot, path.basename(source));
+  try {
+    await rename(source, destination);
+  } catch {
+    throw new GenerationRunnerError(409, "ANALYSIS_REVIEW_ALREADY_CONSUMED");
+  }
+  await appendFile(
+    confined(consumedRoot, "hosted-consumption.log"),
+    `${new Date().toISOString()} ${jobId} ${requestDigest}\n`,
+    { encoding: "utf-8", mode: 0o600 },
+  ).catch(() => undefined);
 }
 
 async function executeCommand(
@@ -2613,30 +2683,10 @@ export async function createJob(
       await mkdir(root, { recursive: true, mode: 0o700 });
       let reviewMoved = false;
       try {
-        await atomicJson(confined(root, "project-intent.json"), {
-          schema_version: "1.1.0",
-          name: validated.name,
-          namespace: validated.namespace,
-          description: validated.description,
-          entity: validated.entity,
-          languages: validated.targets,
-          project_kind: "api",
-          persistence: validated.persistence,
-          auth_mode: validated.authMode,
-          business_rules: [],
-          permissions: [],
-          ...(validated.sources ? { requirement_sources: validated.sources } : {}),
-          ...(validated.sourceBundleSha256
-            ? { source_bundle_sha256: validated.sourceBundleSha256 }
-            : {}),
-          approval_context: {
-            actor: context.actor,
-            tenant_id: context.tenantId,
-            explicitly_approved: true,
-            analysis_digest: validated.analysisDigest,
-            requested_at: now,
-          },
-        });
+        await atomicJson(
+          confined(root, "project-intent.json"),
+          projectIntentDocument(context, validated, now),
+        );
         await atomicJson(confined(root, "synthesis-request.json"), analysisReview.request);
         try {
           await rename(
