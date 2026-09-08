@@ -31,9 +31,17 @@ elmos:
     alipay:
       app-id: ${ELMOS_ALIPAY_APP_ID:}
       public-key-file: ${ELMOS_ALIPAY_PUBLIC_KEY_FILE:}
+      private-key-file: ${ELMOS_ALIPAY_PRIVATE_KEY_FILE:}
+      gateway-url: ${ELMOS_ALIPAY_GATEWAY_URL:https://openapi.alipay.com/gateway.do}
+      notify-url: ${ELMOS_ALIPAY_NOTIFY_URL:}
+      return-url: ${ELMOS_ALIPAY_RETURN_URL:}
     # 微信支付。mch-id 的作用与支付宝的 app-id 相同。
     wechatpay:
       mch-id: ${ELMOS_WECHATPAY_MCHID:}
+      app-id: ${ELMOS_WECHATPAY_APP_ID:}
+      cert-serial-no: ${ELMOS_WECHATPAY_CERT_SERIAL_NO:}
+      private-key-file: ${ELMOS_WECHATPAY_PRIVATE_KEY_FILE:}
+      notify-url: ${ELMOS_WECHATPAY_NOTIFY_URL:}
       platform-certificate-file: ${ELMOS_WECHATPAY_PLATFORM_CERT_FILE:}
       api-v3-key: ${ELMOS_WECHATPAY_API_V3_KEY:}
     stripe:

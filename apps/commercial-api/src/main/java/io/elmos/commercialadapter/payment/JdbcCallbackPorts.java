@@ -38,28 +38,64 @@ public final class JdbcCallbackPorts {
      * 合并成一条语句：20 个并发会话争同一个键时，实测恰好 1 个拿到返回行。
      */
     public static PaymentCallbackPipeline.ProcessedEventLog processedEventLog(DataSource source) {
-        return idempotencyKey -> {
-            String[] parts = splitKey(idempotencyKey);
-            String sql = """
-                    INSERT INTO payment_callback_receipts (provider, provider_event_id)
-                    VALUES (?, ?)
-                    ON CONFLICT (provider, provider_event_id) DO NOTHING
-                    RETURNING provider_event_id
-                    """;
-            try (Connection connection = source.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, parts[0]);
-                statement.setString(2, parts[1]);
-                try (ResultSet rows = statement.executeQuery()) {
-                    // 有返回行 = 本次调用赢得了登记 = 首次见到
-                    return rows.next();
+        return new PaymentCallbackPipeline.ProcessedEventLog() {
+            @Override
+            public boolean registerIfAbsent(String idempotencyKey) {
+                String[] parts = splitKey(idempotencyKey);
+                String sql = """
+                        INSERT INTO payment_callback_receipts (
+                            provider, provider_event_id, processing_status)
+                        VALUES (?, ?, 'PROCESSING')
+                        ON CONFLICT (provider, provider_event_id) DO UPDATE
+                           SET processing_status = 'PROCESSING',
+                               attempt_count = payment_callback_receipts.attempt_count + 1,
+                               updated_at = now()
+                         WHERE payment_callback_receipts.processing_status = 'FAILED'
+                            OR (payment_callback_receipts.processing_status = 'PROCESSING'
+                                AND payment_callback_receipts.updated_at < now() - interval '5 minutes')
+                        RETURNING provider_event_id
+                        """;
+                try (Connection connection = source.getConnection();
+                     PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setString(1, parts[0]);
+                    statement.setString(2, parts[1]);
+                    try (ResultSet rows = statement.executeQuery()) {
+                        return rows.next();
+                    }
+                } catch (SQLException failure) {
+                    throw new IllegalStateException("回调幂等登记失败", failure);
                 }
-            } catch (SQLException failure) {
-                // 登记失败绝不能当作"首次见到"放行，也不能当作"重复"丢弃：
-                // 两种误判都会造成资损，交由上层按处理失败对待并让提供方重发。
-                throw new IllegalStateException("回调幂等登记失败", failure);
+            }
+
+            @Override public void markCompleted(String idempotencyKey) {
+                updateReceiptState(source, idempotencyKey, "COMPLETED");
+            }
+
+            @Override public void markFailed(String idempotencyKey) {
+                updateReceiptState(source, idempotencyKey, "FAILED");
             }
         };
+    }
+
+    private static void updateReceiptState(
+            DataSource source, String idempotencyKey, String state) {
+        String[] parts = splitKey(idempotencyKey);
+        try (Connection connection = source.getConnection();
+             PreparedStatement statement = connection.prepareStatement("""
+                     UPDATE payment_callback_receipts
+                        SET processing_status = ?, updated_at = now()
+                      WHERE provider = ? AND provider_event_id = ?
+                        AND processing_status = 'PROCESSING'
+                     """)) {
+            statement.setString(1, state);
+            statement.setString(2, parts[0]);
+            statement.setString(3, parts[1]);
+            if (statement.executeUpdate() != 1) {
+                throw new IllegalStateException("回调幂等状态转换失败: " + state);
+            }
+        } catch (SQLException failure) {
+            throw new IllegalStateException("回调幂等状态写入失败: " + state, failure);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -100,6 +136,8 @@ public final class JdbcCallbackPorts {
                         object_ref, amount_minor, currency, event_created_at,
                         payload_sha256, signature_verified, processing_status, idempotency_key)
                     VALUES (?, ?, ?, ?, ?, ?, 'CNY', now(), ?, true, 'APPLIED', ?)
+                    ON CONFLICT (provider, payment_provider_event_id) DO NOTHING
+                    RETURNING payment_provider_event_id
                     """;
             try (Connection connection = source.getConnection()) {
                 boolean previousAutoCommit = connection.getAutoCommit();
@@ -110,6 +148,9 @@ public final class JdbcCallbackPorts {
                         tenant.setString(1, order.organizationId());
                         tenant.execute();
                     }
+                    boolean inserted;
+                    String payloadHash = sha256Hex(rawBody);
+                    String idempotencyKey = PaymentCallbackPipeline.idempotencyKey(callback);
                     try (PreparedStatement statement = connection.prepareStatement(sql)) {
                         statement.setString(1, callback.providerEventId());
                         statement.setString(2, order.organizationId());
@@ -117,9 +158,34 @@ public final class JdbcCallbackPorts {
                         statement.setString(4, callback.tradeStatus());
                         statement.setString(5, callback.outTradeNo());
                         statement.setLong(6, callback.amountFen());
-                        statement.setString(7, sha256Hex(rawBody));
-                        statement.setString(8, PaymentCallbackPipeline.idempotencyKey(callback));
-                        statement.executeUpdate();
+                        statement.setString(7, payloadHash);
+                        statement.setString(8, idempotencyKey);
+                        try (ResultSet rows = statement.executeQuery()) {
+                            inserted = rows.next();
+                        }
+                    }
+                    if (!inserted) {
+                        try (PreparedStatement existing = connection.prepareStatement("""
+                                SELECT organization_id, event_type, object_ref, amount_minor,
+                                       payload_sha256, idempotency_key
+                                  FROM payment_provider_events
+                                 WHERE provider = ? AND payment_provider_event_id = ?
+                                """)) {
+                            existing.setString(1, callback.provider().name());
+                            existing.setString(2, callback.providerEventId());
+                            try (ResultSet rows = existing.executeQuery()) {
+                                if (!rows.next()
+                                        || !order.organizationId().equals(rows.getString(1))
+                                        || !callback.tradeStatus().equals(rows.getString(2))
+                                        || !callback.outTradeNo().equals(rows.getString(3))
+                                        || callback.amountFen() != rows.getLong(4)
+                                        || !payloadHash.equals(rows.getString(5))
+                                        || !idempotencyKey.equals(rows.getString(6))) {
+                                    throw new IllegalStateException(
+                                            "提供方事件 ID 已存在但事实不一致");
+                                }
+                            }
+                        }
                     }
                     connection.commit();
                 } catch (SQLException | RuntimeException failure) {

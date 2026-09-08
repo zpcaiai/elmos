@@ -37,8 +37,26 @@ export type TokenClassDefinition = {
   providerReceiptRequired: true;
 };
 
+export type CreditPack = {
+  sku: string;
+  name: string;
+  description: string;
+  priceFen: number;
+  credits: number;
+  expiryDays: number;
+};
+
+export type OneTimeProduct = {
+  sku: string;
+  name: string;
+  description: string;
+  priceFen: number;
+  operationKey: "verified-generation-or-migration";
+  maxRunnerMinutes: number;
+};
+
 export type PricingCatalog = {
-  schemaVersion: "1.1.0";
+  schemaVersion: "1.2.0";
   catalogVersion: string;
   status: "DRAFT" | "PUBLISHED" | "SUPERSEDED";
   currency: "CNY";
@@ -59,6 +77,8 @@ export type PricingCatalog = {
   plans: readonly PricingPlan[];
   tokenClasses: readonly TokenClassDefinition[];
   creditRates: readonly CreditRate[];
+  creditPacks: readonly CreditPack[];
+  oneTimeProducts: readonly OneTimeProduct[];
   limitations: readonly string[];
 };
 
@@ -112,6 +132,10 @@ function exactCatalog(value: typeof rawPricingCatalog): PricingCatalog {
   }
   if (!Array.isArray(value.plans) || value.plans.length !== 3) {
     throw new Error("PRICING_CATALOG_INVALID: plans 必须恰好 3 个");
+  }
+  if (!Array.isArray(value.creditPacks) || value.creditPacks.length < 1
+    || !Array.isArray(value.oneTimeProducts) || value.oneTimeProducts.length < 1) {
+    throw new Error("PRICING_CATALOG_INVALID: 可购买商品目录不能为空");
   }
   return value as PricingCatalog;
 }

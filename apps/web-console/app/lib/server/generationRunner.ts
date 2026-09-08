@@ -2537,7 +2537,17 @@ async function runJob(
       }
       throw error;
     }
-    metering = await beginMeteredExecution(`generation-${job.id}`);
+    const billingIntent = JSON.parse(
+      await readFile(confined(root, "synthesis-request.json"), "utf-8"),
+    ) as { project?: { name?: unknown } };
+    const billingProjectId = typeof billingIntent.project?.name === "string"
+      ? billingIntent.project.name
+      : job.id;
+    metering = await beginMeteredExecution({
+      taskId: `generation-${job.id}`,
+      projectId: billingProjectId,
+      actorId: context.actor,
+    });
     job.status = "VERIFYING";
     const pipeline = await executeCommand(
       runner,

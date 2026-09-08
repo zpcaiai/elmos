@@ -388,6 +388,8 @@ public final class CheckoutRoutingSelfTest {
 
         @Override public UsageSnapshot currentUsage(String a, String b) { throw unexpected("currentUsage"); }
         @Override public List<UsageHistoryPoint> usageHistory(String a, String b, Instant c, Instant d, String e) { throw unexpected("usageHistory"); }
+        @Override public List<UsageHistoryPoint> usageHistory(String a, String b, Instant c, Instant d, String e, boolean f) { throw unexpected("usageHistory"); }
+        @Override public List<UsageEventDetail> usageEvents(String a, String b, Instant c, Instant d, int e, int f, boolean g) { throw unexpected("usageEvents"); }
         @Override public UsageReservation reserve(String a, String b, String c, String d, String e, String f, BigDecimal g, BigDecimal h, Instant i) { throw unexpected("reserve"); }
         @Override public UsageSettlement settle(String a, String b, String c, String d, BigDecimal e, BigDecimal f, String g, String h, String i, String j, BigDecimal k, Instant l) { throw unexpected("settle"); }
         @Override public void release(String a, String b, String c, String d) { throw unexpected("release"); }

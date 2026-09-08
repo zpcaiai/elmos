@@ -97,12 +97,34 @@ public final class JdbcOrderPorts {
                 // 充值目录接受 CREATED/PENDING_PAYMENT/PAID/CREDITED。
                 // 揉进一个 UNION 会逼出一个能同时表达两套状态机的 WHERE，
                 // 而那个 WHERE 下次改任一侧时都会被改错。
-                return lookupTopupOrder(connection, outTradeNo);
+                Optional<PaymentCallbackPipeline.LocalOrder> topup =
+                        lookupTopupOrder(connection, outTradeNo);
+                return topup.isPresent() ? topup : lookupCommercialOrder(connection, outTradeNo);
             } catch (SQLException failure) {
                 // 查不到订单与"查询本身失败"必须区分：前者进对账，后者应让提供方重发。
                 throw new IllegalStateException("订单查询失败", failure);
             }
         };
+    }
+
+    private static Optional<PaymentCallbackPipeline.LocalOrder> lookupCommercialOrder(
+            Connection connection, String outTradeNo) throws SQLException {
+        String sql = """
+                SELECT order_id, organization_id, order_type, amount_minor
+                  FROM commercial_order_directory
+                 WHERE out_trade_no = ?
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'FULFILLED')
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, outTradeNo);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) return Optional.empty();
+                return Optional.of(new PaymentCallbackPipeline.LocalOrder(
+                        rows.getString("order_id"), rows.getString("organization_id"), null,
+                        rows.getLong("amount_minor"),
+                        PaymentCallbackPipeline.OrderKind.valueOf(rows.getString("order_type"))));
+            }
+        }
     }
 
     private static Optional<PaymentCallbackPipeline.LocalOrder> lookupSubscriptionOrder(
@@ -189,6 +211,25 @@ public final class JdbcOrderPorts {
                 statement.execute();
             } catch (SQLException failure) {
                 throw new IllegalStateException("充值入账失败: " + order.orderId(), failure);
+            }
+        };
+    }
+
+    /** Atomically fulfills a paid Credit-pack or one-time generation order. */
+    public static PaymentCallbackPipeline.CommercialOrderFulfiller commercialOrderFulfiller(
+            DataSource source, String actorId) {
+        return (order, callback) -> {
+            try (Connection connection = source.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(
+                         "SELECT elmos_commercial_fulfill_order(?, ?, ?, ?)")) {
+                statement.setString(1, order.organizationId());
+                statement.setString(2, order.orderId());
+                statement.setString(3, callback.providerEventId());
+                statement.setString(4, actorId);
+                statement.execute();
+            } catch (SQLException failure) {
+                throw new IllegalStateException(
+                        "商业商品订单履约失败: " + order.orderId(), failure);
             }
         };
     }

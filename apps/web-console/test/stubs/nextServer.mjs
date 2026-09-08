@@ -1,7 +1,11 @@
 // Minimal runtime stub of next/server for node-unit-testing route handlers.
 // Handlers only construct responses via NextResponse.json and type their
 // request parameter as NextRequest; a Request subclass covers both.
-export class NextRequest extends Request {}
+export class NextRequest extends Request {
+  get nextUrl() {
+    return new URL(this.url);
+  }
+}
 
 function withHeaders(init, extra) {
   const headers = new Headers(init?.headers);

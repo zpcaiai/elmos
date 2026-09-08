@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.1.0",
-  "catalogVersion": "2026-07-28.2",
+  "schemaVersion": "1.2.0",
+  "catalogVersion": "2026-09-08.1",
   "status": "DRAFT",
   "currency": "CNY",
   "effectiveFrom": "2026-07-28T00:00:00Z",
@@ -120,6 +120,11 @@
       "tokenClass": "CACHE_WRITE",
       "unit": "token",
       "providerReceiptRequired": true
+    },
+    {
+      "tokenClass": "REASONING",
+      "unit": "token",
+      "providerReceiptRequired": true
     }
   ],
   "creditRates": [
@@ -159,11 +164,32 @@
       "meterVersion": "platform-credit-v1"
     }
   ],
+  "creditPacks": [
+    {
+      "sku": "elmos-credit-500",
+      "name": "500 Credits",
+      "description": "用于受控生成、迁移、Runner 与证据验证的预付 Credit 包。",
+      "priceFen": 9900,
+      "credits": 500,
+      "expiryDays": 365
+    }
+  ],
+  "oneTimeProducts": [
+    {
+      "sku": "elmos-project-generation-once",
+      "name": "单项目生成一次",
+      "description": "为一个指定项目提供一次受控生成执行，包含最多 20 分钟隔离 Runner。",
+      "priceFen": 3900,
+      "operationKey": "verified-generation-or-migration",
+      "maxRunnerMinutes": 20
+    }
+  ],
   "limitations": [
     "Token 按提供方确认的输入、输出、缓存读取和缓存写入分类记录，当前套餐额度按确认 token 总量扣减。",
     "缺失、迟到或未对账的提供方用量不得显示为可信的零用量。",
     "Credits 按不可变的已接受操作用量事件扣减；组合任务会累计各项费用。",
     "免费体验额度在 14 天结束时失效；付费额度按权威订阅账期重置，均不结转。",
+    "购买的 Credit 自履约日起 365 天有效；一次性项目生成权益只适用于下单时绑定的项目且只能成功消费一次。",
     "额度用尽后硬停止，不自动产生超额费用；支付、税务与开票当前仍为 NOT_CONFIGURED。",
     "模型、Runner、存储、网络与支持成本尚未完成代表性工作负载验证，因此目录不得发布。"
   ]

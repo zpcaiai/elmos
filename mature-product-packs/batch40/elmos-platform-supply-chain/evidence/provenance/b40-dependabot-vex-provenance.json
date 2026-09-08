@@ -8,17 +8,17 @@
   "owner": "elmos-security-owner",
   "source": {
     "repository": "zpcaiai/elmos",
-    "generatedAt": "2026-09-08T04:48:05.477155Z",
-    "alertSnapshotDigest": "sha256:f88b68e9a33628db454318679d8e19e704bf2010387c7023cc6ad2e905501528",
+    "generatedAt": "2026-09-08T12:30:57.028655Z",
+    "alertSnapshotDigest": "sha256:83bf7ccc33fb3adeaf7265e0ba17e23ddf7dd38fe9c7e23c06e82e72c5b75519",
     "registry": {
       "path": "mature-product-packs/batch40/elmos-platform-supply-chain/evidence/execution/b40-dependabot-vex.json",
-      "sha256": "sha256:9dd2f92a8cb7013ef55e8543ee0988a7fcf33c0b3073f870feabb566e12ced51",
-      "bytes": 50126
+      "sha256": "sha256:4f98952cf543679d9623d077f5c90ebe6d72231a3cb0b592b1122c732fdba320",
+      "bytes": 74083
     }
   },
   "analyzer": {
     "path": "scripts/dependabot_governance.py",
-    "sha256": "sha256:98515ba0ad0463d704ab0319021e2272fb203dab73280491b0e1f797a9a3bf75"
+    "sha256": "sha256:0b5c6c316c5276bfe6edfec4538f5d0af21d74479093e80b0d4158bb8d0296aa"
   },
   "externalOperationExecuted": true,
   "independentVerification": "NOT_RUN",
