@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import {
-  AccountSessionError,
-  accountSessionFromRequest,
-  type AccountPermission,
-} from "../../../lib/server/accountSession";
+  authorizeAdmin,
+  OperationsProxyError,
+  requireAdminMutationSameOrigin,
+} from "../../../lib/server/operationsProxy";
 import {
   configuredLiveWorkbenchBaseUrl,
   UpstreamConfigurationError,
@@ -31,8 +31,9 @@ async function forward(request: NextRequest, context: Context): Promise<Response
   try {
     const { path = [] } = await context.params;
     if (!liveWorkbenchRouteAllowed(path, request.method)) return failure(404, "LIVE_WORKBENCH_ROUTE_NOT_FOUND");
-    const permission: AccountPermission = request.method === "GET" ? "workspace:view" : "generation:execute";
-    const session = accountSessionFromRequest(request, permission);
+    if (request.method !== "GET") requireAdminMutationSameOrigin(request);
+    const administrator = authorizeAdmin(request, request.method === "GET" ? "VIEWER" : "OPERATOR");
+    if (!administrator.accessToken) return failure(403, "LIVE_WORKBENCH_OIDC_SESSION_REQUIRED");
     const baseUrl = configuredLiveWorkbenchBaseUrl();
     if (!baseUrl) return failure(503, "LIVE_WORKBENCH_NOT_CONFIGURED");
 
@@ -49,7 +50,7 @@ async function forward(request: NextRequest, context: Context): Promise<Response
     }
     const headers = new Headers({
       Accept: request.headers.get("accept") === "text/event-stream" ? "text/event-stream" : "application/json",
-      Authorization: `Bearer ${session.accessToken}`,
+      Authorization: `Bearer ${administrator.accessToken}`,
       "X-Request-ID": request.headers.get("x-request-id")?.slice(0, 128) || crypto.randomUUID(),
     });
     if (body) headers.set("Content-Type", "application/json");
@@ -73,7 +74,7 @@ async function forward(request: NextRequest, context: Context): Promise<Response
     }
     return new Response(response.body, { status: response.status, headers: responseHeaders });
   } catch (error) {
-    if (error instanceof AccountSessionError) return failure(error.status, error.code);
+    if (error instanceof OperationsProxyError) return failure(error.status, error.errorCode);
     if (error instanceof UpstreamConfigurationError) return failure(503, "LIVE_WORKBENCH_CONFIGURATION_INVALID");
     return failure(503, "LIVE_WORKBENCH_UPSTREAM_UNAVAILABLE");
   }
