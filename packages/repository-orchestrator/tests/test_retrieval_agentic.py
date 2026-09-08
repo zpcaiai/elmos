@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import unittest
-import importlib.util
 
 from elmos_repository_orchestrator.agentic import LangGraphRepairWorkflow, RepairTools
 from elmos_repository_orchestrator.contracts import ContractError, sha256_payload
@@ -172,7 +171,6 @@ class LangGraphRepairTests(unittest.TestCase):
             verifier_identity="verifier-b",
         )
 
-    @unittest.skipUnless(importlib.util.find_spec("langgraph"), "agentic extra is not installed")
     def test_real_langgraph_repairs_checkpoints_and_stops(self) -> None:
         from langgraph.checkpoint.memory import InMemorySaver
 
@@ -200,7 +198,6 @@ class LangGraphRepairTests(unittest.TestCase):
         self.assertEqual(executions, ["T-1:1", "T-1:2"])
         self.assertEqual(graph.get_state(config).values["status"], "VERIFIED")
 
-    @unittest.skipUnless(importlib.util.find_spec("langgraph"), "agentic extra is not installed")
     def test_allowlist_approval_independence_and_idempotency(self) -> None:
         executions: list[str] = []
         with self.assertRaisesRegex(ContractError, "must differ"):
