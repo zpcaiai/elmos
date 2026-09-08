@@ -1,0 +1,122 @@
+name: VB6 SP6 cross-host campaign
+
+on:
+  workflow_dispatch:
+    inputs:
+      route:
+        description: "Exact VB6 route key, or all for the complete 26-route set"
+        required: true
+        default: "all"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vb6-cross-host-${{ github.ref }}-${{ inputs.route }}
+  cancel-in-progress: false
+
+jobs:
+  windows-vb6:
+    name: Governed Windows x86 VB6 SP6 execution
+    runs-on: [self-hosted, Windows, X86, vb6-sp6, governed]
+    environment: vb6-governed-lab
+    timeout-minutes: 360
+    env:
+      ELMOS_ROUTE: ${{ inputs.route }}
+      ELMOS_VB6_TOOLCHAIN_MANIFEST: ${{ vars.ELMOS_VB6_TOOLCHAIN_MANIFEST }}
+      ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256: ${{ secrets.ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256 }}
+    steps:
+      - name: Check out exact request revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Fail closed unless the governed runner is exact
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ((python --version) -ne "Python 3.12.12") {
+            throw "VB6_CAMPAIGN_PYTHON_VERSION_MISMATCH"
+          }
+          if (-not $env:ELMOS_VB6_TOOLCHAIN_MANIFEST) {
+            throw "VB6_TOOLCHAIN_MANIFEST_REQUIRED"
+          }
+          if (-not (Test-Path -LiteralPath $env:ELMOS_VB6_TOOLCHAIN_MANIFEST -PathType Leaf)) {
+            throw "VB6_TOOLCHAIN_MANIFEST_MISSING"
+          }
+          if ($env:ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256 -notmatch '^[0-9a-f]{64}$') {
+            throw "VB6_TOOLCHAIN_MANIFEST_DIGEST_REQUIRED"
+          }
+
+      - name: Execute exact VB6 route or complete set
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $prepared = "verification-packs/vb6-cross-host-prepared-v1"
+          $output = Join-Path $env:RUNNER_TEMP "vb6-windows-output"
+          if ($env:ELMOS_ROUTE -eq "all") {
+            python scripts/batch29/run_vb6_cross_host_campaign.py execute-windows-set `
+              --request-root $prepared `
+              --output-root $output
+          } else {
+            python scripts/batch29/run_vb6_cross_host_campaign.py execute-windows `
+              --request (Join-Path $prepared $env:ELMOS_ROUTE) `
+              --output $output
+          }
+
+      - name: Upload self-attested Windows evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vb6-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}\vb6-windows-output
+          if-no-files-found: error
+          retention-days: 30
+
+  compare-observations:
+    name: Compare non-VB6 and Windows observations
+    needs: windows-vb6
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ELMOS_ROUTE: ${{ inputs.route }}
+    steps:
+      - name: Check out exact request revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up exact Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.12"
+
+      - name: Download Windows evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: vb6-windows-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb6-windows-output
+
+      - name: Verify exact observations without certifying
+        shell: bash
+        run: |
+          set -euo pipefail
+          prepared="verification-packs/vb6-cross-host-prepared-v1"
+          windows="${RUNNER_TEMP}/vb6-windows-output"
+          verified="${RUNNER_TEMP}/vb6-verified"
+          if [[ "${ELMOS_ROUTE}" == "all" ]]; then
+            python3 scripts/batch29/run_vb6_cross_host_campaign.py verify-set \
+              --request-root "${prepared}" \
+              --windows-output-root "${windows}" \
+              --output-root "${verified}"
+          else
+            mkdir -p "${verified}"
+            python3 scripts/batch29/run_vb6_cross_host_campaign.py verify \
+              --request "${prepared}/${ELMOS_ROUTE}" \
+              --windows-output "${windows}" \
+              --output "${verified}/${ELMOS_ROUTE}.json"
+          fi
+
+      - name: Upload cross-host comparison
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vb6-cross-host-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb6-verified
+          if-no-files-found: error
+          retention-days: 30

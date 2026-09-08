@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-08T10:05:28Z",
+  "observation_class": "LIVE_EXTERNAL_SELF_ATTESTED",
+  "synthetic": false,
+  "side_effect_class": "READ_ONLY_OR_MINIMAL_INFERENCE",
+  "marketplace": {
+    "categories_queried": ["searching", "observability", "agents", "workflow", "ai"],
+    "exact_elasticsearch_integration_found": false,
+    "exact_dify_integration_found": false,
+    "substitute_provider_installed": false
+  },
+  "provider_attempts": [
+    {
+      "provider": "openai",
+      "operation": "model_inventory",
+      "http_status": 200,
+      "status": "PASS",
+      "attempts": 1
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-sol",
+      "operation": "responses_generation",
+      "http_status": 429,
+      "status": "UNKNOWN",
+      "attempts": 1,
+      "retry_disposition": "NO_BLIND_RETRY"
+    },
+    {
+      "provider": "gemini",
+      "operation": "model_inventory",
+      "http_status": 400,
+      "status": "FAIL",
+      "attempts": 1
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "operation": "generation",
+      "http_status": 400,
+      "status": "FAIL",
+      "attempts": 1
+    }
+  ],
+  "secrets_recorded": false,
+  "independent_verification": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}
