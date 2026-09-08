@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { installAdministratorSession } from "./helpers/admin-session";
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
@@ -7,6 +8,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("help, shell locale and theme preferences stay accessible and persistent", async ({ page }) => {
+  await installAdministratorSession(page);
   await page.goto("/help");
 
   await expect(page.getByRole("heading", { name: "帮助与就绪状态" })).toBeVisible();
@@ -23,11 +25,14 @@ test("help, shell locale and theme preferences stay accessible and persistent", 
   await expect(page.locator(".skip-link")).toHaveText("Skip to main content");
   await expect(page.locator('button[aria-label="Reload current page (clears unsaved input)"]')).toHaveCount(1);
   await expect(page.getByRole("button", { name: "Open global search" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open repository workspace" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open repository workspace" })).toHaveAttribute(
+    "href",
+    "/repositories",
+  );
   await expect(
     page.getByLabel("Operate and diagnose")
-      .getByRole("link", { name: "Administrator sign in" }),
-  ).toHaveAttribute("href", "/admin/login");
+      .getByRole("link", { name: "Open operations admin" }),
+  ).toHaveAttribute("href", "/admin");
 
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);

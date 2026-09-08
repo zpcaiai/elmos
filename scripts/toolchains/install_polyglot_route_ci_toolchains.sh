@@ -181,18 +181,33 @@ file_sha256() {
 }
 
 download_verified() {
-  local url="$1"
+  local primary_url="$1"
   local expected="$2"
   local destination="$3"
-  curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
-    --output "${destination}" "${url}"
-  local observed
-  observed="$(file_sha256 "${destination}")"
-  if [[ "${observed}" != "${expected}" ]]; then
-    printf 'Pinned source checksum mismatch for %s: expected %s, observed %s\n' \
-      "${url}" "${expected}" "${observed}" >&2
-    exit 3
+  local fallback_url="${4:-}"
+  local url observed
+  local -a urls=("${primary_url}")
+  if [[ -n "${fallback_url}" ]]; then
+    urls+=("${fallback_url}")
   fi
+  for url in "${urls[@]}"; do
+    if curl --fail --location --proto '=https' --tlsv1.2 \
+      --connect-timeout 15 --max-time 90 --retry 4 --retry-all-errors \
+      --retry-delay 2 --retry-max-time 60 \
+      --output "${destination}" "${url}"; then
+      observed="$(file_sha256 "${destination}")"
+      if [[ "${observed}" == "${expected}" ]]; then
+        return 0
+      fi
+      printf 'Pinned source checksum mismatch for %s: expected %s, observed %s\n' \
+        "${url}" "${expected}" "${observed}" >&2
+    else
+      printf 'Pinned source download failed for %s\n' "${url}" >&2
+    fi
+  done
+  printf 'No digest-valid pinned source was available for %s\n' \
+    "${primary_url}" >&2
+  exit 3
 }
 
 install -d -m 0755 "${PINNED_HOME}"
@@ -222,8 +237,9 @@ install_pinned_formula() {
   local source="${temporary_root}/${token//@/_}.rb"
   local target="${TAP_ROOT}/Formula/${token}.rb"
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-core/${commit}/${source_path}"
+  local fallback_url="https://cdn.jsdelivr.net/gh/Homebrew/homebrew-core@${commit}/${source_path}"
 
-  download_verified "${url}" "${source_sha256}" "${source}"
+  download_verified "${url}" "${source_sha256}" "${source}" "${fallback_url}"
   python3 - "${source}" "${target}" "${token}" <<'PY'
 from pathlib import Path
 import sys
@@ -675,8 +691,9 @@ install_pinned_cask() {
   local source="${temporary_root}/${token}.rb"
   local target="${TAP_ROOT}/Casks/${token}.rb"
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-cask/${commit}/${source_path}"
+  local fallback_url="https://cdn.jsdelivr.net/gh/Homebrew/homebrew-cask@${commit}/${source_path}"
 
-  download_verified "${url}" "${source_sha256}" "${source}"
+  download_verified "${url}" "${source_sha256}" "${source}" "${fallback_url}"
   install -m 0444 "${source}" "${target}"
   if brew list --cask --versions "${token}" >/dev/null 2>&1; then
     brew uninstall --cask --force "${token}"
@@ -732,10 +749,23 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
     "38adcf3b2e2f5f90f72fb559467495200b1ee8bb" \
     "Formula/p/python@3.14.rb" \
     "a658a88637d2d4668c7d98e0b32e3c38fc2e30695e614d061b7017b8d9b208b3"
+  install_pinned_formula \
+    "postgresql@17" "17.5" \
+    "c26b6a48e4695754b27b0c2b7ce5d2cfce1a53bb" \
+    "Formula/p/postgresql@17.rb" \
+    "869f0cf437260856fe4ffa52c90f42e5e625afec80f109986c9888fee7eabf55"
+  postgres_bin="$(brew --prefix postgresql@17)/bin"
+  readonly postgres_bin
+  if [[ "$("${postgres_bin}/postgres" --version)" != "postgres (PostgreSQL) 17.5 (Homebrew)" ]]; then
+    printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
+    exit 3
+  fi
   {
     printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
     printf '%s\n' "$(brew --prefix python@3.14)/bin"
+    printf '%s\n' "${postgres_bin}"
   } >>"${GITHUB_PATH}"
+  printf 'POSTGRESQL_17_BIN=%s\n' "${postgres_bin}" >>"${GITHUB_ENV}"
   if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)" ]]; then
     printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2
     exit 3

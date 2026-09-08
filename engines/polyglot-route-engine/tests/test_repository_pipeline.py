@@ -549,6 +549,12 @@ _CANDIDATE_DISCOVERY_CASES: dict[Language, tuple[str, list[str]]] = {
     "kotlin": ("fun total(value: Long): Long = value", ["total"]),
     "react": ("export function total(value: number): number { return value; }", ["total"]),
     "flutter": ("int total(int value) => value;", ["total"]),
+    "vb6": (
+        "Option Explicit\nPublic Function Total(ByVal value As Long) As Long\n"
+        "Total = value\nEnd Function\n",
+        ["Total"],
+    ),
+    "vcpp6": ("__int64 Total(__int64 value) { return value; }", ["Total"]),
 }
 
 

@@ -551,6 +551,12 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline
 
+    document["source"]["versions"]["head"] = None
+    document["source"]["versions"]["compatibility_version"] = None
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    legacy_formula_metadata = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert legacy_formula_metadata == baseline
+
     document["arch"] = "x86_64"
     receipt.write_text(json.dumps(document), encoding="utf-8")
     semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")

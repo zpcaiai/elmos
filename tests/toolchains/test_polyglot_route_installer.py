@@ -14,6 +14,9 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_ENVIRONMENT = ROOT / "scripts" / "toolchains" / "runtime_environment.py"
 INSTALLER = ROOT / "scripts" / "toolchains" / "install_polyglot_route_toolchains.sh"
+PROJECT_SYNTHESIS_INSTALLER = (
+    ROOT / "scripts" / "toolchains" / "install_project_synthesis_toolchains.sh"
+)
 PIN_VERIFIER = (
     ROOT
     / "engines"
@@ -219,6 +222,19 @@ def test_route_installer_is_executable_digest_pinned_and_tree_verifying() -> Non
     assert 'rm -rf -- "${KOTLIN_TARGET}"' not in content
     assert "Refusing to overwrite a non-matching Kotlin route target" in content
     assert "install_project_synthesis_toolchains.sh" not in content
+
+
+def test_project_synthesis_installer_seals_rust_before_publishing_wrappers() -> None:
+    content = PROJECT_SYNTHESIS_INSTALLER.read_text(encoding="utf-8")
+
+    seal_call = 'seal_rust_sysroot "${target}"'
+    wrapper_call = 'write_rust_wrapper "${target}" "rustc"'
+    assert "seal_rust_sysroot()" in content
+    assert 'find "${sysroot}" -type l -print -quit' in content
+    assert 'find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +' in content
+    assert 'find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +' in content
+    assert 'find "${sysroot}" -type d -exec chmod 0555 {} +' in content
+    assert content.index(seal_call) < content.index(wrapper_call)
 
 
 @pytest.mark.parametrize(

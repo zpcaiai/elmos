@@ -21,9 +21,11 @@ import pytest
 from elmos_polyglot_route import types
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers, target_ir_view
-from elmos_polyglot_route.models import ROUTED_LANGUAGES, Parameter, SemanticIR
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Parameter, RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.toolchains import exact_toolchain
+
+LOCAL_LOOP_TARGETS = tuple(language for language in ROUTED_LANGUAGES if language != "vb6")
 
 
 def _strip_spans(obj: Any) -> Any:
@@ -326,11 +328,11 @@ def test_while_loop_with_break_cross_language_parity(tmp_path: Path) -> None:
 
 
 # ==============================================================================
-# 4. Multi-Target Emission Across All 14 Routed Languages
+# 4. Multi-Target Emission Across All Locally Executable Routed Languages
 # ==============================================================================
 
-@pytest.mark.parametrize("target", ROUTED_LANGUAGES)
-def test_for_loop_emits_to_all_14_targets(tmp_path: Path, target: str) -> None:
+@pytest.mark.parametrize("target", LOCAL_LOOP_TARGETS)
+def test_for_loop_emits_to_every_local_loop_target(tmp_path: Path, target: str) -> None:
     py_file = tmp_path / "subject.py"
     py_file.write_text(
         "def subject(n: int) -> int:\n"
@@ -350,8 +352,8 @@ def test_for_loop_emits_to_all_14_targets(tmp_path: Path, target: str) -> None:
     assert "continue" in emitted.content
 
 
-@pytest.mark.parametrize("target", ROUTED_LANGUAGES)
-def test_while_loop_emits_to_all_14_targets(tmp_path: Path, target: str) -> None:
+@pytest.mark.parametrize("target", LOCAL_LOOP_TARGETS)
+def test_while_loop_emits_to_every_local_loop_target(tmp_path: Path, target: str) -> None:
     py_file = tmp_path / "subject.py"
     py_file.write_text(
         "def subject(n: int) -> int:\n"
@@ -368,6 +370,33 @@ def test_while_loop_emits_to_all_14_targets(tmp_path: Path, target: str) -> None
     assert emitted.relative_path
     assert "while" in emitted.content or "for" in emitted.content
     assert "break" in emitted.content
+
+
+def test_vb6_loop_lowering_boundaries_remain_explicit(tmp_path: Path) -> None:
+    for_loop = tmp_path / "for_subject.py"
+    for_loop.write_text(
+        "def subject(n: int) -> int:\n"
+        "    for i in range(0, n, 3):\n"
+        "        return i\n"
+        "    return 0\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError, match="VB6_FOR_LOOP_LOWERING_OUTSIDE_CERTIFIED_SUBSET"):
+        emit(analyze(for_loop, "python", "subject"), "vb6")
+
+    while_loop = tmp_path / "while_subject.py"
+    while_loop.write_text(
+        "def subject(n: int) -> int:\n"
+        "    while n > 0:\n"
+        "        break\n"
+        "    return 0\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        RouteError,
+        match="VB6_LOOP_CONTROL_LOWERING_OUTSIDE_CERTIFIED_SUBSET:break",
+    ):
+        emit(analyze(while_loop, "python", "subject"), "vb6")
 
 
 # ==============================================================================

@@ -148,6 +148,13 @@ _SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
+# A command can exit successfully while a short-lived, same-session helper
+# still owns an inherited stdout/stderr descriptor.  Give that helper a small,
+# absolute drain window before treating the retained pipe as a process leak.
+# This stays far below the command deadline and the runaway-session test's
+# bounded cleanup path remains fail-closed.
+_SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS = 2.0
 _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
@@ -3023,9 +3030,15 @@ def _run_swift_build_step(
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
     communication_deadline = time.monotonic() + effective_timeout
     pending_input = input_text
+    completed_leader_drain_deadline: float | None = None
     try:
         while True:
             remaining = communication_deadline - time.monotonic()
+            if completed_leader_drain_deadline is not None:
+                remaining = min(
+                    remaining,
+                    completed_leader_drain_deadline - time.monotonic(),
+                )
             if remaining <= 0:
                 raise subprocess.TimeoutExpired(command, effective_timeout)
             try:
@@ -3039,12 +3052,18 @@ def _run_swift_build_step(
                 # after the session leader exits.  SwiftPM compiler helpers
                 # have exhibited exactly that leak, which otherwise consumes
                 # the full one-hour cold-build timeout.  Poll the pinned leader
-                # so a completed leader with live pipe holders enters the same
-                # bounded, identity-checked process-tree cleanup as a timeout.
+                # and allow a short-lived helper to drain naturally. A pipe
+                # that remains open beyond the bounded grace enters the same
+                # identity-checked process-tree cleanup as a command timeout.
                 pending_input = None
                 poll = getattr(process, "poll", None)
-                if not callable(poll) or poll() is not None:
+                if not callable(poll):
                     raise
+                if poll() is not None and completed_leader_drain_deadline is None:
+                    completed_leader_drain_deadline = min(
+                        communication_deadline,
+                        time.monotonic() + _SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS,
+                    )
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
