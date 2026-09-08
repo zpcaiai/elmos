@@ -35,7 +35,7 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
-  // Exercise the administrator entry from a fresh document.  On mobile the
+  // Exercise the administrator entry from a fresh document. On mobile the
   // preceding link intentionally closes the drawer, and in development mode
   // a stale Next overlay from that navigation can otherwise intercept the
   // next pointer action instead of testing the link itself.
@@ -49,12 +49,10 @@ test("anonymous user login entries perform a document navigation", async ({ page
     exact: true,
   });
   await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login?returnTo=%2Fadmin");
-  // Next's development indicator occupies the lower-left corner where this
-  // sidebar link is rendered. Activate the real link through its keyboard
-  // contract so development-only chrome cannot intercept the pointer event.
+  // Keyboard activation still exercises the anchor's real document navigation
+  // while remaining independent of Next's development overlay portal.
   await sidebarAdminLogin.focus();
-  await expect(sidebarAdminLogin).toBeFocused();
-  await page.keyboard.press("Enter");
+  await sidebarAdminLogin.press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?returnTo=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
