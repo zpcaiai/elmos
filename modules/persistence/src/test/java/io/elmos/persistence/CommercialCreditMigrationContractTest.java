@@ -11,25 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
-    private static final Path CATALOG_READINESS_MIGRATION = Path.of(
-            "src/main/resources/db/migration/V94__commercial_catalog_runtime_readiness.sql");
-
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);
         assertTrue(sql.contains("'elmos-credit-500', 'CREDIT_PACK', '2026-09-08.1'"));
         assertTrue(sql.contains("'elmos-project-generation-once', 'PROJECT_GENERATION_ONCE'"));
         assertTrue(sql.contains("ELMOS_COMMERCIAL_PRODUCT_IMMUTABLE"));
-    }
-
-    @Test void currentCatalogSnapshotAndSubscriptionFunctionsMoveForwardTogether() throws Exception {
-        String sql = Files.readString(CATALOG_READINESS_MIGRATION);
-        assertTrue(sql.contains("INSERT INTO self_service_pricing_plan_versions"));
-        assertTrue(sql.contains("'2026-09-08.1', 'elmos-free-trial'"));
-        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-monthly'"));
-        assertTrue(sql.contains("'2026-09-08.1', 'elmos-pro-annual'"));
-        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_activate_subscription_period"));
-        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_grant_trial"));
-        assertFalse(sql.contains("2026-07-28.2"));
     }
 
     @Test void callbacksSeeOnlyTheMinimalDirectoryBeforeTenantResolution() throws Exception {

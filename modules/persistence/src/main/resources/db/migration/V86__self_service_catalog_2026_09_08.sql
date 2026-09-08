@@ -1,9 +1,5 @@
--- Forward-only readiness repair for catalog 2026-09-08.1.
---
--- The catalog artifact gained commercial one-time products without changing
--- the three subscription plans. Append the current catalog snapshot so the
--- database health gate, checkout rows, grants, and renewals all bind the same
--- immutable version; never rewrite the V49 or V83 migration history.
+-- Align the PostgreSQL subscription catalog with the immutable application
+-- catalog introduced alongside commercial Credit and one-time products in V83.
 
 INSERT INTO self_service_pricing_plan_versions (
     catalog_version, plan_id, currency, price_minor, billing_period, allowance_window,
@@ -11,13 +7,13 @@ INSERT INTO self_service_pricing_plan_versions (
     artifact_retention_days, effective_from, source_ref, status
 ) VALUES
     ('2026-09-08.1', 'elmos-free-trial', 'CNY', 0, 'TRIAL', 'TRIAL_TERM',
-     2000000, 60, 1, 1, 7, '2026-07-28T00:00:00Z',
+     2000000, 60, 1, 1, 7, '2026-09-08T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT'),
     ('2026-09-08.1', 'elmos-pro-monthly', 'CNY', 12900, 'MONTH', 'MONTHLY',
-     20000000, 600, 10, 3, 30, '2026-07-28T00:00:00Z',
+     20000000, 600, 10, 3, 30, '2026-09-08T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT'),
     ('2026-09-08.1', 'elmos-pro-annual', 'CNY', 129000, 'YEAR', 'MONTHLY',
-     25000000, 750, 25, 5, 90, '2026-07-28T00:00:00Z',
+     25000000, 750, 25, 5, 90, '2026-09-08T00:00:00Z',
      'contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json', 'DRAFT');
 
 CREATE OR REPLACE FUNCTION elmos_activate_subscription_period(
@@ -180,3 +176,29 @@ BEGIN
     );
 END;
 $$;
+
+REVOKE ALL ON FUNCTION elmos_activate_subscription_period(
+    varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+    timestamptz, timestamptz, varchar, varchar) FROM PUBLIC;
+REVOKE ALL ON FUNCTION elmos_grant_trial(
+    varchar, varchar, varchar, varchar, char, varchar) FROM PUBLIC;
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN
+        GRANT EXECUTE ON FUNCTION elmos_activate_subscription_period(
+            varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+            timestamptz, timestamptz, varchar, varchar) TO elmos_billing_runtime;
+        GRANT EXECUTE ON FUNCTION elmos_grant_trial(
+            varchar, varchar, varchar, varchar, char, varchar) TO elmos_billing_runtime;
+    END IF;
+END
+$$;
+
+COMMENT ON FUNCTION elmos_activate_subscription_period(
+    varchar, varchar, varchar, varchar, varchar, varchar, varchar,
+    timestamptz, timestamptz, varchar, varchar) IS
+    'Activates an exact 2026-09-08.1 paid subscription snapshot.';
+COMMENT ON FUNCTION elmos_grant_trial(
+    varchar, varchar, varchar, varchar, char, varchar) IS
+    'Grants the exact 2026-09-08.1 immutable free-trial snapshot.';

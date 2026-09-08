@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-control-plane-cloud-run-production-target",
+  "owner": "ELMOS Platform Engineering",
+  "provider": "google-cloud-project-gen-lang-client-0684615336",
+  "regions": ["asia-east1"],
+  "account_model": "single-project-nexus",
+  "iac_tool": {"name": "gcloud-cli", "version": "583.0.0"},
+  "state_backend": {"type": "google-cloud-resource-state", "locking": "provider-etag-and-revision", "encryption": "google-managed-at-rest"},
+  "container": {
+    "builder": "docker-29.4.0-linux-amd64",
+    "dockerfile": "apps/control-plane/Dockerfile",
+    "base_image_policy": "sha256-digest-only",
+    "registry": "asia-east1-docker.pkg.dev/gen-lang-client-0684615336/elmos-control-plane",
+    "deployment_reference": "resolved-sha256-only"
+  },
+  "orchestrator": {"name": "google-cloud-run-v2", "version": "2026-09-09"},
+  "identity": {
+    "workload_identity": "elmos-control-plane-runtime@gen-lang-client-0684615336.iam.gserviceaccount.com without persistent keys",
+    "human_identity": "Google OAuth operator stored in owner-only external gcloud config",
+    "application_identity": "Descope issuer plus JWKS plus exact project audience"
+  },
+  "network": {
+    "topology": "public-cloud-run-https-ingress-to-fail-closed-spring-resource-server",
+    "default_egress": "provider-controlled-with-explicit-neon-and-descope-obligations",
+    "public_ingress_justification": "Vercel BFF requires the provider HTTPS origin; protected routes independently require Descope JWT validation"
+  },
+  "dns": {"provider": "google-cloud-run", "strategy": "provider-assigned-run.app-origin"},
+  "service_mesh": {"enabled": false, "provider": "none"},
+  "serverless": {"enabled": true, "provider": "google-cloud-run-v2", "min_instances": 0, "max_instances": 4},
+  "managed_services": [
+    {"name": "artifact-registry", "location": "asia-east1", "immutable_tags": true},
+    {"name": "secret-manager", "secret_count": 3, "secret_values_in_state": false},
+    {"name": "neon-postgresql", "provider": "vercel-marketplace", "tls": "required"},
+    {"name": "descope", "provider": "vercel-marketplace", "jwks_tls": "required"}
+  ],
+  "api_gateway": {"provider": "cloud-run-ingress", "strategy": "public-invoker-plus-application-jwt"},
+  "observability": {
+    "telemetry": "Cloud Run request/container logs and Spring Actuator readiness",
+    "retention": "provider-project-policy-not-yet-independently-verified"
+  },
+  "security": {
+    "policy_bundle": "exact-target, digest-image, resource-level-secret-access, no-secret-output, JWT-protected-routes",
+    "encryption": "TLS in transit and Google/Neon provider encryption at rest",
+    "known_gap": "Cloud Run internet egress allowlisting requires a separately approved VPC design"
+  },
+  "cost": {"budget_currency": "USD", "monthly_limit": 25, "min_instances": 0, "alert": "NOT_CONFIGURED"},
+  "provision": {
+    "commands": [
+      "python scripts/deploy/control_plane_cloud_run.py validate",
+      "python scripts/deploy/control_plane_cloud_run.py plan --expected-revision EXACT_40_HEX_REVISION",
+      "python scripts/deploy/control_plane_cloud_run.py --gcloud-config-dir OWNER_ONLY_PATH apply --vercel-env-file OWNER_ONLY_PATH --expected-revision EXACT_40_HEX_REVISION"
+    ]
+  },
+  "validate": {
+    "commands": [
+      "GET CLOUD_RUN_HTTPS_ORIGIN/actuator/health/readiness expects 200 and status UP",
+      "GET https://elmos-alpha.vercel.app/api/health expects control-plane dependency UP",
+      "protected API without JWT expects 401"
+    ]
+  },
+  "destroy": {
+    "commands": ["manual owner-approved Cloud Run, Artifact Registry, Secret Manager and service-account deletion followed by orphan audit"],
+    "automated": false
+  },
+  "lifecycle": {
+    "support_until": "2026-12-08",
+    "upgrade_policy": "revalidate exact project, region, gcloud, Cloud Run API, image, IAM, secret, database, identity, Vercel, rollback, drift and cost tuple"
+  }
+}

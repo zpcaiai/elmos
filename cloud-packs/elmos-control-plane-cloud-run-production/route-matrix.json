@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "tuples": [
+    {
+      "source": {"platform": "elmos-java-control-plane-container", "runtime": "eclipse-temurin-21-jre", "architecture": "linux-amd64"},
+      "target": {"provider": "google-cloud", "project": "gen-lang-client-0684615336", "region": "asia-east1", "platform": "cloud-run-v2", "service": "elmos-control-plane", "frontend": "vercel/elmos"},
+      "status": "experimental",
+      "evidence_refs": ["certification/local-validation.json"]
+    }
+  ],
+  "recertification_triggers": [
+    "Google project, region, Cloud Run API, gcloud, image platform, runtime service account, Secret Manager, Neon or Descope tuple changes",
+    "Vercel project, origin validation, public ingress, Spring Security or anonymous path policy changes",
+    "container CPU, memory, concurrency, timeout, min/max instances or monthly budget changes"
+  ]
+}

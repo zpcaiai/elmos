@@ -29,7 +29,7 @@ public final class BillingDatabaseHealthIndicator implements HealthIndicator {
                     """).param("catalog", PricingPlanCatalog.CATALOG_VERSION)
                     .query(Boolean.class).single();
             return ready
-                    ? Health.up().withDetail("schema", "self-service-billing-v49").build()
+                    ? Health.up().withDetail("schema", "self-service-billing-v86").build()
                     : Health.down().withDetail("schema", "missing-or-stale").build();
         } catch (RuntimeException error) {
             return Health.down().withDetail("schema", "unavailable").build();

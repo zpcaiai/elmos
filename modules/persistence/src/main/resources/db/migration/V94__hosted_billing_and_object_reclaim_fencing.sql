@@ -332,7 +332,7 @@ INSERT INTO wallet_price_book(
     'TRANSLATION', 'translate-pipeline-v1', 'CNY',
     2000, 'WALL_SECOND', 2, 100,
     '2026-09-08T00:00:00Z',
-    'modules/persistence/src/main/resources/db/migration/V93__hosted_billing_and_object_reclaim_fencing.sql',
+    'modules/persistence/src/main/resources/db/migration/V94__hosted_billing_and_object_reclaim_fencing.sql',
     'DRAFT'
 );
 

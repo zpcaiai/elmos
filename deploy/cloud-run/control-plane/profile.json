@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-control-plane-google-cloud-run-nexus-asia-east1",
+  "project_id": "gen-lang-client-0684615336",
+  "project_name": "nexus",
+  "region": "asia-east1",
+  "service_name": "elmos-control-plane",
+  "artifact_repository": "elmos-control-plane",
+  "image_name": "elmos-control-plane",
+  "runtime_service_account": "elmos-control-plane-runtime",
+  "container": {
+    "dockerfile": "apps/control-plane/Dockerfile",
+    "port": 8080,
+    "cpu": "2",
+    "memory": "2Gi",
+    "min_instances": 0,
+    "max_instances": 4,
+    "concurrency": 40,
+    "timeout_seconds": 300,
+    "execution_environment": "gen2"
+  },
+  "network": {
+    "ingress": "all",
+    "allow_unauthenticated_invocation": true,
+    "justification": "Vercel must reach the HTTPS service origin; Spring Security independently rejects every protected route without a valid Descope JWT. Only actuator health is anonymous."
+  },
+  "identity": {
+    "base_url_key": "NEXT_PUBLIC_DESCOPE_BASE_URL",
+    "project_id_key": "NEXT_PUBLIC_DESCOPE_PROJECT_ID",
+    "issuer_template": "{base_url}/{project_id}",
+    "jwks_template": "{base_url}/{project_id}/.well-known/jwks.json",
+    "audience_template": "{project_id}"
+  },
+  "database": {
+    "host_key": "PGHOST_UNPOOLED",
+    "database_key": "PGDATABASE",
+    "user_key": "PGUSER",
+    "password_key": "PGPASSWORD",
+    "jdbc_parameters": "sslmode=require"
+  },
+  "secrets": {
+    "ELMOS_DATABASE_URL": "elmos-control-plane-database-url",
+    "ELMOS_DATABASE_USER": "elmos-control-plane-database-user",
+    "ELMOS_DATABASE_PASSWORD": "elmos-control-plane-database-password"
+  },
+  "vercel": {
+    "scope": "zpchoney-6160s-projects",
+    "project": "elmos",
+    "root": "apps/web-console",
+    "environment_variable": "ELMOS_CONTROL_PLANE_BASE_URL"
+  },
+  "health": {
+    "path": "/actuator/health/readiness",
+    "expected_status": "UP"
+  },
+  "labels": {
+    "application": "elmos",
+    "component": "control-plane",
+    "environment": "production",
+    "managed-by": "elmos-cloud-run-deployer"
+  }
+}

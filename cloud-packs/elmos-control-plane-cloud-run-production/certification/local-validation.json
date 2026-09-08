@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "observed_at": "2026-09-09T02:15:02+08:00",
+  "executor": "repository-owner-local-workstation",
+  "evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "results": [
+    {
+      "command": "uv run --quiet --with pytest pytest -q tests/deploy/test_control_plane_cloud_run.py",
+      "status": "PASS",
+      "summary": "12 passed"
+    },
+    {
+      "command": "uv run --quiet --with jsonschema python scripts/batch33/run_cloud_gate.py cloud-packs/elmos-control-plane-cloud-run-production",
+      "status": "PASS",
+      "summary": "GATE PASS; pack status remains experimental"
+    },
+    {
+      "command": "mvn -B -pl modules/persistence test",
+      "status": "PASS",
+      "summary": "148 tests, 0 failures, 0 errors, 2 environment-conditioned skips"
+    },
+    {
+      "command": "mvn -B -pl modules/security,modules/integrations,apps/control-plane test",
+      "status": "PASS",
+      "summary": "216 tests, 0 failures, 0 errors, 0 skips"
+    },
+    {
+      "command": "docker build --platform=linux/amd64 -f apps/control-plane/Dockerfile -t elmos-control-plane:local-gate .",
+      "status": "BLOCKED",
+      "summary": "Docker Hub anonymous token endpoint reset the connection before either pinned base image metadata was fetched; no build result was inferred"
+    }
+  ],
+  "source_digests": {
+    "deployment_control_sha256": "51362160d5e3def84bd39b01438f67db5dbc2d01b35f138f699f155fb27f2316",
+    "cloud_run_profile_sha256": "c1bf68aab6d8c3fb1e50473c2d616f7008e73a65935cecbd07270213d823f92f",
+    "production_schema_repair_sha256": "3ab5061a8ebbf247e976b79e766f4fae49c15f63bd417f2a13ade85b504bc601",
+    "source_snapshot_sha256": "74d8284ad3c7e2795f92ba24daec254721685695ba8fae42ab5f8432040e8f86"
+  },
+  "production_vercel_environment": {
+    "required_input_schema": "PASS",
+    "values_recorded": false,
+    "secrets_exposed": false
+  },
+  "provider_apply": "NOT_RUN",
+  "live_identity_journey": "NOT_RUN",
+  "independent_status": "NOT_RUN",
+  "certification_status": "NOT_CERTIFIED"
+}
