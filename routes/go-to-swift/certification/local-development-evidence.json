@@ -1,8 +1,8 @@
 {
   "artifact_manifest": {
-    "bytes": 4343,
+    "bytes": 4367,
     "path": "certification/artifacts/development/artifact-manifest.json",
-    "sha256": "sha256:841e6386b29525dd56387f81c33b8f0f47fbc3871edbbdd2cc1623d82b598ed8"
+    "sha256": "sha256:4175c224f3abb2999e8bdbc7c654386ab5733f7fb732541d257a4da095fcb78d"
   },
   "artifact_root": "certification/artifacts/development",
   "authorization": "local-engineering-validation",
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:0a1bb4a849504729093870117da291eccd3d4135ef70d4248cbaff586d28870c",
+    "artifact_sha256": "sha256:58c2cafc6388219f978b5acbe79583a5e7ac89399d4d0d4e35e4be9e8e1dd9f4",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:32c0a3c15cdad01c83b38afd1187f22cbac14c0a4463ff4bf572ea7bb3ebde50",
+    "formal_input_digest": "sha256:9561a62dc9d8abb15e41b27c1a20747b096f0ed508d7891976911993c2e66135",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:32c0a3c15cdad01c83b38afd1187f22cbac14c0a4463ff4bf572ea7bb3ebde50",
+    "formal_input_sha256": "sha256:9561a62dc9d8abb15e41b27c1a20747b096f0ed508d7891976911993c2e66135",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:32c0a3c15cdad01c83b38afd1187f22cbac14c0a4463ff4bf572ea7bb3ebde50",
+        "formal_input_sha256": "sha256:9561a62dc9d8abb15e41b27c1a20747b096f0ed508d7891976911993c2e66135",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:8f723e6f5402d480791a4b82e01ae3f28755a3c7a806994aaf9a5e16bc3d68f8",
+        "sha256": "sha256:af5b2e1c650f8c92aac4a52b4d99c644c98a85d52aac8b9cbbf64429529fdd99",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:32c0a3c15cdad01c83b38afd1187f22cbac14c0a4463ff4bf572ea7bb3ebde50",
+        "formal_input_sha256": "sha256:9561a62dc9d8abb15e41b27c1a20747b096f0ed508d7891976911993c2e66135",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:35b8e0be95eca88c9125e38427df1d5eef04b0e8c9d360e488f8ae905f0c9cee",
+        "sha256": "sha256:aeba4ee9eb026ee470b81050dcb8695f7453650e693a57d8d9e769c8ed8e0524",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:8f723e6f5402d480791a4b82e01ae3f28755a3c7a806994aaf9a5e16bc3d68f8",
+    "solver_input_digest": "sha256:af5b2e1c650f8c92aac4a52b4d99c644c98a85d52aac8b9cbbf64429529fdd99",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -72,7 +72,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:0cdd4fba5540f771431057572bdc29924032ecb2eeb365fd4ecd9512acb6dd93",
+      "sha256": "sha256:e343686e5ae286826a58df5754144a17b92baf8e74775b1166c3bb4c0915b31b",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -81,7 +81,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:4d094d7282cc6e2a6cda34c7c0e021b86e31a47bf777b08f8d90a8abac2bdee9",
+      "sha256": "sha256:22b01b8dcd3a3f1371998d658377e0453fc35dba0a84e25e8ac7287f77e15769",
       "status": "PASSED"
     },
     "renamed": true,
@@ -102,7 +102,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:393c0645b4225683f10ec4134536aca78fd448d1c01c21a26f7f4b58d23b32a5",
+    "artifact_sha256": "sha256:d489b851e814ffc8895c0793efd706f333ee4887b2709ca6d11143c4dcbddfe6",
     "status": "PASSED"
   },
   "limitations": [
@@ -124,7 +124,7 @@
     "source_ir_sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:0cdd4fba5540f771431057572bdc29924032ecb2eeb365fd4ecd9512acb6dd93"
+    "target_ir_sha256": "sha256:e343686e5ae286826a58df5754144a17b92baf8e74775b1166c3bb4c0915b31b"
   },
   "semantic_ir_sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798",
   "source": {
@@ -153,7 +153,7 @@
           "source_behavior_test.go"
         ],
         "stderr": "",
-        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.400s\n"
+        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.562s\n"
       }
     ],
     "language": "go",
