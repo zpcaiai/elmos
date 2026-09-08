@@ -438,7 +438,7 @@ jobs:
     # Linux clang can parse the bounded source subset, but cannot provide that
     # runtime contract, so the compiler-backed core runs on macOS.
     runs-on: macos-26
-    # The 364 repository-matrix cases run in independently bounded source
+    # The 312 repository-matrix cases run in independently bounded source
     # shards below.  Keeping them out of this worker prevents an outdated
     # aggregate runtime estimate from hiding a timeout.
     timeout-minutes: 240
@@ -591,7 +591,6 @@ jobs:
           - kotlin
           - react
           - flutter
-          - vb6
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -681,8 +680,8 @@ jobs:
               for target in HOSTED_REPOSITORY_MATRIX_LANGUAGES
               if target != source
           ]
-          if len(selectors) != 26 or len(set(selectors)) != 26:
-              raise SystemExit("matrix shard must contain exactly 26 unique nodes")
+          if len(selectors) != 24 or len(set(selectors)) != 24:
+              raise SystemExit("matrix shard must contain exactly 24 unique nodes")
           completed = subprocess.run(
               [sys.executable, "-m", "pytest", *selectors],
               check=False,
