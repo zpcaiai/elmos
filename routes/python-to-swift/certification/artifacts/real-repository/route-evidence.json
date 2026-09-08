@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:ab63aad811168db39cf039c73cd8cdaa91b786d4327df3484d735c13c81ca523",
+    "artifact_sha256": "sha256:1a88bcc5474e487a0c02bf3ce82ad6f4e5b1f9d8c330e213708257406dd323b7",
     "assumption_boundary": "typed-pure-function-v1 / L0 only",
-    "formal_input_digest": "sha256:0cbefe11d24f242c5310aa457aa0f049ff910ef98a0f80397c77e69bbd6e8020",
+    "formal_input_digest": "sha256:5e19e5b1fc3caca01143aa53cce18e0e396d18bb76f92470d6233734de250cb7",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:0cbefe11d24f242c5310aa457aa0f049ff910ef98a0f80397c77e69bbd6e8020",
+    "formal_input_sha256": "sha256:5e19e5b1fc3caca01143aa53cce18e0e396d18bb76f92470d6233734de250cb7",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:0cbefe11d24f242c5310aa457aa0f049ff910ef98a0f80397c77e69bbd6e8020",
+        "formal_input_sha256": "sha256:5e19e5b1fc3caca01143aa53cce18e0e396d18bb76f92470d6233734de250cb7",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:58e32c3cd9feb3df446b83c8ed43734b1ad24774f941fc18f781d2243e65e4ec",
+        "sha256": "sha256:0af994c02a3c76d1f1fe55c285b995fa98ca83074bb0a56211cf2fcec904d0fc",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:0cbefe11d24f242c5310aa457aa0f049ff910ef98a0f80397c77e69bbd6e8020",
+        "formal_input_sha256": "sha256:5e19e5b1fc3caca01143aa53cce18e0e396d18bb76f92470d6233734de250cb7",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:9acd6f692c69c9625620436d0c18a13329aa0f0fda0899226dfb0d7fdd1e3725",
+        "sha256": "sha256:3b66212ec433271a3743578b3782247740245cc62c2e3a5407ef9937be13143a",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:58e32c3cd9feb3df446b83c8ed43734b1ad24774f941fc18f781d2243e65e4ec",
+    "solver_input_digest": "sha256:0af994c02a3c76d1f1fe55c285b995fa98ca83074bb0a56211cf2fcec904d0fc",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,7 +66,7 @@
   "identifier_hygiene": {
     "normalized_target_ir": {
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a",
+      "sha256": "sha256:71286bcc426c4d8a52769cf5368a118e065f42585290326c88939038fa56d443",
       "status": "PASSED"
     },
     "plan_path": "identifier-plan.json",
@@ -75,7 +75,7 @@
     "policy_sha256": "sha256:fab9af18b8a5f2723f51d0e3bf5e6e4fd22064dd33fd3247dd885b07277eaad1",
     "raw_target_relift": {
       "path": "target-semantic-ir.raw.json",
-      "sha256": "sha256:637cf2ebc66b442083bd0b2612d37e81f8da82544f2dcfb491e47b9fd739582b",
+      "sha256": "sha256:cd42593bb1fb957d25b19348b005856a1553e91f16aa1464cdd84c6a2e2a7615",
       "status": "PASSED"
     },
     "renamed": true,
@@ -96,7 +96,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:fe2d26a9396e4674007f1964e8cd685aaaea08c793427d7196ed3e294f691fd9",
+    "artifact_sha256": "sha256:01aec97e892ec81dd26c7ac7b8f2030b5b37993c07232321b2d82766ef584157",
     "status": "PASSED"
   },
   "limitations": [
@@ -118,7 +118,7 @@
     "source_ir_sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a"
+    "target_ir_sha256": "sha256:71286bcc426c4d8a52769cf5368a118e065f42585290326c88939038fa56d443"
   },
   "semantic_ir_sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052",
   "source": {
