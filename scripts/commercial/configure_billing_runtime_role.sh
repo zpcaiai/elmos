@@ -41,33 +41,10 @@ test "$role_state" = "false|false" \
 psql "$psql_url" \
   --username "$ELMOS_COMMERCIAL_DATABASE_MIGRATION_USERNAME" \
   --no-psqlrc --set ON_ERROR_STOP=1 <<SQL
-GRANT USAGE ON SCHEMA public TO "$runtime_role";
-GRANT USAGE ON SCHEMA identity, ai_usage, billing TO "$runtime_role";
-GRANT SELECT ON TABLE self_service_pricing_plan_versions TO "$runtime_role";
-GRANT SELECT ON TABLE
-  commercial_products,
-  payment_order_directory,
-  wallet_topup_order_directory,
-  commercial_order_directory,
-  commercial_orders,
-  commercial_credit_accounts,
-  commercial_credit_lots,
-  commercial_credit_ledger_entries,
-  project_generation_entitlements,
-  commercial_credit_reservations,
-  commercial_credit_reservation_lots,
-  identity.accounts,
-  ai_usage.model_calls,
-  billing.token_usage_events
-TO "$runtime_role";
-GRANT SELECT, INSERT ON TABLE
-  payment_callback_receipts,
-  payment_unmatched_callbacks
-TO "$runtime_role";
-GRANT USAGE ON SEQUENCE payment_unmatched_callbacks_payment_unmatched_callback_id_seq
-TO "$runtime_role";
-GRANT UPDATE (processing_status, attempt_count, updated_at)
-  ON TABLE payment_callback_receipts TO "$runtime_role";
+GRANT USAGE ON SCHEMA public, identity, ai_usage, billing TO "$runtime_role";
+GRANT SELECT ON TABLE self_service_pricing_plan_versions, commercial_products TO "$runtime_role";
+GRANT SELECT ON TABLE identity.accounts, ai_usage.model_calls,
+  billing.token_usage_events TO "$runtime_role";
 GRANT SELECT, INSERT, UPDATE ON TABLE
   subscriptions,
   subscription_events,
@@ -83,6 +60,24 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
   payment_reconciliation_case_events,
   usage_alert_preferences,
   usage_alert_deliveries
+TO "$runtime_role";
+GRANT SELECT, INSERT ON TABLE payment_callback_receipts, payment_unmatched_callbacks
+TO "$runtime_role";
+GRANT UPDATE (processing_status, attempt_count, updated_at)
+ON TABLE payment_callback_receipts TO "$runtime_role";
+GRANT USAGE ON SEQUENCE payment_unmatched_callbacks_payment_unmatched_callback_id_seq
+TO "$runtime_role";
+GRANT SELECT ON TABLE
+  payment_order_directory,
+  wallet_topup_order_directory,
+  commercial_order_directory,
+  commercial_orders,
+  commercial_credit_accounts,
+  commercial_credit_lots,
+  commercial_credit_ledger_entries,
+  project_generation_entitlements,
+  commercial_credit_reservations,
+  commercial_credit_reservation_lots
 TO "$runtime_role";
 DO \$\$
 DECLARE
@@ -106,10 +101,12 @@ BEGIN
          'elmos_activate_subscription_period',
          'elmos_grant_trial',
          'elmos_resolve_payment_reconciliation',
+         'elmos_expire_current_trial',
          'elmos_wallet_credit_topup',
          'elmos_wallet_topup_bounds',
          'elmos_wallet_create_topup_order',
-         'elmos_expire_current_trial',
+         'elmos_wallet_mark_topup_handoff',
+         'elmos_wallet_mark_topup_prepare_failed',
          'elmos_commercial_create_order',
          'elmos_commercial_fulfill_order',
          'elmos_commercial_mark_order_handoff',

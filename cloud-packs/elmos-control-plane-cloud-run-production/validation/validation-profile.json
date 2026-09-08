@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-control-plane-cloud-run-production-validation",
+  "owner": "ELMOS Release Engineering",
+  "plan": {
+    "commands": [
+      "python scripts/deploy/control_plane_cloud_run.py validate",
+      "python scripts/deploy/control_plane_cloud_run.py plan --expected-revision EXACT_40_HEX_REVISION"
+    ],
+    "destructive_change_limit": 0
+  },
+  "apply": {
+    "mode": "approved-production-project",
+    "commands": ["controlled apply using owner-only Vercel environment and Google OAuth config"]
+  },
+  "p0_workloads": [
+    {"id": "cloud-run-readiness", "expected": "HTTPS 200 JSON status UP", "status": "NOT_RUN"},
+    {"id": "unauthenticated-protected-route", "expected": "401 without JWT", "status": "NOT_RUN"},
+    {"id": "vercel-control-plane-health", "expected": "dependency status UP", "status": "NOT_RUN"},
+    {"id": "authenticated-descope-proxy", "expected": "issuer, JWKS, audience and tenant accepted", "status": "NOT_RUN"}
+  ],
+  "security": {"critical_findings": 0, "public_exposure": 1, "privilege_expansion": 0, "public_exposure_status": "JUSTIFIED_NOT_INDEPENDENTLY_VERIFIED"},
+  "drift": {"allowed": false, "unknown_resources": 0, "live_check": "NOT_RUN"},
+  "cost": {"currency": "USD", "max_estimated_monthly": 25, "max_test_cost": 5, "provider_estimate": "NOT_RUN"},
+  "rollback": {
+    "commands": ["python scripts/deploy/control_plane_cloud_run.py --gcloud-config-dir OWNER_ONLY_PATH rollback"],
+    "destroy_required": true,
+    "status": "NOT_RUN"
+  },
+  "representative_workloads": [
+    "Vercel readiness and one authenticated tenant API journey",
+    "wrong issuer, wrong audience, unsigned and expired JWT rejection",
+    "Neon TLS connection and Flyway migration startup",
+    "previous Cloud Run revision traffic rollback"
+  ],
+  "evidence_refs": ["certification/local-validation.json"]
+}

@@ -1,4 +1,4 @@
--- V86 repairs the V84 ELMPay order-directory triggers without changing the
+-- V87 repairs the V84 ELMPay order-directory triggers without changing the
 -- already-released V84 migration checksum. PostgreSQL provides sha256(bytea)
 -- and encode(bytea, text) in pg_catalog, so trigger execution must not depend
 -- on the schema chosen when the optional pgcrypto extension was installed.
