@@ -36,22 +36,34 @@ trap 'rm -rf "$WORK"' EXIT
 echo "== 从 $EXEC_JAR 取依赖 =="
 (cd "$WORK" && unzip -q -o "$ROOT/$EXEC_JAR" 'BOOT-INF/lib/*')
 LIB="$WORK/BOOT-INF/lib"
-CP="$LIB/*:$ROOT/$APP_JAR"
+M2_ROOT="${MAVEN_USER_HOME:-${HOME}/.m2}/repository"
+SPRING_TEST_JAR="$(find "$M2_ROOT/org/springframework/spring-test" -type f -name 'spring-test-*.jar' 2>/dev/null | sort -V | tail -1)"
+if [ -z "$SPRING_TEST_JAR" ]; then
+    echo "NOT_RUN: 本地 Maven 仓库缺少 spring-test；请先完成 Maven test-compile。"
+    exit 3
+fi
+CP="$LIB/*:$ROOT/$APP_JAR:$SPRING_TEST_JAR"
 
 echo "== 编译被测代码 =="
 SRC="$WORK/src"
 mkdir -p "$SRC"
-javac -encoding UTF-8 -nowarn -cp "$CP" -d "$SRC" \
+javac_log="$WORK/javac-main.log"
+if ! javac -encoding UTF-8 -nowarn -cp "$CP" -d "$SRC" \
     apps/commercial-api/src/main/java/io/elmos/commercialadapter/payment/*.java \
-    apps/commercial-api/src/main/java/io/elmos/commercialapi/*.java 2>&1 | grep -v '^Note:' || true
-if [ ! -d "$SRC/io" ]; then
+    apps/commercial-api/src/main/java/io/elmos/commercialapi/*.java >"$javac_log" 2>&1; then
+    grep -v '^Note:' "$javac_log" || true
     echo "编译失败，中止。"
     exit 1
 fi
 
 echo "== 编译自检 =="
-javac -encoding UTF-8 -nowarn -cp "$SRC:$CP" -d "$SRC" \
-    tooling/payment-crypto-selftest/*.java 2>&1 | grep -v '^Note:' || true
+javac_selftest_log="$WORK/javac-selftest.log"
+if ! javac -encoding UTF-8 -nowarn -cp "$SRC:$CP" -d "$SRC" \
+    tooling/payment-crypto-selftest/*.java >"$javac_selftest_log" 2>&1; then
+    grep -v '^Note:' "$javac_selftest_log" || true
+    echo "自检编译失败，中止。"
+    exit 1
+fi
 
 # 结账分流自检要跑两遍：一遍用仓库里的真实目录（DRAFT，验"门关着"），
 # 一遍用一份状态位改成已配置的目录（验门开之后的分流逻辑）。
@@ -85,7 +97,13 @@ run() {
     printf '%-34s %s\n' "$label" "$(echo "$output" | tail -1)"
     if [ $code -ne 0 ]; then
         failures=$((failures + 1))
-        echo "$output" | grep -E '\[FAIL\]' | head -10
+        local concise
+        concise="$(echo "$output" | grep -E '\[FAIL\]' | head -10)"
+        if [ -n "$concise" ]; then
+            echo "$concise"
+        else
+            echo "$output"
+        fi
     fi
 }
 

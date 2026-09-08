@@ -877,8 +877,6 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
             "binary": copy.deepcopy(binary),
         },
     }
-    registered = validator._registered_swift_receipt_contract(receipt)
-    receipt["toolchain"] = copy.deepcopy(registered["toolchain"])
     canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
     receipt["canonical_identity"] = {
         "sha256": validator._receipt_payload_sha256(canonical),
@@ -890,12 +888,23 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
 def bind_swift_receipt_to_selected_host_profile(
     validator: object,
     receipt: dict[str, object],
+    profile: object | None = None,
 ) -> None:
     """Bind every host-owned receipt identity to one registered profile."""
 
-    profile = validator._selected_swift_host_profile()
+    profile = profile or validator._selected_swift_host_profile()
     if profile is None:
         raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    toolchain_profile = receipt["toolchain"]["profile"]
+    receipt["toolchain"]["profile"] = [
+        toolchain_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *[
+            item
+            for item in toolchain_profile[1:]
+            if not item.startswith("apple-host-profile=")
+        ],
+    ]
     receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["dependency"]["mirror"]["git"] = {
@@ -1006,42 +1015,40 @@ class ToolkitTests(unittest.TestCase):
             selector.assert_called_once_with("swift")
 
     def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
         from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
 
-        validator = load_route_validator()
-        receipt = portable_swift_analyzer_receipt(validator)
-        profile = _APPLE_ROUTE_HOST_PROFILES[0]
-        receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
-        receipt["toolchain"]["swift_driver_sha256"] = (
-            "sha256:" + profile.swiftc_sha256
-        )
-        receipt["dependency"]["mirror"]["git"]["sha256"] = (
-            "sha256:" + profile.apple_git_sha256
-        )
-        receipt["network_isolation"]["sandbox"]["sha256"] = (
-            "sha256:" + profile.sandbox_exec_sha256
-        )
-        receipt["network_isolation"]["verifier"]["sha256"] = (
-            "sha256:" + profile.codesign_sha256
-        )
+        for profile in _APPLE_ROUTE_HOST_PROFILES:
+            with self.subTest(profile=profile.profile_id):
+                receipt = portable_swift_analyzer_receipt(validator)
+                bind_swift_receipt_to_selected_host_profile(
+                    validator,
+                    receipt,
+                    profile,
+                )
+                self.assertEqual(
+                    receipt["toolchain"]["profile"][1],
+                    f"apple-host-profile={profile.profile_id}",
+                )
+                contract = validator._registered_swift_receipt_contract(receipt)
+                self.assertEqual(contract["profile"], profile)
+                self.assertEqual(contract["toolchain"], receipt["toolchain"])
 
-        contract = validator._registered_swift_receipt_contract(receipt)
-
-        self.assertEqual(
-            contract["toolchain"]["profile"],
-            [
-                "platform=Darwin/arm64",
-                f"apple-host-profile={profile.profile_id}",
-                "xcode=26.6/17F113",
-                "macosx-sdk=26.5",
-                (
-                    "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
-                    "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk"
-                ),
-                "swift-language-mode=6",
-                "integer=Int64",
-            ],
-        )
+                forged = copy.deepcopy(receipt)
+                forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+                failures: list[str] = []
+                validator._validate_swift_analyzer_receipt_document(
+                    forged,
+                    label="forged Swift analyzer receipt",
+                    failures=failures,
+                )
+                self.assertTrue(
+                    any(
+                        "toolchain exact identity is invalid" in failure
+                        for failure in failures
+                    ),
+                    failures,
+                )
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
@@ -2543,7 +2550,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 40)
+        self.assertEqual(len(swift_definition_names), 38)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
@@ -2553,19 +2560,6 @@ print('\\n'.join(failures))
                 schemas[0]["$defs"][definition_name],
                 schemas[1]["$defs"][definition_name],
             )
-        portable_host_variants = schemas[0]["$defs"][
-            "swift_portable_toolchain_host_identity"
-        ]["oneOf"]
-        self.assertEqual(len(portable_host_variants), 2)
-        self.assertEqual(
-            len(
-                {
-                    json.dumps(variant, sort_keys=True)
-                    for variant in portable_host_variants
-                }
-            ),
-            len(portable_host_variants),
-        )
         cache_contracts = [
             schema["$defs"]["swift_dependency_cache_receipt"] for schema in schemas
         ]
@@ -2575,36 +2569,6 @@ print('\\n'.join(failures))
         self.assertEqual(cache_contracts[0], cache_contracts[1])
         self.assertEqual(mirror_contracts[0], mirror_contracts[1])
         receipt = portable_swift_analyzer_receipt(validator)
-        portable_toolchain_contract = {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$defs": schemas[0]["$defs"],
-            "$ref": "#/$defs/swift_portable_toolchain_receipt",
-        }
-        portable_toolchain = receipt["canonical_identity"]["receipt"]["toolchain"]
-        for variant in portable_host_variants:
-            candidate = copy.deepcopy(portable_toolchain)
-            for field, field_contract in variant["properties"].items():
-                candidate[field] = field_contract["const"]
-            self.assertEqual(
-                list(
-                    Draft202012Validator(portable_toolchain_contract).iter_errors(
-                        candidate
-                    )
-                ),
-                [],
-            )
-        host_leaking_portable_toolchain = copy.deepcopy(portable_toolchain)
-        host_leaking_portable_toolchain["profile"].insert(
-            1, "apple-host-profile=local-macos26-20260904"
-        )
-        self.assertNotEqual(
-            list(
-                Draft202012Validator(portable_toolchain_contract).iter_errors(
-                    host_leaking_portable_toolchain
-                )
-            ),
-            [],
-        )
         for schema in schemas:
             receipt_contract = {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2613,14 +2577,6 @@ print('\\n'.join(failures))
             }
             self.assertEqual(
                 list(Draft202012Validator(receipt_contract).iter_errors(receipt)),
-                [],
-            )
-            hybrid = copy.deepcopy(receipt)
-            hybrid["toolchain"]["profile"][1] = (
-                "apple-host-profile=github-macos26-20260728.0273.1"
-            )
-            self.assertNotEqual(
-                list(Draft202012Validator(receipt_contract).iter_errors(hybrid)),
                 [],
             )
         mirror = receipt["dependency"]["mirror"]
@@ -3770,6 +3726,7 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
+        self.assertIn(".php", runner.ARTIFACT_ALLOWED_SUFFIXES)
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
         self.assertEqual(runner.parse_route_key("java-to-php"), ("java", "php"))
@@ -4827,21 +4784,6 @@ print('\\n'.join(failures))
                 ),
                 frozenset({expected}),
             )
-        self.assertEqual(
-            runner.stable_native_route_error(
-                f"NATIVE_ANALYZER_FAILED:/opt/elmos/bin/go:{expected}",
-                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
-            ),
-            expected,
-        )
-        with self.assertRaisesRegex(
-            RuntimeError,
-            "^NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID:",
-        ):
-            runner.stable_native_route_error(
-                f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
-                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
-            )
         for source in ("java", "javascript", "typescript"):
             self.assertEqual(
                 validator.nodejs_negative_expected_reasons(
@@ -4852,6 +4794,96 @@ print('\\n'.join(failures))
                 ),
                 frozenset({expected}),
             )
+
+    def test_generic_negative_stabilizes_only_exact_native_missing_symbol(self):
+        runner = load_polyglot_runner()
+        expected = runner.MISSING_SYMBOL_FAILURE
+
+        self.assertEqual(runner.stable_missing_symbol_failure(expected), expected)
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}"
+            ),
+            expected,
+        )
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2"
+            ),
+            expected,
+        )
+        for rejected in (
+            f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nforged",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 1",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2\nforged",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/go:FUNCTION_NOT_FOUND:other",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:prefix:{expected}",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertIsNone(runner.stable_missing_symbol_failure(rejected))
+
+    def test_generic_negative_records_exact_reason_from_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:/opt/elmos/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+                + "\nexit status 2"
+            )
+            with mock.patch.object(
+                runner,
+                "migrate",
+                side_effect=runner.RouteError(wrapped),
+            ):
+                reference = runner.execute_negative(route, fixtures, "go", "cpp")
+
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"], runner.MISSING_SYMBOL_FAILURE
+            )
+
+    def test_generic_negative_rejects_non_exact_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:relative/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+            )
+            with (
+                mock.patch.object(
+                    runner,
+                    "migrate",
+                    side_effect=runner.RouteError(wrapped),
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "^NEGATIVE_CASE_WRONG_FAILURE:go-to-cpp:",
+                ),
+            ):
+                runner.execute_negative(route, fixtures, "go", "cpp")
 
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,
@@ -4946,10 +4978,7 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError(
-                    "NATIVE_ANALYZER_FAILED:/opt/elmos/bin/python3:"
-                    + runner.MISSING_SYMBOL_FAILURE
-                ),
+                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"

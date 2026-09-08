@@ -98,6 +98,12 @@ import * as route094 from "./auth/descope/wechat/start/_route";
 import * as route095 from "./auth/descope/wechat/callback/_route";
 import * as route096 from "./auth/admin/login/_route";
 import * as route097 from "./live-workbench/[[...path]]/_route";
+import * as route098 from "./billing/orders/credit-packs/_route";
+import * as route099 from "./billing/orders/project-generations/_route";
+import * as route100 from "./billing/orders/_route";
+import * as route101 from "./billing/credits/_route";
+import * as route102 from "./billing/credits/ledger/_route";
+import * as route103 from "./usage/events/_route";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type ApiHandler = (
@@ -141,6 +147,11 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "billing/checkout", value: route025 as ApiRouteModule },
   { template: "billing/subscription", value: route026 as ApiRouteModule },
   { template: "billing/trial", value: route027 as ApiRouteModule },
+  { template: "billing/orders/credit-packs", value: route098 as ApiRouteModule },
+  { template: "billing/orders/project-generations", value: route099 as ApiRouteModule },
+  { template: "billing/orders", value: route100 as ApiRouteModule },
+  { template: "billing/credits", value: route101 as ApiRouteModule },
+  { template: "billing/credits/ledger", value: route102 as ApiRouteModule },
   { template: "capabilities/database-sql", value: route028 as ApiRouteModule },
   { template: "capabilities/generation", value: route029 as ApiRouteModule },
   { template: "capabilities/migration", value: route030 as ApiRouteModule },
@@ -201,6 +212,7 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "usage/current", value: route085 as ApiRouteModule },
   { template: "usage/export", value: route086 as ApiRouteModule },
   { template: "usage/history", value: route087 as ApiRouteModule },
+  { template: "usage/events", value: route103 as ApiRouteModule },
   { template: "wallet", value: route088 as ApiRouteModule },
   { template: "wallet/ledger", value: route089 as ApiRouteModule },
   { template: "wallet/topup/[topupOrderId]", value: route090 as ApiRouteModule },

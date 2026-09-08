@@ -1,0 +1,25 @@
+{
+  "route_key": "csharp-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 572,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:dd5a27fb31ed886505307d27449c9860ffbe4f2b2d3adbcc7c4f40a064c74056"
+    },
+    {
+      "bytes": 383,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:2bd47a23de4ed13251232b7a633fb15bd23e5fd5003327200785a85ef3174a3b"
+    },
+    {
+      "bytes": 598,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:c37bbc66afe2402e92c67b4c08ac9d69f9c56403d0cb11348445b83dc434c940"
+    }
+  ]
+}

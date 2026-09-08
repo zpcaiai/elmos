@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
-import type { PricingPlan } from "../lib/pricingCatalog";
+import type { CreditPack, OneTimeProduct, PricingPlan } from "../lib/pricingCatalog";
 import { renderQrSvg } from "../lib/qrCode";
 import { Icon } from "../components/Icon";
 import styles from "./BillingActions.module.css";
@@ -201,6 +201,107 @@ export function PlanBillingAction({
           {trial ? "需登录并具有已验证邮箱或手机号" : paidUnavailable ? "完成支付、税务与成本门禁后开放" : "跳转至支付页或扫码完成支付"}
         </p>
       )}
+    </div>
+  );
+}
+
+export function ProductBillingAction({
+  product,
+  orderable,
+}: {
+  product: CreditPack | OneTimeProduct;
+  orderable: boolean;
+}) {
+  const key = useRef<string | null>(null);
+  const [projectId, setProjectId] = useState("");
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [qrSvg, setQrSvg] = useState<string | null>(null);
+  const oneTime = "operationKey" in product;
+
+  const purchase = async () => {
+    setPending(true);
+    setFailed(false);
+    setMessage("");
+    setQrSvg(null);
+    try {
+      if (oneTime && !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(projectId)) {
+        throw new Error("请输入有效的项目标识（字母、数字、点、冒号、下划线或连字符）。");
+      }
+      const response = await fetch(
+        oneTime
+          ? "/api/billing/orders/project-generations"
+          : "/api/billing/orders/credit-packs",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey("product-order", key),
+          },
+          body: JSON.stringify({
+            sku: product.sku,
+            ...(oneTime ? { projectId } : {}),
+          }),
+        },
+      );
+      const payload = await json<{
+        paymentProvider: PaymentProvider;
+        checkoutUrl?: string;
+        qrCodeUrl?: string;
+      }>(response);
+      if (!response.ok) throw new Error(errorMessage(payload, "订单暂时无法创建。"));
+      if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
+        const code = payload.qrCodeUrl ?? "";
+        if (!code.startsWith("weixin://wxpay/bizpayurl?")) {
+          throw new Error("支付服务返回了无法识别的微信支付二维码内容。");
+        }
+        setQrSvg(renderQrSvg(code));
+        setMessage("请用微信扫码完成支付；回调确认后额度或项目权益自动到账。");
+        return;
+      }
+      const destination = new URL(payload.checkoutUrl ?? "");
+      if (destination.protocol !== "https:"
+        || !isTrustedCheckoutHost(payload.paymentProvider, destination.hostname)) {
+        throw new Error("支付服务返回了不受信任的结账地址。");
+      }
+      window.location.assign(destination.toString());
+    } catch (error) {
+      setFailed(true);
+      setMessage(error instanceof Error ? error.message : "订单暂时无法创建。");
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <div className={styles.actionStack}>
+      {oneTime && (
+        <label className={styles.projectField}>
+          项目标识
+          <input
+            value={projectId}
+            onChange={(event) => {
+              setProjectId(event.target.value.trim());
+              key.current = null;
+            }}
+            placeholder="例如 my-service"
+            disabled={!orderable || pending}
+          />
+        </label>
+      )}
+      <button className="button button-secondary" type="button"
+        disabled={!orderable || pending} onClick={purchase}>
+        {pending ? "正在创建订单…" : orderable ? "立即购买" : "等待开放"}
+      </button>
+      {qrSvg && <img className={styles.paymentQrCode}
+        src={`data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`}
+        alt="微信支付二维码" width={220} height={220} />}
+      <p className={failed ? styles.actionError : message ? styles.actionSuccess : styles.actionHint}
+        role={failed ? "alert" : "status"}>
+        {message || (orderable ? "支付成功后自动履约" : "需先完成目录发布门禁")}
+      </p>
     </div>
   );
 }

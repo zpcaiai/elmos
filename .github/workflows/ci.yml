@@ -21,8 +21,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Validate complete engine test registry
         run: python3 scripts/operations/run_engine_tests.py --check
       - name: Set up Java 21.0.11
@@ -65,8 +63,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
 
       - name: Set up Java 21
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
@@ -159,8 +155,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up .NET 10
         uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
         with:
@@ -179,8 +173,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Python 3.14
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -239,8 +231,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -264,8 +254,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Root-seal OpenSSL 3 Ed25519 runtime
         run: |
           # Run before repository code. stdin prevents sudo from reopening a
@@ -346,8 +334,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up bootstrap Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -370,7 +356,6 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.25.0"
-          cache: false
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Prepare exact Apple route host
@@ -386,9 +371,8 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Hydrate the exact packages.lock.json closure while network access
-          # is allowed. The analyzer snapshots verified nupkg bytes into an
-          # isolated local source and restores offline during route execution.
+          # Populate the exact lock-file graph while network is authorized;
+          # analyzer execution later verifies and restores from this cache offline.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -403,6 +387,12 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP tree drift
+        run: |
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
       - name: Run complete Batch 29 and route-pack contracts
         run: |
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
@@ -457,8 +447,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up bootstrap Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -484,7 +472,6 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.25.0"
-          cache: false
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Prepare exact Apple route host
@@ -512,8 +499,6 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Hydrate the exact C# analyzer dependency closure before its
-          # fail-closed offline build phase.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -535,6 +520,11 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP tree drift
+        run: |
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,
@@ -546,19 +536,6 @@ jobs:
           test "${UV_PROJECT_ENVIRONMENT}" = \
             "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
-          # Fail before the multi-hour pytest partition when a hosted PHP tree
-          # has not yet been bound to this exact runner image. The preflight
-          # emits the observed identity through the fail-closed RouteError.
-          uv --directory engines/polyglot-route-engine run --locked python -I -B - <<'PY'
-          from elmos_polyglot_route.toolchains import _php_tree_identity
-
-          _php_tree_identity()
-          PY
-          # Exercise the hosted Flutter/Dart repository-build path before the
-          # multi-hour core partition. A failure remains blocking, while the
-          # report-bound assertion exposes the exact reason code for repair.
-          uv --directory engines/polyglot-route-engine run --locked pytest -q \
-            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_flutter_repository_pipeline.py::test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
           uv --directory engines/polyglot-route-engine run --locked pytest \
             "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
           uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
@@ -594,7 +571,7 @@ jobs:
   polyglot-route-engine-matrix:
     name: Directed route engine matrix (${{ matrix.source_language }})
     # Establish the exact hosted compiler/runtime identity once before
-    # consuming scarce macOS workers for the 13 source-language shards.
+    # consuming scarce macOS workers for the 14 source-language shards.
     needs: polyglot-route-engine-core
     runs-on: macos-26
     timeout-minutes: 240
@@ -619,8 +596,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up bootstrap Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -643,7 +618,6 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.25.0"
-          cache: false
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Prepare exact Apple route host
@@ -659,8 +633,6 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
-          # Each shard runs on a fresh host and needs the verified C# analyzer
-          # packages hydrated before offline route execution.
           dotnet restore \
             engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
             --locked-mode
@@ -754,8 +726,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -777,8 +747,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Install exact CPython and SQLite runtime
         env:
           ELMOS_POLYGLOT_ROUTE_CI_PROFILE: typed-sql
@@ -802,8 +770,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Python 3.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -825,7 +791,6 @@ jobs:
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
         run: |
-          cargo build --locked --release --manifest-path ../../native/rust-core/Cargo.toml
           uv sync --locked
           uv run pytest
           uv run ruff check src tests scripts workload
@@ -916,8 +881,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -939,7 +902,6 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.25.0"
-          cache: false
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
         with:
@@ -979,16 +941,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22.23.1"
-      - name: Install exact SQL Runner Python 3.14.6
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1093,13 +1049,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Install exact SQL Runner Python 3.14.6
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
-          architecture: arm64
       - name: Set up Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1152,16 +1101,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
-      - name: Install exact SQL Runner Python 3.14.6
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1222,16 +1165,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
-      - name: Install exact SQL Runner Python 3.14.6
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1280,15 +1217,12 @@ jobs:
 
   commercial-gates:
     name: 商业化门禁（定价目录 / 单位经济 / 支付迁移）
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    runs-on: ubuntu-latest
     # 这些门禁的作用是"没算清楚就不许发布"，因此必须与构建同权重，
     # 不能设 continue-on-error —— 那等于把门禁降级成一条提示。
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -1306,8 +1240,7 @@ jobs:
 
   payment-database-gates:
     name: 支付回调数据库门禁（PostgreSQL 17.5）
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
     services:
       postgres:
         # 与本地 V63/Testcontainers 证据使用同一 17.5-alpine 多架构摘要；
@@ -1334,8 +1267,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
 
       - name: 应用全部迁移
         run: |
@@ -1368,7 +1299,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
           # Batch 30 validates the exact historical Git blobs named by its
           # immutable local qualification receipt. A shallow PR merge checkout
           # does not contain that receipt-bound commit object.

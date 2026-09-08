@@ -3,14 +3,8 @@ name: Vercel deployment smoke
 on:
   push:
     branches: [main]
-    paths:
-      - "apps/web-console/**"
-      - ".github/workflows/vercel-deployment-smoke.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "apps/web-console/**"
-      - ".github/workflows/vercel-deployment-smoke.yml"
   workflow_dispatch:
     inputs:
       deployment_url:
@@ -31,10 +25,11 @@ jobs:
   smoke:
     name: Vercel deployment surface smoke
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     env:
       ELMOS_E2E_BASE_URL: ${{ inputs.deployment_url || vars.ELMOS_VERCEL_SMOKE_URL || 'https://elmos-alpha.vercel.app' }}
       ELMOS_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ELMOS_DEPLOYMENT_ENVIRONMENT: ${{ github.event_name == 'pull_request' && 'Preview' || 'Production' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,6 +55,8 @@ jobs:
           --repository "${GITHUB_REPOSITORY}"
           --sha "${ELMOS_DEPLOYMENT_SHA}"
           --github-env "${GITHUB_ENV}"
+          --timeout-seconds 1800
+          --required-environment "${ELMOS_DEPLOYMENT_ENVIRONMENT}"
           --production-url "${ELMOS_PRODUCTION_SMOKE_URL}"
 
       - name: Set up Node.js 22

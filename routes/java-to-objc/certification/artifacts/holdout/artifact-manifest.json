@@ -1,0 +1,164 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-objc/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Clamp.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1486,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:b63ba05a37f81b63cf7861b88c2a2778ea4e2f43fa2e675a382ce4b907621a32"
+    },
+    {
+      "bytes": 15033,
+      "path": "chunk-map.json",
+      "sha256": "sha256:3685c94ca5ec571a4236f442050b0a1e97809d8971e4d7853dfc1e7aae5e8466"
+    },
+    {
+      "bytes": 3042,
+      "path": "formal-composition.json",
+      "sha256": "sha256:0d0c7854eadd2cd1073e3665fbaf34698674cc8738f6fa63d99f43596a5d3921"
+    },
+    {
+      "bytes": 1014,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:4b0a5999f490560ae1113aa5f33f8d28a92c10a8530675ed78ad5dfe87757257"
+    },
+    {
+      "bytes": 14425,
+      "path": "formal-input.json",
+      "sha256": "sha256:4887c63eb6e4ebabb4a06443ec225b1f9e89a49dd3d44b12d54c8f6ce1f587da"
+    },
+    {
+      "bytes": 2384,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:95dc0d82d8465e9fede1e363f1455fc6d91191371b047a69dd39742e25d49f47"
+    },
+    {
+      "bytes": 2673,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:ec4997fdb98b70fb3038c0dd93a546afe3a76f15eb36b103b58ccb9f705ab407"
+    },
+    {
+      "bytes": 258,
+      "path": "inputs/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 3515,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:64a52f6abb6a55aa1b6398763130e0ea2fe8456616cf5d07ade4fc3d62de7a09"
+    },
+    {
+      "bytes": 383,
+      "path": "migrated.m",
+      "sha256": "sha256:cf569f227e413b64a87cfbc48c99ee9ea1d2903b381d96e20a2d6556660f37e1"
+    },
+    {
+      "bytes": 10446,
+      "path": "route-evidence.json",
+      "sha256": "sha256:0e3cd1c1c4e36b2c2bbb74c492495424962e95746b99dd64414d914fad6eb3a9"
+    },
+    {
+      "bytes": 1780,
+      "path": "route_harness.m",
+      "sha256": "sha256:4797192d461415629102ae66b7fe642084c50b7cdb5c56b6a849c7f24c0f6394"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 1957,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:468b8761b6f16f37f039fe0b616b2c1920f18c545b880362b741f561e8632490"
+    },
+    {
+      "bytes": 258,
+      "path": "source-runtime/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 771,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:1d9036c2d0dc08d7e31e7bd31b774f9c9725852df9026762a0122d7f12f628e5"
+    },
+    {
+      "bytes": 1957,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:468b8761b6f16f37f039fe0b616b2c1920f18c545b880362b741f561e8632490"
+    },
+    {
+      "bytes": 1993,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:6a559ab24ea51911f652a1413a1f873b485f71213ef119994fe07ccbf80d41f4"
+    },
+    {
+      "bytes": 2167,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:3db71a1bb2b4adf541506312c624b243a9967fde5e1816f9abc215d9f43b265a"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-objc",
+  "schema_version": 1,
+  "total_bytes": 66001
+}

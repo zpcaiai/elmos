@@ -35,6 +35,13 @@
       "reason": "Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.",
       "status": "blocked",
       "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "typed-pure-module-v1",
+      "reason": "This legacy route has not requested the separate module profile.",
+      "status": "blocked",
+      "strategy": "per-function-proof-plus-module-composition"
     }
   ],
   "route_key": "python-to-php",

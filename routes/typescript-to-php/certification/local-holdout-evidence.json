@@ -1,0 +1,344 @@
+{
+  "artifact_manifest": {
+    "bytes": 4754,
+    "path": "certification/artifacts/holdout/artifact-manifest.json",
+    "sha256": "sha256:b7c2e5e42ee6e8c6592a1b66578225a6200016c00051facea25cb3f073461fb4"
+  },
+  "artifact_root": "certification/artifacts/holdout",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:3287db95d48d9b72bf89aa4a257734b58ba91abc7ffa1e013a6b9029571a9e9b",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:1aa88f19a7970398a16c8d75617877e5a1a9776894f4edbbb7be39ee55c79b51",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 17,
+    "required_source_chunk_count": 17,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "holdout",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:6622961de4d369385baaa3d6fc2d104c923ec6a40a5e7751acd5d66cce8f66f7",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / nodejs-es2022-esm-safe-integer-finite-v1",
+    "formal_input_digest": "sha256:6b053904ebca2420ee7f94d1bef094ba64240bdc4639723db73cc29de497712a",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:6b053904ebca2420ee7f94d1bef094ba64240bdc4639723db73cc29de497712a",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:6b053904ebca2420ee7f94d1bef094ba64240bdc4639723db73cc29de497712a",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:82354ea70bc3659fef30bd9c9fbe42a047e2c71aa1cebefb5951964158161924",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:6b053904ebca2420ee7f94d1bef094ba64240bdc4639723db73cc29de497712a",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:b6f3a757165c3f8ba5dd3d43403c1aa0ffff37e66ae445ab20dd668d8ced728b",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:82354ea70bc3659fef30bd9c9fbe42a047e2c71aa1cebefb5951964158161924",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:a78ccf60c4f43df10c838306b6a953a4682bc6b33e96e1a72c2605b37621fcc0",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:d6e408ca066af8d612c428834559d4150eda17480f32aa374ab258f6e7e3cae6",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:7a6c63cc83ffb1b4ea4bcbab527f2adec8d660c73eaa74f55e92a1da9e4feb2e",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:a78ccf60c4f43df10c838306b6a953a4682bc6b33e96e1a72c2605b37621fcc0",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "clamp",
+    "status": "PASSED",
+    "target_function_name": "clamp",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "clamp.ts",
+      "source_sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:4b56b260f3f3f4e3ff9093fe8b7304261fcdc8c8903b5b49965a89608bc11051"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:7753757b80da69f04e1839d7228221413aa39b55e35ac708e07c5bf2ecaf792c",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "typescript-to-php",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:2a449c945918a9662fff4df6ec2d706b9626fe4973eb6c50d5c6aa95b151c0d7",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:a01da5fbb12b4f43df8ec0ddae5b42343890b5198c88a57015743cb2cae7b5ba",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:a78ccf60c4f43df10c838306b6a953a4682bc6b33e96e1a72c2605b37621fcc0"
+  },
+  "semantic_ir_sha256": "sha256:a01da5fbb12b4f43df8ec0ddae5b42343890b5198c88a57015743cb2cae7b5ba",
+  "source": {
+    "analyzer": "TypeScript Compiler API",
+    "analyzer_version": "5.9.2;analyzer=23361d1947109049e3b3d22424d0443046402a8e6a9e6e658227dc7f3378604a;typescript-parser=e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b;typescript-closure=aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9;node=73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb;node-closure=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b;typescript-profile=2c1920d87bbc8e7f643c2b76fae667ba5d49fa1c2403679f69d3061748405bdf",
+    "function_name": "clamp",
+    "language": "typescript",
+    "path": "clamp.ts",
+    "sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "clamp.ts",
+    "artifact_sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+          "dist/source_harness.js"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t4024000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t401c000000000000\n"
+      }
+    ],
+    "language": "typescript",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "4024000000000000",
+        "status": "RETURNED",
+        "value": 10.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "401c000000000000",
+        "status": "RETURNED",
+        "value": 7.0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a/bin/tsc",
+      "auxiliary_sha256": "8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+      "executable": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+      "executable_sha256": "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+      "language": "typescript",
+      "profile": [
+        "typescript-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "typescript-language-version=5.9.2",
+        "typescript-package-root=/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-closure-sha256=aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9",
+        "typescript-closure-file-count=108",
+        "typescript-closure-bytes=19067381",
+        "typescript-source-manifest-sha256=61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a",
+        "typescript-standard-library-file-count=102",
+        "typescript-launcher-sha256=8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+        "typescript-tsc-shim-sha256=2cffde0b8c6760dfb0b5b0382bbb7e00ba6a8b2d981b9205b256a700a481d983",
+        "typescript-compiler-sha256=a040f97c9d0223f64c8ebc380c5e48eb7945f1142f7c1dc9c3ec4acdb6c1c613",
+        "typescript-parser-sha256=e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b",
+        "typescript-package-json-sha256=5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+        "typescript-license-sha256=a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+        "node-closure-sha256=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "node-closure-profile=homebrew-node26-libada-77917065434c-616512",
+        "node-topology-sha256=2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd",
+        "node-closure-component-count=25",
+        "node-closure-edge-count=49",
+        "node-closure-system-edge-count=43",
+        "otool-system-tool-content-soundness=NOT_RUN",
+        "dyld-system-library-content-soundness=NOT_RUN",
+        "typescript-compiler-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "5.9.2 / Node 26.0.0"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "clamp",
+    "language": "php",
+    "path": "migrated.php",
+    "sha256": "sha256:29e8766a668c40960a31e2016de07be2d36fff96f6b443a045acf5c1d13c54d7"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "migrated.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in migrated.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "route_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in route_harness.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "route_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t4024000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t401c000000000000\n"
+      }
+    ],
+    "language": "php",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "4024000000000000",
+        "status": "RETURNED",
+        "value": 10.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "401c000000000000",
+        "status": "RETURNED",
+        "value": 7.0
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+      "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+      "language": "php",
+      "profile": [
+        "php-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "php-root=/opt/homebrew/Cellar/php/8.5.9",
+        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-record-count=643",
+        "php-tree-file-count=532",
+        "php-tree-directory-count=109",
+        "php-tree-bytes=129952851",
+        "php-tree-symlink-count=1",
+        "php-tree-unbound-symlink-count=1",
+        "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+        "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+        "integer=int64",
+        "number=binary64",
+        "strict-types=1",
+        "php-zts=False",
+        "php-debug=False",
+        "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+        "php-tokenizer=builtin",
+        "php-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+    }
+  }
+}

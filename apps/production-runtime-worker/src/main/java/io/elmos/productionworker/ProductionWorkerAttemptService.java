@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Bounded worker inbox and exact downstream workload execution protocol. */
 final class ProductionWorkerAttemptService {
     private static final int MAX_ENGINE_RESPONSE_BYTES = 1_048_576;
+    private static final Duration CLOSE_TIMEOUT = Duration.ofSeconds(5);
     enum LocalStatus {
         ACKED, RUNNING, SUCCEEDED, FAILED, PROVIDER_OUTCOME_UNKNOWN,
         CHECKPOINT_OUTCOME_UNKNOWN, COMPLETION_OUTCOME_UNKNOWN
@@ -1046,19 +1047,13 @@ final class ProductionWorkerAttemptService {
                 completionReconciliationExecutor,
                 executors);
         ownedExecutors.forEach(ExecutorService::shutdownNow);
-        awaitTermination(ownedExecutors, Duration.ofSeconds(10));
-    }
 
-    private static void awaitTermination(
-            List<ExecutorService> ownedExecutors,
-            Duration timeout
-    ) {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = System.nanoTime() + CLOSE_TIMEOUT.toNanos();
         for (ExecutorService executor : ownedExecutors) {
             long remaining = deadline - System.nanoTime();
             if (remaining <= 0) return;
             try {
-                executor.awaitTermination(remaining, TimeUnit.NANOSECONDS);
+                if (!executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) return;
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return;
@@ -1078,7 +1073,8 @@ final class ProductionWorkerAttemptService {
     }
 
     boolean executorsTerminated() {
-        return heartbeatScheduler.isTerminated()
+        return closed.get()
+                && heartbeatScheduler.isTerminated()
                 && reconciliationScheduler.isTerminated()
                 && heartbeatExecutor.isTerminated()
                 && providerReconciliationExecutor.isTerminated()

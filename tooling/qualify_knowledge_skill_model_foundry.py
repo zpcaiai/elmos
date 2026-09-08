@@ -109,6 +109,10 @@ IMPORTER_PATH = Path("tooling/integrate_knowledge_skill_model_foundry_skills.py"
 QUALIFIER_PATH = Path("tooling/qualify_knowledge_skill_model_foundry.py")
 READINESS_PATH = Path("tooling/report_foundry_readiness.py")
 NATIVE_GENERATOR_PATH = Path("tooling/generate_foundry_native_semantics.py")
+EXTERNAL_QUALIFIER_PATH = Path("tooling/run_foundry_external_qualification.py")
+ED25519_BACKEND_PATH = Path(
+    "packages/pi-harness/src/elmos_pi_harness/independent_verifier.py"
+)
 NATIVE_PROGRAMS_PATH = ENGINE_ROOT / "src/elmos_foundry/native-semantic-programs.json"
 
 IMPLEMENTATION_ROOTS = (
@@ -121,6 +125,8 @@ IMPLEMENTATION_ROOTS = (
     QUALIFIER_PATH,
     READINESS_PATH,
     NATIVE_GENERATOR_PATH,
+    EXTERNAL_QUALIFIER_PATH,
+    ED25519_BACKEND_PATH,
 )
 EXCLUDED_PATHS = frozenset(
     {
@@ -185,6 +191,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
             NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
             ENGINE_SOURCE,
             ENGINE_TESTS,
             ROOT_TESTS_TEXT,
@@ -206,8 +213,9 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
             NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
-        "environment": {"PYTHONPATH": ENGINE_SOURCE},
+        "environment": {"PYTHONPATH": f"{ENGINE_SOURCE}:packages/pi-harness/src"},
         "timeout_seconds": 900,
     },
     {
@@ -225,6 +233,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             QUALIFIER_PATH.as_posix(),
             READINESS_PATH.as_posix(),
             NATIVE_GENERATOR_PATH.as_posix(),
+            EXTERNAL_QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
         "timeout_seconds": 300,

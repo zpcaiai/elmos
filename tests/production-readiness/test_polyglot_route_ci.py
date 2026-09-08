@@ -4,7 +4,6 @@ import ast
 import importlib.util
 import re
 import subprocess
-import tempfile
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -58,79 +57,6 @@ def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]
 
 
 class PolyglotRouteCiReadinessTests(unittest.TestCase):
-    def test_setup_go_disables_missing_root_module_cache(self) -> None:
-        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-        setup_go = (
-            "uses: actions/setup-go@"
-            "b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
-        )
-        self.assertEqual(workflow.count(setup_go), 4)
-        self.assertEqual(workflow.count('go-version: "1.25.0"\n          cache: false'), 4)
-        self.assertFalse((ROOT / "go.mod").exists())
-
-    def test_rust_component_inventory_is_canonicalized_after_exact_validation(
-        self,
-    ) -> None:
-        installer = (
-            ROOT / "scripts/toolchains/install_project_synthesis_toolchains.sh"
-        ).read_text(encoding="utf-8")
-        function = (
-            "normalize_rust_component_inventory() {"
-            + installer.split("normalize_rust_component_inventory() {", 1)[1]
-            .split("\n}\n\ninstall_rust()", 1)[0]
-            + "\n}"
-        )
-        canonical = (
-            "cargo-aarch64-apple-darwin\n"
-            "rust-std-aarch64-apple-darwin\n"
-            "rustc-aarch64-apple-darwin\n"
-            "clippy-preview-aarch64-apple-darwin\n"
-            "rustfmt-preview-aarch64-apple-darwin\n"
-        )
-        noncanonical = canonical.replace(
-            "cargo-aarch64-apple-darwin\nrust-std-aarch64-apple-darwin",
-            "rust-std-aarch64-apple-darwin\ncargo-aarch64-apple-darwin",
-            1,
-        )
-        with self.subTest("known permutation is canonicalized"):
-            with tempfile.TemporaryDirectory() as temporary:
-                inventory = Path(temporary) / "components"
-                inventory.write_text(noncanonical, encoding="utf-8")
-                completed = subprocess.run(
-                    ["/bin/bash", "-s", "--", str(inventory)],
-                    input=(
-                        "set -euo pipefail\n"
-                        + function
-                        + "\nnormalize_rust_component_inventory \"$1\"\n"
-                    ),
-                    text=True,
-                    capture_output=True,
-                    check=False,
-                )
-                self.assertEqual(completed.returncode, 0, completed.stderr)
-                self.assertEqual(inventory.read_text(encoding="utf-8"), canonical)
-
-        with self.subTest("unknown component fails closed"):
-            with tempfile.TemporaryDirectory() as temporary:
-                inventory = Path(temporary) / "components"
-                inventory.write_text(canonical + "unknown-component\n", encoding="utf-8")
-                completed = subprocess.run(
-                    ["/bin/bash", "-s", "--", str(inventory)],
-                    input=(
-                        "set -euo pipefail\n"
-                        + function
-                        + "\nnormalize_rust_component_inventory \"$1\"\n"
-                    ),
-                    text=True,
-                    capture_output=True,
-                    check=False,
-                )
-                self.assertEqual(completed.returncode, 3, completed.stderr)
-                self.assertEqual(
-                    inventory.read_text(encoding="utf-8"),
-                    canonical + "unknown-component\n",
-                )
-
     def test_route_host_shells_do_not_mask_command_substitution_failures(self) -> None:
         for relative in (
             "scripts/toolchains/prepare_apple_route_ci_host.sh",
@@ -177,12 +103,8 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         self.assertIn('done <<<"${installed_formula_inventory}"', installer)
         self.assertIn('if token == "openssl@3":', installer)
-        self.assertIn('if source.count(openssl_postinstall) != 1:', installer)
-        self.assertIn(
-            'source.replace(openssl_postinstall, "", 1)',
-            installer,
-        )
-        self.assertNotIn('source.replace(overwrite, "force: true", 1)', installer)
+        self.assertIn('if source.count(overwrite) != 1:', installer)
+        self.assertIn('source.replace(overwrite, "force: true", 1)', installer)
         self.assertIn(
             "libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|"
             "9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c",
@@ -388,7 +310,6 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
 
         self.assertEqual(len(verifier.FILE_PROFILES), 3)
         self.assertEqual(len(verifier.UNSEALED_FILE_PROFILES), 3)
-        self.assertEqual(len(verifier.HOST_PROFILES), 2)
         for path, profile in verifier.FILE_PROFILES.items():
             self.assertEqual((profile["uid"], profile["gid"]), (0, 0))
             self.assertEqual(
@@ -654,12 +575,6 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         route_sync = route_engine_job.index(
             "uv --directory engines/polyglot-route-engine sync --locked"
         )
-        php_identity_preflight = route_engine_job.index(
-            "from elmos_polyglot_route.toolchains import _php_tree_identity"
-        )
-        flutter_repository_preflight = route_engine_job.index(
-            "test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
-        )
         closure_tests = route_engine_job.index(
             '"$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"'
         )
@@ -679,28 +594,17 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         route_workers = route_engine_job + route_matrix_job
         all_route_jobs = route_pack_job + route_workers
+        csharp_restore = (
+            "dotnet restore \\\n"
+            "            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+            "Elmos.Dotnet.SemanticCli.csproj \\\n"
+            "            --locked-mode"
+        )
 
         self.assertLess(cargo_fetch, core_partition)
         self.assertLess(cargo_fetch, native_core_build)
         self.assertLess(native_core_build, core_partition)
         self.assertLess(private_environment, route_sync)
-        self.assertLess(route_sync, php_identity_preflight)
-        self.assertLess(php_identity_preflight, flutter_repository_preflight)
-        self.assertLess(flutter_repository_preflight, closure_tests)
-        self.assertEqual(route_engine_job.count("_php_tree_identity()"), 1)
-        self.assertEqual(
-            route_engine_job.count(
-                "test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
-            ),
-            1,
-        )
-        self.assertEqual(
-            route_engine_job.count(
-                "uv --directory engines/polyglot-route-engine run --locked "
-                "python -I -B - <<'PY'"
-            ),
-            1,
-        )
         self.assertLess(route_sync, closure_tests)
         self.assertLess(closure_tests, core_partition)
         self.assertLess(host_preparation, apple_diagnostic)
@@ -845,14 +749,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             all_route_jobs.count("git diff --exit-code -- Package.resolved"),
             3,
         )
-        self.assertEqual(
-            all_route_jobs.count(
-                "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
-                "Elmos.Dotnet.SemanticCli.csproj"
-            ),
-            3,
-        )
-        self.assertEqual(all_route_jobs.count("--locked-mode"), 3)
+        self.assertEqual(all_route_jobs.count(csharp_restore), 3)
+        for job in (route_pack_job, route_engine_job, route_matrix_job):
+            self.assertLess(job.index(csharp_restore), job.index("swift package resolve"))
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)

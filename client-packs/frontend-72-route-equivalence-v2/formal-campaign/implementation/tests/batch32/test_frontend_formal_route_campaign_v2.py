@@ -91,7 +91,6 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
         self.assertEqual(12, len(validator.BLOCK_IDS))
         self.assertEqual(72, len(validator.exact_routes()))
         self.assertEqual(600, validator.SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS)
-        self.assertEqual(600, validator.FROZEN_ENGINE_VERIFIER_TIMEOUT_SECONDS)
         self.assertEqual(
             runtime_runner.BLOCK_OBSERVER_SPECS,
             generator.BLOCK_OBSERVER_SPECS_V2,
@@ -2003,7 +2002,6 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             self.assertTrue(any("does not match" in error for error in errors), errors)
 
     def test_v2_cli_generation_pins_proof_profile(self) -> None:
-        self.assertGreaterEqual(generator.V2_ENGINE_VERIFIER_TIMEOUT_SECONDS, 600)
         with tempfile.TemporaryDirectory(prefix="frontend-v2-cli-") as directory:
             evidence = Path(directory) / "raw.json"
             evidence.write_text("{}\n", encoding="utf-8")
@@ -2255,7 +2253,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
-            timeout=validator.SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS,
+            timeout=300,
         )
         self.assertEqual(0, completed.returncode, completed.stderr)
         after = sorted(

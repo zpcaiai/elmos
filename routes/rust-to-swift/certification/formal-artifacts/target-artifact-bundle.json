@@ -1,0 +1,25 @@
+{
+  "route_key": "rust-to-swift",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 168,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.swift",
+      "sha256": "sha256:8df7165df188e9e5a75408979b8e3e79d6808744b5b4186ce666dd0a42dc1bb1"
+    },
+    {
+      "bytes": 207,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.swift",
+      "sha256": "sha256:641f99909772df6e23124abec3bf9e71dc28479343e6650d2947d132e7f80ec8"
+    },
+    {
+      "bytes": 157,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.swift",
+      "sha256": "sha256:34848733f914d4f8460843ceb39a6a6e6c525c2bd4fbf7a9206d05b618d591c4"
+    }
+  ]
+}

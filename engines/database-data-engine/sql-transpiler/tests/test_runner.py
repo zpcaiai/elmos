@@ -70,54 +70,45 @@ def test_shared_host_performance_confirmation_preserves_initial_failure(
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     capabilities = runner_capabilities()
 
-    ready_profiles = {item["profileId"] for item in capabilities["ready"]}
-    blocked_profiles = {item["profileId"] for item in capabilities["blocked"]}
-    assert ready_profiles >= {
-        "sqlite-3.53.3",
-        "duckdb-1.5.4",
-    }
-    assert ready_profiles | blocked_profiles == {
-        "postgresql-17.5",
-        "sqlite-3.53.3",
-        "duckdb-1.5.4",
+    ready = {item["profileId"] for item in capabilities["ready"]}
+    blocked = {item["profileId"] for item in capabilities["blocked"]}
+    assert {"sqlite-3.53.3", "duckdb-1.5.4"} <= ready
+    assert {
         "postgresql-18.4",
         "mysql-8.4.10-lts",
         "sqlserver-2022-cu26",
         "oracle-26ai-ee",
+    } <= blocked
+    assert ("postgresql-17.5" in ready) != ("postgresql-17.5" in blocked)
+    ready_local = ready & {"postgresql-17.5", "sqlite-3.53.3", "duckdb-1.5.4"}
+    expected_routes = {
+        f"{source}--to--{target}"
+        for source in ready_local
+        for target in ready_local
+        if source != target
     }
-    assert blocked_profiles >= {
-        "postgresql-18.4",
-        "mysql-8.4.10-lts",
-        "sqlserver-2022-cu26",
-        "oracle-26ai-ee",
-    }
-    assert capabilities["readyDirectedRouteCount"] == len(ready_profiles) * (
-        len(ready_profiles) - 1
-    )
+    assert set(capabilities["readyDirectedRoutes"]) == expected_routes
+    assert capabilities["readyDirectedRouteCount"] == len(expected_routes)
     assert all(item["runtimeEvidence"] == "NOT_RUN" for item in capabilities["blocked"])
     assert capabilities["certification"] == "NOT_CERTIFIED"
 
 
-def test_runner_capabilities_do_not_advertise_postgresql_on_wrong_host(
+def test_runner_capabilities_downgrade_missing_postgresql_without_claiming_execution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(runner_module.platform, "system", lambda: "Linux")
-    monkeypatch.setattr(runner_module.platform, "machine", lambda: "x86_64")
+    monkeypatch.delenv("POSTGRESQL_17_BIN", raising=False)
+    monkeypatch.setattr(runner_module, "_POSTGRES_CANDIDATE_DIRS", ())
+    monkeypatch.setattr(runner_module.shutil, "which", lambda _name: None)
 
     capabilities = runner_capabilities()
-    ready_profiles = {item["profileId"] for item in capabilities["ready"]}
-    postgresql = next(
-        item
-        for item in capabilities["blocked"]
-        if item["profileId"] == "postgresql-17.5"
-    )
+    ready = {item["profileId"] for item in capabilities["ready"]}
+    blocked = {item["profileId"]: item for item in capabilities["blocked"]}
 
-    assert ready_profiles == {"sqlite-3.53.3", "duckdb-1.5.4"}
-    assert capabilities["readyDirectedRouteCount"] == 2
-    assert postgresql["state"] == "BLOCKED"
-    assert postgresql["declaredState"] == "LOCAL_RUNNER_READY"
-    assert "requires the declared darwin-arm64 host" in postgresql["reason"]
-    assert postgresql["runtimeEvidence"] == "NOT_RUN"
+    assert "postgresql-17.5" not in ready
+    assert blocked["postgresql-17.5"]["state"] == "BLOCKED"
+    assert "required PostgreSQL executable is unavailable" in blocked["postgresql-17.5"]["reason"]
+    assert capabilities["runtimeEvidence"] == "NOT_RUN"
+    assert capabilities["certification"] == "NOT_CERTIFIED"
 
 
 def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(

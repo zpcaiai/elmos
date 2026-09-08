@@ -1,0 +1,164 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-swift/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Difference.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1486,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:0e798700cafe622ef0423b60d5c06a9b2d1f040680878e7be647985d6a688e85"
+    },
+    {
+      "bytes": 11764,
+      "path": "chunk-map.json",
+      "sha256": "sha256:8f3dbcda55aca09c2498d6bd6625facec983ebc7093a3e6066c1ecec58776193"
+    },
+    {
+      "bytes": 3044,
+      "path": "formal-composition.json",
+      "sha256": "sha256:129a5dd03ab5109afe61e70b0bc40f5cd2b6bc5b2e6c743a7bcd509714abdc9a"
+    },
+    {
+      "bytes": 1010,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:09227c40242ec7fce9222e574cef1343361886634380fc3be5b55d70f9bfbc18"
+    },
+    {
+      "bytes": 14248,
+      "path": "formal-input.json",
+      "sha256": "sha256:d807ac3a7086e4931ed38408a38a0554a27ef371689eb0177fe820543819377d"
+    },
+    {
+      "bytes": 2386,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:068af48be26cc68969ac30f8dfc937016bbbfad0ec19520b85c8c287cc583527"
+    },
+    {
+      "bytes": 2374,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:362103855c05f22d5d86eeaba77c2145100cbd0f8f0c04308ee0fadc5ff8a26d"
+    },
+    {
+      "bytes": 217,
+      "path": "inputs/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 4159,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:87d9334e20bfb73553444512c81c9ba5de67946ec48a513d537c7d9751c64a09"
+    },
+    {
+      "bytes": 982,
+      "path": "main.swift",
+      "sha256": "sha256:847641a27884736bfbb3b9ae1a108e0fbc56a0595a8483e41dfe8487e25c2c9b"
+    },
+    {
+      "bytes": 157,
+      "path": "migrated.swift",
+      "sha256": "sha256:196101691daab5ce90ab4a8703858d2fb41613d00c12d059fba326d55f7c8c22"
+    },
+    {
+      "bytes": 10572,
+      "path": "route-evidence.json",
+      "sha256": "sha256:931afdd7cb24cb3d473db0d51b23026ee3f56f1277c73768e03cd5b8334dab5a"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 1622,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:73147408abd7acfa581d70af4c7704176759d60445d8956a5ad0a7af70d8166c"
+    },
+    {
+      "bytes": 217,
+      "path": "source-runtime/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 797,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:b9ace9abe2d8b840c899a22106cbacfea2de380009ed5eadb03fe0926e9453e3"
+    },
+    {
+      "bytes": 1622,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:73147408abd7acfa581d70af4c7704176759d60445d8956a5ad0a7af70d8166c"
+    },
+    {
+      "bytes": 2272,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:004dd1d55a2bf7c2e50cbb073e8c196a8c3630bad4bcb91a015059e17f41f28a"
+    },
+    {
+      "bytes": 2287,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:9f3f7fe1fcc54a1faf04bdd246489412db8f030df26e3a7ed8f247c421894171"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-swift",
+  "schema_version": 1,
+  "total_bytes": 61671
+}

@@ -82,6 +82,10 @@ public class SelfServiceBillingController {
 
     public record ReserveRequest(
             @NotBlank String subscriptionId,
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}") String actorId,
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}") String projectId,
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}") String jobId,
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}") String model,
             @Pattern(regexp = "repository-discovery|migration-or-translation-plan|verified-generation-or-migration|isolated-runner-minute|evidence-pack-verification|model-inference") String operationKey,
             @NotNull @PositiveOrZero BigDecimal requestedTokens,
             @NotNull @PositiveOrZero BigDecimal requestedCredits,
@@ -89,6 +93,7 @@ public class SelfServiceBillingController {
     ) {}
 
     public record SettleRequest(
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}") String actorId,
             @NotBlank String reservationId,
             @NotNull @PositiveOrZero BigDecimal actualTokens,
             @NotNull @PositiveOrZero BigDecimal actualCredits,
@@ -100,7 +105,10 @@ public class SelfServiceBillingController {
             @NotNull Instant occurredAt
     ) {}
 
-    public record ReleaseRequest(@NotBlank String reservationId, @NotBlank String reasonCode) {}
+    public record ReleaseRequest(
+            @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9._:-]{0,127}") String actorId,
+            @NotBlank String reservationId,
+            @NotBlank String reasonCode) {}
 
     public record CorrectionRequest(
             @NotBlank String originalLedgerEntryId,
@@ -170,16 +178,19 @@ public class SelfServiceBillingController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam Instant from,
             @RequestParam Instant to,
-            @RequestParam(defaultValue = "DAY") String bucket
+            @RequestParam(defaultValue = "DAY") String bucket,
+            @RequestParam(defaultValue = "SELF") @Pattern(regexp = "SELF|ORGANIZATION") String scope
     ) {
         CommercialPrincipal principal = principal(jwt, "commercial:usage:read");
+        boolean organizationScope = usageOrganizationScope(principal, scope);
         return Map.of(
                 "schemaVersion", "1.0.0",
                 "from", from,
                 "to", to,
                 "bucket", bucket.toUpperCase(),
                 "items", billing.usageHistory(
-                        principal.organizationId(), principal.actorId(), from, to, bucket)
+                        principal.organizationId(), principal.actorId(), from, to, bucket,
+                        organizationScope)
         );
     }
 
@@ -188,19 +199,24 @@ public class SelfServiceBillingController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam Instant from,
             @RequestParam Instant to,
-            @RequestParam(defaultValue = "DAY") String bucket
+            @RequestParam(defaultValue = "DAY") String bucket,
+            @RequestParam(defaultValue = "SELF") @Pattern(regexp = "SELF|ORGANIZATION") String scope
     ) {
         CommercialPrincipal principal = principal(jwt, "commercial:usage:export");
         var points = billing.usageHistory(
-                principal.organizationId(), principal.actorId(), from, to, bucket);
+                principal.organizationId(), principal.actorId(), from, to, bucket,
+                usageOrganizationScope(principal, scope));
         StringBuilder csv = new StringBuilder(
-                "\uFEFFbucket_starts_at,meter_id,token_class,actor_id,provider,debited,credited,net\n");
+                "\uFEFFbucket_starts_at,meter_id,token_class,actor_id,provider,project_id,job_id,model,debited,credited,net\n");
         for (var point : points) {
             csv.append(csv(point.bucketStartsAt().toString())).append(',')
                     .append(csv(point.meterId())).append(',')
                     .append(csv(point.tokenClass())).append(',')
                     .append(csv(point.actorId())).append(',')
                     .append(csv(point.provider())).append(',')
+                    .append(csv(point.projectId())).append(',')
+                    .append(csv(point.jobId())).append(',')
+                    .append(csv(point.model())).append(',')
                     .append(point.debited().toPlainString()).append(',')
                     .append(point.credited().toPlainString()).append(',')
                     .append(point.net().toPlainString()).append('\n');
@@ -211,6 +227,23 @@ public class SelfServiceBillingController {
                 .body(csv.toString());
     }
 
+    @GetMapping("/usage/events")
+    Object usageEvents(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam Instant from,
+            @RequestParam Instant to,
+            @RequestParam(defaultValue = "SELF") @Pattern(regexp = "SELF|ORGANIZATION") String scope,
+            @RequestParam(defaultValue = "100") @Min(1) @Max(500) int limit,
+            @RequestParam(defaultValue = "0") @Min(0) int offset) {
+        CommercialPrincipal principal = principal(jwt, "commercial:usage:read");
+        return Map.of(
+                "schemaVersion", "1.0.0",
+                "scope", scope,
+                "items", billing.usageEvents(
+                        principal.organizationId(), principal.actorId(), from, to,
+                        limit, offset, usageOrganizationScope(principal, scope)));
+    }
+
     @PostMapping("/usage/reservations")
     Object reserve(
             @AuthenticationPrincipal Jwt jwt,
@@ -218,20 +251,22 @@ public class SelfServiceBillingController {
             @Valid @RequestBody ReserveRequest request
     ) {
         CommercialPrincipal principal = principal(jwt, "commercial:meter:write");
+        String billedActor = delegatedMeterActor(principal, request.actorId());
         if (request.requestedTokens().signum() == 0 && request.requestedCredits().signum() == 0) {
             throw new BillingApiException(
                     400, "USAGE_RESERVATION_EMPTY", "A reservation must request usage.", false);
         }
-        var reservation = billing.reserve(
+        var reservation = billing.reserveDetailed(
                 principal.organizationId(),
-                principal.actorId(),
+                billedActor,
                 request.subscriptionId(),
                 "usage-res-" + UUID.randomUUID(),
                 exactIdempotencyKey(idempotencyKey),
                 request.operationKey(),
                 request.requestedTokens(),
                 request.requestedCredits(),
-                Instant.now().plusSeconds(request.expiresInSeconds())
+                Instant.now().plusSeconds(request.expiresInSeconds()),
+                request.projectId(), request.jobId(), request.model()
         );
         metrics.reservation(reservation.decision());
         return reservation;
@@ -244,13 +279,14 @@ public class SelfServiceBillingController {
             @Valid @RequestBody SettleRequest request
     ) {
         CommercialPrincipal principal = principal(jwt, "commercial:meter:write");
+        String billedActor = delegatedMeterActor(principal, request.actorId());
         if (request.actualTokens().signum() == 0 && request.actualCredits().signum() == 0) {
             throw new BillingApiException(
                     400, "USAGE_SETTLEMENT_EMPTY", "A settlement must contain actual usage.", false);
         }
         return billing.settle(
                 principal.organizationId(),
-                principal.actorId(),
+                billedActor,
                 request.reservationId(),
                 "usage-event-" + sha256(exactIdempotencyKey(idempotencyKey)).substring(0, 48),
                 request.actualTokens(),
@@ -270,8 +306,9 @@ public class SelfServiceBillingController {
             @Valid @RequestBody ReleaseRequest request
     ) {
         CommercialPrincipal principal = principal(jwt, "commercial:meter:write");
+        String billedActor = delegatedMeterActor(principal, request.actorId());
         billing.release(
-                principal.organizationId(), principal.actorId(),
+                principal.organizationId(), billedActor,
                 request.reservationId(), request.reasonCode());
         return Map.of("status", "RELEASED");
     }
@@ -640,6 +677,18 @@ public class SelfServiceBillingController {
         CommercialPrincipal principal = CommercialPrincipal.from(jwt);
         principal.requireScope(scope);
         return principal;
+    }
+
+    private static boolean usageOrganizationScope(CommercialPrincipal principal, String scope) {
+        if (!"ORGANIZATION".equals(scope)) return false;
+        principal.requireScope("commercial:usage:admin");
+        return true;
+    }
+
+    private static String delegatedMeterActor(CommercialPrincipal principal, String requested) {
+        if (requested == null || requested.equals(principal.actorId())) return principal.actorId();
+        principal.requireScope("commercial:meter:delegate");
+        return requested;
     }
 
     private static String verifiedIdentity(Jwt jwt) {
