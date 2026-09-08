@@ -40,12 +40,12 @@ test("account session discovery represents anonymous state without a console-lev
 
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "使用邮箱登录" })).toBeVisible();
-  await expect(page.getByLabel("邮箱")).toHaveAttribute("name", "email");
+  await expect(page.getByRole("heading", { name: "测试账号登录" })).toBeVisible();
+  await expect(page.getByLabel("账号 / 邮箱")).toHaveAttribute("name", "email");
   // 用户登录页不携带管理员登录模式，也不提供任何管理员登录入口。
   await expect(page.locator(".user-auth-card input[name='loginMode']")).toHaveCount(0);
   await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "使用邮箱登录" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "使用测试账号登录" })).toBeVisible();
   await expect(page.getByText(/服务端 API 均会拒绝操作/)).toBeVisible();
 });
 
@@ -60,9 +60,9 @@ test("user login entry never offers the administrator entry", async ({ page }) =
 
 test("local test account establishes a development-only session", async ({ page }) => {
   await page.goto("/login");
-  await page.getByLabel("邮箱").fill("test@example.test");
+  await page.getByLabel("账号 / 邮箱").fill("test");
   await page.getByLabel("密码").fill("test");
-  await page.getByRole("button", { name: "使用邮箱登录" }).click();
+  await page.getByRole("button", { name: "使用测试账号登录" }).click();
   await expect(page).toHaveURL(/\/$/);
 
   const session = await page.evaluate(async () => {
