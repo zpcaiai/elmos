@@ -5,10 +5,7 @@ import json
 from pathlib import Path
 import unittest
 
-try:
-    import jsonschema  # type: ignore[import-untyped]
-except ImportError:  # pragma: no cover - dependency-free engine run
-    jsonschema = None
+import jsonschema  # type: ignore[import-untyped]
 
 from elmos_project_intelligence.canonical import canonical_digest
 from elmos_project_intelligence.runtime import (
@@ -529,9 +526,7 @@ class RuntimeRegistryTests(unittest.TestCase):
                 )
                 self.assertEqual(rejected["state"], "BLOCKED")
 
-    @unittest.skipIf(jsonschema is None, "jsonschema is needed for source parity")
     def test_diagram_and_estimate_outputs_validate_with_draft_2020_12(self) -> None:
-        assert jsonschema is not None
         for skill, schema_name, output_key in (
             ("elmos-diagram-spec-engine", "diagram-spec.schema.json", "diagram_spec"),
             ("elmos-runtime-cost-estimator", "estimate.schema.json", None),
