@@ -33,7 +33,6 @@ from .contracts import (
     ContractError,
     FailureClass,
     HandlerResult,
-    ModelTier,
     SelectionSource,
     Status,
     canonical_json,

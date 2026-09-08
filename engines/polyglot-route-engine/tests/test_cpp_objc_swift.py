@@ -916,6 +916,60 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_emitted_target_relifts_exact_integer_to_double_widening(
+    tmp_path: Path,
+) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "widening.swift"
+    source.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value) }\n",
+        encoding="utf-8",
+    )
+
+    semantic = analyze(source, "swift", "widen", emitted_target=True)
+    function = semantic.functions[0]
+    assert function.return_type == "number"
+    assert function.body[0].expression is not None
+    assert function.body[0].expression.to_mapping()["kind"] == "name"
+    assert function.body[0].expression.to_mapping()["value"] == "value"
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+@pytest.mark.parametrize(
+    "declaration",
+    [
+        "func f(_ value: Double) -> Double { return Double(value) }",
+        "func f(_ value: Int64) -> Double { return Double(value, value) }",
+        "func f(_ value: Int64) -> Double { return Double(exactly: value) }",
+        "func f() -> Double { return Double(1.5) }",
+    ],
+)
+def test_swift_emitted_target_rejects_noncanonical_double_calls(
+    tmp_path: Path, declaration: str
+) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "invalid-widening.swift"
+    source.write_text(declaration + "\n", encoding="utf-8")
+    with pytest.raises(RouteError, match="SWIFT_EMITTED_DOUBLE_WIDENING_INVALID"):
+        analyze(source, "swift", "f", emitted_target=True)
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_source_does_not_gain_double_call_authority(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "source-widening.swift"
+    source.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value) }\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError, match="SWIFT_CALL_OUTSIDE_CERTIFIED_SUBSET"):
+        analyze(source, "swift", "widen")
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
 def test_swift_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> None:
     from elmos_polyglot_route.native import analyze
 

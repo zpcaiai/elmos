@@ -8,16 +8,15 @@ const idempotencyKeyPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/;
 
 export const reconciliationBodyLimitBytes = 4_096;
 
-export type FinancialAdminPrincipal = {
+export type FinancialAdminCandidate = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION";
+  authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
   accessToken?: string;
 };
 
-type FinancialAdminCandidate = {
-  role: string;
-  authentication: string;
-  accessToken?: string;
+export type FinancialAdminPrincipal = FinancialAdminCandidate & {
+  authentication: "OIDC_SESSION";
+  accessToken: string;
 };
 
 export type ReconciliationResolution = {
@@ -59,7 +58,7 @@ export function requireFinancialOidcAdmin(
     );
   }
   const actualRank = Object.hasOwn(roleRank, principal.role)
-    ? roleRank[principal.role as keyof typeof roleRank]
+    ? roleRank[principal.role]
     : undefined;
   if (!actualRank || actualRank < roleRank[requiredRole]) {
     throw new BillingReconciliationPolicyError(

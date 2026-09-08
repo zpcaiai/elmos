@@ -276,6 +276,22 @@ write_rust_wrapper() {
   chmod 0755 "${wrapper}"
 }
 
+seal_rust_sysroot() {
+  local target="$1"
+  local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
+  if [[ ! -d "${sysroot}" || -L "${sysroot}" ]]; then
+    printf 'Rust %s sysroot is unavailable or unsafe.\n' "${RUST_VERSION}" >&2
+    exit 3
+  fi
+  # Compiler and analyzer outputs belong in their isolated CARGO_HOME and
+  # CARGO_TARGET_DIR. The installed compiler closure is immutable input: make
+  # every payload read-only so a long route campaign cannot silently mutate a
+  # previously qualified sysroot and poison later route identities.
+  find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
+  find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
+  find "${sysroot}" -type d -exec chmod 0555 {} +
+}
+
 install_rust() {
   local target="${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}"
   if [[ -x "${target}/bin/rustc" && -x "${target}/bin/cargo" ]] \
@@ -310,6 +326,7 @@ install_rust() {
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"
+  seal_rust_sysroot "${target}"
 }
 
 if [[ ",${INSTALL_ONLY}," == *',go,'* ]]; then

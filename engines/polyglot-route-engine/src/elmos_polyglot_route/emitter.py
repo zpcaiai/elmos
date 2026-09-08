@@ -1701,13 +1701,40 @@ def _statements(
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}if {condition}:")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 if statement.else_body:
                     lines.append(f"{prefix}else:")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
             elif language in {"go", "rust"}:
                 lines.append(f"{prefix}if {condition} {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 if statement.else_body:
                     # Go's semicolon rule inserts a `;` at the newline after a
                     # closing brace, which strands the `else` and makes the file
@@ -1721,35 +1748,98 @@ def _statements(
                     else:
                         lines.append(f"{prefix}}}")
                         lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
                     lines.append(f"{prefix}}}")
                 else:
                     lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
-                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.then_body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
                 if statement.else_body:
                     lines.append(f"{prefix}else {{")
-                    lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type, mutable_variables))
+                    lines.extend(
+                        _statements(
+                            context,
+                            statement.else_body,
+                            dict(environment),
+                            indent + 1,
+                            return_type,
+                            mutable_variables,
+                        )
+                    )
                     lines.append(f"{prefix}}}")
             continue
         if statement.kind == "while" and statement.condition is not None:
             condition = _expression(context, statement.condition, environment, top_level=True)
             if language == "python":
                 lines.append(f"{prefix}while {condition}:")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
             elif language == "go":
                 lines.append(f"{prefix}for {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             elif language in {"rust", "swift"}:
                 lines.append(f"{prefix}while {condition} {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}while ({condition}) {{")
-                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type, mutable_variables))
+                lines.extend(
+                    _statements(
+                        context,
+                        statement.body,
+                        dict(environment),
+                        indent + 1,
+                        return_type,
+                        mutable_variables,
+                    )
+                )
                 lines.append(f"{prefix}}}")
             continue
         if statement.kind == "for":
