@@ -39,6 +39,8 @@ _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "swift": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
     "php": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "flutter": {"minimum": (4, 8, 12), "recommended": (8, 16, 24)},
+    "vb6": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
+    "vcpp6": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
 }
 
 _TOOLCHAIN_TEXT: dict[Language, str] = {
@@ -56,6 +58,8 @@ _TOOLCHAIN_TEXT: dict[Language, str] = {
     "swift": "pinned Swift 6 toolchain + Swift Package Manager",
     "php": "PHP 8.5.9 CLI (NTS, PHP_INT_SIZE=8) + Composer",
     "flutter": "Flutter 3.44.1 + bundled Dart 3.12.1",
+    "vb6": "Microsoft Visual Basic 6.0 SP6 on governed Windows x86/amd64 runner",
+    "vcpp6": "Microsoft Visual C++ 6.0 SP6 on governed Windows x86/amd64 runner",
 }
 
 _BUILD_COMMANDS: dict[Language, list[str]] = {
@@ -78,6 +82,11 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
         "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
         "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --packages=.dart_tool/package_config.json build/elmos_repository.dill",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
     ],
+    "vb6": ["VB6.EXE /Make elmos-migrated.vbp /Out vb6-build.log"],
+    "vcpp6": [
+        "$sources = Get-Content vcpp6-sources.rsp; foreach ($quoted in $sources) { $source = $quoted.Trim('\"'); $unit = Split-Path (Split-Path $source -Parent) -Leaf; & CL.EXE /nologo /GX /W4 /WX /MD /c $source \"/Fobuild/$unit.obj\"; if ($LASTEXITCODE) { exit $LASTEXITCODE } }",  # noqa: E501 - exact PowerShell guidance; splitting changes the command
+        "& LINK.EXE /NOLOGO /DLL /OUT:build/elmos-migrated.dll build\\*.obj",
+    ],
 }
 
 _PACKAGE_FORMAT: dict[Language, str] = {
@@ -95,6 +104,8 @@ _PACKAGE_FORMAT: dict[Language, str] = {
     "swift": "Swift Package",
     "php": "Composer package (Packagist layout)",
     "flutter": "Flutter/Dart source package and debug kernel bundle",
+    "vb6": "Windows PE x86 executable",
+    "vcpp6": "Windows PE x86 dynamic-link library",
 }
 
 _CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(

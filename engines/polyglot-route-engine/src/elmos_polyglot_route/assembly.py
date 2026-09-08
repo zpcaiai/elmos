@@ -93,6 +93,7 @@ from .validation import (
     _swift_harness,
     _toolchain_executable_dirs,
     _typescript_harness,
+    _vcpp6_harness,
     safe_output,
 )
 
@@ -256,6 +257,7 @@ _BUILD_FILES: dict[Language, tuple[str, ...]] = {
         ".dart_tool/package_config.json",
     ),
     "vb6": ("elmos-migrated.vbp",),
+    "vcpp6": ("vcpp6-sources.rsp",),
 }
 
 _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
@@ -274,6 +276,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "kotlin": ("src/main/kotlin", ".kt", frozenset()),
     "flutter": ("lib", ".dart", frozenset({"lib/main.dart"})),
     "vb6": ("src", ".bas", frozenset({"src/ElmosMain.bas"})),
+    "vcpp6": ("src", ".cpp", frozenset()),
 }
 
 # These generated source files participate in the whole-project compiler input
@@ -379,7 +382,15 @@ def _read_confined_stable_bytes(
     """Read a regular confined file through a no-follow descriptor and rebind its path."""
 
     path = _confined_regular_file(root, relative, missing_code)
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    # O_BINARY is a no-op on POSIX and prevents CRT newline translation on
+    # Windows. Without it, byte-count validation falsely reports stable CRLF
+    # evidence as changed while reading it through ``os.read``.
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         descriptor = os.open(path, flags)
     except OSError as error:
@@ -1315,6 +1326,7 @@ _PLACERS = {
     "go": _place_go,
     "rust": _place_rust,
     "cpp": _place_cpp,
+    "vcpp6": _place_cpp,
     "objc": _place_objc,
     "swift": _place_swift,
     "php": _place_php,
@@ -1335,6 +1347,7 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "go": f"units/{namespace}/migrated.go",
         "rust": f"src/{namespace}.rs",
         "cpp": f"src/{namespace}/migrated.cpp",
+        "vcpp6": f"src/{namespace}/migrated.cpp",
         "objc": f"src/{namespace}/migrated.m",
         "swift": f"Sources/{namespace.capitalize()}/migrated.swift",
         "php": f"src/{namespace}/migrated.php",
@@ -1617,6 +1630,38 @@ def _validate_build_verification(
                 "ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED",
             ) != (artifact["bytes"], artifact["sha256"]):
                 raise RouteError("ASSEMBLY_VB6_COMPILED_ARTIFACT_CHANGED")
+    if target_language == "vcpp6":
+        expected_identity = _exact_toolchain_identity(current_toolchain)
+        if (
+            verification.get("vcpp6_exact_toolchain") != expected_identity
+            or verification.get("vcpp6_exact_toolchain_sha256")
+            != _exact_toolchain_identity_sha256(expected_identity)
+        ):
+            raise RouteError("ASSEMBLY_VCPP6_BUILD_TOOLCHAIN_IDENTITY_DRIFT")
+        artifact = verification.get("vcpp6_compiled_artifact")
+        if (
+            not isinstance(artifact, Mapping)
+            or artifact.get("path") != "build/elmos-migrated.dll"
+            or type(artifact.get("bytes")) is not int
+            or int(artifact["bytes"]) <= 0
+            or not isinstance(artifact.get("sha256"), str)
+            or _RAW_SHA256_PATTERN.fullmatch(
+                str(artifact["sha256"]).removeprefix("sha256:")
+            )
+            is None
+        ):
+            raise RouteError("ASSEMBLY_VCPP6_COMPILED_ARTIFACT_INVALID")
+        if destination is not None:
+            compiled = _confined_regular_file(
+                destination,
+                str(artifact["path"]),
+                "ASSEMBLY_VCPP6_COMPILED_ARTIFACT_INVALID",
+            )
+            if _stable_file_binding(
+                compiled,
+                "ASSEMBLY_VCPP6_COMPILED_ARTIFACT_CHANGED",
+            ) != (artifact["bytes"], artifact["sha256"]):
+                raise RouteError("ASSEMBLY_VCPP6_COMPILED_ARTIFACT_CHANGED")
     for record in commands:
         if (
             not isinstance(record, Mapping)
@@ -2474,6 +2519,21 @@ def _write_build_files(
             f"{standard}add_library(elmos_migrated SHARED\n    {cmake_sources}\n)\n"
             f"{platform_linkage}",
             encoding="utf-8",
+        )
+    elif target_language == "vcpp6":
+        source_paths = sorted(str(unit["assembled_path"]) for unit in included_units)
+        if not source_paths or any(
+            re.fullmatch(r"src/wu[0-9a-z]+/migrated\.cpp", source) is None
+            for source in source_paths
+        ):
+            raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
+        # A response file is the version-native, dependency-free build
+        # descriptor. Each source is still compiled to a unique object path by
+        # verify_assembled_project, avoiding migrated.obj collisions.
+        (destination / "vcpp6-sources.rsp").write_text(
+            "\n".join(f'"{source}"' for source in source_paths) + "\n",
+            encoding="ascii",
+            newline="\r\n",
         )
     elif target_language == "swift":
         products = ",\n".join(
@@ -3420,6 +3480,26 @@ def verify_assembled_project_runtime(
                     runtime_directory,
                 )
                 run_runtime(["./runtime_harness"], runtime_directory)
+            elif target_language == "vcpp6":
+                _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.cpp")
+                (runtime_directory / "runtime_harness.cpp").write_text(
+                    _vcpp6_harness(function, cases, include_file="migrated.cpp"),
+                    encoding="ascii",
+                )
+                run_runtime(
+                    [
+                        toolchain.executable,
+                        "/nologo",
+                        "/GX",
+                        "/W4",
+                        "/WX",
+                        "/MD",
+                        "/Feruntime_harness.exe",
+                        "runtime_harness.cpp",
+                    ],
+                    runtime_directory,
+                )
+                run_runtime(["./runtime_harness.exe"], runtime_directory)
             elif target_language == "objc":
                 _runtime_target_source(destination, raw_unit, runtime_directory, "migrated.m")
                 (runtime_directory / "runtime_harness.m").write_text(
@@ -4096,6 +4176,7 @@ def verify_assembled_project(
     toolchain = exact_toolchain(target_language)
     commands: list[dict[str, Any]] = []
     vb6_compiled_artifact: dict[str, object] | None = None
+    vcpp6_compiled_artifact: dict[str, object] | None = None
     toolchain_dirs = tuple(
         dict.fromkeys(
             Path(path).resolve().parent for path in (toolchain.executable, toolchain.auxiliary) if path is not None
@@ -4256,6 +4337,79 @@ def verify_assembled_project(
         )
         vb6_compiled_artifact = {
             "path": "elmos-migrated.exe",
+            "bytes": compiled_bytes,
+            "sha256": compiled_sha256,
+        }
+    elif target_language == "vcpp6":
+        included = manifest.get("included_units")
+        if not isinstance(included, list) or not included:
+            raise RouteError("ASSEMBLY_NO_VCPP6_SOURCES_FOUND")
+        build_directory = destination / "build"
+        build_directory.mkdir(parents=True, exist_ok=True)
+        object_paths: list[str] = []
+        for unit in included:
+            if not isinstance(unit, Mapping):
+                raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
+            namespace = str(unit.get("namespace", ""))
+            relative = str(unit.get("assembled_path", ""))
+            if (
+                re.fullmatch(r"wu[0-9a-z]+", namespace) is None
+                or relative != f"src/{namespace}/migrated.cpp"
+            ):
+                raise RouteError("ASSEMBLY_VCPP6_SOURCE_SET_INVALID")
+            object_path = f"build/{namespace}.obj"
+            command = [
+                toolchain.executable,
+                "/nologo",
+                "/GX",
+                "/W4",
+                "/WX",
+                "/MD",
+                "/c",
+                relative,
+                f"/Fo{object_path}",
+            ]
+            completed = _run(
+                command,
+                destination,
+                timeout=900,
+                executable_dirs=toolchain_dirs,
+            )
+            commands.append(
+                {"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]}
+            )
+            object_paths.append(object_path)
+        if toolchain.auxiliary is None:
+            raise RouteError("VCPP6_LINKER_REQUIRED")
+        link_command = [
+            toolchain.auxiliary,
+            "/NOLOGO",
+            "/DLL",
+            "/OUT:build/elmos-migrated.dll",
+            *object_paths,
+        ]
+        linked = _run(
+            link_command,
+            destination,
+            timeout=900,
+            executable_dirs=toolchain_dirs,
+        )
+        commands.append(
+            {"command": link_command, "stdout": linked.stdout[-2_000:], "stderr": linked.stderr[-2_000:]}
+        )
+        compiled = _confined_regular_file(
+            destination,
+            "build/elmos-migrated.dll",
+            "ASSEMBLY_VCPP6_COMPILED_ARTIFACT_MISSING",
+        )
+        compiled_bytes, compiled_sha256 = _stable_file_binding(
+            compiled,
+            "ASSEMBLY_VCPP6_COMPILED_ARTIFACT_CHANGED",
+        )
+        if compiled_bytes <= 0:
+            raise RouteError("ASSEMBLY_VCPP6_COMPILED_ARTIFACT_MISSING")
+        vcpp6_compiled_artifact = {
+            "path": "build/elmos-migrated.dll",
             "bytes": compiled_bytes,
             "sha256": compiled_sha256,
         }
@@ -4459,6 +4613,14 @@ def verify_assembled_project(
         manifest["build_verification"]["vb6_compiled_artifact"] = (
             vb6_compiled_artifact
         )
+    if target_language == "vcpp6":
+        assert vcpp6_compiled_artifact is not None
+        vcpp6_identity = _exact_toolchain_identity(toolchain)
+        manifest["build_verification"]["vcpp6_exact_toolchain"] = vcpp6_identity
+        manifest["build_verification"]["vcpp6_exact_toolchain_sha256"] = (
+            _exact_toolchain_identity_sha256(vcpp6_identity)
+        )
+        manifest["build_verification"]["vcpp6_compiled_artifact"] = vcpp6_compiled_artifact
     if target_language == "react":
         manifest["build_verification"]["react_runtime_receipt"] = runtime_receipt
     if target_language == "flutter":
@@ -4479,7 +4641,7 @@ def verify_assembled_project(
                 binding.bytes for binding in cmake.source_bindings if binding.kind == "file"
             ),
             "bundle_manifest_bytes": len(cmake.manifest_bytes),
-                "bundle_manifest_sha256": cmake.manifest_sha256,
+            "bundle_manifest_sha256": cmake.manifest_sha256,
         }
     _write_manifest(destination, manifest)
     runtime_requested = cases_directory is not None or cases_manifest is not None

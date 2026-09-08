@@ -33,7 +33,7 @@ def main() -> int:
     root = Path(a.repo_root).resolve()
     route_key = f"{a.source}-to-{a.target}"
     if route_key not in EVIDENCED_ROUTE_KEYS:
-        p.error("route is outside the approved explicit fourteen-language directed matrix")
+        p.error("route is outside the approved explicit fifteen-language directed matrix")
     routes_root = root / "routes"
     if routes_root.exists() or routes_root.is_symlink():
         metadata = routes_root.lstat()

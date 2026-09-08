@@ -1,9 +1,10 @@
 # Batch 29 directed route matrix
 
 `routes/inventory.json` is authoritative. The active matrix is the exact
-directed permutation of 14 language identities: `java`, `csharp`, `go`,
+directed permutation of 15 language identities: `java`, `csharp`, `go`,
 `rust`, `python`, `typescript`, `cpp`, `objc`, `swift`, `php`, `kotlin`,
-`react`, `flutter`, and `vb6`. Batch 29 preserves the historical 30, 8, 34, 72, 90,
+`react`, `flutter`, `vb6`, and `vcpp6`. The `vcpp6` identity is intentionally
+distinct from modern `cpp`. Batch 29 preserves the historical 30, 8, 34, 72, 90,
 and 110 provenance sets without rewriting their identities. JavaScript remains
 addressable only as deprecated historical evidence and is not an active source
 or target. Engine support alone never creates a passing route claim.
@@ -14,37 +15,41 @@ The generated registry retains these exact set identities:
 `javascript-node26-completion-18`, `ten-language-complete-90`,
 `php-php85-completion-20`, `eleven-language-complete-110`,
 `kotlin-react-flutter-completion-66`, `thirteen-language-complete-156`,
-`vb6-completion-26`, and `fourteen-language-complete-182`.
+`vb6-completion-26`, `fourteen-language-complete-182`,
+`vcpp6-completion-28`, and `fifteen-language-complete-210`.
 
 > ### Route-count provenance — read before quoting any denominator (K6)
 >
 > Verified 2026-09-08 against the generated inventory. `routes/inventory.json`
 > is the only route-record authority.
 >
-> **Current surface: 182 directed routes across 14 active languages**
-> (14 × 13, no self-routes).
+> **Current surface: 210 directed routes across 15 active languages**
+> (15 × 14, no self-routes).
 >
 > `/72`, `/90`, and `/110` survive only as retained provenance-set
 > denominators. The `/156` set is now also retained as the frozen pre-VB6
-> active matrix. None describes the full current surface.
+> active matrix. The `/182` set is retained as the frozen pre-VC++6 matrix.
+> None describes the full current surface.
 
 ## Evidence boundary
 
-- Active engine languages: 14; deprecated engine compatibility languages: one
+- Active engine languages: 15; deprecated engine compatibility languages: one
   (`javascript`).
-- Governed directed routes: 182 = 90 execution-admitted non-V3 directions,
-  66 Kotlin/React/Flutter research directions, and 26 VB6 preparation-only directions.
-- Matrix expansion is exact and explicit: 14 × 13, with no self routes.
-- Local maturity distribution: 90 `limited`, 92 `research`, 0 `certified`.
-- Current local execution: all 182 routes are `NOT_RUN` by design. The exact
+- Governed directed routes: 210 = 90 execution-admitted non-V3 directions,
+  66 Kotlin/React/Flutter research directions, 26 VB6 preparation-only
+  directions, and 28 VC++6 preparation-only directions.
+- Matrix expansion is exact and explicit: 15 × 14, with no self routes.
+- Local maturity distribution: 90 `limited`, 120 `research`, 0 `certified`.
+- Current local execution: all 210 routes are `NOT_RUN` by design. The exact
   split is `38` manifest-drift directions + `52` not-executed directions +
-  `66` V3 research campaigns not replayed + `26` VB6 vendor campaigns not run. Stale historical artifacts are invalidated
+  `66` V3 research campaigns not replayed + `26` VB6 vendor campaigns not run +
+  `28` VC++6 vendor campaigns not run. Stale historical artifacts are invalidated
   against the live engine snapshot; no stale `PASSED_LOCAL` evidence is exported.
-- Repository execution: all 182 governed routes are `NOT_RUN`.
+- Repository execution: all 210 governed routes are `NOT_RUN`.
 - Independent verification and external/customer certification: `NOT_RUN`.
 - Certification decision: `NOT_CERTIFIED` for every route.
 
-Inventory summary: 90 `limited`, 92 `research`, 0 `certified`; current
+Inventory summary: 90 `limited`, 120 `research`, 0 `certified`; current
 execution contains 0 `PASSED_LOCAL` routes.
 A fresh replay of an execution-admitted mutable route may record `PASSED_LOCAL`
 only while its captured engine source bundle still matches the live bytes; it
@@ -191,12 +196,34 @@ Windows x86 remain `NOT_RUN`; all 26 routes are therefore
 and exact binding schema are documented in `docs/batch29/VB6_WINDOWS_RUNBOOK.md`;
 their presence is execution readiness, not Windows or independent evidence.
 
+## Microsoft Visual C++ 6.0 completion 28
+
+`vcpp6-completion-28` adds both directions between VC++6 and every member of
+the frozen 14-language matrix, including the two VC++6↔VB6 routes. `.cpp`
+files retain the modern `cpp` identity by default; repository requests select
+the distinct `vcpp6` source profile explicitly so suffix guessing cannot
+silently change the compiler dialect.
+
+The bounded local subset covers C++98-era free functions using `__int64`,
+finite `double`, `bool`, ASCII `std::string`, local variables, assignment,
+structured `if` and `while`, checked integer arithmetic, comparisons, and
+concatenation. It fails closed on MFC, ATL, COM, Win32 handles, pointers and
+references, templates, exceptions, allocation and ownership, inline assembly,
+and non-ASCII code-page semantics. The target emitter emits VC6-compatible
+source rather than modern C++ constructs.
+
+Microsoft Visual C++ 6.0 SP6 compile/link/runtime replay remains `NOT_RUN`, so
+all 28 routes remain `research / NOT_RUN / NOT_CERTIFIED`. The cross-host
+runner, exact external toolchain binding, and the special dual-vendor
+requirement for VC++6↔VB6 are documented in
+`docs/batch29/VCPP6_WINDOWS_RUNBOOK.md`.
+
 ## Repository experiment boundary
 
 The local engine exposes analyzer, emitter, repository-assembly, and exact
-target-build preparation surfaces for all 14 active identities. The existing
+target-build preparation surfaces for all 15 active identities. The existing
 external repository campaign remains frozen to the 13 locally executable
-pre-VB6 identities and its 156 directions. The 66 V3 directions and 26 VB6
+pre-VB6 identities and its 156 directions. The 66 V3, 26 VB6, and 28 VC++6
 directions are not yet
 admitted route packs: direct route execution fails closed until a bounded
 semantic/target Profile and route-specific corpus are approved. Individual
@@ -231,12 +258,13 @@ gate invocation; the mutable project `.venv` is never the proof-runtime trust
 root. Both commands run the route validator and conservative gate. A passing
 local replay still reports `limited / NOT_CERTIFIED`.
 
-The other 122 active routes are not direct replay selections. The immutable
+The other 150 active routes are not direct replay selections. The immutable
 legacy 30 fail closed with
 `LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION`; the 66 V3
 research routes fail at direct CLI selection with
 `V3_ROUTE_RESEARCH_NOT_EXECUTABLE`; the 26 VB6 routes fail with
-`VB6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE`. The deeper mutation boundary independently
+`VB6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE`; and the 28 VC++6 routes fail with
+`VCPP6_ROUTE_VENDOR_CAMPAIGN_NOT_EXECUTABLE`. The deeper mutation boundary independently
 fails with `V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN` until an exact
 route-specific campaign is approved.
 
@@ -264,9 +292,9 @@ make -f Makefile.batch29 b29-ten-language-verify
 ```
 
 These commands only verify immutable pack structure and binding; they never
-prepare, execute, or rewrite historical evidence. The active 182 can be
+prepare, execute, or rewrite historical evidence. The active 210 can be
 synchronized as research/NOT_RUN metadata with
-`--prepare-route-set fourteen-language-complete-182`; its V3 and VB6 directions
+`--prepare-route-set fifteen-language-complete-210`; its V3, VB6, and VC++6 directions
 remain research-only and therefore the full set is not an executable replay
 selection. No set inherits execution or certification credit from another.
 

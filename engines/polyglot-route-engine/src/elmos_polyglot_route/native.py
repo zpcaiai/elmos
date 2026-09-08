@@ -3,11 +3,9 @@ from __future__ import annotations
 import atexit
 import base64
 import binascii
-import fcntl
 import hashlib
 import json
 import os
-import pwd
 import re
 import shutil
 import signal
@@ -21,6 +19,16 @@ import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Final, cast
+
+try:
+    import fcntl
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    fcntl = None  # type: ignore[assignment]
+
+try:
+    import pwd
+except ModuleNotFoundError:  # pragma: no cover - exercised by Windows route hosts
+    pwd = None  # type: ignore[assignment]
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
@@ -1224,6 +1232,8 @@ def _swift_dependency_cache_base() -> Path:
 
 
 def _swift_dependency_cache_home() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir)
 
 
@@ -2744,6 +2754,8 @@ def _ensure_swift_dependency_cache(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[Path, dict[str, Any]]:
+    if fcntl is None:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_PLATFORM_UNSUPPORTED")
     cache_base = _swift_dependency_cache_base()
     cache_key = _swift_dependency_cache_key()
     cache = cache_base / cache_key
@@ -4664,6 +4676,8 @@ def _csharp_analyzer_input_manifest(engine: Path) -> dict[str, Any]:
 
 
 def _csharp_package_cache_root() -> Path:
+    if pwd is None or not hasattr(os, "getuid"):
+        raise RouteError("CSHARP_ANALYZER_PACKAGE_CACHE_PLATFORM_UNSUPPORTED")
     return Path(pwd.getpwuid(os.getuid()).pw_dir) / ".nuget" / "packages"
 
 
@@ -5292,6 +5306,8 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
     read-only or hostile home directory degrades to the previous per-call
     temporary directory instead of blocking analysis.
     """
+    if pwd is None or not hasattr(os, "getuid"):
+        return None
     try:
         base = (
             Path(pwd.getpwuid(os.getuid()).pw_dir)
@@ -5442,6 +5458,8 @@ def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
     if not _analyzer_binary_cache_enabled():
         return None
     if _toolchain_build_cache(kind, key, ()) is None:
+        return None
+    if pwd is None or not hasattr(os, "getuid"):
         return None
     return (
         Path(pwd.getpwuid(os.getuid()).pw_dir)
