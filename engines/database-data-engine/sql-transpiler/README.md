@@ -66,6 +66,7 @@ The machine-readable contracts are:
 - `schemas/batch31/chinadb-production-qualification-request.schema.json`
 - `schemas/batch31/chinadb-production-trust-store.schema.json`
 - `schemas/batch31/chinadb-production-qualification-result.schema.json`
+- `schemas/batch31/chinadb-vendor-execution-request.schema.json`
 
 ## Run
 
@@ -96,6 +97,13 @@ uv run elmos-sql-transpiler commercial-production-template \
 uv run elmos-sql-transpiler commercial-production-plan \
   /tmp/elmos-chinadb-production-request.json \
   --output /tmp/elmos-chinadb-production-plan.json
+uv run elmos-sql-transpiler commercial-production-execution-request \
+  /tmp/elmos-chinadb-production-request.json \
+  --trust-store /secure/operator-trust-store.json \
+  --trust-store-digest sha256:<pinned-digest> \
+  --target-id dm8 \
+  --input-artifact-digests /tmp/input-artifact-digests.json \
+  --output /tmp/dm8-vendor-execution-request.json
 uv run elmos-sql-transpiler transpile \
   examples/postgresql-to-mysql.json \
   /tmp/elmos-orders-mysql
@@ -131,6 +139,9 @@ The sidecar exposes the same local surface at:
 The execution endpoint accepts strict UTF-8 JSON with no duplicate fields,
 requires exact `scope.tenantId`, `scope.projectId`, and `scope.actorId`, is
 request/response/concurrency bounded, and rejects inline credential material.
+Before spawning its isolated assessment child, the sidecar also enforces a
+bounded normalized host-load admission threshold. An overloaded host receives
+`CHINADB_PREFLIGHT_HOST_OVERLOADED`; the service does not retry internally.
 
 The production qualification planner validates the 13 exact target tuples,
 disposable environments, vendor tool versions/digests, authorizations, and
@@ -140,6 +151,12 @@ certification receipt from an operator-pinned trust store. Planning performs
 no external call and returns no target SQL; without those real receipts the
 five production boundary fields remain `NOT_RUN` / `NOT_CERTIFIED` / `null` /
 `0`. See `docs/batch31/CHINADB_PRODUCTION_QUALIFICATION.md`.
+
+The Vendor Runner handoff command only accepts a target already in
+`READY_FOR_EXTERNAL_EXECUTION`. It emits a secret-free, deterministic request
+bound to the exact tuple, disposable environment, signed authorization,
+vendor tools, all input artifact digests, and a stable idempotency key. It
+does not call a vendor or change `externalExecution` from `NOT_RUN`.
 
 The output directory is create-only. A successful materialization contains target SQL, typed source/target AST, source and target profiles, route, source map identity, Runner configuration, verification state, and a transpilation report. The raw source SQL is not copied, although its typed AST and literals are retained in the canonical IR; customer handling policy still applies.
 

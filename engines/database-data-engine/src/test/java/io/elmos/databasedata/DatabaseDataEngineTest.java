@@ -2,7 +2,9 @@ package io.elmos.databasedata;
 
 import io.elmos.engine.api.EngineApi;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +12,8 @@ import static io.elmos.databasedata.DatabaseDataModels.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseDataEngineTest {
+    @TempDir Path temporaryDirectory;
+
     @Test void declaresThreeTracksAndSeparateUnconfiguredRunners() {
         var engine = new DatabaseDataEngineService();
         var capabilities = engine.capabilities();
@@ -48,6 +52,30 @@ class DatabaseDataEngineTest {
         assertThrows(EngineApi.JobNotFoundException.class, () -> engine.job("org-2", first.jobId()));
         assertThrows(EngineApi.JobConflictException.class, () -> engine.cancel("org-1", first.jobId()));
         assertSame(first, engine.job("org-1", first.jobId()));
+    }
+
+    @Test void durableStoreRecoversTerminalJobAndIdempotencyAcrossRestart() {
+        var firstEngine = new DatabaseDataEngineService(
+                new VendorRunnerRegistry(),
+                new FileDatabaseJobStore(temporaryDirectory.resolve("database-jobs")));
+        var first = firstEngine.scan(request("durable-key", "POSTGRESQL"));
+
+        var restartedEngine = new DatabaseDataEngineService(
+                new VendorRunnerRegistry(),
+                new FileDatabaseJobStore(temporaryDirectory.resolve("database-jobs")));
+        var replay = restartedEngine.scan(request("durable-key", "POSTGRESQL"));
+
+        assertEquals(first, replay);
+        assertEquals(first, restartedEngine.job("org-1", first.jobId()));
+        assertThrows(
+                EngineApi.JobNotFoundException.class,
+                () -> restartedEngine.job("org-2", first.jobId()));
+        assertThrows(
+                EngineApi.IdempotencyConflictException.class,
+                () -> restartedEngine.scan(request("durable-key", "MYSQL")));
+        assertEquals(
+                "DURABLE_OWNER_ONLY_FILES",
+                restartedEngine.capabilities().sandboxRequirements().get("jobStatePersistence"));
     }
 
     @Test void discoveryPermissionsAreReadOnlyAndWritesRequireApproval() {

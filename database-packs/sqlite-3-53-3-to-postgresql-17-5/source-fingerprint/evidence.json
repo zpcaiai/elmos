@@ -4,6 +4,7 @@
     "table:work_orders",
     "index:idx_work_orders_tenant_created"
   ],
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
   "row_count": 3,
   "schema_version": 1,
   "sensitive_data": false

@@ -1,6 +1,8 @@
 {
   "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
   "owner": "elmos-commercial-billing",
+  "status": "draft",
   "strategy": "flyway-incremental-modernization",
   "source": {
     "engine": "postgresql",
@@ -45,14 +47,13 @@
     "before_cutover": "source",
     "after_cutover": "NOT_RUN"
   },
-  "reconciliation": {
-    "grain": "row",
-    "keys": [
-      "tenant_id",
-      "id"
-    ],
-    "required_difference_count": 0
-  },
+  "reconciliation": [
+    {
+      "grain": "row",
+      "keys": ["tenant_id", "id"],
+      "required_difference_count": 0
+    }
+  ],
   "rollback": {
     "strategy": "fail-closed-read-only"
   },

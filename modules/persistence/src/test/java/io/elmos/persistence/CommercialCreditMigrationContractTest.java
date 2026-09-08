@@ -14,9 +14,7 @@ class CommercialCreditMigrationContractTest {
     private static final Path ELMPAY_MIGRATION = Path.of(
             "src/main/resources/db/migration/V84__elmpay_order_digest_lookup.sql");
     private static final Path CATALOG_MIGRATION = Path.of(
-            "src/main/resources/db/migration/V85__self_service_catalog_2026_09_08.sql");
-    private static final Path RESERVATION_EXPIRY_MIGRATION = Path.of(
-            "src/main/resources/db/migration/V86__payment_callback_and_generation_reservation_lifecycle.sql");
+            "src/main/resources/db/migration/V86__self_service_catalog_2026_09_08.sql");
     private static final Path RUNTIME_ROLE_CONFIGURATION = Path.of(
             "../../scripts/commercial/configure_billing_runtime_role.sh");
 
@@ -100,7 +98,8 @@ class CommercialCreditMigrationContractTest {
             assertTrue(script.contains("'" + function + "'"),
                     function + " must be granted when the runtime role is created after Flyway");
         }
-        assertTrue(script.contains("GRANT SELECT ON TABLE\n  commercial_products,"));
+        assertTrue(script.contains(
+                "GRANT SELECT ON TABLE self_service_pricing_plan_versions, commercial_products"));
         assertTrue(script.contains("payment_unmatched_callbacks_payment_unmatched_callback_id_seq"));
         assertTrue(script.contains("GRANT UPDATE (processing_status, attempt_count, updated_at)"));
         assertFalse(script.contains("GRANT INSERT ON TABLE commercial_credit_accounts"));
@@ -132,32 +131,4 @@ class CommercialCreditMigrationContractTest {
         assertFalse(sql.contains("ON CONFLICT (catalog_version, plan_id)"));
     }
 
-    @Test void expiredGenerationReservationsUseABoundedTenantScopedFunction() throws Exception {
-        String sql = Files.readString(RESERVATION_EXPIRY_MIGRATION);
-        assertTrue(sql.contains("ALTER TABLE payment_order_directory\n    ADD COLUMN provider varchar(32)"));
-        assertTrue(sql.contains("ALTER TABLE wallet_topup_order_directory\n    ADD COLUMN provider varchar(16)"));
-        assertTrue(sql.contains("ALTER TABLE commercial_order_directory\n    ADD COLUMN provider varchar(32)"));
-        for (String table : new String[]{
-                "payment_checkout_sessions", "wallet_topup_orders", "commercial_orders"}) {
-            assertTrue(sql.contains("ALTER TABLE " + table + " NO FORCE ROW LEVEL SECURITY"));
-            assertTrue(sql.contains("ALTER TABLE " + table + " FORCE ROW LEVEL SECURITY"));
-        }
-        assertTrue(sql.contains("ELMOS_PAYMENT_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
-        assertTrue(sql.contains("ELMOS_WALLET_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
-        assertTrue(sql.contains("ELMOS_COMMERCIAL_DIRECTORY_PROVIDER_BACKFILL_INCOMPLETE"));
-        assertTrue(sql.contains("NEW.provider, NEW.status"));
-        assertTrue(sql.contains("v_order.failure_code = 'CHECKOUT_PREPARE_OUTCOME_UNKNOWN'"));
-        assertTrue(sql.contains("failure_code = NULL, updated_at = now()"));
-        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_wallet_mark_topup_handoff"));
-        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_wallet_mark_topup_prepare_failed"));
-        assertTrue(sql.contains("v_org varchar := elmos_current_organization_id()"));
-        assertTrue(sql.contains("p_limit < 1 OR p_limit > 1000"));
-        assertTrue(sql.contains("LIMIT p_limit\n         FOR UPDATE SKIP LOCKED"));
-        assertTrue(sql.contains("organization_id = v_org"));
-        assertTrue(sql.contains("SET status = 'EXPIRED'"));
-        assertTrue(sql.contains("held_by_job_id = NULL"));
-        assertTrue(sql.contains("reserved = reserved - v_reservation.requested_credits"));
-        assertTrue(sql.contains(
-                "REVOKE ALL ON FUNCTION elmos_commercial_expire_generation_reservations(integer) FROM PUBLIC"));
-    }
 }

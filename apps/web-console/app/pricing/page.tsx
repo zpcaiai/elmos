@@ -5,6 +5,7 @@ import { formatCny, formatQuota, pricingCatalog } from "../lib/pricingCatalog";
 import styles from "./PricingPage.module.css";
 import { PlanBillingAction, ProductBillingAction, SubscriptionManager } from "./BillingActions";
 import { UsageDashboard } from "./UsageDashboard";
+import { CreditWalletPanel } from "./CreditWalletPanel";
 import { requirePlatformOperationsSurface } from "../lib/server/surfaceGuards";
 
 export const metadata: Metadata = {
@@ -56,6 +57,8 @@ export default async function PricingPage() {
         allowLocalCredentials={process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true"}
         emailAlertsEnabled={process.env.ELMOS_USAGE_EMAIL_ALERTS_ENABLED === "true"}
       />
+
+      <CreditWalletPanel />
 
       <section aria-labelledby="pricing-plans-title">
         <div className="section-heading">

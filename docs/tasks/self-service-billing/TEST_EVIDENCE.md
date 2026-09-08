@@ -8,6 +8,7 @@
 | Maven 商业计费定向集 | 目录、JWT、支付签名/回调、错误映射、迁移契约 | `PASS`（53/53） |
 | Commercial API live integration | JWT 组织派生、精确 scope、试用、订阅摘要、数据库 readiness | `PASS` |
 | Web `pnpm check` | TypeScript、BFF 策略/路由、实时用量、producer、Next 生产构建 | `PASS` |
+| Credit 用户可见闭环 | 订单详情路径保护、付款前不入账、后端履约后余额/流水同步、桌面与移动端 | `PASS`（BFF 4/4；旅程 2/2） |
 | Chromium + mobile Chromium 定价旅程 | 精确商品/金额/目录版本、DRAFT 付费禁用 | `PASS`（4/4） |
 | 项目任务 Markdown 文档包 | 架构、数据库、迁移、历史、追踪、归档 | `PASS`（3/3） |
 | PostgreSQL 17.5 空库 V1–V83 | 83 个迁移、DDL、函数、触发器、RLS | `PASS` |
@@ -33,6 +34,8 @@
 - `JdbcCommercialOrderStoreLiveTest`
 - `CommercialOrderCallbackRoutingTest`
 - `CommercialCreditMigrationContractTest`
+- `commercialBillingRoutes.test.mjs`
+- `pricing-ui.spec.ts` Credit fulfillment journey
 - `SelfServiceBillingApiLiveTest`
 - `usage-meter-ui.spec.ts`
 - `test_project_documentation.py`

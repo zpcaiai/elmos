@@ -414,7 +414,7 @@ export function ChinaDbSqlPreflightStudio() {
             </div>
             <p id="sql-source-profile-hint" className={styles.sourceProfileHint}>
               {sourceRoutePlanned
-                ? "该源家族存在 13 条商业目标规划路线；本地查询适配器仅在显式兼容模式下发射 SQL。"
+                ? "该源家族存在 13 条商业目标规划路线；仅在显式兼容模式下有限发射 SQL，不代表厂商原生适配。"
                 : "该 Profile 仅用于 typed source intake，不在 78 条商业规划路线内；结果将明确标记 COMMERCIAL_ROUTE_NOT_PLANNED。"}
             </p>
           </fieldset>
