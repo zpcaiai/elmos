@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 const workspaceId = "d12ac53a-30b8-4d87-8202-9c9a4b181cf8";
 const sourceCommit = "1".repeat(40);
 const deliveredCommit = "2".repeat(40);
@@ -63,6 +65,7 @@ function workspace(input: {
 }
 
 test.beforeEach(async ({ page }) => {
+  await installAdministratorSession(page);
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
 });
