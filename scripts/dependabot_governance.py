@@ -324,7 +324,7 @@ def build_vex_record(
             "fixedClaims": [],
             "evidenceStatus": "LOCAL_EXECUTED_SELF_ATTESTED",
             "githubDisposition": "DISMISSED" if applied else "PREPARED",
-            "dismissedCount": dismissed_count,
+            "dismissedCount": len(records) if applied else 0,
             "independentVerification": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
         },
@@ -376,7 +376,7 @@ def fetch_open_alerts(repo: str) -> list[dict[str, Any]]:
             "--paginate",
             "-H",
             "Accept: application/vnd.github+json",
-            f"/repos/{repo}/dependabot/alerts?state=open&per_page=100",
+            f"repos/{repo}/dependabot/alerts?state=open&per_page=100",
         ],
         stdin=subprocess.DEVNULL,
         capture_output=True,
@@ -391,6 +391,43 @@ def fetch_open_alerts(repo: str) -> list[dict[str, Any]]:
     return [dict(item) for item in value if isinstance(item, Mapping)]
 
 
+def fetch_alert(repo: str, number: int) -> dict[str, Any]:
+    result = subprocess.run(
+        [
+            "gh",
+            "api",
+            "-H",
+            "Accept: application/vnd.github+json",
+            f"repos/{repo}/dependabot/alerts/{number}",
+        ],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        timeout=60,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"GitHub Dependabot alert lookup failed for alert {number}")
+    value = json.loads(result.stdout)
+    if not isinstance(value, Mapping):
+        raise TypeError(f"GitHub Dependabot alert {number} is not an object")
+    return dict(value)
+
+
+def dismissal_comment(exception: Mapping[str, Any]) -> str:
+    comment = (
+        "VEX not_affected; not fixed; "
+        + str(exception["classification"])
+        + "; manifest "
+        + str(exception["manifest"]["sha256"])
+        + "; expires "
+        + str(exception["expires_at"])
+        + "; evidence b40-dependabot-vex"
+    )
+    if len(comment) > 280:
+        raise ValueError("Dependabot dismissal comment exceeds GitHub's limit")
+    return comment
+
+
 def dismiss_eligible(
     repo: str,
     registry: Mapping[str, Any],
@@ -403,17 +440,9 @@ def dismiss_eligible(
     count = 0
     for exception in registry["exceptions"]:
         number = int(exception["alert_number"])
-        classification = str(exception["classification"])
-        comment = (
-            "VEX not_affected; retained evidence, not a production dependency and not declared fixed. "
-            + classification
-            + "; manifest "
-            + str(exception["manifest"]["sha256"])
-            + "; controls: "
-            + ", ".join(str(item) for item in exception["controls"])
-            + "; expires "
-            + str(exception["expires_at"])
-        )
+        if by_number[number].get("state") != "open":
+            continue
+        comment = dismissal_comment(exception)
         result = subprocess.run(
             [
                 "gh",
@@ -422,7 +451,7 @@ def dismiss_eligible(
                 "PATCH",
                 "-H",
                 "Accept: application/vnd.github+json",
-                f"/repos/{repo}/dependabot/alerts/{number}",
+                f"repos/{repo}/dependabot/alerts/{number}",
                 "-f",
                 "state=dismissed",
                 "-f",
@@ -436,7 +465,10 @@ def dismiss_eligible(
             check=False,
         )
         if result.returncode != 0:
-            raise RuntimeError(f"Dependabot alert dismissal failed for alert {number}")
+            detail = result.stderr.decode("utf-8", errors="replace").strip()
+            raise RuntimeError(
+                f"Dependabot alert dismissal failed for alert {number}: {detail}"
+            )
         count += 1
         del by_number[number]
     return count
@@ -468,13 +500,30 @@ def main() -> int:
         help="dismiss only registry-listed eligible alerts",
     )
     args = parser.parse_args()
-    alerts = fetch_open_alerts(args.repo)
+    open_alerts = fetch_open_alerts(args.repo)
     snapshot_path = Path(args.snapshot)
-    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in alerts]))
+    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
     registry_path = Path(args.registry)
     if registry_path.exists():
         registry = json.loads(registry_path.read_bytes())
+        registered_numbers = {
+            int(exception["alert_number"]) for exception in registry.get("exceptions", [])
+        }
+        unexpected_open = sorted(
+            int(alert["number"])
+            for alert in open_alerts
+            if int(alert["number"]) not in registered_numbers
+        )
+        if unexpected_open:
+            raise ValueError(
+                "Dependabot registry does not cover open alerts: "
+                + ", ".join(str(number) for number in unexpected_open)
+            )
+        alerts = [
+            fetch_alert(args.repo, number) for number in sorted(registered_numbers)
+        ]
     else:
+        alerts = open_alerts
         registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
@@ -486,7 +535,8 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "open_alerts": len(alerts),
+                "open_alerts": len(open_alerts),
+                "registered_alerts": len(alerts),
                 "eligible_residual_risk": eligible,
                 "apply": args.apply,
             },
