@@ -1,0 +1,131 @@
+{
+  "analyzer": "Dart package:analyzer AST",
+  "analyzer_version": "package:analyzer 10.1.0; Dart 3.12.1",
+  "diagnostics": [],
+  "functions": [
+    {
+      "body": [
+        {
+          "condition": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 53,
+                "file": "pricing.dart",
+                "start_byte": 45
+              },
+              "value": "subtotal"
+            },
+            "operator": "<",
+            "right": {
+              "kind": "literal",
+              "source_span": {
+                "end_byte": 57,
+                "file": "pricing.dart",
+                "start_byte": 56
+              },
+              "value": 0
+            },
+            "source_span": {
+              "end_byte": 57,
+              "file": "pricing.dart",
+              "start_byte": 45
+            }
+          },
+          "else": [],
+          "kind": "if",
+          "source_span": {
+            "end_byte": 78,
+            "file": "pricing.dart",
+            "start_byte": 41
+          },
+          "then": [
+            {
+              "expression": {
+                "kind": "literal",
+                "source_span": {
+                  "end_byte": 73,
+                  "file": "pricing.dart",
+                  "start_byte": 72
+                },
+                "value": 0
+              },
+              "kind": "return",
+              "source_span": {
+                "end_byte": 74,
+                "file": "pricing.dart",
+                "start_byte": 65
+              }
+            }
+          ]
+        },
+        {
+          "expression": {
+            "kind": "binary",
+            "left": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 96,
+                "file": "pricing.dart",
+                "start_byte": 88
+              },
+              "value": "subtotal"
+            },
+            "operator": "+",
+            "right": {
+              "kind": "name",
+              "source_span": {
+                "end_byte": 102,
+                "file": "pricing.dart",
+                "start_byte": 99
+              },
+              "value": "tax"
+            },
+            "source_span": {
+              "end_byte": 102,
+              "file": "pricing.dart",
+              "start_byte": 88
+            }
+          },
+          "kind": "return",
+          "source_span": {
+            "end_byte": 103,
+            "file": "pricing.dart",
+            "start_byte": 81
+          }
+        }
+      ],
+      "name": "calculate",
+      "parameters": [
+        {
+          "name": "subtotal",
+          "source_span": {
+            "end_byte": 26,
+            "file": "pricing.dart",
+            "start_byte": 14
+          },
+          "type": "integer"
+        },
+        {
+          "name": "tax",
+          "source_span": {
+            "end_byte": 35,
+            "file": "pricing.dart",
+            "start_byte": 28
+          },
+          "type": "integer"
+        }
+      ],
+      "return_type": "integer",
+      "source_span": {
+        "end_byte": 105,
+        "file": "pricing.dart",
+        "start_byte": 0
+      }
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_file": "pricing.dart",
+  "source_language": "flutter"
+}

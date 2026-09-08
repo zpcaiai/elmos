@@ -56,7 +56,8 @@ normalized absolute root or installation and doctoring fail closed.
 | --- | --- | --- |
 | `core` | Java 21/Maven, Python 3.14/uv, .NET 10, Node 26/pnpm | Required runtimes must match; container tooling is reported but remains profile-selected |
 | `synthesis` | Java, Python, C#, TypeScript, Go, Kotlin, PHP, Rust, PostgreSQL | All eight exact emitter runtimes are required |
-| `routes-macos` | 13 active identities: Java, Python, C#, TypeScript, Go, Rust, C++, Objective-C, Swift, PHP, Kotlin, React, Flutter | Darwin arm64 only; 14 exact runtime entries are required because Node and the TypeScript compiler are checked separately; all central probes and the route engine's 13-language exact receipt must pass; deprecated JavaScript is excluded |
+| `routes-macos` | 13 locally executable identities: Java, Python, C#, TypeScript, Go, Rust, C++, Objective-C, Swift, PHP, Kotlin, React, Flutter; VB6 is an external Windows boundary | Darwin arm64 only; 14 exact runtime entries are required because Node and the TypeScript compiler are checked separately; all central probes and the route engine's 13-language exact receipt must pass; deprecated JavaScript and the separately gated VB6 vendor runtime are excluded |
+| `routes-windows-vb6` | Licensed Visual Basic 6.0 SP6 `VB6.EXE` plus `MSVBVM60.DLL`, both x86 PE files and SHA-256 bound by an external manifest | Windows x86-compatible only; use `schemas/batch29/vb6-toolchain-binding.schema.json` and the cross-host campaign; evidence is self-attested until a distinct verifier checks it |
 | `b66-80` | Mainstream language and engineering-asset Skills | Catalog/observation profile; target-specific tools remain `NOT_RUN` until selected |
 | `spring-legacy` | JDK 8/11/17/21 plus Maven 3.9.11 | Approved container/profile evidence is required; host PATH is not flattened |
 | `frontend-native` | Flutter/Dart, Apple, Android, HarmonyOS | Device, simulator, signing, and vendor evidence remains separate |

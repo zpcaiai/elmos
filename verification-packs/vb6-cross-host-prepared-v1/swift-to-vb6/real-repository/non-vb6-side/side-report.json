@@ -1,0 +1,73 @@
+{
+  "artifact_path": "difference.swift",
+  "artifact_sha256": "sha256:ba02cc7089e9cc48ed9fb8fb9aab0751d5b07fcb1f0cda186ba323ce201ac9cf",
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "-swift-version",
+        "6",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-warnings-as-errors",
+        "-o",
+        "source_harness",
+        "difference.swift",
+        "main.swift"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "./source_harness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t13\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\n"
+    }
+  ],
+  "language": "swift",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "13",
+      "status": "RETURNED",
+      "value": 13
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    }
+  ],
+  "role": "source",
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+    "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+    "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+    "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+    "language": "swift",
+    "profile": [
+      "platform=Darwin/arm64",
+      "apple-host-profile=local-macos26-20260904",
+      "xcode=26.6/17F113",
+      "macosx-sdk=26.5",
+      "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "swift-language-mode=6",
+      "integer=Int64"
+    ],
+    "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+  }
+}

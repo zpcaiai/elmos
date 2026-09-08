@@ -106,7 +106,7 @@ def test_a_missing_toolchain_is_never_reported_as_a_capability_gap() -> None:
     ) == "REJECTED:PYTHON_UNSUPPORTED_STATEMENT"
 
 
-@pytest.mark.parametrize("language", ["kotlin", "react", "flutter"])
+@pytest.mark.parametrize("language", ["kotlin", "react", "flutter", "vb6"])
 @requires_real_probe
 def test_new_active_languages_are_emission_targets(language: str) -> None:
     assert _report()["emission"][language] == "SUPPORTED"
@@ -180,4 +180,4 @@ def test_the_declaration_cross_check_reports_its_own_applicability() -> None:
     assert check["status"] in {"MATCH", "MISMATCH", "NOT_PROBED:INVENTORY_ABSENT", "NOT_PROBED:INCOMPLETE_RUN"}
     if check["status"] == "MATCH":
         assert check["declared_route_count"] == check["executed_bidirectional_routes"]
-        assert check["declared_route_count"] == 156
+        assert check["declared_route_count"] == 182

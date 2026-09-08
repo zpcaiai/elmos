@@ -1,0 +1,124 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "corpora": [
+    {
+      "artifacts": [
+        {
+          "bytes": 134,
+          "path": "development/inputs/pricing.ts",
+          "sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd"
+        },
+        {
+          "bytes": 151,
+          "path": "development/inputs/cases.json",
+          "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+        },
+        {
+          "bytes": 248,
+          "path": "development/inputs/migrated.bas",
+          "sha256": "sha256:bd05790fe7f5d06586fb4f0c21f5e136159bd002f69cb7d65d62dd5800ed20a2"
+        },
+        {
+          "bytes": 3708,
+          "path": "development/inputs/semantic-ir.json",
+          "sha256": "sha256:1d0a80e646fda6c0736d090ab0ac64f54add7fcd97b396644f743b5be53a4393"
+        },
+        {
+          "bytes": 2848,
+          "path": "development/inputs/identifier-plan.json",
+          "sha256": "sha256:61cbcd5370d3c47708640748cf1a384b55198302a068a7885d9c6f3950452bde"
+        },
+        {
+          "bytes": 3601,
+          "path": "development/non-vb6-side/side-report.json",
+          "sha256": "sha256:d0afede6f7e263b0a5f5d4be9cafe2113e6957938e4f4cd156f208c6be9e659a"
+        }
+      ],
+      "corpus": "development",
+      "function_name": "calculate",
+      "local_role": "source"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 162,
+          "path": "holdout/inputs/clamp.ts",
+          "sha256": "sha256:430f057f1a72ced96fcf3633ba01befa6605ada6c11f5437a27a130b2f6fd05e"
+        },
+        {
+          "bytes": 150,
+          "path": "holdout/inputs/cases.json",
+          "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+        },
+        {
+          "bytes": 392,
+          "path": "holdout/inputs/migrated.bas",
+          "sha256": "sha256:0464a3d0c164fc1f73d4a3fd6993a7dc50c132dc8291075d398e647c33168be0"
+        },
+        {
+          "bytes": 4619,
+          "path": "holdout/inputs/semantic-ir.json",
+          "sha256": "sha256:cd3a42278cb3fd492e1ebb67a2fe9f83638ad60fd811f11b261017a690106aed"
+        },
+        {
+          "bytes": 3047,
+          "path": "holdout/inputs/identifier-plan.json",
+          "sha256": "sha256:6e75d5e3310363e85c68a6a42803ba10e7a72340735ee333c3a5139b00b08491"
+        },
+        {
+          "bytes": 3598,
+          "path": "holdout/non-vb6-side/side-report.json",
+          "sha256": "sha256:87095908c0f74821314cc7c6693474d3b0d7af16b55a135fe2924869064b152e"
+        }
+      ],
+      "corpus": "holdout",
+      "function_name": "clamp",
+      "local_role": "source"
+    },
+    {
+      "artifacts": [
+        {
+          "bytes": 131,
+          "path": "real-repository/inputs/difference.ts",
+          "sha256": "sha256:fdfd17c493fed0c6238801e5313e915e4844a4116dc16f478872b3feecf3dc01"
+        },
+        {
+          "bytes": 146,
+          "path": "real-repository/inputs/cases.json",
+          "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+        },
+        {
+          "bytes": 246,
+          "path": "real-repository/inputs/migrated.bas",
+          "sha256": "sha256:17890afb18bc592036834662d8755bd80d657a17cd56ebe52e6af17bc7ebeb1c"
+        },
+        {
+          "bytes": 3745,
+          "path": "real-repository/inputs/semantic-ir.json",
+          "sha256": "sha256:e5578d5a5d68ba8476261bf9c82d582b7632a3cb519954099f3a064d032ea475"
+        },
+        {
+          "bytes": 2848,
+          "path": "real-repository/inputs/identifier-plan.json",
+          "sha256": "sha256:b558cb5eca175720bd26d8d1db6457c67ef8906487459a365f4501303ab45449"
+        },
+        {
+          "bytes": 3603,
+          "path": "real-repository/non-vb6-side/side-report.json",
+          "sha256": "sha256:c085697fcac061b0ed0143ff84cb57922be35b6967a8d003332685c8278de2b3"
+        }
+      ],
+      "corpus": "real-repository",
+      "function_name": "difference",
+      "local_role": "source"
+    }
+  ],
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.vb6-cross-host-campaign-request",
+  "prepared_side_status": "PASSED_LOCAL",
+  "route_key": "typescript-to-vb6",
+  "schema_version": 1,
+  "source_language": "typescript",
+  "target_language": "vb6",
+  "windows_vb6_side_status": "NOT_RUN"
+}

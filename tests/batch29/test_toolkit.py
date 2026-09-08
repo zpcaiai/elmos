@@ -3602,11 +3602,11 @@ print('\\n'.join(failures))
                 failures,
             )
 
-    def test_route_inventory_is_exact_thirteen_language_complete_156(self):
+    def test_route_inventory_is_exact_fourteen_language_complete_182(self):
         matrix = load_matrix_validator()
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         routes = matrix.check_inventory_shape(inventory)
-        self.assertEqual(len(routes), 156)
+        self.assertEqual(len(routes), 182)
         self.assertEqual(
             {route["route_key"] for route in routes},
             set(matrix.EVIDENCED_ROUTE_KEYS),
@@ -3745,8 +3745,8 @@ print('\\n'.join(failures))
     ):
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         document = (ROOT / "docs" / "batch29" / "ROUTE_MATRIX.md").read_text()
-        self.assertEqual(len(inventory["routes"]), 156)
-        self.assertIn("156 directed routes across 13 active languages", document)
+        self.assertEqual(len(inventory["routes"]), 182)
+        self.assertIn("182 directed routes across 14 active languages", document)
         for route_set in (
             "legacy-complete-30",
             "cpp-objc-swift-java-exact-8",
@@ -3758,9 +3758,11 @@ print('\\n'.join(failures))
             "eleven-language-complete-110",
             "kotlin-react-flutter-completion-66",
             "thirteen-language-complete-156",
+            "vb6-completion-26",
+            "fourteen-language-complete-182",
         ):
             self.assertIn(f"`{route_set}`", document)
-        self.assertIn("90 `limited`, 66 `research`, 0 `certified`", document)
+        self.assertIn("90 `limited`, 92 `research`, 0 `certified`", document)
         self.assertIn("`PASSED_LOCAL`", document)
         self.assertIn("`NOT_CERTIFIED`", document)
         self.assertIn("Independent verification: `NOT_RUN`", document)
@@ -4211,6 +4213,7 @@ print('\\n'.join(failures))
 
                 with (
                     mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
+                    mock.patch.object(runner, "VB6_EXACT_ROUTE_KEYS", ()),
                     mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
                     mock.patch.object(
                         runner, "ALL_DECLARED_ROUTE_KEYS", route_keys

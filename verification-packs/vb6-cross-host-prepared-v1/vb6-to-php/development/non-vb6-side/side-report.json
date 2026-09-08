@@ -1,0 +1,114 @@
+{
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        "-n",
+        "-d",
+        "error_reporting=E_ALL",
+        "-d",
+        "precision=17",
+        "-d",
+        "serialize_precision=-1",
+        "-d",
+        "opcache.enable_cli=0",
+        "-l",
+        "migrated.php"
+      ],
+      "stderr": "",
+      "stdout": "No syntax errors detected in migrated.php\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        "-n",
+        "-d",
+        "error_reporting=E_ALL",
+        "-d",
+        "precision=17",
+        "-d",
+        "serialize_precision=-1",
+        "-d",
+        "opcache.enable_cli=0",
+        "-l",
+        "route_harness.php"
+      ],
+      "stderr": "",
+      "stdout": "No syntax errors detected in route_harness.php\n"
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        "-n",
+        "-d",
+        "error_reporting=E_ALL",
+        "-d",
+        "precision=17",
+        "-d",
+        "serialize_precision=-1",
+        "-d",
+        "opcache.enable_cli=0",
+        "route_harness.php"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+    }
+  ],
+  "language": "php",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "i64-dec",
+      "raw": "120",
+      "status": "RETURNED",
+      "value": 120
+    },
+    {
+      "case_id": 1,
+      "encoding": "i64-dec",
+      "raw": "0",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "i64-dec",
+      "raw": "5",
+      "status": "RETURNED",
+      "value": 5
+    }
+  ],
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": null,
+    "auxiliary_sha256": null,
+    "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+    "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+    "language": "php",
+    "profile": [
+      "php-toolchain-closure-schema=v1",
+      "platform=Darwin/arm64",
+      "homebrew-bundle-profile=local-macos26-20260904",
+      "php-root=/opt/homebrew/Cellar/php/8.5.9",
+      "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+      "php-tree-record-count=643",
+      "php-tree-file-count=532",
+      "php-tree-directory-count=109",
+      "php-tree-bytes=129952851",
+      "php-tree-symlink-count=1",
+      "php-tree-unbound-symlink-count=1",
+      "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+      "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+      "integer=int64",
+      "number=binary64",
+      "strict-types=1",
+      "php-zts=False",
+      "php-debug=False",
+      "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+      "php-tokenizer=builtin",
+      "php-runtime-semantic-soundness=NOT_RUN"
+    ],
+    "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "case_count": 3,
+  "commands": [
+    {
+      "command": [
+        "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+        "build",
+        "-o",
+        "route_harness",
+        "migrated.go",
+        "route_harness.go"
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "./route_harness"
+      ],
+      "stderr": "",
+      "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTA=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNw==\n"
+    }
+  ],
+  "language": "go",
+  "observations": [
+    {
+      "case_id": 0,
+      "encoding": "b64",
+      "raw": "MTA=",
+      "status": "RETURNED",
+      "value": 10
+    },
+    {
+      "case_id": 1,
+      "encoding": "b64",
+      "raw": "MA==",
+      "status": "RETURNED",
+      "value": 0
+    },
+    {
+      "case_id": 2,
+      "encoding": "b64",
+      "raw": "Nw==",
+      "status": "RETURNED",
+      "value": 7
+    }
+  ],
+  "status": "PASSED",
+  "toolchain": {
+    "auxiliary": null,
+    "auxiliary_sha256": null,
+    "executable": "/Users/stephen/.local/share/elmos/toolchains/go/1.25.0/bin/go",
+    "executable_sha256": "c812de5f1e8307431c5bce8ebc4887c180827abc5834a72cd640a8a14200a93b",
+    "language": "go",
+    "profile": [
+      "go-toolchain-closure-schema=v1",
+      "platform=Darwin/arm64",
+      "go-root=/Users/stephen/.local/share/elmos/toolchains/go/1.25.0",
+      "go-tree-sha256=877afe68674e435643c86dcbb546ec9d441f636962068ac7b63d3ced854c2704",
+      "go-tree-record-count=16087",
+      "go-tree-file-count=14496",
+      "go-tree-directory-count=1591",
+      "go-tree-bytes=202722007",
+      "go-runtime-semantic-soundness=NOT_RUN"
+    ],
+    "version": "1.25.0"
+  }
+}

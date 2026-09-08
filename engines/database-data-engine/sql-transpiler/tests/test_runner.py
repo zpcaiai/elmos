@@ -70,20 +70,54 @@ def test_shared_host_performance_confirmation_preserves_initial_failure(
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     capabilities = runner_capabilities()
 
-    assert capabilities["readyDirectedRouteCount"] == 6
-    assert {item["profileId"] for item in capabilities["ready"]} == {
-        "postgresql-17.5",
+    ready_profiles = {item["profileId"] for item in capabilities["ready"]}
+    blocked_profiles = {item["profileId"] for item in capabilities["blocked"]}
+    assert ready_profiles >= {
         "sqlite-3.53.3",
         "duckdb-1.5.4",
     }
-    assert {item["profileId"] for item in capabilities["blocked"]} == {
+    assert ready_profiles | blocked_profiles == {
+        "postgresql-17.5",
+        "sqlite-3.53.3",
+        "duckdb-1.5.4",
         "postgresql-18.4",
         "mysql-8.4.10-lts",
         "sqlserver-2022-cu26",
         "oracle-26ai-ee",
     }
+    assert blocked_profiles >= {
+        "postgresql-18.4",
+        "mysql-8.4.10-lts",
+        "sqlserver-2022-cu26",
+        "oracle-26ai-ee",
+    }
+    assert capabilities["readyDirectedRouteCount"] == len(ready_profiles) * (
+        len(ready_profiles) - 1
+    )
     assert all(item["runtimeEvidence"] == "NOT_RUN" for item in capabilities["blocked"])
     assert capabilities["certification"] == "NOT_CERTIFIED"
+
+
+def test_runner_capabilities_do_not_advertise_postgresql_on_wrong_host(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(runner_module.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(runner_module.platform, "machine", lambda: "x86_64")
+
+    capabilities = runner_capabilities()
+    ready_profiles = {item["profileId"] for item in capabilities["ready"]}
+    postgresql = next(
+        item
+        for item in capabilities["blocked"]
+        if item["profileId"] == "postgresql-17.5"
+    )
+
+    assert ready_profiles == {"sqlite-3.53.3", "duckdb-1.5.4"}
+    assert capabilities["readyDirectedRouteCount"] == 2
+    assert postgresql["state"] == "BLOCKED"
+    assert postgresql["declaredState"] == "LOCAL_RUNNER_READY"
+    assert "requires the declared darwin-arm64 host" in postgresql["reason"]
+    assert postgresql["runtimeEvidence"] == "NOT_RUN"
 
 
 def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(

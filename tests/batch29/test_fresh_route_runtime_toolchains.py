@@ -819,7 +819,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     }
 
 
-def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_path() -> None:
+def test_fresh_child_selects_hosted_repository_language_ids_with_a_sanitized_path() -> None:
     runtime = _runtime()
 
     assert (

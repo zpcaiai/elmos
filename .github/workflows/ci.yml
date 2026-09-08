@@ -110,6 +110,48 @@ jobs:
             -Dtest=SelfServiceBillingApiLiveTest \
             -Dsurefire.failIfNoSpecifiedTests=false test
 
+  live-workbench-postgres:
+    name: Live Workbench PostgreSQL 17
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres@sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa # 17.5-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: elmos_live_workbench
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d elmos_live_workbench"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      ELMOS_LW_TEST_DATABASE_URL: jdbc:postgresql://127.0.0.1:5432/elmos_live_workbench
+      ELMOS_LW_TEST_DATABASE_USER: postgres
+      ELMOS_LW_TEST_DATABASE_PASSWORD: postgres
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Java 21
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Install Live Workbench reactor dependencies
+        run: mvn -B -ntp -q -DskipTests -pl modules/live-workbench -am install
+      - name: Verify real PostgreSQL lifecycle and RLS contracts
+        run: >-
+          mvn -B -ntp -f modules/live-workbench/pom.xml
+          -Dtest=JdbcLiveWorkbenchStorePostgresTest test
+      - name: Verify package integration and anti-fabrication gate
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/live-workbench -p 'test_*.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/live_workbench/run_production_gate.py --expect-blocked
+
   dotnet-engine:
     name: .NET Engine
     runs-on: ubuntu-24.04
@@ -250,7 +292,9 @@ jobs:
           python3.11 -m pip install --disable-pip-version-check
           'jsonschema==4.25.1' 'uv==0.11.16'
       - name: Install locked dependencies
-        run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+        run: |
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          pnpm --dir apps/web-console install --frozen-lockfile
       - name: Bind locked Z3 solver
         run: |
           chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3
@@ -646,10 +690,10 @@ jobs:
           import subprocess
           import sys
 
-          from elmos_polyglot_route.models import SUPPORTED_LANGUAGES
+          from elmos_polyglot_route.models import HOSTED_REPOSITORY_MATRIX_LANGUAGES
 
           source = os.environ["ELMOS_ROUTE_SOURCE_LANGUAGE"]
-          if source not in SUPPORTED_LANGUAGES:
+          if source not in HOSTED_REPOSITORY_MATRIX_LANGUAGES:
               raise SystemExit(f"unsupported matrix source shard: {source}")
           test_file = (
               Path(os.environ["GITHUB_WORKSPACE"])
@@ -663,7 +707,7 @@ jobs:
           selectors = [
               f"{test_file}::{function}[{source}-{target}]"
               for function in functions
-              for target in SUPPORTED_LANGUAGES
+              for target in HOSTED_REPOSITORY_MATRIX_LANGUAGES
               if target != source
           ]
           if len(selectors) != 24 or len(set(selectors)) != 24:

@@ -180,6 +180,7 @@ def _target_language(target_path: str) -> Language:
         ".php": "php",
         ".kt": "kotlin",
         ".dart": "flutter",
+        ".bas": "vb6",
     }
     return suffixes[Path(filename).suffix]
 
@@ -441,6 +442,12 @@ ADDITIONAL_TARGET_UNITS: dict[Language, tuple[str, str]] = {
         "export function calculate(a: number, b: number): number { return a + b; }\n",
     ),
     "flutter": ("migrated.dart", "int calculate(int a, int b) => a + b;\n"),
+    "vb6": (
+        "migrated.bas",
+        "Option Explicit\n\nPublic Function calculate(ByVal a As Long, ByVal b As Long) As Long\n"
+        "    calculate = a + b\n"
+        "End Function\n",
+    ),
 }
 
 
@@ -532,6 +539,7 @@ _ADDITIONAL_TARGET_PROJECT_SHAPES: dict[Language, tuple[str, set[str]]] = {
         "lib/generated/wu00001/migrated.dart",
         {"pubspec.yaml", "analysis_options.yaml", ".dart_tool/package_config.json"},
     ),
+    "vb6": ("src/wu00001/migrated.bas", {"elmos-migrated.vbp"}),
 }
 
 
@@ -582,6 +590,13 @@ def test_assemble_supports_every_additional_target_project_shape(
             (destination / "composer.json").read_text(encoding="utf-8")
         )
         assert composer["require"]["php"] == "8.5.9"
+    if target_language == "vb6":
+        project = (destination / "elmos-migrated.vbp").read_text(encoding="ascii")
+        assert project.startswith("Type=Exe\n")
+        assert f"Module=wu00001; {expected_path}" in project
+        assert "Module=ElmosMain; src/ElmosMain.bas" in project
+        assert (destination / "src" / "ElmosMain.bas").is_file()
+        assert 'Name="ElmosMigrated"' in project
 
 
 @pytest.mark.parametrize("target_language", ["cpp", "objc"])

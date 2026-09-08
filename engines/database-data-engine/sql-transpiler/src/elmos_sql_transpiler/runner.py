@@ -1253,22 +1253,60 @@ def runner_capabilities() -> dict[str, Any]:
     for item in catalog["runners"]:
         rendered = dict(item)
         rendered["runtimeEvidence"] = "NOT_RUN"
+        if (
+            item["state"] == "LOCAL_RUNNER_READY"
+            and item["profileId"] == "postgresql-17.5"
+        ):
+            rendered["declaredState"] = item["state"]
+            try:
+                runner = PostgreSQLRunner()
+                if platform.system().lower() != "darwin" or platform.machine() != "arm64":
+                    raise RunnerBlockedError(
+                        "PostgreSQL Runner requires the declared darwin-arm64 host"
+                    )
+                if (
+                    version("psycopg") != "3.3.4"
+                    or version("psycopg-binary") != "3.3.4"
+                ):
+                    raise RunnerBlockedError(
+                        "PostgreSQL Runner requires exact psycopg-binary 3.3.4"
+                    )
+                for executable in ("postgres", "initdb", "pg_ctl"):
+                    runner._binary(executable)
+                version_output = runner._run(
+                    [str(runner._binary("postgres")), "--version"], timeout=5.0
+                )
+                if "PostgreSQL) 17.5" not in version_output:
+                    raise RunnerBlockedError(
+                        "PostgreSQL Runner requires exact server 17.5"
+                    )
+            except (RunnerBlockedError, OSError, subprocess.SubprocessError) as error:
+                rendered["state"] = "BLOCKED"
+                rendered["reason"] = (
+                    "Exact PostgreSQL 17.5 runtime unavailable on this host: "
+                    + " ".join(str(error).split())
+                )
+                blocked.append(rendered)
+                continue
+
         if item["state"] == "LOCAL_RUNNER_READY":
             ready.append(rendered)
         else:
             blocked.append(rendered)
+    ready_profile_ids = tuple(item["profileId"] for item in ready)
+    ready_directed_routes = [
+        f"{source}--to--{target}"
+        for source in ready_profile_ids
+        for target in ready_profile_ids
+        if source != target
+    ]
     return {
         "schemaVersion": "1.0",
         "hostContract": catalog["host"],
         "ready": ready,
         "blocked": blocked,
-        "readyDirectedRoutes": [
-            f"{source}--to--{target}"
-            for source in _LOCAL_PROFILE_IDS
-            for target in _LOCAL_PROFILE_IDS
-            if source != target
-        ],
-        "readyDirectedRouteCount": 6,
+        "readyDirectedRoutes": ready_directed_routes,
+        "readyDirectedRouteCount": len(ready_directed_routes),
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
     }
