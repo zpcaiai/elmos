@@ -144,6 +144,7 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "auth/descope/wechat/start", value: route094 as ApiRouteModule },
   { template: "auth/descope/wechat/callback", value: route095 as ApiRouteModule },
   { template: "auth/admin/login", value: route096 as ApiRouteModule },
+  { template: "live-workbench/[[...path]]", value: route097 as ApiRouteModule },
   { template: "billing/cancel", value: route024 as ApiRouteModule },
   { template: "billing/checkout", value: route025 as ApiRouteModule },
   { template: "billing/subscription", value: route026 as ApiRouteModule },
@@ -219,7 +220,6 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "wallet/ledger", value: route089 as ApiRouteModule },
   { template: "wallet/topup/[topupOrderId]", value: route090 as ApiRouteModule },
   { template: "wallet/topup", value: route091 as ApiRouteModule },
-  { template: "live-workbench/[[...path]]", value: route097 as ApiRouteModule },
 ]);
 
 function allowedMethods(module: ApiRouteModule): string {

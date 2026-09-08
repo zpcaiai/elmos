@@ -10,6 +10,7 @@ import {
   type Stats,
 } from "node:fs";
 import { inflateRawSync } from "node:zlib";
+import { LocalProcessCapacity } from "./localProcessCapacity";
 import {
   access,
   lstat,
@@ -388,6 +389,10 @@ function clearPriorExecutionOutputs(job: TranslationJob): void {
   job.artifactReady = false;
   delete job.artifactSha256;
   delete job.artifactSize;
+  delete job.artifactManifestSha256;
+  delete job.semanticCoverage;
+  delete job.behaviorCoverage;
+  delete job.repositoryComplete;
   delete job.snapshotSha256;
   delete job.readyCount;
   delete job.workUnitCount;
@@ -1462,6 +1467,7 @@ async function boundedOpenPipelineFile(
   relativePath: string,
   maximumBytes: number,
   errorCode: string,
+  hashBeforeUse = true,
 ): Promise<OpenedPipelineFile> {
   const candidate = confined(pipeline, relativePath);
   let resolved: string;
@@ -1490,7 +1496,7 @@ async function boundedOpenPipelineFile(
     if (!info.isFile() || info.nlink !== 1 || info.size < 1 || info.size > maximumBytes) {
       fail(409, errorCode);
     }
-    const sha256 = await sha256OpenPipelineFile(handle, info, errorCode);
+    const sha256 = hashBeforeUse ? await sha256OpenPipelineFile(handle, info, errorCode) : "";
     return { handle, path: resolved, size: info.size, sha256, stats: info };
   } catch (error) {
     await handle.close().catch(() => undefined);
@@ -2109,6 +2115,367 @@ async function runChild(
   return completion;
 }
 
+/** Shared fail-closed finalization for local and leased hosted workloads. */
+export async function validateCompletedTranslationPipeline(
+  pipeline: string,
+  job: Pick<TranslationJob, "repositoryRef" | "sourceLanguage" | "targetLanguage">,
+  preflight: { snapshotSha256: string },
+) {
+  const pipelineReport = await readBoundedPipelineFile(
+    pipeline,
+    "repository-pipeline-report.json",
+    64 * 1024 * 1024,
+    "TRANSLATION_PIPELINE_EVIDENCE_INVALID",
+  );
+  let report: Record<string, unknown>;
+  try {
+    report = JSON.parse(pipelineReport.content.toString("utf8")) as Record<string, unknown>;
+  } catch {
+    fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  }
+  const status = String(report.status);
+  const workUnitCount = Number(report.work_unit_count);
+  const conversion = validateTranslationConversion(report.functional_conversion, workUnitCount);
+  const artifact = report.artifact as Record<string, unknown> | null | undefined;
+  if (
+    report.schema_version !== "1.0.0"
+    || report.kind !== "elmos.repository-pipeline-report"
+    || !["COMPLETE", "PARTIAL", "BLOCKED"].includes(status)
+    || report.repository_ref !== job.repositoryRef
+    || report.source_language !== job.sourceLanguage
+    || report.target_language !== job.targetLanguage
+    || report.route_id !== `${job.sourceLanguage}-to-${job.targetLanguage}`
+    || report.profile !== "typed-pure-function-v1"
+    || !digestPattern.test(String(report.snapshot_sha256))
+    || report.snapshot_sha256 !== preflight.snapshotSha256
+    || !digestPattern.test(String(report.cases_manifest_sha256))
+    || report.cases_manifest_sha256 !== conversion.summary.casesManifestSha256
+    || report.independent_verification_status !== "NOT_RUN"
+    || report.external_verification_status !== "NOT_RUN"
+    || report.certification_status !== "NOT_CERTIFIED"
+  ) {
+    fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  }
+
+  const batchStatusCounts = report.status_counts;
+  const readyCount = Number(report.ready_count);
+  const includedUnitCount = Number(report.included_unit_count);
+  const buildRaw = report.build_verification;
+  if (
+    !batchStatusCounts || typeof batchStatusCounts !== "object" || Array.isArray(batchStatusCounts)
+    || !Number.isSafeInteger(readyCount) || readyCount < 0 || readyCount > workUnitCount
+    || !Number.isSafeInteger(includedUnitCount) || includedUnitCount < 0 || includedUnitCount > workUnitCount
+    || !buildRaw || typeof buildRaw !== "object" || Array.isArray(buildRaw)
+  ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  const batchCounts = batchStatusCounts as Record<string, unknown>;
+  if (
+    Object.keys(batchCounts).length < 1
+    || Object.keys(batchCounts).length > 16
+    || Object.entries(batchCounts).some(([key, value]) => (
+      !/^[A-Z][A-Z0-9_]{1,99}$/.test(key)
+      || !Number.isSafeInteger(value)
+      || Number(value) < 0
+    ))
+    || Object.values(batchCounts).reduce<number>((total, value) => total + Number(value), 0) !== workUnitCount
+  ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  const build = buildRaw as Record<string, unknown>;
+  // Narrowed here, checked on the very next line.  The engine reports NOT_RUN
+  // for a missing exact toolchain and FAILED for a reportable build failure;
+  // anything outside that set is rejected before the job is constructed.
+  const buildStatus = String(build.status) as NonNullable<
+    TranslationJob["buildVerification"]
+  >["status"];
+  // Resolved once, before the guard chain: calling a type predicate inside
+  // `||` would narrow `build` for every clause after it.
+  const verifiedBuild = validBuildVerification(build) ? build : null;
+  if (
+    // The pipeline writes `commands: [{command, stdout, stderr}]` and
+    // `toolchain: {language, version}`.  The other side of this merge read a
+    // singular `command: string[]` and a string `toolchain`, a shape the
+    // engine has never emitted -- so every real report was rejected here as
+    // TRANSLATION_PIPELINE_EVIDENCE_INVALID.  `validBuildVerification` above
+    // is the reader for the shape that is actually written.
+    !["PASSED", "FAILED", "NOT_RUN"].includes(buildStatus)
+    || !Array.isArray(build.commands)
+    || build.commands.length > 100
+    || !isRecord(build.toolchain)
+    || (buildStatus === "PASSED" && verifiedBuild === null)
+    || (buildStatus !== "PASSED" && build.commands.length > 0)
+    || (build.reason !== null && (
+      typeof build.reason !== "string" || build.reason.length > 4_000
+    ))
+  ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  const buildReason = typeof build.reason === "string" ? build.reason : null;
+  const functionalStatus: "COMPLETE" | "PARTIAL" | "BLOCKED" =
+    conversion.summary.numerator === 0
+      ? "BLOCKED"
+      : conversion.summary.denominatorComplete
+        && conversion.summary.numerator === conversion.summary.denominator
+        && buildStatus === "PASSED"
+        ? "COMPLETE"
+        : "PARTIAL";
+  const packagingRaw = report.artifact_packaging;
+  if (!packagingRaw || typeof packagingRaw !== "object" || Array.isArray(packagingRaw)) {
+    fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  }
+  const packaging = packagingRaw as Record<string, unknown>;
+  const packagingStatus = String(packaging.status);
+  const packagingReasonCode = packaging.reason_code;
+  const packagingReason = packaging.reason;
+  const packagingLimitsValid =
+    packaging.max_uncompressed_bytes === MAX_TRANSLATION_ARTIFACT_BYTES
+    && packaging.max_compressed_bytes === MAX_TRANSLATION_ARTIFACT_BYTES;
+  const packagingPassed = packagingStatus === "PASSED"
+    && packagingReasonCode === null
+    && packagingReason === null
+    && conversion.summary.codeArtifactReady
+    && artifact !== null
+    && artifact !== undefined
+    && (status === functionalStatus || (status === "PARTIAL" && functionalStatus === "COMPLETE" && report.repository_complete === false))
+    && functionalStatus !== "BLOCKED";
+  const packagingNotRun = packagingStatus === "NOT_RUN"
+    && packagingReasonCode === "FUNCTIONAL_CONVERSION_NOT_CODE_READY"
+    && typeof packagingReason === "string"
+    && packagingReason.length >= 1
+    && packagingReason.length <= 2_000
+    && !conversion.summary.codeArtifactReady
+    && (artifact === null || artifact === undefined)
+    && status === functionalStatus;
+  const packagingCapacityFailed = packagingStatus === "FAILED"
+    && [
+      "PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED",
+      "PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+    ].includes(String(packagingReasonCode))
+    && typeof packagingReason === "string"
+    && packagingReason.length >= 1
+    && packagingReason.length <= 2_000
+    && !conversion.summary.codeArtifactReady
+    && (artifact === null || artifact === undefined)
+    && status === "BLOCKED"
+    && functionalStatus !== "BLOCKED";
+  if (
+    !packagingLimitsValid
+    || Object.keys(packaging).some((key) => ![
+      "status",
+      "reason_code",
+      "reason",
+      "max_uncompressed_bytes",
+      "max_compressed_bytes",
+    ].includes(key))
+    || !(packagingPassed || packagingNotRun || packagingCapacityFailed)
+  ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  // A build that did not verify carries no verification to attach; the field
+  // is optional on TranslationJob precisely so NOT_RUN and FAILED can say so
+  // by omission rather than by a half-populated record.
+  const buildVerification: TranslationJob["buildVerification"] = verifiedBuild ?? undefined;
+
+  const [verifiedJsonReport, verifiedMarkdownReport] = await Promise.all([
+    readVerifiedPipelineFile(
+      pipeline,
+      conversion.jsonReport,
+      "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+    ),
+    readVerifiedPipelineFile(
+      pipeline,
+      conversion.markdownReport,
+      "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+    ),
+  ]);
+  let conversionDocument: unknown;
+  try {
+    conversionDocument = JSON.parse(verifiedJsonReport.content.toString("utf8"));
+  } catch {
+    fail(409, "TRANSLATION_REPORT_DOCUMENT_INVALID");
+  }
+  const conversionContext = {
+    pipelineStatus: functionalStatus,
+    repositoryRef: job.repositoryRef,
+    snapshotSha256: String(report.snapshot_sha256),
+    routeId: `${job.sourceLanguage}-to-${job.targetLanguage}`,
+    sourceLanguage: job.sourceLanguage,
+    targetLanguage: job.targetLanguage,
+    profile: String(report.profile),
+    buildStatus,
+    buildReason,
+    markdownSha256: conversion.markdownReport.sha256,
+    casesManifestSha256: conversion.summary.casesManifestSha256,
+  };
+  if (conversion.summary.storageMode === "SINGLE") {
+    validateTranslationConversionDocument(
+      conversionDocument,
+      conversionContext,
+      conversion.summary,
+    );
+    validateTranslationConversionMarkdown(
+      conversionDocument,
+      verifiedMarkdownReport.content,
+    );
+  } else {
+    const shardDescriptors = validateTranslationConversionIndex(
+      conversionDocument,
+      conversionContext,
+      conversion.summary,
+    );
+    validateTranslationConversionMarkdown(
+      conversionDocument,
+      verifiedMarkdownReport.content,
+    );
+    const shardOutputs = await Promise.all(shardDescriptors.map(async (descriptor) => {
+      const [jsonFile, markdownFile] = await Promise.all([
+        readVerifiedPipelineFile(
+          pipeline,
+          descriptor.json,
+          "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+        ),
+        readVerifiedPipelineFile(
+          pipeline,
+          descriptor.markdown,
+          "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+        ),
+      ]);
+      try {
+        return {
+          document: JSON.parse(jsonFile.content.toString("utf8")) as unknown,
+          markdown: markdownFile.content,
+        };
+      } catch {
+        fail(409, "TRANSLATION_REPORT_DOCUMENT_INVALID");
+      }
+    }));
+    shardOutputs.forEach((output, offset) => {
+      const descriptor = shardDescriptors[offset];
+      validateTranslationConversionMarkdown(
+        output.document,
+        output.markdown,
+        `分片 ${descriptor.sequence}/${conversion.summary.shardCount}；本分片 ${descriptor.functionCount} 个功能；总指标来自全部分片`,
+      );
+    });
+    validateTranslationConversionShardDocuments(
+      conversionDocument,
+      shardOutputs.map((output) => output.document),
+      conversionContext,
+      conversion.summary,
+      shardDescriptors,
+    );
+    const expectedBundleFiles = translationConversionBundleFiles(
+      conversion,
+      shardDescriptors,
+    );
+    const manifestFile = await readBoundedPipelineFile(
+      pipeline,
+      BUNDLE_MANIFEST_PATH,
+      1024 * 1024,
+      "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+    );
+    const manifestDescriptor = validateTranslationConversionBundleManifest(
+      manifestFile.content,
+      conversion.summary.reportId,
+      expectedBundleFiles,
+    );
+    if (
+      manifestDescriptor.bytes !== manifestFile.size
+      || manifestDescriptor.sha256 !== manifestFile.sha256
+      || !conversion.reportBundle
+    ) fail(409, "TRANSLATION_REPORT_INTEGRITY_MISMATCH");
+    const bundleFile = await verifiedOpenPipelineFile(
+      pipeline,
+      conversion.reportBundle,
+      "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+    );
+    if (bundleFile.size > MAX_FUNCTIONAL_REPORT_BUNDLE_BYTES) {
+      await bundleFile.handle.close().catch(() => undefined);
+      fail(409, "TRANSLATION_REPORT_INTEGRITY_MISMATCH");
+    }
+    try {
+      await validateTranslationConversionBundleArchive(
+        bundleFile.handle,
+        conversion.reportBundle,
+        expectedBundleFiles,
+        manifestDescriptor,
+      );
+    } finally {
+      await bundleFile.handle.close().catch(() => undefined);
+    }
+  }
+
+  let verifiedArtifact: { path: string; size: number; sha256: string } | undefined;
+  let verifiedManifestSha256: string | undefined;
+  let semanticCoverage: TranslationJob["semanticCoverage"];
+  let behaviorCoverage: TranslationJob["behaviorCoverage"];
+  if (conversion.summary.codeArtifactReady) {
+    if (
+      !artifact
+      || artifact.path !== "repository-migration-artifact.zip"
+      || !Number.isSafeInteger(artifact.bytes)
+      || Number(artifact.bytes) < 1
+      || Number(artifact.bytes) > MAX_TRANSLATION_ARTIFACT_BYTES
+      || !digestPattern.test(String(artifact.sha256))
+    ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+    if (functionalStatus === "BLOCKED") {
+      fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+    }
+    const repositoryStatus = status as "COMPLETE" | "PARTIAL";
+    if (!["COMPLETE","PARTIAL"].includes(status) || typeof report.repository_complete !== "boolean"
+      || (status === "COMPLETE" && report.repository_complete !== true)
+      || report.repository_execution_status !== (status === "COMPLETE" ? "PASSED_LOCAL" : "LIMITED")
+      || report.local_execution_evidence !== (status === "COMPLETE" ? "PASSED" : "LIMITED")) fail(409,"TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+    const manifestFile=await readBoundedPipelineFile(pipeline,"artifact-manifest.json",MAX_PIPELINE_JSON_BYTES,"TRANSLATION_ARTIFACT_MANIFEST_INVALID");
+    const graphFile=await readBoundedPipelineFile(pipeline,"project-graph.json",MAX_PIPELINE_JSON_BYTES,"TRANSLATION_PIPELINE_PROJECT_GRAPH_INVALID");
+    const manifest=JSON.parse(manifestFile.content.toString("utf8")) as Record<string,unknown>;
+    const graph=JSON.parse(graphFile.content.toString("utf8")) as Record<string,unknown>;
+    const closure=validateBatchClosure(report,repositoryStatus);
+    validateProjectGraphEvidence(graph,report.project_graph,job.repositoryRef,report.repository_complete);
+    semanticCoverage=validateConversionCoverage(report.conversion_coverage,job.sourceLanguage,repositoryStatus,graph,closure.includedUnitCount);
+    behaviorCoverage=validateTranslationBehaviorCoverageClaims(report,manifest,repositoryStatus,closure);
+    const claimFields=["status","repository_ref","snapshot_sha256","route_id","profile","source_language","target_language",
+      "repository_scale","repository_limits","unit_batch_status","project_graph","conversion_coverage","behavior_coverage",
+      "repository_complete","runtime_verification_status","local_execution_evidence","repository_execution_status",
+      "independent_verification_status","external_verification_status","certification_status"];
+    if (!isRecord(manifest) || claimFields.some(field=>report[field]===undefined || !canonicalEqual(manifest[field],report[field])))
+      fail(409,"TRANSLATION_ARTIFACT_MANIFEST_REPORT_MISMATCH");
+    const repositoryClaims=Object.fromEntries(claimFields.map(field=>[field,report[field]]));
+    verifiedManifestSha256=manifestFile.sha256;
+    const artifactDescriptor = {
+      path: "repository-migration-artifact.zip" as const,
+      bytes: Number(artifact.bytes),
+      sha256: String(artifact.sha256),
+    };
+    const artifactFile = await verifiedOpenPipelineFile(
+      pipeline,
+      artifactDescriptor,
+      "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
+    );
+    try {
+      await validateTranslationCodeArtifactArchive(
+        artifactFile.handle,
+        artifactDescriptor,
+        {
+          pipelineStatus: repositoryStatus,
+          repositoryRef: job.repositoryRef,
+          snapshotSha256: String(report.snapshot_sha256),
+          routeId: `${job.sourceLanguage}-to-${job.targetLanguage}`,
+          profile: String(report.profile),
+          summary: conversion.summary,
+          manifestSha256:verifiedManifestSha256,
+          repositoryClaims,
+        },
+      );
+      verifiedArtifact = {
+        path: artifactFile.path,
+        size: artifactFile.size,
+        sha256: artifactFile.sha256,
+      };
+    } catch {
+      fail(409, "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
+    } finally {
+      await artifactFile.handle.close().catch(() => undefined);
+    }
+  } else if (artifact !== null && artifact !== undefined) {
+    fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
+  }
+  return { report, status, conversion, verifiedArtifact, verifiedManifestSha256, semanticCoverage, behaviorCoverage, readyCount, workUnitCount, includedUnitCount, batchCounts, buildVerification, packagingCapacityFailed, packagingReasonCode };
+}
+
 async function execute(
   runner: TranslationRunnerConfig,
   context: AuthorizedContext,
@@ -2292,332 +2659,7 @@ async function execute(
     );
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
     if (exitCode !== 0) fail(409, "TRANSLATION_PIPELINE_BLOCKED");
-    const pipelineReport = await readBoundedPipelineFile(
-      pipeline,
-      "repository-pipeline-report.json",
-      64 * 1024 * 1024,
-      "TRANSLATION_PIPELINE_EVIDENCE_INVALID",
-    );
-    let report: Record<string, unknown>;
-    try {
-      report = JSON.parse(pipelineReport.content.toString("utf8")) as Record<string, unknown>;
-    } catch {
-      fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    }
-    const status = String(report.status);
-    const workUnitCount = Number(report.work_unit_count);
-    const conversion = validateTranslationConversion(report.functional_conversion, workUnitCount);
-    const artifact = report.artifact as Record<string, unknown> | null | undefined;
-    if (
-      report.schema_version !== "1.0.0"
-      || report.kind !== "elmos.repository-pipeline-report"
-      || !["COMPLETE", "PARTIAL", "BLOCKED"].includes(status)
-      || report.repository_ref !== job.repositoryRef
-      || report.source_language !== job.sourceLanguage
-      || report.target_language !== job.targetLanguage
-      || report.route_id !== `${job.sourceLanguage}-to-${job.targetLanguage}`
-      || report.profile !== "typed-pure-function-v1"
-      || !digestPattern.test(String(report.snapshot_sha256))
-      || report.snapshot_sha256 !== preflight.snapshotSha256
-      || !digestPattern.test(String(report.cases_manifest_sha256))
-      || report.cases_manifest_sha256 !== conversion.summary.casesManifestSha256
-      || report.independent_verification_status !== "NOT_RUN"
-      || report.external_verification_status !== "NOT_RUN"
-      || report.certification_status !== "NOT_CERTIFIED"
-    ) {
-      fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    }
-
-    const batchStatusCounts = report.status_counts;
-    const readyCount = Number(report.ready_count);
-    const includedUnitCount = Number(report.included_unit_count);
-    const buildRaw = report.build_verification;
-    if (
-      !batchStatusCounts || typeof batchStatusCounts !== "object" || Array.isArray(batchStatusCounts)
-      || !Number.isSafeInteger(readyCount) || readyCount < 0 || readyCount > workUnitCount
-      || !Number.isSafeInteger(includedUnitCount) || includedUnitCount < 0 || includedUnitCount > workUnitCount
-      || !buildRaw || typeof buildRaw !== "object" || Array.isArray(buildRaw)
-    ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    const batchCounts = batchStatusCounts as Record<string, unknown>;
-    if (
-      Object.keys(batchCounts).length < 1
-      || Object.keys(batchCounts).length > 16
-      || Object.entries(batchCounts).some(([key, value]) => (
-        !/^[A-Z][A-Z0-9_]{1,99}$/.test(key)
-        || !Number.isSafeInteger(value)
-        || Number(value) < 0
-      ))
-      || Object.values(batchCounts).reduce<number>((total, value) => total + Number(value), 0) !== workUnitCount
-    ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    const build = buildRaw as Record<string, unknown>;
-    // Narrowed here, checked on the very next line.  The engine reports NOT_RUN
-    // for a missing exact toolchain and FAILED for a reportable build failure;
-    // anything outside that set is rejected before the job is constructed.
-    const buildStatus = String(build.status) as NonNullable<
-      TranslationJob["buildVerification"]
-    >["status"];
-    // Resolved once, before the guard chain: calling a type predicate inside
-    // `||` would narrow `build` for every clause after it.
-    const verifiedBuild = validBuildVerification(build) ? build : null;
-    if (
-      // The pipeline writes `commands: [{command, stdout, stderr}]` and
-      // `toolchain: {language, version}`.  The other side of this merge read a
-      // singular `command: string[]` and a string `toolchain`, a shape the
-      // engine has never emitted -- so every real report was rejected here as
-      // TRANSLATION_PIPELINE_EVIDENCE_INVALID.  `validBuildVerification` above
-      // is the reader for the shape that is actually written.
-      !["PASSED", "FAILED", "NOT_RUN"].includes(buildStatus)
-      || !Array.isArray(build.commands)
-      || build.commands.length > 100
-      || !isRecord(build.toolchain)
-      || (buildStatus === "PASSED" && verifiedBuild === null)
-      || (buildStatus !== "PASSED" && build.commands.length > 0)
-      || (build.reason !== null && (
-        typeof build.reason !== "string" || build.reason.length > 4_000
-      ))
-    ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    const buildReason = typeof build.reason === "string" ? build.reason : null;
-    const functionalStatus: "COMPLETE" | "PARTIAL" | "BLOCKED" =
-      conversion.summary.numerator === 0
-        ? "BLOCKED"
-        : conversion.summary.denominatorComplete
-          && conversion.summary.numerator === conversion.summary.denominator
-          && buildStatus === "PASSED"
-          ? "COMPLETE"
-          : "PARTIAL";
-    const packagingRaw = report.artifact_packaging;
-    if (!packagingRaw || typeof packagingRaw !== "object" || Array.isArray(packagingRaw)) {
-      fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    }
-    const packaging = packagingRaw as Record<string, unknown>;
-    const packagingStatus = String(packaging.status);
-    const packagingReasonCode = packaging.reason_code;
-    const packagingReason = packaging.reason;
-    const packagingLimitsValid =
-      packaging.max_uncompressed_bytes === MAX_TRANSLATION_ARTIFACT_BYTES
-      && packaging.max_compressed_bytes === MAX_TRANSLATION_ARTIFACT_BYTES;
-    const packagingPassed = packagingStatus === "PASSED"
-      && packagingReasonCode === null
-      && packagingReason === null
-      && conversion.summary.codeArtifactReady
-      && artifact !== null
-      && artifact !== undefined
-      && status === functionalStatus
-      && functionalStatus !== "BLOCKED";
-    const packagingNotRun = packagingStatus === "NOT_RUN"
-      && packagingReasonCode === "FUNCTIONAL_CONVERSION_NOT_CODE_READY"
-      && typeof packagingReason === "string"
-      && packagingReason.length >= 1
-      && packagingReason.length <= 2_000
-      && !conversion.summary.codeArtifactReady
-      && (artifact === null || artifact === undefined)
-      && status === functionalStatus;
-    const packagingCapacityFailed = packagingStatus === "FAILED"
-      && [
-        "PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED",
-        "PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
-      ].includes(String(packagingReasonCode))
-      && typeof packagingReason === "string"
-      && packagingReason.length >= 1
-      && packagingReason.length <= 2_000
-      && !conversion.summary.codeArtifactReady
-      && (artifact === null || artifact === undefined)
-      && status === "BLOCKED"
-      && functionalStatus !== "BLOCKED";
-    if (
-      !packagingLimitsValid
-      || Object.keys(packaging).some((key) => ![
-        "status",
-        "reason_code",
-        "reason",
-        "max_uncompressed_bytes",
-        "max_compressed_bytes",
-      ].includes(key))
-      || !(packagingPassed || packagingNotRun || packagingCapacityFailed)
-    ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    // A build that did not verify carries no verification to attach; the field
-    // is optional on TranslationJob precisely so NOT_RUN and FAILED can say so
-    // by omission rather than by a half-populated record.
-    const buildVerification: TranslationJob["buildVerification"] = verifiedBuild ?? undefined;
-
-    const [verifiedJsonReport, verifiedMarkdownReport] = await Promise.all([
-      readVerifiedPipelineFile(
-        pipeline,
-        conversion.jsonReport,
-        "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-      ),
-      readVerifiedPipelineFile(
-        pipeline,
-        conversion.markdownReport,
-        "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-      ),
-    ]);
-    let conversionDocument: unknown;
-    try {
-      conversionDocument = JSON.parse(verifiedJsonReport.content.toString("utf8"));
-    } catch {
-      fail(409, "TRANSLATION_REPORT_DOCUMENT_INVALID");
-    }
-    const conversionContext = {
-      pipelineStatus: functionalStatus,
-      repositoryRef: job.repositoryRef,
-      snapshotSha256: String(report.snapshot_sha256),
-      routeId: `${job.sourceLanguage}-to-${job.targetLanguage}`,
-      sourceLanguage: job.sourceLanguage,
-      targetLanguage: job.targetLanguage,
-      profile: String(report.profile),
-      buildStatus,
-      buildReason,
-      markdownSha256: conversion.markdownReport.sha256,
-      casesManifestSha256: conversion.summary.casesManifestSha256,
-    };
-    if (conversion.summary.storageMode === "SINGLE") {
-      validateTranslationConversionDocument(
-        conversionDocument,
-        conversionContext,
-        conversion.summary,
-      );
-      validateTranslationConversionMarkdown(
-        conversionDocument,
-        verifiedMarkdownReport.content,
-      );
-    } else {
-      const shardDescriptors = validateTranslationConversionIndex(
-        conversionDocument,
-        conversionContext,
-        conversion.summary,
-      );
-      validateTranslationConversionMarkdown(
-        conversionDocument,
-        verifiedMarkdownReport.content,
-      );
-      const shardOutputs = await Promise.all(shardDescriptors.map(async (descriptor) => {
-        const [jsonFile, markdownFile] = await Promise.all([
-          readVerifiedPipelineFile(
-            pipeline,
-            descriptor.json,
-            "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-          ),
-          readVerifiedPipelineFile(
-            pipeline,
-            descriptor.markdown,
-            "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-          ),
-        ]);
-        try {
-          return {
-            document: JSON.parse(jsonFile.content.toString("utf8")) as unknown,
-            markdown: markdownFile.content,
-          };
-        } catch {
-          fail(409, "TRANSLATION_REPORT_DOCUMENT_INVALID");
-        }
-      }));
-      shardOutputs.forEach((output, offset) => {
-        const descriptor = shardDescriptors[offset];
-        validateTranslationConversionMarkdown(
-          output.document,
-          output.markdown,
-          `分片 ${descriptor.sequence}/${conversion.summary.shardCount}；本分片 ${descriptor.functionCount} 个功能；总指标来自全部分片`,
-        );
-      });
-      validateTranslationConversionShardDocuments(
-        conversionDocument,
-        shardOutputs.map((output) => output.document),
-        conversionContext,
-        conversion.summary,
-        shardDescriptors,
-      );
-      const expectedBundleFiles = translationConversionBundleFiles(
-        conversion,
-        shardDescriptors,
-      );
-      const manifestFile = await readBoundedPipelineFile(
-        pipeline,
-        BUNDLE_MANIFEST_PATH,
-        1024 * 1024,
-        "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-      );
-      const manifestDescriptor = validateTranslationConversionBundleManifest(
-        manifestFile.content,
-        conversion.summary.reportId,
-        expectedBundleFiles,
-      );
-      if (
-        manifestDescriptor.bytes !== manifestFile.size
-        || manifestDescriptor.sha256 !== manifestFile.sha256
-        || !conversion.reportBundle
-      ) fail(409, "TRANSLATION_REPORT_INTEGRITY_MISMATCH");
-      const bundleFile = await verifiedOpenPipelineFile(
-        pipeline,
-        conversion.reportBundle,
-        "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
-      );
-      if (bundleFile.size > MAX_FUNCTIONAL_REPORT_BUNDLE_BYTES) {
-        await bundleFile.handle.close().catch(() => undefined);
-        fail(409, "TRANSLATION_REPORT_INTEGRITY_MISMATCH");
-      }
-      try {
-        await validateTranslationConversionBundleArchive(
-          bundleFile.handle,
-          conversion.reportBundle,
-          expectedBundleFiles,
-          manifestDescriptor,
-        );
-      } finally {
-        await bundleFile.handle.close().catch(() => undefined);
-      }
-    }
-
-    let verifiedArtifact: { path: string; size: number; sha256: string } | undefined;
-    if (conversion.summary.codeArtifactReady) {
-      if (
-        !artifact
-        || artifact.path !== "repository-migration-artifact.zip"
-        || !Number.isSafeInteger(artifact.bytes)
-        || Number(artifact.bytes) < 1
-        || Number(artifact.bytes) > MAX_TRANSLATION_ARTIFACT_BYTES
-        || !digestPattern.test(String(artifact.sha256))
-      ) fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-      if (functionalStatus === "BLOCKED") {
-        fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-      }
-      const artifactDescriptor = {
-        path: "repository-migration-artifact.zip" as const,
-        bytes: Number(artifact.bytes),
-        sha256: String(artifact.sha256),
-      };
-      const artifactFile = await verifiedOpenPipelineFile(
-        pipeline,
-        artifactDescriptor,
-        "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
-      );
-      try {
-        await validateTranslationCodeArtifactArchive(
-          artifactFile.handle,
-          artifactDescriptor,
-          {
-            pipelineStatus: functionalStatus,
-            repositoryRef: job.repositoryRef,
-            snapshotSha256: String(report.snapshot_sha256),
-            routeId: `${job.sourceLanguage}-to-${job.targetLanguage}`,
-            profile: String(report.profile),
-            summary: conversion.summary,
-          },
-        );
-        verifiedArtifact = {
-          path: artifactFile.path,
-          size: artifactFile.size,
-          sha256: artifactFile.sha256,
-        };
-      } catch {
-        fail(409, "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
-      } finally {
-        await artifactFile.handle.close().catch(() => undefined);
-      }
-    } else if (artifact !== null && artifact !== undefined) {
-      fail(409, "TRANSLATION_PIPELINE_EVIDENCE_INVALID");
-    }
+    const { report, status, conversion, verifiedArtifact, verifiedManifestSha256, semanticCoverage, behaviorCoverage, readyCount, workUnitCount, includedUnitCount, batchCounts, buildVerification, packagingCapacityFailed, packagingReasonCode } = await validateCompletedTranslationPipeline(pipeline, job, preflight);
 
     if (!await durableExecutionIsCurrent(runner, context, job.id, executionId)) return;
 
@@ -2631,6 +2673,10 @@ async function execute(
     if (verifiedArtifact) {
       job.artifactSha256 = verifiedArtifact.sha256;
       job.artifactSize = verifiedArtifact.size;
+      job.artifactManifestSha256 = verifiedManifestSha256;
+      job.semanticCoverage = semanticCoverage;
+      job.behaviorCoverage = behaviorCoverage;
+      job.repositoryComplete = report.repository_complete === true;
     } else {
       delete job.artifactSha256;
       delete job.artifactSize;
@@ -3104,6 +3150,12 @@ export async function cancelTranslationJob(
   return job;
 }
 
+const artifactCapacityState = globalThis as typeof globalThis & {
+  __elmosTranslationArtifactCapacity?: LocalProcessCapacity;
+};
+const artifactCapacity = artifactCapacityState.__elmosTranslationArtifactCapacity
+  ??= new LocalProcessCapacity();
+
 export async function translationArtifact(
   context: AuthorizedContext,
   jobId: string,
@@ -3132,11 +3184,35 @@ export async function translationArtifact(
     bytes: job.artifactSize,
     sha256: job.artifactSha256,
   };
-  const artifact = await verifiedOpenPipelineFile(
-    confined(jobRoot(runner, context, jobId), "pipeline"),
-    descriptor,
-    "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
-  );
+  let admission: ReturnType<typeof artifactCapacity.acquire>;
+  try {
+    admission = artifactCapacity.acquire(context.tenantId, 4, 2);
+  } catch {
+    fail(429, "TRANSLATION_ARTIFACT_CAPACITY_REACHED");
+  }
+  // The archive validator hashes the same opened handle while inspecting every
+  // entry. Avoid a redundant full read before that complete verification pass.
+  let artifact: OpenedPipelineFile;
+  try {
+    artifact = await boundedOpenPipelineFile(
+      confined(jobRoot(runner, context, jobId), "pipeline"),
+      descriptor.path,
+      descriptor.bytes,
+      "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
+      false,
+    );
+  } catch (error) {
+    admission.release();
+    throw error;
+  }
+  // A slow reader retains its slot until the same verified handle closes.
+  // Node FileHandle emits close at runtime; older installed Node declarations
+  // omit its EventEmitter methods. Check this explicit host ABI fail-closed.
+  const lifecycle = artifact.handle as FileHandle & { once?: (event:"close", listener:()=>void)=>unknown };
+  if (typeof lifecycle.once !== "function") {
+    await artifact.handle.close(); admission.release(); fail(503,"ARTIFACT_HANDLE_LIFECYCLE_UNAVAILABLE");
+  }
+  lifecycle.once("close", admission.release);
   try {
     await validateTranslationCodeArtifactArchive(
       artifact.handle,
@@ -3148,8 +3224,13 @@ export async function translationArtifact(
         routeId: `${job.sourceLanguage}-to-${job.targetLanguage}`,
         profile: "typed-pure-function-v1",
         summary: job.conversionSummary,
+        manifestSha256:job.artifactManifestSha256,
       },
     );
+    if (!sameOpenFileStats(artifact.stats, await artifact.handle.stat())) {
+      fail(409, "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
+    }
+    artifact.sha256 = descriptor.sha256;
     return artifact;
   } catch {
     await artifact.handle.close().catch(() => undefined);

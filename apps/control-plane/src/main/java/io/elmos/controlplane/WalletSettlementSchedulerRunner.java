@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
  * <p>No enable flag of its own, on purpose. The flag that matters lives in the
  * database ({@code wallet_enforcement_settings}); while charging is off the
  * outbox stays empty, and a scheduler polling an empty table is cheap. A second
- * flag would mostly be a way for charging to be on while nothing resolves it --
- * holds would then sit until their TTL and quietly release, which looks like the
- * feature working and is not.
+ * flag would mostly be a way for charging to be on while nothing resolves it.
+ * Job-backed holds deliberately remain reserved until the outbox reconciles;
+ * they do not quietly become free work through the generic orphan-hold TTL.
  *
  * <p>Failures are logged, never rethrown: a thrown exception here stops the
  * fixed-delay schedule for the life of the process, so one poison row would end
@@ -64,8 +64,8 @@ final class WalletSettlementSchedulerRunner {
             }
         } catch (RuntimeException failure) {
             // Swallowed on purpose. See the class comment: rethrowing kills the
-            // schedule, and money would then sit held until TTL with no error
-            // after this one line.
+            // schedule. The hold remains fail-closed until a later pass
+            // reconciles it, so this error must stay visible to operators.
             LOG.error("Wallet settlement pass aborted; retrying on the next tick", failure);
         }
     }

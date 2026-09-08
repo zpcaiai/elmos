@@ -679,6 +679,7 @@ def test_swift_build_ps_process_list_is_bounded_and_exact(
         return subprocess.CompletedProcess(command, 0, stdout, b"")
 
     monkeypatch.setattr(native.subprocess, "run", run)
+    monkeypatch.setattr(native, "run_bounded", run)
     monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_IDS", maximum_ids)
     monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES", maximum_bytes)
 
@@ -795,7 +796,7 @@ child = subprocess.Popen(
     [sys.executable, "-c", child_script, str(child_record)],
     stdin=subprocess.DEVNULL,
 )
-deadline = time.monotonic() + 5
+deadline = time.monotonic() + 30
 while not child_record.exists():
     if time.monotonic() >= deadline:
         raise RuntimeError("child did not become ready")
@@ -818,6 +819,35 @@ while True:
     monkeypatch.setattr(native, "_SWIFT_BUILD_REAP_RESERVE_SECONDS", 0.5)
     monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.01)
     monkeypatch.setattr(native, "_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS", 0.3)
+    monkeypatch.delenv("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", raising=False)
+    real_bounded_communicate = native.bounded_communicate
+
+    def communicate_after_fixture_ready(
+        process: subprocess.Popen[str],
+        *,
+        input: str | None,
+        timeout: float,
+        reap: bool,
+        leader_exit_poll_interval: float | None,
+    ) -> tuple[str, str]:
+        # Establish the moved process group before starting the unchanged
+        # transport timeout. On a heavily loaded host, Python startup itself
+        # may exceed that timeout and never exercise the cleanup under test.
+        # This hook is inside the build step's cleanup-protected try block.
+        readiness_deadline = time.monotonic() + 45
+        while not parent_record.exists():
+            if time.monotonic() >= readiness_deadline:
+                raise AssertionError("Swift cleanup fixture did not become ready")
+            time.sleep(0.01)
+        return real_bounded_communicate(
+            process,
+            input=input,
+            timeout=timeout,
+            reap=reap,
+            leader_exit_poll_interval=leader_exit_poll_interval,
+        )
+
+    monkeypatch.setattr(native, "bounded_communicate", communicate_after_fixture_ready)
     real_session_members = native._swift_build_session_members
     if enumeration_mode == "primary-fallback":
         real_libproc_enumeration = native._swift_build_process_ids_from_libproc
@@ -986,25 +1016,23 @@ def test_swift_build_step_allows_bounded_pipe_drain_after_successful_leader_exit
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    communication_attempts = 0
+    communication_calls: list[dict[str, object]] = []
     cleaned: list[int] = []
 
     class CompletedLeader:
         pid = 41_099
         returncode = 0
 
-        def communicate(self, **_kwargs: object) -> tuple[str, str]:
-            nonlocal communication_attempts
-            communication_attempts += 1
-            if communication_attempts == 1:
-                raise subprocess.TimeoutExpired([sys.executable], 1)
-            return "stdout", "stderr"
-
-        def poll(self) -> int:
-            return self.returncode
-
     process = CompletedLeader()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        native,
+        "bounded_communicate",
+        lambda candidate, **kwargs: (
+            communication_calls.append({"process": candidate, **kwargs})
+            or ("stdout", "stderr")
+        ),
+    )
     monkeypatch.setattr(
         native,
         "_wait_for_swift_build_session_exit",
@@ -1027,7 +1055,15 @@ def test_swift_build_step_allows_bounded_pipe_drain_after_successful_leader_exit
     assert completed.returncode == 0
     assert completed.stdout == "stdout"
     assert completed.stderr == "stderr"
-    assert communication_attempts == 2
+    assert communication_calls == [
+        {
+            "process": process,
+            "input": None,
+            "timeout": 30,
+            "reap": True,
+            "leader_exit_poll_interval": native._SWIFT_BUILD_COMMUNICATION_POLL_SECONDS,
+        }
+    ]
     assert cleaned == []
 
 
@@ -1050,6 +1086,7 @@ def test_swift_build_step_preserves_keyboard_interrupt(
 
     process = InterruptingProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
     monkeypatch.setattr(
         native,
         "_attempt_swift_build_session_cleanup",
@@ -1101,6 +1138,7 @@ def test_swift_build_step_preserves_system_exit(
 
     process = InterruptingProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
 
     def cleanup(candidate: InterruptingProcess) -> tuple[BaseException | None, tuple[str, ...]]:
         cleaned.append(candidate.pid)
@@ -1139,6 +1177,7 @@ def test_swift_build_step_fails_closed_on_normal_completion_enumeration_error(
 
     process = CompletedProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
     monkeypatch.setattr(
         native,
         "_wait_for_swift_build_session_exit",

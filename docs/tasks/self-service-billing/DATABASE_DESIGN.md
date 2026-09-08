@@ -3,10 +3,13 @@
 ## 权威版本
 
 - 数据库：PostgreSQL 17.5
-- Flyway：V1–V86；基础计费为 `V49__self_service_billing_and_usage.sql`，
+- Flyway：V1–V95；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V83__commercial_credit_and_one_time_orders.sql`，
-  支付生命周期加固为 V84–V85，当前订阅目录快照升级为 V86
-- 目录版本：`2026-09-08.1`
+  ELMPay 摘要目录与支付生命周期加固为 V84–V85，当前订阅目录快照升级为 V86；
+  V94–V95 前向绑定托管计费/对象回收，并修复目录触发器的 digest schema 与
+  provider 不变量
+- 目录版本：`2026-09-08.1`；V86 保存权威三档订阅快照并重绑定试用/账期函数，
+  V49 与旧目录版本保持不可变
 - 数量：`numeric(30,0)`，只接受非负整数
 - 金额：人民币分，`numeric(19,0)`；提供方成本使用 `numeric(30,6)` 并带显式币种
 
@@ -78,7 +81,7 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 
 ## 已验证与未验证
 
-- 空数据库 V1–V83 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
+- 空数据库 V1–V95 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
   Credit/一次性权益和对账结案：
   由本地 PostgreSQL 17 集成测试验证。
 - 生产项目/分支/数据库上的表、策略与 Flyway 历史：`NOT_RUN`。

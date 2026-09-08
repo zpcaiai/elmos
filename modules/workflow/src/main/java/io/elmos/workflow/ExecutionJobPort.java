@@ -148,6 +148,11 @@ public interface ExecutionJobPort {
 
     Optional<JobView> find(String organizationId, String jobId);
 
+    /** Exact tenant-owned dispatch subject; never include this in generic list responses. */
+    default Optional<Map<String, Object>> requestPayload(String organizationId, String jobId) {
+        throw new ExecutionStateException("ELMOS_EXECUTION_PAYLOAD_LOOKUP_UNAVAILABLE");
+    }
+
     /**
      * Authoritative tenant-scoped lookup used after an uncertain enqueue acknowledgement.
      * Implementations must return the persisted request digest so a reconciler can distinguish

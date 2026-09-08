@@ -28,10 +28,16 @@ import json
 import re
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
 from .models import Language, RouteError, SemanticIR
+from .process_io import (
+    MAX_ALLOWED_PROCESS_STREAM_BYTES,
+    ProcessOutputLimitError,
+    run_bounded,
+)
 from .toolchains import sanitized_subprocess_env
 
 #: Nodes that wrap a value without changing it in the certified subset.
@@ -71,8 +77,18 @@ _NON_CANONICAL_INTEGER_TYPES = frozenset(
 )
 _STRING_TYPES = frozenset({"std::string", "string", "NSString *", "NSString"})
 _BOOLEAN_TYPES = frozenset({"bool", "BOOL"})
+_SIMPLE_RECORD_TYPE = re.compile(r"^(?:struct\s+)?([A-Za-z_][A-Za-z0-9_]*)$")
+_MAX_REFERENCED_RECORD_TYPES = 16
 
 _OPERATOR_METHOD = re.compile(r"^operator(==|!=|\+|-|\*|/|%|<=|>=|<|>)$")
+_LATER_HEADER_DIRECTIVE = re.compile(
+    rb"^[ \t]*#[ \t]*(?:include|import)\b",
+    re.MULTILINE,
+)
+_TRUSTED_EMITTER_PRELUDES: dict[Language, bytes] = {
+    "cpp": b"#include <cstdint>\n#include <stdexcept>\n#include <string>\n\n",
+    "objc": b"#import <Foundation/Foundation.h>\n\n",
+}
 
 _EMITTED_HELPERS: dict[Language, dict[str, tuple[str, int]]] = {
     "cpp": {
@@ -137,7 +153,7 @@ def _sdk_path(explicit: str | None) -> str:
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
-            completed = subprocess.run(
+            completed = run_bounded(
                 [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
                 check=False,
                 capture_output=True,
@@ -160,51 +176,71 @@ def _sdk_path(explicit: str | None) -> str:
     return str(path)
 
 
-def _run_clang(
-    executable: str,
+def _system_header_prelude(
     source: Path,
     language: Language,
-    sdk_path: str | None,
-    timeout: int = 600,
-) -> dict[str, Any]:
-    mode = "c++" if language == "cpp" else "objective-c"
-    standard = "-std=c++20" if language == "cpp" else "-std=c17"
+) -> tuple[bytes, bytes, bytes] | None:
+    """Split an exact emitter-owned system prelude without changing offsets.
+
+    Clang's unfiltered JSON AST eagerly serializes every declaration from C++
+    and Foundation headers. New Xcode SDKs can turn a two-kilobyte module into
+    hundreds of megabytes of JSON, which must not bypass the process output
+    budget. A compiler PCH keeps those already type-checked declarations lazy.
+
+    This optimization is deliberately restricted to the two canonical byte
+    sequences emitted by this engine. Arbitrary angle headers, quoted,
+    computed, conditional, continued, interleaved, or later headers retain the
+    ordinary fail-closed analyzer path and cannot drive PCH artifact creation.
+    """
+
+    source_bytes = source.read_bytes()
+    trusted_prelude = _TRUSTED_EMITTER_PRELUDES.get(language)
+    if trusted_prelude is None or not source_bytes.startswith(trusted_prelude):
+        return None
+    prelude_end = len(trusted_prelude)
+    if _LATER_HEADER_DIRECTIVE.search(source_bytes[prelude_end:]):
+        return None
+    masked = bytearray(source_bytes)
+    for index in range(prelude_end):
+        if masked[index] not in (ord("\r"), ord("\n")):
+            masked[index] = ord(" ")
+    return trusted_prelude, bytes(masked), source_bytes
+
+
+def _clang_driver_prefix(
+    executable: str,
+    language: Language,
+    sdk_path: str,
+    *,
+    header: bool,
+) -> list[str]:
+    mode = (
+        "c++-header"
+        if header and language == "cpp"
+        else "objective-c-header"
+        if header
+        else "c++"
+        if language == "cpp"
+        else "objective-c"
+    )
     command = [
         executable,
         "-x",
         mode,
-        standard,
-        "-isysroot",
-        _sdk_path(sdk_path),
-        "-Xclang",
-        "-ast-dump=json",
-        "-fsyntax-only",
-        str(source),
+        "-std=c++20" if language == "cpp" else "-std=c17",
     ]
     if language == "objc":
-        command[4:4] = ["-fobjc-arc", "-framework", "Foundation"]
-    with tempfile.TemporaryDirectory(prefix="elmos-clang-env-") as temporary:
-        root = Path(temporary)
-        home = root / "home"
-        scratch = root / "tmp"
-        home.mkdir(mode=0o700)
-        scratch.mkdir(mode=0o700)
-        try:
-            completed = subprocess.run(
-                command,
-                cwd=source.parent,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                env=sanitized_subprocess_env(
-                    home=home,
-                    temp_dir=scratch,
-                    executable_dirs=(Path(executable).resolve().parent,),
-                ),
-            )
-        except subprocess.TimeoutExpired as error:
-            raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
+        command.append("-fobjc-arc")
+        if not header:
+            command.extend(["-framework", "Foundation"])
+    command.extend(["-isysroot", sdk_path])
+    return command
+
+
+def _require_clang_success(
+    completed: subprocess.CompletedProcess[str],
+    executable: str,
+) -> None:
     errors = [
         line
         for line in completed.stderr.splitlines()
@@ -212,11 +248,240 @@ def _run_clang(
     ]
     if errors:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:" + "; ".join(errors[:5])[:2_000])
-    if completed.returncode != 0 or not completed.stdout.strip():
+    if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
         raise RouteError(f"NATIVE_ANALYZER_FAILED:{executable}:{detail}")
+
+
+def _stable_clang_detail(
+    completed: subprocess.CompletedProcess[str],
+    replacements: tuple[tuple[str, str], ...],
+) -> str:
+    detail = (completed.stderr or completed.stdout).strip()
+    for transient, stable in replacements:
+        spellings = {transient, str(Path(transient).resolve())}
+        if transient.startswith("/private/"):
+            spellings.add(transient.removeprefix("/private"))
+        elif transient.startswith("/var/"):
+            spellings.add("/private" + transient)
+        for spelling in sorted(spellings, key=len, reverse=True):
+            detail = detail.replace(spelling, stable)
+    return detail[-2_000:]
+
+
+def _require_pch_success(
+    completed: subprocess.CompletedProcess[str],
+    executable: str,
+    replacements: tuple[tuple[str, str], ...],
+) -> None:
+    if completed.returncode != 0:
+        detail = _stable_clang_detail(completed, replacements)
+        raise RouteError(f"NATIVE_ANALYZER_PCH_FAILED:{executable}:{detail}")
+
+
+def _remaining_clang_timeout(deadline: float, executable: str) -> float:
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}")
+    return remaining
+
+
+def _run_clang(
+    executable: str,
+    source: Path,
+    language: Language,
+    sdk_path: str | None,
+    timeout: float = 600,
+    *,
+    declaration_filter: str | None = None,
+    precompile_system_prelude: bool = False,
+) -> dict[str, Any]:
+    resolved_sdk_path = _sdk_path(sdk_path)
+    prelude = (
+        _system_header_prelude(source, language)
+        if precompile_system_prelude
+        else None
+    )
+    deadline = time.monotonic() + timeout
+    source_snapshot: bytes | None = None
+    pch_replacements: tuple[tuple[str, str], ...] = ()
+    with tempfile.TemporaryDirectory(prefix="elmos-clang-env-") as temporary:
+        root = Path(temporary)
+        home = root / "home"
+        scratch = root / "tmp"
+        home.mkdir(mode=0o700)
+        scratch.mkdir(mode=0o700)
+        environment = sanitized_subprocess_env(
+            home=home,
+            temp_dir=scratch,
+            executable_dirs=(Path(executable).resolve().parent,),
+        )
+        analysis_source = source
+        command = _clang_driver_prefix(
+            executable,
+            language,
+            resolved_sdk_path,
+            header=False,
+        )
+        if prelude is not None:
+            prelude_bytes, masked_source_bytes, source_snapshot = prelude
+            pch_path = root / "prelude.pch"
+            masked_root = root / "source"
+            prelude_root = root / "prelude-source"
+            masked_root.mkdir(mode=0o700)
+            prelude_root.mkdir(mode=0o700)
+            analysis_source = masked_root / source.name
+            prelude_source = prelude_root / source.name
+            stable_source = str(source.resolve())
+            pch_replacements = (
+                (str(prelude_source), stable_source),
+                (str(analysis_source), stable_source),
+                (str(pch_path), "<ELMOS_PCH>"),
+                (str(root), "<ELMOS_CLANG_WORKDIR>"),
+            )
+            source_map = f"-ffile-prefix-map={masked_root.resolve()}={source.parent.resolve()}"
+            prelude_source_map = (
+                f"-ffile-prefix-map={prelude_root.resolve()}={source.parent.resolve()}"
+            )
+            pch_command = _clang_driver_prefix(
+                executable,
+                language,
+                resolved_sdk_path,
+                header=True,
+            )
+            pch_command.extend(
+                [
+                    prelude_source_map,
+                    "-Xclang",
+                    "-main-file-name",
+                    "-Xclang",
+                    source.name,
+                    str(prelude_source),
+                    "-o",
+                    "-",
+                ]
+            )
+            validation_command = _clang_driver_prefix(
+                executable,
+                language,
+                resolved_sdk_path,
+                header=False,
+            )
+            validation_command.extend(["-fsyntax-only", str(source)])
+            try:
+                validation_completed = run_bounded(
+                    validation_command,
+                    cwd=source.parent,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=_remaining_clang_timeout(deadline, executable),
+                    max_stream_bytes=MAX_ALLOWED_PROCESS_STREAM_BYTES,
+                    env=environment,
+                )
+            except ProcessOutputLimitError as error:
+                raise RouteError(f"NATIVE_ANALYZER_OUTPUT_LIMIT:{executable}") from error
+            except subprocess.TimeoutExpired as error:
+                raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
+            _require_clang_success(validation_completed, executable)
+            try:
+                prelude_source.write_bytes(prelude_bytes)
+                with pch_path.open("xb") as pch_output:
+                    pch_completed = run_bounded(
+                        pch_command,
+                        cwd=source.parent,
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=_remaining_clang_timeout(deadline, executable),
+                        max_stream_bytes=MAX_ALLOWED_PROCESS_STREAM_BYTES,
+                        env=environment,
+                        stdout_log=pch_output,
+                        retain_stdout=False,
+                    )
+            except ProcessOutputLimitError as error:
+                raise RouteError(f"NATIVE_ANALYZER_OUTPUT_LIMIT:{executable}") from error
+            except subprocess.TimeoutExpired as error:
+                raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
+            except OSError as error:
+                raise RouteError(f"NATIVE_ANALYZER_PCH_IO:{executable}") from error
+            _require_pch_success(pch_completed, executable, pch_replacements)
+            try:
+                pch_status = pch_path.stat()
+            except OSError as error:
+                raise RouteError(f"NATIVE_ANALYZER_PCH_IO:{executable}") from error
+            if (
+                pch_path.is_symlink()
+                or not pch_path.is_file()
+                or not 0 < pch_status.st_size <= MAX_ALLOWED_PROCESS_STREAM_BYTES
+            ):
+                raise RouteError(f"NATIVE_ANALYZER_PCH_INVALID:{executable}")
+            if source.read_bytes() != source_snapshot:
+                raise RouteError("SOURCE_CHANGED_DURING_ANALYSIS")
+            try:
+                analysis_source.write_bytes(masked_source_bytes)
+            except OSError as error:
+                raise RouteError(f"NATIVE_ANALYZER_PCH_IO:{executable}") from error
+            command.extend(
+                [
+                    "-include-pch",
+                    str(pch_path),
+                    source_map,
+                ]
+            )
+        command.extend(["-Xclang", "-ast-dump=json"])
+        if declaration_filter is not None:
+            # clang still parses and type-checks the complete translation unit, but
+            # emits only declaration subtrees whose qualified name contains this
+            # host-selected function identifier. This prevents SDK/header ASTs from
+            # dominating the bounded subprocess channel.
+            command.extend(["-Xclang", "-ast-dump-filter", "-Xclang", declaration_filter])
+        command.extend(["-fsyntax-only", str(analysis_source)])
+        try:
+            completed = run_bounded(
+                command,
+                cwd=source.parent,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=_remaining_clang_timeout(deadline, executable),
+                max_stream_bytes=MAX_ALLOWED_PROCESS_STREAM_BYTES,
+                env=environment,
+            )
+        except ProcessOutputLimitError as error:
+            raise RouteError(f"NATIVE_ANALYZER_OUTPUT_LIMIT:{executable}") from error
+        except subprocess.TimeoutExpired as error:
+            raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
+        if source_snapshot is not None and source.read_bytes() != source_snapshot:
+            raise RouteError("SOURCE_CHANGED_DURING_ANALYSIS")
+    if prelude is None:
+        _require_clang_success(completed, executable)
+    else:
+        _require_pch_success(completed, executable, pch_replacements)
+    if not completed.stdout.strip():
+        if declaration_filter is not None:
+            return {"kind": "TranslationUnitDecl", "inner": []}
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{executable}:")
     try:
-        value = json.loads(completed.stdout)
+        if declaration_filter is None:
+            value = json.loads(completed.stdout)
+        else:
+            # ast-dump-filter can match more than one declaration. clang emits
+            # those JSON objects consecutively, so parse the exact sequence and
+            # restore the TranslationUnit shape consumed below.
+            decoder = json.JSONDecoder()
+            offset = 0
+            declarations: list[dict[str, Any]] = []
+            while offset < len(completed.stdout):
+                while offset < len(completed.stdout) and completed.stdout[offset].isspace():
+                    offset += 1
+                if offset == len(completed.stdout):
+                    break
+                declaration, offset = decoder.raw_decode(completed.stdout, offset)
+                if not isinstance(declaration, dict):
+                    raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
+                declarations.append(declaration)
+            value = {"kind": "TranslationUnitDecl", "inner": declarations}
     except json.JSONDecodeError as error:
         raise RouteError(f"NATIVE_ANALYZER_INVALID_JSON:{executable}") from error
     if not isinstance(value, dict):
@@ -997,6 +1262,94 @@ def _function(
     )
 
 
+def _is_unqualified_cpp_function(node: dict[str, Any]) -> bool:
+    """Accept only a plain global C++ function from a filtered Clang root.
+
+    ``-ast-dump-filter`` emits matching declarations without their lexical
+    parents.  The compiler-owned Itanium symbol therefore remains the only
+    scope identity in the JSON root: plain global names start with a decimal
+    source-name length (or ``L`` plus that length for file-static functions),
+    while namespace/anonymous-namespace names use the nested-name ``N`` form.
+    Missing/non-Itanium names include C-linkage declarations and fail closed;
+    the exact route toolchains use this ABI on both Darwin and Linux.
+    """
+
+    # Hidden friends have global Itanium linkage but are not ordinary
+    # top-level declarations. Clang preserves their lexical owner explicitly
+    # even when the filtered dump omits the record node.
+    if node.get("parentDeclContextId") is not None:
+        return False
+    mangled = node.get("mangledName")
+    if not isinstance(mangled, str):
+        return False
+    encoded = mangled.lstrip("_")
+    if not encoded.startswith("Z"):
+        return False
+    source_name = encoded[1:]
+    if source_name.startswith("L"):
+        source_name = source_name[1:]
+    return bool(source_name) and source_name[0].isdigit()
+
+
+def _referenced_record_type_names(tree: dict[str, Any]) -> tuple[str, ...]:
+    """Return bounded, compiler-resolved simple type names used by one function.
+
+    The function AST is already bounded by ``-ast-dump-filter``.  Record
+    declarations are loaded separately by the same compiler filter so SDK
+    declarations never need to cross the subprocess output boundary.  Primitive
+    and unsupported simple spellings may be present here; only an exact
+    source-owned record declaration can promote one into ``record_names``.
+    """
+
+    names: set[str] = set()
+    pending = [tree]
+    while pending:
+        node = pending.pop()
+        raw_type = node.get("type")
+        if isinstance(raw_type, dict):
+            source_type = raw_type.get("qualType")
+            if isinstance(source_type, str):
+                match = _SIMPLE_RECORD_TYPE.fullmatch(_strip(source_type))
+                if match is not None:
+                    names.add(match.group(1))
+                    if len(names) > _MAX_REFERENCED_RECORD_TYPES:
+                        raise RouteError("CLANG_REFERENCED_RECORD_TYPE_LIMIT")
+        pending.extend(_inner(node))
+    return tuple(sorted(names))
+
+
+def _load_referenced_records(
+    tree: dict[str, Any],
+    source: Path,
+    language: Language,
+    executable: str,
+    sdk_path: str | None,
+) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for record_name in _referenced_record_type_names(tree):
+        record_tree = _run_clang(
+            executable,
+            source,
+            language,
+            sdk_path,
+            declaration_filter=record_name,
+            precompile_system_prelude=True,
+        )
+        matches = [
+            node
+            for node in _inner(record_tree)
+            if node.get("kind") in ("CXXRecordDecl", "RecordDecl")
+            and node.get("name") == record_name
+            and not node.get("isImplicit")
+            and _inventory_span(node, source) is not None
+            and any(child.get("kind") == "FieldDecl" for child in _inner(node))
+        ]
+        if len(matches) > 1:
+            raise RouteError(f"AMBIGUOUS_RECORD_DEFINITION:{record_name}")
+        records.extend(matches)
+    return records
+
+
 def analyze_clang(
     source: Path,
     language: Language,
@@ -1010,51 +1363,44 @@ def analyze_clang(
     """Lift one named C++/Objective-C function into the semantic IR."""
     if language not in ("cpp", "objc"):
         raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
-    tree = _run_clang(executable, source, language, sdk_path)
-    def _is_in_source_file(node: dict[str, Any]) -> bool:
-        loc = node.get("loc")
-        if not isinstance(loc, dict):
-            return False
-        for nested in ("expansionLoc", "spellingLoc"):
-            nested_loc = loc.get(nested)
-            if isinstance(nested_loc, dict):
-                loc = nested_loc
-                break
-        if "includedFrom" in loc:
-            return False
-        file_path = loc.get("file")
-        if isinstance(file_path, str):
-            return Path(file_path).name == source.name
-        return True
-
+    tree = _run_clang(
+        executable,
+        source,
+        language,
+        sdk_path,
+        declaration_filter=function_name,
+        precompile_system_prelude=True,
+    )
     candidates = [
         node
         for node in _inner(tree)
         if node.get("kind") == "FunctionDecl"
         and node.get("name") == function_name
         and not node.get("isImplicit")
-        and _is_in_source_file(node)
         and any(child.get("kind") == "CompoundStmt" for child in _inner(node))
+        and _inventory_span(node, source) is not None
+        and (language != "cpp" or _is_unqualified_cpp_function(node))
     ]
     if not candidates:
         raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}")
     if len(candidates) > 1:
         raise RouteError(f"AMBIGUOUS_FUNCTION_DEFINITION:{function_name}")
     semantic_markers = _function_semantic_markers(candidates[0])
-    if semantic_markers:
+    unsupported_markers = [
+        marker for marker in semantic_markers if marker != "storage-class:static"
+    ]
+    if unsupported_markers:
         raise RouteError(
             f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
-            + ",".join(semantic_markers)
+            + ",".join(unsupported_markers)
         )
-    record_candidates = [
-        node
-        for node in _inner(tree)
-        if node.get("kind") in ("CXXRecordDecl", "RecordDecl")
-        and node.get("name")
-        and not node.get("isImplicit")
-        and _is_in_source_file(node)
-        and any(child.get("kind") == "FieldDecl" for child in _inner(node))
-    ]
+    record_candidates = _load_referenced_records(
+        tree,
+        source,
+        language,
+        executable,
+        sdk_path,
+    )
     record_names = {str(rec["name"]).strip() for rec in record_candidates}
     records = []
     for rec in record_candidates:
@@ -1193,7 +1539,13 @@ def inventory_clang_module(
 
     if language not in ("cpp", "objc"):
         raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
-    tree = _run_clang(executable, source, language, sdk_path)
+    tree = _run_clang(
+        executable,
+        source,
+        language,
+        sdk_path,
+        precompile_system_prelude=True,
+    )
     subjects: list[dict[str, object]] = []
     diagnostics: list[str] = []
     scope_kinds = {
@@ -1270,7 +1622,17 @@ def inventory_clang_module(
             if kind == "TranslationUnitDecl":
                 visit(child, scope, top_level=True)
             elif kind in scope_kinds:
-                visit(child, child_scope, top_level=False)
+                # An explicit C++ linkage specification restates the language's
+                # default linkage and does not introduce a lexical scope. Keep
+                # the wrapper itself as an obligation, but let its plain global
+                # functions retain the same analyzability as an unwrapped
+                # declaration. C linkage and nested wrappers remain fail-closed.
+                transparent_cpp_linkage = (
+                    top_level
+                    and kind == "LinkageSpecDecl"
+                    and node.get("language") == "C++"
+                )
+                visit(child, child_scope, top_level=transparent_cpp_linkage)
 
     visit(tree, (), top_level=True)
     return {

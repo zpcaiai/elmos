@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import RouteError, SemanticIR
+from .process_io import run_bounded
 from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
 ENGINE_ROOT = Path(__file__).resolve().parents[2]
@@ -411,7 +412,7 @@ def verify_react_runtime_import(toolchain: ExactToolchain) -> dict[str, Any]:
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=root,
                 check=False,
@@ -639,7 +640,7 @@ def _run_react_frontend(
                 selector,
             ]
             try:
-                completed = subprocess.run(
+                completed = run_bounded(
                     command,
                     cwd=root,
                     check=False,

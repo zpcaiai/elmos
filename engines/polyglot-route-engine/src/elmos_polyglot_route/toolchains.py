@@ -14,6 +14,8 @@ from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 from .models import Language, RouteError
+from .process_io import run_bounded
+from .resource_budget import keyed_lock
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 _GO_TELEMETRY_MODE = b"off\n"
@@ -347,7 +349,7 @@ def _output(
                 env["LOGNAME"] = current_user
                 if "__CF_USER_TEXT_ENCODING" in os.environ:
                     env["__CF_USER_TEXT_ENCODING"] = os.environ["__CF_USER_TEXT_ENCODING"]
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 check=False,
                 capture_output=True,
@@ -1685,6 +1687,8 @@ def _python_runtime_tree() -> dict[str, object]:
 
 
 def _python() -> ExactToolchain:
+    if _container_toolchain_profile_requested():
+        return _linux_arm64_container_python()
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         raise RouteError(
             "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:python:expected=Darwin/arm64:"
@@ -1861,6 +1865,8 @@ def _csharp() -> ExactToolchain:
 
 
 def _typescript() -> ExactToolchain:
+    if _container_toolchain_profile_requested():
+        return _linux_arm64_container_typescript()
     shim_before = _node_shim_identity()
     node_before = _node_dependency_closure()
     node_profile_before = _verify_node_dependency_closure(node_before)
@@ -3487,6 +3493,11 @@ def _discover_node_topology() -> dict[str, object]:
 
 
 def _node_cached_topology() -> dict[str, object]:
+    with keyed_lock(("node-topology", str(_EXPECTED_NODE_ROOT))):
+        return _node_cached_topology_locked()
+
+
+def _node_cached_topology_locked() -> dict[str, object]:
     global _NODE_TOPOLOGY_CACHE
 
     if _NODE_TOPOLOGY_CACHE is None:
@@ -5474,7 +5485,7 @@ def _kotlin_version_banner(jvm_home: Path) -> str:
                 executable_dirs=(jvm_home / "bin", _EXPECTED_KOTLINC_EXECUTABLE.parent),
             )
             environment["JAVA_HOME"] = str(jvm_home)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 check=False,
                 capture_output=True,
@@ -5858,6 +5869,353 @@ def _react() -> ExactToolchain:
     )
 
 
+_CONTAINER_TOOLCHAIN_PROFILE_VARIABLE = "ELMOS_POLYGLOT_ROUTE_CONTAINER_PROFILE"
+_LINUX_ARM64_CONTAINER_PROFILE = "linux-arm64-python3.12.12-node26-typescript5.9.2-v1"
+_CONTAINER_PYTHON = Path("/usr/local/bin/python3.12")
+_CONTAINER_LIBPYTHON = Path("/usr/local/lib/libpython3.12.so.1.0")
+_CONTAINER_PYTHON_MATH = Path(
+    "/usr/local/lib/python3.12/lib-dynload/math.cpython-312-aarch64-linux-gnu.so"
+)
+_CONTAINER_PYTHON_RUNTIME_IDENTITY_SHA256 = (
+    "81212c739065b4e8118b173e41b2b6350ec576246c52917a6d0984255f75fb26"
+)
+_CONTAINER_PYTHON_FILES = {
+    _CONTAINER_PYTHON: ("36727872f3be3469d83c23705431d90ab2b408a0ba1e3008ba3d4dd337b7f481", 67_680),
+    _CONTAINER_LIBPYTHON: ("5080df85c21d2f90872577e2cbb5942c247f5557051bf83695667f3011cf0456", 6_612_600),
+    _CONTAINER_PYTHON_MATH: ("6fcc3f3285b1d6f2ea00b8fc72f5bc573051bac95a8cc937067e9157632a59d1", 70_336),
+}
+_CONTAINER_NODE = Path("/usr/local/bin/node")
+_CONTAINER_NODE_SHA256 = "08610d90c05cdc75cca04ce4ac58ab865674856e1bda422ffd95c4bd6921cae6"
+_CONTAINER_NODE_BYTES = 146_767_968
+_CONTAINER_NODE_PROCESS_VERSIONS_SHA256 = (
+    "a6b18682ba65081b2905d2f4f0c79b958e95105603d234ecf42d9039eb0f8f87"
+)
+_CONTAINER_TYPESCRIPT_ROOT = Path(
+    "/opt/elmos/apps/web-console/node_modules/.pnpm/"
+    "typescript@5.9.2/node_modules/typescript"
+)
+_CONTAINER_TYPESCRIPT_TREE_SHA256 = (
+    "c8cd6309ea953499902b846e732075ef63a5ddc7b66f546c9dc68105a0b6ee36"
+)
+_CONTAINER_TYPESCRIPT_TREE_RECORDS = 147
+_CONTAINER_TYPESCRIPT_TREE_FILES = 132
+_CONTAINER_TYPESCRIPT_TREE_DIRECTORIES = 15
+_CONTAINER_TYPESCRIPT_TREE_BYTES = 23_622_869
+
+
+def _container_toolchain_profile_requested() -> bool:
+    profile = os.environ.get(_CONTAINER_TOOLCHAIN_PROFILE_VARIABLE, "").strip()
+    if not profile:
+        return False
+    if profile != _LINUX_ARM64_CONTAINER_PROFILE:
+        raise RouteError(f"EXACT_TOOLCHAIN_CONTAINER_PROFILE_UNSUPPORTED:{profile}")
+    return True
+
+
+def _container_regular_file_identity(
+    path: Path,
+    root: Path,
+    failure: str,
+) -> dict[str, str | int]:
+    try:
+        path.relative_to(root)
+        if path.resolve(strict=True) != path:
+            raise RouteError(failure)
+        before = path.lstat()
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            opened_before = os.fstat(descriptor)
+            digest = hashlib.sha256()
+            byte_count = 0
+            while chunk := os.read(descriptor, 1024 * 1024):
+                digest.update(chunk)
+                byte_count += len(chunk)
+            opened_after = os.fstat(descriptor)
+        finally:
+            os.close(descriptor)
+        after = path.lstat()
+    except (OSError, ValueError) as error:
+        raise RouteError(failure) from error
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_size,
+        before.st_uid,
+        before.st_gid,
+        before.st_nlink,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    if (
+        identity
+        != (
+            after.st_dev,
+            after.st_ino,
+            after.st_mode,
+            after.st_size,
+            after.st_uid,
+            after.st_gid,
+            after.st_nlink,
+            after.st_mtime_ns,
+            after.st_ctime_ns,
+        )
+        or identity
+        != (
+            opened_before.st_dev,
+            opened_before.st_ino,
+            opened_before.st_mode,
+            opened_before.st_size,
+            opened_before.st_uid,
+            opened_before.st_gid,
+            opened_before.st_nlink,
+            opened_before.st_mtime_ns,
+            opened_before.st_ctime_ns,
+        )
+        or identity
+        != (
+            opened_after.st_dev,
+            opened_after.st_ino,
+            opened_after.st_mode,
+            opened_after.st_size,
+            opened_after.st_uid,
+            opened_after.st_gid,
+            opened_after.st_nlink,
+            opened_after.st_mtime_ns,
+            opened_after.st_ctime_ns,
+        )
+        or not stat.S_ISREG(after.st_mode)
+        or after.st_uid != 0
+        or after.st_gid != 0
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or byte_count != after.st_size
+    ):
+        raise RouteError(failure)
+    return {
+        "bytes": byte_count,
+        "sha256": digest.hexdigest(),
+        "mode": f"{stat.S_IMODE(after.st_mode):04o}",
+    }
+
+
+def _container_typescript_tree_identity() -> dict[str, str | int]:
+    failure = "EXACT_TOOLCHAIN_CONTAINER_TYPESCRIPT_TREE_UNSAFE"
+    root = _CONTAINER_TYPESCRIPT_ROOT
+    try:
+        before = root.lstat()
+        if (
+            root.resolve(strict=True) != root
+            or not stat.S_ISDIR(before.st_mode)
+            or before.st_uid != 0
+            or before.st_gid != 0
+            or stat.S_IMODE(before.st_mode) & 0o022
+        ):
+            raise RouteError(failure)
+        paths = sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix())
+    except (OSError, ValueError) as error:
+        raise RouteError(failure) from error
+    records: list[dict[str, str | int]] = []
+    file_count = 0
+    directory_count = 0
+    total_bytes = 0
+    for path in paths:
+        relative = path.relative_to(root).as_posix()
+        try:
+            metadata = path.lstat()
+        except OSError as error:
+            raise RouteError(failure) from error
+        if metadata.st_uid != 0 or metadata.st_gid != 0 or stat.S_IMODE(metadata.st_mode) & 0o022:
+            raise RouteError(failure)
+        mode = f"{stat.S_IMODE(metadata.st_mode):04o}"
+        if stat.S_ISDIR(metadata.st_mode):
+            directory_count += 1
+            records.append({"path": relative, "kind": "directory", "mode": mode})
+            continue
+        if not stat.S_ISREG(metadata.st_mode):
+            raise RouteError(failure)
+        identity = _container_regular_file_identity(path, root, failure)
+        file_count += 1
+        total_bytes += int(identity["bytes"])
+        records.append(
+            {
+                "path": relative,
+                "kind": "file",
+                "mode": str(identity["mode"]),
+                "bytes": int(identity["bytes"]),
+                "sha256": str(identity["sha256"]),
+            }
+        )
+    try:
+        after = root.lstat()
+        rebound = sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix())
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        [item.relative_to(root).as_posix() for item in paths]
+        != [item.relative_to(root).as_posix() for item in rebound]
+        or (before.st_dev, before.st_ino, before.st_mode, before.st_mtime_ns, before.st_ctime_ns)
+        != (after.st_dev, after.st_ino, after.st_mode, after.st_mtime_ns, after.st_ctime_ns)
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_CONTAINER_TYPESCRIPT_TREE_CHANGED")
+    digest = hashlib.sha256(
+        json.dumps(
+            {"records": records},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    identity = {
+        "sha256": digest,
+        "record_count": len(records),
+        "file_count": file_count,
+        "directory_count": directory_count,
+        "bytes": total_bytes,
+    }
+    if identity != {
+        "sha256": _CONTAINER_TYPESCRIPT_TREE_SHA256,
+        "record_count": _CONTAINER_TYPESCRIPT_TREE_RECORDS,
+        "file_count": _CONTAINER_TYPESCRIPT_TREE_FILES,
+        "directory_count": _CONTAINER_TYPESCRIPT_TREE_DIRECTORIES,
+        "bytes": _CONTAINER_TYPESCRIPT_TREE_BYTES,
+    }:
+        raise RouteError("EXACT_TOOLCHAIN_CONTAINER_TYPESCRIPT_TREE_MISMATCH")
+    return identity
+
+
+def _require_linux_arm64_container_profile(language: Language) -> None:
+    if platform.system() != "Linux" or platform.machine() != "aarch64":
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Linux/aarch64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+
+
+def _linux_arm64_container_python() -> ExactToolchain:
+    _require_linux_arm64_container_profile("python")
+    identities = {
+        path: _container_regular_file_identity(
+            path,
+            Path("/usr/local"),
+            "EXACT_TOOLCHAIN_CONTAINER_PYTHON_FILE_UNSAFE",
+        )
+        for path in _CONTAINER_PYTHON_FILES
+    }
+    for path, (expected_sha256, expected_bytes) in _CONTAINER_PYTHON_FILES.items():
+        if identities[path] != {
+            "sha256": expected_sha256,
+            "bytes": expected_bytes,
+            "mode": "0755",
+        }:
+            raise RouteError(f"EXACT_TOOLCHAIN_CONTAINER_PYTHON_FILE_MISMATCH:{path}")
+    observed = _output(
+        [_CONTAINER_PYTHON.as_posix(), "-I", "-B", "-c", _PYTHON_RUNTIME_IDENTITY_SCRIPT],
+        include_stderr=False,
+    )
+    try:
+        runtime = json.loads(observed)
+    except json.JSONDecodeError as error:
+        raise RouteError("EXACT_TOOLCHAIN_CONTAINER_PYTHON_IDENTITY_INVALID") from error
+    if (
+        not isinstance(runtime, dict)
+        or hashlib.sha256(observed.encode("utf-8")).hexdigest()
+        != _CONTAINER_PYTHON_RUNTIME_IDENTITY_SHA256
+        or runtime.get("version") != "3.12.12"
+        or runtime.get("implementation") != "cpython"
+        or runtime.get("executable") != str(_CONTAINER_PYTHON)
+        or runtime.get("prefix") != "/usr/local"
+        or runtime.get("base_prefix") != "/usr/local"
+        or runtime.get("stdlib") != "/usr/local/lib/python3.12"
+        or runtime.get("platstdlib") != "/usr/local/lib/python3.12"
+        or runtime.get("math_origin") != str(_CONTAINER_PYTHON_MATH)
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_CONTAINER_PYTHON_IDENTITY_MISMATCH")
+    return ExactToolchain(
+        "python",
+        "3.12.12 / OCI Linux arm64",
+        str(_CONTAINER_PYTHON),
+        str(_CONTAINER_LIBPYTHON),
+        profile=(
+            f"container-toolchain-profile={_LINUX_ARM64_CONTAINER_PROFILE}",
+            "platform=Linux/aarch64",
+            "distribution=python-official-3.12.12-slim-trixie",
+            "base-image-digest=sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c",
+            f"python-runtime-identity-sha256={_CONTAINER_PYTHON_RUNTIME_IDENTITY_SHA256}",
+            f"python-executable-sha256={identities[_CONTAINER_PYTHON]['sha256']}",
+            f"libpython-sha256={identities[_CONTAINER_LIBPYTHON]['sha256']}",
+            f"math-extension-sha256={identities[_CONTAINER_PYTHON_MATH]['sha256']}",
+            "container-image-identity=HOST_VERIFIED_NOT_SELF_ASSERTED",
+            "python-runtime-semantic-soundness=NOT_RUN",
+        ),
+        executable_sha256=str(identities[_CONTAINER_PYTHON]["sha256"]),
+        auxiliary_sha256=str(identities[_CONTAINER_LIBPYTHON]["sha256"]),
+    )
+
+
+def _linux_arm64_container_typescript() -> ExactToolchain:
+    _require_linux_arm64_container_profile("typescript")
+    node_before = _container_regular_file_identity(
+        _CONTAINER_NODE,
+        Path("/usr/local"),
+        "EXACT_TOOLCHAIN_CONTAINER_NODE_UNSAFE",
+    )
+    tree_before = _container_typescript_tree_identity()
+    launcher = _CONTAINER_TYPESCRIPT_ROOT / "bin/tsc"
+    observed_version = _output(
+        [str(_CONTAINER_NODE), str(launcher), "--version"],
+        include_stderr=False,
+    )
+    process_versions = _output(
+        [str(_CONTAINER_NODE), "-p", "JSON.stringify(process.versions)"],
+        include_stderr=False,
+    )
+    tree_after = _container_typescript_tree_identity()
+    node_after = _container_regular_file_identity(
+        _CONTAINER_NODE,
+        Path("/usr/local"),
+        "EXACT_TOOLCHAIN_CONTAINER_NODE_UNSAFE",
+    )
+    if (
+        node_before != node_after
+        or node_after
+        != {"sha256": _CONTAINER_NODE_SHA256, "bytes": _CONTAINER_NODE_BYTES, "mode": "0755"}
+        or tree_before != tree_after
+        or observed_version != "Version 5.9.2"
+        or hashlib.sha256(process_versions.encode("ascii")).hexdigest()
+        != _CONTAINER_NODE_PROCESS_VERSIONS_SHA256
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_CONTAINER_TYPESCRIPT_IDENTITY_MISMATCH")
+    return ExactToolchain(
+        "typescript",
+        "5.9.2 / Node 26.0.0 / OCI Linux arm64",
+        str(_CONTAINER_NODE),
+        str(launcher),
+        profile=(
+            "typescript-toolchain-closure-schema=v1",
+            f"container-toolchain-profile={_LINUX_ARM64_CONTAINER_PROFILE}",
+            "platform=Linux/aarch64",
+            "node-base-image-digest=sha256:3529ef69feecddd94e9c5ecd3d25a96f2f23ea40661f494f932ae2b12ab1977c",
+            f"node-sha256={node_after['sha256']}",
+            f"node-process-versions-sha256={_CONTAINER_NODE_PROCESS_VERSIONS_SHA256}",
+            f"typescript-package-root={_CONTAINER_TYPESCRIPT_ROOT}",
+            f"typescript-tree-sha256={tree_after['sha256']}",
+            f"typescript-tree-record-count={tree_after['record_count']}",
+            f"typescript-tree-file-count={tree_after['file_count']}",
+            f"typescript-tree-bytes={tree_after['bytes']}",
+            f"typescript-launcher-sha256={_EXPECTED_TYPESCRIPT_LAUNCHER_SHA256}",
+            f"typescript-compiler-sha256={_EXPECTED_TYPESCRIPT_COMPILER_SHA256}",
+            f"typescript-parser-sha256={_EXPECTED_TYPESCRIPT_PARSER_SHA256}",
+            "container-image-identity=HOST_VERIFIED_NOT_SELF_ASSERTED",
+            "node-system-library-content-soundness=NOT_RUN",
+            "typescript-compiler-runtime-semantic-soundness=NOT_RUN",
+        ),
+        executable_sha256=str(node_after["sha256"]),
+        auxiliary_sha256=_EXPECTED_TYPESCRIPT_LAUNCHER_SHA256,
+    )
+
+
 def _vb6() -> ExactToolchain:
     """Bind an exact, externally governed Windows/x86 VB6 SP6 installation."""
 
@@ -5940,6 +6298,7 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
         os.environ.get("ELMOS_CLANG_HOME", ""),
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        os.environ.get(_CONTAINER_TOOLCHAIN_PROFILE_VARIABLE, ""),
         *binding_fingerprint(),
         *vcpp6_binding_fingerprint(),
         tsc_identity,
@@ -5991,4 +6350,8 @@ def exact_toolchain(language: Language) -> ExactToolchain:
     `identifier_hygiene.policy_for_language` and the pipeline's own lookup
     all raise a coded `RouteError` here.
     """
-    return _cached_exact_toolchain(language, _toolchain_fingerprint())
+    fingerprint = _toolchain_fingerprint()
+    # lru_cache is coherent but can execute the same cold selector in several
+    # threads. Serialize only that exact key; never cache live content receipts.
+    with keyed_lock(("exact-toolchain", language, fingerprint)):
+        return _cached_exact_toolchain(language, fingerprint)

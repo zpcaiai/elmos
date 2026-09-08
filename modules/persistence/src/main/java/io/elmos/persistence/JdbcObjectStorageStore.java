@@ -48,7 +48,11 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
         Optional<S3ObjectStore.Backend> backend = jdbc.sql("""
                 SELECT backend_id, backend_kind, endpoint, region, bucket, path_style,
                        server_side_encryption, cmk_reference, credential_reference,
-                       backend_state, max_object_bytes
+                       backend_state, max_object_bytes,
+                       CASE WHEN upload_fencing_verified_at IS NOT NULL
+                                  AND upload_fencing_verified_by_actor_id IS NOT NULL
+                            THEN upload_fencing_protocol
+                            ELSE 'LEGACY_UNFENCED' END AS upload_fencing_protocol
                   FROM object_storage_backends
                  WHERE backend_state IN ('ACTIVE', 'READ_ONLY')
                  ORDER BY CASE backend_state WHEN 'ACTIVE' THEN 0 ELSE 1 END
@@ -56,6 +60,7 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 """)
                 .query((ResultSet rs, int row) -> new S3ObjectStore.Backend(
                         rs.getString("backend_id"),
+                        rs.getString("backend_kind"),
                         rs.getString("backend_state"),
                         rs.getString("endpoint"),
                         rs.getString("bucket"),
@@ -64,12 +69,14 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                         rs.getString("server_side_encryption"),
                         rs.getString("cmk_reference"),
                         rs.getLong("max_object_bytes"),
+                        rs.getString("upload_fencing_protocol"),
                         credentials(rs.getString("credential_reference"))))
                 .optional();
 
         return backend.orElseGet(() -> new S3ObjectStore.Backend(
-                "primary", "NOT_CONFIGURED", null, null, null, false,
-                "NONE", null, 0, SigV4Presigner.Credentials.of("", "")));
+                "primary", "S3", "NOT_CONFIGURED", null, null, null, false,
+                "NONE", null, 0, S3ObjectStore.LEGACY_UNFENCED,
+                SigV4Presigner.Credentials.of("", "")));
     }
 
     private SigV4Presigner.Credentials credentials(String reference) {
@@ -90,14 +97,21 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
 
     @Override
     public String registerPendingObject(String organizationId, String contentSha256, long byteSize,
-                                        String mediaType, String backendId, String storageKey) {
+                                        String mediaType, String backendId, String storageKey,
+                                        String uploadProtocol) {
         return inTenant(organizationId, () -> jdbc.sql("""
                 INSERT INTO content_objects (
                     content_object_id, organization_id, content_sha256, byte_size,
-                    media_type, backend_id, storage_key, object_state)
-                VALUES (:id, :org, :sha, :size, :media, :backend, :key, 'PENDING_UPLOAD')
+                    media_type, backend_id, storage_key, upload_protocol, object_state)
+                VALUES (:id, :org, :sha, :size, :media, :backend, :key,
+                        :uploadProtocol, 'PENDING_UPLOAD')
                 ON CONFLICT (organization_id, content_sha256) DO UPDATE
                     SET media_type = EXCLUDED.media_type
+                    WHERE content_objects.object_state IN ('PENDING_UPLOAD','AVAILABLE')
+                      AND content_objects.byte_size = EXCLUDED.byte_size
+                      AND content_objects.backend_id = EXCLUDED.backend_id
+                      AND content_objects.storage_key = EXCLUDED.storage_key
+                      AND content_objects.upload_protocol = EXCLUDED.upload_protocol
                 RETURNING content_object_id
                 """)
                 .param("id", "obj-" + UUID.randomUUID())
@@ -107,7 +121,9 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 .param("media", mediaType)
                 .param("backend", backendId)
                 .param("key", storageKey)
-                .query(String.class).single());
+                .param("uploadProtocol", uploadProtocol)
+                .query(String.class).optional().orElseThrow(() -> new S3ObjectStore.ObjectStorageException(
+                        "CONTENT_OBJECT_UPLOAD_STATE_OR_IDENTITY_INVALID")));
     }
 
     @Override
@@ -158,11 +174,16 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
      * caller forgets to bind the tenant.</p>
      */
     public Optional<String> artifactIdFor(String organizationId, String jobId, String role) {
+        return artifactIdFor(organizationId,jobId,role,null);
+    }
+
+    public Optional<String> artifactIdFor(String organizationId, String jobId, String role, String filename) {
         return inTenant(organizationId, () -> jdbc.sql("""
                 SELECT artifact_id FROM job_artifacts
                  WHERE organization_id = :org
                    AND job_id = :jobId
                    AND artifact_role = :role
+                   AND (CAST(:filename AS varchar) IS NULL OR filename = :filename)
                    AND deleted_at IS NULL
                  ORDER BY published_at DESC
                  LIMIT 1
@@ -170,6 +191,7 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 .param("org", organizationId)
                 .param("jobId", jobId)
                 .param("role", role)
+                .param("filename", filename)
                 .query(String.class)
                 .optional());
     }
@@ -312,10 +334,46 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
     }
 
     /** Resolves the organization for a lease without trusting anything the runner sent. */
+    public boolean leaseOwnsJob(String leaseId, String runnerNodeId, String jobId, String tokenSha256) {
+        Integer matches = jdbc.sql("""
+                SELECT count(*) FROM runner_job_leases lease
+                  JOIN execution_jobs job ON job.job_id = lease.job_ref
+                    AND job.organization_id = lease.organization_id
+                  JOIN execution_job_dispatch dispatch ON dispatch.job_id = job.job_id
+                    AND dispatch.organization_id = job.organization_id
+                    AND dispatch.lease_ref = lease.runner_job_lease_id
+                    AND dispatch.runner_node_ref = lease.runner_node_ref
+                    AND dispatch.dispatch_state = 'LEASED'
+                 WHERE lease.runner_job_lease_id = :lease AND lease.runner_node_ref = :node
+                   AND lease.job_ref = :job AND lease.token_sha256 = :token
+                   AND lease.lease_state IN ('ISSUED', 'ACTIVE')
+                   AND lease.expires_at > clock_timestamp()
+                   AND job.status IN ('CLAIMED', 'RUNNING') AND job.cancel_requested_at IS NULL
+                """).param("lease", leaseId).param("node", runnerNodeId)
+                .param("job", jobId).param("token", tokenSha256).query(Integer.class).single();
+        return matches != null && matches == 1;
+    }
+
     public Optional<String> organizationForLease(String leaseId) {
         return jdbc.sql("SELECT organization_id FROM runner_job_leases WHERE runner_job_lease_id = :leaseId")
                 .param("leaseId", leaseId)
                 .query(String.class).optional();
+    }
+
+    public boolean executionInputAvailable(String organizationId, String jobId, String bindingId,
+                                            String objectId, String digest, long bytes) {
+        return inTenant(organizationId, () -> jdbc.sql("""
+                SELECT EXISTS (
+                  SELECT 1 FROM execution_input_bindings binding JOIN content_objects object
+                    ON object.content_object_id = binding.content_object_ref
+                   AND object.organization_id = binding.organization_id
+                   WHERE binding.organization_id = :org AND binding.job_ref = :job
+                     AND binding.binding_id = :binding AND binding.binding_state = 'ATTACHED'
+                     AND binding.content_object_ref = :object AND binding.content_sha256 = :sha
+                     AND binding.byte_size = :bytes AND object.content_sha256 = :sha
+                     AND object.byte_size = :bytes AND object.object_state = 'AVAILABLE')
+                """).param("org", organizationId).param("job", jobId).param("binding", bindingId)
+                .param("object", objectId).param("sha", digest).param("bytes", bytes).query(Boolean.class).single());
     }
 
     private <T> T inTenant(String organizationId, Supplier<T> work) {

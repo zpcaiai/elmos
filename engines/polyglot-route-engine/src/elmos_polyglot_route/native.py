@@ -40,8 +40,10 @@ from .models import (
     RouteError,
     SemanticIR,
 )
+from .process_io import bounded_communicate, run_bounded
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
+from .resource_budget import keyed_lock
 from .toolchains import (
     AppleRouteHostProfile,
     ExactToolchain,
@@ -95,8 +97,8 @@ _JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
 _JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
 _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-_TYPESCRIPT_ANALYZER_SHA256 = "23361d1947109049e3b3d22424d0443046402a8e6a9e6e658227dc7f3378604a"
-_TYPESCRIPT_ANALYZER_BYTES = 69_262
+_TYPESCRIPT_ANALYZER_SHA256 = "fe5cbfb7f2052af8b15ed09a9df4bf73e83098e96a55f7162a51197cb45b8aa6"
+_TYPESCRIPT_ANALYZER_BYTES = 70_227
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
 _PHP_ANALYZER_SHA256 = "5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00"
@@ -148,13 +150,6 @@ _SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
-_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
-# A command can exit successfully while a short-lived, same-session helper
-# still owns an inherited stdout/stderr descriptor.  Give that helper a small,
-# absolute drain window before treating the retained pipe as a process leak.
-# This stays far below the command deadline and the runaway-session test's
-# bounded cleanup path remains fail-closed.
-_SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS = 2.0
 _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
@@ -3028,42 +3023,14 @@ def _run_swift_build_step(
     except OSError as error:
         raise RouteError(failure + ":process") from error
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
-    communication_deadline = time.monotonic() + effective_timeout
-    pending_input = input_text
-    completed_leader_drain_deadline: float | None = None
     try:
-        while True:
-            remaining = communication_deadline - time.monotonic()
-            if completed_leader_drain_deadline is not None:
-                remaining = min(
-                    remaining,
-                    completed_leader_drain_deadline - time.monotonic(),
-                )
-            if remaining <= 0:
-                raise subprocess.TimeoutExpired(command, effective_timeout)
-            try:
-                stdout, stderr = process.communicate(
-                    input=pending_input,
-                    timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
-                )
-                break
-            except subprocess.TimeoutExpired:
-                # communicate() waits for inherited stdout/stderr pipes even
-                # after the session leader exits.  SwiftPM compiler helpers
-                # have exhibited exactly that leak, which otherwise consumes
-                # the full one-hour cold-build timeout.  Poll the pinned leader
-                # and allow a short-lived helper to drain naturally. A pipe
-                # that remains open beyond the bounded grace enters the same
-                # identity-checked process-tree cleanup as a command timeout.
-                pending_input = None
-                poll = getattr(process, "poll", None)
-                if not callable(poll):
-                    raise
-                if poll() is not None and completed_leader_drain_deadline is None:
-                    completed_leader_drain_deadline = min(
-                        communication_deadline,
-                        time.monotonic() + _SWIFT_BUILD_PIPE_DRAIN_TIMEOUT_SECONDS,
-                    )
+        stdout, stderr = bounded_communicate(
+            process,
+            input=input_text,
+            timeout=effective_timeout,
+            reap=True,
+            leader_exit_poll_interval=_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS,
+        )
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -4977,7 +4944,7 @@ def _run_csharp_build_step(
     failure: str,
 ) -> None:
     try:
-        completed = subprocess.run(
+        completed = run_bounded(
             command,
             cwd=cwd,
             check=False,
@@ -5937,7 +5904,7 @@ def _run(
                 )
             if environment_overrides:
                 environment.update(environment_overrides)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=cwd,
                 check=False,
@@ -7338,7 +7305,13 @@ def _run_trusted_typescript_analyzer(
     *,
     emitted_target: bool = False,
 ) -> dict[str, Any]:
-    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+    batched_names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else []
+    valid_batch = (
+        1 < len(batched_names) <= 100
+        and len(set(batched_names)) == len(batched_names)
+        and all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) for name in batched_names)
+    )
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None and not valid_batch:
         raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
     if selector == "--inventory" and emitted_target:
         raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
@@ -7399,6 +7372,16 @@ def _run_trusted_typescript_analyzer(
             f"node-closure={toolchain_binding['node_closure_sha256']};"
             f"typescript-profile={toolchain_binding['profile_sha256']}"
         )
+        if valid_batch:
+            entries = bound.get("results")
+            if bound.get("kind") != "elmos.typed-pure-function-batch" or not isinstance(entries, list):
+                raise RouteError("TYPESCRIPT_ANALYZER_BATCH_CONTRACT_INVALID")
+            for entry in entries:
+                if isinstance(entry, dict) and entry.get("status") == "ok":
+                    result = entry.get("value")
+                    if not isinstance(result, dict) or result.get("analyzer_version") != analyzer_version:
+                        raise RouteError("TYPESCRIPT_ANALYZER_VERSION_MISMATCH")
+                    result["analyzer_version"] = bound["analyzer_version"]
         return bound
 
 
@@ -7559,6 +7542,11 @@ def _verify_java_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> 
 
 
 def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
+    with keyed_lock(("java-analyzer", str(helper), toolchain.executable)):
+        return _java_analyzer_classes_locked(helper, toolchain)
+
+
+def _java_analyzer_classes_locked(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
     """Compile the Java analyzer once and bind the bytecode to its source.
 
     The engine runs the analyzer through JEP 330's source launcher, which
@@ -7606,7 +7594,7 @@ def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Pat
     shutil.rmtree(staging, ignore_errors=True)
     try:
         staging.mkdir(mode=0o700, parents=True)
-        completed = subprocess.run(
+        completed = run_bounded(
             [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
             capture_output=True,
             text=True,
@@ -7973,7 +7961,7 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     return validated
 
 
-_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust"})
+_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust", "typescript"})
 
 
 def analyze_many(
@@ -8092,6 +8080,16 @@ def _analyze_batch(
             def promote(reason: str) -> RouteError | None:
                 return RouteError(reason) if reason in promotable else None
 
+        elif language == "typescript":
+            if len(function_names) > 100:
+                return None
+            document = _run_trusted_typescript_analyzer(
+                toolchain, resolved, selector, emitted_target=emitted_target,
+            )
+
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+
         else:
             return None
     except RouteError:
@@ -8108,12 +8106,18 @@ def _analyze_batch(
             return None
         name = entry.get("function")
         status = entry.get("status")
-        if not isinstance(name, str):
+        if not isinstance(name, str) or name in results:
             return None
         if status == "ok":
             value = entry.get("value")
             if not isinstance(value, dict):
                 return None
+            if language == "typescript":
+                try:
+                    results[name] = _external_semantic_ir(value)
+                except RouteError as error:
+                    results[name] = error
+                continue
             try:
                 results[name] = SemanticIR.from_mapping(value)
             except (RouteError, ValueError, TypeError):
@@ -8544,7 +8548,7 @@ def _compile_kotlin_analyzer(
         executable_dirs=(jvm_home / "bin", Path(toolchain.executable).resolve().parent),
     )
     environment["JAVA_HOME"] = str(jvm_home)
-    completed = subprocess.run(
+    completed = run_bounded(
         [
             str(toolchain.executable),
             "-nowarn",
@@ -8737,7 +8741,7 @@ def analyze(
             project = ENGINE_ROOT / "native" / "csharp"
             dll = project / "bin" / "Release" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
             if not dll.is_file():
-                subprocess.run(
+                run_bounded(
                     [toolchain.executable, "build", str(project), "-c", "Release", "--nologo"],
                     cwd=project,
                     check=False,

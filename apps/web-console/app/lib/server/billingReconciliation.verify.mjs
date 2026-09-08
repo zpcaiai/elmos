@@ -65,6 +65,14 @@ rejected(
 );
 rejected(
   () => requireFinancialOidcAdmin({
+    role: "APPROVER",
+    authentication: "TEMPORARY_ADMIN_PASSWORD",
+  }, "VIEWER"),
+  BillingReconciliationPolicyError,
+  "FINANCIAL_OIDC_SESSION_REQUIRED",
+);
+rejected(
+  () => requireFinancialOidcAdmin({
     role: "VIEWER",
     authentication: "OIDC_SESSION",
     accessToken: "enterprise-oidc-token-long-enough",
@@ -75,6 +83,15 @@ rejected(
 rejected(
   () => requireFinancialOidcAdmin({
     role: "OWNER",
+    authentication: "OIDC_SESSION",
+    accessToken: "enterprise-oidc-token-long-enough",
+  }, "VIEWER"),
+  BillingReconciliationPolicyError,
+  "FINANCIAL_ADMIN_ROLE_INSUFFICIENT",
+);
+rejected(
+  () => requireFinancialOidcAdmin({
+    role: "constructor",
     authentication: "OIDC_SESSION",
     accessToken: "enterprise-oidc-token-long-enough",
   }, "VIEWER"),

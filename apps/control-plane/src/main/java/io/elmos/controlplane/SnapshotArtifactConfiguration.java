@@ -127,7 +127,9 @@ class SnapshotArtifactConfiguration {
             @Value("${elmos.snapshot.cas.root:}") String casRoot,
             @Value("${elmos.snapshot.cas.store-name:snapshot-local}") String storeName,
             @Value("${elmos.snapshot.cas.encryption.key-directory:}") String keyDirectory,
-            @Value("${elmos.snapshot.cas.encryption.provider:DIRECTORY}") String provider
+            @Value("${elmos.snapshot.cas.encryption.provider:DIRECTORY}") String provider,
+            @Value("${elmos.snapshot.max-artifact-bytes:1073741824}") long maximumArtifactBytes,
+            @Value("${elmos.snapshot.cas.encryption.maximum-legacy-bytes:67108864}") long maximumLegacyBytes
     ) {
         if (casRoot.isBlank()) {
             throw new IllegalStateException(
@@ -143,7 +145,8 @@ class SnapshotArtifactConfiguration {
         } else if (!"KMS".equals(provider)) {
             throw new IllegalStateException("snapshot CAS encryption provider is invalid");
         }
-        return new TenantEncryptedLocalCasStore(storeName, storage, encryption);
+        return new TenantEncryptedLocalCasStore(storeName, storage, encryption,
+                maximumArtifactBytes, maximumLegacyBytes);
     }
 
     @Bean

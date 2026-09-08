@@ -1,0 +1,136 @@
+{
+  "boundaries": [
+    "Data generation and post-write verification are outside the timed region.",
+    "Bytes inputs are allocated before tracemalloc starts; native allocations are not counted by tracemalloc.",
+    "RSS includes process setup and inputs; shared-host scheduling noise is not production tail latency.",
+    "Three samples do not establish p95/p99 or cross-platform superiority."
+  ],
+  "evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "file_mib": 8,
+  "host": "macOS-26.6.2-arm64-arm-64bit",
+  "independent_verification": "NOT_RUN",
+  "median_seconds": {
+    "native-bytes": 3.4395448330033105,
+    "native-file": 3.473490457996377,
+    "python-bytes": 0.05115566699532792,
+    "python-file": 0.24412566701357719,
+    "python-stream": 0.25894579199666623
+  },
+  "native_library_sha256": "348936f2751d40066b812473979750bd9ef42583778c8aa4c8804df0547360dd",
+  "production_slo": "NOT_RUN",
+  "python": "3.12.12",
+  "rounds": 3,
+  "samples": [
+    {
+      "mode": "python-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 42926080,
+      "python_peak_bytes": 7726,
+      "seconds": 0.025340916006825864
+    },
+    {
+      "mode": "native-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 42123264,
+      "python_peak_bytes": 2103,
+      "seconds": 1.1328350420080824
+    },
+    {
+      "mode": "python-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 35389440,
+      "python_peak_bytes": 2108024,
+      "seconds": 0.3023683330102358
+    },
+    {
+      "mode": "native-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 33046528,
+      "python_peak_bytes": 6791,
+      "seconds": 3.473490457996377
+    },
+    {
+      "mode": "python-stream",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 33996800,
+      "python_peak_bytes": 2107867,
+      "seconds": 0.18616250000195578
+    },
+    {
+      "mode": "python-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 42188800,
+      "python_peak_bytes": 7726,
+      "seconds": 0.05115566699532792
+    },
+    {
+      "mode": "native-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 39944192,
+      "python_peak_bytes": 2103,
+      "seconds": 3.6458129579987144
+    },
+    {
+      "mode": "python-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 35192832,
+      "python_peak_bytes": 2108024,
+      "seconds": 0.24412566701357719
+    },
+    {
+      "mode": "native-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 29818880,
+      "python_peak_bytes": 6791,
+      "seconds": 5.194452041003387
+    },
+    {
+      "mode": "python-stream",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 31752192,
+      "python_peak_bytes": 2107867,
+      "seconds": 0.720297459003632
+    },
+    {
+      "mode": "python-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 40058880,
+      "python_peak_bytes": 7726,
+      "seconds": 0.26495895799598657
+    },
+    {
+      "mode": "native-bytes",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 40599552,
+      "python_peak_bytes": 2103,
+      "seconds": 3.4395448330033105
+    },
+    {
+      "mode": "python-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 37437440,
+      "python_peak_bytes": 2108024,
+      "seconds": 0.11122120798972901
+    },
+    {
+      "mode": "native-file",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 35864576,
+      "python_peak_bytes": 6791,
+      "seconds": 0.6895257500000298
+    },
+    {
+      "mode": "python-stream",
+      "output_identity": "sha256:4b33c66cbcd442a8af32c84248e4f2c88ae3405a9ab91eef5010f57face73faa",
+      "process_peak_rss_bytes": 36552704,
+      "python_peak_bytes": 2107867,
+      "seconds": 0.25894579199666623
+    }
+  ],
+  "shared_development_host": true,
+  "source_sha256": {
+    "engines/build-cache-engine/src/elmos_build_cache/cas.py": "c58bf11ec4d4941f38f23814645a5df3605e6ab60390ebc7cb6f27c94798a9e5",
+    "engines/build-cache-engine/src/elmos_build_cache/native_cas_bridge.py": "530e5d0857bff17fd408cc40895b36fbb5e570064f6b4c1a12322abafd95fc20",
+    "tools/performance/r2_native_profile.py": "7600c4e5da95d7fed3493876d20ae40fc333472ebca65ee34e8c8dd2ab82d12c"
+  }
+}

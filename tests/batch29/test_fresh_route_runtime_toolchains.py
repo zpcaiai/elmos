@@ -336,7 +336,7 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert 'readonly ADA_URL_OPT_LINK="${HOMEBREW_PREFIX}/opt/ada-url"' in installer
     assert '[[ ! -L "${abi_link}" ]]' in installer
     assert '"${link_target}" != "libada.3.4.4.dylib"' in installer
-    assert "brew chmod codesign curl find git install mv python3 realpath shasum" in installer
+    assert "brew cc chmod codesign curl find git install make mv python3 realpath shasum" in installer
     assert 'REALPATH_PATH="$(command -v realpath)"' in installer
     assert "readonly REALPATH_PATH" in installer
     assert '/bin/realpath|/usr/bin/realpath)' in installer

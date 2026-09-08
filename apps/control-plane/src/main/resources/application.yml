@@ -40,6 +40,10 @@ elmos:
     local:
       enabled: ${ELMOS_LOCAL_IDENTITY_ENABLED:false}
       pepper-file: ${ELMOS_IDENTITY_PEPPER_FILE:}
+  translation:
+    repository-root: ${ELMOS_TRANSLATION_REPOSITORY_ROOT:}
+    cases-root: ${ELMOS_TRANSLATION_CASES_ROOT:}
+    node-executable: ${ELMOS_TRANSLATION_NODE_EXECUTABLE:}
   execution:
     images:
       generation: ${ELMOS_RUNNER_IMAGE_GENERATION:}
@@ -133,6 +137,7 @@ elmos:
         enabled: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_ENABLED:false}
         provider: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_PROVIDER:DIRECTORY}
         key-directory: ${ELMOS_SNAPSHOT_CAS_TENANT_KEY_DIRECTORY:}
+        maximum-legacy-bytes: ${ELMOS_SNAPSHOT_CAS_MAXIMUM_LEGACY_BYTES:67108864}
         kms-broker:
           endpoint: ${ELMOS_CAS_KMS_BROKER_ENDPOINT:}
           connect-timeout: ${ELMOS_CAS_KMS_BROKER_CONNECT_TIMEOUT:5s}

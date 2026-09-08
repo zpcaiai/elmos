@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../../pom.xml</relativePath></parent>
+  <artifactId>elmos-cas-publication-verification</artifactId>
+  <packaging>pom</packaging>
+  <!-- Persistence dependency closure plus the real artifact caller; never requires mvn install. -->
+  <modules>
+    <module>../../../modules/object-storage</module>
+    <module>../../../modules/cas</module>
+    <module>../../../modules/enterprise-governance</module>
+    <module>../../../modules/commercial-operations</module>
+    <module>../../../modules/domain</module>
+    <module>../../../modules/evidence</module>
+    <module>../../../modules/application</module>
+    <module>../../../modules/workflow</module>
+    <module>../../../modules/scm</module>
+    <module>../../../modules/snapshot</module>
+    <module>../../../modules/secret</module>
+    <module>../../../modules/network-policy</module>
+    <module>../../../modules/workspace</module>
+    <module>../../../modules/health-check</module>
+    <module>../../../modules/planning</module>
+    <module>../../../modules/persistence</module>
+    <module>../../../modules/integrations</module>
+  </modules>
+</project>

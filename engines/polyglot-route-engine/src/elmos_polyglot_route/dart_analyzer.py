@@ -25,6 +25,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from .models import RouteError, SemanticIR
+from .process_io import run_bounded
 from .toolchains import ExactToolchain, sanitized_subprocess_env
 
 ENGINE_ROOT = Path(__file__).resolve().parents[2]
@@ -373,7 +374,7 @@ def _run(
     timeout: int = _DART_ANALYZER_TIMEOUT_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
     try:
-        completed = subprocess.run(
+        completed = run_bounded(
             command,
             cwd=cwd,
             env=environment,

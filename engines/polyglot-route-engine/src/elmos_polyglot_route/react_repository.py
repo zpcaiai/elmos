@@ -20,6 +20,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .models import RouteError
+from .process_io import run_bounded
 from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
 MAX_DESCRIPTOR_BYTES = 256 * 1024
@@ -274,7 +275,7 @@ def verify_react_repository_project(
             target.write_bytes(content)
         command = [toolchain.auxiliary, "-p", "tsconfig.json", "--pretty", "false"]
         try:
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=snapshot,
                 check=False,

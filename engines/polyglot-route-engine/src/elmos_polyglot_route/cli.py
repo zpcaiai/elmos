@@ -13,6 +13,7 @@ from .models import SUPPORTED_LANGUAGES, RouteError
 from .pipeline import run_repository_pipeline
 from .preflight import repository_preflight
 from .repository import plan_repository
+from .resource_budget import ExecutionBudget
 from .single_unit import check_only, emit_only
 
 SUBCOMMANDS = (
@@ -109,6 +110,8 @@ def _repository_pipeline_parser() -> argparse.ArgumentParser:
     parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
     parser.add_argument("--cases-directory", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--max-workers", type=int, default=1, choices=range(1, 9))
+    parser.add_argument("--memory-budget-mib", type=int, default=1024)
     return parser
 
 
@@ -235,6 +238,13 @@ def main(argv: list[str] | None = None) -> int:
 
         if subcommand == "repository-pipeline":
             pipeline_args = _repository_pipeline_parser().parse_args(remainder)
+            try:
+                budget = ExecutionBudget(
+                    max_workers=pipeline_args.max_workers,
+                    memory_budget_mib=pipeline_args.memory_budget_mib,
+                )
+            except ValueError as error:
+                raise RouteError("EXECUTION_RESOURCE_BUDGET_INVALID") from error
             report = run_repository_pipeline(
                 pipeline_args.repository,
                 pipeline_args.repository_ref,
@@ -242,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
                 pipeline_args.target_language,
                 pipeline_args.cases_directory,
                 pipeline_args.output,
+                execution_budget=budget,
             )
             return _emit(report)
 

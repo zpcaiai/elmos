@@ -6,11 +6,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,6 +35,12 @@ import java.util.Map;
  */
 public final class S3ObjectStore {
 
+    public static final String LEGACY_UNFENCED = "LEGACY_UNFENCED";
+    public static final String WRITE_ONCE_RECLAIM_FENCE_V1 =
+            "WRITE_ONCE_RECLAIM_FENCE_V1";
+    private static final byte[] RECLAIM_FENCE =
+            "{\"elmos\":\"reclaimed-v1\"}\n".getBytes(StandardCharsets.UTF_8);
+
     public static final class ObjectStorageException extends RuntimeException {
         private static final long serialVersionUID = 1L;
         private final String code;
@@ -47,11 +56,46 @@ public final class S3ObjectStore {
     }
 
     /**
+     * Host-owned protocol capability, not a deployment flag or a provider HTTP
+     * success code. Existing bearer PUT URLs can replay across a DELETE and an
+     * expired URL does not prove an already accepted writer has stopped.
+     */
+    public enum HostedPhysicalGcCapability {
+        BLOCKED_UPLOAD_FENCING,
+        WRITE_ONCE_RECLAIM_FENCE_V1;
+
+        public void requireWriterQuiescence() {
+            if (this != WRITE_ONCE_RECLAIM_FENCE_V1) {
+                throw new IllegalStateException(
+                        "PHYSICAL_GC_BLOCKED_UPLOAD_FENCING");
+            }
+        }
+    }
+
+    /**
+     * Code and provider verification must agree. A caller flag alone cannot
+     * turn an unfenced backend into a reclaimable one.
+     */
+    public static HostedPhysicalGcCapability hostedPhysicalGcCapability(
+            Backend backend) {
+        if (backend != null
+                && WRITE_ONCE_RECLAIM_FENCE_V1.equals(
+                        backend.uploadFencingProtocol())
+                && ("S3".equals(backend.backendKind())
+                    || "MINIO".equals(backend.backendKind())
+                    || "OSS".equals(backend.backendKind()))) {
+            return HostedPhysicalGcCapability.WRITE_ONCE_RECLAIM_FENCE_V1;
+        }
+        return HostedPhysicalGcCapability.BLOCKED_UPLOAD_FENCING;
+    }
+
+    /**
      * Resolved backend configuration, mirroring one ACTIVE row of
      * {@code object_storage_backends}.
      */
     public record Backend(
             String backendId,
+            String backendKind,
             String state,
             String endpoint,
             String bucket,
@@ -60,6 +104,7 @@ public final class S3ObjectStore {
             String serverSideEncryption,
             String cmkReference,
             long maxObjectBytes,
+            String uploadFencingProtocol,
             SigV4Presigner.Credentials credentials) {
 
         public boolean writable() {
@@ -75,7 +120,8 @@ public final class S3ObjectStore {
     public interface ObjectStorageMetadata {
         /** Creates or returns the PENDING_UPLOAD row for this tenant and digest. */
         String registerPendingObject(String organizationId, String contentSha256, long byteSize,
-                                     String mediaType, String backendId, String storageKey);
+                                     String mediaType, String backendId, String storageKey,
+                                     String uploadProtocol);
 
         void markAvailable(String organizationId, String contentObjectId);
 
@@ -125,23 +171,16 @@ public final class S3ObjectStore {
             throw new ObjectStorageException("ARTIFACT_SIZE_OUT_OF_RANGE");
         }
         String key = storageKey(organizationId, contentSha256);
+        String uploadProtocol = normalizedUploadProtocol();
         String contentObjectId = metadata.registerPendingObject(
-                organizationId, contentSha256, byteSize, mediaType, backend.backendId(), key);
+                organizationId, contentSha256, byteSize, mediaType,
+                backend.backendId(), key, uploadProtocol);
+
+        Map<String, String> headers = uploadHeaders(uploadProtocol);
 
         URI url = SigV4Presigner.presign("PUT", backend.endpoint(), backend.bucket(), key,
                 backend.region(), backend.pathStyle(), backend.credentials(),
-                clock.instant(), expiresIn, Map.of());
-
-        // Server-side encryption is requested through headers the uploader must
-        // send. They are returned with the ticket so the runner cannot silently
-        // write an unencrypted object.
-        Map<String, String> headers = switch (backend.serverSideEncryption()) {
-            case "SSE_KMS" -> Map.of(
-                    "x-amz-server-side-encryption", "aws:kms",
-                    "x-amz-server-side-encryption-aws-kms-key-id", backend.cmkReference());
-            case "SSE_S3" -> Map.of("x-amz-server-side-encryption", "AES256");
-            default -> Map.of();
-        };
+                clock.instant(), expiresIn, Map.of(), headers);
 
         return new UploadTicket(url, key, contentObjectId, headers);
     }
@@ -173,6 +212,11 @@ public final class S3ObjectStore {
      */
     public void deleteObject(String organizationId, String contentSha256) {
         requireWritable();
+        if (hostedPhysicalGcCapability(backend)
+                == HostedPhysicalGcCapability.WRITE_ONCE_RECLAIM_FENCE_V1) {
+            throw new ObjectStorageException(
+                    "OBJECT_DELETE_WOULD_REMOVE_UPLOAD_FENCE");
+        }
         String key = storageKey(organizationId, contentSha256);
         URI url = SigV4Presigner.presign(
                 "DELETE", backend.endpoint(), backend.bucket(), key,
@@ -195,6 +239,69 @@ public final class S3ObjectStore {
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();
             throw new ObjectStorageException("OBJECT_DELETE_INTERRUPTED");
+        }
+    }
+
+    public record ReclaimReceipt(
+            String providerRequestId,
+            String fenceSha256,
+            long fenceBytes) {
+    }
+
+    /**
+     * Reclaims payload bytes without creating a namespace gap.
+     *
+     * <p>Every client upload for this protocol is a signed create-if-absent
+     * request. The host atomically replaces the payload with a small permanent
+     * fence and verifies the exact fence bytes. A stale client PUT therefore
+     * sees an existing key and cannot resurrect the payload. Provider versioning
+     * must be disabled or suspended as part of backend verification, otherwise
+     * replacing the current version would not physically reclaim old bytes.</p>
+     */
+    public ReclaimReceipt reclaimObject(
+            String organizationId,
+            String contentSha256,
+            String expectedStorageKey) {
+        requireWritable();
+        hostedPhysicalGcCapability(backend).requireWriterQuiescence();
+        String key = storageKey(organizationId, contentSha256);
+        if (!key.equals(expectedStorageKey)) {
+            throw new ObjectStorageException(
+                    "OBJECT_GC_PROVIDER_BINDING_MISMATCH");
+        }
+        Map<String, String> headers = new LinkedHashMap<>(encryptionHeaders());
+        headers.put("x-amz-meta-elmos-reclaim-fence", "v1");
+        URI put = SigV4Presigner.presign(
+                "PUT", backend.endpoint(), backend.bucket(), key,
+                backend.region(), backend.pathStyle(), backend.credentials(),
+                clock.instant(), Duration.ofMinutes(5), Map.of(), headers);
+        try {
+            HttpRequest.Builder request = HttpRequest.newBuilder(put)
+                    .timeout(Duration.ofSeconds(30))
+                    .PUT(HttpRequest.BodyPublishers.ofByteArray(RECLAIM_FENCE));
+            headers.forEach(request::header);
+            HttpResponse<Void> response = http.send(
+                    request.build(), HttpResponse.BodyHandlers.discarding());
+            if (response.statusCode() / 100 != 2) {
+                throw new ObjectStorageException(
+                        "OBJECT_RECLAIM_FAILED_" + response.statusCode());
+            }
+            String requestId = response.headers()
+                    .firstValue("x-amz-request-id")
+                    .or(() -> response.headers().firstValue("x-oss-request-id"))
+                    .filter(value -> !value.isBlank() && value.length() <= 240)
+                    .orElseThrow(() -> new ObjectStorageException(
+                            "OBJECT_RECLAIM_RECEIPT_MISSING"));
+            verifyReclaimFence(key);
+            return new ReclaimReceipt(
+                    requestId,
+                    SigV4Presigner.sha256Hex(RECLAIM_FENCE),
+                    RECLAIM_FENCE.length);
+        } catch (IOException error) {
+            throw new ObjectStorageException("OBJECT_RECLAIM_IO");
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw new ObjectStorageException("OBJECT_RECLAIM_INTERRUPTED");
         }
     }
 
@@ -279,6 +386,68 @@ public final class S3ObjectStore {
     private void requireReadable() {
         if (!backend.readable()) {
             throw new ObjectStorageException("OBJECT_STORAGE_NOT_CONFIGURED");
+        }
+    }
+
+    private String normalizedUploadProtocol() {
+        String protocol = backend.uploadFencingProtocol();
+        if (protocol == null || protocol.isBlank()) {
+            return LEGACY_UNFENCED;
+        }
+        if (!LEGACY_UNFENCED.equals(protocol)
+                && !WRITE_ONCE_RECLAIM_FENCE_V1.equals(protocol)) {
+            throw new ObjectStorageException(
+                    "OBJECT_UPLOAD_FENCING_PROTOCOL_UNKNOWN");
+        }
+        return protocol;
+    }
+
+    private Map<String, String> uploadHeaders(String uploadProtocol) {
+        Map<String, String> headers = new LinkedHashMap<>(encryptionHeaders());
+        if (WRITE_ONCE_RECLAIM_FENCE_V1.equals(uploadProtocol)) {
+            switch (backend.backendKind()) {
+                case "S3", "MINIO" -> headers.put("if-none-match", "*");
+                case "OSS" -> headers.put("x-oss-forbid-overwrite", "true");
+                default -> throw new ObjectStorageException(
+                        "OBJECT_UPLOAD_FENCING_BACKEND_UNSUPPORTED");
+            }
+        }
+        return Map.copyOf(headers);
+    }
+
+    private Map<String, String> encryptionHeaders() {
+        return switch (backend.serverSideEncryption()) {
+            case "SSE_KMS" -> Map.of(
+                    "x-amz-server-side-encryption", "aws:kms",
+                    "x-amz-server-side-encryption-aws-kms-key-id",
+                    backend.cmkReference());
+            case "SSE_S3" -> Map.of(
+                    "x-amz-server-side-encryption", "AES256");
+            default -> Map.of();
+        };
+    }
+
+    private void verifyReclaimFence(String key)
+            throws IOException, InterruptedException {
+        URI get = SigV4Presigner.presign(
+                "GET", backend.endpoint(), backend.bucket(), key,
+                backend.region(), backend.pathStyle(), backend.credentials(),
+                clock.instant(), Duration.ofMinutes(5), Map.of());
+        HttpResponse<InputStream> response = http.send(
+                HttpRequest.newBuilder(get)
+                        .timeout(Duration.ofSeconds(30)).GET().build(),
+                HttpResponse.BodyHandlers.ofInputStream());
+        if (response.statusCode() / 100 != 2) {
+            throw new ObjectStorageException(
+                    "OBJECT_RECLAIM_VERIFY_FAILED_" + response.statusCode());
+        }
+        byte[] observed;
+        try (InputStream input = response.body()) {
+            observed = input.readNBytes(RECLAIM_FENCE.length + 1);
+        }
+        if (!Arrays.equals(observed, RECLAIM_FENCE)) {
+            throw new ObjectStorageException(
+                    "OBJECT_RECLAIM_FENCE_MISMATCH");
         }
     }
 

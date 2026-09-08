@@ -267,6 +267,7 @@ public final class GitRepositoryWorkspaceService {
     private final int maximumWorkspaces;
     private final Duration workspaceTtl;
     private final PullRequestPublisher pullRequests;
+    private final java.util.concurrent.Executor cleanupExecutor;
 
     public GitRepositoryWorkspaceService(
             Path root,
@@ -313,6 +314,16 @@ public final class GitRepositoryWorkspaceService {
             Duration workspaceTtl,
             PullRequestPublisher pullRequests
     ) {
+        this(root, maximumFiles, maximumRepositoryBytes, allowControlledFileRepositories,
+                allowedGenericHosts, maximumWorkspaces, workspaceTtl, pullRequests, WorkspaceCleanup.EXECUTOR);
+    }
+
+    GitRepositoryWorkspaceService(
+            Path root, int maximumFiles, long maximumRepositoryBytes,
+            boolean allowControlledFileRepositories, Set<String> allowedGenericHosts,
+            int maximumWorkspaces, Duration workspaceTtl, PullRequestPublisher pullRequests,
+            java.util.concurrent.Executor cleanupExecutor
+    ) {
         this.root = Objects.requireNonNull(root, "root").toAbsolutePath().normalize();
         if (this.root.getParent() == null) throw new IllegalArgumentException("workspace root must not be a filesystem root");
         if (maximumFiles < 1 || maximumFiles > 1_000_000) throw new IllegalArgumentException("maximumFiles is invalid");
@@ -332,6 +343,7 @@ public final class GitRepositoryWorkspaceService {
         this.maximumWorkspaces = maximumWorkspaces;
         this.workspaceTtl = workspaceTtl;
         this.pullRequests = Objects.requireNonNull(pullRequests, "pullRequests");
+        this.cleanupExecutor = Objects.requireNonNull(cleanupExecutor, "cleanupExecutor");
         this.allowedGenericHosts = Objects.requireNonNull(
                 allowedGenericHosts, "allowedGenericHosts").stream()
                 .map(String::trim)
@@ -391,9 +403,11 @@ public final class GitRepositoryWorkspaceService {
         }
         String workspaceId = UUID.randomUUID().toString();
         Path directory = workspaceDirectory(workspaceId);
+        // Metadata discovery is single-flight and outside admission. Recursive cleanup is
+        // queued only after an expired workspace is atomically retired from the active set.
+        purgeExpiredWorkspaces();
         try (var workspaceGuard = WorkspaceLocks.acquire(coordinationRoot.resolve(workspaceId))) {
             try (var admission = WorkspaceLocks.acquire(coordinationRoot)) {
-                purgeExpiredWorkspaces();
                 Set<String> reserved = RESERVATIONS.computeIfAbsent(coordinationRoot, ignored -> new LinkedHashSet<>());
                 if (workspaceCount(reserved) + reserved.size() >= maximumWorkspaces) {
                     if (reserved.isEmpty()) RESERVATIONS.remove(coordinationRoot);
@@ -1456,16 +1470,27 @@ public final class GitRepositoryWorkspaceService {
         );
         if (!manifest.organizationId().equals(organizationId)) throw new SecurityException("GIT_WORKSPACE_TENANT_MISMATCH");
         if (!manifest.createdAt().plus(workspaceTtl).isAfter(Instant.now())) {
-            safeDelete(workspaceDirectory(workspaceId));
+            try { retireWorkspace(workspaceDirectory(workspaceId)); }
+            catch (IOException failure) {
+                throw new IllegalStateException("GIT_WORKSPACE_CLEANUP_FAILED", failure);
+            }
             throw new IllegalArgumentException("GIT_WORKSPACE_EXPIRED");
         }
         return manifest;
     }
 
     private void purgeExpiredWorkspaces() {
+        try (var maintenance = WorkspaceLocks.tryAcquire(coordinationRoot.resolve(".maintenance"))) {
+            if (maintenance == null) return;
+            retryRetiredWorkspaces();
+            retireExpiredWorkspaces();
+        }
+    }
+
+    private void retireExpiredWorkspaces() {
         Instant cutoff = Instant.now().minus(workspaceTtl);
         try (var directories = Files.list(root)) {
-            directories
+            var candidates = directories
                     .filter(path -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
                     .filter(path -> {
                         try {
@@ -1475,28 +1500,125 @@ public final class GitRepositoryWorkspaceService {
                             return false;
                         }
                     })
-                    .toList()
-                    .forEach(directory -> {
-                        // Never wait for a long-running Git operation while holding admission.
-                        try (var workspaceGuard = WorkspaceLocks.tryAcquire(
-                                coordinationRoot.resolve(directory.getFileName()))) {
-                        if (workspaceGuard == null) return;
-                        Path manifest = directory.resolve(MANIFEST);
-                        Properties properties = new Properties();
-                        try (var input = Files.newInputStream(manifest)) {
-                            properties.load(input);
-                            Instant createdAt = Instant.parse(properties.getProperty("createdAt"));
-                            if (directory.getFileName().toString().equals(properties.getProperty("workspaceId"))
-                                    && !createdAt.isAfter(cutoff)) {
-                                safeDelete(directory);
-                            }
-                        } catch (RuntimeException | IOException ignored) {
-                            // Unknown or corrupt directories are never auto-deleted.
+                    .iterator();
+            int retired = 0;
+            while (candidates.hasNext() && retired < 8) {
+                Path directory = candidates.next();
+                try (var workspaceGuard = WorkspaceLocks.tryAcquire(
+                        coordinationRoot.resolve(directory.getFileName()))) {
+                    if (workspaceGuard == null) continue;
+                    Path manifest = directory.resolve(MANIFEST);
+                    if (!Files.isRegularFile(manifest, LinkOption.NOFOLLOW_LINKS)
+                            || Files.size(manifest) > 64 * 1024) continue;
+                    Properties properties = new Properties();
+                    try {
+                        try (var input = Files.newInputStream(manifest)) { properties.load(input); }
+                        Instant createdAt = Instant.parse(properties.getProperty("createdAt"));
+                        if (directory.getFileName().toString().equals(properties.getProperty("workspaceId"))
+                                && !createdAt.isAfter(cutoff)) {
+                            if (retireWorkspace(directory)) retired++;
                         }
-                        }
-                    });
+                    } catch (RuntimeException | IOException ignored) {
+                        // Unknown or corrupt directories are never auto-deleted.
+                    }
+                }
+            }
         } catch (IOException error) {
             throw new IllegalStateException("GIT_WORKSPACE_CLEANUP_FAILED", error);
+        }
+    }
+
+    private boolean retireWorkspace(Path source) throws IOException {
+        // A failed cleanup must not turn an active-count limit into unbounded
+        // retained disk usage. Serialize this small backlog reservation separately
+        // from active admission; recursive removal never holds either lock.
+        try (var guard = WorkspaceLocks.acquire(coordinationRoot.resolve(".retirement-admission"))) {
+            return retireWorkspaceWithBacklogReservation(source);
+        }
+    }
+
+    private boolean retireWorkspaceWithBacklogReservation(Path source) throws IOException {
+        String workspaceId = source.getFileName().toString();
+        Path retiredRoot = retirementRoot();
+        try (var backlog = Files.list(retiredRoot)) {
+            if (backlog.limit(128).count() >= 128) return false;
+        }
+        Path retirement = retiredRoot.resolve(workspaceId);
+        try (var reservation = WorkspaceCleanup.reserve(
+                coordinationRoot.resolve(".retired").resolve(workspaceId))) {
+            if (reservation == null || Files.exists(retirement, LinkOption.NOFOLLOW_LINKS)) return false;
+            Files.createDirectory(retirement);
+            setOwnerOnlyDirectory(retirement);
+            Files.writeString(retirement.resolve("ticket"), retirementTicket(workspaceId),
+                    java.nio.file.StandardOpenOption.CREATE_NEW);
+            setOwnerOnly(retirement.resolve("ticket"));
+            try (var ticket = java.nio.channels.FileChannel.open(retirement.resolve("ticket"),
+                    java.nio.file.StandardOpenOption.WRITE)) { ticket.force(true); }
+            // Only the atomic active-set transition is protected by admission. A stopped
+            // writer can be retried from its ticket; no repository content supplies a path.
+            try (var admission = WorkspaceLocks.acquire(coordinationRoot)) {
+                Files.move(source, retirement.resolve("workspace"), StandardCopyOption.ATOMIC_MOVE);
+            }
+            reservation.submit(cleanupExecutor, () -> deleteRetiredWorkspace(retirement));
+            return true;
+        }
+    }
+
+    private Path retirementRoot() throws IOException {
+        Path retired = root.resolve(".retired");
+        Files.createDirectories(retired);
+        if (!Files.isDirectory(retired, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(retired)) {
+            throw new SecurityException("GIT_WORKSPACE_RETIREMENT_UNSAFE");
+        }
+        setOwnerOnlyDirectory(retired);
+        return retired;
+    }
+
+    private static String retirementTicket(String workspaceId) {
+        return "elmos-workspace-retirement/1\n" + workspaceId + "\n";
+    }
+
+    private boolean validRetirement(Path retirement) throws IOException {
+        try { requireUuid(retirement.getFileName().toString(), "workspaceId"); }
+        catch (IllegalArgumentException invalid) { return false; }
+        if (!Files.isDirectory(retirement, LinkOption.NOFOLLOW_LINKS)) return false;
+        Path ticket = retirement.resolve("ticket");
+        return Files.isRegularFile(ticket, LinkOption.NOFOLLOW_LINKS)
+                && Files.size(ticket) < 128
+                && Files.readString(ticket).equals(retirementTicket(retirement.getFileName().toString()));
+    }
+
+    private void retryRetiredWorkspaces() {
+        Path retiredRoot = root.resolve(".retired");
+        if (!Files.isDirectory(retiredRoot, LinkOption.NOFOLLOW_LINKS)) return;
+        try (var entries = Files.list(retiredRoot)) {
+            var iterator = entries.iterator();
+            int scheduled = 0;
+            while (iterator.hasNext() && scheduled < 8) {
+                Path retirement = iterator.next();
+                if (!validRetirement(retirement)) continue;
+                try (var reservation = WorkspaceCleanup.reserve(coordinationRoot.resolve(".retired")
+                        .resolve(retirement.getFileName()))) {
+                    if (reservation == null) continue;
+                    reservation.submit(cleanupExecutor, () -> deleteRetiredWorkspace(retirement));
+                    scheduled++;
+                }
+            }
+        } catch (IOException failure) {
+            throw new IllegalStateException("GIT_WORKSPACE_CLEANUP_FAILED", failure);
+        }
+    }
+
+    private void deleteRetiredWorkspace(Path retirement) {
+        try {
+            if (!validRetirement(retirement)) throw new SecurityException("GIT_WORKSPACE_RETIREMENT_UNSAFE");
+            // Retain the ticket until recursive deletion has completed, so an interrupted
+            // cleanup never has to guess which unfinished directories it owns.
+            safeDelete(retirement.resolve("workspace"));
+            Files.deleteIfExists(retirement.resolve("ticket"));
+            Files.delete(retirement);
+        } catch (IOException failure) {
+            throw new IllegalStateException("GIT_WORKSPACE_CLEANUP_FAILED", failure);
         }
     }
 

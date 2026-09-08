@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -117,8 +120,8 @@ def test_current_engine_capture_binds_all_required_assets_and_runtime_modules(
         artifact_directory=artifact_directory,
     )
 
-    assert len(validator.ENGINE_RUNTIME_MODULES) == 13
-    assert len(validator.ENGINE_SOURCE_REQUIRED_ASSETS) == 16
+    assert len(validator.ENGINE_RUNTIME_MODULES) == 22
+    assert len(validator.ENGINE_SOURCE_REQUIRED_ASSETS) == 25
     assert _failures(
         validator,
         route,
@@ -127,6 +130,57 @@ def test_current_engine_capture_binds_all_required_assets_and_runtime_modules(
         records,
         runtime_provenance,
     ) == []
+
+
+def test_runtime_module_allowlist_covers_the_isolated_import_closure(
+    validator: Any,
+) -> None:
+    source_root = (
+        ROOT
+        / validator.ENGINE_RUNTIME_PROJECT_RELATIVE
+        / "src"
+    )
+    probe = """
+import importlib
+import json
+import sys
+from pathlib import Path
+
+declared = json.loads(sys.argv[1])
+source_root = Path(sys.argv[2]).resolve(strict=True)
+for module_name in declared:
+    importlib.import_module(module_name)
+loaded = {}
+for module_name, module in tuple(sys.modules.items()):
+    if module_name != "elmos_polyglot_route" and not module_name.startswith(
+        "elmos_polyglot_route."
+    ):
+        continue
+    origin = getattr(module, "__file__", None)
+    if not isinstance(origin, str):
+        continue
+    try:
+        relative = Path(origin).resolve(strict=True).relative_to(source_root)
+    except (OSError, ValueError):
+        continue
+    if relative.suffix == ".py":
+        loaded[module_name] = relative.as_posix()
+print(json.dumps(loaded, sort_keys=True))
+"""
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            probe,
+            json.dumps(sorted(validator.ENGINE_RUNTIME_MODULES)),
+            str(source_root),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert json.loads(completed.stdout) == validator.ENGINE_RUNTIME_MODULES
 
 
 @pytest.mark.parametrize(

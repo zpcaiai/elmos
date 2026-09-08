@@ -134,7 +134,8 @@ public class ArtifactController {
      * digest is therefore returned alongside the URL.</p>
      */
     @PostMapping("/api/v1/execution/jobs/{jobId}/artifacts/{role}/download-ticket")
-    public ResponseEntity<?> downloadTicket(@PathVariable String jobId, @PathVariable String role) {
+    public ResponseEntity<?> downloadTicket(@PathVariable String jobId, @PathVariable String role,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String filename) {
         String organizationId = tenants.organizationId();
         ControlPlanePrincipal principal = ControlPlanePrincipal.current()
                 .orElseThrow(() -> new org.springframework.security.access.AccessDeniedException(
@@ -152,7 +153,8 @@ public class ArtifactController {
                     .body(Map.of("status", "ERROR", "code", "ELMOS_EXECUTION_JOB_UNKNOWN"));
         }
 
-        String artifactId = storage.artifactIdFor(organizationId, jobId, role)
+        String artifactId = (filename == null ? storage.artifactIdFor(organizationId, jobId, role)
+                : storage.artifactIdFor(organizationId, jobId, role, filename))
                 .orElse(null);
         if (artifactId == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -169,11 +171,13 @@ public class ArtifactController {
 
         return ResponseEntity.ok(Map.of(
                 "downloadUrl", ticket.downloadUrl().toString(),
-                "filename", granted.filename(),
+                "filename", filename == null ? granted.filename() : java.nio.file.Path.of(granted.filename()).getFileName().toString(),
                 "contentSha256", granted.contentSha256(),
                 "byteSize", granted.byteSize(),
                 "expiresInSeconds", DOWNLOAD_TICKET_TTL_SECONDS));
     }
+
+    public ResponseEntity<?> downloadTicket(String jobId, String role) { return downloadTicket(jobId,role,null); }
 
     private static String permissionFor(String role) {
         return switch (role.toUpperCase(Locale.ROOT)) {

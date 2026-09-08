@@ -18,16 +18,41 @@ def _hosted_repository_matrix_languages() -> tuple[str, ...]:
         / "engines/polyglot-route-engine/src/elmos_polyglot_route/models.py"
     )
     module = ast.parse(models_path.read_text(encoding="utf-8"))
+    tuples: dict[str, tuple[str, ...]] = {}
     for node in module.body:
         if (
             isinstance(node, ast.AnnAssign)
             and isinstance(node.target, ast.Name)
-            and node.target.id == "HOSTED_REPOSITORY_MATRIX_LANGUAGES"
+            and node.target.id in {
+                "SUPPORTED_LANGUAGES",
+                "EXTERNAL_TOOLCHAIN_LANGUAGES",
+                "HOSTED_REPOSITORY_MATRIX_LANGUAGES",
+            }
         ):
             value = ast.literal_eval(node.value)
             if isinstance(value, tuple) and all(isinstance(item, str) for item in value):
-                return value
-    raise AssertionError("HOSTED_REPOSITORY_MATRIX_LANGUAGES literal was not found")
+                tuples[node.target.id] = value
+    expected_names = {
+        "SUPPORTED_LANGUAGES",
+        "EXTERNAL_TOOLCHAIN_LANGUAGES",
+        "HOSTED_REPOSITORY_MATRIX_LANGUAGES",
+    }
+    if set(tuples) != expected_names:
+        raise AssertionError("route language lifecycle literals were not found")
+    external = set(tuples["EXTERNAL_TOOLCHAIN_LANGUAGES"])
+    if not external.issubset(tuples["SUPPORTED_LANGUAGES"]):
+        raise AssertionError("external toolchain languages must be supported")
+    local_execution = tuple(
+        language
+        for language in tuples["SUPPORTED_LANGUAGES"]
+        if language not in external
+    )
+    hosted = tuples["HOSTED_REPOSITORY_MATRIX_LANGUAGES"]
+    if hosted != local_execution:
+        raise AssertionError(
+            "hosted repository matrix must equal supported languages minus external toolchains"
+        )
+    return hosted
 
 
 def _locally_executable_repository_languages() -> tuple[str, ...]:

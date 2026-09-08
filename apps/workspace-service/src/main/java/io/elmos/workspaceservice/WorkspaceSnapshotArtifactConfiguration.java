@@ -121,7 +121,9 @@ class WorkspaceSnapshotArtifactConfiguration {
             @Value("${elmos.workspace.snapshot-cas.encryption.key-directory:}")
             String keyDirectory,
             @Value("${elmos.workspace.snapshot-cas.encryption.provider:DIRECTORY}")
-            String provider
+            String provider,
+            @Value("${elmos.workspace.snapshot-max-artifact-bytes:1073741824}") long maximumArtifactBytes,
+            @Value("${elmos.workspace.snapshot-cas.encryption.maximum-legacy-bytes:67108864}") long maximumLegacyBytes
     ) {
         if (casRoot.isBlank()) {
             throw new IllegalStateException("workspace snapshot CAS root is required");
@@ -139,7 +141,8 @@ class WorkspaceSnapshotArtifactConfiguration {
             throw new IllegalStateException(
                     "workspace snapshot CAS encryption provider is invalid");
         }
-        return new TenantEncryptedLocalCasStore(storeName, storage, encryption);
+        return new TenantEncryptedLocalCasStore(storeName, storage, encryption,
+                maximumArtifactBytes, maximumLegacyBytes);
     }
 
     @Bean

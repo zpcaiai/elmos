@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
 import path from "node:path";
-import { Unzip, UnzipInflate } from "fflate";
+import { Unzip } from "fflate";
+import { AsynchronousZipInflate } from "./asynchronousZipInflate";
 import type {
   TranslationConversionReportFile,
   TranslationConversionSummary,
@@ -75,6 +76,8 @@ export type ValidatedTranslationPreflight = {
 };
 
 export type TranslationCodeArtifactContext = {
+  manifestSha256?: string;
+  repositoryClaims?: Readonly<Record<string, unknown>>;
   pipelineStatus: "COMPLETE" | "PARTIAL";
   repositoryRef: string;
   snapshotSha256: string;
@@ -1323,7 +1326,8 @@ export async function validateTranslationConversionBundleArchive(
     };
     file.start();
   });
-  unzip.register(UnzipInflate);
+  const inflaters = new AsynchronousZipInflate();
+  unzip.register(inflaters.decoder);
   const archiveDigest = createHash("sha256");
   let archiveBytes = 0;
   try {
@@ -1336,12 +1340,16 @@ export async function validateTranslationConversionBundleArchive(
       if (archiveBytes > descriptor.bytes) invalid();
       archiveDigest.update(bytes);
       unzip.push(bytes, false);
+      await inflaters.drain();
       if (validationError) throw validationError;
     }
     unzip.push(new Uint8Array(), true);
+    await inflaters.drain();
     if (validationError) throw validationError;
   } catch {
     invalid();
+  } finally {
+    inflaters.close();
   }
   if (
     validationError
@@ -1442,7 +1450,8 @@ export async function validateTranslationCodeArtifactArchive(
     };
     file.start();
   });
-  unzip.register(UnzipInflate);
+  const inflaters = new AsynchronousZipInflate();
+  unzip.register(inflaters.decoder);
 
   const archiveDigest = createHash("sha256");
   let archiveBytes = 0;
@@ -1456,12 +1465,16 @@ export async function validateTranslationCodeArtifactArchive(
       if (archiveBytes > descriptor.bytes) invalidArtifact();
       archiveDigest.update(bytes);
       unzip.push(bytes, false);
+      await inflaters.drain();
       if (validationError) throw validationError;
     }
     unzip.push(new Uint8Array(), true);
+    await inflaters.drain();
     if (validationError) throw validationError;
   } catch {
     invalidArtifact();
+  } finally {
+    inflaters.close();
   }
   if (
     validationError
@@ -1494,6 +1507,18 @@ export async function validateTranslationCodeArtifactArchive(
       "snapshot_sha256",
       "status",
     ];
+    if ("repository_complete" in manifest) {
+      // This is the exact expanded schema emitted by the repository pipeline,
+      // not permission to accept arbitrary added claims. A prior semantic
+      // validator must bind these precise manifest bytes before reuse.
+      if (!expected.manifestSha256 || !DIGEST_PATTERN.test(expected.manifestSha256)
+        || createHash("sha256").update(Buffer.concat(manifestChunks)).digest("hex") !== expected.manifestSha256) invalidArtifact();
+      expectedTopLevelKeys.push("source_language","target_language","repository_scale","repository_limits","unit_batch_status",
+        "project_graph","conversion_coverage","behavior_coverage","repository_complete","runtime_verification_status",
+        "local_execution_evidence","repository_execution_status","independent_verification_status");
+      expectedTopLevelKeys.sort();
+      if (expected.repositoryClaims && Object.entries(expected.repositoryClaims).some(([key,value])=>!deepJsonEqual(manifest[key],value))) invalidArtifact();
+    }
     if (JSON.stringify(Object.keys(manifest).sort()) !== JSON.stringify(expectedTopLevelKeys)) {
       invalidArtifact();
     }

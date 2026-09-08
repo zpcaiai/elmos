@@ -22,6 +22,7 @@ from __future__ import annotations
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -334,6 +335,338 @@ def test_cpp_source_lifts_scalars_and_control_flow(tmp_path: Path) -> None:
     assert [statement.kind for statement in function.body] == ["if", "return"]
     content, planned = _emitted(semantic, "java")
     assert planned("public static long calculate(long subtotal, long tax)") in content
+
+
+@requires_clang
+def test_cpp_ast_filter_selects_the_exact_name_from_multiple_json_documents(
+    tmp_path: Path,
+) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".cpp",
+        "cpp",
+        "#include <cstdint>\n"
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "std::int64_t calculateTotal(std::int64_t value) { return value + 1; }\n",
+        "calculate",
+    )
+    assert [function.name for function in semantic.functions] == ["calculate"]
+
+
+@requires_clang
+def test_cpp_inventory_precompiles_system_headers_without_losing_main_file_closure(
+    tmp_path: Path,
+) -> None:
+    from elmos_polyglot_route.clang_analyzer import inventory_clang_module
+
+    source = tmp_path / "bounded_inventory.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        "#include <stdexcept>\n"
+        "#include <string>\n\n"
+        "using Amount = std::int64_t;\n"
+        "static Amount checked_add(Amount left, Amount right) { return left + right; }\n"
+        "bool same(const std::string &left, const std::string &right) { return left == right; }\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+
+    assert inventory["enumeration_status"] == "PASSED"
+    assert [
+        (subject["declaration_kind"], subject["name"])
+        for subject in inventory["subjects"]
+    ] == [
+        ("TypeAliasDecl", "Amount"),
+        ("FunctionDecl", "checked_add"),
+        ("FunctionDecl", "same"),
+    ]
+    assert all(
+        subject["source_span"]["end_byte"] <= source.stat().st_size
+        for subject in inventory["subjects"]
+    )
+
+
+@pytest.mark.skipif(
+    sys.platform != "darwin" or CLANG is None,
+    reason="Foundation inventory requires Apple clang",
+)
+def test_objc_inventory_precompiles_foundation_without_losing_main_file_closure(
+    tmp_path: Path,
+) -> None:
+    from elmos_polyglot_route.clang_analyzer import inventory_clang_module
+
+    source = tmp_path / "bounded_inventory.m"
+    source.write_text(
+        "#import <Foundation/Foundation.h>\n\n"
+        "long long calculate(long long left, long long right) { return left + right; }\n"
+        "BOOL both(BOOL left, BOOL right) { return left && right; }\n",
+        encoding="utf-8",
+    )
+    assert CLANG is not None
+
+    inventory = inventory_clang_module(source, "objc", CLANG, "test")
+
+    assert inventory["enumeration_status"] == "PASSED"
+    assert [subject["name"] for subject in inventory["subjects"]] == ["calculate", "both"]
+    assert all(subject["analyzable"] is True for subject in inventory["subjects"])
+
+
+def test_pch_optimization_accepts_only_exact_emitter_owned_preludes(tmp_path: Path) -> None:
+    from elmos_polyglot_route.clang_analyzer import _system_header_prelude
+
+    source = tmp_path / "module.cpp"
+    source.write_text(
+        "#include <cstdint>\n#include <stdexcept>\n#include <string>\n\nvoid run() {}\n",
+        encoding="utf-8",
+    )
+    assert _system_header_prelude(source, "cpp") is not None
+
+    source.write_text("#include <vector>\n\nvoid run() {}\n", encoding="utf-8")
+    assert _system_header_prelude(source, "cpp") is None
+
+    source.write_text(
+        "#include <cstdint>\n#include <stdexcept>\n#include <string>\n\n"
+        "#include <vector>\nvoid run() {}\n",
+        encoding="utf-8",
+    )
+    assert _system_header_prelude(source, "cpp") is None
+
+
+def test_pch_inventory_stages_share_one_deadline(tmp_path: Path, monkeypatch) -> None:
+    import elmos_polyglot_route.clang_analyzer as clang_analyzer
+
+    source = tmp_path / "module.cpp"
+    source.write_text(
+        "#include <cstdint>\n#include <stdexcept>\n#include <string>\n\nvoid run() {}\n",
+        encoding="utf-8",
+    )
+    timeouts: list[float] = []
+    calls = 0
+
+    def fake_run(command, **kwargs):
+        nonlocal calls
+        calls += 1
+        timeouts.append(kwargs["timeout"])
+        if calls == 2:
+            kwargs["stdout_log"].write(b"bounded-pch")
+        stdout = '{"kind":"TranslationUnitDecl","inner":[]}' if calls == 3 else ""
+        return subprocess.CompletedProcess(command, 0, stdout, "")
+
+    ticks = iter((100.0, 101.0, 102.0, 103.0))
+    monkeypatch.setattr(clang_analyzer, "run_bounded", fake_run)
+    monkeypatch.setattr(clang_analyzer, "_sdk_path", lambda _value: "/sdk")
+    monkeypatch.setattr(clang_analyzer.time, "monotonic", lambda: next(ticks))
+
+    tree = clang_analyzer._run_clang(
+        "/clang++",
+        source,
+        "cpp",
+        None,
+        precompile_system_prelude=True,
+    )
+
+    assert tree["kind"] == "TranslationUnitDecl"
+    assert timeouts == [599.0, 598.0, 597.0]
+
+
+def test_pch_consume_failure_is_infrastructure_and_has_stable_paths(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    import elmos_polyglot_route.clang_analyzer as clang_analyzer
+
+    source = tmp_path / "module.cpp"
+    source.write_text(
+        "#include <cstdint>\n#include <stdexcept>\n#include <string>\n\nvoid run() {}\n",
+        encoding="utf-8",
+    )
+    calls = 0
+
+    def fake_run(command, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            kwargs["stdout_log"].write(b"bounded-pch")
+        if calls == 3:
+            return subprocess.CompletedProcess(
+                command,
+                1,
+                "",
+                f"{command[-1]}: fatal error: malformed or corrupted AST file",
+            )
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(clang_analyzer, "run_bounded", fake_run)
+    monkeypatch.setattr(clang_analyzer, "_sdk_path", lambda _value: "/sdk")
+
+    with pytest.raises(RouteError) as captured:
+        clang_analyzer._run_clang(
+            "/clang++",
+            source,
+            "cpp",
+            None,
+            precompile_system_prelude=True,
+        )
+
+    message = str(captured.value)
+    assert message.startswith("NATIVE_ANALYZER_PCH_FAILED:/clang++:")
+    assert str(source.resolve()) in message
+    assert "elmos-clang-env-" not in message
+
+
+@requires_clang
+def test_cpp_ast_filter_preserves_the_missing_symbol_contract(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:missing$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\nstd::int64_t calculate(std::int64_t value) { return value; }\n",
+            "missing",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_a_namespaced_function_as_top_level(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "namespace billing {\n"
+            "std::int64_t calculate(std::int64_t value) { return value + 1; }\n"
+            "}\n"
+            "using billing::calculate;\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_selects_global_over_same_named_namespace_function(
+    tmp_path: Path,
+) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".cpp",
+        "cpp",
+        "#include <cstdint>\n"
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "namespace billing {\n"
+        "std::int64_t calculate(std::int64_t value) { return value + 1; }\n"
+        "}\n",
+        "calculate",
+    )
+    expression = semantic.functions[0].body[0].expression
+    assert expression is not None
+    assert expression.kind == "name"
+    assert expression.value == "value"
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_c_linkage_outside_inventory_scope(tmp_path: Path) -> None:
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        'extern "C" {\n'
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    assert subject["analyzable"] is False
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_hidden_friend_outside_inventory_scope(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "struct Billing {\n"
+            "friend std::int64_t calculate(std::int64_t value) { return value; }\n"
+            "};\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_anonymous_namespace_function(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "namespace {\n"
+            "std::int64_t calculate(std::int64_t value) { return value; }\n"
+            "}\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_linkage_wrapper_preserves_default_cpp_function_semantics(
+    tmp_path: Path,
+) -> None:
+    """Explicit C++ linkage is transparent while its wrapper stays explicit."""
+
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        'extern "C++" {\n'
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    semantic = analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    wrapper = next(
+        row for row in inventory["subjects"] if row["declaration_kind"] == "LinkageSpecDecl"
+    )
+    assert subject["analyzable"] is True
+    assert wrapper["analyzable"] is False
+    assert semantic.functions[0].name == "calculate"
+
+
+@requires_clang
+def test_cpp_file_static_function_matches_inventory_analyzability(tmp_path: Path) -> None:
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        "static std::int64_t calculate(std::int64_t value) { return value; }\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    semantic = analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    assert subject["analyzable"] is True
+    assert subject["signature"]["visibility"] == "internal"
+    assert semantic.functions[0].name == "calculate"
 
 
 @requires_clang

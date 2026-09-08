@@ -110,7 +110,7 @@ def atomic_write_bytes(
 
 
 def _open_stable(path: Path, *, max_bytes: int, unsafe_error: str, limit_error: str) -> tuple[int, os.stat_result]:
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
     try:
         descriptor = os.open(path, flags)
     except OSError as error:
@@ -131,11 +131,29 @@ def _verify_stable_path(path: Path, before: os.stat_result, descriptor: int, cha
         current = path.stat(follow_symlinks=False)
     except OSError as error:
         raise RouteError(changed_error) from error
-    def identity(value: os.stat_result) -> tuple[int, int, int, int]:
-        return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns
+    def identity(value: os.stat_result) -> tuple[int, ...]:
+        return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns, value.st_nlink
 
     if identity(before) != identity(after) or identity(before) != identity(current):
         raise RouteError(changed_error)
+
+
+@contextmanager
+def stable_input_file(
+    path: Path,
+    *,
+    max_bytes: int,
+    unsafe_error: str,
+    changed_error: str,
+    limit_error: str,
+) -> Iterator[BinaryIO]:
+    """Pin a regular inode for bounded streaming and verify its path on exit."""
+    descriptor, before = _open_stable(
+        path, max_bytes=max_bytes, unsafe_error=unsafe_error, limit_error=limit_error,
+    )
+    with os.fdopen(descriptor, "rb") as handle:
+        yield handle
+        _verify_stable_path(path, before, handle.fileno(), changed_error)
 
 
 def stable_file_digest(
