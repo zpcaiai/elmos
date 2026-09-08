@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import { POST as buyCredits } from "../app/api/billing/orders/credit-packs/_route.ts";
 import { POST as buyProject } from "../app/api/billing/orders/project-generations/_route.ts";
 import { GET as usageEvents } from "../app/api/usage/events/_route.ts";
+import { GET as commercialOrder } from "../app/api/billing/orders/[orderId]/_route.ts";
 
 function jsonRequest(path, body, key = "billing-test-key") {
   return new NextRequest(`http://localhost${path}`, {
@@ -44,4 +45,15 @@ test("raw usage history rejects invalid time windows before proxying", async () 
   ));
   assert.equal(response.status, 400);
   assert.equal((await response.json()).code, "USAGE_EVENTS_QUERY_INVALID");
+});
+
+test("commercial order detail rejects traversal and malformed identifiers before proxying", async () => {
+  for (const orderId of ["../other", "order/child", "", "订单-1"]) {
+    const response = await commercialOrder(
+      new NextRequest(`http://localhost/api/billing/orders/${encodeURIComponent(orderId)}`),
+      { params: Promise.resolve({ orderId }) },
+    );
+    assert.equal(response.status, 400);
+    assert.equal((await response.json()).code, "COMMERCIAL_ORDER_ID_INVALID");
+  }
 });

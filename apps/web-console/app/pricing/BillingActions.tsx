@@ -19,6 +19,8 @@ type TrialGrant = {
 };
 
 type PaymentProvider = "STRIPE_CHECKOUT" | "ALIPAY_CHECKOUT" | "WECHAT_PAY_NATIVE";
+type CommercialOrderStatus = "CREATED" | "PENDING_PAYMENT" | "PAID" | "FULFILLED"
+  | "EXPIRED" | "FAILED" | "RECONCILIATION_REQUIRED";
 
 // 结账响应有两种互斥形态，取决于目录里的 paymentProvider：
 //   跳转型（Stripe / 支付宝）→ checkoutUrl，浏览器跳过去付
@@ -218,7 +220,51 @@ export function ProductBillingAction({
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
   const [qrSvg, setQrSvg] = useState<string | null>(null);
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
   const oneTime = "operationKey" in product;
+
+  useEffect(() => {
+    if (!activeOrderId) return;
+    let stopped = false;
+    const check = async () => {
+      try {
+        const response = await fetch(
+          `/api/billing/orders/${encodeURIComponent(activeOrderId)}`,
+          { cache: "no-store", credentials: "same-origin" },
+        );
+        if (!response.ok || stopped) return;
+        const order = await json<{ status: CommercialOrderStatus }>(response);
+        if (stopped) return;
+        if (order.status === "FULFILLED") {
+          key.current = null;
+          setActiveOrderId(null);
+          setQrSvg(null);
+          setFailed(false);
+          setMessage(oneTime ? "付款已确认，项目生成权益已到账。" : "付款已确认，Credit 已到账。");
+          window.dispatchEvent(new Event("elmos:billing-changed"));
+        } else if (["FAILED", "EXPIRED", "RECONCILIATION_REQUIRED"].includes(order.status)) {
+          if (order.status !== "RECONCILIATION_REQUIRED") key.current = null;
+          setActiveOrderId(null);
+          setQrSvg(null);
+          setFailed(true);
+          setMessage(order.status === "RECONCILIATION_REQUIRED"
+            ? "支付结果需要人工对账，请勿重复付款。"
+            : order.status === "EXPIRED" ? "订单已过期，请重新发起购买。" : "订单未能完成，请重新发起购买。");
+          window.dispatchEvent(new Event("elmos:billing-changed"));
+        }
+      } catch {
+        // 查询失败不会改变订单事实；下一轮继续读取，绝不在浏览器里乐观入账。
+      }
+    };
+    void check();
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "hidden") void check();
+    }, 4_000);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, [activeOrderId, oneTime]);
 
   const purchase = async () => {
     setPending(true);
@@ -247,18 +293,22 @@ export function ProductBillingAction({
         },
       );
       const payload = await json<{
+        order: { orderId: string };
         paymentProvider: PaymentProvider;
         checkoutUrl?: string;
         qrCodeUrl?: string;
       }>(response);
       if (!response.ok) throw new Error(errorMessage(payload, "订单暂时无法创建。"));
+      if (!payload.order?.orderId) throw new Error("订单服务未返回可追踪的订单号。");
+      setActiveOrderId(payload.order.orderId);
+      window.dispatchEvent(new Event("elmos:billing-changed"));
       if (payload.paymentProvider === "WECHAT_PAY_NATIVE") {
         const code = payload.qrCodeUrl ?? "";
         if (!code.startsWith("weixin://wxpay/bizpayurl?")) {
           throw new Error("支付服务返回了无法识别的微信支付二维码内容。");
         }
         setQrSvg(renderQrSvg(code));
-        setMessage("请用微信扫码完成支付；回调确认后额度或项目权益自动到账。");
+        setMessage(`请用微信扫码完成支付；订单 ${payload.order.orderId} 将自动等待回调入账。`);
         return;
       }
       const destination = new URL(payload.checkoutUrl ?? "");
@@ -292,8 +342,8 @@ export function ProductBillingAction({
         </label>
       )}
       <button className="button button-secondary" type="button"
-        disabled={!orderable || pending} onClick={purchase}>
-        {pending ? "正在创建订单…" : orderable ? "立即购买" : "等待开放"}
+        disabled={!orderable || pending || activeOrderId !== null} onClick={purchase}>
+        {pending ? "正在创建订单…" : activeOrderId ? "等待支付确认…" : orderable ? "立即购买" : "等待开放"}
       </button>
       {qrSvg && <img className={styles.paymentQrCode}
         src={`data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`}
