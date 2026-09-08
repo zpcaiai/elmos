@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ElmPayMigrationContractTest {
     private static final Path REPAIR = Path.of(
-            "src/main/resources/db/migration/V94__elmpay_digest_function_schema_repair.sql");
+            "src/main/resources/db/migration/V95__elmpay_digest_function_schema_repair.sql");
 
     @Test void forwardRepairQualifiesDigestFunctionsAgainstTheirActualSchemas() throws Exception {
         String sql = Files.readString(REPAIR);

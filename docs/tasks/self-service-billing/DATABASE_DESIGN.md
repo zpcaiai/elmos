@@ -3,7 +3,7 @@
 ## 权威版本
 
 - 数据库：PostgreSQL 17.5
-- Flyway：V1–V94；基础计费为 `V49__self_service_billing_and_usage.sql`，
+- Flyway：V1–V95；基础计费为 `V49__self_service_billing_and_usage.sql`，
   Credit/一次性订单与用户维度扩展为 `V83__commercial_credit_and_one_time_orders.sql`；
   ELMPay 摘要目录为 V84，V94 前向修复其函数 schema 绑定
 - 目录版本：`2026-09-08.1`；V93 以前向追加方式保存三档订阅快照并重绑定试用/
@@ -79,7 +79,7 @@ WITH CHECK (organization_id = current_setting('app.organization_id', true))
 
 ## 已验证与未验证
 
-- 空数据库 V1–V94 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
+- 空数据库 V1–V95 重放、RLS、并发硬停止、幂等、试用防滥用、阈值告警、
   Credit/一次性权益和对账结案：
   由本地 PostgreSQL 17 集成测试验证。
 - 生产项目/分支/数据库上的表、策略与 Flyway 历史：`NOT_RUN`。

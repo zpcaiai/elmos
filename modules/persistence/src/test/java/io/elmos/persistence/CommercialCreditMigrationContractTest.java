@@ -12,7 +12,7 @@ class CommercialCreditMigrationContractTest {
     private static final Path MIGRATION = Path.of(
             "src/main/resources/db/migration/V83__commercial_credit_and_one_time_orders.sql");
     private static final Path CATALOG_READINESS_MIGRATION = Path.of(
-            "src/main/resources/db/migration/V93__commercial_catalog_runtime_readiness.sql");
+            "src/main/resources/db/migration/V94__commercial_catalog_runtime_readiness.sql");
 
     @Test void catalogContainsExactServerOwnedProducts() throws Exception {
         String sql = Files.readString(MIGRATION);

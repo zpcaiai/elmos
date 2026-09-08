@@ -99,7 +99,7 @@ ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启�
 3. 执行真实小额付款、回调重发、延迟回调、退款和逐笔对账；保存提供方 receipt。
 4. 外部门禁全部签核后发布新的 `PUBLISHED` 目录版本，再开启 live billing，并采用灰度流量。
 5. 异常回滚先关闭 `ELMOS_BILLING_LIVE_ENABLED` 和新生成入口；保留订单、回调、账本和
-   Token 事实供对账。V83–V94 是前向审计迁移，不做删除式 down migration。
+   Token 事实供对账。V83–V95 是前向审计迁移，不做删除式 down migration。
 
 ## 邮件告警
 
