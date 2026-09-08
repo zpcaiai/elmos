@@ -87,12 +87,12 @@ Micrometer 指标：
 
 ## 发布与回滚
 
-1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V83。
+1. 先备份并在同版本影子库执行 Flyway `validate → migrate → validate` 到 V91。
 2. 注入只读目录/白名单函数权限的运行角色和支付 Secret，保持 live billing 关闭。
 3. 执行真实小额付款、回调重发、延迟回调、退款和逐笔对账；保存提供方 receipt。
 4. 外部门禁全部签核后发布新的 `PUBLISHED` 目录版本，再开启 live billing，并采用灰度流量。
 5. 异常回滚先关闭 `ELMOS_BILLING_LIVE_ENABLED` 和新生成入口；保留订单、回调、账本和
-   Token 事实供对账。V83 是前向审计迁移，不做删除式 down migration。
+   Token 事实供对账。V91 是前向审计迁移，不做删除式 down migration。
 
 ## 邮件告警
 

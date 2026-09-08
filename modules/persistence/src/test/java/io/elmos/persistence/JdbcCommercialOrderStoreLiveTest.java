@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Real PostgreSQL proof for V83 order fulfillment, Credit accounting and entitlements. */
+/** Real PostgreSQL proof for V91 order fulfillment, Credit accounting and entitlements. */
 @Testcontainers(disabledWithoutDocker = true)
 class JdbcCommercialOrderStoreLiveTest {
     @Container

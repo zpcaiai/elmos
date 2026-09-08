@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 import static io.elmos.persistence.SqlTimestamps.offset;
 
-/** PostgreSQL adapter for V83 commercial orders and credits. */
+/** PostgreSQL adapter for V91 commercial orders and credits. */
 public final class JdbcCommercialOrderStore implements CommercialOrderPort {
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;

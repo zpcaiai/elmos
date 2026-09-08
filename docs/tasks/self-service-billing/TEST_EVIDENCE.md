@@ -10,8 +10,8 @@
 | Web `pnpm check` | TypeScript、BFF 策略/路由、实时用量、producer、Next 生产构建 | `PASS` |
 | Chromium + mobile Chromium 定价旅程 | 精确商品/金额/目录版本、DRAFT 付费禁用 | `PASS`（4/4） |
 | 项目任务 Markdown 文档包 | 架构、数据库、迁移、历史、追踪、归档 | `PASS`（3/3） |
-| PostgreSQL 17.5 空库 V1–V83 | 83 个迁移、DDL、函数、触发器、RLS | `PASS` |
-| V83 JDBC live integration | Credit/权益、并发、actor/tenant、生产 Token 事实历史、回调 claim、过期付款 | `PASS`（5/5） |
+| PostgreSQL 17.5 空库 V1–V91 | 91 个迁移、DDL、函数、触发器、RLS | `PASS` |
+| V91 JDBC live integration | Credit/权益、并发、actor/tenant、生产 Token 事实历史、回调 claim、过期付款 | `PASS`（5/5） |
 | 支付密码学/路由自检 | 12 组：真实密钥、签名、金额、重放、Spring、安全与目录 | `PASS`（全部零失败） |
 | 定价 JSON Schema | `jsonschema 4.25.1` 校验目录 | `PASS` |
 | 目录发布门禁 | DRAFT 结构验证；缺少真实外部证据时拒绝发布 | `PASS`（预期 `PUBLICATION_BLOCKED`） |
@@ -53,7 +53,7 @@
 - `uv run --quiet --with jsonschema==4.25.1 python ...`（目录 Schema）
 - `python3 scripts/commercial/validate_pricing_catalog_publication.py --check-publishable`
 - `uv run --project engines/project-synthesis-engine pytest -q engines/project-synthesis-engine/tests/test_project_documentation.py`
-- Flyway `validate → migrate → validate`，从空库应用 V1–V83
+- Flyway `validate → migrate → validate`，从空库应用 V1–V91
 
 ## 证据边界
 
