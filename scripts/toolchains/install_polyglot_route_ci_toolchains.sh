@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod codesign curl find git install mv python3 realpath shasum stat sudo sw_vers tar; do
+for command_name in brew cc chmod codesign curl find git install make mv python3 realpath shasum stat sudo sw_vers tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -721,8 +721,54 @@ install_pinned_uv() {
   fi
 }
 
+install_pinned_postgresql_17() {
+  local -r postgres_version="17.5"
+  local -r postgres_sha256="730bfef34b03825c051ae0fc37542c8be26b55a44e472369221afd397196e303"
+  local -r target="${TOOLCHAIN_ROOT}/postgresql/${postgres_version}"
+  if [[ -x "${target}/bin/postgres" ]] \
+    && [[ "$("${target}/bin/postgres" --version)" == "postgres (PostgreSQL) ${postgres_version}" ]]; then
+    printf '%s\n' "${target}/bin" >>"${GITHUB_PATH}"
+    printf 'POSTGRESQL_17_BIN=%s\n' "${target}/bin" >>"${GITHUB_ENV}"
+    return
+  fi
+  if [[ -e "${target}" || -L "${target}" ]]; then
+    printf 'Refusing to overwrite a non-matching PostgreSQL toolchain: %s\n' "${target}" >&2
+    exit 3
+  fi
+
+  local -r archive="${temporary_root}/postgresql-${postgres_version}.tar.gz"
+  local -r source_root="${temporary_root}/postgresql-${postgres_version}"
+  download_verified \
+    "https://ftp.postgresql.org/pub/source/v${postgres_version}/postgresql-${postgres_version}.tar.gz" \
+    "${postgres_sha256}" "${archive}"
+  tar -xzf "${archive}" -C "${temporary_root}"
+  (
+    cd "${source_root}"
+    ./configure \
+      --prefix="${target}" \
+      --without-icu \
+      --without-readline \
+      --without-zlib
+    make -j2
+    make install
+  )
+  if [[ "$("${target}/bin/postgres" --version)" != "postgres (PostgreSQL) ${postgres_version}" ]]; then
+    printf 'Pinned PostgreSQL identity does not match the typed SQL runtime.\n' >&2
+    exit 3
+  fi
+  for postgres_tool in postgres initdb pg_ctl createdb psql; do
+    if [[ ! -x "${target}/bin/${postgres_tool}" ]]; then
+      printf 'PostgreSQL %s is missing required tool: %s\n' "${postgres_version}" "${postgres_tool}" >&2
+      exit 3
+    fi
+  done
+  printf '%s\n' "${target}/bin" >>"${GITHUB_PATH}"
+  printf 'POSTGRESQL_17_BIN=%s\n' "${target}/bin" >>"${GITHUB_ENV}"
+}
+
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
   install_pinned_sqlite
+  install_pinned_postgresql_17
 fi
 
 if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
@@ -735,6 +781,7 @@ if [[ "${CI_PROFILE}" == "typed-sql" ]]; then
   {
     printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin"
     printf '%s\n' "$(brew --prefix python@3.14)/bin"
+    printf '%s\n' "${TOOLCHAIN_ROOT}/postgresql/17.5/bin"
   } >>"${GITHUB_PATH}"
   if [[ "$("${UV_PATH}" --version)" != "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)" ]]; then
     printf 'Pinned uv identity does not match the typed SQL runtime.\n' >&2

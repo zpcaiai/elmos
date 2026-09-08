@@ -206,7 +206,6 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "wallet/ledger", value: route089 as ApiRouteModule },
   { template: "wallet/topup/[topupOrderId]", value: route090 as ApiRouteModule },
   { template: "wallet/topup", value: route091 as ApiRouteModule },
-  { template: "live-workbench/[[...path]]", value: route097 as ApiRouteModule },
 ]);
 
 function allowedMethods(module: ApiRouteModule): string {
