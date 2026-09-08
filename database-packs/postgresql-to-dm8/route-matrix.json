@@ -5,10 +5,14 @@
     {
       "source": {
         "engine": "postgresql",
-        "versions": ["17.5"],
+        "versions": [
+          "17.5"
+        ],
         "edition": "community",
         "dialect": "postgresql",
-        "driver_versions": ["psql:17.5"],
+        "driver_versions": [
+          "psql:17.5"
+        ],
         "charset": "UTF8",
         "collation": "C",
         "timezone": "UTC",
@@ -16,10 +20,14 @@
       },
       "target": {
         "engine": "dm8",
-        "versions": ["8.1.3.140"],
+        "versions": [
+          "8.1.3.140"
+        ],
         "edition": "enterprise",
         "dialect": "dm8-oracle-compatible",
-        "driver_versions": ["dm-jdbc:8.1.3.140"],
+        "driver_versions": [
+          "dm-jdbc:8.1.3.140"
+        ],
         "charset": "UTF-8",
         "collation": "BINARY",
         "timezone": "Asia/Shanghai",
@@ -30,7 +38,7 @@
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
       "restrictions": [
-        "Local typed parse, exact-route emission, and target-dialect reparse only; source and target execution are NOT_RUN."
+        "Local typed parse, adapter emission, and target reparse only; source and target execution plus independent verification are NOT_RUN."
       ]
     }
   ],
