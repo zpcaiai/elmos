@@ -85,7 +85,9 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
 
     @Override
     public CreditBalance creditBalance(String organizationId) {
-        return inTenant(organizationId, () -> jdbc.sql("""
+        return inTenant(organizationId, () -> {
+            expireGenerationReservations();
+            return jdbc.sql("""
                 select a.organization_id,
                        coalesce(sum(l.available + l.reserved)
                            filter (where l.expires_at > now() or l.reserved > 0), 0) balance,
@@ -102,7 +104,8 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
                         rs.getBigDecimal("reserved"), rs.getBigDecimal("spendable"),
                         rs.getString("status")))
                 .optional().orElse(new CreditBalance(
-                        organizationId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "ACTIVE")));
+                        organizationId, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, "ACTIVE"));
+        });
     }
 
     @Override
@@ -133,7 +136,9 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
                                                    String actorId, String projectId, String jobId,
                                                    BigDecimal requestedCredits,
                                                    String idempotencyKey, int ttlSeconds) {
-        return inTenant(organizationId, () -> jdbc.sql("""
+        return inTenant(organizationId, () -> {
+            expireGenerationReservations();
+            return jdbc.sql("""
                 select * from elmos_commercial_reserve_generation(
                     :reservation, :actor, :project, :job, :credits, :idempotency, :ttl)
                 """).param("reservation", reservationId).param("actor", actorId)
@@ -142,24 +147,36 @@ public final class JdbcCommercialOrderStore implements CommercialOrderPort {
                 .query((rs, row) -> new GenerationReservation(
                         rs.getString("reservation_id"), rs.getString("decision"),
                         rs.getString("funding_source"), rs.getBigDecimal("remaining_credits")))
-                .single());
+                .single();
+        });
     }
 
     @Override
     public String settleGeneration(String organizationId, String actorId,
                                    String reservationId, BigDecimal actualCredits) {
-        return inTenant(organizationId, () -> jdbc.sql(
+        return inTenant(organizationId, () -> {
+            expireGenerationReservations();
+            return jdbc.sql(
                 "select elmos_commercial_settle_generation(:reservation, :actor, :credits)")
                 .param("reservation", reservationId).param("actor", actorId)
-                .param("credits", actualCredits).query(String.class).single());
+                .param("credits", actualCredits).query(String.class).single();
+        });
     }
 
     @Override
     public String releaseGeneration(String organizationId, String actorId, String reservationId) {
-        return inTenant(organizationId, () -> jdbc.sql(
+        return inTenant(organizationId, () -> {
+            expireGenerationReservations();
+            return jdbc.sql(
                 "select elmos_commercial_release_generation(:reservation, :actor)")
                 .param("reservation", reservationId).param("actor", actorId)
-                .query(String.class).single());
+                .query(String.class).single();
+        });
+    }
+
+    private void expireGenerationReservations() {
+        jdbc.sql("select elmos_commercial_expire_generation_reservations(1000)")
+                .query(Integer.class).single();
     }
 
     private Order order(java.sql.ResultSet rs, int row) throws java.sql.SQLException {

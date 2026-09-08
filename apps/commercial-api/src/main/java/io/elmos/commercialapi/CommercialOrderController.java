@@ -45,14 +45,14 @@ public class CommercialOrderController {
     public record CreditPackOrderRequest(@NotBlank String sku) {}
     public record ProjectGenerationOrderRequest(
             @NotBlank String sku,
-            @Pattern(regexp = ID_PATTERN) String projectId) {}
+            @NotBlank @Pattern(regexp = ID_PATTERN) String projectId) {}
     public record OrderHandoff(
             CommercialOrderPort.Order order, String paymentProvider,
             String checkoutUrl, String qrCodeUrl) {}
     public record GenerationReserveRequest(
             @Pattern(regexp = ID_PATTERN) String actorId,
-            @Pattern(regexp = ID_PATTERN) String projectId,
-            @Pattern(regexp = ID_PATTERN) String jobId,
+            @NotBlank @Pattern(regexp = ID_PATTERN) String projectId,
+            @NotBlank @Pattern(regexp = ID_PATTERN) String jobId,
             @NotNull @Positive BigDecimal requestedCredits,
             @Min(30) @Max(3600) int expiresInSeconds) {}
     public record GenerationSettleRequest(
@@ -196,13 +196,6 @@ public class CommercialOrderController {
             throw new BillingApiException(503, "COMMERCIAL_ORDER_CHANNEL_NOT_SUPPORTED",
                     "CNY product orders require a mainland China payment channel.", false);
         }
-        PaymentProviderRouter.CheckoutGateway gateway;
-        try {
-            gateway = router.checkoutGateway();
-        } catch (IllegalStateException missing) {
-            throw new BillingApiException(503, "CHECKOUT_NOT_CONFIGURED",
-                    "Payment checkout is not configured.", false, missing);
-        }
         String exactKey = exactIdempotencyKey(idempotencyKey);
         String orderId = "order-" + UUID.randomUUID();
         String requestHash = sha256(String.join("\0", principal.organizationId(),
@@ -214,6 +207,21 @@ public class CommercialOrderController {
         var order = orders.findOrder(principal.organizationId(), persisted)
                 .orElseThrow(() -> new BillingApiException(500,
                         "COMMERCIAL_ORDER_MISSING_AFTER_CREATE", "Order readback failed.", true));
+        PaymentProvider orderProvider = PaymentProvider.parse(order.provider());
+        if ("FULFILLED".equals(order.status())) {
+            return new OrderHandoff(order, orderProvider.name(), null, null);
+        }
+        if (!"CREATED".equals(order.status()) && !"PENDING_PAYMENT".equals(order.status())) {
+            throw new BillingApiException(409, "COMMERCIAL_ORDER_NOT_PAYABLE",
+                    "The existing order cannot open another checkout.", false);
+        }
+        PaymentProviderRouter.CheckoutGateway gateway;
+        try {
+            gateway = router.checkoutGateway(orderProvider);
+        } catch (IllegalStateException missing) {
+            throw new BillingApiException(503, "CHECKOUT_NOT_CONFIGURED",
+                    "The order's payment channel is not configured.", false, missing);
+        }
         try {
             var handoff = gateway.prepare(
                     order.outTradeNo(), order.amountMinor().longValueExact(), subject);
@@ -221,7 +229,7 @@ public class CommercialOrderController {
                     principal.organizationId(), principal.actorId(), order.orderId());
             var ready = orders.findOrder(principal.organizationId(), order.orderId()).orElseThrow();
             return new OrderHandoff(
-                    ready, provider.name(), handoff.redirectUrl(), handoff.qrCodeUrl());
+                    ready, orderProvider.name(), handoff.redirectUrl(), handoff.qrCodeUrl());
         } catch (RuntimeException failure) {
             boolean unknown = gateway.contactsProviderDuringPrepare();
             try {
