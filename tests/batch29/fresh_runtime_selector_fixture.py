@@ -28,7 +28,6 @@ def main() -> int:
         "kotlin": "_kotlin",
         "react": "_react",
         "flutter": "_flutter",
-        "vb6": "_vb6",
     }
     assert tuple(selectors) == tuple(HOSTED_REPOSITORY_MATRIX_LANGUAGES)
     assert tuple(DEPRECATED_LANGUAGES) == ("javascript",)

@@ -500,7 +500,7 @@ LOCKED_WEB_CONSOLE_LOCK_SHA256 = (
     "sha256:231b25204c480bb17335a1d306b5e996283fd00b50678022081fa931b1c57b21"
 )
 LOCKED_WEB_CONSOLE_PACKAGE_SHA256 = (
-    "sha256:6a0d2bdf532f7a2470f113dd2bfd20de12726d5101ee5913bc58e9e5ec3a85fa"
+    "sha256:8789236a161bfe6b5c1017507ff1b8a8115a0ddfc3ee7cc77a27b4333dbd38d7"
 )
 LOCKED_PLAYWRIGHT_PACKAGE_SHA256 = (
     "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
@@ -10327,9 +10327,6 @@ def execute_flutter_browser_runtime(
         flutter_identity = runtime_tool_identity(
             Path(policy.flutter_path), flutter_version
         )
-        python_identity = runtime_tool_identity(
-            Path(sys.executable), platform.python_version()
-        )
         integration_identity = file_identity(
             workspace / "integration_test/elmos_bounded_interaction_test.dart",
             "Flutter integration test source",
@@ -10346,7 +10343,6 @@ def execute_flutter_browser_runtime(
             "integration_test_sha256": integration_identity["sha256"],
             "integration_driver_sha256": driver_source_identity["sha256"],
         }
-        closure_digest = digest_json(closure)
         acquisition_relative, acquisition_sha, acquisition_bytes = (
             write_content_addressed_runtime_json(
                 evidence_root,

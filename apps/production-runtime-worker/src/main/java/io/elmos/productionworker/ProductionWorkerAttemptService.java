@@ -1036,7 +1036,8 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
     }
 
     @PreDestroy
-    void close() {
+    @Override
+    public void close() {
         if (!closed.compareAndSet(false, true)) return;
         List<ExecutorService> ownedExecutors = List.of(
                 heartbeatScheduler,

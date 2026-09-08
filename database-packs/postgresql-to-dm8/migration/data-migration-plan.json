@@ -2,20 +2,30 @@
   "schema_version": 1,
   "pack_key": "postgresql-to-dm8",
   "owner": "ELMOS Database Migration",
-  "status": "blocked-external-environment",
+  "status": "blocked",
   "strategy": "query-contract-first-no-data-movement",
   "source": {
     "engine": "postgresql",
-    "version": "17.5",
+    "versions": ["17.5"],
     "edition": "community",
-    "driver": "psql:17.5",
+    "dialect": "postgresql",
+    "driver_versions": ["psql:17.5"],
+    "charset": "UTF8",
+    "collation": "C",
+    "timezone": "UTC",
+    "extensions": [],
     "authority": "retained"
   },
   "target": {
     "engine": "dm8",
-    "version": "8.1.3.140",
+    "versions": ["8.1.3.140"],
     "edition": "enterprise",
-    "driver": "dm-jdbc:8.1.3.140",
+    "dialect": "dm8-oracle-compatible",
+    "driver_versions": ["dm-jdbc:8.1.3.140"],
+    "charset": "UTF-8",
+    "collation": "BINARY",
+    "timezone": "Asia/Shanghai",
+    "extensions": [],
     "compatibility_mode": "oracle-compatible-explicit",
     "provisioning": "NOT_RUN"
   },
@@ -34,13 +44,15 @@
     "before_cutover": "source",
     "after_cutover": "NOT_RUN"
   },
-  "reconciliation": {
-    "status": "NOT_RUN",
-    "grain": "row-and-column",
-    "keys": ["tenant_id", "id"],
-    "money_comparison": "exact-decimal-no-tolerance",
-    "required_difference_count": 0
-  },
+  "reconciliation": [
+    {
+      "status": "NOT_RUN",
+      "grain": "row-and-column",
+      "keys": ["tenant_id", "id"],
+      "money_comparison": "exact-decimal-no-tolerance",
+      "required_difference_count": 0
+    }
+  ],
   "rollback": {
     "strategy": "retain-postgresql-authority-and-drop-disposable-dm8-schema"
   },

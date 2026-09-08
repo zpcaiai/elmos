@@ -3,7 +3,7 @@
   "pack_key": "postgresql-to-dm8",
   "version": "0.1.0",
   "mode": "migration",
-  "status": "experimental",
+  "status": "research",
   "owner": "ELMOS Database Migration",
   "maintenance_owner": "ELMOS ChinaDB Adapter Maintainers",
   "data_owner": "ELMOS Synthetic Fixture Owner",

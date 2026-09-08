@@ -3,16 +3,30 @@
   "pack_key": "postgresql-to-dm8",
   "tuples": [
     {
-      "source_engine": "postgresql",
-      "source_version": "17.5",
-      "source_edition": "community",
-      "target_engine": "dm8",
-      "target_version": "8.1.3.140",
-      "target_edition": "enterprise",
-      "source_driver": "psql:17.5",
-      "target_driver": "dm-jdbc:8.1.3.140",
-      "target_compatibility_mode": "oracle-compatible-explicit",
-      "status": "experimental",
+      "source": {
+        "engine": "postgresql",
+        "versions": ["17.5"],
+        "edition": "community",
+        "dialect": "postgresql",
+        "driver_versions": ["psql:17.5"],
+        "charset": "UTF8",
+        "collation": "C",
+        "timezone": "UTC",
+        "extensions": []
+      },
+      "target": {
+        "engine": "dm8",
+        "versions": ["8.1.3.140"],
+        "edition": "enterprise",
+        "dialect": "dm8-oracle-compatible",
+        "driver_versions": ["dm-jdbc:8.1.3.140"],
+        "charset": "UTF-8",
+        "collation": "BINARY",
+        "timezone": "Asia/Shanghai",
+        "extensions": [],
+        "compatibility_mode": "oracle-compatible-explicit"
+      },
+      "status": "research",
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ]
