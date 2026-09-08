@@ -17,6 +17,7 @@ public record PaymentCallbackPorts(
         PaymentCallbackPipeline.ProviderEventStore events,
         PaymentCallbackPipeline.SubscriptionActivator subscriptions,
         PaymentCallbackPipeline.WalletCreditor wallet,
+        PaymentCallbackPipeline.CommercialOrderFulfiller commercialOrders,
         PaymentCallbackPipeline.ReconciliationCases reconciliation) {
 
     public PaymentCallbackPorts {
@@ -26,7 +27,22 @@ public record PaymentCallbackPorts(
         require(events, "events");
         require(subscriptions, "subscriptions");
         require(wallet, "wallet");
+        require(commercialOrders, "commercialOrders");
         require(reconciliation, "reconciliation");
+    }
+
+    public PaymentCallbackPorts(
+            PaymentProviderRouter router,
+            PaymentCallbackPipeline.ProcessedEventLog processedEvents,
+            PaymentCallbackPipeline.OrderLookup orders,
+            PaymentCallbackPipeline.ProviderEventStore events,
+            PaymentCallbackPipeline.SubscriptionActivator subscriptions,
+            PaymentCallbackPipeline.WalletCreditor wallet,
+            PaymentCallbackPipeline.ReconciliationCases reconciliation) {
+        this(router, processedEvents, orders, events, subscriptions, wallet,
+                (order, callback) -> {
+                    throw new IllegalStateException("COMMERCIAL_ORDER_FULFILLER_NOT_CONFIGURED");
+                }, reconciliation);
     }
 
     /**
@@ -47,6 +63,9 @@ public record PaymentCallbackPorts(
                 (order, callback) -> {
                     throw new IllegalStateException("WALLET_CREDITOR_NOT_CONFIGURED");
                 },
+                (order, callback) -> {
+                    throw new IllegalStateException("COMMERCIAL_ORDER_FULFILLER_NOT_CONFIGURED");
+                },
                 reconciliation);
     }
 
@@ -54,7 +73,8 @@ public record PaymentCallbackPorts(
     public PaymentCallbackPipeline pipelineFor(PaymentProvider provider) {
         return new PaymentCallbackPipeline(
                 router.callbackAdapter(provider),
-                processedEvents, orders, events, subscriptions, wallet, reconciliation);
+                processedEvents, orders, events, subscriptions, wallet, commercialOrders,
+                reconciliation);
     }
 
     private static void require(Object value, String name) {

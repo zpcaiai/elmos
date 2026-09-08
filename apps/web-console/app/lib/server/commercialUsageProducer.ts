@@ -8,11 +8,17 @@ type OperationKey =
   | "evidence-pack-verification"
   | "model-inference";
 
-type TokenClass = "INPUT" | "OUTPUT" | "CACHE_READ" | "CACHE_WRITE";
+type TokenClass = "INPUT" | "OUTPUT" | "CACHE_READ" | "CACHE_WRITE" | "REASONING";
 
 type Reservation = {
   reservationId: string;
   decision: "RESERVED" | "DENY_TOKEN_LIMIT" | "DENY_CREDIT_LIMIT";
+};
+
+type ExecutionIdentity = {
+  taskId: string;
+  projectId: string;
+  actorId: string;
 };
 
 const fixedExecutionCredits = pricingCatalog.creditRates.find(
@@ -122,15 +128,20 @@ async function retryDelay(attempt: number): Promise<void> {
 }
 
 async function reserve(
-  taskId: string,
+  identity: ExecutionIdentity,
   operationKey: OperationKey,
   tokens: number,
   credits: number,
   suffix: string,
+  model: string | null = null,
 ): Promise<Reservation> {
   const configured = config();
-  const result = await request("/usage/reservations", `${taskId}:${suffix}:reserve`, {
+  const result = await request("/usage/reservations", `${identity.taskId}:${suffix}:reserve`, {
     subscriptionId: configured.subscriptionId,
+    actorId: identity.actorId,
+    projectId: identity.projectId,
+    jobId: identity.taskId,
+    model,
     operationKey,
     requestedTokens: tokens,
     requestedCredits: credits,
@@ -150,12 +161,13 @@ async function reserve(
 }
 
 async function settleCredits(
-  taskId: string,
+  identity: ExecutionIdentity,
   reservation: Reservation,
   credits: number,
   suffix: string,
 ): Promise<void> {
-  await request("/usage/settlements", `${taskId}:${suffix}:settle`, {
+  await request("/usage/settlements", `${identity.taskId}:${suffix}:settle`, {
+    actorId: identity.actorId,
     reservationId: reservation.reservationId,
     actualTokens: 0,
     actualCredits: credits,
@@ -169,12 +181,13 @@ async function settleCredits(
 }
 
 async function release(
-  taskId: string,
+  identity: ExecutionIdentity,
   reservation: Reservation,
   suffix: string,
   reasonCode: string,
 ): Promise<void> {
-  await request("/usage/releases", `${taskId}:${suffix}:release`, {
+  await request("/usage/releases", `${identity.taskId}:${suffix}:release`, {
+    actorId: identity.actorId,
     reservationId: reservation.reservationId,
     reasonCode,
   });
@@ -184,7 +197,33 @@ export type MeteredExecution = {
   finish(success: boolean): Promise<void>;
 };
 
-export async function beginMeteredExecution(taskId: string): Promise<MeteredExecution | null> {
+async function reservePurchasedFunding(identity: ExecutionIdentity): Promise<Reservation | null> {
+  try {
+    const result = await request(
+      "/generation/reservations",
+      `${identity.taskId}:purchased:reserve`,
+      {
+        actorId: identity.actorId,
+        projectId: identity.projectId,
+        jobId: identity.taskId,
+        requestedCredits: fixedExecutionCredits! + 20 * runnerMinuteCredits!,
+        expiresInSeconds: 3600,
+      },
+    );
+    return {
+      reservationId: String(result.reservationId ?? ""),
+      decision: String(result.decision ?? "") as Reservation["decision"],
+    };
+  } catch (error) {
+    if (error instanceof CommercialUsageProducerError
+      && error.code === "DENY_CREDIT_LIMIT") return null;
+    throw error;
+  }
+}
+
+export async function beginMeteredExecution(
+  identity: ExecutionIdentity,
+): Promise<MeteredExecution | null> {
   if (!enabled()) return null;
   if (fixedExecutionCredits !== 40 || runnerMinuteCredits !== 1) {
     throw new CommercialUsageProducerError(
@@ -193,14 +232,45 @@ export async function beginMeteredExecution(taskId: string): Promise<MeteredExec
     );
   }
   const startedAt = Date.now();
+  const purchased = await reservePurchasedFunding(identity);
+  if (purchased) {
+    let closed = false;
+    return {
+      async finish(success: boolean) {
+        if (closed) return;
+        const elapsedMinutes = Math.max(
+          1,
+          Math.min(20, Math.ceil((Date.now() - startedAt) / 60_000)),
+        );
+        if (success) {
+          await request(
+            "/generation/settlements",
+            `${identity.taskId}:purchased:settle`,
+            {
+              actorId: identity.actorId,
+              reservationId: purchased.reservationId,
+              actualCredits: fixedExecutionCredits! + elapsedMinutes * runnerMinuteCredits!,
+            },
+          );
+        } else {
+          await request(
+            "/generation/releases",
+            `${identity.taskId}:purchased:release`,
+            { actorId: identity.actorId, reservationId: purchased.reservationId },
+          );
+        }
+        closed = true;
+      },
+    };
+  }
   const fixed = await reserve(
-    taskId, "verified-generation-or-migration", 0, fixedExecutionCredits, "execution",
+    identity, "verified-generation-or-migration", 0, fixedExecutionCredits, "execution",
   );
   let runner: Reservation;
   try {
-    runner = await reserve(taskId, "isolated-runner-minute", 0, 20, "runner");
+    runner = await reserve(identity, "isolated-runner-minute", 0, 20, "runner");
   } catch (error) {
-    await release(taskId, fixed, "execution", "RUNNER_RESERVATION_DENIED");
+    await release(identity, fixed, "execution", "RUNNER_RESERVATION_DENIED");
     throw error;
   }
   let closed = false;
@@ -210,11 +280,11 @@ export async function beginMeteredExecution(taskId: string): Promise<MeteredExec
       if (closed) return;
       if (committedOutcome === null) committedOutcome = success;
       const elapsedMinutes = Math.max(1, Math.min(20, Math.ceil((Date.now() - startedAt) / 60_000)));
-      await settleCredits(taskId, runner, elapsedMinutes, "runner");
+      await settleCredits(identity, runner, elapsedMinutes, "runner");
       if (committedOutcome) {
-        await settleCredits(taskId, fixed, fixedExecutionCredits, "execution");
+        await settleCredits(identity, fixed, fixedExecutionCredits, "execution");
       } else {
-        await release(taskId, fixed, "execution", "TASK_NOT_COMPLETED");
+        await release(identity, fixed, "execution", "TASK_NOT_COMPLETED");
       }
       closed = true;
     },
@@ -223,6 +293,9 @@ export async function beginMeteredExecution(taskId: string): Promise<MeteredExec
 
 export async function recordModelTokens(input: {
   taskId: string;
+  projectId: string;
+  actorId: string;
+  model: string;
   tokenClass: TokenClass;
   expectedTokens: number;
   actualTokens: number;
@@ -241,16 +314,18 @@ export async function recordModelTokens(input: {
     );
   }
   const reservation = await reserve(
-    input.taskId,
+    { taskId: input.taskId, projectId: input.projectId, actorId: input.actorId },
     "model-inference",
     input.expectedTokens,
     0,
     `model-${input.tokenClass.toLowerCase()}`,
+    input.model,
   );
   await request(
     "/usage/settlements",
     `${input.taskId}:model-${input.tokenClass.toLowerCase()}:settle`,
     {
+      actorId: input.actorId,
       reservationId: reservation.reservationId,
       actualTokens: input.actualTokens,
       actualCredits: 0,
