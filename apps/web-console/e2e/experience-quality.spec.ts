@@ -23,10 +23,13 @@ test("help, shell locale and theme preferences stay accessible and persistent", 
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { name: "Help and readiness" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Open global search" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open repository workspace" })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Administrator sign in" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Open repository workspace" })).toHaveAttribute(
     "href",
-    "/admin/login",
+    "/repositories",
+  );
+  await expect(page.getByRole("link", { name: "Open operations admin" })).toHaveAttribute(
+    "href",
+    "/admin",
   );
 
   const accessibility = await new AxeBuilder({ page }).analyze();
