@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "snapshot_digest": "sha256:74d8284ad3c7e2795f92ba24daec254721685695ba8fae42ab5f8432040e8f86",
+  "coverage": 1.0,
+  "source_tuple": {
+    "platform": "elmos-java-control-plane-container",
+    "provider": "repository-owned",
+    "regions": ["workspace"],
+    "account_model": "single-repository",
+    "iac_tool": {"name": "dockerfile", "version": "1.7"},
+    "runtime": {"name": "eclipse-temurin-jre", "version": "21"},
+    "orchestrator": {"name": "none", "version": "n/a"},
+    "ci_cd": {"name": "local-maven-docker", "version": "maven-3.9.11-docker-29.4.0"},
+    "state_backend": {"type": "git-and-container-registry", "locking": "git-commit", "encryption": "provider-managed-at-rest"},
+    "services": ["java-control-plane", "postgresql", "oidc-jwks"]
+  },
+  "resources": [
+    {"key": "control-plane-image", "source_ref": "apps/control-plane/Dockerfile", "sha256": "eba41ce0be2ef959aa57b2a4152627cf5fe485148b164829467111b9b4756739"},
+    {"key": "control-plane-build", "source_ref": "apps/control-plane/pom.xml", "sha256": "c1cc95cd6b968c17f24bc2fde0c0ebc88266c7b3066e6c6a48dbc8a98b21fe51"},
+    {"key": "control-plane-config", "source_ref": "apps/control-plane/src/main/resources/application.yml", "sha256": "2ac9b6c62d05d9e5fefadc0bdf08419b19c8f3684dacb647139484eda2230d18"},
+    {"key": "production-database-config", "source_ref": "apps/control-plane/src/main/resources/application-prod.yml", "sha256": "298de0f72ba1f662b5c6586552fe960785c56103a7489efaca9a3d4634587cec"},
+    {"key": "cloud-run-profile", "source_ref": "deploy/cloud-run/control-plane/profile.json", "sha256": "c1bf68aab6d8c3fb1e50473c2d616f7008e73a65935cecbd07270213d823f92f"},
+    {"key": "deployment-control", "source_ref": "scripts/deploy/control_plane_cloud_run.py", "sha256": "51362160d5e3def84bd39b01438f67db5dbc2d01b35f138f699f155fb27f2316"},
+    {"key": "production-schema-repair", "source_ref": "modules/persistence/src/main/resources/db/migration/V85__payment_provider_binding_and_credit_expiry.sql", "sha256": "3ab5061a8ebbf247e976b79e766f4fae49c15f63bd417f2a13ade85b504bc601"}
+  ],
+  "identities": [
+    {"key": "descope-resource-server", "source_ref": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java", "sha256": "d8d78cd1c0b9fb2a2c988ecfb0248e21303f8e27f1d0d754c7dca1d86ecaf714"}
+  ],
+  "networks": [
+    {"key": "https-upstream-policy", "source_ref": "deploy/cloud-run/control-plane/profile.json"}
+  ],
+  "pipelines": [
+    {"key": "controlled-gcloud-deploy", "source_ref": "scripts/deploy/control_plane_cloud_run.py"}
+  ],
+  "runtime_evidence": [],
+  "evidence_refs": ["certification/local-validation.json"]
+}

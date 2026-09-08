@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "status": "experimental",
+  "owner": "Independent Release Authority",
+  "exact_tuple": {
+    "source": {"platform": "elmos-java-control-plane-container", "runtime": "eclipse-temurin-jre-21", "image_platform": "linux-amd64"},
+    "target": {"provider": "google-cloud", "project": "gen-lang-client-0684615336", "region": "asia-east1", "platform": "cloud-run-v2", "gcloud": "583.0.0", "service": "elmos-control-plane", "frontend": "vercel-zpchoney-6160s-projects-elmos"}
+  },
+  "metrics": {"local_contract_tests": "PASS", "provider_apply": "NOT_RUN", "independent_representative": "NOT_RUN"},
+  "evidence_refs": ["certification/local-validation.json"],
+  "blockers": [
+    "Google OAuth CLI grant and real provider plan/apply are NOT_RUN",
+    "Cloud Run readiness, JWT negative paths, Vercel redeploy and authenticated journey are NOT_RUN",
+    "Rollback, destroy, orphan, drift, cost, SLO and independent evidence are NOT_RUN"
+  ],
+  "conditions": [
+    "A real deployment may advance operational availability but cannot self-certify the route",
+    "Public ingress remains valid only while Spring Security rejects every protected anonymous request"
+  ]
+}

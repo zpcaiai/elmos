@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "source_snapshot_digest": "sha256:45adef90ec8b5b388946ccab58c6637acc091cd5e775bc8d84c5ae5947085edb",
+  "components": [
+    {
+      "id": "component.control-plane-image",
+      "kind": "container-image",
+      "name": "ELMOS Java Control Plane image",
+      "source_refs": [{"path": "apps/control-plane/Dockerfile"}, {"path": "apps/control-plane/pom.xml"}],
+      "references": [],
+      "properties": {"architecture": "linux/amd64", "runtime": "eclipse-temurin-21-jre", "user": "10001:10001"},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.cloud-run-service",
+      "kind": "managed-container-service",
+      "name": "Cloud Run elmos-control-plane",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}],
+      "references": ["component.control-plane-image", "identity.runtime-service-account", "component.secret-manager"],
+      "properties": {"project": "gen-lang-client-0684615336", "region": "asia-east1", "port": 8080, "min_instances": 0, "max_instances": 4},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.artifact-registry",
+      "kind": "container-registry",
+      "name": "Immutable Artifact Registry repository",
+      "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "references": ["component.control-plane-image"],
+      "properties": {"location": "asia-east1", "immutable_tags": true},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.secret-manager",
+      "kind": "secret-provider",
+      "name": "Google Secret Manager database references",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}],
+      "references": ["identity.runtime-service-account"],
+      "properties": {"secret_count": 3, "transport": "stdin", "replication": "automatic"},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.neon-postgresql",
+      "kind": "external-database",
+      "name": "Vercel Marketplace Neon PostgreSQL",
+      "source_refs": [{"path": "apps/control-plane/src/main/resources/application-prod.yml"}],
+      "references": ["component.secret-manager"],
+      "properties": {"tls": "required", "credential_source": "Vercel production environment"},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.descope-jwks",
+      "kind": "external-identity-provider",
+      "name": "Vercel Marketplace Descope JWKS",
+      "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}],
+      "references": ["identity.descope-session-jwt"],
+      "properties": {"transport": "https", "signature_validation": "issuer-jwks-audience-expiry"},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.vercel-web-console",
+      "kind": "frontend-bff",
+      "name": "Vercel production Web Console",
+      "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}],
+      "references": ["component.cloud-run-service", "identity.descope-session-jwt"],
+      "properties": {"origin": "https://elmos-alpha.vercel.app", "upstream_variable": "ELMOS_CONTROL_PLANE_BASE_URL"},
+      "criticality": "P0"
+    }
+  ],
+  "connections": [
+    {
+      "id": "connection.vercel-to-cloud-run",
+      "kind": "https",
+      "name": "Vercel BFF to Cloud Run application ingress",
+      "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}],
+      "references": ["component.vercel-web-console", "component.cloud-run-service", "identity.descope-session-jwt"],
+      "properties": {"public_network": true, "application_authentication": "bearer-jwt", "anonymous_paths": ["/actuator/health/**"]},
+      "criticality": "P0"
+    },
+    {
+      "id": "connection.cloud-run-to-neon",
+      "kind": "jdbc-tls",
+      "name": "Cloud Run to Neon PostgreSQL",
+      "source_refs": [{"path": "apps/control-plane/src/main/resources/application-prod.yml"}],
+      "references": ["component.cloud-run-service", "component.neon-postgresql", "component.secret-manager"],
+      "properties": {"tls": "sslmode=require", "pool": "application-managed"},
+      "criticality": "P0"
+    },
+    {
+      "id": "connection.cloud-run-to-descope",
+      "kind": "https-jwks",
+      "name": "Cloud Run JWT decoder to Descope JWKS",
+      "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}],
+      "references": ["component.cloud-run-service", "component.descope-jwks"],
+      "properties": {"method": "GET", "tls": "required"},
+      "criticality": "P0"
+    }
+  ],
+  "identities": [
+    {
+      "id": "identity.runtime-service-account",
+      "kind": "google-service-account",
+      "name": "elmos-control-plane-runtime",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}],
+      "references": [],
+      "properties": {"persistent_key": false, "secret_access": "three exact resources only"},
+      "criticality": "P0"
+    },
+    {
+      "id": "identity.deployment-operator",
+      "kind": "google-human-oauth",
+      "name": "Authenticated Google Cloud deployment operator",
+      "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "references": ["component.artifact-registry", "component.secret-manager", "component.cloud-run-service"],
+      "properties": {"credential_storage": "owner-only external gcloud config", "repository_storage": false},
+      "criticality": "P0"
+    },
+    {
+      "id": "identity.descope-session-jwt",
+      "kind": "oidc-jwt",
+      "name": "Descope user session JWT",
+      "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}],
+      "references": ["component.descope-jwks"],
+      "properties": {"issuer": "derived-from-provisioned-project", "audience": "exact-project-id"},
+      "criticality": "P0"
+    }
+  ],
+  "data_flows": [
+    {
+      "id": "flow.database-secret-promotion",
+      "kind": "secret-input",
+      "name": "Vercel Neon configuration to Secret Manager versions",
+      "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "references": ["identity.deployment-operator", "component.secret-manager"],
+      "properties": {"logged": false, "command_argument": false, "transport": "stdin"},
+      "criticality": "P0"
+    },
+    {
+      "id": "flow.control-plane-api",
+      "kind": "tenant-api",
+      "name": "Authenticated tenant API requests and PostgreSQL state",
+      "source_refs": [{"path": "apps/control-plane/src/main/resources/application.yml"}],
+      "references": ["connection.vercel-to-cloud-run", "connection.cloud-run-to-neon"],
+      "properties": {"tenant_context": "verified-token", "database_tls": true},
+      "criticality": "P0"
+    }
+  ],
+  "policies": [
+    {
+      "id": "policy.digest-only-deployment",
+      "kind": "supply-chain",
+      "name": "Deploy resolved sha256 image only",
+      "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}],
+      "references": ["component.control-plane-image", "component.artifact-registry", "component.cloud-run-service"],
+      "properties": {"mutable_image_reference_rejected": true},
+      "criticality": "P0"
+    },
+    {
+      "id": "policy.public-ingress-application-auth",
+      "kind": "network-and-authentication",
+      "name": "Public Cloud Run ingress with fail-closed Spring JWT enforcement",
+      "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}],
+      "references": ["connection.vercel-to-cloud-run", "identity.descope-session-jwt"],
+      "properties": {"justified_public_ingress": true, "protected_routes_anonymous": false},
+      "criticality": "P0"
+    }
+  ],
+  "source_map": [
+    {"node_id": "component.control-plane-image", "source_refs": [{"path": "apps/control-plane/Dockerfile"}, {"path": "apps/control-plane/pom.xml"}]},
+    {"node_id": "component.cloud-run-service", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}]},
+    {"node_id": "component.artifact-registry", "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "component.secret-manager", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}]},
+    {"node_id": "component.neon-postgresql", "source_refs": [{"path": "apps/control-plane/src/main/resources/application-prod.yml"}]},
+    {"node_id": "component.descope-jwks", "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}]},
+    {"node_id": "component.vercel-web-console", "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}]},
+    {"node_id": "connection.vercel-to-cloud-run", "source_refs": [{"path": "apps/web-console/app/lib/server/trustedUpstream.ts"}]},
+    {"node_id": "connection.cloud-run-to-neon", "source_refs": [{"path": "apps/control-plane/src/main/resources/application-prod.yml"}]},
+    {"node_id": "connection.cloud-run-to-descope", "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}]},
+    {"node_id": "identity.runtime-service-account", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}]},
+    {"node_id": "identity.deployment-operator", "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "identity.descope-session-jwt", "source_refs": [{"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}]},
+    {"node_id": "flow.database-secret-promotion", "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "flow.control-plane-api", "source_refs": [{"path": "apps/control-plane/src/main/resources/application.yml"}]},
+    {"node_id": "policy.digest-only-deployment", "source_refs": [{"path": "scripts/deploy/control_plane_cloud_run.py"}]},
+    {"node_id": "policy.public-ingress-application-auth", "source_refs": [{"path": "deploy/cloud-run/control-plane/profile.json"}, {"path": "apps/control-plane/src/main/java/io/elmos/controlplane/ControlPlaneSecurityConfiguration.java"}]}
+  ],
+  "obligations": [
+    {"id": "real-provider-evidence", "status": "NOT_RUN"},
+    {"id": "independent-certification", "status": "NOT_CERTIFIED"}
+  ]
+}

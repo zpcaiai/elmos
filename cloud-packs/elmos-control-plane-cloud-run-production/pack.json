@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-control-plane-cloud-run-production",
+  "version": "0.1.0",
+  "status": "experimental",
+  "mode": "replatform",
+  "owner": "ELMOS Platform Engineering",
+  "maintenance_owner": "ELMOS SRE",
+  "source": {
+    "platform": "elmos-java-control-plane-container",
+    "provider": "repository-owned",
+    "regions": ["workspace"],
+    "account_model": "single-repository",
+    "iac_tool": {"name": "dockerfile", "version": "1.7"},
+    "runtime": {"name": "eclipse-temurin-jre", "version": "21"},
+    "orchestrator": {"name": "none", "version": "n/a"},
+    "ci_cd": {"name": "local-maven-docker", "version": "maven-3.9.11-docker-29.4.0"},
+    "state_backend": {"type": "git-and-container-registry", "locking": "git-commit", "encryption": "provider-managed-at-rest"},
+    "services": ["java-control-plane", "postgresql", "oidc-jwks"]
+  },
+  "target": {
+    "platform": "google-cloud-run-v2",
+    "provider": "google-cloud-project-gen-lang-client-0684615336",
+    "regions": ["asia-east1"],
+    "account_model": "single-project-nexus",
+    "iac_tool": {"name": "gcloud-cli", "version": "583.0.0"},
+    "runtime": {"name": "google-cloud-run-v2", "version": "2026-09-09"},
+    "orchestrator": {"name": "cloud-run-managed", "version": "v2"},
+    "ci_cd": {"name": "manual-gcloud", "version": "583.0.0"},
+    "state_backend": {"type": "google-cloud-resource-state", "locking": "provider-etag-and-revision", "encryption": "google-managed-at-rest"},
+    "services": ["cloud-run-service", "artifact-registry", "secret-manager", "service-account", "neon-postgresql", "descope-jwks", "vercel-web-console"]
+  },
+  "contracts": {
+    "runtime_architecture": "runtime-architecture/contract.json",
+    "iac_ir": "iac-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "validation_profile": "validation/validation-profile.json"
+  },
+  "support_matrix_path": "support-matrix.json",
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "tags": ["java", "spring-boot", "cloud-run", "neon", "descope", "vercel", "not-certified"]
+}
