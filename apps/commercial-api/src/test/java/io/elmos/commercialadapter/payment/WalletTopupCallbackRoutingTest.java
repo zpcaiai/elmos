@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,6 +69,40 @@ class WalletTopupCallbackRoutingTest {
         assertEquals(List.of("AMOUNT_MISMATCH"), reconciliationCases);
     }
 
+    @Test void aCallbackFromTheWrongProviderIsReconciledBeforeAnyMoneyMoves() {
+        LocalOrder wechatOrder = new LocalOrder("topup-1", "org-1", null, 50_000L,
+                OrderKind.TOPUP, PaymentProvider.WECHAT_PAY_NATIVE);
+
+        Outcome outcome = pipeline(wechatOrder).process(rawCallback());
+
+        assertEquals(Outcome.PROVIDER_MISMATCH, outcome);
+        assertTrue(walletCredits.isEmpty(), "渠道不符时不得入账");
+        assertEquals(List.of("PROVIDER_MISMATCH"), reconciliationCases);
+    }
+
+    @Test void unresolvedReconciliationReleasesTheClaimForProviderRetry() {
+        class RecoverableLog implements PaymentCallbackPipeline.ProcessedEventLog {
+            boolean available = true;
+            @Override public boolean registerIfAbsent(String key) {
+                if (!available) return false;
+                available = false;
+                return true;
+            }
+            @Override public void markFailed(String key) { available = true; }
+        }
+        RecoverableLog log = new RecoverableLog();
+        AtomicInteger reconciliations = new AtomicInteger();
+        PaymentCallbackPipeline pipeline = new PaymentCallbackPipeline(
+                adapter(), log, outTradeNo -> Optional.of(topupOrder(99_999L)),
+                (order, callback, body) -> { }, (order, callback) -> { },
+                (order, callback) -> { },
+                (reason, callback, order, detail) -> reconciliations.incrementAndGet());
+
+        assertEquals(Outcome.AMOUNT_MISMATCH, pipeline.process(rawCallback()));
+        assertEquals(Outcome.AMOUNT_MISMATCH, pipeline.process(rawCallback()));
+        assertEquals(2, reconciliations.get());
+    }
+
     /** 幂等去重早于任何副作用，充值这条路径也不例外。 */
     @Test void aReplayedTopUpCallbackIsIgnoredBeforeItReachesTheWallet() {
         PaymentCallbackPipeline pipeline = pipeline(topupOrder(50_000L));
@@ -102,17 +137,19 @@ class WalletTopupCallbackRoutingTest {
 
     /** 充值订单没有套餐；订阅订单必须有，缺了要在构造时就拒绝。 */
     @Test void onlySubscriptionOrdersAreRequiredToCarryAPlan() {
-        LocalOrder topup = new LocalOrder("topup-1", "org-1", null, 50_000L, OrderKind.TOPUP);
+        LocalOrder topup = new LocalOrder("topup-1", "org-1", null, 50_000L,
+                OrderKind.TOPUP, PaymentProvider.ALIPAY_CHECKOUT);
         assertEquals(OrderKind.TOPUP, topup.kind());
 
         assertThrows(IllegalArgumentException.class,
-                () -> new LocalOrder("ord-1", "org-1", null, 50_000L, OrderKind.SUBSCRIPTION));
+                () -> new LocalOrder("ord-1", "org-1", null, 50_000L,
+                        OrderKind.SUBSCRIPTION, PaymentProvider.ALIPAY_CHECKOUT));
     }
 
-    /** 既有的四参构造保持订阅语义，接进充值不应改变任何既有调用点的含义。 */
-    @Test void theLegacyFourArgumentConstructorStillMeansSubscription() {
-        assertEquals(OrderKind.SUBSCRIPTION,
-                new LocalOrder("ord-1", "org-1", "elmos-pro-monthly", 12_900L).kind());
+    @Test void everyOrderRequiresAnExplicitProviderBinding() {
+        assertThrows(IllegalArgumentException.class, () -> new LocalOrder(
+                "ord-1", "org-1", "elmos-pro-monthly", 12_900L,
+                OrderKind.SUBSCRIPTION, null));
     }
 
     // ------------------------------------------------------------------
@@ -129,12 +166,13 @@ class WalletTopupCallbackRoutingTest {
     }
 
     private static LocalOrder topupOrder(long expectedFen) {
-        return new LocalOrder("topup-1", "org-1", null, expectedFen, OrderKind.TOPUP);
+        return new LocalOrder("topup-1", "org-1", null, expectedFen, OrderKind.TOPUP,
+                PaymentProvider.ALIPAY_CHECKOUT);
     }
 
     private static LocalOrder subscriptionOrder(long expectedFen) {
         return new LocalOrder("ord-1", "org-1", "elmos-pro-monthly", expectedFen,
-                OrderKind.SUBSCRIPTION);
+                OrderKind.SUBSCRIPTION, PaymentProvider.ALIPAY_CHECKOUT);
     }
 
     private static PaymentCallbackPipeline.ProviderAdapter adapter() {

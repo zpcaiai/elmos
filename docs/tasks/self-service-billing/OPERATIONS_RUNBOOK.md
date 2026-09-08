@@ -28,6 +28,8 @@ Micrometer 指标：
    超过五分钟的 PROCESSING 可由同一提供方事件重领，持续 FAILED 必须告警。
 8. `commercial_orders.status='RECONCILIATION_REQUIRED'`，尤其是
    `CHECKOUT_PREPARE_OUTCOME_UNKNOWN` 与 `PAYMENT_AFTER_LOCAL_EXPIRY`。
+9. 定价页的 Credit 面板应从 `/billing/credits`、`/billing/credits/ledger` 和
+   `/billing/orders` 得到一致事实；存在待付款订单时每四秒读取一次，页面隐藏时停止轮询。
 
 ## 生产配置
 
@@ -84,6 +86,7 @@ ELMPay 聚合出口：见 [ELMPAY_INTEGRATION.md](ELMPAY_INTEGRATION.md)。启�
 - 微信下单超时/结果未知：订单进入待对账，禁止盲重试。
 - 支付宝本地签名/参数失败：提供方未被联系，可安全创建新的幂等请求。
 - 付款晚于本地 TTL：不得自动发货；按外部证据选择退款或受控补发并保留审批记录。
+- 用户看到 `RECONCILIATION_REQUIRED`：要求停止重复付款；运营核对 provider 交易后再退款或补发。
 - Webhook 签名异常：拒绝，不创建订阅；轮换 secret 前核对 endpoint。
 - 数据库不可用：拒绝新预留和 Checkout；不要退回客户端自报计量。
 - 用量突增：关闭任务入口而非篡改额度；保存 receipt 和作业证据。

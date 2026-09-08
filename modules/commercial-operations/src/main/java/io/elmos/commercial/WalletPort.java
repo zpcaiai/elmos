@@ -104,6 +104,7 @@ public interface WalletPort {
             String topupOrderId,
             String organizationId,
             BigDecimal amountMinor,
+            String provider,
             String status
     ) {}
 
@@ -123,6 +124,11 @@ public interface WalletPort {
     String createTopupOrder(String topupOrderId, String organizationId, String actorId,
                             BigDecimal amountMinor, String provider, String outTradeNo,
                             String idempotencyKey, int ttlSeconds);
+
+    String markTopupAwaitingPayment(String organizationId, String topupOrderId, String actorId);
+
+    String markTopupPreparationFailed(String organizationId, String topupOrderId, String actorId,
+                                      boolean outcomeUnknown, String failureCode);
 
     Optional<TopupOrder> findTopupOrder(String organizationId, String topupOrderId);
 
