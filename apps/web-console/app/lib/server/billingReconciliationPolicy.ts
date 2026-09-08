@@ -9,12 +9,6 @@ const idempotencyKeyPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,159}$/;
 export const reconciliationBodyLimitBytes = 4_096;
 
 export type FinancialAdminCandidate = {
-  role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION";
-  accessToken: string;
-};
-
-export type FinancialAdminCandidate = {
   role: string;
   authentication: string;
   accessToken?: unknown;
