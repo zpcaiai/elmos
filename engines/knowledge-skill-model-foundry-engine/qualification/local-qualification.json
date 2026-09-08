@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "5f0b5899d40af4ec3325fc5ee3cd77e3539d4263",
+  "baseline_commit": "16ae5b6dfebcf092dd32c77aac32c0aed9837ee9",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 131,
+    "file_count": 133,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -39,7 +39,7 @@
       "tooling/report_foundry_readiness.py",
       "tooling/generate_foundry_native_semantics.py"
     ],
-    "sha256": "1a8b1ec8fde367c8beab6d5cbc4a3f88051600f8981864195c2b79630c9b8df8",
+    "sha256": "c785c087d135198863c32255ff8b4482263a3bd35b1c6067d85b306688c2195c",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
