@@ -1,0 +1,58 @@
+[
+  {
+    "schema": "contracts/schemas/trusted-scope.schema.json",
+    "example": "contracts/examples/trusted-scope.json"
+  },
+  {
+    "schema": "contracts/schemas/context-request.schema.json",
+    "example": "contracts/examples/context-request.json"
+  },
+  {
+    "schema": "contracts/schemas/source-anchor.schema.json",
+    "example": "contracts/examples/source-anchor.json"
+  },
+  {
+    "schema": "contracts/schemas/retrieval-plan.schema.json",
+    "example": "contracts/examples/retrieval-plan.json"
+  },
+  {
+    "schema": "contracts/schemas/context-response.schema.json",
+    "example": "contracts/examples/context-response.json"
+  },
+  {
+    "schema": "contracts/schemas/agent-subflow-request.schema.json",
+    "example": "contracts/examples/agent-subflow-request.json"
+  },
+  {
+    "schema": "contracts/schemas/action-intent.schema.json",
+    "example": "contracts/examples/action-intent.json"
+  },
+  {
+    "schema": "contracts/schemas/agent-checkpoint.schema.json",
+    "example": "contracts/examples/agent-checkpoint.json"
+  },
+  {
+    "schema": "contracts/schemas/projection-manifest.schema.json",
+    "example": "contracts/examples/projection-manifest.json"
+  },
+  {
+    "schema": "contracts/schemas/benchmark-report.schema.json",
+    "example": "contracts/examples/benchmark-report.json"
+  },
+  {
+    "schema": "contracts/schemas/qualification-report.schema.json",
+    "example": "contracts/examples/qualification-report.json"
+  },
+  {
+    "schema": "contracts/schemas/gap-analysis.schema.json",
+    "example": "contracts/examples/gap-analysis.json"
+  },
+  {
+    "schema": "contracts/schemas/skill-run-report.schema.json",
+    "example": "contracts/examples/skill-run-report.json"
+  },
+  {
+    "schema": "contracts/schemas/feature-decision.schema.json",
+    "example": "contracts/examples/feature-decision.json"
+  }
+]

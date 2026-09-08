@@ -95,8 +95,8 @@ description: "当大型文件夹含数千至数十万个文件，上传需要文
 - Source contract SHA-256: `da6c01e7b739a1ff898d769e7347ebb1d67def154635c9dd8d650a82dd0f755c`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_resumable_multi_file_folder_upload`
 - Runtime phase: `project-package`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-secure-resumable-upload`, `$elmos-folder-tree-input`
 - Acceptance identities: `S42-01`, `S42-02`, `S42-03`, `S42-04`, `S42-05`, `S42-06`
 - Generated contract: `compiled-contract.json`

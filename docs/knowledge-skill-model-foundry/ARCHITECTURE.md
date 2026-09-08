@@ -6,8 +6,8 @@ Pinned ZIP (untrusted data)
   -> manifest-designated YAML contract compiler
   -> exact compiled-contract v2 catalog (41 meta + 1,310 atomic + 14 pipelines)
   -> authenticated policy gate
-       -> 51 exact local semantic handlers
-       -> 1,259 distinct host-routed bindings (catalog PREPARE_ONLY)
+       -> 61 exact local semantic handlers
+       -> 1,249 distinct host-routed bindings (catalog PREPARE_ONLY)
        -> exact Broker route + request-bound permit + durable idempotency
        -> 14 exact pipeline Broker routes with the same fail-closed boundary
   -> tenant-private CAS + durable SQLite transition/outbox/checkpoint/evidence
@@ -32,8 +32,8 @@ artifact, adapter, outbox event, or evidence receipt is created.
 1. The compiled catalog binds exact names, all six authoritative source
    documents per Skill, typed inputs/outputs, dependencies, permissions, gates,
    handler IDs, execution contracts, and evidence ceilings.
-2. The 51 local semantic handlers reject missing or empty declared inputs and
-   produce exactly the declared output set. Each of the other 1,259 identities
+2. The 61 local semantic handlers reject missing or empty declared inputs and
+   produce exactly the declared output set. Each of the other 1,249 identities
    has a unique adapter ID, operation, digest and route derived from its exact
    source and runtime contract. These bindings do not impersonate compilers,
    databases, clouds, trainers or signers when the host integration is absent.

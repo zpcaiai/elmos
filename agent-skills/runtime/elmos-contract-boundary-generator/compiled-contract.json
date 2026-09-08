@@ -2,36 +2,37 @@
   "certification_status": "NOT_CERTIFIED",
   "contract": {
     "acceptance": [
-      "downstream task can execute from contract without hidden assumptions"
+      "downstream task can start without hidden assumptions once incoming contracts validate"
     ],
     "guardrails": [
-      "Contract changes affecting public APIs require elevated review tier."
+      "A prose handoff is not enough when a machine-checkable contract is possible."
     ],
     "inputs": [
       "`tasks`",
-      "`architecture index`"
+      "`repository graph`",
+      "`scenario graph`",
+      "`invariant ledger`"
     ],
     "outputs": [
-      "`interface contracts`",
+      "`interface/handoff contracts`",
       "`fixtures/stubs`",
-      "`compatibility rules`"
+      "`compatibility rules`",
+      "`edge validators`"
     ],
-    "triggers": [
-      "DAG contains cross-task boundaries"
-    ]
+    "triggers": []
   },
   "dag": {
     "activation": "conditional",
     "dependencies": [
-      "elmos-task-dag-builder"
+      "elmos-atomicity-validator"
     ]
   },
   "external_evidence_status": "NOT_RUN",
-  "namespace": "repository-task-router-v1",
+  "namespace": "repository-task-router-v2",
   "package": {
     "id": "elmos.repository-task-router-skills",
     "name": "elmos-repository-task-decomposition-cost-router-skills",
-    "version": "1.1.0"
+    "version": "2.0.0"
   },
   "runtime_binding": {
     "adapter_requirement": null,
@@ -42,14 +43,14 @@
     "local_evidence_status": "NOT_RUN",
     "module": "elmos_repository_orchestrator.runtime",
     "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
-    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
   },
   "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
     "name": "elmos-contract-boundary-generator",
     "ordinal": 8,
-    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/08-contract-boundary-generator/SKILL.md",
-    "sha256": "sha256:b265a780ca516b7139b297eb8918cebfed6048af8862a98c61849cb770af3a1a",
-    "version": "1.0.0"
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/08-contract-boundary-generator/SKILL.md",
+    "sha256": "sha256:5cd8853a6201d038505f1f3d78be6b960fb2a49063609de0413ac5ed33c37935",
+    "version": "2.0.0"
   }
 }

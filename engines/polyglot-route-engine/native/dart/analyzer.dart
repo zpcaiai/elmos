@@ -364,6 +364,8 @@ _TypedExpression _expression(
 List<Map<String, Object>> _statements(
   Iterable<Statement> nodes,
   Map<String, String> environment,
+  Set<String> paramNames,
+  Set<String> finalVars,
   String returnType,
   String fileName,
   _ByteOffsets offsets,
@@ -406,6 +408,8 @@ List<Map<String, Object>> _statements(
       final thenBody = _statements(
         thenStatement.statements,
         Map<String, String>.of(environment),
+        paramNames,
+        Set<String>.of(finalVars),
         returnType,
         fileName,
         offsets,
@@ -418,6 +422,8 @@ List<Map<String, Object>> _statements(
           ? _statements(
               elseStatement.statements,
               Map<String, String>.of(environment),
+              paramNames,
+              Set<String>.of(finalVars),
               returnType,
               fileName,
               offsets,
@@ -427,6 +433,8 @@ List<Map<String, Object>> _statements(
           ? _statements(
               <Statement>[elseStatement],
               Map<String, String>.of(environment),
+              paramNames,
+              Set<String>.of(finalVars),
               returnType,
               fileName,
               offsets,
@@ -442,10 +450,184 @@ List<Map<String, Object>> _statements(
       });
       continue;
     }
+    if (node is WhileStatement) {
+      final condition = _expression(
+        node.condition,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (condition.type != 'boolean') _fail('DART_CONDITION_MUST_BE_BOOLEAN');
+      if (node.body is! Block) _fail('DART_WHILE_BLOCK_BODY_REQUIRED');
+      final body = _statements(
+        (node.body as Block).statements,
+        Map<String, String>.of(environment),
+        paramNames,
+        Set<String>.of(finalVars),
+        returnType,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      output.add(<String, Object>{
+        'kind': 'while',
+        'condition': condition.mapping,
+        'body': body,
+        'source_span': _span(fileName, offsets, node),
+      });
+      continue;
+    }
+    if (node is DoStatement) {
+      _fail('DART_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET');
+    }
+    if (node is BreakStatement) {
+      if (node.label != null) {
+        _fail('DART_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      output.add(<String, Object>{
+        'kind': 'break',
+        'source_span': _span(fileName, offsets, node),
+      });
+      continue;
+    }
+    if (node is ContinueStatement) {
+      if (node.label != null) {
+        _fail('DART_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      output.add(<String, Object>{
+        'kind': 'continue',
+        'source_span': _span(fileName, offsets, node),
+      });
+      continue;
+    }
+    if (node is ForStatement) {
+      final forLoopParts = node.forLoopParts;
+      if (forLoopParts is ForEachParts) {
+        _fail('DART_FOR_IN_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      if (forLoopParts is! ForPartsWithDeclarations) {
+        _fail('DART_FOR_PARTS_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      final variables = forLoopParts.variables;
+      if (variables.variables.length != 1) {
+        _fail('DART_FOR_PARTS_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      final declaredType = _canonicalType(
+        variables.type,
+        missingCode: 'DART_EXPLICIT_LOCAL_TYPE_REQUIRED',
+      );
+      if (declaredType != 'integer') {
+        _fail('DART_FOR_VARIABLE_TYPE_INVALID:$declaredType');
+      }
+      final loopVar = variables.variables.single;
+      final varName = loopVar.name.lexeme;
+      final initializer = loopVar.initializer;
+      if (initializer == null) {
+        _fail('DART_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET');
+      }
+      final startExpr = _expression(
+        initializer,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (startExpr.type != 'integer') {
+        _fail('DART_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET');
+      }
+
+      final condition = forLoopParts.condition;
+      if (condition is! BinaryExpression || condition.operator.lexeme != '<') {
+        _fail('DART_FOR_CONDITION_NON_MONOTONIC');
+      }
+      final leftOperand = condition.leftOperand;
+      if (leftOperand is! SimpleIdentifier || leftOperand.name != varName) {
+        _fail('DART_FOR_CONDITION_NON_MONOTONIC');
+      }
+      final endExpr = _expression(
+        condition.rightOperand,
+        environment,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      if (endExpr.type != 'integer') {
+        _fail('DART_FOR_CONDITION_NON_MONOTONIC');
+      }
+
+      if (forLoopParts.updaters.length != 1) {
+        _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+      }
+      final updater = forLoopParts.updaters.single;
+      Map<String, Object>? stepMapping;
+      if (updater is PostfixExpression) {
+        final operand = updater.operand;
+        if (updater.operator.lexeme != '++' ||
+            operand is! SimpleIdentifier ||
+            operand.name != varName) {
+          _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+        }
+      } else if (updater is PrefixExpression) {
+        final operand = updater.operand;
+        if (updater.operator.lexeme != '++' ||
+            operand is! SimpleIdentifier ||
+            operand.name != varName) {
+          _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+        }
+      } else if (updater is AssignmentExpression) {
+        final lhs = updater.leftHandSide;
+        if (lhs is! SimpleIdentifier ||
+            lhs.name != varName ||
+            updater.operator.lexeme != '+=') {
+          _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+        }
+        final stepLifted = _expression(
+          updater.rightHandSide,
+          environment,
+          fileName,
+          offsets,
+          emittedTarget,
+        );
+        if (stepLifted.type != 'integer') {
+          _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+        }
+        stepMapping = stepLifted.mapping;
+      } else {
+        _fail('DART_FOR_UPDATE_NON_MONOTONIC');
+      }
+
+      if (node.body is! Block) _fail('DART_FOR_BLOCK_BODY_REQUIRED');
+      final loopEnv = Map<String, String>.of(environment);
+      loopEnv[varName] = 'integer';
+      final loopFinalVars = Set<String>.of(finalVars);
+      loopFinalVars.add(varName);
+      final body = _statements(
+        (node.body as Block).statements,
+        loopEnv,
+        paramNames,
+        loopFinalVars,
+        returnType,
+        fileName,
+        offsets,
+        emittedTarget,
+      );
+      output.add(<String, Object>{
+        'kind': 'for',
+        'name': varName,
+        'type': 'integer',
+        'start': startExpr.mapping,
+        'end': endExpr.mapping,
+        if (stepMapping != null) 'step': stepMapping,
+        'body': body,
+        'source_span': _span(fileName, offsets, node),
+      });
+      continue;
+    }
     if (node is VariableDeclarationStatement) {
       final variables = node.variables;
-      if (!variables.isFinal || variables.isConst || variables.isLate) {
-        _fail('DART_LOCAL_MUST_BE_FINAL');
+      if (variables.isConst || variables.isLate) {
+        _fail('DART_LOCAL_MODIFIERS_UNSUPPORTED');
       }
       if (variables.variables.length != 1)
         _fail('DART_ONE_LOCAL_PER_DECLARATION_REQUIRED');
@@ -477,7 +659,162 @@ List<Map<String, Object>> _statements(
         'source_span': _span(fileName, offsets, node),
       });
       environment[name] = declaredType;
+      if (variables.isFinal) {
+        finalVars.add(name);
+      }
       continue;
+    }
+    if (node is ExpressionStatement) {
+      final expr = node.expression;
+      if (expr is AssignmentExpression) {
+        final lhs = expr.leftHandSide;
+        if (lhs is! SimpleIdentifier) {
+          _fail('DART_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        final targetName = lhs.name;
+        if (paramNames.contains(targetName)) {
+          _fail('DART_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName');
+        }
+        if (!environment.containsKey(targetName)) {
+          _fail('DART_ASSIGNMENT_TARGET_NOT_DECLARED:$targetName');
+        }
+        if (finalVars.contains(targetName)) {
+          _fail('DART_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName');
+        }
+        final targetType = environment[targetName]!;
+        final op = expr.operator.lexeme;
+        if (op == '=') {
+          final rhs = _expression(
+            expr.rightHandSide,
+            environment,
+            fileName,
+            offsets,
+            emittedTarget,
+          );
+          if (rhs.type != targetType) {
+            _fail('DART_ASSIGNMENT_TYPE_MISMATCH:$targetType:${rhs.type}');
+          }
+          output.add(<String, Object>{
+            'kind': 'assign',
+            'name': targetName,
+            'expression': rhs.mapping,
+            'source_span': _span(fileName, offsets, node),
+          });
+          continue;
+        }
+        if (op == '+=' || op == '-=' || op == '*=' || op == '/=' || op == '~/=' || op == '%=') {
+          final binaryOp = op == '~/=' ? '/' : op.substring(0, op.length - 1);
+          final rhs = _expression(
+            expr.rightHandSide,
+            environment,
+            fileName,
+            offsets,
+            emittedTarget,
+          );
+          const numeric = <String>{'integer', 'number'};
+          if (binaryOp == '+') {
+            if (targetType == 'string') {
+              if (rhs.type != 'string') {
+                _fail('DART_ASSIGNMENT_TYPE_MISMATCH:string:${rhs.type}');
+              }
+            } else {
+              if (!numeric.contains(targetType) || !numeric.contains(rhs.type)) {
+                _fail('DART_OPERAND_TYPE_MISMATCH:+:$targetType:${rhs.type}');
+              }
+              if (targetType == 'integer' && rhs.type != 'integer') {
+                _fail('DART_ASSIGNMENT_TYPE_MISMATCH:integer:${rhs.type}');
+              }
+            }
+          } else if (binaryOp == '-' || binaryOp == '*' || binaryOp == '%') {
+            if (!numeric.contains(targetType) || !numeric.contains(rhs.type)) {
+              _fail('DART_OPERAND_TYPE_MISMATCH:$binaryOp:$targetType:${rhs.type}');
+            }
+            if (targetType == 'integer' && rhs.type != 'integer') {
+              _fail('DART_ASSIGNMENT_TYPE_MISMATCH:integer:${rhs.type}');
+            }
+          } else if (binaryOp == '/') {
+            if (op == '~/=') {
+              if (targetType != 'integer' || rhs.type != 'integer') {
+                _fail('DART_TRUNCATING_DIVISION_REQUIRES_INTEGER_OPERANDS');
+              }
+            } else {
+              if (targetType != 'number' || rhs.type != 'number') {
+                _fail('DART_ASSIGNMENT_TYPE_MISMATCH:$targetType:${rhs.type}');
+              }
+            }
+          }
+          output.add(<String, Object>{
+            'kind': 'assign',
+            'name': targetName,
+            'expression': <String, Object>{
+              'kind': 'binary',
+              'operator': binaryOp,
+              'left': <String, Object>{
+                'kind': 'name',
+                'value': targetName,
+              },
+              'right': rhs.mapping,
+              'source_span': _span(fileName, offsets, expr),
+            },
+            'source_span': _span(fileName, offsets, node),
+          });
+          continue;
+        }
+        _fail('DART_UNSUPPORTED_COMPOUND_ASSIGN_OPERATOR:$op');
+      }
+      if (expr is PostfixExpression || expr is PrefixExpression) {
+        final operand = expr is PostfixExpression
+            ? expr.operand
+            : (expr as PrefixExpression).operand;
+        if (operand is! SimpleIdentifier) {
+          _fail('DART_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET');
+        }
+        final targetName = operand.name;
+        if (paramNames.contains(targetName)) {
+          _fail('DART_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName');
+        }
+        if (!environment.containsKey(targetName)) {
+          _fail('DART_ASSIGNMENT_TARGET_NOT_DECLARED:$targetName');
+        }
+        if (finalVars.contains(targetName)) {
+          _fail('DART_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName');
+        }
+        final targetType = environment[targetName]!;
+        if (targetType != 'integer') {
+          _fail('DART_INCREMENT_REQUIRES_INTEGER:$targetName');
+        }
+        final opLexeme = expr is PostfixExpression
+            ? expr.operator.lexeme
+            : (expr as PrefixExpression).operator.lexeme;
+        final String incOp;
+        if (opLexeme == '++') {
+          incOp = '+';
+        } else if (opLexeme == '--') {
+          incOp = '-';
+        } else {
+          _fail('DART_UNSUPPORTED_INCREMENT_OPERATOR:$opLexeme');
+        }
+        output.add(<String, Object>{
+          'kind': 'assign',
+          'name': targetName,
+          'expression': <String, Object>{
+            'kind': 'binary',
+            'operator': incOp,
+            'left': <String, Object>{
+              'kind': 'name',
+              'value': targetName,
+            },
+            'right': <String, Object>{
+              'kind': 'literal',
+              'value': 1,
+            },
+            'source_span': _span(fileName, offsets, expr),
+          },
+          'source_span': _span(fileName, offsets, node),
+        });
+        continue;
+      }
+      _fail('DART_UNSUPPORTED_STATEMENT:${node.runtimeType}');
     }
     _fail('DART_UNSUPPORTED_STATEMENT:${node.runtimeType}');
   }
@@ -514,6 +851,8 @@ Map<String, Object> _analyzeFunction(
   final parameters = expression.parameters;
   if (parameters == null) _fail('DART_PARAMETER_LIST_REQUIRED');
   final environment = <String, String>{};
+  final paramNames = <String>{};
+  final finalVars = <String>{};
   final liftedParameters = <Map<String, Object>>[];
   for (final parameter in parameters.parameters) {
     if (parameter is! SimpleFormalParameter ||
@@ -533,6 +872,7 @@ Map<String, Object> _analyzeFunction(
       missingCode: 'DART_EXPLICIT_PARAMETER_TYPE_REQUIRED',
     );
     environment[name] = type;
+    paramNames.add(name);
     liftedParameters.add(<String, Object>{
       'name': name,
       'type': type,
@@ -548,6 +888,8 @@ Map<String, Object> _analyzeFunction(
     liftedBody = _statements(
       body.block.statements,
       environment,
+      paramNames,
+      finalVars,
       returnType,
       fileName,
       offsets,

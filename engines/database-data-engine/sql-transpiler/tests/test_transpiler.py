@@ -89,14 +89,19 @@ def test_positional_group_and_order_references_are_normalized_in_typed_ast() -> 
         ("postgresql-18.4", "mysql-8.4.10-lts", "SELECT * FROM"),
         ("postgresql-18.4", "mysql-8.4.10-lts", "SELECT 'unterminated"),
         (
-            "mysql-8.4.10-lts",
-            "sqlite-3.53.3",
-            "SELECT GROUP_CONCAT(name ORDER BY name SEPARATOR ',') FROM customers",
-        ),
-        (
+            # Single-argument TRUNC is numeric-or-date ambiguous without a
+            # catalog, and no other engine in this profile set provides
+            # TRUNC(...) natively. See tests/test_rewrites.py for the two
+            # formerly-blocked pairs that are now typed rewrites.
             "oracle-26ai-ee",
             "mysql-8.4.10-lts",
-            "SELECT TRUNC(created_at, 'MM') FROM orders",
+            "SELECT TRUNC(created_at) FROM orders",
+        ),
+        (
+            # Quarter truncation has no faithful portable mapping.
+            "oracle-26ai-ee",
+            "postgresql-17.5",
+            "SELECT TRUNC(created_at, 'Q') FROM orders",
         ),
     ],
 )

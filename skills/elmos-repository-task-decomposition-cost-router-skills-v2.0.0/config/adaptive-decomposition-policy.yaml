@@ -1,0 +1,157 @@
+version: 2.0.0
+planner:
+  hierarchy_levels:
+    - goal
+    - capability
+    - changeset
+    - atomic_task
+    - microstep
+  max_depth: 5
+  default_target_level: atomic_task
+  coarse_to_fine: true
+  lazy_refinement: true
+  refine_only_ready_branches: true
+
+implicit_requirement_recovery:
+  enabled: true
+  evidence_sources:
+    - existing_tests
+    - public_interfaces
+    - sibling_implementations
+    - schemas_and_migrations
+    - docs_and_examples
+    - git_conventions_if_available
+    - build_and_ci_rules
+  require_evidence_for_inferred_requirement: true
+  unresolved_ambiguity_action: exploration_task
+
+repository_graph:
+  required_node_kinds:
+    - module
+    - source_file
+    - public_symbol
+    - api_endpoint
+    - database_entity
+    - migration
+    - queue_or_topic
+    - external_service
+    - config_surface
+    - build_target
+    - test_target
+  required_edge_kinds:
+    - imports
+    - calls
+    - implements
+    - exposes
+    - reads
+    - writes
+    - publishes
+    - consumes
+    - migrates
+    - configures
+    - builds
+    - tests
+    - covers
+  evidence_required: true
+
+adaptive_granularity:
+  min_task_score: 0.20
+  max_task_score: 0.72
+  split_threshold: 0.72
+  merge_threshold: 0.20
+  max_owned_path_groups: 4
+  max_cross_boundary_edges: 5
+  max_unverified_invariants: 0
+  preferred_acceptance_checks_per_task: [1, 4]
+  score_weights:
+    context_demand: 0.15
+    write_surface: 0.12
+    semantic_breadth: 0.18
+    cross_boundary_coupling: 0.18
+    invariant_density: 0.15
+    verification_distance: 0.12
+    uncertainty: 0.10
+  merge_penalties:
+    hidden_invariant_created: 1.0
+    transaction_boundary_split: 1.0
+    migration_and_reader_split_without_compatibility: 0.9
+    public_contract_split_without_fixture: 0.8
+
+plan_verification:
+  reject_cycles: true
+  reject_orphan_acceptance_scenarios: true
+  reject_unowned_write_paths: true
+  reject_missing_contract_edges: true
+  reject_unverified_high_risk_invariants: true
+  reject_dependency_type_mismatch: true
+  require_validated_handoff_on_cross_task_edge: true
+  require_repository_final_gate: true
+
+uncertainty:
+  levels: [low, medium, high, critical]
+  exploration_task_triggers:
+    - impact_confidence_below_threshold
+    - conflicting_repository_conventions
+    - unknown_runtime_behavior
+    - ambiguous_ownership
+    - missing_test_or_build_path
+  impact_confidence_threshold: 0.70
+  max_exploration_budget_fraction: 0.12
+
+replanning:
+  enabled: true
+  triggers:
+    - repeated_same_failure
+    - discovered_write_surface_expansion
+    - new_dependency_edge
+    - invariant_violation
+    - acceptance_scenario_change
+    - contract_change
+    - model_reports_missing_context
+    - integration_conflict
+    - test_failure_outside_predicted_impact
+  max_global_replans: 3
+  max_local_replans_per_branch: 4
+  prefer_local_graph_edit: true
+  preserve_passed_task_evidence: true
+
+integration:
+  checkpoint_after_each_boundary_cluster: true
+  checkpoint_before_high_risk_task: true
+  checkpoint_after_schema_or_public_contract_change: true
+  require_edge_contract_validation: true
+  allow_speculative_parallelism_with_stubs: true
+
+proof_obligations:
+  required_for:
+    - public_api
+    - security
+    - authentication
+    - authorization
+    - transaction
+    - concurrency
+    - idempotency
+    - data_migration
+    - backward_compatibility
+    - distributed_side_effect
+  evidence_preference:
+    - deterministic_test
+    - compiler_or_typechecker
+    - static_analyzer
+    - executable_probe
+    - structured_diff
+    - model_review
+
+learning:
+  record_decomposition_outcomes: true
+  metrics:
+    - first_pass_task_success
+    - task_replan_rate
+    - split_after_execution_rate
+    - merge_after_execution_rate
+    - integration_conflict_rate
+    - hidden_dependency_discovery_rate
+    - context_overflow_rate
+    - cost_per_accepted_task
+    - cost_per_certified_repository_change
+  decay_by_repository_version: true

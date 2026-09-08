@@ -82,8 +82,8 @@ description: "为每次模型调用分配系统、策略、技能、对话、文
 - Source contract SHA-256: `bfdbabf12c16716873207643a414293c577f8ee475ea3c44c3481fa43d9b1ab6`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_context_budget_manager`
 - Runtime phase: `context`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-model-capability-discovery`, `$elmos-multimodal-token-accounting`
 - Acceptance identities: `S30-01`, `S30-02`, `S30-03`, `S30-04`
 - Generated contract: `compiled-contract.json`

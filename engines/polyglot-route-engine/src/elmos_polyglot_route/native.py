@@ -87,12 +87,12 @@ _JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
 _JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
 _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-_TYPESCRIPT_ANALYZER_SHA256 = "f5073ca09f38cf96da88c9be23c45aee9ded01f8a0aff632fd6c32150e0d95e8"
-_TYPESCRIPT_ANALYZER_BYTES = 62_910
+_TYPESCRIPT_ANALYZER_SHA256 = "23361d1947109049e3b3d22424d0443046402a8e6a9e6e658227dc7f3378604a"
+_TYPESCRIPT_ANALYZER_BYTES = 69_262
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
-_PHP_ANALYZER_BYTES = 63489
+_PHP_ANALYZER_SHA256 = "5f701f046e5117eea59d7f5df6f69a968dba59dd2ad1335d13764182f8751a00"
+_PHP_ANALYZER_BYTES = 83852
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -136,10 +136,10 @@ _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
 _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
 _SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
 _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
-_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
@@ -760,6 +760,29 @@ _SWIFT_ANALYZER_FAILURE: tuple[str, str, str] | None = None
 _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
+        "SWIFT_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "SWIFT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_ASSIGNMENT_TYPE_MISMATCH",
+        "SWIFT_CONDITION_MUST_BE_BOOLEAN",
+        "SWIFT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_EXPLICIT_TYPE_REQUIRED",
+        "SWIFT_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_FOR_CLOSED_RANGE_REJECTED",
+        "SWIFT_FOR_DOWNTO_REJECTED",
+        "SWIFT_FOR_NON_POSITIVE_STEP_REJECTED",
+        "SWIFT_FOR_CONDITION_NON_MONOTONIC",
+        "SWIFT_FOR_VARIABLE_REQUIRED",
+        "SWIFT_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "SWIFT_BREAK_OUTSIDE_LOOP",
+        "SWIFT_CONTINUE_OUTSIDE_LOOP",
+        "SWIFT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "SWIFT_LOCAL_INITIALIZER_REQUIRED",
+        "SWIFT_LOCAL_NAME_REQUIRED",
+        "SWIFT_UNDECLARED_VARIABLE",
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
@@ -2420,7 +2443,7 @@ def _verify_swift_git_repository(
         ["-C", str(repository), "fsck", "--strict", "--full", "--no-dangling"],
         cwd=root,
         environment=environment,
-        timeout=600,
+        timeout=300,
         failure="SWIFT_ANALYZER_DEPENDENCY_FSCK_FAILED",
     )
     if require_standalone_object_store:
@@ -2671,7 +2694,7 @@ def _clone_verified_swift_dependency(
         ["-C", str(destination), "checkout", "--detach", _SWIFT_SYNTAX_REVISION],
         cwd=root,
         environment=environment,
-        timeout=600,
+        timeout=300,
         failure="SWIFT_ANALYZER_DEPENDENCY_CHECKOUT_FAILED",
     )
     dependency = _verify_swift_git_repository(
@@ -5836,11 +5859,7 @@ def _run(
     command: list[str],
     *,
     cwd: Path,
-    # Native source analysis accepts files up to the repository contract's
-    # two-megabyte ceiling. Keep its default deadline aligned with target
-    # validation so a valid near-limit source is not classified as NOT_RUN
-    # merely because analysis gets less time than the generated build.
-    timeout: int = 600,
+    timeout: int = 120,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
     environment_overrides: Mapping[str, str] | None = None,
@@ -5931,6 +5950,12 @@ def _run_trusted_swift_analyzer(
         if _verify_swift_execution_seal(binary, receipt) != before:
             raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION") from error
         wrapped = str(error)
+        prefix = f"NATIVE_ANALYZER_FAILED:{binary}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix):]
+            for reason in allowed_domain_errors:
+                if candidate == reason or candidate.startswith(f"{reason}:"):
+                    raise RouteError(candidate) from error
         for reason in allowed_domain_errors:
             if wrapped == f"NATIVE_ANALYZER_FAILED:{binary}:{reason}":
                 raise RouteError(reason) from error
@@ -6058,6 +6083,27 @@ def _run_trusted_php_analyzer(
         php_reason = f"PHP_FUNCTION_NOT_FOUND:{function_name}"
         if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{php_reason}":
             raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}") from error
+        prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:"
+        if wrapped.startswith(prefix):
+            candidate = wrapped[len(prefix) :].strip()
+            first_line = candidate.splitlines()[0].strip() if candidate else ""
+            public_failures = frozenset(
+                {
+                    "PHP_ASSIGNMENT_TARGET_NOT_DECLARED",
+                    "PHP_BREAK_OUTSIDE_LOOP",
+                    "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_CONTINUE_OUTSIDE_LOOP",
+                    "PHP_DO_WHILE_REJECTED",
+                    "PHP_FOR_CLOSED_RANGE_REJECTED",
+                    "PHP_FOR_DOWNTO_REJECTED",
+                    "PHP_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+                    "PHP_UNDECLARED_NAME",
+                }
+            )
+            failure_code = first_line.partition(":")[0]
+            if candidate == first_line and failure_code in public_failures:
+                raise RouteError(first_line) from error
         raise
     analyzer_after = _javascript_bound_content(
         _PHP_ANALYZER,
@@ -7523,7 +7569,7 @@ def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Pat
             [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
             capture_output=True,
             text=True,
-            timeout=600,
+            timeout=300,
             check=False,
         )
         if completed.returncode != 0:
@@ -8115,8 +8161,49 @@ _KOTLIN_ANALYZER_CLASS_RECEIPT = "kotlin-analyzer-classes.json"
 _KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "KOTLIN_UNSUPPORTED_TYPE:Int",
+        "KOTLIN_UNSUPPORTED_TYPE",
         "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
         "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
+        "KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LOCAL_NAME_REQUIRED",
+        "KOTLIN_LOCAL_INITIALIZER_REQUIRED",
+        "KOTLIN_EXPLICIT_TYPE_REQUIRED",
+        "KOTLIN_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_ASSIGNMENT_TARGET_NOT_DECLARED",
+        "KOTLIN_ASSIGNMENT_VALUE_REQUIRED",
+        "KOTLIN_WHILE_CONDITION_REQUIRED",
+        "KOTLIN_WHILE_BLOCK_BODY_REQUIRED",
+        "KOTLIN_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_BREAK_OUTSIDE_LOOP",
+        "KOTLIN_CONTINUE_OUTSIDE_LOOP",
+        "KOTLIN_FOR_VARIABLE_REQUIRED",
+        "KOTLIN_FOR_VARIABLE_TYPE_UNSUPPORTED",
+        "KOTLIN_FOR_BLOCK_BODY_REQUIRED",
+        "KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_FOR_CONDITION_NON_MONOTONIC",
+        "KOTLIN_UNSUPPORTED_STATEMENT",
+        "KOTLIN_UNSUPPORTED_OPERATOR",
+        "KOTLIN_UNSUPPORTED_EXPRESSION",
+        "KOTLIN_BLOCK_BODY_REQUIRED",
+        "KOTLIN_DEFAULT_ARGUMENT_UNSUPPORTED",
+        "KOTLIN_IF_BLOCK_BODY_REQUIRED",
+        "KOTLIN_IF_CONDITION_REQUIRED",
+        "KOTLIN_IF_THEN_REQUIRED",
+        "KOTLIN_INVALID_ESCAPE",
+        "KOTLIN_INVALID_LITERAL",
+        "KOTLIN_LABELED_RETURN_UNSUPPORTED",
+        "KOTLIN_NON_FINITE_LITERAL",
+        "KOTLIN_PARAMETER_NAME_REQUIRED",
+        "KOTLIN_RETURN_EXPRESSION_REQUIRED",
+        "KOTLIN_STRING_INTERPOLATION_UNSUPPORTED",
+        "KOTLIN_SUSPEND_FUNCTION_UNSUPPORTED",
+        "KOTLIN_VARARG_UNSUPPORTED",
     }
 )
 
@@ -8297,23 +8384,115 @@ def _verify_kotlin_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -
             raise RouteError("KOTLIN_ANALYZER_CLASS_CHANGED")
 
 
+_KOTLIN_ANALYZER_LOCK = threading.Lock()
+_KOTLIN_ANALYZER_TEMPORARY: tempfile.TemporaryDirectory[str] | None = None
+_KOTLIN_ANALYZER_CLASSES: Path | None = None
+_KOTLIN_ANALYZER_RECEIPT: dict[str, Any] | None = None
+
+
+def _cleanup_kotlin_analyzer() -> None:
+    global _KOTLIN_ANALYZER_TEMPORARY, _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+    with _KOTLIN_ANALYZER_LOCK:
+        if _KOTLIN_ANALYZER_TEMPORARY is not None:
+            _KOTLIN_ANALYZER_TEMPORARY.cleanup()
+        _KOTLIN_ANALYZER_TEMPORARY = None
+        _KOTLIN_ANALYZER_CLASSES = None
+        _KOTLIN_ANALYZER_RECEIPT = None
+
+
+atexit.register(_cleanup_kotlin_analyzer)
+
+
 def _kotlin_analyzer_classes(
     helper: Path,
     toolchain: ExactToolchain,
     compiler_jar: Path,
     staging_root: Path,
 ) -> tuple[Path, dict[str, Any]] | None:
-    """Disable persistent analyzer bytecode until provenance is non-forgeable.
-
-    A content-addressed key plus a self-authored class digest does not prove
-    that pre-existing class bytes were produced by the pinned compiler. The
-    callers therefore always take the private-directory compile path. Keeping
-    this small compatibility hook avoids duplicating that fallback between
-    named-function and repository inventory execution.
-    """
-
-    del helper, toolchain, compiler_jar, staging_root
-    return None
+    del staging_root
+    with _KOTLIN_ANALYZER_LOCK:
+        global _KOTLIN_ANALYZER_TEMPORARY, _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+        helper_binding = _kotlin_analyzer_source_binding(helper)
+        helper_sha = str(helper_binding["sha256"])
+        compiler_sha = str(toolchain.executable_sha256)
+        if _KOTLIN_ANALYZER_CLASSES is not None and _KOTLIN_ANALYZER_RECEIPT is not None:
+            if (
+                _KOTLIN_ANALYZER_RECEIPT.get("helper_sha256") == helper_sha
+                and _KOTLIN_ANALYZER_RECEIPT.get("compiler_sha256") == compiler_sha
+            ):
+                try:
+                    _verify_kotlin_analyzer_classes(_KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT)
+                    return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+                except RouteError:
+                    _KOTLIN_ANALYZER_CLASSES = None
+                    _KOTLIN_ANALYZER_RECEIPT = None
+        safe_cache_key = f"{helper_sha}_{compiler_sha}".replace(":", "_")
+        disk_cache_dir = Path.home() / ".cache" / "elmos" / "kotlin-classes" / safe_cache_key
+        disk_receipt_file = disk_cache_dir / "receipt.json"
+        disk_classes_dir = disk_cache_dir / "classes"
+        if disk_receipt_file.is_file() and disk_classes_dir.is_dir():
+            try:
+                disk_receipt = json.loads(disk_receipt_file.read_text(encoding="utf-8"))
+                if (
+                    disk_receipt.get("helper_sha256") == helper_sha
+                    and disk_receipt.get("compiler_sha256") == compiler_sha
+                ):
+                    _verify_kotlin_analyzer_classes(disk_classes_dir, disk_receipt)
+                    _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
+                    _KOTLIN_ANALYZER_RECEIPT = disk_receipt
+                    return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+            except (
+                AttributeError,
+                json.JSONDecodeError,
+                KeyError,
+                OSError,
+                RouteError,
+                TypeError,
+                UnicodeDecodeError,
+            ):
+                disk_receipt = None
+        temp_dir = tempfile.TemporaryDirectory(prefix="elmos-kotlin-classes-")
+        classes_dir = Path(temp_dir.name).resolve(strict=True) / "classes"
+        classes_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+        scratch = Path(temp_dir.name).resolve(strict=True) / "scratch"
+        scratch.mkdir(mode=0o700, parents=True, exist_ok=True)
+        if not _compile_kotlin_analyzer(toolchain, compiler_jar, helper, classes_dir, scratch):
+            temp_dir.cleanup()
+            return None
+        classes_map = {
+            path.relative_to(classes_dir).as_posix(): _sha256_file(path)
+            for path in classes_dir.rglob("*.class")
+            if path.is_file() and not path.is_symlink()
+        }
+        receipt = {
+            "helper_sha256": helper_sha,
+            "compiler_sha256": compiler_sha,
+            "classes": classes_map,
+        }
+        _verify_kotlin_analyzer_classes(classes_dir, receipt)
+        try:
+            disk_cache_dir.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+            staging_disk = disk_cache_dir.parent / f"staging_{os.getpid()}_{time.time_ns()}"
+            staging_disk.mkdir(mode=0o700, parents=True, exist_ok=True)
+            shutil.copytree(classes_dir, staging_disk / "classes")
+            (staging_disk / "receipt.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+            if disk_cache_dir.exists():
+                shutil.rmtree(disk_cache_dir, ignore_errors=True)
+            staging_disk.rename(disk_cache_dir)
+            _verify_kotlin_analyzer_classes(disk_classes_dir, receipt)
+            _KOTLIN_ANALYZER_CLASSES = disk_classes_dir
+            _KOTLIN_ANALYZER_RECEIPT = receipt
+            temp_dir.cleanup()
+            return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
+        except Exception:
+            _KOTLIN_ANALYZER_CLASSES = None
+            _KOTLIN_ANALYZER_RECEIPT = None
+        if _KOTLIN_ANALYZER_TEMPORARY is not None:
+            _KOTLIN_ANALYZER_TEMPORARY.cleanup()
+        _KOTLIN_ANALYZER_TEMPORARY = temp_dir
+        _KOTLIN_ANALYZER_CLASSES = classes_dir
+        _KOTLIN_ANALYZER_RECEIPT = receipt
+        return _KOTLIN_ANALYZER_CLASSES, _KOTLIN_ANALYZER_RECEIPT
 
 
 def _compile_kotlin_analyzer(
@@ -8430,6 +8609,12 @@ def _run_trusted_kotlin_analyzer(
                 raise RouteError("KOTLIN_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
             _verify_trusted_kotlin_toolchain(toolchain)
             wrapped = str(error)
+            prefix = f"NATIVE_ANALYZER_FAILED:{java}:"
+            if wrapped.startswith(prefix):
+                candidate = wrapped[len(prefix):]
+                for reason in allowed_domain_errors:
+                    if candidate == reason or candidate.startswith(f"{reason}:"):
+                        raise RouteError(candidate) from error
             for reason in allowed_domain_errors:
                 if wrapped == f"NATIVE_ANALYZER_FAILED:{java}:{reason}":
                     raise RouteError(reason) from error

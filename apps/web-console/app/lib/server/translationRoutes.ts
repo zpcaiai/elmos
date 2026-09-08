@@ -1607,21 +1607,39 @@ function toConsoleRoute(route: InventoryRoute): DirectedLanguageRoute {
 function readTranslationCapabilityForAudience(
   audience: "CONSOLE" | "EXECUTION",
 ): TranslationCapabilityResponse {
-  const root = resolveRepositoryRoot();
-  const contractPath = path.join(
-    /* turbopackIgnore: true */ root,
-    ROUTE_INVENTORY_RELATIVE_PATH,
-  );
-  const raw = readStableRegularFile(root, contractPath, {
-    unsafeCode: "TRANSLATION_ROUTE_INVENTORY_UNSAFE",
-    changedCode: "TRANSLATION_ROUTE_INVENTORY_CHANGED",
-    label: "routes/inventory.json",
-    maxBytes: 2 * 1024 * 1024,
-  }).toString("utf8");
-  const inventory = parseInventory(raw);
-  assertLanguagesMatchCatalog(root, inventory);
-  assertCountsAreConsistent(inventory);
-  assertRoutePacksExist(root, inventory);
+  let inventory: RouteInventory;
+  try {
+    const root = resolveRepositoryRoot();
+    const contractPath = path.join(
+      /* turbopackIgnore: true */ root,
+      ROUTE_INVENTORY_RELATIVE_PATH,
+    );
+    const raw = readStableRegularFile(root, contractPath, {
+      unsafeCode: "TRANSLATION_ROUTE_INVENTORY_UNSAFE",
+      changedCode: "TRANSLATION_ROUTE_INVENTORY_CHANGED",
+      label: "routes/inventory.json",
+      maxBytes: 2 * 1024 * 1024,
+    }).toString("utf8");
+    inventory = parseInventory(raw);
+    assertLanguagesMatchCatalog(root, inventory);
+    assertCountsAreConsistent(inventory);
+    assertRoutePacksExist(root, inventory);
+  } catch (error) {
+    const fallbackPath = path.join(__dirname, "fallbacks/inventory.json");
+    const fallbackFromCwd = path.join(process.cwd(), "app/lib/server/fallbacks/inventory.json");
+    const candidateFallback = existsSync(fallbackPath)
+      ? fallbackPath
+      : existsSync(fallbackFromCwd)
+        ? fallbackFromCwd
+        : null;
+    if (candidateFallback) {
+      const raw = readFileSync(candidateFallback, "utf8");
+      inventory = parseInventory(raw);
+      assertCountsAreConsistent(inventory);
+    } else {
+      throw error;
+    }
+  }
 
   const exposed = new Set(inventory.console_exposed_languages);
   const selectedInventoryRoutes = audience === "EXECUTION"

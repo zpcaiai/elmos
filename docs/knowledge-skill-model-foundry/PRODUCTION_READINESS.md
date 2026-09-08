@@ -7,8 +7,8 @@ local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
 
 - exact source and runtime identity;
 - exact compiled contracts and runtime bindings for all 1,310 Skills, with real
-  provider-free semantics for the allowlisted 51-Skill `LOCAL` set; the other
-  1,259 retain catalog state `PREPARE_ONLY` and have distinct digest-bound,
+  provider-free semantics for the allowlisted 61-Skill `LOCAL` set; the other
+  1,249 retain catalog state `PREPARE_ONLY` and have distinct digest-bound,
   fail-closed host Broker routes;
 - tenant/project isolation and host-minted authority checks;
 - bounded canonical requests and exact durable idempotency for adapter effects;
@@ -46,7 +46,7 @@ provider execution or production persistence qualification.
 - independent corpora, verifier, customer acceptance, legal approval and
   production certification.
 
-The 51 local handlers and 1,259 host route bindings do not clear any item in
+The 61 local handlers and 1,249 host route bindings do not clear any item in
 this external-gate list. Their
 receipts are bounded, self-attested engineering evidence only.
 
@@ -63,12 +63,12 @@ dependency blockers, required tools, workflow and verification requirements.
 Regenerate with `uv run python tooling/report_foundry_readiness.py --write`;
 `make knowledge-skill-model-foundry-skills` rejects a stale inventory.
 
-The 1,259 `PREPARE_ONLY` Skills still lack repository-owned native semantic
+The 1,249 `PREPARE_ONLY` Skills still lack repository-owned native semantic
 implementations. They now have exact integration bindings rather than a generic
 dispatcher: each route fixes the Skill identity, source digest, operation,
 inputs, outputs, tools, gates and privileged effect class. Execution remains
 `NOT_RUN` until a concrete host/provider implementation and environment are
-injected and its permit and result receipt verify. Even the 51 `LOCAL` Skills
+injected and its permit and result receipt verify. Even the 61 `LOCAL` Skills
 cover bounded local behavior and are not whole-Skill or production completion.
 All 14 golden pipelines now expose exact Broker execution paths, but none was
 executed in a real training, deployment, device, database or customer

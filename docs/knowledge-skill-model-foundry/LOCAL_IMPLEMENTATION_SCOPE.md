@@ -85,7 +85,7 @@ multi-host concurrency, backups/DR, KMS signing or production deployment.
 
 The unchanged source denominator is 1,310 atomic Skills, 41 packs, 9,090
 dependency edges and 14 pipelines. The exhaustive implementation matrix keeps
-native semantic gaps separate from the 1,259 exact host integration routes and
+native semantic gaps separate from the 1,249 exact host integration routes and
 from unexecuted verification. Adding a local handler must also update the
 three explicit allowlists, regenerate and re-pin the compiled catalog, add
 public service acceptance and negative cases, refresh the matrix, and execute

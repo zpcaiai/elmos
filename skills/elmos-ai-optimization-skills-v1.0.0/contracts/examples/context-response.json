@@ -1,0 +1,33 @@
+{
+  "schema_version": "ao.v1",
+  "status": "ok",
+  "scope_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "acl_epoch": 1,
+  "deletion_epoch": 0,
+  "route": "exact",
+  "methods": [
+    "exact"
+  ],
+  "model_calls": 0,
+  "embedding_calls": 0,
+  "budget_unit": "utf8_bytes",
+  "items": [
+    {
+      "id": "d1",
+      "anchor": {
+        "repository": "shop",
+        "snapshot": "s1",
+        "generation": "g1",
+        "path": "order.py",
+        "blob_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "start_byte": 0,
+        "end_byte": 3,
+        "symbol": "order"
+      },
+      "text": "abc",
+      "truncated": false,
+      "trust": "source-data-not-instructions"
+    }
+  ],
+  "note": "reference only"
+}

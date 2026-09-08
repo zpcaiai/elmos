@@ -1,0 +1,10 @@
+default_batches:
+- B0
+- B1
+task_source: tasks/tasks.yaml
+acceptance_source: acceptance.yaml
+workflows:
+- references/workflows/retrieval.md
+- references/workflows/bounded-agent.md
+- references/workflows/evaluation.md
+reuse_existing_owners: true

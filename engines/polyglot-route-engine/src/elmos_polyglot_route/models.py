@@ -606,7 +606,7 @@ class Statement:
     condition: Expression | None = None
     then_body: tuple[Statement, ...] = ()
     else_body: tuple[Statement, ...] = ()
-    #: `let` only: the bound name and its declared canonical type.
+    #: `let` and `assign`: the bound or assigned name and its declared canonical type (`let`).
     name: str | None = None
     declared_type: str | None = None
     #: `for` only: monotonic iteration loop
@@ -681,6 +681,25 @@ class Statement:
                 kind=kind,
                 name=name,
                 declared_type=declared_type,
+                expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "assign":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "name", "expression"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            name = _require_string(value["name"], f"{_path}.name")
+            if not name:
+                raise RouteError(f"ASSIGN_NAME_REQUIRED:{_path}")
+            expression = value["expression"]
+            if type(expression) is not dict:
+                raise RouteError(f"ASSIGN_EXPRESSION_REQUIRED:{_path}")
+            return cls(
+                kind=kind,
+                name=name,
                 expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
                 source_span=_optional_source_span(value, _path),
             )
@@ -771,6 +790,12 @@ class Statement:
                 "type": self.declared_type,
                 "expression": self.expression.semantic_mapping(),
             }
+        if self.kind == "assign" and self.name is not None and self.expression is not None:
+            return {
+                "kind": "assign",
+                "name": self.name,
+                "expression": self.expression.semantic_mapping(),
+            }
         if self.kind == "while" and self.condition is not None:
             return {
                 "kind": "while",
@@ -811,6 +836,12 @@ class Statement:
                 "kind": "let",
                 "name": self.name,
                 "type": self.declared_type,
+                "expression": self.expression.to_mapping(),
+            }
+        elif self.kind == "assign" and self.name is not None and self.expression is not None:
+            result = {
+                "kind": "assign",
+                "name": self.name,
                 "expression": self.expression.to_mapping(),
             }
         elif self.kind == "while" and self.condition is not None:

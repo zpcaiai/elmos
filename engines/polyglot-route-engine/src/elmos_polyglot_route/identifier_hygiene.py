@@ -1354,6 +1354,15 @@ def _rename_statements(
                     body=_rename_statements(statement.body, body_names, role, function_names),
                 )
             )
+        elif statement.kind == "assign" and statement.expression is not None and statement.name is not None:
+            target_name = names.get(statement.name, statement.name)
+            result.append(
+                replace(
+                    statement,
+                    name=target_name,
+                    expression=_rename_expression(statement.expression, names, role, function_names),
+                )
+            )
         elif statement.kind == "break":
             result.append(statement)
         elif statement.kind == "continue":

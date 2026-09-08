@@ -405,6 +405,7 @@ public final class Analyzer {
         }
         List<Map<String, Object>> parameters = new ArrayList<>();
         Map<String, String> environment = new LinkedHashMap<>();
+        Set<String> parameterNames = new LinkedHashSet<>();
         for (VariableTree parameter : method.getParameters()) {
             String parameterType = type(parameter.getType().toString(), records);
             parameters.add(withSpan(
@@ -413,13 +414,15 @@ public final class Analyzer {
                     Map.of(
                             "name", parameter.getName().toString(),
                             "type", parameterType)));
-            environment.put(parameter.getName().toString(), parameterType);
+            String paramName = parameter.getName().toString();
+            environment.put(paramName, parameterType);
+            parameterNames.add(paramName);
         }
         Map<String, Object> function = new LinkedHashMap<>();
         function.put("name", method.getName().toString());
         function.put("parameters", parameters);
         function.put("return_type", type(method.getReturnType().toString(), records));
-        function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+        function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, parameterNames, records, functionNames, functionReturnTypes, spans));
         return withSpan(method, spans, function);
     }
 
@@ -993,10 +996,22 @@ public final class Analyzer {
         }
     }
 
+    private static String compoundOperator(Tree.Kind kind) {
+        return switch (kind) {
+            case PLUS_ASSIGNMENT -> "+";
+            case MINUS_ASSIGNMENT -> "-";
+            case MULTIPLY_ASSIGNMENT -> "*";
+            case DIVIDE_ASSIGNMENT -> "/";
+            case REMAINDER_ASSIGNMENT -> "%";
+            default -> throw new IllegalArgumentException("JAVA_UNSUPPORTED_COMPOUND_ASSIGN_OPERATOR:" + kind);
+        };
+    }
+
     private static List<Map<String, Object>> statements(
             List<? extends StatementTree> source,
             boolean emittedTarget,
             Map<String, String> environment,
+            Set<String> parameterNames,
             Map<String, RecordDef> records,
             Set<String> functionNames,
             Map<String, String> functionReturnTypes,
@@ -1024,9 +1039,6 @@ public final class Analyzer {
                 if (prefix.contains("var")) {
                     throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.UNANNOTATED_ASSIGNMENT);
                 }
-                if (!variable.getModifiers().getFlags().contains(Modifier.FINAL)) {
-                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.MUTABLE_LOCAL);
-                }
                 String declaredType = variable.getType().toString().trim();
                 String canonical = type(declaredType, records);
                 Map<String, Object> expr = expression(
@@ -1039,18 +1051,92 @@ public final class Analyzer {
                 item.put("type", canonical);
                 item.put("expression", expr);
                 result.add(withSpan(statement, spans, item));
-            } else if (statement instanceof ExpressionStatementTree exprStmt && exprStmt.getExpression() instanceof AssignmentTree) {
-                throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.MUTABLE_LOCAL);
+            } else if (statement instanceof ExpressionStatementTree exprStmt) {
+                ExpressionTree expr = exprStmt.getExpression();
+                if (expr instanceof AssignmentTree assign) {
+                    if (!(assign.getVariable() instanceof IdentifierTree id)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    String targetName = id.getName().toString();
+                    if (parameterNames.contains(targetName)) {
+                        throw new IllegalArgumentException("JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:" + targetName);
+                    }
+                    if (!environment.containsKey(targetName)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_NOT_DECLARED:" + targetName);
+                    }
+                    Map<String, Object> valueExpr = expression(
+                            assign.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("kind", "assign");
+                    item.put("name", targetName);
+                    item.put("expression", valueExpr);
+                    result.add(withSpan(statement, spans, item));
+                } else if (expr instanceof CompoundAssignmentTree compound) {
+                    String op = compoundOperator(compound.getKind());
+                    if (!(compound.getVariable() instanceof IdentifierTree id)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    String targetName = id.getName().toString();
+                    if (parameterNames.contains(targetName)) {
+                        throw new IllegalArgumentException("JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:" + targetName);
+                    }
+                    if (!environment.containsKey(targetName)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_NOT_DECLARED:" + targetName);
+                    }
+                    Map<String, Object> leftRef = withSpan(id, spans, Map.of("kind", "name", "value", targetName));
+                    Map<String, Object> rhsExpr = expression(
+                            compound.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
+                    Map<String, Object> binaryExpr = withSpan(compound, spans, Map.of(
+                            "kind", "binary",
+                            "operator", op,
+                            "left", leftRef,
+                            "right", rhsExpr
+                    ));
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("kind", "assign");
+                    item.put("name", targetName);
+                    item.put("expression", binaryExpr);
+                    result.add(withSpan(statement, spans, item));
+                } else if (expr instanceof UnaryTree unary &&
+                           (unary.getKind() == Tree.Kind.POSTFIX_INCREMENT || unary.getKind() == Tree.Kind.PREFIX_INCREMENT ||
+                            unary.getKind() == Tree.Kind.POSTFIX_DECREMENT || unary.getKind() == Tree.Kind.PREFIX_DECREMENT)) {
+                    String op = (unary.getKind() == Tree.Kind.POSTFIX_INCREMENT || unary.getKind() == Tree.Kind.PREFIX_INCREMENT) ? "+" : "-";
+                    if (!(unary.getExpression() instanceof IdentifierTree id)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    String targetName = id.getName().toString();
+                    if (parameterNames.contains(targetName)) {
+                        throw new IllegalArgumentException("JAVA_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:" + targetName);
+                    }
+                    if (!environment.containsKey(targetName)) {
+                        throw new IllegalArgumentException("JAVA_ASSIGNMENT_TARGET_NOT_DECLARED:" + targetName);
+                    }
+                    Map<String, Object> leftRef = withSpan(id, spans, Map.of("kind", "name", "value", targetName));
+                    Map<String, Object> oneLiteral = withSpan(unary, spans, Map.of("kind", "literal", "value", 1L));
+                    Map<String, Object> binaryExpr = withSpan(unary, spans, Map.of(
+                            "kind", "binary",
+                            "operator", op,
+                            "left", leftRef,
+                            "right", oneLiteral
+                    ));
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("kind", "assign");
+                    item.put("name", targetName);
+                    item.put("expression", binaryExpr);
+                    result.add(withSpan(statement, spans, item));
+                } else {
+                    throw new IllegalArgumentException("JAVA_UNSUPPORTED_STATEMENT:" + statement.getKind());
+                }
             } else if (statement instanceof IfTree conditional) {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "if");
                 item.put("condition", expression(
                         conditional.getCondition(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                 item.put("then", statementBody(
-                        conditional.getThenStatement(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+                        conditional.getThenStatement(), emittedTarget, environment, parameterNames, records, functionNames, functionReturnTypes, spans));
                 item.put("else", conditional.getElseStatement() == null
                         ? List.of()
-                        : statementBody(conditional.getElseStatement(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+                        : statementBody(conditional.getElseStatement(), emittedTarget, environment, parameterNames, records, functionNames, functionReturnTypes, spans));
                 result.add(withSpan(statement, spans, item));
             } else if (statement instanceof BreakTree breakTree) {
                 if (breakTree.getLabel() != null) {
@@ -1069,7 +1155,7 @@ public final class Analyzer {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "while");
                 item.put("condition", expression(whileLoop.getCondition(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
-                item.put("body", statementBody(whileLoop.getStatement(), emittedTarget, new LinkedHashMap<>(environment), records, functionNames, functionReturnTypes, spans));
+                item.put("body", statementBody(whileLoop.getStatement(), emittedTarget, new LinkedHashMap<>(environment), parameterNames, records, functionNames, functionReturnTypes, spans));
                 result.add(withSpan(statement, spans, item));
             } else if (statement instanceof ForLoopTree forLoop) {
                 List<? extends StatementTree> inits = forLoop.getInitializer();
@@ -1120,7 +1206,7 @@ public final class Analyzer {
 
                 Map<String, String> loopEnv = new LinkedHashMap<>(environment);
                 loopEnv.put(varName, "integer");
-                List<Map<String, Object>> body = statementBody(forLoop.getStatement(), emittedTarget, loopEnv, records, functionNames, functionReturnTypes, spans);
+                List<Map<String, Object>> body = statementBody(forLoop.getStatement(), emittedTarget, loopEnv, parameterNames, records, functionNames, functionReturnTypes, spans);
 
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "for");
@@ -1148,15 +1234,16 @@ public final class Analyzer {
             StatementTree statement,
             boolean emittedTarget,
             Map<String, String> environment,
+            Set<String> parameterNames,
             Map<String, RecordDef> records,
             Set<String> functionNames,
             Map<String, String> functionReturnTypes,
             SpanContext spans) {
         Map<String, String> branchEnv = new LinkedHashMap<>(environment);
         if (statement instanceof BlockTree block) {
-            return statements(block.getStatements(), emittedTarget, branchEnv, records, functionNames, functionReturnTypes, spans);
+            return statements(block.getStatements(), emittedTarget, branchEnv, parameterNames, records, functionNames, functionReturnTypes, spans);
         }
-        return statements(List.of(statement), emittedTarget, branchEnv, records, functionNames, functionReturnTypes, spans);
+        return statements(List.of(statement), emittedTarget, branchEnv, parameterNames, records, functionNames, functionReturnTypes, spans);
     }
 
     private static String expressionType(

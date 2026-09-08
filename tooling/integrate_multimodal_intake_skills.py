@@ -202,6 +202,7 @@ ENGINE_IMPLEMENTATION_FILES = (
     "src/elmos_multimodal_intake/migrations/022_downstream_agent_integration.sql",
     "src/elmos_multimodal_intake/migrations/023_processing_job_cancellation.sql",
     "src/elmos_multimodal_intake/migrations/024_core_outbox_delivery_receipts.sql",
+    "src/elmos_multimodal_intake/native_archive_bridge.py",
     "src/elmos_multimodal_intake/observability.py",
     "src/elmos_multimodal_intake/operation_registry.py",
     "src/elmos_multimodal_intake/parsers.py",
@@ -378,6 +379,7 @@ ENGINE_TEST_FILES = (
     "tests/test_human_review_workflow.py",
     "tests/test_knowledge_archive_bridge.py",
     "tests/test_knowledge_outbox_delivery.py",
+    "tests/test_native_archive.py",
     "tests/test_observability.py",
     "tests/test_operation_registry_contract.py",
     "tests/test_project_package_lifecycle.py",
@@ -732,6 +734,15 @@ SURFACE_IMPLEMENTATION_FILES = (
     "sdk/multimodal-intake/java/src/main/java/dev/elmos/intake/MultimodalIntakeClient.java",
 )
 LEGACY_SURFACE_IMPLEMENTATION_FILES_V1 = tuple(
+    relative.replace("_route.ts", "route.ts")
+    for relative in SURFACE_IMPLEMENTATION_FILES
+    if relative != "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/_route.ts"
+)
+LEGACY_SURFACE_IMPLEMENTATION_FILES_V2 = tuple(
+    relative.replace("_route.ts", "route.ts")
+    for relative in SURFACE_IMPLEMENTATION_FILES
+)
+LEGACY_SURFACE_IMPLEMENTATION_FILES_V3 = tuple(
     relative
     for relative in SURFACE_IMPLEMENTATION_FILES
     if relative != "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/_route.ts"
@@ -4956,6 +4967,8 @@ def _validate_managed_upgrade_group(
         )
         for surface_files in (
             LEGACY_SURFACE_IMPLEMENTATION_FILES_V1,
+            LEGACY_SURFACE_IMPLEMENTATION_FILES_V2,
+            LEGACY_SURFACE_IMPLEMENTATION_FILES_V3,
             SURFACE_IMPLEMENTATION_FILES,
         )
     )

@@ -83,8 +83,8 @@ description: "为 Elmos 实现统一多模态输入总控；当任务涉及音�
 - Source contract SHA-256: `7bee0bc845ceb53e05ff5a709d05b746f659567a3940c1569495ac337fd1d67d`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_multimodal_input_orchestrator`
 - Runtime phase: `secure-intake`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-unified-multimodal-content-ir`, `$elmos-source-anchor-and-provenance`, `$elmos-durable-processing-and-recovery`
 - Acceptance identities: `S01-01`, `S01-02`, `S01-03`, `S01-04`
 - Generated contract: `compiled-contract.json`
