@@ -1,7 +1,6 @@
 import { appendFile, mkdir, rename, rmdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-
 import { installAdministratorSession } from "./helpers/admin-session";
 
 const tenantId = "local-e2e";
@@ -177,13 +176,11 @@ test.describe.serial("实时账户用量", () => {
   });
 
   test("套餐页实时更新 token 消耗量与进度", async ({ page }) => {
-    await installAdministratorSession(page);
+    await installAdministratorSession(page, {
+      actorId,
+      organizationId: tenantId,
+    });
     await page.goto("/pricing");
-    // The administrator fixture is needed only for the protected page render.
-    // Remove it before exercising the explicit tenant-scoped usage credential;
-    // otherwise the cookie identity correctly takes precedence and rejects the
-    // unrelated local-e2e subject as a cross-tenant request.
-    await page.setExtraHTTPHeaders({});
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);
     for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {
