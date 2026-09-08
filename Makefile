@@ -173,10 +173,11 @@ database-bigdata-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
 .PHONY: project-intelligence-skills
 project-intelligence-skills:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 -m unittest discover -s engines/project-intelligence-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/qualify_project_intelligence_runtime.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_project_intelligence_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
+	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s engines/project-intelligence-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python tooling/qualify_project_intelligence_runtime.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python tooling/integrate_project_intelligence_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project engines/project-intelligence-engine --locked --group test python -m unittest discover -s tests/project-intelligence-skills -p 'test_*.py'
 .PHONY: legacy-web-modernization-skills
 legacy-web-modernization-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_legacy_web_modernization_skills.py --check
@@ -195,12 +196,13 @@ ai-capability-enhancement-skills:
 
 .PHONY: knowledge-skill-model-foundry-skills
 knowledge-skill-model-foundry-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/generate_foundry_native_semantics.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/report_foundry_readiness.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_knowledge_skill_model_foundry_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet python tooling/qualify_knowledge_skill_model_foundry.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
-	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
-	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet python -m compileall -q engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
+	$(UV) run --quiet --with ruff==0.12.10 ruff check tooling/integrate_knowledge_skill_model_foundry_skills.py tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py engines/knowledge-skill-model-foundry-engine/src engines/knowledge-skill-model-foundry-engine/tests tests/knowledge-skill-model-foundry-skills
+	PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with mypy==1.17.1 mypy --strict engines/knowledge-skill-model-foundry-engine/src/elmos_foundry tooling/generate_foundry_native_semantics.py tooling/qualify_knowledge_skill_model_foundry.py tooling/report_foundry_readiness.py
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with-requirements engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/knowledge-skill-model-foundry-engine/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/knowledge-skill-model-foundry-engine/src $(UV) run --quiet --with-requirements engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/knowledge-skill-model-foundry-skills -p 'test_*.py'
 
@@ -307,9 +309,9 @@ ai-optimization-skills:
 
 .PHONY: repository-task-router-skills
 repository-task-router-skills:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_repository_task_router_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python tooling/integrate_repository_task_router_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --project packages/repository-orchestrator --locked --group test python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/repair-orchestration,apps/agent-gateway -am test
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine run build
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit

@@ -45,6 +45,9 @@ PRIMARY_ARCHIVE_RELATIVE = Path("skills/subskills") / f"{PACKAGE_DIRECTORY}.zip"
 FALLBACK_ARCHIVE_RELATIVE = Path("skills/subskills/sub") / f"{PACKAGE_DIRECTORY}.zip"
 ENGINE_RELATIVE = Path("engines/knowledge-skill-model-foundry-engine")
 CATALOG_RELATIVE = ENGINE_RELATIVE / "catalog"
+NATIVE_PROGRAMS_RELATIVE = (
+    ENGINE_RELATIVE / "src/elmos_foundry/native-semantic-programs.json"
+)
 
 EXPECTED_ARCHIVE_SHA256 = (
     "e29673a598756deff422e8dd7f36b2826e9c1aaff6df22db2c0699b0857ee0e4"
@@ -1149,7 +1152,72 @@ def _handler_id(pack: str) -> str:
 
 
 def _capability_state(skill_name: str) -> str:
-    return "LOCAL" if skill_name in LOCAL_CAPABILITY_ALLOWLIST else "PREPARE_ONLY"
+    return "LOCAL" if skill_name in LOCAL_CAPABILITY_ALLOWLIST else "NATIVE"
+
+
+def _validate_native_program_manifest(
+    atomic_skills: Sequence[Mapping[str, Any]],
+) -> None:
+    """Bind every non-local catalog identity to repository-owned semantic code."""
+
+    path = ROOT / NATIVE_PROGRAMS_RELATIVE
+    _require(path.is_file() and not path.is_symlink(), "native semantic manifest missing or unsafe")
+    manifest = _mapping(load_json(path.read_bytes(), path.as_posix()), path.as_posix())
+    _require(
+        set(manifest) == {"schema_version", "implementation_version", "programs"},
+        "native semantic manifest keys drift",
+    )
+    _require(
+        manifest.get("schema_version") == "elmos.foundry.native-semantic-manifest.v1"
+        and manifest.get("implementation_version") == "1.0.0",
+        "native semantic manifest version drift",
+    )
+    rows = _list(manifest.get("programs"), "native semantic programs")
+    expected = {
+        str(row["name"]): row
+        for row in atomic_skills
+        if str(row["name"]) not in LOCAL_CAPABILITY_ALLOWLIST
+    }
+    _require(len(rows) == len(expected), "native semantic program count mismatch")
+    observed: set[str] = set()
+    for index, raw in enumerate(rows):
+        row = _mapping(raw, f"native semantic programs[{index}]")
+        _require(set(row) == {"document", "program_digest"}, "native program row keys drift")
+        document = _mapping(row.get("document"), f"native program {index}.document")
+        name = _string(document.get("skill_name"), f"native program {index}.skill_name")
+        _require(name not in observed and name in expected, f"native program identity mismatch: {name}")
+        observed.add(name)
+        source = expected[name]
+        exact = {
+            "schema_version": "elmos.foundry.native-semantic-program.v1",
+            "implementation_version": "1.0.0",
+            "handler_id": f"native.{name}",
+            "skill_version": source["version"],
+            "skill_source_sha256": source["source_sha256"],
+            "pack": source["pack"],
+            "risk_class": source["risk_class"],
+            "objective": source["description"],
+            "effect_class": "PRIVILEGED_EXTERNAL",
+            "dependencies": source["dependencies"],
+            "required_gates": source["required_gates"],
+            "invariants": source["invariants"],
+            "rollback_strategy": source["rollback_contract"]["strategy"],
+            "success_state": "PROVIDER_RECEIPT_VERIFIED",
+            "certification_state": "NOT_CERTIFIED",
+        }
+        for field, value in exact.items():
+            _require(document.get(field) == value, f"{name}: native program {field} drift")
+        digest = hashlib.sha256(
+            json.dumps(
+                document,
+                ensure_ascii=False,
+                allow_nan=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        _require(row.get("program_digest") == digest, f"{name}: native program digest drift")
+    _require(observed == set(expected), "native semantic program allowlist is incomplete")
 
 
 def _files_below(files: Mapping[str, zipfile.ZipInfo], prefix: str) -> set[str]:
@@ -1540,7 +1608,7 @@ def _validate_atomic_skills(
                 "semantic_handler_binding": (
                     f"local.{name}"
                     if name in LOCAL_CAPABILITY_ALLOWLIST
-                    else UNBOUND
+                    else f"native.{name}"
                 ),
                 "capability_state": _capability_state(name),
                 "external_evidence_status": "NOT_RUN",
@@ -1859,6 +1927,7 @@ def audit_archive(
             zf, files, controlled_hashes, catalog_items, skill_schema
         )
         _require(len(atomic_skills) == EXPECTED_ATOMIC_SKILLS, "atomic Skill count mismatch")
+        _validate_native_program_manifest(atomic_skills)
         _require(dict(pack_counts) == dict(EXPECTED_PACK_COUNTS), f"pack counts mismatch: {dict(pack_counts)}")
         _require(dict(priority_counts) == dict(EXPECTED_PRIORITY_COUNTS), f"priority counts mismatch: {dict(priority_counts)}")
         _require(dict(risk_counts) == dict(EXPECTED_RISK_COUNTS), f"risk counts mismatch: {dict(risk_counts)}")
@@ -1943,6 +2012,7 @@ def audit_archive(
         },
         "counts": {
             "atomic_skills": len(atomic_skills),
+            "native_semantic_programs": len(atomic_skills) - len(LOCAL_CAPABILITY_ALLOWLIST),
             "meta_skills": len(meta_skills),
             "packs": len(packs),
             "schemas": supporting["schema_count"],
@@ -1975,8 +2045,8 @@ def audit_archive(
         "profiles": supporting["profiles"],
         "meta_source_version_counts": dict(sorted(meta_version_counts.items())),
         "capability_states": {
-            "PREPARE_ONLY": sum(skill["capability_state"] == "PREPARE_ONLY" for skill in atomic_skills),
             "LOCAL": sum(skill["capability_state"] == "LOCAL" for skill in atomic_skills),
+            "NATIVE": sum(skill["capability_state"] == "NATIVE" for skill in atomic_skills),
         },
         "auxiliary_json_catalog": auxiliary,
         "external_evidence_status": "NOT_RUN",
@@ -2000,12 +2070,12 @@ def _safe_wrapper_bytes(meta: Mapping[str, Any]) -> bytes:
     source_sha256 = str(meta["source_sha256"])
     return f"""---
 name: {name}
-description: Route the {pack} capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the {pack} capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: {PACKAGE_VERSION}
   pack: {pack}
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: {source_sha256}
@@ -2153,7 +2223,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--include-meta-wrappers",
         action="store_true",
-        help="also generate 41 normalized PREPARE_ONLY meta wrappers",
+        help="also generate 41 normalized fail-closed meta wrappers",
     )
     return parser
 

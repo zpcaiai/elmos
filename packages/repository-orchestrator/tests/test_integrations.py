@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import unittest
-import importlib.util
 
 from elmos_repository_orchestrator.contracts import ContractError, sha256_payload
 from elmos_repository_orchestrator.integrations import (
@@ -13,14 +12,6 @@ from elmos_repository_orchestrator.integrations import (
     integration_fingerprint,
 )
 from elmos_repository_orchestrator.retrieval import RetrievalQuery, SearchDocument, SourceAnchor
-
-
-def has_module(name: str) -> bool:
-    try:
-        return importlib.util.find_spec(name) is not None
-    except ModuleNotFoundError:
-        return False
-
 
 class FakeIndices:
     def __init__(self) -> None:
@@ -183,7 +174,6 @@ class DifyAndTelemetryTests(unittest.TestCase):
                 {"_elmos_tenant_id": "tenant-b"}, actor_id="alice", idempotency_key="req-2"
             )
 
-    @unittest.skipUnless(has_module("opentelemetry.sdk"), "integrations extra is not installed")
     def test_otel_records_safe_attributes_and_rejects_content(self) -> None:
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import SimpleSpanProcessor
