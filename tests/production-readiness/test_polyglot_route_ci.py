@@ -30,6 +30,22 @@ def _supported_route_languages() -> tuple[str, ...]:
     raise AssertionError("SUPPORTED_LANGUAGES literal was not found")
 
 
+def _repository_matrix_languages() -> tuple[str, ...]:
+    route_sets_path = ROOT / "scripts" / "batch29" / "route_sets.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_batch29_route_sets_for_ci_test",
+        route_sets_path,
+    )
+    if spec is None or spec.loader is None:
+        raise AssertionError("Batch 29 route-set authority could not be loaded")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    value = module.THIRTEEN_LANGUAGE_MATRIX_LANGUAGES
+    if not isinstance(value, tuple) or not all(isinstance(item, str) for item in value):
+        raise AssertionError("THIRTEEN_LANGUAGE_MATRIX_LANGUAGES is invalid")
+    return value
+
+
 def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]:
     matrix_path = (
         ROOT
@@ -770,7 +786,17 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             for line in source_matrix.splitlines()
             if line.strip().startswith("- ")
         )
-        self.assertEqual(configured_sources, _supported_route_languages())
+        supported_languages = _supported_route_languages()
+        repository_matrix_languages = frozenset(_repository_matrix_languages())
+        expected_configured_sources = tuple(
+            language
+            for language in supported_languages
+            if language in repository_matrix_languages
+        )
+        self.assertEqual(configured_sources, expected_configured_sources)
+        self.assertEqual(len(configured_sources), len(set(configured_sources)))
+        self.assertIn("vb6", supported_languages)
+        self.assertNotIn("vb6", configured_sources)
         expected_matrix_nodes = {
             (function_name, source, target)
             for function_name in parameterized_tests
