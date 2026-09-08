@@ -3,12 +3,12 @@
     "bytes": 14613600,
     "device": 16777230,
     "gid": 20,
-    "inode": 609437857,
+    "inode": 621951003,
     "mode": "0500",
     "name": "ElmosSwiftAnalyzer",
     "nlink": 1,
-    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca/ElmosSwiftAnalyzer",
-    "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e",
+    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid/ElmosSwiftAnalyzer",
+    "sha256": "sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76",
     "uid": 501
   },
   "build": {
@@ -86,7 +86,7 @@
         "mode": "0500",
         "name": "ElmosSwiftAnalyzer",
         "nlink": 1,
-        "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e"
+        "sha256": "sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76"
       },
       "build": {
         "argv": [
@@ -195,7 +195,7 @@
           "mode": "0500",
           "name": "ElmosSwiftAnalyzer",
           "nlink": 1,
-          "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e"
+          "sha256": "sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76"
         },
         "mode": "0500",
         "policy": "private-nonwritable-execution-root-v1"
@@ -322,12 +322,12 @@
             "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
           },
           {
-            "bytes": 42338,
+            "bytes": 42759,
             "path": "Sources/ElmosSwiftAnalyzer/main.swift",
-            "sha256": "sha256:366907d0b6a742333badcc79f96cc8c8cf62768237493a200c92895deab3efee"
+            "sha256": "sha256:a7f1ae2d3b4428e0ff0d65afa92d61e70fa00d23f992988f40f33c950dbf9948"
           }
         ],
-        "sha256": "sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763"
+        "sha256": "sha256:6faba783c284b0781cfdf720cb7011d92b4f1198422182c4169236a7ada809cb"
       },
       "toolchain": {
         "build_closure": {
@@ -654,7 +654,7 @@
         "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
       }
     },
-    "sha256": "sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e"
+    "sha256": "sha256:f76a02fcde7685ae91897f2a1d1686ea4b59940210bb73884f4097672fecfa6f"
   },
   "dependency": {
     "bytes": 8866479,
@@ -695,20 +695,20 @@
       "bytes": 14613600,
       "device": 16777230,
       "gid": 20,
-      "inode": 609437857,
+      "inode": 621951003,
       "mode": "0500",
       "name": "ElmosSwiftAnalyzer",
       "nlink": 1,
-      "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca/ElmosSwiftAnalyzer",
-      "sha256": "sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e",
+      "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid/ElmosSwiftAnalyzer",
+      "sha256": "sha256:77de6e58a7e47d92d785b1cb7ca98f3fb0e99bd84e4e8e29ccd4b482ee4e7f76",
       "uid": 501
     },
     "device": 16777230,
     "gid": 20,
-    "inode": 609432225,
+    "inode": 621947725,
     "mode": "0500",
     "policy": "private-nonwritable-execution-root-v1",
-    "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca",
+    "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid",
     "uid": 501
   },
   "kind": "elmos.swift-analyzer-build-receipt",
@@ -723,11 +723,11 @@
         "bytes": 33784,
         "device": 16777230,
         "gid": 20,
-        "inode": 609433212,
+        "inode": 621948778,
         "mode": "0500",
         "name": "ElmosNetworkDenyProbe",
         "nlink": 1,
-        "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca/network-probe-execution/ElmosNetworkDenyProbe",
+        "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid/network-probe-execution/ElmosNetworkDenyProbe",
         "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
         "uid": 501
       },
@@ -790,20 +790,20 @@
           "bytes": 33784,
           "device": 16777230,
           "gid": 20,
-          "inode": 609433212,
+          "inode": 621948778,
           "mode": "0500",
           "name": "ElmosNetworkDenyProbe",
           "nlink": 1,
-          "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca/network-probe-execution/ElmosNetworkDenyProbe",
+          "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid/network-probe-execution/ElmosNetworkDenyProbe",
           "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
           "uid": 501
         },
         "device": 16777230,
         "gid": 20,
-        "inode": 609433211,
+        "inode": 621948777,
         "mode": "0500",
         "policy": "private-nonwritable-execution-root-v1",
-        "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-uev4g7ca/network-probe-execution",
+        "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-l_ofgvid/network-probe-execution",
         "uid": 501
       },
       "mach_o": {
@@ -858,12 +858,12 @@
         "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
       },
       {
-        "bytes": 42338,
+        "bytes": 42759,
         "path": "Sources/ElmosSwiftAnalyzer/main.swift",
-        "sha256": "sha256:366907d0b6a742333badcc79f96cc8c8cf62768237493a200c92895deab3efee"
+        "sha256": "sha256:a7f1ae2d3b4428e0ff0d65afa92d61e70fa00d23f992988f40f33c950dbf9948"
       }
     ],
-    "sha256": "sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763"
+    "sha256": "sha256:6faba783c284b0781cfdf720cb7011d92b4f1198422182c4169236a7ada809cb"
   },
   "toolchain": {
     "build_closure": {
