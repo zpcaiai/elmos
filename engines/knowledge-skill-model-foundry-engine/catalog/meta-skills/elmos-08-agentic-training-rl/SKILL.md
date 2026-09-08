@@ -1,11 +1,11 @@
 ---
 name: elmos-08-agentic-training-rl
-description: Route the 08-agentic-training-rl capability pack through the repository-owned compiled catalog using fail-closed PREPARE_ONLY bindings.
+description: Route the 08-agentic-training-rl capability pack through exact repository-owned LOCAL or NATIVE semantic bindings.
 license: Proprietary-Elmos-Commercial
 metadata:
   version: 3.0.0
   pack: 08-agentic-training-rl
-  capability-state: PREPARE_ONLY
+  capability-state: NATIVE_OR_LOCAL
   external-evidence-status: NOT_RUN
   certification-status: NOT_CERTIFIED
   source-sha256: 579c2b26b54974991e2b87f0ccbead1cbe8dbfce41d28e48967742e47735c977
