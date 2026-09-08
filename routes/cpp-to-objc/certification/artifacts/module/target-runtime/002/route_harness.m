@@ -31,23 +31,23 @@ static __attribute__((unused)) NSString *ElmosHarnessHexUTF8(NSString *value) {
 
 int main() {
     @autoreleasepool {
-        long long actual_0 = clamp(-10, 0, 100);
+        long long actual_0 = elmos_fn_d061a95391d14e41(-10, 0, 100);
         long long expected_0 = 0;
         if (actual_0 != expected_0) return 1;
         printf("ELMOS_OBSERVATION\t0\ti64-dec\t%lld\n", actual_0);
-        long long actual_1 = clamp(55, 0, 100);
+        long long actual_1 = elmos_fn_d061a95391d14e41(55, 0, 100);
         long long expected_1 = 55;
         if (actual_1 != expected_1) return 2;
         printf("ELMOS_OBSERVATION\t1\ti64-dec\t%lld\n", actual_1);
-        long long actual_2 = clamp(101, 0, 100);
+        long long actual_2 = elmos_fn_d061a95391d14e41(101, 0, 100);
         long long expected_2 = 100;
         if (actual_2 != expected_2) return 3;
         printf("ELMOS_OBSERVATION\t2\ti64-dec\t%lld\n", actual_2);
-        long long actual_3 = clamp(0, 0, 100);
+        long long actual_3 = elmos_fn_d061a95391d14e41(0, 0, 100);
         long long expected_3 = 0;
         if (actual_3 != expected_3) return 4;
         printf("ELMOS_OBSERVATION\t3\ti64-dec\t%lld\n", actual_3);
-        long long actual_4 = clamp(100, 0, 100);
+        long long actual_4 = elmos_fn_d061a95391d14e41(100, 0, 100);
         long long expected_4 = 100;
         if (actual_4 != expected_4) return 5;
         printf("ELMOS_OBSERVATION\t4\ti64-dec\t%lld\n", actual_4);

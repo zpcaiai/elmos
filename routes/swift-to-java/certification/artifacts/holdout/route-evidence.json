@@ -1,0 +1,279 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:b63ba05a37f81b63cf7861b88c2a2778ea4e2f43fa2e675a382ce4b907621a32",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:095418ff6de349cad1333e7e06455ce0efba798f3b1357ff639fdcd8b2874b8c",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 17,
+    "required_source_chunk_count": 17,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "holdout",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:a61b9be024a14c04ab0d753cd7e0ef9b18920044bbadf351dc99607322bd76af",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:041d72fdc3fc9eacfe2fda8e81736a19e6ec012c716cb0966279d1a08bdde787",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:041d72fdc3fc9eacfe2fda8e81736a19e6ec012c716cb0966279d1a08bdde787",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:041d72fdc3fc9eacfe2fda8e81736a19e6ec012c716cb0966279d1a08bdde787",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:cb39945cfc26a3e10734b4e617ca8a7ec7db6a9238d7e0dff58732c0931e592f",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:041d72fdc3fc9eacfe2fda8e81736a19e6ec012c716cb0966279d1a08bdde787",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:3c10012b19091a4265744a1d79fcc5f72512a52eac054d8ac6bfac87963e2ce9",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:cb39945cfc26a3e10734b4e617ca8a7ec7db6a9238d7e0dff58732c0931e592f",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1f4fb0fa850829915bd9f5b080225c468d1a540a918630d2b471c4357fdce9ae",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:fa703d7e3d6caa1df3ed67fbef9495658f42880cba3755470a07c372e393f376",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:b01cba902876200251f3fa2c33cea32bf9eb397fb2e07bd41058f3c84d1a6f51",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "clamp",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_d7f4315f9912b613",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "clamp.swift",
+      "source_sha256": "sha256:1fbc81174fbc2f0cdcfde51f9c9dd40687ccca1a842a262e00d96e6b6c4eae0e",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:048481350a32e606239a041f68bc3b47b15a8402390abe25dd7bdecafeb90d3b"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:2c1715ce302cb319aeabe1f79a8b00611936d1e28b132bd083e4ac3e7df78111",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "swift-to-java",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:1f4fb0fa850829915bd9f5b080225c468d1a540a918630d2b471c4357fdce9ae"
+  },
+  "semantic_ir_sha256": "sha256:3567da295652d1b3abb89cb2a3ea08f23793e937aafd1d674b331fee72a16226",
+  "source": {
+    "analyzer": "SwiftSyntax",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "function_name": "clamp",
+    "language": "swift",
+    "path": "clamp.swift",
+    "sha256": "sha256:1fbc81174fbc2f0cdcfde51f9c9dd40687ccca1a842a262e00d96e6b6c4eae0e"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "clamp.swift",
+    "artifact_sha256": "sha256:1fbc81174fbc2f0cdcfde51f9c9dd40687ccca1a842a262e00d96e6b6c4eae0e",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "-swift-version",
+          "6",
+          "-sdk",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-warnings-as-errors",
+          "-o",
+          "source_harness",
+          "clamp.swift",
+          "main.swift"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+      }
+    ],
+    "language": "swift",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "10",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "7",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "language": "swift",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "swift-language-mode=6",
+        "integer=Int64"
+      ],
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_d7f4315f9912b613",
+    "language": "java",
+    "path": "Migrated.java",
+    "sha256": "sha256:2835b69f8a249499931ed2d858d673e623c6753922845f2c6588100bc2bd82ef"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "Migrated.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+      }
+    ],
+    "language": "java",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "10",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "7",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+      "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
+      "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+      "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
+      "language": "java",
+      "profile": [
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-openjdk@21",
+        "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+        "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+        "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+        "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+        "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+      ],
+      "version": "21.0.11"
+    }
+  }
+}

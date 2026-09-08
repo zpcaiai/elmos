@@ -1,0 +1,191 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".mjs",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/csharp-to-swift/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/bin/Release/net10.0/SourceHarness",
+    "source-runtime/bin/Release/net10.0/SourceHarness.deps.json",
+    "source-runtime/bin/Release/net10.0/SourceHarness.dll",
+    "source-runtime/bin/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/bin/Release/net10.0/SourceHarness.runtimeconfig.json",
+    "source-runtime/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfo.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfoInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GlobalUsings.g.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.assets.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.CoreCompileInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.FileListAbsolute.txt",
+    "source-runtime/obj/Release/net10.0/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/SourceHarness.genruntimeconfig.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/obj/Release/net10.0/apphost",
+    "source-runtime/obj/Release/net10.0/ref/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/refint/SourceHarness.dll",
+    "source-runtime/obj/SourceHarness.csproj.nuget.dgspec.json",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.props",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.targets",
+    "source-runtime/obj/project.assets.json",
+    "source-runtime/obj/project.nuget.cache"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 21,
+  "files": [
+    {
+      "bytes": 1487,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:a371f9e639b98a17fc5f3152a08815bedf41d1a7aa5b9849910b61203b30ec88"
+    },
+    {
+      "bytes": 11067,
+      "path": "chunk-map.json",
+      "sha256": "sha256:8da6829a0766873d608e0c0ee70412fd4229f5eebf4d9a95927f6748d2161846"
+    },
+    {
+      "bytes": 3052,
+      "path": "formal-composition.json",
+      "sha256": "sha256:ba78889c218f5b0eedc55b6e82b0ce6b19529d5156cf90000aaaa5133d76f6af"
+    },
+    {
+      "bytes": 1018,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:5b8de0e7d354799f5478148d71bcd28a2d8656ac89461c687acf84aecb2afa34"
+    },
+    {
+      "bytes": 13994,
+      "path": "formal-input.json",
+      "sha256": "sha256:cac16407769831420314eaa2bcdb46c80b357076b03c4d061913be0768929731"
+    },
+    {
+      "bytes": 2394,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:71f62e7e6a5e7692adc03149a987db0704d8b6b9d63da337e8f134c76fe108df"
+    },
+    {
+      "bytes": 2373,
+      "path": "identifier-plan.json",
+      "sha256": "sha256:890141789cc476a86e5b86c01479237c8e6ce75f48507349ecd5cb8db94f3519"
+    },
+    {
+      "bytes": 201,
+      "path": "inputs/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 4514,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:d7c1b9212183fbd59aeaef9683164b76ff936137ddff67db65ce3da08b74b443"
+    },
+    {
+      "bytes": 987,
+      "path": "main.swift",
+      "sha256": "sha256:d2d11ee54f0ed9413d14f13aca84abd7cb627691335504e91040bbacb2ee305c"
+    },
+    {
+      "bytes": 168,
+      "path": "migrated.swift",
+      "sha256": "sha256:dc9fe286ae253869368b71e6a8e1e4dae680d7ec32c639a6cbd366b67fbc04f2"
+    },
+    {
+      "bytes": 14515,
+      "path": "route-evidence.json",
+      "sha256": "sha256:423a92e93c38d1410cbf26563998d69c64f5cfe893697fea57868fa5365adaff"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 1019,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:6db2ac5fba97f43fe0b6c8cdca8d9955ea767d5bf245be33cdee85c98abe4e85"
+    },
+    {
+      "bytes": 201,
+      "path": "source-runtime/Pricing.cs",
+      "sha256": "sha256:068529dab349fae96d0d284203057cfb4e2e3eee24b692d89490416f61203cab"
+    },
+    {
+      "bytes": 886,
+      "path": "source-runtime/Program.cs",
+      "sha256": "sha256:03b394e85ed4348a801af9560d1564c78b46a6b4b91c2ba75812761c95fb3c5c"
+    },
+    {
+      "bytes": 262,
+      "path": "source-runtime/SourceHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 1019,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:6db2ac5fba97f43fe0b6c8cdca8d9955ea767d5bf245be33cdee85c98abe4e85"
+    },
+    {
+      "bytes": 2278,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:0cdd4fba5540f771431057572bdc29924032ecb2eeb365fd4ecd9512acb6dd93"
+    },
+    {
+      "bytes": 2294,
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:c26ba6b941f0fbd92eb6de1880e572e4d5235ff5e05d8909b2146a25e26a385f"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "csharp-to-swift",
+  "schema_version": 1,
+  "total_bytes": 64189
+}

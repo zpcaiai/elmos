@@ -1,11 +1,292 @@
 {
-  "behavior_pass_rate": 0.0,
+  "artifact_manifest": {
+    "bytes": 4445,
+    "path": "certification/artifacts/holdout/artifact-manifest.json",
+    "sha256": "sha256:6a3d2f7f39ab977ced169c04c66921e59d98b5815a57b39eec426efc57c2b5b3"
+  },
+  "artifact_root": "certification/artifacts/holdout",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:51d2c6bf4c9b44ea4f751dde1c14c051a5829de44bcdc3f4ce5a811eb973336f",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
   "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:39d5dd3f672a8ec591a16003c8253e53e6dd9edc1f7084564514c7e8cb7fee25",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 17,
+    "required_source_chunk_count": 17,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
   "corpus": "holdout",
-  "critical_unknown_semantics": 1,
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:c763c6f3df3a30c38b992e702ed75cd20c614385ee3e53662e9f2cd05c887e72",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:fb9fa899f06b2687483dafd99519dfc59c8c15637e0d388641d1cb65d59e342b",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:fb9fa899f06b2687483dafd99519dfc59c8c15637e0d388641d1cb65d59e342b",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:fb9fa899f06b2687483dafd99519dfc59c8c15637e0d388641d1cb65d59e342b",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:588596bec36d6e2e412119fa1ec6a03a5a19c19458a09ffff619ada60529f537",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:fb9fa899f06b2687483dafd99519dfc59c8c15637e0d388641d1cb65d59e342b",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:858d628c60db477bbc2b9952960f0fee5fecffee41141dc6b852746ce53d1ba9",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:588596bec36d6e2e412119fa1ec6a03a5a19c19458a09ffff619ada60529f537",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:3d1fac257fad50dcd67b289d12f71e669b11db909676df8dff4636e8f9533ddd",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:4d5a54ec1b16125cd5cf17e7d83c71e965d26e5590a07a0d406f787a6bd5bdca",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:e59434b55aa4b83451bef687d44cfc5fb3f104a38de921af706947f2664d2bf3",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:3d1fac257fad50dcd67b289d12f71e669b11db909676df8dff4636e8f9533ddd",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "clamp",
+    "status": "PASSED",
+    "target_function_name": "clamp",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "clamp.cpp",
+      "source_sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:7e0d428fae25ae44ae7ef4b5726563fcdb7aea911d62ceea25d41b66a5671cf4"
+  },
   "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:178c4c7a67e29c09aceab183a1e56f18369aac6da3339d610a10b4e381fabe7b",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "cpp-to-python",
-  "schema_version": 1,
-  "source_map_coverage": 0.0,
-  "status": "NOT_RUN"
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:16d4835e9ee042427b3eb97c36f8410ef84cf58d3bc74794860edf57ae178268",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:3d1fac257fad50dcd67b289d12f71e669b11db909676df8dff4636e8f9533ddd"
+  },
+  "semantic_ir_sha256": "sha256:16d4835e9ee042427b3eb97c36f8410ef84cf58d3bc74794860edf57ae178268",
+  "source": {
+    "analyzer": "clang AST (JSON)",
+    "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "function_name": "clamp",
+    "language": "cpp",
+    "path": "clamp.cpp",
+    "sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "clamp.cpp",
+    "artifact_sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "-std=c++20",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "source_harness",
+          "source_harness.cpp"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+      }
+    ],
+    "language": "cpp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "10",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "7",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "cpp",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c++20"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "clamp",
+    "language": "python",
+    "path": "migrated.py",
+    "sha256": "sha256:6f0fdf933fc45e479bea458c7ba3f9353c9e5c7848367182a1d7963604365ebf"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+          "-m",
+          "py_compile",
+          "migrated.py",
+          "route_harness.py"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+          "route_harness.py"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":10}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":7}\n"
+      }
+    ],
+    "language": "python",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":10}",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":7}",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/lib/libpython3.12.dylib",
+      "auxiliary_sha256": "6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+      "executable": "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python/bin/python3.12",
+      "executable_sha256": "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
+      "language": "python",
+      "profile": [
+        "python-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "distribution=python-build-standalone-20260211-install-only-stripped",
+        "python-root=/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python",
+        "python-source-archive-sha256=22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84",
+        "python-source-archive-bytes=17667661",
+        "python-source-tree-sha256=1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154",
+        "python-runtime-tree-sha256=49eb47a1e6f1a8803ef3686da328abf2e18f1d31b6447190c3455640e4df9adf",
+        "python-runtime-tree-record-count=1899",
+        "python-runtime-tree-file-count=1890",
+        "python-runtime-tree-bytes=47880708",
+        "python-runtime-identity-sha256=8776314c1c57bbf83332a98d947144d329c8e6e57d2fe1cd850875f27d807d0a",
+        "libpython-sha256=6eaf8b75978a525dd85d04f34053fe33bd7fdc4b684ce991417f7d019d9b2f6e",
+        "math-runtime=built-in-via-libpython3.12.dylib",
+        "python-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "3.12.12+20260211"
+    }
+  }
 }

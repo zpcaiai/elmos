@@ -1,0 +1,361 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:f6ce86e4c1aaa2478570f8c1dc3c82ed2e00951da678931e32cf4141395c52d9",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:d748fb09f5f3724711f5af4387610ac0c9fe7bdd86e7c4a62a3c0ccfa6e0a3eb",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:1622882cacf780926a52fadd0ef5b77e6e8dfd94d80d1af4dac3cefdb10659d2",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:d8aad91f69db8b5a8d050a444a7921b78d3e3a88b93ecf392753bd826404b950",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:6225565a547126899fbced74b71e45c8257bd4c8c1113b76f3cb6bcbc994174f",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:f1ee2cfdd5c57297884fec428b16e81fe1d1c38381efcc290f99245a5584dbf2",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:d8aad91f69db8b5a8d050a444a7921b78d3e3a88b93ecf392753bd826404b950",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:527537a838317ca5de87cf586807fe4eaf618557d4209a6076f139c5f28b1917",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:9238f3c6b054019f12eadd2f5d31c77b679aaa4a66281417ab8f94d26b795185",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:7a6c63cc83ffb1b4ea4bcbab527f2adec8d660c73eaa74f55e92a1da9e4feb2e",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:527537a838317ca5de87cf586807fe4eaf618557d4209a6076f139c5f28b1917",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "difference",
+    "status": "PASSED",
+    "target_function_name": "difference",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "Difference.cs",
+      "source_sha256": "sha256:c2e15ecc364c7b758e9f217c158cdde9d566c2def8b293cf2377a3b4536ad0a5",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:90e2ecc3b8957c18f3f79e2928396804c6ccb259ce7d4c3b734b0e256b51638d"
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:7e3a3564e6593a626f9399ef891618f1e4795f1430d3b854334743381a19952e",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
+  "route": "csharp-to-php",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:1c5b1f4ef147518ce184dd19621451e7a5192f7996d91d881993ae550125a063",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:527537a838317ca5de87cf586807fe4eaf618557d4209a6076f139c5f28b1917"
+  },
+  "semantic_ir_sha256": "sha256:1c5b1f4ef147518ce184dd19621451e7a5192f7996d91d881993ae550125a063",
+  "source": {
+    "analyzer": "Microsoft.CodeAnalysis.CSharp",
+    "analyzer_version": "5.6.0.0;source-inputs=sha256:62879faec13a79de62fee583d848c020ea29ee56734ba8edb0d752d1ed34b5cf;dotnet=sha256:b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2;dotnet-bundle=sha256:a2c14a09dfc0c6ca7c6a195cf09372618f1b8124622f38fd456685f13dfee94e;build-output=sha256:5991a3592cc3d4579d5e809c9767ed57ab762a2d045f34b87175bd79b5a2aac4",
+    "function_name": "difference",
+    "language": "csharp",
+    "path": "Difference.cs",
+    "sha256": "sha256:c2e15ecc364c7b758e9f217c158cdde9d566c2def8b293cf2377a3b4536ad0a5"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "Difference.cs",
+    "artifact_sha256": "sha256:c2e15ecc364c7b758e9f217c158cdde9d566c2def8b293cf2377a3b4536ad0a5",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "build",
+          "SourceHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/real-repository/source-runtime/SourceHarness.csproj (in 333 ms).\n  SourceHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-csharp-to-php-g68z0yca/real-repository/source-runtime/bin/Release/net10.0/SourceHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:10.13\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "run",
+          "--project",
+          "SourceHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTM=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tMA==\n"
+      }
+    ],
+    "language": "csharp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTM=",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+      "executable_sha256": "b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+      "language": "csharp",
+      "profile": [
+        "dotnet-profile-schema=v1",
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-dotnet",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "dotnet-root=/opt/homebrew/Cellar/dotnet/10.0.301/libexec",
+        "sdk-version=10.0.301",
+        "hostfxr-version=10.0.9",
+        "runtime-framework=Microsoft.NETCore.App",
+        "runtime-version=10.0.9",
+        "rid=osx-arm64",
+        "targeting-pack-version=10.0.9",
+        "apphost-pack-version=10.0.9",
+        "wrapper-path=/opt/homebrew/Cellar/dotnet/10.0.301/bin/dotnet",
+        "wrapper-sha256=135ed085e642e17a1cf55cd61a039c53d79998579b5fafa607e8e731d18ab85e",
+        "wrapper-bytes=136",
+        "muxer-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+        "muxer-sha256=b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+        "muxer-bytes=140432",
+        "sdk-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/sdk/10.0.301",
+        "sdk-tree-sha256=bef3d3ea1d59cea9886bb8b9bc5c52174da2d923fdaa634e98395250b2d274ab",
+        "sdk-tree-file-count=3031",
+        "sdk-tree-bytes=360219604",
+        "hostfxr-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/host/fxr/10.0.9",
+        "hostfxr-tree-sha256=617b873814d0013e3005da134b7b1432c91d8a42407cd4554ceabc29cc0a0f3c",
+        "hostfxr-tree-file-count=1",
+        "hostfxr-tree-bytes=449376",
+        "runtime-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/shared/Microsoft.NETCore.App/10.0.9",
+        "runtime-tree-sha256=bd69ee3fb7f237deedb6f99532afc8023a9b8ab016dd60b101e4f5a95e0884b9",
+        "runtime-tree-file-count=188",
+        "runtime-tree-bytes=81526751",
+        "reference-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Ref/10.0.9",
+        "reference-pack-tree-sha256=da4febffbad4f86171e05436ad91885096c9a7d8a177a5480c1b4856e1d6e845",
+        "reference-pack-tree-file-count=348",
+        "reference-pack-tree-bytes=40730732",
+        "apphost-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Host.osx-arm64/10.0.9",
+        "apphost-pack-tree-sha256=af2915a0316b1a6715304aaebd2b6dadda66463cdd296eeff42977cb2ace0789",
+        "apphost-pack-tree-file-count=7",
+        "apphost-pack-tree-bytes=11573800",
+        "hostfxr-sha256=9387e328807ac3d29fb0f203bbefdf07d10d4e2200e307515ac16273657267a2",
+        "hostpolicy-sha256=145952fb2f06831089127216152a3e4c47ab7ffb74ddaaf4cd06410314de57ff"
+      ],
+      "version": "10.0.301"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "difference",
+    "language": "php",
+    "path": "migrated.php",
+    "sha256": "sha256:6c52073b36ede3cf07c8a34eacec5806cba9ac289648a08f70f04ba9a7d4e605"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "migrated.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in migrated.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "route_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in route_harness.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "route_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t13\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\n"
+      }
+    ],
+    "language": "php",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "13",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+      "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+      "language": "php",
+      "profile": [
+        "php-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "php-root=/opt/homebrew/Cellar/php/8.5.9",
+        "php-tree-sha256=fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+        "php-tree-record-count=643",
+        "php-tree-file-count=532",
+        "php-tree-directory-count=109",
+        "php-tree-bytes=129952851",
+        "php-tree-symlink-count=1",
+        "php-tree-unbound-symlink-count=1",
+        "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+        "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+        "integer=int64",
+        "number=binary64",
+        "strict-types=1",
+        "php-zts=False",
+        "php-debug=False",
+        "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+        "php-tokenizer=builtin",
+        "php-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+    }
+  }
+}

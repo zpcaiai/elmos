@@ -1,11 +1,293 @@
 {
-  "behavior_pass_rate": 0.0,
+  "artifact_manifest": {
+    "bytes": 4380,
+    "path": "certification/artifacts/development/artifact-manifest.json",
+    "sha256": "sha256:667dedd902c657a8fff823a93d990be978753803cf4693401e06a552184beb36"
+  },
+  "artifact_root": "certification/artifacts/development",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:b7883c58f9c57d9db829988fbb0280af0bd2c4bebeed636aa4d81bac4e8d4ea9",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
   "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:fe4f8257266d32285bbe17b7bd311d47febf39a3fcbf95295a1ab71349868ce2",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
   "corpus": "development",
-  "critical_unknown_semantics": 1,
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:9e9be9c0164ca9932f97a4e2236be8c720f5c14a4bb88a5bec54a336bcb9792c",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:f03e94e1e988a1551a2386ae9703361cf7910e5684f03cc1b9a57b0b9d69aa7f",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:f03e94e1e988a1551a2386ae9703361cf7910e5684f03cc1b9a57b0b9d69aa7f",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:f03e94e1e988a1551a2386ae9703361cf7910e5684f03cc1b9a57b0b9d69aa7f",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:14fa8fa7f5e426655617be05ac68211ad5d0ee0009ea1c7f0b63a8d2dd60673f",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:f03e94e1e988a1551a2386ae9703361cf7910e5684f03cc1b9a57b0b9d69aa7f",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:578f24770458ee12e2f9ea26ff8685efbbd626cf0e29fd060adb0433b33d9ddc",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:14fa8fa7f5e426655617be05ac68211ad5d0ee0009ea1c7f0b63a8d2dd60673f",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:779aa54d6bbd5d30673b2d4c0ad462297ebcb43df8fb0b92ba4578f64ba97ed3",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:bccb06417867ad33732c95a078b10ffc95977086e55f184695f1010961b40ccd",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:4d6d52aec6fc8900787806adb99cff5c6b119b60aa36897f9758b0e75322b405",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:779aa54d6bbd5d30673b2d4c0ad462297ebcb43df8fb0b92ba4578f64ba97ed3",
+      "status": "PASSED"
+    },
+    "renamed": false,
+    "source_function_name": "calculate",
+    "status": "PASSED",
+    "target_function_name": "calculate",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "pricing.swift",
+      "source_sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:5a408dedca95f7443d3c92ed3b03563f3b1842438d7f27fdf31f2e52a75e5ee1"
+  },
   "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:d49957d4aae8a25ada4d195b5a606fa34fce0506ac27eebdeaaa1c556b0c7fef",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "swift-to-rust",
-  "schema_version": 1,
-  "source_map_coverage": 0.0,
-  "status": "NOT_RUN"
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:20837c27acf34244fa12b6068bda794d091767a1affd4613cba9dbfa2ff07b93",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:779aa54d6bbd5d30673b2d4c0ad462297ebcb43df8fb0b92ba4578f64ba97ed3"
+  },
+  "semantic_ir_sha256": "sha256:20837c27acf34244fa12b6068bda794d091767a1affd4613cba9dbfa2ff07b93",
+  "source": {
+    "analyzer": "SwiftSyntax",
+    "analyzer_version": "600.0.1;source-inputs=sha256:6ac46d212271caed65f4dc73e523e2c827028634ca6ee099c0892aa3b5613763;swift-driver=sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb;swift-syntax-tree=sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d;canonical-receipt=sha256:f7f1b5d7cac69523aa4eba91004ef0f803a53de140961f7daaae8513cc8d2f4e;binary=sha256:185c755dd9cc5985c674a97f659d98a4ad6ba6d0c944e25b6c10eddd8a90861e;toolchain=sha256:abd549de7e236a804834f5e6c297c8da0a68d7b68d6372ee5b676ebb4a69f006;build-closure=sha256:42f086a415270b64ecf45d007c59c2395b3308d623f8cc35c6e385696b820cc5;network-policy=sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+    "function_name": "calculate",
+    "language": "swift",
+    "path": "pricing.swift",
+    "sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.swift",
+    "artifact_sha256": "sha256:2f714eef55edff22e39dc5c8ee3c23887e4512cb784e733f1d79a96d73af3dc3",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "-swift-version",
+          "6",
+          "-sdk",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-warnings-as-errors",
+          "-o",
+          "source_harness",
+          "pricing.swift",
+          "main.swift"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t5\n"
+      }
+    ],
+    "language": "swift",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "language": "swift",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "swift-language-mode=6",
+        "integer=Int64"
+      ],
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "calculate",
+    "language": "rust",
+    "path": "migrated.rs",
+    "sha256": "sha256:fe38942d9c82578d2374b5be82c214786372957e4b6b0458691c8a5d9ad2bb62"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
+          "--edition=2021",
+          "-D",
+          "warnings",
+          "-o",
+          "route_harness",
+          "route_harness.rs"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\trust-debug\t120\nELMOS_OBSERVATION\t1\trust-debug\t0\nELMOS_OBSERVATION\t2\trust-debug\t5\n"
+      }
+    ],
+    "language": "rust",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "rust-debug",
+        "raw": "120",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "rust-debug",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "rust-debug",
+        "raw": "5",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/cargo",
+      "auxiliary_sha256": "798a97c06e6fc3a63f1b7e3141f87e515e6bc8da1527bc32e19ba27d86bb89c5",
+      "executable": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin/bin/rustc",
+      "executable_sha256": "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c",
+      "language": "rust",
+      "profile": [
+        "rust-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "rustup-home=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup",
+        "cargo-home=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/cargo",
+        "rust-sysroot=/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/rustup/toolchains/1.89.0-aarch64-apple-darwin",
+        "rust-wrapper-tree-sha256=aa5baa526cfd7d7d2b8c55d98582265ee8ff1d90582ec49f4775111c2abd4141",
+        "rust-wrapper-tree-record-count=3",
+        "rust-wrapper-tree-bytes=1963",
+        "rust-sysroot-tree-sha256=93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a",
+        "rust-sysroot-tree-record-count=157",
+        "rust-sysroot-tree-file-count=135",
+        "rust-sysroot-tree-bytes=531383469",
+        "rustup-sha256=aeb4105778ca1bd3c6b0e75768f581c656633cd51368fa61289b6a71696ac7e1",
+        "rust-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "1.89.0"
+    }
+  }
 }

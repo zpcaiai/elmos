@@ -3,34 +3,34 @@
     "development": {
       "bytes": 4426,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:cf1c33611516d04ced769efb0916b9230d74b0f7640bbb2e8bda3f3f5e3ba1eb"
+      "sha256": "sha256:d23eda73e31cc2b9496e1bcb20e2a3b29d9abf5dfcca21b1de6a4a16f7e2bb53"
     },
     "holdout": {
       "bytes": 4422,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:1ecec751ee8a9b250f0e3852925185ef05e9e8139b6339fb391859ddc78c87fd"
+      "sha256": "sha256:f227ff416d57d9f040debf34cfc5126d727aacfa057e5e78027646446e4645be"
     },
     "real-repository": {
       "bytes": 4438,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:13d00e2eebb32d6463c7db8dbe6cbb5d3ea5d14e659781e21f46258cebcbbb7d"
+      "sha256": "sha256:8a159fea72d55492a10763fa659940cb2404b2908da7f6336ddbea62da34fa10"
     }
   },
   "artifact_refs": [
     {
       "bytes": 4426,
       "path": "certification/artifacts/development/artifact-manifest.json",
-      "sha256": "sha256:cf1c33611516d04ced769efb0916b9230d74b0f7640bbb2e8bda3f3f5e3ba1eb"
+      "sha256": "sha256:d23eda73e31cc2b9496e1bcb20e2a3b29d9abf5dfcca21b1de6a4a16f7e2bb53"
     },
     {
       "bytes": 4422,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
-      "sha256": "sha256:1ecec751ee8a9b250f0e3852925185ef05e9e8139b6339fb391859ddc78c87fd"
+      "sha256": "sha256:f227ff416d57d9f040debf34cfc5126d727aacfa057e5e78027646446e4645be"
     },
     {
       "bytes": 4438,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
-      "sha256": "sha256:13d00e2eebb32d6463c7db8dbe6cbb5d3ea5d14e659781e21f46258cebcbbb7d"
+      "sha256": "sha256:8a159fea72d55492a10763fa659940cb2404b2908da7f6336ddbea62da34fa10"
     },
     {
       "bytes": 10734,
@@ -47,9 +47,9 @@
   ],
   "execution_status": "PASSED_LOCAL",
   "formal_equivalence": {
-    "bytes": 298378,
+    "bytes": 298379,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:4ada2e798dc1d52a8a14ee4545ff49f1362553c058ab4437b167425c79bb9ee8"
+    "sha256": "sha256:8a8e9ecafbe7b1c8d07f4ea2c5f3ecdb47228a478cf6257d07d3425d658a6ec0"
   },
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {

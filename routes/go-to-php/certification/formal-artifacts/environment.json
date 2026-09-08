@@ -1,0 +1,31 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 271520,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:79cb9803a2da3a73ab5ff56beacc20aa0d6d9151fe39666303b4a43c8679ac8e"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
+  },
+  "route_key": "go-to-php",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "Go 1.25.0",
+    "go/parser AST"
+  ],
+  "target_toolchain": [
+    "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+    "ext/tokenizer Zend token stream",
+    "strict_types=1"
+  ]
+}

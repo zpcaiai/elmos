@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 309,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:7dbfc8ea0c2c8e0b84c34a6dfb90debcff04a09867eff900290c4a226ecd55dd"
+    },
+    {
+      "bytes": 398,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:c3a1dab48ab31d80a30d92598684a857b914e2f8a4b2644c77e31cd0e81ffd38"
+    },
+    {
+      "bytes": 335,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:0285bd61c210f378f5333cc8c5f42309bc61dbdd0074ac4e5f4155ac987bdc45"
+    }
+  ]
+}

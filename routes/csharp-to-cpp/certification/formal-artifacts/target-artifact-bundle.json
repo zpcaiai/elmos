@@ -1,0 +1,25 @@
+{
+  "route_key": "csharp-to-cpp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 596,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.cpp",
+      "sha256": "sha256:90223f95f6ba3fd3686e5d800854ba7aca01700db043e33f2023747ba05dacb8"
+    },
+    {
+      "bytes": 416,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.cpp",
+      "sha256": "sha256:7e98c87b44fea20231fd49e5af50526fe9b2f5ee537d67620f6777f52e24aadd"
+    },
+    {
+      "bytes": 622,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.cpp",
+      "sha256": "sha256:f9eff74d5048dc592f273cb9cf16ea099f02682a41ea9fda688b45e1743a79bf"
+    }
+  ]
+}

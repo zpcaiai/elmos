@@ -1,0 +1,32 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 271520,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:8193d6e04577d0f0e8d8758386907099008aa339d333ba5955bb490ee186cfe4"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
+  },
+  "route_key": "go-to-objc",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "Go 1.25.0",
+    "go/parser AST"
+  ],
+  "target_toolchain": [
+    "Objective-C",
+    "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "arm64-apple-darwin25.6.0",
+    "Foundation"
+  ]
+}
