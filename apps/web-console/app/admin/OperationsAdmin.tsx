@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../components/Icon";
 import { useAccountSession } from "../components/AccountSessionProvider";
+import { triggerBrowserDownload } from "../lib/browserDownload";
 import { AccountOrganizationStudio } from "../account/AccountOrganizationStudio";
 import type {
   AuditExportPage,
@@ -116,12 +117,10 @@ function downloadCsv(rows: AuditExportRow[], days: string) {
   const blob = new Blob([`﻿${header}\r\n${body}\r\n`], {
     type: "text/csv;charset=utf-8",
   });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `elmos-audit-${days}d-${new Date().toISOString().slice(0, 10)}.csv`;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  triggerBrowserDownload(
+    blob,
+    `elmos-audit-${days}d-${new Date().toISOString().slice(0, 10)}.csv`,
+  );
 }
 
 type LoadState = "LOCKED" | "LOADING" | "READY" | "ERROR";

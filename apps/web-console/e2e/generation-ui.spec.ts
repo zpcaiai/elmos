@@ -86,6 +86,18 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "锁定生成计划" })).toBeVisible();
   });
 
+  test("锁定计划后可下载结构化 Intent", async ({ page }) => {
+    await page.goto("/generation");
+    await page.getByRole("button", { name: "锁定生成计划" }).click();
+
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "导出 Intent" }).click();
+    const download = await downloadPromise;
+
+    expect(download.suggestedFilename()).toBe("project-intent.json");
+    await expect(page.getByText(/project-intent\.json 已导出/)).toBeVisible();
+  });
+
   test("错误凭证失败关闭且不能绕过需求审阅", async ({ page, request }) => {
     const [capabilityResponse, readinessResponse, blockedResponse] = await Promise.all([
       request.get("/api/capabilities/generation"),

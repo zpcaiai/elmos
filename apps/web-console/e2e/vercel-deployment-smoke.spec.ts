@@ -125,13 +125,13 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
 
 });
 
-test("deployed console exposes separate provider-backed user and administrator entry points", async ({ page }) => {
+test("deployed console keeps provider-backed user and administrator entry points separate", async ({ page }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "邮箱验证码登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "微信扫码登录" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute("href", "/admin/login");
+  await expect(page.locator(".user-auth-card a[href='/admin/login']")).toHaveCount(0);
   const passwordInputs = page.getByLabel("密码");
   expect([0, 1]).toContain(await passwordInputs.count());
 
@@ -162,18 +162,17 @@ test("deployed console exposes separate provider-backed user and administrator e
 test("deployed console authenticates test/test credential and yields customer session", async ({ page }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
   const testLoginButton = page.getByRole("button", { name: "使用测试账号登录" });
-  if (await testLoginButton.count() > 0) {
-    await page.getByLabel("账号 / 邮箱").fill("test");
-    await page.getByLabel("密码").fill("test");
-    await testLoginButton.click();
-    await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
+  await expect(testLoginButton).toBeVisible();
+  await page.getByLabel("账号 / 邮箱").fill("test");
+  await page.getByLabel("密码").fill("test");
+  await testLoginButton.click();
+  await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
 
-    const session = await page.evaluate(async () => {
-      const response = await fetch("/api/auth/session", { credentials: "same-origin" });
-      return response.json();
-    }) as { authenticated?: boolean; principal?: { actorId?: string } };
+  const session = await page.evaluate(async () => {
+    const response = await fetch("/api/auth/session", { credentials: "same-origin" });
+    return response.json();
+  }) as { authenticated?: boolean; principal?: { actorId?: string } };
 
-    expect(session.authenticated).toBe(true);
-    expect(session.principal?.actorId).toBe("local:test");
-  }
+  expect(session.authenticated).toBe(true);
+  expect(session.principal?.actorId).toBe("local:test");
 });

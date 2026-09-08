@@ -294,7 +294,6 @@ seal_rust_sysroot() {
 
 install_rust() {
   local target="${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}"
-  local sysroot="${target}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin"
   if [[ -x "${target}/bin/rustc" && -x "${target}/bin/cargo" ]] \
     && "${target}/bin/rustc" --version | grep -q "^rustc ${RUST_VERSION}" \
     && "${target}/bin/cargo" --version | grep -q "^cargo ${RUST_VERSION}"; then
@@ -317,22 +316,7 @@ install_rust() {
       --toolchain "${RUST_VERSION}" clippy rustfmt
     mv "${stage}" "${target}"
   fi
-  # Rustup preserves the distribution bytes but leaves owner-write bits on a
-  # fresh install.  Cached local trees may already be sealed, which made the
-  # exact manifest depend on installation history.  Reject links and seal the
-  # complete sysroot to one deterministic, read-only executable/data profile
-  # before any selector publishes or hashes it.
-  if [[ -L "${sysroot}" || ! -d "${sysroot}" ]]; then
-    printf 'Materialized Rust sysroot is unavailable or unsafe.\n' >&2
-    exit 3
-  fi
-  if find "${sysroot}" -type l -print -quit | grep -q .; then
-    printf 'Materialized Rust sysroot contains a symbolic link.\n' >&2
-    exit 3
-  fi
-  find "${sysroot}" -type f -perm -0100 -exec chmod 0555 {} +
-  find "${sysroot}" -type f ! -perm -0100 -exec chmod 0444 {} +
-  find "${sysroot}" -type d -exec chmod 0555 {} +
+  seal_rust_sysroot "${target}"
   # Wrapper semantics are part of the qualified route-toolchain identity. A
   # cached Rust payload can remain byte-identical while an older installer has
   # left stale wrappers behind, so refresh the three repository-owned launchers

@@ -35,7 +35,7 @@ test("development administrator login is visibly separate from user login", asyn
   await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
   await expect(page.getByLabel("管理员用户名")).toHaveValue(administratorEmail);
   await expect(page.getByLabel("管理员密码")).toBeVisible();
-  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeEnabled();
   await expect(page.getByText(/仅用于开发测试，生产环境不启用/)).toBeVisible();
   // 返回用户页只是导航；临时管理员凭据只能提交给独立管理员端点。
   const userLoginLink = page.locator(".admin-auth-card a[href='/login']");
@@ -45,6 +45,8 @@ test("development administrator login is visibly separate from user login", asyn
   );
   await expect(userLoginLink).toHaveText("返回用户登录，使用产品功能");
   await expect(page.locator(".admin-auth-card form[action='/api/auth/admin/login']")).toHaveCount(1);
+  // The privileged page must not contain the ordinary user credential form.
+  await expect(page.locator(".admin-auth-card form[action='/api/auth/login']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card input[name='loginMode']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card")).toBeVisible();
 });

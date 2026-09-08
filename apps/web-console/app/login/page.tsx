@@ -152,16 +152,12 @@ export default async function LoginPage({
             <button className="button button-primary" type="submit">使用测试账号登录</button>
           </form>
         )}
-        <div className="auth-links">
-          {(descopeReady || registrationConfigured) && (
-            <>
-              <span>还没有账户？</span>
-              <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
-              <span style={{ margin: "0 8px" }}>·</span>
-            </>
-          )}
-          <a className="text-link" href="/admin/login">进入管理员登录</a>
-        </div>
+        {(descopeReady || registrationConfigured) && (
+          <div className="auth-links">
+            <span>还没有账户？</span>
+            <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
+          </div>
+        )}
         {!descopeReady && !configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>

@@ -11,7 +11,7 @@
     "target_artifact_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
     "workload_key": "bounded-frontend-interaction-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:b03186463fb4ade68c0425e1f8bc6711d47473b99f2e6cab957b8fd1eb086890"
+    "environment_digest": "sha256:849ac9775022c82d16f26a8a9ca3fab77dfa06aef863d6b33d550caa86046e2e"
   },
   "contracts": {
     "validation_profile": "validation-profile.json",
@@ -32,11 +32,11 @@
     "advanced-verification"
   ],
   "frontend_formal_route_campaign_v2": "formal-campaign/frontend-formal-route-campaign-v2.json",
-  "frontend_formal_campaign_v2_digest": "sha256:c0de92763854cbf0951c11dfe525f8cfdac42a63d6a03e94977de06183c97085",
+  "frontend_formal_campaign_v2_digest": "sha256:94a87bf52fc596ff1b1af8c051c6ea88bcfcc754bf07430d102f348bb47562a4",
   "frontend_formal_scope_v2_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
   "frontend_formal_peer_v2": {
     "pack_key": "frontend-72-route-equivalence-v2",
-    "campaign_sha256": "sha256:c0de92763854cbf0951c11dfe525f8cfdac42a63d6a03e94977de06183c97085",
+    "campaign_sha256": "sha256:94a87bf52fc596ff1b1af8c051c6ea88bcfcc754bf07430d102f348bb47562a4",
     "scope_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2"
   },
   "frontend_governance_v2": {
