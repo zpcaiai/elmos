@@ -4,6 +4,7 @@ import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -190,7 +191,10 @@ function safeEqual(left: string, right: string): boolean {
 }
 
 function authorize(request: NextRequest, configured: UsageSettings, now: Date): void {
-  if (unsafeCookieValue(request, accountCookieNames.session)) {
+  if (
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session)
+  ) {
     try {
       const account = accountSessionFromRequest(request, "usage:read");
       if (

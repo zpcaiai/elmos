@@ -29,6 +29,17 @@ def is_java_path(path: str) -> bool:
     return path.lower().endswith(_JAVA_SUFFIXES)
 
 
+def prepare_java_source(source: str) -> tuple[str, list[int]] | None:
+    """Return comment-and-string-masked Java text, or ``None`` if unusable."""
+
+    if not source.strip():
+        return None
+    try:
+        return _mask_comments_and_strings(source)
+    except Exception:
+        return None
+
+
 def _mask_comments_and_strings(source: str) -> tuple[str, list[int]]:
     """Replace comments and string literal contents with whitespace while
     preserving newlines and exact character offsets. Returns masked text and

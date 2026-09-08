@@ -1,6 +1,6 @@
 ---
 name: b46-polyglot-topology-smoke
-description: Handle repositories containing several languages or services: one primary entry, declared secondary stacks, one shared lease, and explicit coverage reporting.
+description: "Handle repositories containing several languages or services: one primary entry, declared secondary stacks, one shared lease, and explicit coverage reporting."
 ---
 
 ## Operating mode

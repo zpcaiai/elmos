@@ -95,8 +95,8 @@ description: "当用户通过浏览器、桌面端、CLI 或 SDK 提交一个或
 - Source contract SHA-256: `5a92fad1add7cbe07d8ae61ac6deb961eaf62ecc3dea458a967065042c7dfd6f`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_folder_tree_input`
 - Runtime phase: `project-package`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-multimodal-input-orchestrator`, `$elmos-secure-resumable-upload`, `$elmos-project-package-manifest`
 - Acceptance identities: `S41-01`, `S41-02`, `S41-03`, `S41-04`, `S41-05`, `S41-06`
 - Generated contract: `compiled-contract.json`

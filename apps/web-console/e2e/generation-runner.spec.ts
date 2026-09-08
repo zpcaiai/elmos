@@ -953,6 +953,25 @@ for (const authMode of ["jwt", "oidc"] as const) {
     });
     await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
+    // The preview endpoint reads the live health payload through the same
+    // lease-checked path the "浏览器查看运行结果" button uses.
+    const runtimePreviewResponse = await request.get(
+      `/api/generation/jobs/${acceptedJob.id}/preview`,
+      { headers: { ...runnerHeaders }, timeout: 60_000 },
+    );
+    expect(runtimePreviewResponse.status()).toBe(200);
+    const runtimePreview = await runtimePreviewResponse.json() as {
+      status?: string;
+      language?: string;
+      health?: { status?: string; service?: string };
+      remainingSeconds?: number;
+    };
+    expect(runtimePreview).toMatchObject({
+      status: "RUNNING",
+      language: "python",
+      health: { status: "UP" },
+    });
+    expect(runtimePreview.remainingSeconds).toBeGreaterThan(0);
     const runtimeStopResponsePromise = page.waitForResponse((response) => (
       response.request().method() === "POST"
       && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/stop`

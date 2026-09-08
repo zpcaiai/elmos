@@ -1,0 +1,49 @@
+{
+  "schema_version": "ao.v1",
+  "environment_kind": "reference_only",
+  "host_revision": null,
+  "enabled_features": [],
+  "checks": {
+    "host_mapping_review": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "real_consumer_e2e": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "tenant_acl_and_revocation": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "snapshot_and_tombstone": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "injection_and_redaction": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "paired_quality_latency_cost": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "rollback_and_compatibility": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    },
+    "independent_host_review": {
+      "status": "not_run",
+      "artifact": null,
+      "sha256": null
+    }
+  },
+  "production_qualified": false
+}

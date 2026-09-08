@@ -54,10 +54,10 @@ class QualificationReceiptTests(unittest.TestCase):
             receipt["local_qualification"]["capability_scope"],
             {
                 "compiled_contracts_validated": 1_310,
-                "exact_local_semantic_handlers_exercised": 51,
-                "prepare_only_skills": 1_259,
+                "exact_local_semantic_handlers_exercised": 66,
+                "prepare_only_skills": 1_244,
                 "exact_integration_bindings_validated": 1_310,
-                "host_route_bound_skills": 1_259,
+                "host_route_bound_skills": 1_244,
                 "integration_unbound_skills": 0,
                 "pipeline_host_routes_validated": 14,
             },

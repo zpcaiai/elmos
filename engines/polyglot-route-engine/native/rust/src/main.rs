@@ -1,4 +1,5 @@
 use serde_json::{json, Value};
+use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::{env, fs, panic, path::Path, process};
 use syn::{Attribute, BinOp, Block, Expr, ExprIf, FnArg, Item, Lit, Pat, ReturnType, Stmt, Type};
@@ -44,16 +45,19 @@ fn canonical_type(value: &Type) -> &'static str {
 }
 
 fn path_name(value: &Expr) -> Option<String> {
-    let Expr::Path(path) = value else {
-        return None;
-    };
-    if path.qself.is_some() {
-        return None;
+    match value {
+        Expr::Path(path) => {
+            if path.qself.is_some() {
+                return None;
+            }
+            path.path
+                .segments
+                .last()
+                .map(|segment| segment.ident.to_string())
+        }
+        Expr::Paren(paren) => path_name(&paren.expr),
+        _ => None,
     }
-    path.path
-        .segments
-        .last()
-        .map(|segment| segment.ident.to_string())
 }
 
 fn expression(value: &Expr, emitted_target: bool) -> Value {
@@ -74,6 +78,27 @@ fn expression(value: &Expr, emitted_target: bool) -> Value {
             Lit::Bool(value) => json!({"kind": "literal", "value": value.value}),
             Lit::Str(value) => json!({"kind": "literal", "value": value.value()}),
             _ => fail("RUST_UNSUPPORTED_LITERAL"),
+        },
+        Expr::Unary(unary) => match &unary.op {
+            syn::UnOp::Neg(_) => match unary.expr.as_ref() {
+                Expr::Lit(literal) => match &literal.lit {
+                    Lit::Int(value) => {
+                        let parsed = value
+                            .base10_parse::<i64>()
+                            .unwrap_or_else(|_| fail("RUST_INVALID_INTEGER"));
+                        json!({"kind": "literal", "value": -parsed})
+                    }
+                    Lit::Float(value) => {
+                        let parsed = value
+                            .base10_parse::<f64>()
+                            .unwrap_or_else(|_| fail("RUST_INVALID_FLOAT"));
+                        json!({"kind": "literal", "value": -parsed})
+                    }
+                    _ => fail("RUST_UNSUPPORTED_EXPRESSION"),
+                },
+                _ => fail("RUST_UNSUPPORTED_EXPRESSION"),
+            },
+            _ => fail("RUST_UNSUPPORTED_EXPRESSION"),
         },
         Expr::Paren(paren) => expression(&paren.expr, emitted_target),
         Expr::Binary(binary) => {
@@ -185,38 +210,259 @@ fn expression(value: &Expr, emitted_target: bool) -> Value {
 ///
 /// Anything else in the else position (a `match`, a bare expression) is still
 /// outside the profile and still fails closed.
-fn lift_if(branch: &ExprIf, emitted_target: bool) -> Value {
+fn lift_if(
+    branch: &ExprIf,
+    emitted_target: bool,
+    scope_vars: &HashMap<String, &'static str>,
+    param_names: &HashSet<String>,
+) -> Value {
+    let mut then_scope = scope_vars.clone();
+    let then_statements = statements(&branch.then_branch, emitted_target, &mut then_scope, param_names);
     let otherwise = match branch.else_branch.as_ref() {
         None => Vec::new(),
         Some((_, value)) => match value.as_ref() {
-            Expr::Block(block) => statements(&block.block, emitted_target),
-            Expr::If(chained) => vec![lift_if(chained, emitted_target)],
+            Expr::Block(block) => {
+                let mut else_scope = scope_vars.clone();
+                statements(&block.block, emitted_target, &mut else_scope, param_names)
+            }
+            Expr::If(chained) => vec![lift_if(chained, emitted_target, scope_vars, param_names)],
             _ => fail("RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET"),
         },
     };
     json!({
         "kind": "if",
         "condition": expression(&branch.cond, emitted_target),
-        "then": statements(&branch.then_branch, emitted_target),
+        "then": then_statements,
         "else": otherwise,
     })
 }
 
-fn statements(block: &Block, emitted_target: bool) -> Vec<Value> {
-    block
-        .stmts
-        .iter()
-        .map(|statement| match statement {
-            Stmt::Expr(Expr::Return(returned), _) => {
-                let Some(value) = returned.expr.as_ref() else {
-                    fail("RUST_RETURN_EXPRESSION_REQUIRED");
+fn statements(
+    block: &Block,
+    emitted_target: bool,
+    scope_vars: &mut HashMap<String, &'static str>,
+    param_names: &HashSet<String>,
+) -> Vec<Value> {
+    let mut result = Vec::new();
+    let stmts_len = block.stmts.len();
+    for (idx, statement) in block.stmts.iter().enumerate() {
+        let is_last = idx == stmts_len - 1;
+        match statement {
+            Stmt::Local(local) => {
+                let Some(init) = &local.init else {
+                    fail("RUST_ANNOTATED_DECLARATION_WITHOUT_VALUE");
                 };
-                json!({"kind": "return", "expression": expression(value, emitted_target)})
+                if init.diverge.is_some() {
+                    fail("RUST_LET_ELSE_OUTSIDE_CERTIFIED_SUBSET");
+                }
+                let (pat_ident, ty_str) = match &local.pat {
+                    Pat::Ident(_) => {
+                        fail("RUST_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+                    }
+                    Pat::Type(pat_type) => {
+                        let Pat::Ident(pat_ident) = pat_type.pat.as_ref() else {
+                            fail("RUST_PATTERN_BINDING_OUTSIDE_CERTIFIED_SUBSET");
+                        };
+                        (pat_ident, canonical_type(&pat_type.ty))
+                    }
+                    _ => fail("RUST_PATTERN_BINDING_OUTSIDE_CERTIFIED_SUBSET"),
+                };
+                if pat_ident.by_ref.is_some() || pat_ident.subpat.is_some() {
+                    fail("RUST_PATTERN_BINDING_OUTSIDE_CERTIFIED_SUBSET");
+                }
+                let name = pat_ident.ident.to_string();
+                scope_vars.insert(name.clone(), ty_str);
+                result.push(json!({
+                    "kind": "let",
+                    "name": name,
+                    "type": ty_str,
+                    "expression": expression(&init.expr, emitted_target),
+                }));
             }
-            Stmt::Expr(Expr::If(branch), _) => lift_if(branch, emitted_target),
+            Stmt::Expr(expr, semi) => {
+                match expr {
+                    Expr::Return(returned) => {
+                        let Some(value) = returned.expr.as_ref() else {
+                            fail("RUST_RETURN_EXPRESSION_REQUIRED");
+                        };
+                        result.push(json!({
+                            "kind": "return",
+                            "expression": expression(value, emitted_target)
+                        }));
+                    }
+                    Expr::If(branch) => {
+                        result.push(lift_if(branch, emitted_target, scope_vars, param_names));
+                    }
+                    Expr::While(while_expr) => {
+                        if while_expr.label.is_some() {
+                            fail("RUST_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        let mut loop_scope = scope_vars.clone();
+                        let body_stmts = statements(&while_expr.body, emitted_target, &mut loop_scope, param_names);
+                        result.push(json!({
+                            "kind": "while",
+                            "condition": expression(&while_expr.cond, emitted_target),
+                            "body": body_stmts,
+                        }));
+                    }
+                    Expr::ForLoop(for_loop) => {
+                        if for_loop.label.is_some() {
+                            fail("RUST_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        let pat_ident = match for_loop.pat.as_ref() {
+                            Pat::Ident(ident) => ident,
+                            _ => fail("RUST_FOR_PATTERN_OUTSIDE_CERTIFIED_SUBSET"),
+                        };
+                        if pat_ident.by_ref.is_some() || pat_ident.subpat.is_some() {
+                            fail("RUST_FOR_PATTERN_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        let var_name = pat_ident.ident.to_string();
+                        let (start_expr, end_expr, step_val) = match for_loop.expr.as_ref() {
+                            Expr::Range(range) => {
+                                if !matches!(range.limits, syn::RangeLimits::HalfOpen(_)) {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                }
+                                let Some(start) = range.start.as_deref() else {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                };
+                                let Some(end) = range.end.as_deref() else {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                };
+                                (start, end, None)
+                            }
+                            Expr::MethodCall(method_call) => {
+                                if method_call.method != "step_by" || method_call.args.len() != 1 {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                }
+                                let range_expr = match method_call.receiver.as_ref() {
+                                    Expr::Paren(paren) => paren.expr.as_ref(),
+                                    other => other,
+                                };
+                                let Expr::Range(range) = range_expr else {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                };
+                                if !matches!(range.limits, syn::RangeLimits::HalfOpen(_)) {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                }
+                                let Some(start) = range.start.as_deref() else {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                };
+                                let Some(end) = range.end.as_deref() else {
+                                    fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET");
+                                };
+                                let step_arg = &method_call.args[0];
+                                let step_inner = match step_arg {
+                                    Expr::Cast(cast) => &cast.expr,
+                                    other => other,
+                                };
+                                let step_value = expression(step_inner, emitted_target);
+                                (start, end, Some(step_value))
+                            }
+                            _ => fail("RUST_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET"),
+                        };
+                        let mut loop_scope = scope_vars.clone();
+                        loop_scope.insert(var_name.clone(), "integer");
+                        let body_stmts = statements(&for_loop.body, emitted_target, &mut loop_scope, param_names);
+                        let mut for_json = json!({
+                            "kind": "for",
+                            "name": var_name,
+                            "type": "integer",
+                            "start": expression(start_expr, emitted_target),
+                            "end": expression(end_expr, emitted_target),
+                            "body": body_stmts,
+                        });
+                        if let Some(step) = step_val {
+                            for_json["step"] = step;
+                        }
+                        result.push(for_json);
+                    }
+                    Expr::Break(expr_break) => {
+                        if expr_break.label.is_some() {
+                            fail("RUST_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        if expr_break.expr.is_some() {
+                            fail("RUST_BREAK_VALUE_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        result.push(json!({"kind": "break"}));
+                    }
+                    Expr::Continue(expr_continue) => {
+                        if expr_continue.label.is_some() {
+                            fail("RUST_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET");
+                        }
+                        result.push(json!({"kind": "continue"}));
+                    }
+                    Expr::Assign(assign) => {
+                        let target_name = match path_name(&assign.left) {
+                            Some(name) => name,
+                            None => fail("RUST_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET"),
+                        };
+                        if param_names.contains(&target_name) {
+                            fail(format!("RUST_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}"));
+                        }
+                        if !scope_vars.contains_key(&target_name) {
+                            fail(format!("RUST_ASSIGNMENT_TARGET_NOT_DECLARED:{target_name}"));
+                        }
+                        result.push(json!({
+                            "kind": "assign",
+                            "name": target_name,
+                            "expression": expression(&assign.right, emitted_target),
+                        }));
+                    }
+                    Expr::Binary(binary) => {
+                        let op_str = match &binary.op {
+                            BinOp::AddAssign(_) => "+",
+                            BinOp::SubAssign(_) => "-",
+                            BinOp::MulAssign(_) => "*",
+                            BinOp::DivAssign(_) => "/",
+                            BinOp::RemAssign(_) => "%",
+                            _ => {
+                                if semi.is_none() && is_last {
+                                    result.push(json!({
+                                        "kind": "return",
+                                        "expression": expression(expr, emitted_target)
+                                    }));
+                                    continue;
+                                }
+                                fail("RUST_UNSUPPORTED_STATEMENT");
+                            }
+                        };
+                        let target_name = match path_name(&binary.left) {
+                            Some(name) => name,
+                            None => fail("RUST_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET"),
+                        };
+                        if param_names.contains(&target_name) {
+                            fail(format!("RUST_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:{target_name}"));
+                        }
+                        if !scope_vars.contains_key(&target_name) {
+                            fail(format!("RUST_ASSIGNMENT_TARGET_NOT_DECLARED:{target_name}"));
+                        }
+                        result.push(json!({
+                            "kind": "assign",
+                            "name": target_name,
+                            "expression": {
+                                "kind": "binary",
+                                "operator": op_str,
+                                "left": {"kind": "name", "value": target_name},
+                                "right": expression(&binary.right, emitted_target),
+                            },
+                        }));
+                    }
+                    _ => {
+                        if semi.is_none() && is_last {
+                            result.push(json!({
+                                "kind": "return",
+                                "expression": expression(expr, emitted_target)
+                            }));
+                        } else {
+                            fail("RUST_UNSUPPORTED_STATEMENT");
+                        }
+                    }
+                }
+            }
             _ => fail("RUST_UNSUPPORTED_STATEMENT"),
-        })
-        .collect()
+        }
+    }
+    result
 }
 
 fn attribute_name(attribute: &Attribute) -> String {
@@ -539,6 +785,20 @@ fn analyze_function(
         ReturnType::Type(_, value) => canonical_type(value),
         ReturnType::Default => fail("RUST_RETURN_TYPE_REQUIRED"),
     };
+    let param_names: HashSet<String> = function
+        .sig
+        .inputs
+        .iter()
+        .filter_map(|input| match input {
+            FnArg::Typed(argument) => match argument.pat.as_ref() {
+                Pat::Ident(name) => Some(name.ident.to_string()),
+                _ => None,
+            },
+            FnArg::Receiver(_) => None,
+        })
+        .collect();
+    let mut scope_vars: HashMap<String, &'static str> = HashMap::new();
+    let body = statements(&function.block, emitted_target, &mut scope_vars, &param_names);
     json!({
         "schema_version": "1.0.0",
         "source_language": "rust",
@@ -549,7 +809,7 @@ fn analyze_function(
             "name": function.sig.ident.to_string(),
             "parameters": parameters,
             "return_type": return_type,
-            "body": statements(&function.block, emitted_target),
+            "body": body,
         }],
         "diagnostics": [],
     })

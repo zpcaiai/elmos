@@ -35,21 +35,30 @@ import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtBreakExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtConstantExpression
+import org.jetbrains.kotlin.psi.KtContinueExpression
+import org.jetbrains.kotlin.psi.KtDoWhileExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtForExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
+import org.jetbrains.kotlin.psi.KtLabeledExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParenthesizedExpression
+import org.jetbrains.kotlin.psi.KtPostfixExpression
+import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtReturnExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtTypeAlias
 import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.KtUnaryExpression
+import org.jetbrains.kotlin.psi.KtWhileExpression
 import java.io.File
 
 private const val ANALYZER_NAME = "kotlin-compiler PSI"
@@ -346,7 +355,23 @@ private fun emittedDotQualified(
     fail("KOTLIN_EMITTED_DOT_QUALIFIED_UNRECOGNIZED:${node.text}")
 }
 
-private fun ifStatement(node: KtIfExpression, emittedTarget: Boolean): Map<String, Any?> {
+private fun unwrapParens(expr: KtExpression?): KtExpression? {
+    var current = expr
+    while (current is KtParenthesizedExpression) {
+        current = current.expression
+    }
+    return current
+}
+
+private fun ifStatement(
+    node: KtIfExpression,
+    emittedTarget: Boolean,
+    environment: MutableMap<String, String>,
+    parameterNames: Set<String>,
+    valNames: MutableSet<String>,
+    returnType: String,
+    inLoop: Boolean,
+): Map<String, Any?> {
     val condition = node.condition ?: fail("KOTLIN_IF_CONDITION_REQUIRED")
     val thenBranch = node.then ?: fail("KOTLIN_IF_THEN_REQUIRED")
     val elseBranch = node.`else`
@@ -355,13 +380,13 @@ private fun ifStatement(node: KtIfExpression, emittedTarget: Boolean): Map<Strin
         // `else if` is an else branch whose expression is itself an if -- it is
         // spelling, not a construct -- so it lifts into the nested shape every
         // other frontend in this engine already produces.
-        is KtIfExpression -> listOf(ifStatement(elseBranch, emittedTarget))
-        is KtBlockExpression -> statements(elseBranch, emittedTarget)
+        is KtIfExpression -> listOf(ifStatement(elseBranch, emittedTarget, environment, parameterNames, valNames, returnType, inLoop))
+        is KtBlockExpression -> statements(elseBranch, emittedTarget, HashMap(environment), parameterNames, HashSet(valNames), returnType, inLoop)
         else -> fail("KOTLIN_UNSUPPORTED_STATEMENT:${elseBranch::class.java.simpleName}")
     }
     val thenBody: List<Map<String, Any?>> =
         if (thenBranch is KtBlockExpression) {
-            statements(thenBranch, emittedTarget)
+            statements(thenBranch, emittedTarget, HashMap(environment), parameterNames, HashSet(valNames), returnType, inLoop)
         } else {
             fail("KOTLIN_IF_BLOCK_BODY_REQUIRED")
         }
@@ -373,7 +398,15 @@ private fun ifStatement(node: KtIfExpression, emittedTarget: Boolean): Map<Strin
     )
 }
 
-private fun statements(block: KtBlockExpression, emittedTarget: Boolean): List<Map<String, Any?>> {
+private fun statements(
+    block: KtBlockExpression,
+    emittedTarget: Boolean,
+    environment: MutableMap<String, String>,
+    parameterNames: Set<String>,
+    valNames: MutableSet<String>,
+    returnType: String,
+    inLoop: Boolean = false,
+): List<Map<String, Any?>> {
     val result = ArrayList<Map<String, Any?>>()
     for (statement in block.statements) {
         when (statement) {
@@ -382,22 +415,221 @@ private fun statements(block: KtBlockExpression, emittedTarget: Boolean): List<M
                 val value = statement.returnedExpression ?: fail("KOTLIN_RETURN_EXPRESSION_REQUIRED")
                 result.add(mapOf("kind" to "return", "expression" to expression(value, emittedTarget)))
             }
-            is KtIfExpression -> result.add(ifStatement(statement, emittedTarget))
+            is KtIfExpression -> result.add(ifStatement(statement, emittedTarget, environment, parameterNames, valNames, returnType, inLoop))
             is KtProperty -> {
-                if (statement.isVar) fail("KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET")
                 if (statement.delegateExpression != null) {
                     fail("KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET")
                 }
                 val name = statement.name ?: fail("KOTLIN_LOCAL_NAME_REQUIRED")
                 val initializer = statement.initializer ?: fail("KOTLIN_LOCAL_INITIALIZER_REQUIRED")
+                val cType = canonicalType(statement.typeReference)
+                environment[name] = cType
+                if (!statement.isVar) {
+                    valNames.add(name)
+                }
                 result.add(
                     mapOf(
                         "kind" to "let",
                         "name" to name,
-                        "type" to canonicalType(statement.typeReference),
+                        "type" to cType,
                         "expression" to expression(initializer, emittedTarget),
                     )
                 )
+            }
+            is KtBinaryExpression -> {
+                val op = statement.operationReference.text
+                val isSimpleAssign = op == "="
+                val isCompoundAssign = op in setOf("+=", "-=", "*=", "/=", "%=")
+                if (!isSimpleAssign && !isCompoundAssign) {
+                    fail("KOTLIN_UNSUPPORTED_STATEMENT:${statement::class.java.simpleName}")
+                }
+                val left = statement.left
+                if (left !is KtNameReferenceExpression) {
+                    fail("KOTLIN_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+                }
+                val targetName = left.getReferencedName()
+                if (targetName in parameterNames) {
+                    fail("KOTLIN_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName")
+                }
+                if (targetName !in environment) {
+                    fail("KOTLIN_ASSIGNMENT_TARGET_NOT_DECLARED:$targetName")
+                }
+                if (targetName in valNames) {
+                    fail("KOTLIN_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName")
+                }
+                val rhs = statement.right ?: fail("KOTLIN_ASSIGNMENT_VALUE_REQUIRED")
+                if (isSimpleAssign) {
+                    result.add(
+                        mapOf(
+                            "kind" to "assign",
+                            "name" to targetName,
+                            "expression" to expression(rhs, emittedTarget),
+                        )
+                    )
+                } else {
+                    val binaryOp = op.substring(0, op.length - 1)
+                    result.add(
+                        mapOf(
+                            "kind" to "assign",
+                            "name" to targetName,
+                            "expression" to mapOf(
+                                "kind" to "binary",
+                                "operator" to binaryOp,
+                                "left" to mapOf("kind" to "name", "value" to targetName),
+                                "right" to expression(rhs, emittedTarget),
+                            ),
+                        )
+                    )
+                }
+            }
+            is KtUnaryExpression -> {
+                val op = statement.operationReference.text
+                if (op != "++" && op != "--") {
+                    fail("KOTLIN_UNSUPPORTED_STATEMENT:${statement::class.java.simpleName}")
+                }
+                val base = statement.baseExpression
+                if (base !is KtNameReferenceExpression) {
+                    fail("KOTLIN_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+                }
+                val targetName = base.getReferencedName()
+                if (targetName in parameterNames) {
+                    fail("KOTLIN_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName")
+                }
+                if (targetName !in environment) {
+                    fail("KOTLIN_ASSIGNMENT_TARGET_NOT_DECLARED:$targetName")
+                }
+                if (targetName in valNames) {
+                    fail("KOTLIN_CONSTANT_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:$targetName")
+                }
+                val binaryOp = if (op == "++") "+" else "-"
+                result.add(
+                    mapOf(
+                        "kind" to "assign",
+                        "name" to targetName,
+                        "expression" to mapOf(
+                            "kind" to "binary",
+                            "operator" to binaryOp,
+                            "left" to mapOf("kind" to "name", "value" to targetName),
+                            "right" to mapOf("kind" to "literal", "value" to 1L),
+                        ),
+                    )
+                )
+            }
+            is KtWhileExpression -> {
+                val cond = statement.condition ?: fail("KOTLIN_WHILE_CONDITION_REQUIRED")
+                val body = statement.body ?: fail("KOTLIN_WHILE_BLOCK_BODY_REQUIRED")
+                if (body !is KtBlockExpression) fail("KOTLIN_WHILE_BLOCK_BODY_REQUIRED")
+                val whileBody = statements(
+                    body,
+                    emittedTarget,
+                    HashMap(environment),
+                    parameterNames,
+                    HashSet(valNames),
+                    returnType,
+                    inLoop = true,
+                )
+                result.add(
+                    mapOf(
+                        "kind" to "while",
+                        "condition" to expression(cond, emittedTarget),
+                        "body" to whileBody,
+                    )
+                )
+            }
+            is KtDoWhileExpression -> fail("KOTLIN_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET")
+            is KtBreakExpression -> {
+                if (statement.getTargetLabel() != null) fail("KOTLIN_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET")
+                if (!inLoop) fail("KOTLIN_BREAK_OUTSIDE_LOOP")
+                result.add(mapOf("kind" to "break"))
+            }
+            is KtContinueExpression -> {
+                if (statement.getTargetLabel() != null) fail("KOTLIN_LABELED_CONTINUE_OUTSIDE_CERTIFIED_SUBSET")
+                if (!inLoop) fail("KOTLIN_CONTINUE_OUTSIDE_LOOP")
+                result.add(mapOf("kind" to "continue"))
+            }
+            is KtForExpression -> {
+                val loopParam = statement.loopParameter ?: fail("KOTLIN_FOR_VARIABLE_REQUIRED")
+                val varName = loopParam.name ?: fail("KOTLIN_FOR_VARIABLE_REQUIRED")
+                val rawTypeRef = loopParam.typeReference
+                if (rawTypeRef != null) {
+                    val cType = canonicalType(rawTypeRef)
+                    if (cType != "integer") fail("KOTLIN_FOR_VARIABLE_TYPE_UNSUPPORTED")
+                }
+                val body = statement.body ?: fail("KOTLIN_FOR_BLOCK_BODY_REQUIRED")
+                if (body !is KtBlockExpression) fail("KOTLIN_FOR_BLOCK_BODY_REQUIRED")
+
+                val loopRange = unwrapParens(statement.loopRange) ?: fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                var startExpr: Map<String, Any?>
+                var endExpr: Map<String, Any?>
+                var stepExpr: Map<String, Any?>? = null
+
+                if (loopRange is KtBinaryExpression) {
+                    val topOp = loopRange.operationReference.text
+                    if (topOp == "step") {
+                        stepExpr = expression(loopRange.right, emittedTarget)
+                        val innerRange = unwrapParens(loopRange.left)
+                        if (innerRange !is KtBinaryExpression) {
+                            fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                        }
+                        val innerOp = innerRange.operationReference.text
+                        if (innerOp == "until") {
+                            startExpr = expression(innerRange.left, emittedTarget)
+                            endExpr = expression(innerRange.right, emittedTarget)
+                        } else if (innerOp == ".." || innerOp == "rangeTo") {
+                            fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                        } else if (innerOp == "downTo") {
+                            fail("KOTLIN_FOR_CONDITION_NON_MONOTONIC")
+                        } else {
+                            fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                        }
+                    } else if (topOp == "until") {
+                        startExpr = expression(loopRange.left, emittedTarget)
+                        endExpr = expression(loopRange.right, emittedTarget)
+                    } else if (topOp == ".." || topOp == "rangeTo") {
+                        fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                    } else if (topOp == "downTo") {
+                        fail("KOTLIN_FOR_CONDITION_NON_MONOTONIC")
+                    } else {
+                        fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                    }
+                } else {
+                    fail("KOTLIN_FOR_RANGE_OUTSIDE_CERTIFIED_SUBSET")
+                }
+
+                val loopEnv = HashMap(environment)
+                loopEnv[varName] = "integer"
+                val loopValNames = HashSet(valNames)
+                loopValNames.add(varName)
+                val loopBody = statements(
+                    body,
+                    emittedTarget,
+                    loopEnv,
+                    parameterNames,
+                    loopValNames,
+                    returnType,
+                    inLoop = true,
+                )
+
+                val item = mutableMapOf<String, Any?>(
+                    "kind" to "for",
+                    "name" to varName,
+                    "type" to "integer",
+                    "start" to startExpr,
+                    "end" to endExpr,
+                    "body" to loopBody,
+                )
+                if (stepExpr != null) {
+                    item["step"] = stepExpr
+                }
+                result.add(item)
+            }
+            is KtLabeledExpression -> {
+                val base = statement.baseExpression
+                if (base is KtWhileExpression || base is KtForExpression || base is KtDoWhileExpression) {
+                    fail("KOTLIN_LABELED_LOOP_OUTSIDE_CERTIFIED_SUBSET")
+                } else {
+                    fail("KOTLIN_UNSUPPORTED_STATEMENT:KtLabeledExpression")
+                }
             }
             else -> fail("KOTLIN_UNSUPPORTED_STATEMENT:${statement::class.java.simpleName}")
         }
@@ -607,12 +839,19 @@ private fun analyzeFunction(
     // on inference.  Requiring a block body keeps this frontend from ever
     // depending on type inference it does not run.
     val body = candidate.bodyBlockExpression ?: fail("KOTLIN_BLOCK_BODY_REQUIRED")
+    val paramEnv = mutableMapOf<String, String>()
+    val paramNames = mutableSetOf<String>()
     val parameters = candidate.valueParameters.map { parameter ->
         val name = parameter.name ?: fail("KOTLIN_PARAMETER_NAME_REQUIRED")
         if (parameter.hasDefaultValue()) fail("KOTLIN_DEFAULT_ARGUMENT_UNSUPPORTED")
         if (parameter.isVarArg) fail("KOTLIN_VARARG_UNSUPPORTED")
-        mapOf("name" to name, "type" to canonicalType(parameter.typeReference))
+        val cType = canonicalType(parameter.typeReference)
+        paramEnv[name] = cType
+        paramNames.add(name)
+        mapOf("name" to name, "type" to cType)
     }
+    val returnType = canonicalType(candidate.typeReference)
+    val valNames = mutableSetOf<String>()
     return mapOf(
         "schema_version" to "1.0.0",
         "source_language" to "kotlin",
@@ -623,8 +862,16 @@ private fun analyzeFunction(
             mapOf(
                 "name" to (candidate.name ?: ""),
                 "parameters" to parameters,
-                "return_type" to canonicalType(candidate.typeReference),
-                "body" to statements(body, emittedTarget),
+                "return_type" to returnType,
+                "body" to statements(
+                    body,
+                    emittedTarget,
+                    HashMap(paramEnv),
+                    paramNames,
+                    valNames,
+                    returnType,
+                    inLoop = false,
+                ),
             )
         ),
         "diagnostics" to emptyList<String>(),

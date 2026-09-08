@@ -1,0 +1,10 @@
+{
+  "repository": "shop",
+  "snapshot": "s1",
+  "generation": "g1",
+  "path": "order.py",
+  "blob_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "start_byte": 0,
+  "end_byte": 3,
+  "symbol": "order"
+}

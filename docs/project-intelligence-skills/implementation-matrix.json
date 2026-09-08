@@ -1522,16 +1522,16 @@
     "qualification_runtime_environment": {
       "byteorder": "little",
       "cache_tag": "cpython-312",
-      "executable": "/Users/stephen/Downloads/ENTER/bin/python3.12",
-      "executable_sha256": "sha256:54192ee41e783b7acfea25a8eff4ac32d7feb7fb55257b2bec8251f48e77221b",
-      "hexversion": 51121392,
+      "executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "executable_sha256": "sha256:30b2a6bf9706029b609327ca5db722cd458239df96efc87e1f8e37beed49db2e",
+      "hexversion": 51121904,
       "implementation": "cpython",
       "machine": "arm64",
       "platform": "darwin",
       "release_level": "final",
-      "resolved_executable": "/Users/stephen/Downloads/ENTER/bin/python3.12",
+      "resolved_executable": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
       "serial": 0,
-      "version": "3.12.12"
+      "version": "3.12.14"
     },
     "skill_interface_status": "INSTALLED",
     "skills": 50,

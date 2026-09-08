@@ -1,0 +1,10 @@
+.git
+.DS_Store
+node_modules
+.next
+.next-*
+coverage
+playwright-report
+test-results
+.cache
+.turbo

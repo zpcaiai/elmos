@@ -129,6 +129,48 @@ def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(
         verify_route("sqlite-3.53.3", "duckdb-1.5.4", output)
 
 
+def test_postgresql_to_sqlite_executes_on_real_server_175(
+    tmp_path: Path,
+) -> None:
+    """The declared darwin-arm64 host tuple: PostgreSQL 17.5 from the pinned
+    Homebrew keg, provisioned through a fresh initdb cluster that is destroyed
+    afterwards. On a host without the exact keg the route is NOT_RUN and the
+    test skips rather than fabricating execution evidence.
+    """
+    capabilities = runner_capabilities()
+    if "postgresql-17.5" not in {item["profileId"] for item in capabilities["ready"]}:
+        pytest.skip(
+            "pinned PostgreSQL 17.5 Homebrew keg is absent; "
+            "postgresql-17.5 runtime evidence stays NOT_RUN on this host"
+        )
+
+    output = tmp_path / "postgresql-to-sqlite"
+    result = verify_route("postgresql-17.5", "sqlite-3.53.3", output)
+
+    assert result["localDecision"] == "READY_FOR_EXTERNAL_GATE"
+    assert result["sourceExecution"] == "PASSED"
+    assert result["targetExecution"] == "PASSED"
+    assert result["resultEquivalence"] == "PASSED"
+    assert result["independentVerification"] == "NOT_RUN"
+    assert result["certification"] == "NOT_CERTIFIED"
+
+    environment = json.loads((output / "environment.json").read_text())
+    source_runner = environment["sourceRunner"]
+    assert source_runner["engineVersionObserved"] == "17.5"
+    assert source_runner["engineVersionObservedRaw"] == "17.5 (Homebrew)"
+    assert source_runner["profile"]["id"] == "postgresql-17.5"
+    assert source_runner["network"] == "LOOPBACK_EPHEMERAL_PORT"
+
+    manifest = json.loads((output / "runner-evidence.json").read_text())
+    assert manifest["contentAddressed"] is True
+    for item in manifest["evidence"]:
+        content = (output / item["path"]).read_bytes()
+        assert item["bytes"] == len(content)
+        assert item["digest"] == f"sha256:{sha256(content).hexdigest()}"
+    assert not list(output.rglob("*.sqlite3"))
+    assert list(output.parent.rglob("*.sqlite3")) == []
+
+
 def test_unavailable_exact_runtime_remains_not_run(tmp_path: Path) -> None:
     with pytest.raises(RunnerBlockedError, match="runtime evidence remains NOT_RUN"):
         verify_route(

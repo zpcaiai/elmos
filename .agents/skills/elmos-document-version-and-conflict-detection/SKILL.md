@@ -82,8 +82,8 @@ description: "识别输入资料的版本、覆盖关系和需求冲突；当 PD
 - Source contract SHA-256: `205e684c47109f5136ea7f920475f8913f7ecaaee6d87bf0479d6b767bdaaadf`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_document_version_and_conflict_detection`
 - Runtime phase: `content`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-multi-asset-content-fusion`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S16-01`, `S16-02`, `S16-03`, `S16-04`
 - Generated contract: `compiled-contract.json`

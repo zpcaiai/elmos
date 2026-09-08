@@ -8614,12 +8614,38 @@ def _validate_module_identifier_closure(
     except Exception as exc:
         failures.append(f"module identifier artifact is invalid JSON: {exc}")
         return {}
-    _validate_optional_json_schema(
-        plan_mapping,
-        "identifier-plan.schema.json",
-        failures,
-        "module identifier plan",
-    )
+    module_target_language = manifest.get("target", {}).get("language")
+    if (
+        module_target_language == "javascript"
+        and plan_mapping.get("target_language") == "javascript"
+    ):
+        try:
+            import jsonschema
+        except ImportError as exc:
+            failures.append(
+                f"module identifier plan schema validation unavailable: jsonschema is required: {exc}"
+            )
+        else:
+            try:
+                schema_file = (
+                    Path(__file__).resolve().parents[2]
+                    / "schemas"
+                    / "batch29"
+                    / "identifier-plan.schema.json"
+                )
+                schema_data = json.loads(schema_file.read_text(encoding="utf-8"))
+                if "javascript" not in schema_data["$defs"]["language"]["enum"]:
+                    schema_data["$defs"]["language"]["enum"].append("javascript")
+                jsonschema.Draft202012Validator(schema_data).validate(plan_mapping)
+            except Exception as exc:
+                failures.append(f"module identifier plan schema validation failed: {exc}")
+    else:
+        _validate_optional_json_schema(
+            plan_mapping,
+            "identifier-plan.schema.json",
+            failures,
+            "module identifier plan",
+        )
     if normalized_mapping != target_semantic_document:
         failures.append(
             "module normalized-target-ir differs from target-module-semantic-ir"

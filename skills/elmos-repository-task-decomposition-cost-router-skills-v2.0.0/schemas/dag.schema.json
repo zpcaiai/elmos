@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosTypedTaskDAG",
+  "type": "object",
+  "required": [
+    "run_id",
+    "plan_revision",
+    "tasks",
+    "edges",
+    "waves"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tasks": {
+      "type": "array"
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "data",
+              "contract",
+              "schema",
+              "build",
+              "runtime",
+              "verification",
+              "integration",
+              "lock"
+            ]
+          },
+          "contract_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "validator": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "validated": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "waves": {
+      "type": "array"
+    },
+    "critical_path": {
+      "type": "array"
+    },
+    "path_locks": {
+      "type": "object"
+    },
+    "resource_locks": {
+      "type": "object"
+    },
+    "integration_barriers": {
+      "type": "array"
+    },
+    "refinement_frontier": {
+      "type": "array"
+    }
+  }
+}

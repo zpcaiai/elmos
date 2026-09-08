@@ -187,6 +187,46 @@ parameter mapped to one target parameter, refuses a repeated parameter when
 the target's placeholders are positional and anonymous, and verifies every
 emitted token against the target's placeholder grammar.
 
+### Typed rewrites for known conditional pairs
+
+`rewrites.py` owns three boundaries the pinned parser used to handle only by
+accident (an internal `UnsupportedError` that happened to fire under
+`unsupported_level=RAISE`):
+
+* **Aggregate ORDER BY in `GROUP_CONCAT`** (`mysql <-> sqlite` and every
+  other pair). The mysql-family parse stores the ordering in `this=Order`,
+  the sqlite-family parse in `separator=Order`, and each family's generator
+  only renders its own shape -- crossing them either raised or, worse,
+  emitted `GROUP_CONCAT(x SEPARATOR ',' ORDER BY x)`, which real MySQL
+  rejects. Every statement is canonicalized to the mysql shape and, for
+  SQLite targets, lowered back into SQLite's native
+  `GROUP_CONCAT(expr, sep ORDER BY ...)`. SQLite has supported aggregate
+  ORDER BY since 3.44.0; the pinned 3.53.3 host executes the emitted SQL
+  with verified ordering, separator, and multi-term `DESC` semantics
+  (`tests/test_rewrites.py`). A missing separator synthesizes the shared
+  comma default, because rendering the shape without one emits a dangling
+  comma. `GROUP_CONCAT(DISTINCT ... ORDER BY ...)` stays fail-closed:
+  SQLite DISTINCT aggregates accept exactly one argument.
+* **Oracle `TRUNC(date, fmt)`** is normalized from an exact allow-list
+  (`YYYY/SYYYY/YEAR`, `MM/MON/MONTH`, `DD/DDD/J`) to canonical units, so
+  MySQL renders faithful month/year starts through `STR_TO_DATE` and day
+  truncation through `DATE()`. Before this rule the raw oracle format token
+  either tripped the emitter (`Unexpected interval unit: MM`) or silently
+  mistranslated `'MM'` to the *day* truncation `DATE(x)`. Quarter, week,
+  ISO-year, day-of-week and time-of-day formats stay blocked
+  (`ORACLE_TRUNC_FORMAT_UNSUPPORTED`). Numeric `TRUNC(x, d)` is typed
+  separately by the reader and maps to `TRUNCATE` untouched.
+* **Oracle single-argument `TRUNC(x)`** is numeric-or-date ambiguous without
+  a catalog and reaches the pipeline as an opaque node that would be emitted
+  verbatim (`TRUNC(x)` is not a function any other engine here provides).
+  It fails closed with `ORACLE_TRUNC_AMBIGUOUS_WITHOUT_FORMAT`.
+
+Both `knownConditionalPairs` entries in `profiles-v1.json` are now recorded
+as `TYPED_REWRITE` / `TYPED_REWRITE_ALLOW_LIST` with these reasons. Each
+firing is content-addressed in the rule trace (`ruleTrace`) and carries its
+own semantic obligation on the statement. Result equivalence against a real
+source engine remains `NOT_RUN`.
+
 ### Divergences that are legal SQL on both sides
 
 Two differences cannot be fixed by translation, because the statement is valid

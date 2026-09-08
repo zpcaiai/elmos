@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:feature-decision",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "feature": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "deferred",
+        "approved",
+        "rejected"
+      ]
+    },
+    "host_approval_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "backend": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "primary_metric": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baseline_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "candidate_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rollback_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "feature",
+    "status",
+    "host_approval_ref",
+    "backend",
+    "primary_metric",
+    "baseline_ref",
+    "candidate_ref",
+    "rollback_ref"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "host_approval_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "baseline_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "candidate_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rollback_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}

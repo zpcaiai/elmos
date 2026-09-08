@@ -1,0 +1,21 @@
+name: elmos-ai-optimization-skills
+version: 1.0.0
+contract_namespace: ao.v1
+codex_skill: elmos-ai-optimization
+codex_discoverable_skills: 1
+internal_workflows: 3
+new_elmos_routes: 0
+kernel_authority_change: false
+default_batches:
+- B0
+- B1
+host_repository_status: not_inspected
+production_qualified: false
+artifact_kind: implementation-specification-and-reference-tests
+preserved_invariants:
+- K1-K8
+- 16-routes
+- K8-independent-completion
+- 3-top-level-slots
+- 600s-first-ready-lease
+- host-model-execution-gateways

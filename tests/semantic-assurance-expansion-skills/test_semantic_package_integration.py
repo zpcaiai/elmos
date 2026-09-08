@@ -418,8 +418,8 @@ def test_expected_installation_is_repo_owned_dual_root_and_collision_safe(
     proof_owner = (
         REPOSITORY_ROOT / ".agents/skills/elmos-proof-obligation-generator/SKILL.md"
     ).read_text(encoding="utf-8")
-    assert "pack: 09-evaluation-proof-certification" in proof_owner
-    assert "version: 3.0.0" in proof_owner
+    assert "elmos-repository-task-decomposition-cost-router-skills" in proof_owner
+    assert "2.0.0" in proof_owner
     cache_owner = (
         REPOSITORY_ROOT / ".agents/skills/elmos-proof-cache-invalidation/SKILL.md"
     ).read_text(encoding="utf-8")

@@ -1,0 +1,10 @@
+{
+  "schema_version": "ao.v1",
+  "scope_ref": "scope1",
+  "route": "exact",
+  "max_candidates": 20,
+  "graph_depth": 0,
+  "embedding_profile": null,
+  "rerank": false,
+  "deadline_ref": "budget1"
+}

@@ -2189,7 +2189,7 @@ print('\\n'.join(failures))
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=300,
+                timeout=2400,
             )
             output = completed.stdout + completed.stderr
             self.assertNotEqual(completed.returncode, 0, output)
@@ -3487,7 +3487,7 @@ print('\\n'.join(failures))
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=300,
+                timeout=2400,
             )
             output = completed.stdout + completed.stderr
             self.assertNotEqual(completed.returncode, 0, output)

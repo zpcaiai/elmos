@@ -1,6 +1,6 @@
 ---
 name: b46-runnable-smoke-factory
-description: Produce a complete one-click runnable smoke pack for a converted or generated project: detect the stack, derive minimal data, synthesize disposable seeds, emit entries, run, and reclaim on lease expiry.
+description: "Produce a complete one-click runnable smoke pack for a converted or generated project: detect the stack, derive minimal data, synthesize disposable seeds, emit entries, run, and reclaim on lease expiry."
 ---
 
 ## Operating mode

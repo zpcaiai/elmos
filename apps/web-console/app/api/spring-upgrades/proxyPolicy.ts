@@ -4,6 +4,7 @@ import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -108,7 +109,10 @@ export function authenticateSpringProxy(
   request: NextRequest,
 ): SpringActorContext | Response {
   const configuration = springProxyConfiguration();
-  if (unsafeCookieValue(request, accountCookieNames.session)) {
+  if (
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session)
+  ) {
     try {
       const account = accountSessionFromRequest(request, "spring:execute");
       if (

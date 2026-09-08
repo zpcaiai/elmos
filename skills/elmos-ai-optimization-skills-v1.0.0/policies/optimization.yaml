@@ -1,0 +1,41 @@
+status: proposed_requires_B0_approval
+routes:
+  exact:
+    model_calls: 0
+    embedding_calls: 0
+    rerank_calls: 0
+  lexical:
+    rewrite: false
+    candidates: 40
+    top_k: 8
+  hybrid:
+    enabled: false
+    per_lane: 40
+    rerank_limit: 20
+    rrf_k: 60
+    graph_depth: 2
+    graph_nodes: 40
+agent:
+  enabled: false
+  max_rounds: 3
+  no_progress_repetitions: 2
+  max_parallel_readonly: 2
+  unknown_result: reconcile_only
+cache:
+  semantic_answer_cache: false
+  private_cross_tenant: false
+  revalidate: true
+experiment:
+  min_independent_cases: 200
+  min_per_required_stratum: 20
+  warm_repetitions: 5
+  max_p95_latency_ratio: 1.1
+  max_cost_ratio: 1.1
+  quality_guardrail_delta: 0.0
+  primary_improvement_required: true
+  security_leaks_allowed: 0
+  include_failed_attempts: true
+  ci_unit: repository-cluster
+deployment:
+  flags_default: false
+  requires_host_approval: true
