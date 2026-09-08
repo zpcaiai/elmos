@@ -1,12 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
 });
 
 test("help, shell locale and theme preferences stay accessible and persistent", async ({ page }) => {
+  await installAdministratorSession(page);
   await page.goto("/help");
 
   await expect(page.getByRole("heading", { name: "帮助与就绪状态" })).toBeVisible();

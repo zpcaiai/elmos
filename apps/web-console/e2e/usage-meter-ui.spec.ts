@@ -2,6 +2,8 @@ import { appendFile, mkdir, rename, rmdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 const tenantId = "local-e2e";
 const actorId = "user:e2e";
 const planId = "elmos-pro-monthly";
@@ -175,7 +177,12 @@ test.describe.serial("实时账户用量", () => {
   });
 
   test("套餐页实时更新 token 消耗量与进度", async ({ page }) => {
+    await installAdministratorSession(page);
     await page.goto("/pricing");
+    // The administrator fixture is only the server-side admission identity for
+    // this protected page. Remove it before exercising the explicitly enabled
+    // local usage credentials so the API receives exactly one actor identity.
+    await page.setExtraHTTPHeaders({});
     await expect(page.getByRole("button", { name: "开始免费体验" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "等待开放" })).toHaveCount(2);
     for (const button of await page.getByRole("button", { name: "等待开放" }).all()) {

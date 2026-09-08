@@ -31,12 +31,17 @@ test("administrator login is visibly separate from user login", async ({ page })
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
   await expect(page.getByText("管理员专用 · ADMIN ONLY", { exact: true })).toBeVisible();
   await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("管理员身份提供商未配置");
-  await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
-  await expect(page.getByLabel("密码")).toHaveCount(0);
+  await expect(page.getByRole("status")).toHaveCount(0);
+  await expect(page.getByLabel("管理员用户名")).toHaveValue(administratorEmail);
+  await expect(page.getByLabel("管理员密码")).toBeVisible();
+  await expect(page.getByRole("button", { name: "登录管理中心" })).toBeVisible();
   await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
-  // 管理员登录卡片不提供任何用户登录入口。
-  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveCount(0);
+  // 管理员卡片可返回用户入口，但绝不嵌入用户登录表单或可控登录模式。
+  await expect(page.locator(".admin-auth-card form[action='/api/auth/login']")).toHaveCount(0);
+  await expect(page.locator(".admin-auth-card input[name='loginMode']")).toHaveCount(0);
+  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveText(
+    "返回用户登录，使用产品功能",
+  );
   await expect(page.locator(".admin-auth-card")).toBeVisible();
 });
 

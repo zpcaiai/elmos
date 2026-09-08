@@ -347,6 +347,24 @@ final class DurableRunLeaseStore implements AutoCloseable {
         }
     }
 
+    /**
+     * Closes queue mutation admission after all service tasks have terminated.
+     *
+     * <p>The same in-process lock guards mutation and closure. Consequently an
+     * in-flight heartbeat or release finishes before this method returns, and
+     * every later operation fails before opening (and potentially recreating)
+     * the filesystem lock. This is the final writer barrier required before an
+     * owner releases or removes the workspace.</p>
+     */
+    @Override public void close() {
+        processLock.lock();
+        try {
+            closed = true;
+        } finally {
+            processLock.unlock();
+        }
+    }
+
     private Path leasePath(String tenantDigest, String runId) {
         return confined(leasesRoot, tenantDigest, runId + ".properties");
     }
