@@ -4829,7 +4829,7 @@
       "bytes": 55254,
       "path": "certification/formal-artifacts/swift-analyzer-build-receipt.json",
       "role": "swift-analyzer-build-receipt",
-      "sha256": "sha256:89deffaa9361e8ca203fdba420e6eb2103318f200454641b71fdf7ee41ad7eac"
+      "sha256": "sha256:28658344918a6ab3bda696bdc62324c5bf276bc8ec2adfb6cf5ffc03a19b7aa2"
     },
     {
       "artifact_id": "artifact-0b0bb08c601bdfdd3d101393255425ef63dfc9305b8e04746c5d15b62ec1a10c",
