@@ -188,9 +188,9 @@ def _markdown_code(value: str, invalid_code: str) -> str:
 def v3_research_support_document(route_key: str) -> dict[str, Any]:
     """Build the exact non-promoted support contract for one V3 route."""
 
-    from route_sets import V3_EXACT_ROUTE_KEYS, VB6_EXACT_ROUTE_KEYS
+    from route_sets import V3_EXACT_ROUTE_KEYS, VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS
 
-    if route_key not in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS}:
+    if route_key not in {*V3_EXACT_ROUTE_KEYS, *VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
         raise ValueError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
     capabilities = V3_RESEARCH_SUPPORT_CAPABILITIES
     if route_key in VB6_EXACT_ROUTE_KEYS:
@@ -202,6 +202,21 @@ def v3_research_support_document(route_key: str) -> dict[str, Any]:
                 (
                     "The typed pure standard-module subset has a local bounded handler; "
                     "VB6 SP6 compiler/runtime and representative Windows evidence remain NOT_RUN."
+                    if capability_id in {"type-system", "numeric"}
+                    else reason
+                ),
+            )
+            for capability_id, status, strategy, reason in V3_RESEARCH_SUPPORT_CAPABILITIES
+        )
+    if route_key in VCPP6_EXACT_ROUTE_KEYS:
+        capabilities = tuple(
+            (
+                capability_id,
+                "experimental" if capability_id in {"type-system", "numeric"} else status,
+                strategy,
+                (
+                    "The typed pure C++98-era module subset has a local bounded handler; "
+                    "VC++6 SP6 compiler/linker/runtime and representative Windows evidence remain NOT_RUN."
                     if capability_id in {"type-system", "numeric"}
                     else reason
                 ),
@@ -379,6 +394,12 @@ def route_execution_authorities_document() -> dict[str, Any]:
             "vendor_runtime": "Visual Basic 6.0 SP6 on approved Windows x86",
             "external_verification_status": "NOT_RUN",
         },
+        "vcpp6-completion-28": {
+            "policy": "bounded-local-handlers-vendor-campaign-required",
+            "native_reexecution_status": "NOT_RUN",
+            "vendor_runtime": "Microsoft Visual C++ 6.0 SP6 on approved Windows x86",
+            "external_verification_status": "NOT_RUN",
+        },
     }
 
 
@@ -397,7 +418,7 @@ def v3_research_metrics() -> dict[str, None]:
 def v3_research_evidence_document(route_key: str) -> dict[str, Any]:
     """Build the exact raw-evidence contract for one unexecuted V3 route."""
 
-    from route_sets import VB6_EXACT_ROUTE_KEYS
+    from route_sets import VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS
 
     notes = [
         "No V3 route-level semantic profile or target profile has been admitted.",
@@ -410,6 +431,12 @@ def v3_research_evidence_document(route_key: str) -> dict[str, Any]:
             "VB6 forms, class modules, COM/ActiveX, ADO, error handling, ByRef and implicit "
             "Variant remain unsupported.",
             "Visual Basic 6.0 SP6 compiler/runtime, repository, independent and external evidence remain NOT_RUN.",
+        ]
+    if route_key in VCPP6_EXACT_ROUTE_KEYS:
+        notes = [
+            "The typed pure VC++6 C++98-era analyzer and emitter are bounded local engineering handlers.",
+            "MFC, ATL, COM, Win32 handles, pointers, references, templates, exceptions and object ownership remain unsupported.",
+            "Microsoft Visual C++ 6.0 SP6 compiler/linker/runtime, repository, independent and external evidence remain NOT_RUN.",
         ]
     return {
         "schema_version": 1,
@@ -434,7 +461,7 @@ def v3_research_evidence_document(route_key: str) -> dict[str, Any]:
 def v3_research_certification_document(route_key: str) -> dict[str, Any]:
     """Build the exact non-certified decision for one unexecuted V3 route."""
 
-    from route_sets import VB6_EXACT_ROUTE_KEYS
+    from route_sets import VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS
 
     return {
         "schema_version": 1,
@@ -445,6 +472,8 @@ def v3_research_certification_document(route_key: str) -> dict[str, Any]:
         "declared_scope": (
             "VB6_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN"
             if route_key in VB6_EXACT_ROUTE_KEYS
+            else "VCPP6_CPP98_TYPED_PURE_MODULE_V1_VENDOR_RUNTIME_NOT_RUN"
+            if route_key in VCPP6_EXACT_ROUTE_KEYS
             else V3_RESEARCH_DECLARED_SCOPE
         ),
         "gate_results": v3_research_gate_results(),
@@ -482,6 +511,102 @@ def vb6_vendor_campaign_document(route_key: str) -> dict[str, Any]:
             "manifest_digest_environment": "ELMOS_VB6_TOOLCHAIN_MANIFEST_SHA256",
             "evidence_class": "GOVERNED_EXTERNAL_SELF_ATTESTED",
         },
+        "certification_status": "NOT_CERTIFIED",
+    }
+
+
+def vcpp6_vendor_campaign_document(route_key: str) -> dict[str, Any]:
+    """Describe the governed VC++6 cross-host campaign without claiming it ran."""
+
+    from route_sets import VCPP6_EXACT_ROUTE_KEYS
+
+    if route_key not in VCPP6_EXACT_ROUTE_KEYS:
+        raise ValueError(f"VCPP6_ROUTE_KEY_REQUIRED:{route_key}")
+    return {
+        "schema_version": 1,
+        "kind": "elmos.vcpp6-vendor-campaign-plan",
+        "route_key": route_key,
+        "runner": "scripts/batch29/run_vcpp6_cross_host_campaign.py",
+        "corpora": ["development", "holdout", "real-repository"],
+        "phases": {
+            "non_vcpp6_side_prepare": "READY",
+            "windows_vcpp6_compile_run": "NOT_RUN",
+            "cross_host_behavior_compare": "NOT_RUN",
+            "independent_verification": "NOT_RUN",
+            "external_certification": "NOT_RUN",
+        },
+        "required_windows_binding": {
+            "product": "Microsoft Visual C++ 6.0 SP6",
+            "compiler_architecture": "x86",
+            "manifest_environment": "ELMOS_VCPP6_TOOLCHAIN_MANIFEST",
+            "manifest_digest_environment": "ELMOS_VCPP6_TOOLCHAIN_MANIFEST_SHA256",
+            "evidence_class": "GOVERNED_EXTERNAL_SELF_ATTESTED",
+        },
+        "certification_status": "NOT_CERTIFIED",
+    }
+
+
+def vendor_research_lowering_document(route_key: str) -> dict[str, Any]:
+    """Return the exact bounded lowering contract for a vendor-language route."""
+
+    from route_sets import VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS, split_route_key
+
+    if route_key not in {*VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
+        raise ValueError(f"VENDOR_ROUTE_KEY_REQUIRED:{route_key}")
+    source, target = split_route_key(route_key)
+    vb6 = route_key in VB6_EXACT_ROUTE_KEYS
+    return {
+        "schema_version": 1,
+        "kind": "elmos.vendor-research-lowering-contract",
+        "route_key": route_key,
+        "source_language": source,
+        "target_language": target,
+        "semantic_profile": "typed-pure-module-v1",
+        "target_profile": (
+            "vb6-long32-pure-module-v1" if vb6 else "vcpp6-cpp98-pure-module-v1"
+        ),
+        "admitted_statements": [
+            "local-declaration",
+            "assignment",
+            "if",
+            "while",
+            "break",
+            "continue",
+            "return",
+        ],
+        "integer_semantics": "CHECKED_SIGNED_INT32" if vb6 else "CHECKED_SIGNED_INT64",
+        "number_semantics": "FINITE_BINARY64",
+        "string_semantics": "ASCII_ONLY",
+        "effects": "BLOCKED",
+        "vendor_runtime_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+    }
+
+
+def vendor_research_type_mapping_document(route_key: str) -> dict[str, Any]:
+    """Return exact canonical type boundaries without claiming vendor execution."""
+
+    from route_sets import VB6_EXACT_ROUTE_KEYS, VCPP6_EXACT_ROUTE_KEYS, split_route_key
+
+    if route_key not in {*VB6_EXACT_ROUTE_KEYS, *VCPP6_EXACT_ROUTE_KEYS}:
+        raise ValueError(f"VENDOR_ROUTE_KEY_REQUIRED:{route_key}")
+    source, target = split_route_key(route_key)
+    vb6 = route_key in VB6_EXACT_ROUTE_KEYS
+    return {
+        "schema_version": 1,
+        "kind": "elmos.vendor-research-type-mapping",
+        "route_key": route_key,
+        "source_language": source,
+        "target_language": target,
+        "canonical_types": {
+            "integer": "SIGNED_INT32" if vb6 else "SIGNED_INT64",
+            "number": "FINITE_BINARY64",
+            "boolean": "EXACT_BOOLEAN",
+            "string": "ASCII_VALUE",
+        },
+        "implicit_coercions": "BLOCKED",
+        "pointer_reference_ownership": "NOT_APPLICABLE" if vb6 else "BLOCKED",
+        "vendor_runtime_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
     }
 
@@ -675,6 +800,11 @@ VERSIONS: dict[str, tuple[str, ...]] = {
         "typed-pure-module-v1 bounded parser/emitter",
         "vendor compiler/runtime NOT_RUN",
     ),
+    "vcpp6": (
+        "Microsoft Visual C++ 6.0 SP6 source dialect",
+        "C++98-era typed-pure-module-v1 bounded parser/emitter",
+        "vendor compiler/linker/runtime NOT_RUN",
+    ),
 }
 
 ENGINE_PATHS: dict[str, str] = {
@@ -693,6 +823,7 @@ ENGINE_PATHS: dict[str, str] = {
     "react": "engines/polyglot-route-engine/native/react/analyzer.mjs",
     "flutter": "engines/polyglot-route-engine/native/dart/analyzer.dart",
     "vb6": "engines/polyglot-route-engine/src/elmos_polyglot_route/vb6_analyzer.py",
+    "vcpp6": "engines/polyglot-route-engine/src/elmos_polyglot_route/vcpp6_analyzer.py",
 }
 
 SHORT_VERSIONS: dict[str, str] = {
@@ -711,4 +842,5 @@ SHORT_VERSIONS: dict[str, str] = {
     "react": "React 19.2.7 / TypeScript 5.9.2 / Node 26.0.0",
     "flutter": "Flutter 3.44.1 / Dart 3.12.1 / analyzer 10.1.0",
     "vb6": "Visual Basic 6.0 SP6 dialect / vendor runtime NOT_RUN",
+    "vcpp6": "Visual C++ 6.0 SP6 dialect / vendor runtime NOT_RUN",
 }

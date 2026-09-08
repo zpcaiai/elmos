@@ -119,6 +119,12 @@ digest-bound three-phase runner in `scripts/batch29/run_vb6_cross_host_campaign.
 the non-VB6 side is prepared on its exact host, the VB6 side compiles/runs on an
 approved Windows x86-compatible VB6 SP6 host, and typed observations are compared
 after transfer. Missing Windows or independent receipts remain `NOT_RUN`, never success.
+The 28 VC++6 directions use the corresponding
+`scripts/batch29/run_vcpp6_cross_host_campaign.py` runner and must bind exact
+x86 `CL.EXE`, `LINK.EXE`, and `MSVCP60.DLL` bytes through the external governed
+manifest. VC++6↔VB6 additionally requires both vendor bindings; missing either
+side remains `NOT_RUN`. Local cross-host equality is engineering evidence only,
+and cannot satisfy independent verification or certification.
 
 ## Certification outcomes
 

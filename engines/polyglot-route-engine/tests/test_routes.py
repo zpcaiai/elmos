@@ -37,6 +37,7 @@ EXTENSIONS = {
     "react": "tsx",
     "flutter": "dart",
     "vb6": "bas",
+    "vcpp6": "cpp",
 }
 FILES = {
     "java": "Pricing",
@@ -54,16 +55,21 @@ FILES = {
     "react": "pricing",
     "flutter": "pricing",
     "vb6": "pricing",
+    "vcpp6": "pricing",
 }
 
 
-def _require_vb6_vendor_runtime(source: Language, target: Language) -> None:
-    if "vb6" not in {source, target}:
-        return
-    try:
-        exact_toolchain("vb6")
-    except RouteError as error:
-        pytest.skip(f"governed Windows VB6 SP6 runtime unavailable: {error}")
+def _require_vendor_runtime(source: Language, target: Language) -> None:
+    for language, product in (
+        ("vb6", "VB6 SP6"),
+        ("vcpp6", "Visual C++ 6.0 SP6"),
+    ):
+        if language not in {source, target}:
+            continue
+        try:
+            exact_toolchain(language)
+        except RouteError as error:
+            pytest.skip(f"governed Windows {product} runtime unavailable: {error}")
 
 
 @pytest.fixture
@@ -120,7 +126,7 @@ def test_every_repository_direction_compiles_and_matches_behavior(
     source_language: Language,
     target_language: Language,
 ) -> None:
-    _require_vb6_vendor_runtime(source_language, target_language)
+    _require_vendor_runtime(source_language, target_language)
     source = ROOT / "fixtures" / source_language / f"{FILES[source_language]}.{EXTENSIONS[source_language]}"
     output = route_tmp_path / f"{source_language}-to-{target_language}"
     source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
@@ -174,7 +180,7 @@ def test_independent_corpora_compile_and_match_behavior(
     source_language: Language,
     target_language: Language,
 ) -> None:
-    _require_vb6_vendor_runtime(source_language, target_language)
+    _require_vendor_runtime(source_language, target_language)
     source_base = file_name if source_language in {"java", "csharp"} else file_name.lower()
     source = ROOT / "fixtures" / corpus / source_language / f"{source_base}.{EXTENSIONS[source_language]}"
     source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()

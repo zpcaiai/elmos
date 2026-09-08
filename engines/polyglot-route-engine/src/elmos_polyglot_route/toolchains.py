@@ -45,8 +45,13 @@ def _installer_bound_toolchain_root() -> Path:
 
 
 _EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
+_homebrew_default = (
+    "/opt/homebrew"
+    if platform.system() == "Darwin"
+    else str(_EXPECTED_TOOLCHAIN_ROOT / "homebrew-not-applicable")
+)
 _EXPECTED_HOMEBREW_PREFIX = Path(
-    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", _homebrew_default)
 ).expanduser()
 if (
     not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
@@ -6222,8 +6227,45 @@ def _vb6() -> ExactToolchain:
     )
 
 
+def _vcpp6() -> ExactToolchain:
+    """Bind an exact, externally governed Windows/x86 VC++ 6 SP6 install."""
+
+    from .vcpp6_toolchain import resolve_vcpp6_toolchain
+
+    binding = resolve_vcpp6_toolchain(REPOSITORY_ROOT)
+    return ExactToolchain(
+        "vcpp6",
+        (
+            "Microsoft Visual C++ 6.0 SP6 / "
+            f"compiler {binding.compiler_version} / linker {binding.linker_version} / "
+            f"runtime {binding.runtime_version}"
+        ),
+        str(binding.compiler),
+        str(binding.linker),
+        profile=(
+            "vcpp6-dialect=6.0-sp6-cpp98-era",
+            "vcpp6-compiler-architecture=x86",
+            f"vcpp6-host-architecture={binding.host_architecture}",
+            f"vcpp6-linker={binding.linker}",
+            f"vcpp6-linker-sha256={binding.linker_sha256}",
+            f"vcpp6-linker-version={binding.linker_version}",
+            f"vcpp6-runtime={binding.runtime}",
+            f"vcpp6-runtime-sha256={binding.runtime_sha256}",
+            f"vcpp6-runtime-version={binding.runtime_version}",
+            f"vcpp6-runner-id={binding.runner_id}",
+            f"vcpp6-authorization-ref={binding.authorization_ref}",
+            f"vcpp6-binding-manifest-sha256={binding.manifest_sha256}",
+            "vcpp6-binding-evidence=GOVERNED_EXTERNAL_SELF_ATTESTED",
+            "vcpp6-independent-verification=NOT_RUN_UNLESS_SEPARATE_RECEIPT",
+        ),
+        executable_sha256=binding.compiler_sha256,
+        auxiliary_sha256=binding.linker_sha256,
+    )
+
+
 def _toolchain_fingerprint() -> tuple[str, ...]:
     from .vb6_toolchain import binding_fingerprint
+    from .vcpp6_toolchain import binding_fingerprint as vcpp6_binding_fingerprint
 
     tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
     try:
@@ -6240,6 +6282,7 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
         os.environ.get(_CONTAINER_TOOLCHAIN_PROFILE_VARIABLE, ""),
         *binding_fingerprint(),
+        *vcpp6_binding_fingerprint(),
         tsc_identity,
     )
 
@@ -6265,6 +6308,7 @@ def _cached_exact_toolchain(
         "react": _react,
         "flutter": _flutter,
         "vb6": _vb6,
+        "vcpp6": _vcpp6,
     }
     try:
         selector = selectors[language]

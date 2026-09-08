@@ -624,7 +624,8 @@ export type TranslationLanguageId =
   | "kotlin"
   | "react"
   | "flutter"
-  | "vb6";
+  | "vb6"
+  | "vcpp6";
 
 /**
  * Repository inventory retains deprecated JavaScript files for digest-bound

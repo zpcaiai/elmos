@@ -126,6 +126,11 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
         re.MULTILINE | re.IGNORECASE,
     ),
+    "vcpp6": re.compile(
+        r"^\s*(?:(?:static|inline)\s+)*(?:__int64|double|bool|std::string)\s+"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE,
+    ),
 }
 
 
@@ -142,7 +147,7 @@ def propose_candidates(source: bytes, language: Language) -> list[str]:
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        if language != "vb6":
+        if language not in {"vb6", "vcpp6"}:
             return []
         text = source.decode("cp1252")
     if language == "python":
@@ -636,6 +641,10 @@ def _analyzer_failure_verdict(error: Exception, language: Language) -> str:
         if primary_code in {"VB6_SOURCE_CHANGED_DURING_READ", "VB6_EXPRESSION_SOURCE_SPAN_REQUIRED"}:
             return Verdict.NOT_RUN
         return Verdict.UNSUPPORTED
+    if language == "vcpp6" and primary_code.startswith("VCPP6_"):
+        if primary_code in {"VCPP6_SOURCE_CHANGED_DURING_READ", "VCPP6_EXPRESSION_SOURCE_SPAN_REQUIRED"}:
+            return Verdict.NOT_RUN
+        return Verdict.UNSUPPORTED
     allowed = _COMMON_SOURCE_REJECTION_CODES | _SOURCE_REJECTION_CODES[language]
     return Verdict.UNSUPPORTED if primary_code in allowed else Verdict.NOT_RUN
 
@@ -818,6 +827,83 @@ def _read_work_unit_source(
         return None
     except ValueError as error:
         raise RouteError(f"WORK_UNIT_PATH_ESCAPES_REPOSITORY:{relative}") from error
+
+    if os.name == "nt":
+        try:
+            path_before = resolved.lstat()
+            if resolved.is_symlink() or not stat.S_ISREG(path_before.st_mode):
+                raise RouteError(f"WORK_UNIT_SOURCE_NOT_REGULAR:{relative}")
+            if path_before.st_size > MAX_FILE_BYTES:
+                raise RouteError(f"WORK_UNIT_SOURCE_TOO_LARGE:{relative}")
+            file_fd = os.open(
+                resolved,
+                os.O_RDONLY | int(getattr(os, "O_BINARY", 0)),
+            )
+            try:
+                before = os.fstat(file_fd)
+                if not stat.S_ISREG(before.st_mode):
+                    raise RouteError(f"WORK_UNIT_SOURCE_NOT_REGULAR:{relative}")
+                chunks: list[bytes] = []
+                remaining = before.st_size
+                while remaining:
+                    chunk = os.read(file_fd, min(remaining, 64 * 1024))
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    remaining -= len(chunk)
+                content = b"".join(chunks)
+                after = os.fstat(file_fd)
+            finally:
+                os.close(file_fd)
+            path_after = resolved.lstat()
+        except OSError as error:
+            raise RouteError(f"WORK_UNIT_SOURCE_OPEN_UNSAFE:{relative}") from error
+        descriptor_identity = (
+            before.st_dev,
+            before.st_ino,
+            before.st_mode,
+            before.st_size,
+            before.st_mtime_ns,
+            before.st_ctime_ns,
+        )
+        path_identity = (
+            path_before.st_dev,
+            path_before.st_ino,
+            path_before.st_mode,
+            path_before.st_size,
+            path_before.st_mtime_ns,
+            path_before.st_ctime_ns,
+        )
+        attachment_identity = descriptor_identity[:-1]
+        if (
+            descriptor_identity
+            != (
+                after.st_dev,
+                after.st_ino,
+                after.st_mode,
+                after.st_size,
+                after.st_mtime_ns,
+                after.st_ctime_ns,
+            )
+            or path_identity
+            != (
+                path_after.st_dev,
+                path_after.st_ino,
+                path_after.st_mode,
+                path_after.st_size,
+                path_after.st_mtime_ns,
+                path_after.st_ctime_ns,
+            )
+            # Windows reports creation/change time with different precision
+            # through a pathname and an open descriptor.  The stable pathname
+            # identity above retains ctime; attachment uses the fields whose
+            # semantics are identical across both APIs.
+            or attachment_identity != path_identity[:-1]
+            or len(content) != before.st_size
+            or resolved.resolve(strict=True) != resolved
+        ):
+            raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{relative}")
+        return resolved, content
 
     no_follow = int(getattr(os, "O_NOFOLLOW", 0))
     directory_flags = os.O_RDONLY | int(getattr(os, "O_DIRECTORY", 0)) | no_follow
@@ -1601,7 +1687,7 @@ def _candidate_inventory(source: bytes, language: Language) -> tuple[list[str], 
     try:
         text = source.decode("utf-8")
     except UnicodeDecodeError:
-        if language != "vb6":
+        if language not in {"vb6", "vcpp6"}:
             return [], False, "SOURCE_NOT_UTF8"
         text = source.decode("cp1252")
     if language == "python":

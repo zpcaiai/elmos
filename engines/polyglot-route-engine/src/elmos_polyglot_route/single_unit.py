@@ -69,6 +69,7 @@ _SOURCE_EXTENSION: dict[Language, str] = {
     "flutter": ".dart",
     "javascript": ".mjs",
     "vb6": ".bas",
+    "vcpp6": ".cpp",
 }
 
 _TARGET_FILE: dict[Language, str] = {
@@ -87,6 +88,7 @@ _TARGET_FILE: dict[Language, str] = {
     "flutter": "migrated.dart",
     "javascript": "migrated.mjs",
     "vb6": "migrated.bas",
+    "vcpp6": "migrated.cpp",
 }
 
 _AUXILIARY_COMPILER_LANGUAGES: frozenset[Language] = frozenset(
@@ -449,6 +451,16 @@ def _static_check_command(
             "-Wextra",
             "-Werror",
             "-fsyntax-only",
+            target_name,
+        ]
+    if target_language == "vcpp6":
+        return [
+            toolchain.executable,
+            "/nologo",
+            "/GX",
+            "/W4",
+            "/WX",
+            "/c",
             target_name,
         ]
     if target_language == "objc":
