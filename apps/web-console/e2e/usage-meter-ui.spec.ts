@@ -1,7 +1,6 @@
 import { appendFile, mkdir, rename, rmdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-
 import { installAdministratorSession } from "./helpers/admin-session";
 
 const tenantId = "local-e2e";

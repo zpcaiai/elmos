@@ -1,6 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-
 import { installAdministratorSession } from "./helpers/admin-session";
 
 const workspaceId = "d12ac53a-30b8-4d87-8202-9c9a4b181cf8";
@@ -83,6 +82,7 @@ test("normalizes repository responses from before controlled delivery", async ({
   });
 
   await page.goto("/repositories");
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
   await page.getByRole("button", { name: "拉取并建立工作区" }).click();
@@ -100,8 +100,9 @@ test("pulls, reads and locally modifies a Gitee repository without external effe
   let observedChange: Record<string, unknown> | null = null;
   await page.route("**/api/repository-workspaces**", async (route) => {
     const request = route.request();
+    // An authenticated enterprise session stays in HttpOnly cookies. The BFF,
+    // not browser JavaScript, derives the upstream bearer after this request.
     expect(request.headers().authorization).toBeUndefined();
-    expect(request.headers().cookie).toContain("__Host-elmos_session=");
     const url = new URL(request.url());
     if (request.method() === "POST" && url.pathname.endsWith("/api/repository-workspaces")) {
       await route.fulfill({
@@ -215,6 +216,7 @@ test("pulls, reads and locally modifies a Gitee repository without external effe
 
   await page.goto("/repositories");
   await expect(page.getByRole("heading", { name: "代码仓库工作区" })).toBeVisible();
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
@@ -277,6 +279,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
     await route.fulfill({ status: 404, body: "{}" });
   });
   await page.goto("/repositories");
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
@@ -288,6 +291,7 @@ test("hands a clean exact-head workspace to translation and Spring", async ({ pa
   );
 
   await page.goto("/repositories");
+  await expect(page.getByLabel("开发访问令牌")).toHaveCount(0);
   await page.getByLabel("托管平台").selectOption("GITEE");
   await page.getByLabel("HTTPS Clone URL").fill("https://gitee.com/owner/repository.git");
   await page.getByLabel("仓库原生标识").fill("owner/repository");
