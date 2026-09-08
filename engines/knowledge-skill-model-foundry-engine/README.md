@@ -64,6 +64,11 @@ remains `NOT_CERTIFIED`.
 The external assurance API validates evidence supplied by real providers,
 independent verifiers and certification authorities. It intentionally contains
 no local issuer, signing key, synthetic success path or default trust decision.
+`ExternalTrustStore` and `verify_external_qualification_chain` add role-scoped
+Ed25519 verification, key validity/revocation, authority separation, exact
+scope/executor bindings, ordered training/deployment checks, and complete
+receipt-chain validation. The repository command is documented in
+`docs/knowledge-skill-model-foundry/EXTERNAL_QUALIFICATION.md`.
 
 Run the repository integration target:
 
