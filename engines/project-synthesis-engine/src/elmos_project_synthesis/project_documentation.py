@@ -22,6 +22,13 @@ _SQL_TYPES = {
     "boolean": "boolean",
     "datetime": "timestamptz",
 }
+_SQLITE_TYPES = {
+    "string": "TEXT",
+    "integer": "INTEGER",
+    "number": "REAL",
+    "boolean": "INTEGER",
+    "datetime": "TEXT",
+}
 
 
 def _markdown(value: object) -> str:
@@ -253,7 +260,10 @@ def _relationship_field_type(
         relation.source == entity.singular and relation.source_field == field.name and relation.target_field == "id"
         for relation in request.relations
     )
-    return "uuid" if is_foreign_identifier else _SQL_TYPES[field.type]
+    if is_foreign_identifier:
+        return "TEXT" if request.is_sqlite else "uuid"
+    types = _SQLITE_TYPES if request.is_sqlite else _SQL_TYPES
+    return types[field.type]
 
 
 def _er_relation(relation: RelationSpec) -> str:
@@ -294,9 +304,11 @@ def _entity_sections(request: SynthesisRequest) -> str:
     sections: list[str] = []
     for entity in request.entities:
         if request.requires_database:
+            id_type = "TEXT" if request.is_sqlite else "uuid"
+            tenant_type = "TEXT" if request.is_sqlite else "text"
             system_rows = [
-                "| `tenant_id` | tenant boundary | `text` | 否 | 复合主键；非空检查 |",
-                "| `id` | entity identifier | `uuid` | 否 | 复合主键 |",
+                f"| `tenant_id` | tenant boundary | `{tenant_type}` | 否 | 复合主键；非空检查 |",
+                f"| `id` | entity identifier | `{id_type}` | 否 | 复合主键 |",
             ]
             field_rows = []
             for field in entity.fields:
@@ -325,7 +337,10 @@ def _entity_sections(request: SynthesisRequest) -> str:
                 for field in entity.fields
             ]
         rows = "\n".join((*system_rows, *field_rows))
-        physical_name = f"`app.{entity.plural}`" if request.requires_database else "`NOT_APPLICABLE`"
+        if request.requires_database:
+            physical_name = f"`{entity.plural}`" if request.is_sqlite else f"`app.{entity.plural}`"
+        else:
+            physical_name = "`NOT_APPLICABLE`"
         sections.append(
             clean(
                 f"""
@@ -364,7 +379,25 @@ def _database_design(request: SynthesisRequest) -> str:
         (("ID", "id"), ("规则", "statement"), ("声明执行层", "enforcement")),
         empty="当前基线没有可编译为数据库 CHECK 的字段比较规则。",
     )
-    if request.requires_database:
+    if request.is_sqlite:
+        physical = clean(
+            """
+            - SQLite 版本配置：`3.45`
+            - 数据库存储：嵌入式文件数据库
+            - 初始迁移：`database/migrations/001_initial.sql`
+            - 迁移清单：`database/migrations/manifest.json`
+            - 执行入口：`database/apply-migrations.sh`
+            - 策略：仅向前迁移（forward-only）
+            """
+        )
+        isolation = clean(
+            """
+            每张业务表使用复合主键 `(tenant_id, id)`，并为 `tenant_id` 建索引。
+            SQLite 租户隔离通过应用层显式参数绑定 `WHERE "tenant_id" = ?` 严格限定。
+            所有关系外键都包含 `tenant_id`，启用 `PRAGMA foreign_keys = ON`，删除策略为 `RESTRICT`。
+            """
+        )
+    elif request.is_postgresql:
         physical = clean(
             """
             - PostgreSQL 版本配置：`17.5`
@@ -385,7 +418,7 @@ def _database_design(request: SynthesisRequest) -> str:
         )
     else:
         physical = (
-            "当前持久化配置为 `in-memory`，没有生成 PostgreSQL DDL、迁移脚本或物理索引；相关状态为 `NOT_APPLICABLE`。"
+            "当前持久化配置为 `in-memory`，没有生成数据库 DDL、迁移脚本或物理索引；相关状态为 `NOT_APPLICABLE`。"
         )
         isolation = (
             "当前内存配置没有实现数据库级租户隔离。若未来切换到持久化数据库，"
@@ -398,6 +431,7 @@ def _database_design(request: SynthesisRequest) -> str:
         if request.requires_database
         else "当前任务不需要数据库连接；不得为内存配置生成或保存占位数据库凭据。"
     )
+    verification_db_name = "SQLite" if request.is_sqlite else "PostgreSQL"
     return clean(
         f"""
         # 数据库设计文档
@@ -451,7 +485,7 @@ def _database_design(request: SynthesisRequest) -> str:
         - 每个迁移必须具有唯一版本、内容摘要、执行顺序与前向恢复方案。
         - 破坏性或不向后兼容变更必须经过扩展/迁移/收缩评审，并先验证混合版本窗口。
         - 备份恢复必须写入新数据库验证，不得覆盖唯一现存数据库。
-        - 只有真实 PostgreSQL 执行、逐表对账、租户负向测试和恢复演练证据
+        - 只有真实 {verification_db_name} 执行、逐表对账、租户负向测试和恢复演练证据
           才能更新 `NOT_RUN`。
         """
     )
@@ -459,7 +493,21 @@ def _database_design(request: SynthesisRequest) -> str:
 
 def _migration_guide(request: SynthesisRequest) -> str:
     database_ddl_status = "GENERATED_NOT_APPLIED" if request.requires_database else "NOT_APPLICABLE"
-    if request.requires_database:
+    if request.is_sqlite:
+        database_steps = clean(
+            """
+            1. 确认 SQLite 3.45 运行环境与目标数据库路径。
+            2. 执行前备份现有数据库文件并记录摘要，不覆盖现有数据库。
+            3. 通过 `ELMOS_DATABASE_URL_FILE` 或配置提供数据库路径。
+            4. 执行 `database/apply-migrations.sh`，失败即停止。
+            5. 核对 `schema_migrations` 中的 `001_initial`、表结构、约束和索引。
+            6. 运行逐实体 CRUD、跨租户拒绝、行数/字段值对账和恢复演练。
+            """
+        )
+        database_artifacts = (
+            "`database/migrations/001_initial.sql`、`database/migrations/manifest.json`、`database/apply-migrations.sh`"
+        )
+    elif request.is_postgresql:
         database_steps = clean(
             """
             1. 解析并审批 PostgreSQL 17.5 目标环境与租户策略。
@@ -475,7 +523,7 @@ def _migration_guide(request: SynthesisRequest) -> str:
         )
     else:
         database_steps = (
-            "当前任务使用 `in-memory`，物理数据库迁移为 `NOT_APPLICABLE`。未来切换 PostgreSQL "
+            "当前任务使用 `in-memory`，物理数据库迁移为 `NOT_APPLICABLE`。未来切换持久化数据库 "
             "必须创建并审批新基线、生成新输出目录并重新执行全部数据库验证。"
         )
         database_artifacts = "`NOT_APPLICABLE`"

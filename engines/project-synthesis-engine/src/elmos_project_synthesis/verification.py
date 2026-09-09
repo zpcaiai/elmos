@@ -1179,7 +1179,7 @@ def runtime_commands(
                 state = root / "python" / ".elmos-runtime"
                 runtime_arguments = (
                     ["run", "--no-sync", "python", "scripts/local_runtime.py"]
-                    if storage == "postgresql"
+                    if storage in {"postgresql", "sqlite"}
                     else ["run", "--no-sync", "python", "-m", packages[0].parent.name]
                 )
                 plan: dict[str, Any] = {
@@ -1191,11 +1191,11 @@ def runtime_commands(
                         "HOST": "127.0.0.1",
                         "ELMOS_RUNTIME_STATE_DIR": str(state),
                     },
-                    "providers": ["postgresql"] if storage == "postgresql" else [],
+                    "providers": [storage] if storage in {"postgresql", "sqlite"} else [],
                     "port": port,
                     **execution,
                 }
-                if storage == "postgresql":
+                if storage in {"postgresql", "sqlite"}:
                     integration_environment = {
                         "ELMOS_DATABASE_URL_FILE": str(state / "database-url"),
                         "ELMOS_AUTH_ISSUER": "https://identity.local.invalid/",
@@ -1380,6 +1380,8 @@ def verify_workspace(
             EXACT_TOOLCHAIN_REQUIREMENTS["postgresql"],
         )
         results.extend(provider_checks)
+    if any(isinstance(item, dict) and item.get("storage") == "sqlite" for item in applications):
+        provider_ready["sqlite"] = True
     for language in sorted(selected):
         exact_toolchains[language], checks = _check_exact_toolchain(
             language,

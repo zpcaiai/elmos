@@ -66,7 +66,7 @@ def _quoted(columns: tuple[str, ...]) -> str:
     return ", ".join(f'"{column}"' for column in columns)
 
 
-def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
+def entity_sql(entity: EntitySpec, *, placeholder: str = "?", is_sqlite: bool = False) -> EntitySql:
     """Build the four statements for an entity in a placeholder style.
 
     ``placeholder`` is a format string receiving the 1-based parameter index so
@@ -74,7 +74,7 @@ def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
     """
     columns = tuple(field.name for field in entity.fields)
     quoted = _quoted(columns)
-    table = f'"app"."{entity.plural}"'
+    table = f'"{entity.plural}"' if is_sqlite else f'"app"."{entity.plural}"'
 
     def mark(index: int) -> str:
         return placeholder.format(index) if "{" in placeholder else placeholder
@@ -83,6 +83,21 @@ def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
     assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
     # noqa: S608 below - every identifier here is produced by the strict entity
     # and field validators, and every value is bound as a parameter.
+    if is_sqlite:
+        return EntitySql(
+            entity=entity.singular,
+            plural=entity.plural,
+            columns=columns,
+            list_sql=f'SELECT "id", {quoted} FROM {table} WHERE "tenant_id" = {mark(1)} ORDER BY "id"',  # noqa: S608
+            get_sql=f'SELECT "id", {quoted} FROM {table} WHERE "tenant_id" = {mark(1)} AND "id" = {mark(2)}',  # noqa: S608
+            upsert_sql=(
+                f'INSERT INTO {table} ("tenant_id", "id", {quoted}) '  # noqa: S608
+                f"VALUES ({mark(1)}, {mark(2)}, {insert_values}) "
+                f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
+                f'RETURNING "id", {quoted}'
+            ),
+            delete_sql=f'DELETE FROM {table} WHERE "tenant_id" = {mark(1)} AND "id" = {mark(2)}',  # noqa: S608
+        )
     return EntitySql(
         entity=entity.singular,
         plural=entity.plural,
@@ -100,7 +115,7 @@ def entity_sql(entity: EntitySpec, *, placeholder: str = "?") -> EntitySql:
 
 
 def all_entity_sql(request: SynthesisRequest, *, placeholder: str = "?") -> list[EntitySql]:
-    return [entity_sql(entity, placeholder=placeholder) for entity in request.entities]
+    return [entity_sql(entity, placeholder=placeholder, is_sqlite=request.is_sqlite) for entity in request.entities]
 
 
 def uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
@@ -224,7 +239,11 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
         "tenant_claim": TENANT_CLAIM,
         "tenant_setting": TENANT_SETTING,
         "database_role": DATABASE_ROLE,
-        "isolation": "postgresql-row-level-security-forced",
+        "isolation": (
+            "sqlite-tenant-scoped-queries"
+            if request.is_sqlite
+            else "postgresql-row-level-security-forced"
+        ),
         "environment": {
             "database_url_file": ENV_DATABASE_URL_FILE,
             "auth_issuer": ENV_AUTH_ISSUER,

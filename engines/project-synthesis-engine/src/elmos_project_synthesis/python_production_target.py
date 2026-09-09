@@ -361,7 +361,7 @@ def _test_identity_source(auth_mode: str) -> str:
     )
 
 
-def _ci_workflow(auth_mode: str) -> str:
+def _ci_workflow(auth_mode: str, *, is_sqlite: bool = False) -> str:
     auth_environment = (
         "ELMOS_JWT_HMAC_SECRET_FILE: /tmp/elmos-test-identity/jwt-hmac"
         if auth_mode == "jwt"
@@ -371,6 +371,40 @@ def _ci_workflow(auth_mode: str) -> str:
         )
     )
     auth_environment = auth_environment.replace("\n", "\n                  ")
+    if is_sqlite:
+        return clean(
+            f"""
+            name: python-production-profile
+            on: [push, pull_request]
+            permissions:
+              contents: read
+            jobs:
+              test:
+                runs-on: ubuntu-latest
+                defaults:
+                  run:
+                    working-directory: python
+                steps:
+                  - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+                  - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+                  - run: uv lock --check
+                  - run: uv sync --locked --python 3.12
+                  - run: uv run python scripts/create-test-identity.py /tmp/elmos-test-identity
+                  - run: |
+                      umask 077
+                      printf '%s' 'sqlite:///tmp/generated.db' > /tmp/database-url
+                      ELMOS_DATABASE_URL_FILE=/tmp/database-url ../database/apply-migrations.sh
+                  - run: uv run pytest -m integration
+                    env:
+                      ELMOS_DATABASE_URL_FILE: /tmp/database-url
+                      {auth_environment}
+                      ELMOS_AUTH_ISSUER: https://identity.test.invalid/
+                      ELMOS_AUTH_AUDIENCE: generated-api
+                  - run: uv run pytest -m "not integration"
+                  - run: uv run ruff check src tests scripts
+                  - run: uv run mypy src
+            """
+        )
     write_admin_url = (
         "printf '%s' 'postgresql://postgres:integration-only@127.0.0.1:5432/generated' > /tmp/admin-database-url"
     )
@@ -435,7 +469,7 @@ def _ci_workflow(auth_mode: str) -> str:
     )
 
 
-def _local_runtime_source(package_name: str, auth_mode: str) -> str:
+def _local_runtime_source(package_name: str, auth_mode: str, *, is_sqlite: bool = False) -> str:
     if auth_mode == "jwt":
         runtime_auth_imports = "import secrets"
         runtime_auth_setup = clean(
@@ -495,6 +529,90 @@ def _local_runtime_source(package_name: str, auth_mode: str) -> str:
         )
     runtime_auth_imports = runtime_auth_imports.rstrip().replace("\n", "\n        ")
     runtime_auth_setup = runtime_auth_setup.rstrip().replace("\n", "\n            ")
+    if is_sqlite:
+        return clean(
+            f"""
+        from __future__ import annotations
+
+        import atexit
+        import os
+        {runtime_auth_imports}
+        import signal
+        import sqlite3
+        import subprocess
+        import sys
+        import time
+        from pathlib import Path
+
+        children: list[subprocess.Popen[bytes]] = []
+        stopping = False
+
+
+        def stop_children(*_: object) -> None:
+            global stopping
+            if stopping:
+                return
+            stopping = True
+            for child in reversed(children):
+                if child.poll() is None:
+                    child.terminate()
+            deadline = time.monotonic() + 8
+            for child in reversed(children):
+                try:
+                    child.wait(timeout=max(0.1, deadline - time.monotonic()))
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    child.wait(timeout=2)
+
+
+        def main() -> int:
+            atexit.register(stop_children)
+            signal.signal(signal.SIGTERM, stop_children)
+            signal.signal(signal.SIGINT, stop_children)
+            workspace = Path.cwd().resolve()
+            state = Path(os.getenv("ELMOS_RUNTIME_STATE_DIR", ".elmos-runtime")).resolve()
+            if state == workspace or workspace not in state.parents or state.is_symlink():
+                raise RuntimeError("RUNTIME_STATE_DIRECTORY_MUST_BE_WORKSPACE_CONFINED")
+            state.mkdir(parents=True, exist_ok=True, mode=0o700)
+
+            db_file = state / "app.db"
+            migration = workspace.parent / "database" / "migrations" / "001_initial.sql"
+            if not db_file.exists() and migration.exists():
+                with sqlite3.connect(str(db_file)) as connection:
+                    connection.executescript(migration.read_text(encoding="utf-8"))
+
+            database_url_file = state / "database-url"
+            database_url_file.write_text(
+                f"sqlite://{{db_file}}",
+                encoding="utf-8",
+            )
+            database_url_file.chmod(0o600)
+            environment = dict(os.environ)
+            environment["ELMOS_DATABASE_URL_FILE"] = str(database_url_file)
+            environment["ELMOS_AUTH_ISSUER"] = "https://identity.local.invalid/"
+            environment["ELMOS_AUTH_AUDIENCE"] = "generated-api"
+            {runtime_auth_setup}
+            if sys.argv[1:] == ["--verify"]:
+                result = subprocess.run(
+                    [sys.executable, "-m", "pytest", "-m", "integration"],
+                    check=False,
+                    env=environment,
+                )
+                stop_children()
+                return result.returncode
+            if sys.argv[1:]:
+                raise RuntimeError("LOCAL_RUNTIME_ARGUMENT_INVALID")
+            app = subprocess.Popen([sys.executable, "-m", "{package_name}"], env=environment)
+            children.append(app)
+            return_code = app.wait()
+            stop_children()
+            return return_code
+
+
+        if __name__ == "__main__":
+            raise SystemExit(main())
+        """
+        )
     return clean(
         f"""
         from __future__ import annotations
@@ -754,68 +872,146 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         )
         columns = [field.name for field in entity.fields]
         quoted_columns = ", ".join(f'"{column}"' for column in columns)
-        placeholders = ", ".join(["%s"] * len(columns))
-        values = ", ".join(f"payload.{column}" for column in columns)
+        table_ref = f'"{entity.plural}"' if request.is_sqlite else f'"app"."{entity.plural}"'
         assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
-        list_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
-            f'SELECT "id", {quoted_columns} FROM "app"."{entity.plural}" ORDER BY "id"'
-        )
-        get_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
-            f'SELECT "id", {quoted_columns} FROM "app"."{entity.plural}" WHERE "id" = %s'
-        )
-        save_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
-            f'INSERT INTO "app"."{entity.plural}" '
-            f'("tenant_id", "id", {quoted_columns}) VALUES (%s, %s, {placeholders}) '
-            f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
-            f'RETURNING "id", {quoted_columns}'
-        )
-        delete_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
-            f'DELETE FROM "app"."{entity.plural}" WHERE "id" = %s'
-        )
-        repository_blocks.append(
-            clean(
-                f"""
-                def _{entity.singular}_from_row(row: dict[str, object]) -> {entity_class}:
-                    return {entity_class}.model_validate(row)
+        if request.is_sqlite:
+            placeholders = ", ".join(["?"] * len(columns))
+            list_query = (
+                f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? ORDER BY "id"'
+            )
+            get_query = (
+                f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
+            )
+            save_query = (
+                f'INSERT INTO {table_ref} '
+                f'("tenant_id", "id", {quoted_columns}) VALUES (?, ?, {placeholders}) '
+                f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
+                f'RETURNING "id", {quoted_columns}'
+            )
+            delete_query = (
+                f'DELETE FROM {table_ref} WHERE "tenant_id" = ? AND "id" = ?'
+            )
+            save_params_elements = [
+                "identity.tenant_id",
+                "str(record_id)",
+                *[f"_to_db_value(payload.{column})" for column in columns],
+            ]
+            save_params = (
+                "(\n"
+                + ",\n".join(f"                                    {elem}" for elem in save_params_elements)
+                + ",\n                                )"
+            )
+            repository_blocks.append(
+                clean(
+                    f"""
+                    def _{entity.singular}_from_row(row: dict[str, object]) -> {entity_class}:
+                        return {entity_class}.model_validate(dict(row))
 
 
-                def list_{entity.plural}(identity: Identity) -> list[{entity_class}]:
-                    with tenant_connection(identity.tenant_id) as connection:
-                        query = {_wrapped_python_string(list_query, body_indent=24, closing_indent=20)}
-                        rows = connection.execute(query).fetchall()
-                    return [_{entity.singular}_from_row(dict(row)) for row in rows]
+                    def list_{entity.plural}(identity: Identity) -> list[{entity_class}]:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(list_query, body_indent=24, closing_indent=20)}
+                            rows = connection.execute(query, (identity.tenant_id,)).fetchall()
+                        return [_{entity.singular}_from_row(dict(row)) for row in rows]
 
 
-                def get_{entity.singular}(identity: Identity, record_id: UUID) -> {entity_class} | None:
-                    with tenant_connection(identity.tenant_id) as connection:
-                        query = {_wrapped_python_string(get_query, body_indent=24, closing_indent=20)}
-                        row = connection.execute(query, (str(record_id),)).fetchone()
-                    return None if row is None else _{entity.singular}_from_row(dict(row))
+                    def get_{entity.singular}(identity: Identity, record_id: UUID) -> {entity_class} | None:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(get_query, body_indent=24, closing_indent=20)}
+                            row = connection.execute(query, (identity.tenant_id, str(record_id))).fetchone()
+                        return None if row is None else _{entity.singular}_from_row(dict(row))
 
 
-                def save_{entity.singular}(
-                    identity: Identity,
-                    record_id: UUID,
-                    payload: {upsert_class},
-                ) -> {entity_class}:
-                    with tenant_connection(identity.tenant_id) as connection:
-                        query = {_wrapped_python_string(save_query, body_indent=24, closing_indent=20)}
-                        row = connection.execute(
-                            query,
-                            (identity.tenant_id, str(record_id), {values}),
-                        ).fetchone()
-                    assert row is not None
-                    return _{entity.singular}_from_row(dict(row))
+                    def save_{entity.singular}(
+                        identity: Identity,
+                        record_id: UUID,
+                        payload: {upsert_class},
+                    ) -> {entity_class}:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(save_query, body_indent=24, closing_indent=20)}
+                            row = connection.execute(
+                                query,
+                                {save_params},
+                            ).fetchone()
+                        assert row is not None
+                        return _{entity.singular}_from_row(dict(row))
 
 
-                def delete_{entity.singular}(identity: Identity, record_id: UUID) -> bool:
-                    with tenant_connection(identity.tenant_id) as connection:
-                        query = {_wrapped_python_string(delete_query, body_indent=24, closing_indent=20)}
-                        result = connection.execute(query, (str(record_id),))
-                    return result.rowcount == 1
-                """
-            ).rstrip()
-        )
+                    def delete_{entity.singular}(identity: Identity, record_id: UUID) -> bool:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(delete_query, body_indent=24, closing_indent=20)}
+                            result = connection.execute(query, (identity.tenant_id, str(record_id)))
+                        return result.rowcount == 1
+                    """
+                ).rstrip()
+            )
+        else:
+            placeholders = ", ".join(["%s"] * len(columns))
+            values = ", ".join(f"payload.{column}" for column in columns)
+            save_params = (
+                f"(identity.tenant_id, str(record_id), {values})"
+                if columns
+                else "(identity.tenant_id, str(record_id))"
+            )
+            list_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
+                f'SELECT "id", {quoted_columns} FROM {table_ref} ORDER BY "id"'
+            )
+            get_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
+                f'SELECT "id", {quoted_columns} FROM {table_ref} WHERE "id" = %s'
+            )
+            save_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
+                f'INSERT INTO {table_ref} '
+                f'("tenant_id", "id", {quoted_columns}) VALUES (%s, %s, {placeholders}) '
+                f'ON CONFLICT ("tenant_id", "id") DO UPDATE SET {assignments} '
+                f'RETURNING "id", {quoted_columns}'
+            )
+            delete_query = (  # noqa: S608 - identifiers are produced by strict entity/field validators.
+                f'DELETE FROM {table_ref} WHERE "id" = %s'
+            )
+            repository_blocks.append(
+                clean(
+                    f"""
+                    def _{entity.singular}_from_row(row: dict[str, object]) -> {entity_class}:
+                        return {entity_class}.model_validate(row)
+
+
+                    def list_{entity.plural}(identity: Identity) -> list[{entity_class}]:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(list_query, body_indent=24, closing_indent=20)}
+                            rows = connection.execute(query).fetchall()
+                        return [_{entity.singular}_from_row(dict(row)) for row in rows]
+
+
+                    def get_{entity.singular}(identity: Identity, record_id: UUID) -> {entity_class} | None:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(get_query, body_indent=24, closing_indent=20)}
+                            row = connection.execute(query, (str(record_id),)).fetchone()
+                        return None if row is None else _{entity.singular}_from_row(dict(row))
+
+
+                    def save_{entity.singular}(
+                        identity: Identity,
+                        record_id: UUID,
+                        payload: {upsert_class},
+                    ) -> {entity_class}:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(save_query, body_indent=24, closing_indent=20)}
+                            row = connection.execute(
+                                query,
+                                {save_params},
+                            ).fetchone()
+                        assert row is not None
+                        return _{entity.singular}_from_row(dict(row))
+
+
+                    def delete_{entity.singular}(identity: Identity, record_id: UUID) -> bool:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            query = {_wrapped_python_string(delete_query, body_indent=24, closing_indent=20)}
+                            result = connection.execute(query, (str(record_id),))
+                        return result.rowcount == 1
+                    """
+                ).rstrip()
+            )
         route_blocks.append(
             clean(
                 f"""
@@ -932,108 +1128,97 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
     dependencies = [
         "fastapi==0.116.1",
         "prometheus-client==0.22.1",
-        "psycopg[binary]==3.2.9",
         "pydantic==2.11.7",
         "PyJWT[crypto]==2.10.1",
         "uvicorn==0.35.0",
     ]
+    if request.is_postgresql:
+        dependencies.append("psycopg[binary]==3.2.9")
+    dependencies.sort()
     healthcheck = f"import urllib.request; urllib.request.urlopen('http://127.0.0.1:{port}/health/live', timeout=1)"
-    repository_source = "\n\n".join(repository_blocks).replace("\n", "\n            ")
+    repository_source = "\n\n".join(repository_blocks)
     route_source = "\n\n".join(route_blocks).replace("\n", "\n            ")
     integration_test_source = "\n\n".join(integration_tests).replace("\n", "\n            ")
-    return {
-        ".gitignore": gitignore(),
-        ".dockerignore": dockerignore(),
-        ".env.example": env_example(request, port)
-        + clean(
-            """
-            ELMOS_DATABASE_URL_FILE=/run/secrets/database-url
-            ELMOS_AUTH_ISSUER=https://identity.example.invalid/
-            ELMOS_AUTH_AUDIENCE=generated-api
-            ELMOS_JWT_HMAC_SECRET_FILE=/run/secrets/jwt-hmac
-            ELMOS_OIDC_JWKS_FILE=/run/secrets/oidc-jwks
-            """
-        ),
-        "pyproject.toml": clean(
+    if request.is_sqlite:
+        repo_header = clean(
             f"""
-            [project]
-            name = "{request.project_name}"
-            version = "1.0.0"
-            description = {json.dumps(request.description, ensure_ascii=False)}
-            requires-python = ">=3.12,<3.13"
-            dependencies = {json.dumps(dependencies, indent=2)}
+            from __future__ import annotations
 
-            [dependency-groups]
-            dev = [
-              "httpx==0.28.1",
-              "mypy==1.17.0",
-              "pytest==8.4.1",
-              "ruff==0.12.5",
-            ]
+            import os
+            import sqlite3
+            import stat
+            import time
+            from collections.abc import Iterator
+            from contextlib import contextmanager
+            from datetime import datetime
+            from decimal import Decimal
+            from pathlib import Path
+            from uuid import UUID
 
-            [build-system]
-            requires = ["hatchling==1.27.0"]
-            build-backend = "hatchling.build"
+            from .models import {", ".join(sorted(model_imports))}
+            from .security import Identity
+            from .telemetry import DATABASE_DURATION
 
-            [tool.hatch.build.targets.wheel]
-            packages = ["src/{package_name}"]
 
-            [tool.pytest.ini_options]
-            addopts = "-q --strict-markers -m 'not integration'"
-            testpaths = ["tests"]
-            markers = ["integration: requires the exact PostgreSQL profile"]
+            def _to_db_value(value: object) -> object:
+                if value is None:
+                    return None
+                if isinstance(value, UUID):
+                    return str(value)
+                if isinstance(value, datetime):
+                    return value.isoformat()
+                if isinstance(value, Decimal):
+                    return float(value)
+                return value
 
-            [tool.ruff]
-            target-version = "py312"
-            line-length = 120
 
-            [tool.ruff.lint]
-            select = ["E", "F", "I", "B", "UP", "S"]
-            ignore = ["S101", "S603"]
+            def _database_url() -> str:
+                raw_path = os.getenv("ELMOS_DATABASE_URL_FILE", "")
+                path = Path(raw_path)
+                if not raw_path or not path.is_absolute() or path.is_symlink():
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_INVALID")
+                details = path.stat()
+                if not stat.S_ISREG(details.st_mode) or details.st_mode & 0o077:
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_UNSAFE")
+                value = path.read_text(encoding="utf-8").strip()
+                if not value.startswith("sqlite://") or len(value) > 4096:
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_INVALID")
+                return value
 
-            [tool.mypy]
-            python_version = "3.12"
-            strict = true
-            packages = ["{package_name}"]
+
+            def _sqlite_path() -> Path:
+                return Path(_database_url().removeprefix("sqlite://"))
+
+
+            @contextmanager
+            def tenant_connection(tenant_id: str) -> Iterator[sqlite3.Connection]:
+                started = time.perf_counter()
+                outcome = "success"
+                connection = sqlite3.connect(str(_sqlite_path()))
+                connection.row_factory = sqlite3.Row
+                connection.execute("PRAGMA foreign_keys = ON")
+                try:
+                    with connection:
+                        yield connection
+                except Exception:
+                    outcome = "error"
+                    raise
+                finally:
+                    DATABASE_DURATION.labels(outcome=outcome).observe(time.perf_counter() - started)
+                    connection.close()
+
+
+            def ready() -> bool:
+                try:
+                    with sqlite3.connect(str(_sqlite_path())) as connection:
+                        row = connection.execute("SELECT 1").fetchone()
+                        return bool(row and row[0] == 1)
+                except (OSError, RuntimeError, sqlite3.Error):
+                    return False
             """
-        ),
-        f"src/{package_name}/__init__.py": f'"""Production profile for {request.project_name}."""\n',
-        f"src/{package_name}/models.py": clean(model_imports_source + f"\nfrom pydantic import {pydantic_imports}\n")
-        + "\n\n"
-        + "\n\n".join(model_blocks)
-        + "\n",
-        f"src/{package_name}/telemetry.py": clean(
-            """
-            from prometheus_client import Counter, Histogram
-
-            HTTP_REQUESTS = Counter(
-                "http_server_requests_total",
-                "HTTP requests by method, normalized route, and status.",
-                ("method", "route", "status"),
-            )
-            HTTP_DURATION = Histogram(
-                "http_server_request_duration_seconds",
-                "HTTP request duration by method and normalized route.",
-                ("method", "route"),
-            )
-            AUTHENTICATION_FAILED = Counter(
-                "authentication_failed_total",
-                "Failed bearer authentication decisions.",
-            )
-            AUTHORIZATION_DENIED = Counter(
-                "authz_denied_total",
-                "Default-deny authorization decisions.",
-                ("resource", "action"),
-            )
-            DATABASE_DURATION = Histogram(
-                "database_operation_duration_seconds",
-                "Tenant-scoped database connection duration by outcome.",
-                ("outcome",),
-            )
-            """
-        ),
-        f"src/{package_name}/security.py": _security_source(request),
-        f"src/{package_name}/repository.py": clean(
+        )
+    else:
+        repo_header = clean(
             f"""
             from __future__ import annotations
 
@@ -1089,11 +1274,101 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                         return connection.execute("SELECT 1").fetchone() == (1,)
                 except (OSError, RuntimeError, psycopg.Error):
                     return False
-
-
-            {repository_source}
+            """
+        )
+    return {
+        ".gitignore": gitignore(),
+        ".dockerignore": dockerignore(),
+        ".env.example": env_example(request, port)
+        + clean(
+            """
+            ELMOS_DATABASE_URL_FILE=/run/secrets/database-url
+            ELMOS_AUTH_ISSUER=https://identity.example.invalid/
+            ELMOS_AUTH_AUDIENCE=generated-api
+            ELMOS_JWT_HMAC_SECRET_FILE=/run/secrets/jwt-hmac
+            ELMOS_OIDC_JWKS_FILE=/run/secrets/oidc-jwks
             """
         ),
+        "pyproject.toml": clean(
+            f"""
+            [project]
+            name = "{request.project_name}"
+            version = "1.0.0"
+            description = {json.dumps(request.description, ensure_ascii=False)}
+            requires-python = ">=3.12,<3.13"
+            dependencies = {json.dumps(dependencies, indent=2)}
+
+            [dependency-groups]
+            dev = [
+              "httpx==0.28.1",
+              "mypy==1.17.0",
+              "pytest==8.4.1",
+              "ruff==0.12.5",
+            ]
+
+            [build-system]
+            requires = ["hatchling==1.27.0"]
+            build-backend = "hatchling.build"
+
+            [tool.hatch.build.targets.wheel]
+            packages = ["src/{package_name}"]
+
+            [tool.pytest.ini_options]
+            addopts = "-q --strict-markers -m 'not integration'"
+            testpaths = ["tests"]
+            markers = ["integration: requires the exact database profile"]
+
+            [tool.ruff]
+            target-version = "py312"
+            line-length = 120
+
+            [tool.ruff.lint]
+            select = ["E", "F", "I", "B", "UP", "S"]
+            ignore = ["S101", "S603"]
+
+            [tool.mypy]
+            python_version = "3.12"
+            strict = true
+            packages = ["{package_name}"]
+            """
+        ),
+        f"src/{package_name}/__init__.py": f'"""Production profile for {request.project_name}."""\n',
+        f"src/{package_name}/models.py": clean(model_imports_source + f"\nfrom pydantic import {pydantic_imports}\n")
+        + "\n\n"
+        + "\n\n".join(model_blocks)
+        + "\n",
+        f"src/{package_name}/telemetry.py": clean(
+            """
+            from prometheus_client import Counter, Histogram
+
+            HTTP_REQUESTS = Counter(
+                "http_server_requests_total",
+                "HTTP requests by method, normalized route, and status.",
+                ("method", "route", "status"),
+            )
+            HTTP_DURATION = Histogram(
+                "http_server_request_duration_seconds",
+                "HTTP request duration by method and normalized route.",
+                ("method", "route"),
+            )
+            AUTHENTICATION_FAILED = Counter(
+                "authentication_failed_total",
+                "Failed bearer authentication decisions.",
+            )
+            AUTHORIZATION_DENIED = Counter(
+                "authz_denied_total",
+                "Default-deny authorization decisions.",
+                ("resource", "action"),
+            )
+            DATABASE_DURATION = Histogram(
+                "database_operation_duration_seconds",
+                "Tenant-scoped database connection duration by outcome.",
+                ("outcome",),
+            )
+            """
+        ),
+        f"src/{package_name}/security.py": _security_source(request),
+        f"src/{package_name}/repository.py": f"{repo_header}\n\n\n{repository_source}\n",
         f"src/{package_name}/app.py": clean(
             f"""
             from __future__ import annotations
@@ -1198,7 +1473,11 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 )
             """
         ),
-        "scripts/local_runtime.py": _local_runtime_source(package_name, request.auth_mode),
+        "scripts/local_runtime.py": _local_runtime_source(
+            package_name,
+            request.auth_mode,
+            is_sqlite=request.is_sqlite,
+        ),
         "scripts/create-test-identity.py": _test_identity_source(request.auth_mode),
         "tests/test_security.py": clean(
             f"""
@@ -1220,7 +1499,11 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 assert response.status_code == 401
             """
         ),
-        "tests/test_postgresql_integration.py": clean(
+        (
+            "tests/test_sqlite_integration.py"
+            if request.is_sqlite
+            else "tests/test_postgresql_integration.py"
+        ): clean(
             f"""
             import os
             import time
@@ -1282,7 +1565,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             """
         ),
         "deploy/kubernetes.yaml": kubernetes_yaml(request, language="python", port=port),
-        ".github/workflows/ci.yml": _ci_workflow(request.auth_mode),
+        ".github/workflows/ci.yml": _ci_workflow(request.auth_mode, is_sqlite=request.is_sqlite),
         "Makefile": clean(
             f"""
             .PHONY: sync test integration check run migrate
@@ -1305,7 +1588,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         "README.md": target_readme(
             request,
             language="Python 3.12",
-            framework="FastAPI 0.116.1 + PostgreSQL 17.5",
+            framework=f"FastAPI 0.116.1 + {'SQLite 3.45' if request.is_sqlite else 'PostgreSQL 17.5'}",
             port=port,
             commands=(
                 "uv lock\n"

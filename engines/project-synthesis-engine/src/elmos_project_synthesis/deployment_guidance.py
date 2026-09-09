@@ -180,12 +180,18 @@ def _cloud_markdown(request: SynthesisRequest, profiles: list[dict[str, Any]]) -
         f"| {profile['id']} | `{profile['directory']}/Dockerfile` | {profile['port']} | `/health` |"
         for profile in profiles
     )
-    database_step = (
-        "7. PostgreSQL 配置优先使用同区域 Cloud SQL for PostgreSQL；设置连接池和实例上限，"
-        "Secret 只通过 Secret Manager 挂载文件，并先执行迁移/回滚演练。"
-        if request.requires_database
-        else "7. 当前为内存 Starter；扩缩容会产生多副本状态分叉，生产前必须改用外置持久化。"
-    )
+    if request.is_sqlite:
+        database_step = (
+            "7. SQLite 配置使用持久化存储卷或本地受保护路径；注意单进程写锁，"
+            "Secret 文件配置绝对路径，并先执行迁移/备份重放。"
+        )
+    elif request.is_postgresql:
+        database_step = (
+            "7. PostgreSQL 配置优先使用同区域 Cloud SQL for PostgreSQL；设置连接池和实例上限，"
+            "Secret 只通过 Secret Manager 挂载文件，并先执行迁移/回滚演练。"
+        )
+    else:
+        database_step = "7. 当前为内存 Starter；扩缩容会产生多副本状态分叉，生产前必须改用外置持久化。"
     auth_step = (
         "8. 为 JWT/OIDC 配置精确 issuer、audience 与 Secret/JWKS 版本，权限缺失时默认拒绝。"
         if request.auth_mode != "none"

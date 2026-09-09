@@ -343,11 +343,13 @@ def render_declared_dependency_graph(request: SynthesisRequest) -> dict[str, Any
             ]
         )
     if request.requires_database:
+        provider_id = "provider:sqlite:3.45" if request.is_sqlite else "provider:postgresql:17.5"
+        coordinate = "sqlite@3.45" if request.is_sqlite else "postgresql@17.5"
         nodes.append(
             {
-                "id": "provider:postgresql:17.5",
+                "id": provider_id,
                 "kind": "provider",
-                "coordinate": "postgresql@17.5",
+                "coordinate": coordinate,
                 "version_source": "runtime-manifest",
             }
         )
@@ -355,7 +357,7 @@ def render_declared_dependency_graph(request: SynthesisRequest) -> dict[str, Any
             edges.append(
                 {
                     "from": f"app:{target.language}",
-                    "to": "provider:postgresql:17.5",
+                    "to": provider_id,
                     "type": "persists-to",
                     "scope": "runtime",
                     "evidence_status": "DECLARED",

@@ -33,7 +33,7 @@
         "description": {"type": "string", "minLength": 1, "maxLength": 4000},
         "namespace": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
         "kind": {"const": "api"},
-        "persistence": {"enum": ["in-memory", "postgresql"]},
+        "persistence": {"enum": ["in-memory", "postgresql", "sqlite"]},
         "auth_mode": {"enum": ["none", "jwt", "oidc"]}
       }
     },

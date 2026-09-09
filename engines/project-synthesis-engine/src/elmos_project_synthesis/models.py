@@ -85,15 +85,17 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
 SUPPORTED_PROJECT_KINDS = ("api",)
-SUPPORTED_PERSISTENCE = ("in-memory", "postgresql")
+SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
 # durable, identity-aware vertical slice opens per target only after that
-# target has produced its own PostgreSQL-backed integration evidence through
-# the shared runtime harness; a target with an emitter but no evidence stays
-# closed here.
+# target has produced its own integration evidence through the shared runtime
+# harness; a target with an emitter but no evidence stays closed here.
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
+    ("sqlite", "none"): frozenset(SUPPORTED_LANGUAGES),
+    ("sqlite", "jwt"): frozenset(SUPPORTED_LANGUAGES),
+    ("sqlite", "oidc"): frozenset(SUPPORTED_LANGUAGES),
     ("postgresql", "jwt"): frozenset(
         {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
     ),
@@ -610,7 +612,7 @@ class SynthesisRequest:
         if not isinstance(relations_raw, list):
             raise RequestValidationError("RELATIONS_MUST_BE_ARRAY")
         relations = tuple(RelationSpec.from_mapping(item, entity_fields=entity_fields) for item in relations_raw)
-        if persistence == "postgresql" and require_approval:
+        if persistence in {"postgresql", "sqlite"} and require_approval:
             for relation in relations:
                 canonical = relation.canonical()
                 if relation.kind == "many-to-many":
@@ -681,7 +683,7 @@ class SynthesisRequest:
             )
         if (
             generation_profile == STARTER_GENERATION_PROFILE
-            and persistence == "postgresql"
+            and persistence in {"postgresql", "sqlite"}
             and len(entities) > 1
         ):
             unsupported_multi_entity_targets = sorted(
@@ -761,7 +763,15 @@ class SynthesisRequest:
 
     @property
     def requires_database(self) -> bool:
+        return self.persistence in {"postgresql", "sqlite"}
+
+    @property
+    def is_postgresql(self) -> bool:
         return self.persistence == "postgresql"
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.persistence == "sqlite"
 
     @property
     def requires_authentication(self) -> bool:
