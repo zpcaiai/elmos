@@ -182,19 +182,21 @@ def _mysql_schema_sql(request: SynthesisRequest) -> str:
         if relation.source_field is not None and relation.target_field == "id"
     }
     for entity in request.entities:
+        field_col_defs = []
+        for field in entity.fields:
+            if (entity.singular, field.name) in uuid_relation_fields:
+                col_type = "VARCHAR(36)"
+            else:
+                col_type = _mysql_sql_type(field)
+            nullable = " NOT NULL" if field.required else ""
+            field_col_defs.append(f"`{field.name}` {col_type}{nullable}")
+
         columns = [
             "`tenant_id` VARCHAR(64) NOT NULL",
             "`id` VARCHAR(36) NOT NULL",
-            *[
-                (
-                    f"`{field.name}` "
-                    f"{'VARCHAR(36)' if (entity.singular, field.name) in uuid_relation_fields else _mysql_sql_type(field)}"
-                    f"{' NOT NULL' if field.required else ''}"
-                )
-                for field in entity.fields
-            ],
+            *field_col_defs,
             "CONSTRAINT `tenant_id_not_blank` CHECK (CHAR_LENGTH(TRIM(`tenant_id`)) > 0)",
-            f"PRIMARY KEY (`tenant_id`, `id`)",
+            "PRIMARY KEY (`tenant_id`, `id`)",
         ]
         for rule in request.raw["business_rules"]:
             predicate = rule.get("predicate")

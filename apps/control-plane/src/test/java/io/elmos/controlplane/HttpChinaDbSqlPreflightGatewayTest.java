@@ -61,6 +61,39 @@ class HttpChinaDbSqlPreflightGatewayTest {
     }
 
     @Test
+    void fixedWorkerHopAcceptsLocalEmittedAssessmentWithoutCertification() throws Exception {
+        HttpServer server = HttpServer.create(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+        AtomicReference<byte[]> receivedBody = new AtomicReference<>();
+        server.createContext("/engine/v1/sql-preflight/assess", exchange -> {
+            receivedBody.set(exchange.getRequestBody().readAllBytes());
+            byte[] payload = json.writeValueAsBytes(localEmitted());
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, payload.length);
+            try (var output = exchange.getResponseBody()) {
+                output.write(payload);
+            }
+        });
+        server.start();
+        try {
+            String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+            var gateway = new HttpChinaDbSqlPreflightGateway(
+                    true, baseUrl, Duration.ofSeconds(1), Duration.ofSeconds(30), json);
+            byte[] request = request().getBytes(StandardCharsets.UTF_8);
+
+            var result = gateway.assess(request, "org-a", "actor-a");
+
+            assertEquals("LOCAL_EMITTED", result.path("state").textValue());
+            assertEquals("SELECT 1;\n", result.path("targetSql").textValue());
+            assertEquals("NOT_CERTIFIED", result.path("certification").textValue());
+            assertEquals("NOT_RUN", result.path("verification").path("sourceExecution").textValue());
+            assertArrayEquals(request, receivedBody.get());
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
     void nonLocalPlainHttpWorkerDestinationsAreRejected() {
         assertThrows(IllegalStateException.class, () -> new HttpChinaDbSqlPreflightGateway(
                 true,
@@ -68,6 +101,57 @@ class HttpChinaDbSqlPreflightGatewayTest {
                 Duration.ofSeconds(1),
                 Duration.ofSeconds(2),
                 json));
+    }
+
+    private ObjectNode localEmitted() throws Exception {
+        ObjectNode root = json.createObjectNode();
+        root.put("schemaVersion", "1.0");
+        root.put("queryId", "query-1");
+        root.put("sourceProfile", "postgresql-17.5");
+        ObjectNode target = root.putObject("target");
+        target.put("id", "dm8");
+        target.put("label", "DM8");
+        target.put("version", "8.1.3.140");
+        target.put("edition", "enterprise");
+        target.put("compatibilityMode", "oracle");
+        target.put("driver", "dmjdbc-8.1.3.140");
+        target.put("charset", "UTF-8");
+        target.put("collation", "BINARY");
+        target.put("timeZone", "Asia/Shanghai");
+        target.put("adapterId", "chinadb.dm8.target-adapter.v1");
+        target.put("implementationStatus", "LOCAL_ADAPTER");
+        root.put("routeId", "postgresql--to--dm8");
+        root.put("state", "LOCAL_EMITTED");
+        root.put("sourceDigest", "sha256:" + sha256Hex("SELECT 1"));
+        root.put("capabilitySnapshotDigest", SNAPSHOT);
+        ObjectNode statement = root.putArray("statements").addObject();
+        statement.put("index", 0);
+        statement.put("kind", "SELECT");
+        statement.putObject("sourceAst").put("type", "Select");
+        statement.putArray("obligations").add("TARGET_SEMANTICS_REVIEW_REQUIRED");
+        ObjectNode blocker = root.putArray("blockers").addObject();
+        blocker.put("code", "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED");
+        blocker.put("severity", "WARNING");
+        blocker.putNull("statementIndex");
+        blocker.put("message", "Local emission is not live-database evidence.");
+        root.put("targetSql", "SELECT 1;\n");
+        ObjectNode verification = root.putObject("verification");
+        verification.put("sourceParse", "PASSED");
+        verification.put("targetAdapter", "PASSED");
+        verification.put("targetEmit", "PASSED");
+        verification.put("targetReparse", "PASSED");
+        verification.put("sourceExecution", "NOT_RUN");
+        verification.put("targetExecution", "NOT_RUN");
+        verification.put("resultEquivalence", "NOT_RUN");
+        verification.put("externalExecution", "NOT_RUN");
+        root.put("certification", "NOT_CERTIFIED");
+        return root;
+    }
+
+    private static String sha256Hex(String value) throws Exception {
+        byte[] digest = java.security.MessageDigest.getInstance("SHA-256")
+                .digest(value.getBytes(StandardCharsets.UTF_8));
+        return java.util.HexFormat.of().formatHex(digest);
     }
 
     private String request() throws Exception {

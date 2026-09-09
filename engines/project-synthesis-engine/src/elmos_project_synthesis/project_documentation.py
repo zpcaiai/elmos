@@ -354,7 +354,8 @@ def _entity_sections(request: SynthesisRequest) -> str:
             ]
         rows = "\n".join((*system_rows, *field_rows))
         if request.requires_database:
-            physical_name = f"`{entity.plural}`" if (request.is_sqlite or request.is_mysql) else f"`app.{entity.plural}`"
+            table_prefix = "" if (request.is_sqlite or request.is_mysql) else "app."
+            physical_name = f"`{table_prefix}{entity.plural}`"
         else:
             physical_name = "`NOT_APPLICABLE`"
         sections.append(

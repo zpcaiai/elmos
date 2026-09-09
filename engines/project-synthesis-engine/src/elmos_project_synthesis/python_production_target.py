@@ -2209,7 +2209,10 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         "README.md": target_readme(
             request,
             language="Python 3.12",
-            framework=f"FastAPI 0.116.1 + {'SQLite 3.45' if request.is_sqlite else 'MySQL 8.0' if request.is_mysql else 'PostgreSQL 17.5'}",
+            framework=(
+                f"FastAPI 0.116.1 + "
+                f"{'SQLite 3.45' if request.is_sqlite else 'MySQL 8.0' if request.is_mysql else 'PostgreSQL 17.5'}"
+            ),
             port=port,
             commands=(
                 "uv lock\n"
