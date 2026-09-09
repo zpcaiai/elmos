@@ -1260,8 +1260,78 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
     dependencies.sort()
     healthcheck = f"import urllib.request; urllib.request.urlopen('http://127.0.0.1:{port}/health/live', timeout=1)"
     repository_source = "\n\n".join(repository_blocks)
+    if request.is_worker:
+        worker_integration_test = clean(
+            """
+            def test_worker_authenticated_journey() -> None:
+                headers = {"Authorization": f"Bearer {token('tenant-alpha')}"}
+                status_resp = client.get("/api/v1/worker/status", headers=headers)
+                assert status_resp.status_code == 200
+                assert status_resp.json()["kind"] == "worker"
+                assert status_resp.json()["status"] in {"idle", "running", "stopped"}
+
+                trigger_resp = client.post("/api/v1/worker/trigger", headers=headers)
+                assert trigger_resp.status_code == 200
+                assert trigger_resp.json()["outcome"] == "success"
+                assert trigger_resp.json()["items_processed"] >= 1
+            """
+        )
+        integration_tests.append(worker_integration_test)
     route_source = "\n\n".join(route_blocks).replace("\n", "\n            ")
     integration_test_source = "\n\n".join(integration_tests).replace("\n", "\n            ")
+    worker_imports = (
+        (
+            "import asyncio\n"
+            "from collections.abc import AsyncIterator\n"
+            "from contextlib import asynccontextmanager\n\n"
+            "from .worker import BackgroundWorker\n\n"
+        ).replace("\n", "\n            ")
+        if request.is_worker
+        else ""
+    )
+    worker_setup = (
+        clean(
+            f"""
+            worker = BackgroundWorker(service_name=os.getenv("APP_NAME", "{request.project_name}"))
+
+
+            @asynccontextmanager
+            async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+                worker_task = asyncio.create_task(worker.run_loop())
+                yield
+                await worker.stop()
+                try:
+                    await asyncio.wait_for(worker_task, timeout=2.0)
+                except (asyncio.TimeoutError, asyncio.CancelledError):
+                    pass
+
+
+            app = FastAPI(title="{request.project_name}", version="1.0.0", lifespan=lifespan)
+            """
+        ).replace("\n", "\n            ")
+        if request.is_worker
+        else f'app = FastAPI(title="{request.project_name}", version="1.0.0")'
+    )
+    if request.is_worker:
+        worker_routes = clean(
+            """
+            @app.get("/api/v1/worker/status")
+            def worker_status(
+                identity: Annotated[Identity, Depends(identity_from_authorization)],
+            ) -> dict[str, object]:
+                return worker.status.to_dict()
+
+
+            @app.post("/api/v1/worker/trigger")
+            async def trigger_worker(
+                identity: Annotated[Identity, Depends(identity_from_authorization)],
+            ) -> dict[str, object]:
+                return await worker.execute_cycle()
+            """
+        )
+        worker_routes_indented = "\n\n            " + worker_routes.replace("\n", "\n            ")
+    else:
+        worker_routes_indented = ""
     if request.is_sqlite:
         repo_header = clean(
             f"""
@@ -1528,12 +1598,11 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
 
             from . import repository
             from .models import {", ".join(sorted(model_imports))}
-            from .security import Identity, authorize
+            from .security import Identity, authorize, identity_from_authorization
             from .telemetry import HTTP_DURATION, HTTP_REQUESTS
-
-            app = FastAPI(title="{request.project_name}", version="1.0.0")
-            logger = logging.getLogger("{package_name}")
+            {worker_imports}logger = logging.getLogger("{package_name}")
             request_id_pattern = re.compile(r"^[A-Za-z0-9._:-]{{8,128}}$")
+            {worker_setup}
 
 
             @app.middleware("http")
@@ -1580,14 +1649,14 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             @app.get("/health")
             @app.get("/health/live")
             def liveness() -> dict[str, str]:
-                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}")}}
+                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}
 
 
             @app.get("/health/ready")
             def readiness() -> dict[str, str]:
                 if not repository.ready():
                     raise HTTPException(status_code=503, detail="database is unavailable")
-                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}")}}
+                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}
 
 
             @app.get("/metrics", include_in_schema=False)
@@ -1595,7 +1664,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 return StarletteResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
-            {route_source}
+            {route_source}{worker_routes_indented}
             """
         ),
         f"src/{package_name}/__main__.py": clean(
@@ -1638,6 +1707,23 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 response = client.get("/api/v1/{request.entities[0].plural}")
                 assert response.status_code == 401
             """
+            + (
+                "\n\n"
+                + clean(
+                    """
+                    def test_worker_status_unauthenticated_is_denied() -> None:
+                        response = client.get("/api/v1/worker/status")
+                        assert response.status_code == 401
+
+
+                    def test_worker_trigger_unauthenticated_is_denied() -> None:
+                        response = client.post("/api/v1/worker/trigger")
+                        assert response.status_code == 401
+                    """
+                )
+                if request.is_worker
+                else ""
+            )
         ),
         (
             "tests/test_sqlite_integration.py"
@@ -1739,3 +1825,39 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             ),
         ),
     }
+    if request.is_worker:
+        files[f"src/{package_name}/worker.py"] = _worker_source(package_name, request.project_name)
+        files["tests/test_worker_lifecycle.py"] = clean(
+            f"""
+            import asyncio
+
+            from {package_name}.worker import BackgroundWorker
+
+
+            def test_worker_cycle_execution() -> None:
+                async def run_test() -> None:
+                    worker = BackgroundWorker(service_name="test-service", interval_seconds=0.05)
+                    cycle = await worker.execute_cycle()
+                    assert cycle["outcome"] == "success"
+                    assert cycle["items_processed"] >= 1
+                    assert worker.status.cycles_completed == 1
+                    assert worker.status.jobs_processed >= 1
+                    assert worker.status.status == "idle"
+
+                asyncio.run(run_test())
+
+
+            def test_worker_run_loop_and_stop() -> None:
+                async def run_test() -> None:
+                    worker = BackgroundWorker(service_name="test-service", interval_seconds=0.01)
+                    task = asyncio.create_task(worker.run_loop())
+                    await asyncio.sleep(0.05)
+                    assert worker.status.cycles_completed >= 1
+                    await worker.stop()
+                    await asyncio.wait_for(task, timeout=1.0)
+                    assert worker.status.status == "stopped"
+
+                asyncio.run(run_test())
+            """
+        )
+    return files
