@@ -266,6 +266,39 @@ def test_postgresql_to_sqlite_executes_on_real_server_175(
     assert list(output.parent.rglob("*.sqlite3")) == []
 
 
+def test_postgresql_to_duckdb_executes_on_real_server_175(
+    tmp_path: Path,
+) -> None:
+    capabilities = runner_capabilities()
+    ready = {item["profileId"] for item in capabilities["ready"]}
+    if "postgresql-17.5" not in ready or "duckdb-1.5.4" not in ready:
+        pytest.skip(
+            "pinned PostgreSQL 17.5 or DuckDB 1.5.4 runtime is absent; "
+            "runtime evidence stays NOT_RUN on this host"
+        )
+
+    output = tmp_path / "postgresql-to-duckdb"
+    result = verify_route("postgresql-17.5", "duckdb-1.5.4", output)
+
+    assert result["localDecision"] == "FAILED"
+    assert result["sourceExecution"] == "PASSED"
+    assert result["targetExecution"] == "PASSED"
+    assert result["resultEquivalence"] == "FAILED"
+    assert result["independentVerification"] == "NOT_RUN"
+    assert result["certification"] == "NOT_CERTIFIED"
+
+    environment = json.loads((output / "environment.json").read_text())
+    assert environment["sourceRunner"]["engineVersionObserved"] == "17.5"
+    assert environment["sourceRunner"]["profile"]["id"] == "postgresql-17.5"
+
+    manifest = json.loads((output / "runner-evidence.json").read_text())
+    assert manifest["contentAddressed"] is True
+    for item in manifest["evidence"]:
+        content = (output / item["path"]).read_bytes()
+        assert item["bytes"] == len(content)
+        assert item["digest"] == f"sha256:{sha256(content).hexdigest()}"
+
+
 def test_unavailable_exact_runtime_remains_not_run(tmp_path: Path) -> None:
     with pytest.raises(RunnerBlockedError, match="runtime evidence remains NOT_RUN"):
         verify_route(

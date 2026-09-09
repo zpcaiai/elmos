@@ -187,6 +187,39 @@ def test_every_chinadb_target_emits_under_a_mapped_compatibility_mode(target_id:
     assert result.certification == "NOT_CERTIFIED"
 
 
+def test_commercial_sql_function_emits_under_mysql_compatibility_mode() -> None:
+    result = assess_commercial(
+        _request(
+            source_profile="postgresql-17.5",
+            target_id="tidb",
+            compatibility_mode="mysql-compatible-explicit",
+            sql=(
+                "CREATE FUNCTION add_one(x INTEGER) RETURNS INTEGER "
+                "LANGUAGE SQL AS $$ SELECT x + 1 $$"
+            ),
+            parameters=(),
+        )
+    )
+    assert result.state == "LOCAL_EMITTED", result.blockers
+    assert result.target_sql is not None
+    assert "CREATE FUNCTION add_one" in result.target_sql
+    assert "$$" not in result.target_sql
+    assert result.certification == "NOT_CERTIFIED"
+
+
+def test_commercial_locking_hint_stays_blocked() -> None:
+    result = assess_commercial(
+        _request(
+            source_profile="sqlserver-2022-cu26",
+            sql="SELECT id FROM orders WITH (NOLOCK)",
+            parameters=(),
+        )
+    )
+    assert result.state == "BLOCKED"
+    assert result.target_sql is None
+    assert "LOCKING_HINT_NOT_PORTABLE" in {item.code for item in result.blockers}
+
+
 def test_unmapped_compatibility_mode_stays_blocked() -> None:
     result = assess_commercial(_request(compatibility_mode="native-unspecified-explicit"))
     assert result.state == "BLOCKED"

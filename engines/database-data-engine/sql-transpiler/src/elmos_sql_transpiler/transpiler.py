@@ -553,7 +553,7 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                         )
                     )
                 target_statement, opaque_target = routines.reparse_routine_sql(
-                    generated, target.dialect, _routine_name_from_sql(generated)
+                    generated, target.dialect, conversion.object_name
                 )
                 obligations = set(_obligations(source_statement))
                 obligations.update(conversion.obligations)
@@ -728,6 +728,18 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 target_emit="PASSED",
                 target_reparse="PASSED",
             )
+    if hint_scan.plan_hint:
+        diagnostics.append(
+            Diagnostic(
+                code="OPTIMIZER_HINT_STRIPPED",
+                severity="WARNING",
+                statement_index=None,
+                message=(
+                    "Vendor plan and index hints were stripped; they do not have a "
+                    "portable optimizer contract. Plan-shape equivalence remains NOT_RUN."
+                ),
+            )
+        )
     diagnostics.extend(
         _route_semantic_warnings(
             source.dialect,

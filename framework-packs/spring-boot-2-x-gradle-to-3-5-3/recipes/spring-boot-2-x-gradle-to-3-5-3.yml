@@ -1,0 +1,11 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: io.elmos.gradle.SpringBoot2To3GradleMigration
+displayName: Migrate Spring Boot 2.x on Gradle to Spring Boot 3.5.3 on Java 21
+description: >-
+  Applies the versioned Gradle plugin and dependency updates for Spring Boot 3.5.3.
+recipeList:
+  - org.openrewrite.gradle.plugins.UpgradePluginVersion:
+      pluginId: org.springframework.boot
+      newVersion: 3.5.3
+  - org.openrewrite.java.migrate.UpgradeToJava21

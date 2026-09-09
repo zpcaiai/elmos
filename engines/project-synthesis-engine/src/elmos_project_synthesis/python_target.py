@@ -128,7 +128,7 @@ def _worker_source(package_name: str, service_name: str) -> str:
                             logger.debug("Worker cycle error: %s", exc)
                         try:
                             await asyncio.wait_for(self._stop_event.wait(), timeout=self.interval_seconds)
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             continue
                 finally:
                     self.status.status = "stopped"
@@ -351,7 +351,7 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
                 "    await worker.stop()\n"
                 "    try:\n"
                 "        await asyncio.wait_for(worker_task, timeout=2.0)\n"
-                "    except (asyncio.TimeoutError, asyncio.CancelledError):\n"
+                "    except (TimeoutError, asyncio.CancelledError):\n"
                 "        pass\n\n\n"
                 f'app = FastAPI(title="{request.project_name}", version="1.0.0", lifespan=lifespan)\n'
                 if request.is_worker
@@ -360,7 +360,11 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
             + f"{chr(10).join(store_blocks)}\n\n\n"
             + '@app.get("/health")\n'
             + "def health() -> dict[str, str]:\n"
-            + f'    return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}\n\n\n'
+            + '    return {\n'
+            + '        "status": "UP",\n'
+            + f'        "service": os.getenv("APP_NAME", "{request.project_name}"),\n'
+            + f'        "kind": "{request.project_kind}",\n'
+            + '    }\n\n\n'
             + f"{chr(10).join(route_blocks)}\n"
             + (
                 '\n\n@app.get("/api/v1/worker/status")\n'

@@ -834,8 +834,8 @@ def _worker_source(package_name: str, service_name: str) -> str:
 
         from .telemetry import (
             WORKER_ACTIVE,
-            WORKER_CYCLES,
             WORKER_CYCLE_DURATION,
+            WORKER_CYCLES,
             WORKER_JOBS_PROCESSED,
         )
 
@@ -929,7 +929,7 @@ def _worker_source(package_name: str, service_name: str) -> str:
                             logger.debug("Worker cycle error: %s", exc)
                         try:
                             await asyncio.wait_for(self._stop_event.wait(), timeout=self.interval_seconds)
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             continue
                 finally:
                     self.status.status = "stopped"
@@ -1279,18 +1279,22 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         integration_tests.append(worker_integration_test)
     route_source = "\n\n".join(route_blocks).replace("\n", "\n            ")
     integration_test_source = "\n\n".join(integration_tests).replace("\n", "\n            ")
-    worker_imports = (
-        (
+    if request.is_worker:
+        worker_imports = (
             "import asyncio\n"
+            "import json\n"
+            "import logging\n"
+            "import os\n"
+            "import re\n"
+            "import time\n"
             "from collections.abc import AsyncIterator\n"
-            "from contextlib import asynccontextmanager\n\n"
-            "from .worker import BackgroundWorker\n\n"
+            "from contextlib import asynccontextmanager\n"
+            "from typing import Annotated\n"
+            "from uuid import UUID, uuid4"
         ).replace("\n", "\n            ")
-        if request.is_worker
-        else ""
-    )
-    worker_setup = (
-        clean(
+        security_imports = "from .security import Identity, authorize, identity_from_authorization"
+        worker_local_import = "\n            from .worker import BackgroundWorker"
+        worker_setup = clean(
             f"""
             worker = BackgroundWorker(service_name=os.getenv("APP_NAME", "{request.project_name}"))
 
@@ -1302,16 +1306,26 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 await worker.stop()
                 try:
                     await asyncio.wait_for(worker_task, timeout=2.0)
-                except (asyncio.TimeoutError, asyncio.CancelledError):
+                except (TimeoutError, asyncio.CancelledError):
                     pass
 
 
             app = FastAPI(title="{request.project_name}", version="1.0.0", lifespan=lifespan)
             """
         ).replace("\n", "\n            ")
-        if request.is_worker
-        else f'app = FastAPI(title="{request.project_name}", version="1.0.0")'
-    )
+    else:
+        worker_imports = (
+            "import json\n"
+            "import logging\n"
+            "import os\n"
+            "import re\n"
+            "import time\n"
+            "from typing import Annotated\n"
+            "from uuid import UUID, uuid4"
+        ).replace("\n", "\n            ")
+        security_imports = "from .security import Identity, authorize"
+        worker_local_import = ""
+        worker_setup = f'app = FastAPI(title="{request.project_name}", version="1.0.0")'
     if request.is_worker:
         worker_routes = clean(
             """
@@ -1330,8 +1344,21 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             """
         )
         worker_routes_indented = "\n\n            " + worker_routes.replace("\n", "\n            ")
+        worker_security_tests = clean(
+            """
+            def test_worker_status_unauthenticated_is_denied() -> None:
+                response = client.get("/api/v1/worker/status")
+                assert response.status_code == 401
+
+
+            def test_worker_trigger_unauthenticated_is_denied() -> None:
+                response = client.post("/api/v1/worker/trigger")
+                assert response.status_code == 401
+            """
+        )
     else:
         worker_routes_indented = ""
+        worker_security_tests = ""
     if request.is_sqlite:
         repo_header = clean(
             f"""
@@ -1469,7 +1496,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                     return False
             """
         )
-    return {
+    files: dict[str, str] = {
         ".gitignore": gitignore(),
         ".dockerignore": dockerignore(),
         ".env.example": env_example(request, port)
@@ -1508,8 +1535,10 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
 
             [tool.pytest.ini_options]
             addopts = "-q --strict-markers -m 'not integration'"
+            markers = [
+              "integration: marks tests requiring local runtime services",
+            ]
             testpaths = ["tests"]
-            markers = ["integration: requires the exact database profile"]
 
             [tool.ruff]
             target-version = "py312"
@@ -1517,7 +1546,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
 
             [tool.ruff.lint]
             select = ["E", "F", "I", "B", "UP", "S"]
-            ignore = ["S101", "S603"]
+            ignore = ["S101"]
 
             [tool.mypy]
             python_version = "3.12"
@@ -1526,35 +1555,36 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             """
         ),
         f"src/{package_name}/__init__.py": f'"""Production profile for {request.project_name}."""\n',
-        f"src/{package_name}/models.py": clean(model_imports_source + f"\nfrom pydantic import {pydantic_imports}\n")
-        + "\n\n"
-        + "\n\n".join(model_blocks)
-        + "\n",
+        f"src/{package_name}/models.py": (
+            f"{model_imports_source}\nfrom pydantic import {pydantic_imports}\n\n\n"
+            + "\n\n\n".join(model_blocks)
+            + "\n"
+        ),
         f"src/{package_name}/telemetry.py": clean(
             """
             from prometheus_client import Counter, Gauge, Histogram
 
             HTTP_REQUESTS = Counter(
                 "http_server_requests_total",
-                "HTTP requests by method, normalized route, and status.",
+                "Total HTTP requests handled by the service.",
                 ("method", "route", "status"),
             )
             HTTP_DURATION = Histogram(
                 "http_server_request_duration_seconds",
-                "HTTP request duration by method and normalized route.",
+                "HTTP request duration in seconds.",
                 ("method", "route"),
             )
             AUTHENTICATION_FAILED = Counter(
-                "authentication_failed_total",
-                "Failed bearer authentication decisions.",
+                "security_authentication_failures_total",
+                "Total rejected authentication attempts.",
             )
             AUTHORIZATION_DENIED = Counter(
-                "authz_denied_total",
-                "Default-deny authorization decisions.",
+                "security_authorization_denials_total",
+                "Total authorization policy denials.",
                 ("resource", "action"),
             )
             DATABASE_DURATION = Histogram(
-                "database_operation_duration_seconds",
+                "tenant_database_duration_seconds",
                 "Tenant-scoped database connection duration by outcome.",
                 ("outcome",),
             )
@@ -1583,13 +1613,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             f"""
             from __future__ import annotations
 
-            import json
-            import logging
-            import os
-            import re
-            import time
-            from typing import Annotated
-            from uuid import UUID, uuid4
+            {worker_imports}
 
             from fastapi import Depends, FastAPI, HTTPException, Request, Response
             from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -1598,9 +1622,10 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
 
             from . import repository
             from .models import {", ".join(sorted(model_imports))}
-            from .security import Identity, authorize, identity_from_authorization
-            from .telemetry import HTTP_DURATION, HTTP_REQUESTS
-            {worker_imports}logger = logging.getLogger("{package_name}")
+            {security_imports}
+            from .telemetry import HTTP_DURATION, HTTP_REQUESTS{worker_local_import}
+
+            logger = logging.getLogger("{package_name}")
             request_id_pattern = re.compile(r"^[A-Za-z0-9._:-]{{8,128}}$")
             {worker_setup}
 
@@ -1649,14 +1674,22 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             @app.get("/health")
             @app.get("/health/live")
             def liveness() -> dict[str, str]:
-                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}
+                return {{
+                    "status": "UP",
+                    "service": os.getenv("APP_NAME", "{request.project_name}"),
+                    "kind": "{request.project_kind}",
+                }}
 
 
             @app.get("/health/ready")
             def readiness() -> dict[str, str]:
                 if not repository.ready():
                     raise HTTPException(status_code=503, detail="database is unavailable")
-                return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}
+                return {{
+                    "status": "UP",
+                    "service": os.getenv("APP_NAME", "{request.project_name}"),
+                    "kind": "{request.project_kind}",
+                }}
 
 
             @app.get("/metrics", include_in_schema=False)
@@ -1707,24 +1740,8 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 response = client.get("/api/v1/{request.entities[0].plural}")
                 assert response.status_code == 401
             """
-            + (
-                "\n\n"
-                + clean(
-                    """
-                    def test_worker_status_unauthenticated_is_denied() -> None:
-                        response = client.get("/api/v1/worker/status")
-                        assert response.status_code == 401
-
-
-                    def test_worker_trigger_unauthenticated_is_denied() -> None:
-                        response = client.post("/api/v1/worker/trigger")
-                        assert response.status_code == 401
-                    """
-                )
-                if request.is_worker
-                else ""
-            )
-        ),
+        )
+        + (f"\n\n\n{worker_security_tests}\n" if worker_security_tests else "\n"),
         (
             "tests/test_sqlite_integration.py"
             if request.is_sqlite

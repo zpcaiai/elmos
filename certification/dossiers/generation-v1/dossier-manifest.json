@@ -1,0 +1,216 @@
+{
+  "claim_ceiling": "limited",
+  "contracts": {
+    "declared-dependency-graph-v1.schema.json": "sha256:7326e6999b7699f5c660505d2459c4c0727b2d17be837f93d2a6c2412e9a399d",
+    "project-insights-v1.schema.json": "sha256:c6d0e17b438c943b832fcd981c361d6767df9955e6f83cd084637b9307cfd1cf",
+    "project-structure-v1.schema.json": "sha256:876bea100985d46afdf44c388939a87b3a9a768cd5cf8a31081cba504fa17a37",
+    "synthesis-request-v1.schema.json": "sha256:b62e088524a47ce1436ff0eda22379a4cdccc8978dd04643f5c08b5a28e056bb"
+  },
+  "control_digests": {
+    "contracts_files_count": 4,
+    "source_files_count": 39,
+    "support_matrix_sha256": "sha256:91fbcbce26cc403df2702442708797b0466fd00874b46ac2fd0416d0324bfd51"
+  },
+  "created_at": "2026-09-09T09:17:08.543420+00:00",
+  "dossier_id": "project-synthesis-independent-verification-v1",
+  "dossier_sha256": "sha256:d9b57d2f8984cabfee8f27a46d543d90bb8ac4d221d06d40bd4206b9ad624ef2",
+  "dossier_version": "1.0.0",
+  "engine_scope": "elmos.project-synthesis",
+  "engine_sources": {
+    "elmos_project_synthesis/__init__.py": "sha256:6131642adca3998a83963cfbb2b2043e359ad52015149bab964cbd2469dbda39",
+    "elmos_project_synthesis/cleanup.py": "sha256:4d361636b4a63873351f9b80d27269c7b23cac0653b49c348823dbfbdb42db0a",
+    "elmos_project_synthesis/cli.py": "sha256:1097c248cf56d04c16ccd8327a338cf9f5939dea3133ced559ad7a4ace1c85ce",
+    "elmos_project_synthesis/cloud_run_control.py": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd",
+    "elmos_project_synthesis/container_images.py": "sha256:63dfe4341a2a2414732b8fa2ea6d045a8788cc253972342b58c3b07c9c20f4c9",
+    "elmos_project_synthesis/deployment_guidance.py": "sha256:4474151482d75fca660f96c16f24871f9be1f430943dcb750b669af0a2cce94e",
+    "elmos_project_synthesis/dotnet_production_target.py": "sha256:92446e69cf0c2189a8c3b280f73fbcd51afdee7799dc58b18f733d371b9ddfc4",
+    "elmos_project_synthesis/dotnet_target.py": "sha256:73d26b55d3f60dac011d64299033fc7988e8eb43fce009b09a8c23b70ab21df9",
+    "elmos_project_synthesis/go_production_target.py": "sha256:1c19c9e6af18bdaaaa8e7e3007d4152d904d2da53ade4afdfde400e8f9e66d45",
+    "elmos_project_synthesis/go_target.py": "sha256:942783f754dd055d71c37a272e5e3fd63fe09bb87f182dacf88f17bc0d2aad48",
+    "elmos_project_synthesis/insights.py": "sha256:45a493db648ef511464136d21f7c2dddd666d0fbc73dd89ed433007689edce1b",
+    "elmos_project_synthesis/intake.py": "sha256:353a70e8c3e9d959caf8f247f488d40778ceaeef983e1d2a77cdd695271506b4",
+    "elmos_project_synthesis/java_production_target.py": "sha256:600d89125df6840233c3ab844a9331048123564bf8abea037487af4331d17e90",
+    "elmos_project_synthesis/java_target.py": "sha256:ba8dae7ac45230af742f7a23bd87a30b5e60e9129de6778eeb489ad7a6750956",
+    "elmos_project_synthesis/kotlin_production_target.py": "sha256:dcef4db1b32d048fa109af0e8070f03063ca4f7eee8f66551f4a07e649618a91",
+    "elmos_project_synthesis/kotlin_target.py": "sha256:0bd99611e7a7dd387430dc4ab476aa0730fa5b01c18ca104f296af44347e5507",
+    "elmos_project_synthesis/local_project_control.py": "sha256:df92fb2e47d2fb1719b63745de6fd8944bd979bc57d9b9e4873cd368a3565514",
+    "elmos_project_synthesis/models.py": "sha256:c41c11b37500bdbc66f7a26fb3b11fd4ff5e30a14747563c542c9db576b1cfcb",
+    "elmos_project_synthesis/native_dep_solver_bridge.py": "sha256:9413b3d1aa61c170b7600df2d1296f01c4c1cd07e512bf7da6edc3f26ed34e57",
+    "elmos_project_synthesis/php_production_target.py": "sha256:7bbc91c131a45d148da3b91d30c0d0b0289da055305c068b1fc6e881d923f2ee",
+    "elmos_project_synthesis/php_target.py": "sha256:33fe1b003113c47e83aa168736a2ab3b01fcf676804c3cff378be02854dde21a",
+    "elmos_project_synthesis/production_contract.py": "sha256:799e3fdded72dd49c6e1d9358d9267a079f7b62fb0ad63ca42934368446d749f",
+    "elmos_project_synthesis/production_profile.py": "sha256:2bd6c913c3c86f2c1aaab99731c097394a7e24164cf2d36994ec0b84be91e04e",
+    "elmos_project_synthesis/production_runtime.py": "sha256:b567d100f35c240f28e00e9845b9eeb04120ff79debad70e0658f08f2a3518fc",
+    "elmos_project_synthesis/project_documentation.py": "sha256:632701b42cae9dc91277b671abf7fefdc2e8fa5bdd35db90615b415ab4e01314",
+    "elmos_project_synthesis/project_graphs.py": "sha256:6329b0b35762bb7e4a3a3c923ea06c148351b5e18c5dac07a8198398a6fb35c3",
+    "elmos_project_synthesis/python_production_target.py": "sha256:ee34cd605b7b9743d2b383c724298e8030389cf003f6703feaa8fe8303ec5941",
+    "elmos_project_synthesis/python_target.py": "sha256:136439b1161e0f1b3f0f5c524c12cc4550c2867c2528a2b11079cd89f1497b32",
+    "elmos_project_synthesis/rendering.py": "sha256:0f977bde6d7bfd967f3b6f9747c72b3ee728d2db322dee837061809c304ca1ec",
+    "elmos_project_synthesis/rust_production_target.py": "sha256:8a822192423dab4bf77444579b9a340fee7ddd50c06f803b38e5f47e2b43a192",
+    "elmos_project_synthesis/rust_target.py": "sha256:c376f33dfb6872c9fff0f76a00cd5a2b3ad1b752e16a3620d507fbd704dcd7ce",
+    "elmos_project_synthesis/templates/kotlin/gradle.lockfile": "sha256:d35de11459c960a7485a2189765a91d122f36bc9b2a8832f2ed3ac851cc3161a",
+    "elmos_project_synthesis/templates/kotlin/gradle.production.lockfile": "sha256:d04c7e6adbfd79bda7b1171421fc0ea18e3c7df12f314f5341653f3c312ee55c",
+    "elmos_project_synthesis/templates/rust/Cargo.lock": "sha256:0398bb24c8d35c1401f5548597b95d74e3c26f59b459c1acd08487ca50e4cc59",
+    "elmos_project_synthesis/templates/rust/Cargo.production.lock": "sha256:7d62648372caf2047aeef2d0f0cc3b633de76267ebf360e993c7a10fa6837715",
+    "elmos_project_synthesis/typescript_production_target.py": "sha256:3f7c320afe56bba885a5d083c78dc6fdb4ff0614304d65c29dff716f9cf0b426",
+    "elmos_project_synthesis/typescript_target.py": "sha256:96be4fba574bbdec832c0a42a6fbbe24f3a5e33c03c2cff8c27613357c66b428",
+    "elmos_project_synthesis/verification.py": "sha256:a01dc695c27b8f1deed1e6ede1bb37b43c4cfb2e43bde3e193d80b9abb19c601",
+    "elmos_project_synthesis/workspace.py": "sha256:263c681b802b3ce1d2e82cc8eb8b9d8c9d3290496c1fdf7fa46a33a3dccca858"
+  },
+  "targets": [
+    {
+      "framework": "spring-boot",
+      "language": "java",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language java --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language java --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "build",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "21",
+      "source_skill": "PG077-PG088",
+      "toolchain": "Java 21 / Maven 3.9.10"
+    },
+    {
+      "framework": "fastapi",
+      "language": "python",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language python --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language python --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "lock-sync",
+        "lint",
+        "type-check",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "3.12",
+      "source_skill": "PG089-PG100",
+      "toolchain": "Python 3.12 / uv 0.11.16"
+    },
+    {
+      "framework": "aspnet-core",
+      "language": "csharp",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language csharp --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language csharp --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "restore",
+        "build",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "10.0",
+      "source_skill": "PG101-PG112",
+      "toolchain": ".NET SDK 10.0.301"
+    },
+    {
+      "framework": "nestjs-fastify",
+      "language": "typescript",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language typescript --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language typescript --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "locked-install",
+        "type-check",
+        "unit-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "26.0.0",
+      "source_skill": "PG226",
+      "toolchain": "Node 26.0.0 / pnpm 10.12.4"
+    },
+    {
+      "framework": "net-http",
+      "language": "go",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language go --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language go --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "format",
+        "vet",
+        "race-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "1.25.0",
+      "source_skill": "PG237",
+      "toolchain": "Go 1.25.0"
+    },
+    {
+      "framework": "ktor",
+      "language": "kotlin",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language kotlin --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language kotlin --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "locked-dependency-resolution",
+        "unit-test",
+        "build",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "2.2.20",
+      "source_skill": "PG250",
+      "toolchain": "Kotlin 2.2.20 / Java 21 / Gradle 8.14.3"
+    },
+    {
+      "framework": "native-http",
+      "language": "php",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language php --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language php --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "syntax",
+        "unit-test",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "8.4.12",
+      "source_skill": "PG263",
+      "toolchain": "PHP 8.4.12"
+    },
+    {
+      "framework": "axum",
+      "language": "rust",
+      "replay_commands": [
+        "python3 scripts/run_production_matrix.py --language rust --auth-mode jwt",
+        "python3 scripts/run_production_matrix.py --language rust --auth-mode oidc"
+      ],
+      "required_evidence": [
+        "exact-toolchain",
+        "format",
+        "clippy",
+        "unit-test",
+        "release-build",
+        "startup-probe",
+        "postgresql-integration"
+      ],
+      "runtime": "1.89.0",
+      "source_skill": "PG287",
+      "toolchain": "Rust 1.89.0 / Cargo 1.89.0"
+    }
+  ]
+}

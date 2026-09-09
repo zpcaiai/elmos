@@ -18,14 +18,14 @@ def test_separated_corpora_meet_local_syntax_goal_and_fail_closed() -> None:
 
     assert report["routeCount"] == 42
     assert report["syntax"] == {
-        "eligible": 462,
-        "ready": 462,
+        "eligible": 482,
+        "ready": 482,
         "successRate": 1.0,
         "goal": 0.995,
         "goalMet": True,
     }
-    assert report["negative"]["total"] == 55
-    assert report["negative"]["blocked"] == 55
+    assert report["negative"]["total"] == 63
+    assert report["negative"]["blocked"] == 63
     assert report["negative"]["failClosedRate"] == 1.0
     assert report["routeCoverage"] == {
         "covered": 42,
