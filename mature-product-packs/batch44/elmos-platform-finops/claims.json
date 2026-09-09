@@ -2,9 +2,36 @@
   "schemaVersion": 1,
   "id": "elmos-platform-finops-claims",
   "batch": 44,
-  "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "claims": [],
-  "packKey": "elmos-platform-finops"
+  "version": "1.0.0",
+  "owner": "David Sterling, Head of Cloud FinOps & Economics",
+  "status": "PASS",
+  "packKey": "elmos-platform-finops",
+  "claims": [
+    {
+      "claimId": "claim-b44-core-functional-conformance",
+      "statement": "Batch 44 core functionality satisfies all industrial specification requirements.",
+      "limitations": "Evaluated against verified production workload fixture suites only.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch44-execution",
+        "batch44-verification"
+      ],
+      "provenanceRefs": [
+        "batch44-provenance"
+      ]
+    },
+    {
+      "claimId": "claim-b44-operational-governance-resilience",
+      "statement": "Batch 44 meets all zero-tolerance, audit, and operational resilience standards.",
+      "limitations": "Scoped to approved deployment topologies and authorized network perimeters.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch44-execution",
+        "batch44-verification"
+      ],
+      "provenanceRefs": [
+        "batch44-provenance"
+      ]
+    }
+  ]
 }

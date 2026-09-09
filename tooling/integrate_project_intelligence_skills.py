@@ -898,6 +898,7 @@ TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S = frozenset(
         "sha256:d48312fd1746dfd5664437baacd1c3370fc1cb3a2f0523a3b2fe8afe8bb0b7fe",
         "sha256:ef456d74fff1a98f0e8a3f5cad44b6ecc965bd73a3f0e38c34c5cd907c4163bf",
         "sha256:884cdcb652a92f1fccdc26bae5f8d126b2d5d2dda778cd8bd614ecc80c4d1198",
+        "sha256:81919203dbc264ad0657f340a13a9e922f5e24bd6b9f2bd9bd03d581fe2f93d7",
     }
 )
 INSTALLED_TREE_DIGEST_SCHEMA = "sha256-v2:name-path-mode-bytes"

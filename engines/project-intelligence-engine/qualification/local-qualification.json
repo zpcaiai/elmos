@@ -255,7 +255,7 @@
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
-  "receipt_digest": "sha256:b112a44ce87035be8573b93b49d5b67fc1e9ad7bd220465ce6f95850c0ea6678",
+  "receipt_digest": "sha256:b8eff3ce83924d9981cd730196a974846f1c1e825a8bb9ffb89c1ebd35e29c2e",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -3335,17 +3335,17 @@
   ],
   "runtime_environment": {
     "byteorder": "little",
-    "cache_tag": "cpython-314",
-    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
-    "executable_sha256": "sha256:c015ab131972822e27ed108cf353582af6ca2fd7daf6296789576c7e7d1ad61a",
-    "hexversion": 51250672,
+    "cache_tag": "cpython-312",
+    "executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
+    "executable_sha256": "sha256:3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5",
+    "hexversion": 51121392,
     "implementation": "cpython",
     "machine": "arm64",
     "platform": "darwin",
     "release_level": "final",
-    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.14.5-macos-aarch64-none/bin/python3.14",
+    "resolved_executable": "/Users/stephen/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/bin/python3.12",
     "serial": 0,
-    "version": "3.14.5"
+    "version": "3.12.12"
   },
   "schema_version": "elmos.project-intelligence.local-qualification.v2",
   "source_package": "elmos-project-intelligence-skills",

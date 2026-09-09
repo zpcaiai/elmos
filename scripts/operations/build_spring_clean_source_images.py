@@ -44,7 +44,12 @@ MINIMUM_BUILD_FREE_BYTES = 12 * GIB
 HARD_STOP_FREE_BYTES = 8 * GIB
 CAPACITY_POLL_SECONDS = 2.0
 MAX_ARCHIVE_ENTRY_COUNT = 200_000
-MAX_ARCHIVE_REGULAR_BYTES = 3 * GIB
+# The committed repository tree (including recorded local-execution evidence
+# artifacts and pinned skill suites) crossed 4 GiB in 2026-09. Keep the
+# archive-bomb guard as a bound, but size it above the real tree so a
+# legitimate clean-source build is not refused by a limit written for a
+# smaller repository. Capacity floors still stop the run on real disk limits.
+MAX_ARCHIVE_REGULAR_BYTES = 6 * GIB
 EXTRACTION_BATCH_BYTES = 4 * 1024 * 1024
 EXTRACTION_METADATA_RESERVE_BYTES = 64 * 1024 * 1024
 EXTRACTION_ENTRY_ALLOCATION_GUARD_BYTES = 4096

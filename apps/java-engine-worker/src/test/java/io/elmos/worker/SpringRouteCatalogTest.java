@@ -130,7 +130,10 @@ class SpringRouteCatalogTest {
                         () -> SpringRouteCatalog.select("1.5.22", "17", "maven")).code());
         var gradle = SpringRouteCatalog.select("2.7.18", "17", "gradle");
         assertEquals("boot-2.x-gradle-to-boot-3.5.3-java-21", gradle.route().routeId());
-        assertEquals(EvidenceStatus.NOT_RUN, gradle.evidence());
+        // The exact tuple 2.7.18 / Java 17 recorded baseline, rewrite, target
+        // build and loopback startup evidence on the pinned Gradle 8.14.3
+        // driver. Other Gradle tuples inside the 2.x range stay NOT_RUN.
+        assertEquals(EvidenceStatus.PASSED_LOCAL, gradle.evidence());
         assertTrue(gradle.requiresExperimentalOptIn());
     }
 

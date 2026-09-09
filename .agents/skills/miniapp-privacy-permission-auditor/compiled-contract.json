@@ -112,7 +112,7 @@
     }
   },
   "contract_state": "HANDLER_IMPLEMENTED",
-  "runtime_implementation_digest": "sha256:2460e6f8f27976bd2d7c1e261381899ccc99e4db7f299af043615f00da4a0799",
+  "runtime_implementation_digest": "sha256:39ef53b479db747d6881d3ebeb8e364c1d1c807f98ef377539607dc0e7d4bcb1",
   "runtime_evidence_status": "DECLARED",
   "external_evidence_status": "NOT_RUN",
   "certification": "NOT_CERTIFIED",

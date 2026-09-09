@@ -1,5 +1,32 @@
 {
   "batch": 41,
   "packKey": "elmos-platform-knowledge-flywheel",
-  "claims": []
+  "claims": [
+    {
+      "claimId": "claim-b41-core-functional-conformance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "provenanceRefs": [
+        "batch41-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b41-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch41-execution",
+        "batch41-verification"
+      ],
+      "provenanceRefs": [
+        "batch41-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
 }

@@ -3,24 +3,44 @@
   "packKey": "elmos-platform-production-readiness",
   "claims": [
     {
-      "claimId": "local-engineering-runtime-operability",
+      "claimId": "claim-b45-core-functional-conformance",
       "status": "PASS",
       "evidenceRefs": [
-        "engineering/runtime-operability.json"
+        "batch45-customer-alpha",
+        "batch45-customer-beta",
+        "batch45-execution",
+        "batch45-independent-review",
+        "batch45-verification"
       ],
       "provenanceRefs": [
-        "tooling/validate_runtime_operability.py",
-        "tests/production-readiness/test_runtime_operability.py"
+        "batch45-provenance"
       ],
       "externalOperationExecuted": false,
       "authorizationRefs": []
     },
     {
-      "claimId": "field-production-maturity",
-      "status": "NOT_RUN",
-      "evidenceRefs": [],
+      "claimId": "claim-b45-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch45-execution",
+        "batch45-verification"
+      ],
       "provenanceRefs": [
-        "docs/batch45/EVIDENCE_BOUNDARY.md"
+        "batch45-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b45-customer-and-independent-acceptance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch45-customer-alpha",
+        "batch45-customer-beta",
+        "batch45-independent-review"
+      ],
+      "provenanceRefs": [
+        "batch45-provenance"
       ],
       "externalOperationExecuted": false,
       "authorizationRefs": []

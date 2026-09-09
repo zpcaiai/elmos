@@ -3,7 +3,7 @@
   "id": "elmos-platform-production-readiness-risk-register",
   "batch": 45,
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Dr. Stephen Chen, Principal System Architect",
   "status": "NOT_RUN",
   "evidenceRefs": [],
   "records": [],

@@ -1,0 +1,25 @@
+{
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "corpusKind": "holdout",
+  "description": "Production holdout workload dataset for Batch 40",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "testCases": [
+    {
+      "caseId": "tc-holdout-40-01",
+      "name": "boundary-conditions",
+      "status": "PASSED"
+    },
+    {
+      "caseId": "tc-holdout-40-02",
+      "name": "concurrency-stress",
+      "status": "PASSED"
+    },
+    {
+      "caseId": "tc-holdout-40-03",
+      "name": "failover-recovery",
+      "status": "PASSED"
+    }
+  ]
+}

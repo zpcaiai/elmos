@@ -1,0 +1,9 @@
+{
+  "id": "batch42-provenance",
+  "batch": 42,
+  "packKey": "elmos-platform-agent-factory",
+  "role": "provenance",
+  "origin": "elmos-reproducible-build-system-b42",
+  "sha256": "sha256:3bce6f274a5f148d8e49eafb99325fedb44c1a1239ce78f1676cb47ab0ea05d1",
+  "recordedAt": "2026-09-09T22:16:57.511794Z"
+}

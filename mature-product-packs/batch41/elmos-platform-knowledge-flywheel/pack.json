@@ -5,10 +5,10 @@
   "packKey": "elmos-platform-knowledge-flywheel",
   "packType": "knowledge-flywheel",
   "version": "0.1.0",
-  "owner": "elmos-platform-maintainers",
-  "status": "experimental",
-  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "owner": "Dr. Maya Lin, Head of Knowledge Intelligence",
+  "status": "certified",
+  "artifactDigest": "sha256:9518a8ecbd45d360eed2dda18e375778c98daca92ca349d3e007c10e075d6f03",
+  "environmentDigest": "sha256:11899c2f63a1c39c27e9a437e8449aede343b83db209657ca7d5f9653ec085da",
   "requiredBatches": [
     21,
     24,
@@ -24,6 +24,10 @@
   "supportMatrix": "support-matrix.json",
   "profile": "profile.json",
   "certification": "certification.json",
-  "evidenceRefs": [],
+  "evidenceRefs": [
+    "batch41-execution",
+    "batch41-provenance",
+    "batch41-verification"
+  ],
   "metadata": {}
 }

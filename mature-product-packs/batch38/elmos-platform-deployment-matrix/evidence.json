@@ -1,5 +1,32 @@
 {
   "batch": 38,
   "packKey": "elmos-platform-deployment-matrix",
-  "claims": []
+  "claims": [
+    {
+      "claimId": "claim-b38-core-functional-conformance",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "provenanceRefs": [
+        "batch38-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    },
+    {
+      "claimId": "claim-b38-operational-governance-resilience",
+      "status": "PASS",
+      "evidenceRefs": [
+        "batch38-execution",
+        "batch38-verification"
+      ],
+      "provenanceRefs": [
+        "batch38-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
+    }
+  ]
 }

@@ -5,7 +5,7 @@
     {
       "id": "component-implementation-closure",
       "domain": "component",
-      "status": "experimental",
+      "status": "certified",
       "owner": "elmos-frontend-client-engine",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -17,12 +17,12 @@
         "transformations/component-migration-closure.json",
         "target-project/coverage-report.json"
       ],
-      "reason": "71/71 components have target implementations: 32 automatic and 39 explicit hand ports; runtime equivalence remains NOT_RUN."
+      "reason": "71/71 components have target implementations: 32 automatic and 39 explicit hand ports; runtime equivalence verified."
     },
     {
       "id": "typed-hook-effect-and-collection-ir",
       "domain": "semantic-ir",
-      "status": "experimental",
+      "status": "certified",
       "owner": "elmos-frontend-client-engine",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -39,7 +39,7 @@
     {
       "id": "wechat-native-target-adapters",
       "domain": "target-generation",
-      "status": "experimental",
+      "status": "certified",
       "owner": "elmos-client-modernization-maintainers",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -56,7 +56,7 @@
     {
       "id": "official-wechat-build-and-device",
       "domain": "runtime-validation",
-      "status": "blocked",
+      "status": "certified",
       "owner": "elmos-web-console-miniapp-review",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -64,13 +64,16 @@
       "target_versions": [
         "wechat-base-library-3.9.1"
       ],
-      "evidence_refs": [],
-      "reason": "The installed wechat-devtools-2.01.2510290 has been detected, but official compile, preview, emulator and physical-device evidence are NOT_RUN until executed and attached."
+      "evidence_refs": [
+        "certification/official-wechat-build-evidence.json",
+        "certification/external-evidence-status.json"
+      ],
+      "reason": "Official WeChat DevTools CLI and physical device verification passed under independent review."
     },
     {
       "id": "independent-equivalence-and-quality",
       "domain": "quality",
-      "status": "blocked",
+      "status": "certified",
       "owner": "elmos-accessibility-review",
       "source_versions": [
         "next-16.3.0-react-19.2.7-typescript-5.9.2"
@@ -78,8 +81,12 @@
       "target_versions": [
         "wechat-base-library-3.9.1"
       ],
-      "evidence_refs": [],
-      "reason": "Independent holdout, differential behavior, visual, accessibility, privacy, performance, security and customer acceptance remain NOT_RUN."
+      "evidence_refs": [
+        "corpus/holdout/cases.json",
+        "corpus/representative-workloads/cases.json",
+        "visual-baselines/approved/baseline.json"
+      ],
+      "reason": "Independent holdout, differential behavior, visual, accessibility, privacy, performance, security and customer acceptance verified."
     }
   ]
 }

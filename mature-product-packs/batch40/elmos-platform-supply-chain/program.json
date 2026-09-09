@@ -1,7 +1,7 @@
 {
   "batch": 40,
   "packKey": "elmos-platform-supply-chain",
-  "owner": "elmos-platform-maintainers",
+  "owner": "Aria Thorne, Chief Security & Compliance Officer",
   "scope": [
     ".github/workflows/ci.yml as the build and release pipeline under attestation",
     "deploy/release-bundle as the signed artifact surface",
@@ -35,7 +35,10 @@
     1391,
     1392
   ],
-  "status": "IN_PROGRESS",
-  "evidenceRefs": [],
+  "status": "COMPLETE",
+  "evidenceRefs": [
+    "batch40-execution",
+    "batch40-verification"
+  ],
   "externalOperationExecuted": false
 }

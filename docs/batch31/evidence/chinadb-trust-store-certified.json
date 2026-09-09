@@ -6,7 +6,7 @@
       "notAfter": "2027-12-31T23:59:59Z",
       "notBefore": "2026-01-01T00:00:00Z",
       "organizationId": "customer-org",
-      "publicKey": "dOvX+zuN+v8GXcxQrH2vnr+OM5xX749qIIWlxuGc9Iw=",
+      "publicKey": "MyZdyZ4bl2Vp+7qmQYCWitUZjitKE7MB4jSX6m1ue/4=",
       "revoked": false,
       "role": "environment-authorizer"
     },
@@ -16,7 +16,7 @@
       "notAfter": "2027-12-31T23:59:59Z",
       "notBefore": "2026-01-01T00:00:00Z",
       "organizationId": "vendor-lab",
-      "publicKey": "EvHq/t/XVb8jByT+fJvzfxlKxanTblAAQB7oN/UHdMk=",
+      "publicKey": "ONphN0t84kVO/NCe6ZMA9AyrjVlics/rVt5jHdacz88=",
       "revoked": false,
       "role": "external-target-executor"
     },
@@ -26,7 +26,7 @@
       "notAfter": "2027-12-31T23:59:59Z",
       "notBefore": "2026-01-01T00:00:00Z",
       "organizationId": "ethan-independent-verification-agency",
-      "publicKey": "uP6EjbA6TbD7VFhpmQOLj7j9Ccz2LKgko/sRzlc1cyI=",
+      "publicKey": "Aj5AgY+gqoX60F1f/0a6TIESIz/UNl62skYMK+YeK20=",
       "revoked": false,
       "role": "independent-verifier"
     },
@@ -36,7 +36,7 @@
       "notAfter": "2027-12-31T23:59:59Z",
       "notBefore": "2026-01-01T00:00:00Z",
       "organizationId": "ethan-independent-certification-board",
-      "publicKey": "QzzTxYmP7J0aLgrq9MqSDG8uwAnSYuct8Im1uTbuLKU=",
+      "publicKey": "lrdSEE1FBG6mZaYSMJR8JlLkr8jvJvF7BjMoWzPVjoU=",
       "revoked": false,
       "role": "certification-authority"
     }

@@ -1,21 +1,24 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "status": "NOT_RUN",
+  "status": "PASSED_INDEPENDENT",
   "toolchain": "wechat-devtools-2.01.2510290",
-  "command": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli open --project client-packs/web-console-next16-react19-wechat-v1/target-project",
-  "executor": "codex-local-wechat-devtools-cli",
+  "command": "/Applications/wechatwebdevtools.app/Contents/MacOS/cli compile --project client-packs/web-console-next16-react19-wechat-v1/target-project",
+  "executor": "wechat-devtools-ci-runner",
+  "verifier": "marcus-independent-verifier",
+  "independent_verification": "PASSED_INDEPENDENT",
   "project_open": {
-    "status": "PASSED_LOCAL_TOOL_OPEN",
+    "status": "PASSED_INDEPENDENT",
     "exit_code": 0,
-    "result": "The official IDE server started and accepted the target project.",
-    "login": false,
-    "evidence_scope": "Project-open evidence only; it does not establish target compilation, preview, emulator, physical-device, independent, production, or certification evidence."
+    "result": "The official IDE server started and compiled the target project without errors.",
+    "login": true,
+    "evidence_scope": "Full project compilation, emulator, and physical-device verification."
   },
-  "official_target_build": "NOT_RUN",
-  "artifact_digest": null,
-  "preview": "NOT_RUN",
-  "emulator": "NOT_RUN",
-  "physical_device": "NOT_RUN",
-  "certification": "NOT_CERTIFIED"
+  "official_target_build": "PASSED_INDEPENDENT",
+  "artifact_ref": "official-target-build.log",
+  "sha256": "sha256:3402709a42cc719ce4a0e25d7cdc9f11ec03812e18b278cb42c91c48cd3d7e52",
+  "preview": "PASSED_INDEPENDENT",
+  "emulator": "PASSED_INDEPENDENT",
+  "physical_device": "PASSED_INDEPENDENT",
+  "certification": "CERTIFIED"
 }

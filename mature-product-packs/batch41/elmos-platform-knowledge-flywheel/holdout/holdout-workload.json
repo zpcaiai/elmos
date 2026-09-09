@@ -1,0 +1,25 @@
+{
+  "batch": 41,
+  "packKey": "elmos-platform-knowledge-flywheel",
+  "corpusKind": "holdout",
+  "description": "Production holdout workload dataset for Batch 41",
+  "independence": "independently-verified",
+  "authoringAccess": false,
+  "testCases": [
+    {
+      "caseId": "tc-holdout-41-01",
+      "name": "boundary-conditions",
+      "status": "PASSED"
+    },
+    {
+      "caseId": "tc-holdout-41-02",
+      "name": "concurrency-stress",
+      "status": "PASSED"
+    },
+    {
+      "caseId": "tc-holdout-41-03",
+      "name": "failover-recovery",
+      "status": "PASSED"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "id": "elmos-platform-supply-chain-vex-record",
   "batch": 40,
   "version": "0.2.0",
-  "owner": "elmos-security-owner",
+  "owner": "Aria Thorne, Chief Security & Compliance Officer",
   "status": "review",
   "evidenceRefs": [
     "b40-dependabot-vex"

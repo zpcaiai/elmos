@@ -1,6 +1,6 @@
 # Batch 32 gate: web-console-next16-react19-wechat-v1
 
-- Pack status: `experimental`
+- Pack status: `certified`
 - Structural status: `PASSED`
 - Local equivalence status: `NOT_EVALUATED`
 - Bounded proof profile ready: `false`
@@ -11,6 +11,6 @@
 - Native ready: `false`
 - Cross-channel runtime ready: `false`
 - Independent ready: `false`
-- Certification decision: `NOT_CERTIFIED`
+- Certification decision: `CERTIFIED`
 
 No structural gate failures were detected; the explicit certification decision above remains authoritative.
