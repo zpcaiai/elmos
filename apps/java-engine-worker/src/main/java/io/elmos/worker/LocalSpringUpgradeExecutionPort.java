@@ -947,6 +947,11 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                                 + "behavior; a declared dependency alone is not active source evidence.");
             }
             sourceDescription = "Spring Framework " + fingerprint.sourceFrameworkVersion();
+        } else if (SpringRouteCatalog.SourceFamily.JAVA_EE_SERVLET.contractValue().equals(sourceFamily)) {
+            selection = SpringRouteCatalog.selectJavaEeServlet(
+                    fingerprint.sourceFrameworkVersion(), fingerprint.javaVersion(),
+                    fingerprint.buildTool(), targetSpringBoot, targetJava);
+            sourceDescription = "Java EE Servlet " + fingerprint.sourceFrameworkVersion();
         } else if (SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue().equals(sourceFamily)) {
             selection = SpringRouteCatalog.select(
                     fingerprint.springBootVersion(), fingerprint.javaVersion(), fingerprint.buildTool(),
@@ -2236,7 +2241,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     private static boolean isNonBootSpringFamily(String sourceFamily) {
         return SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue().equals(sourceFamily)
-                || SpringRouteCatalog.SourceFamily.SPRING_FRAMEWORK.contractValue().equals(sourceFamily);
+                || SpringRouteCatalog.SourceFamily.SPRING_FRAMEWORK.contractValue().equals(sourceFamily)
+                || SpringRouteCatalog.SourceFamily.JAVA_EE_SERVLET.contractValue().equals(sourceFamily);
     }
 
     /**

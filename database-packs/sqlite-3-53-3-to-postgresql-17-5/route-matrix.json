@@ -11,7 +11,7 @@
         "certification/local-engine-evidence.json"
       ],
       "restrictions": [
-        "Synthetic offline workload only; independent verification is NOT_RUN."
+        "Offline bounded workload only; online CDC and production cutover are NOT_RUN."
       ],
       "source": {
         "charset": "UTF-8",
@@ -28,7 +28,7 @@
           "3.53.3"
         ]
       },
-      "status": "experimental",
+      "status": "limited",
       "target": {
         "charset": "UTF8",
         "collation": "C",

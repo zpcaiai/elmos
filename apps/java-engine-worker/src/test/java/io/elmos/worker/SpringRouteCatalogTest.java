@@ -562,4 +562,21 @@ class SpringRouteCatalogTest {
         assertEquals("1.8x", SpringRouteCatalog.normalizeJava("1.8x"));
         assertEquals("1.", SpringRouteCatalog.normalizeJava("1."));
     }
+
+    @Test void javaEeServletRouteSelectionAndDiagnostics() {
+        var selection = SpringRouteCatalog.selectJavaEeServlet("2.5.0", "17", "maven", "3.5.3", "21");
+        assertEquals("servlet-2.5-jsp-maven-to-boot-3.5.3-java-21", selection.route().routeId());
+        assertEquals(EvidenceStatus.PASSED_LOCAL, selection.evidence());
+        assertEquals(SpringRouteCatalog.SourceFamily.JAVA_EE_SERVLET, selection.route().sourceFamily());
+        assertEquals(EvidenceStatus.NOT_RUN, selection.route().evidenceFor("2.5.0", "11"));
+
+        assertEquals("SERVLET_VERSION_UNRESOLVED",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectJavaEeServlet(
+                                "", "17", "maven", "3.5.3", "21")).code());
+        assertEquals("UNSUPPORTED_SOURCE_SERVLET_VERSION",
+                assertThrows(BlockedException.class,
+                        () -> SpringRouteCatalog.selectJavaEeServlet(
+                                "2.3.0", "17", "maven", "3.5.3", "21")).code());
+    }
 }

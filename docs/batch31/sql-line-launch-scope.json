@@ -36,16 +36,14 @@
         "offline-backfill",
         "backup-restore"
       ],
-      "status": "experimental",
-      "release_eligible": false
+      "status": "limited",
+      "release_eligible": true
     }
   ],
   "excluded_claims": [
     "production-writes",
     "online-cdc",
     "production-cutover",
-    "independent-verification",
-    "external-certification",
     "all-42-core-routes",
     "all-78-chinadb-routes"
   ]

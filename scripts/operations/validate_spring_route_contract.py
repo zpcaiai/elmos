@@ -380,7 +380,7 @@ def parse_catalog() -> list[dict[str, object]]:
         require(source_family is not None, f"CATALOG_ROUTE_SOURCE_FAMILY_MISSING:{route_id}")
         assert source_family is not None
         require(
-            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK"},
+            source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC", "SPRING_FRAMEWORK", "JAVA_EE_SERVLET"},
             f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
         )
         exact_source = re.search(
@@ -399,6 +399,7 @@ def parse_catalog() -> list[dict[str, object]]:
                 "SPRING_BOOT": "spring-boot",
                 "SPRING_MVC": "spring-mvc",
                 "SPRING_FRAMEWORK": "spring-framework",
+                "JAVA_EE_SERVLET": "java-ee-servlet",
             }[source_family.group(1)],
             "build_tool": build_tools[directed_fields.group(1)],
             "target_boot": constant_or_string(directed_fields.group(2), route_id, "target_boot"),

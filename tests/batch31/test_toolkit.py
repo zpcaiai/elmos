@@ -255,7 +255,7 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
 
     def test_release_gate_blocks_engineering_only_pack(self):
-        pack = ROOT / "database-packs" / "sqlite-3-53-3-to-postgresql-17-5"
+        pack = ROOT / "database-packs" / "postgresql-to-dm8"
         result = subprocess.run(
             [
                 sys.executable,
@@ -266,6 +266,19 @@ class ToolkitTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 3)
+
+    def test_release_gate_accepts_release_ready_pack(self):
+        pack = ROOT / "database-packs" / "sqlite-3-53-3-to-postgresql-17-5"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPTS / "run_database_gate.py"),
+                str(pack),
+                "--require-release-ready",
+            ],
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0)
 
     def test_validator_executes_formal_support_schema(self):
         with tempfile.TemporaryDirectory() as td:

@@ -193,11 +193,18 @@ def _routes(snapshot: RepositorySnapshot) -> tuple[dict[str, Any], ...]:
                         navigation.append({"when": result.attrib.get("name", "success"), "kind": "render", "target": (result.text or "").strip() or None, "status": 200, "preserveRequestAttributes": True})
                     found.append(_route(path, "struts2", action.attrib["class"], file, navigation or [{"when": "success", "kind": "render", "target": None, "status": 200, "preserveRequestAttributes": True}]))
         if root is not None and file.path.endswith("web.xml"):
+            servlet_classes: dict[str, str] = {}
+            for servlet_elem in _iter_xml(root, "servlet"):
+                s_name = next((child.text.strip() for child in servlet_elem if _local_name(child.tag) == "servlet-name" and child.text), "")
+                s_class = next((child.text.strip() for child in servlet_elem if _local_name(child.tag) == "servlet-class" and child.text), "")
+                if s_name and s_class:
+                    servlet_classes[s_name] = s_class
             for mapping in _iter_xml(root, "servlet-mapping"):
                 servlet_name = next((child.text.strip() for child in mapping if _local_name(child.tag) == "servlet-name" and child.text), "unknown")
                 pattern = next((child.text.strip() for child in mapping if _local_name(child.tag) == "url-pattern" and child.text), None)
                 if pattern:
-                    found.append(_route(pattern, "servlet", servlet_name, file, [{"when": "REQUEST", "kind": "render", "target": None, "status": 200, "preserveRequestAttributes": True}]))
+                    owner_symbol = servlet_classes.get(servlet_name, servlet_name)
+                    found.append(_route(pattern, "servlet", owner_symbol, file, [{"when": "REQUEST", "kind": "render", "target": None, "status": 200, "preserveRequestAttributes": True}]))
     # Annotation extraction is symbol-aware enough to bind the route to the
     # nearest class, but intentionally leaves composed annotations unknown.
     for file in snapshot.files:

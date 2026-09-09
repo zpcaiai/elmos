@@ -50,7 +50,8 @@ final class SpringRouteCatalog {
     enum SourceFamily {
         SPRING_BOOT("spring-boot"),
         SPRING_MVC("spring-mvc"),
-        SPRING_FRAMEWORK("spring-framework");
+        SPRING_FRAMEWORK("spring-framework"),
+        JAVA_EE_SERVLET("java-ee-servlet");
 
         private final String contractValue;
 
@@ -208,6 +209,12 @@ final class SpringRouteCatalog {
         static RouteRequest springFramework(String sourceSpringFramework, String sourceJava,
                                             String buildTool, String targetBoot, String targetJava) {
             return new RouteRequest(SourceFamily.SPRING_FRAMEWORK, sourceSpringFramework, sourceJava,
+                    buildTool, targetBoot, targetJava);
+        }
+
+        static RouteRequest javaEeServlet(String sourceServletVersion, String sourceJava,
+                                          String buildTool, String targetBoot, String targetJava) {
+            return new RouteRequest(SourceFamily.JAVA_EE_SERVLET, sourceServletVersion, sourceJava,
                     buildTool, targetBoot, targetJava);
         }
     }
@@ -741,7 +748,24 @@ final class SpringRouteCatalog {
                     EvidenceStatus.NOT_RUN, "", "",
                     "Deterministic Core/Context preparation and Boot 4.1.1 pin; bean graph, "
                             + "context ownership, lifecycle and provider semantics require FCM evidence.",
-                    SourceFamily.SPRING_FRAMEWORK)
+                    SourceFamily.SPRING_FRAMEWORK),
+            new SpringRoute(
+                    "servlet-2.5-jsp-maven-to-boot-3.5.3-java-21",
+                    "java-ee-servlet-2-5-to-spring-boot-3-5-3",
+                    "Java EE Servlet 2.5 / JSP / Maven → Boot 3.5.3 / Java 21",
+                    "2.5.0", "3.0.0", Set.of("8", "11", "17", "21"), MAVEN_BUILD_TOOL,
+                    TARGET_BOOT, TARGET_JAVA,
+                    "/rewrite/servlet-2.5-jsp-to-spring-boot-3.5.3.yml",
+                    "io.elmos.openrewrite.Servlet2_5JspToSpringBoot3_5_3Java21",
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    EvidenceStatus.PASSED_LOCAL, "2.5.0", "17",
+                    "Generic Servlet 2.5 / JSP / JSTL to Spring Boot 3.5.3 modernization route. "
+                            + "Automates web.xml servlet/filter/listener mapping to Spring Boot @RestController, "
+                            + "FilterRegistrationBean, and SecurityFilterChain. The exact 2.5.0 / Java 17 tuple "
+                            + "passed local source/target build and web behavior equivalence; customer, holdout "
+                            + "and independent verification remain NOT_RUN.",
+                    SourceFamily.JAVA_EE_SERVLET,
+                    "2.5.0")
     );
 
     static List<SpringRoute> routes() {
@@ -812,6 +836,13 @@ final class SpringRouteCatalog {
                 springFrameworkVersion, javaVersion, buildTool, targetBoot, targetJava));
     }
 
+    /** Select the explicitly declared Java EE Servlet / JSP modernization edge. */
+    static Selection selectJavaEeServlet(String servletVersion, String javaVersion,
+                                         String buildTool, String targetBoot, String targetJava) {
+        return select(RouteRequest.javaEeServlet(
+                servletVersion, javaVersion, buildTool, targetBoot, targetJava));
+    }
+
     static Selection select(RouteRequest request) {
         return selectFrom(ROUTES, request);
     }
@@ -838,6 +869,8 @@ final class SpringRouteCatalog {
         if (source.isEmpty() || "unknown".equals(source.toLowerCase(Locale.ROOT))) {
             String code = family == SourceFamily.SPRING_BOOT
                     ? "SPRING_BOOT_VERSION_UNRESOLVED"
+                    : family == SourceFamily.JAVA_EE_SERVLET
+                    ? "SERVLET_VERSION_UNRESOLVED"
                     : "SPRING_FRAMEWORK_VERSION_UNRESOLVED";
             throw new BlockedException(code,
                     "The " + family.contractValue() + " source version could not be resolved; "
@@ -879,6 +912,8 @@ final class SpringRouteCatalog {
         if (sourceMatches.isEmpty()) {
             String code = family == SourceFamily.SPRING_BOOT
                     ? "UNSUPPORTED_SOURCE_BOOT_VERSION"
+                    : family == SourceFamily.JAVA_EE_SERVLET
+                    ? "UNSUPPORTED_SOURCE_SERVLET_VERSION"
                     : "UNSUPPORTED_SOURCE_SPRING_FRAMEWORK_VERSION";
             throw new BlockedException(code,
                     family.contractValue() + " " + source

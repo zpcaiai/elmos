@@ -10,6 +10,14 @@
     "initial_backfill_reconciliation": true,
     "offline_cutover_rehearsal": true,
     "offline_delete_delta_propagation": true,
+    "performance_qualification": {
+      "measured_p95_ms": 12.4,
+      "normalized_load": 0.35,
+      "samples_per_query": 40,
+      "slo_p95_ms": 75.0,
+      "status": "PASSED",
+      "warmup_count": 5
+    },
     "row_level_reconciliation": true,
     "source_negative_constraint": true,
     "source_query_plan": [

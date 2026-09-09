@@ -1,60 +1,68 @@
 {
-  "schema_version": 1,
-  "pack_key": "postgresql-to-dm8",
-  "version": "0.1.0",
-  "mode": "migration",
-  "status": "research",
-  "owner": "ELMOS Database Migration",
-  "maintenance_owner": "ELMOS ChinaDB Adapter Maintainers",
   "data_owner": "ELMOS Synthetic Fixture Owner",
-  "source": {
-    "engine": "postgresql",
-    "versions": [
-      "17.5"
+  "gates": {
+    "canonical_ir_coverage": 0.95,
+    "data_reconciliation": 1.0,
+    "fingerprint_coverage": 0.95,
+    "p0_correctness": 1.0,
+    "source_map_coverage": 0.95
+  },
+  "maintenance_owner": "ELMOS ChinaDB Adapter Maintainers",
+  "mode": "migration",
+  "owner": "ELMOS Database Migration",
+  "pack_key": "postgresql-to-dm8",
+  "paths": {
+    "canonical_ir": "canonical-ir/model.json",
+    "certification": "certification",
+    "fingerprint": "source-fingerprint",
+    "migration_plan": "migration/data-migration-plan.json",
+    "target_profile": "target-profile/profile.json"
+  },
+  "review_by": "2026-12-08",
+  "schema_version": 1,
+  "scope": {
+    "objects": [
+      "orders-query-contract"
     ],
-    "edition": "community",
+    "schemas": [
+      "public"
+    ],
+    "workload_classes": [
+      "parameterized-select",
+      "ordering",
+      "pagination"
+    ]
+  },
+  "source": {
+    "charset": "UTF8",
+    "collation": "C",
     "dialect": "postgresql",
     "driver_versions": [
       "psql:17.5"
     ],
-    "charset": "UTF8",
-    "collation": "C",
+    "edition": "community",
+    "engine": "postgresql",
+    "extensions": [],
     "timezone": "UTC",
-    "extensions": []
-  },
-  "target": {
-    "engine": "dm8",
     "versions": [
-      "8.1.3.140"
-    ],
-    "edition": "enterprise",
+      "17.5"
+    ]
+  },
+  "status": "experimental",
+  "target": {
+    "charset": "UTF-8",
+    "collation": "BINARY",
     "dialect": "dm8-oracle-compatible",
     "driver_versions": [
       "dm-jdbc:8.1.3.140"
     ],
-    "charset": "UTF-8",
-    "collation": "BINARY",
+    "edition": "enterprise",
+    "engine": "dm8",
+    "extensions": [],
     "timezone": "Asia/Shanghai",
-    "extensions": []
+    "versions": [
+      "8.1.3.140"
+    ]
   },
-  "scope": {
-    "schemas": ["public"],
-    "objects": ["orders-query-contract"],
-    "workload_classes": ["parameterized-select", "ordering", "pagination"]
-  },
-  "paths": {
-    "fingerprint": "source-fingerprint",
-    "canonical_ir": "canonical-ir/model.json",
-    "target_profile": "target-profile/profile.json",
-    "migration_plan": "migration/data-migration-plan.json",
-    "certification": "certification"
-  },
-  "gates": {
-    "fingerprint_coverage": 0.95,
-    "canonical_ir_coverage": 0.95,
-    "source_map_coverage": 0.95,
-    "p0_correctness": 1.0,
-    "data_reconciliation": 1.0
-  },
-  "review_by": "2026-12-08"
+  "version": "0.1.0"
 }
