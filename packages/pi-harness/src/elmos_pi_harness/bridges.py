@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -19,6 +20,31 @@ from .models import (
 )
 from .policy import effective_policy
 from .tool_runtime import ToolRuntime
+
+
+_SENSITIVE_PATTERNS = (
+    (re.compile(r"sk-[a-zA-Z0-9_\-]{16,}"), "[REDACTED_SECRET]"),
+    (re.compile(r"ghp_[a-zA-Z0-9]{20,}"), "[REDACTED_SECRET]"),
+    (re.compile(r"Bearer\s+[a-zA-Z0-9_\-\.]{16,}", re.IGNORECASE), "Bearer [REDACTED_SECRET]"),
+    (re.compile(r"AKIA[0-9A-Z]{16}"), "[REDACTED_SECRET]"),
+)
+
+
+def sanitize_output(text: str, max_bytes: int = 65536) -> str:
+    """Sanitize sensitive tokens and enforce maximum payload size boundaries."""
+    if not isinstance(text, str):
+        text = str(text)
+
+    for pattern, replacement in _SENSITIVE_PATTERNS:
+        text = pattern.sub(replacement, text)
+
+    raw_bytes = text.encode("utf-8", errors="replace")
+    if len(raw_bytes) > max_bytes:
+        truncated_text = raw_bytes[:max_bytes].decode("utf-8", errors="ignore")
+        return truncated_text + f"\n... [TRUNCATED: payload exceeded {max_bytes} bytes safety limit] ..."
+
+    return text
+
 
 
 @dataclass(frozen=True)
@@ -290,10 +316,41 @@ class MCPHarnessBridge:
             else {"allowed": sorted(self.authority.allowed_capabilities)}
         )
 
-    def handle_request(self, request_dict: Mapping[str, Any]) -> dict[str, Any]:
+    def handle_request(self, request_dict: Mapping[str, Any]) -> dict[str, Any] | None:
+        if not isinstance(request_dict, Mapping):
+            return {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32600, "message": "Invalid Request: request must be an object"},
+            }
+
         req_id = request_dict.get("id")
         method = request_dict.get("method")
         params = request_dict.get("params", {})
+
+        if not isinstance(method, str):
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "error": {"code": -32600, "message": "Invalid Request: missing method"},
+            }
+
+        if params is not None and not isinstance(params, Mapping):
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "error": {"code": -32602, "message": "Invalid params: params must be an object"},
+            }
+        params = dict(params or {})
+
+        # Notifications (no id)
+        if method in ("notifications/initialized", "notifications/cancelled", "$/cancelRequest"):
+            if req_id is None:
+                return None
+            return {"jsonrpc": "2.0", "id": req_id, "result": {}}
+
+        if method == "ping":
+            return {"jsonrpc": "2.0", "id": req_id, "result": {}}
 
         if method == "initialize":
             return {
@@ -324,8 +381,23 @@ class MCPHarnessBridge:
             }
 
         elif method == "tools/call":
-            capability = str(params.get("name", ""))
-            arguments = dict(params.get("arguments", {}))
+            capability = params.get("name")
+            if not capability or not isinstance(capability, str) or not capability.strip():
+                return {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "error": {"code": -32602, "message": "Invalid params: missing or invalid 'name'"},
+                }
+            capability = capability.strip()
+
+            raw_args = params.get("arguments", {})
+            if not isinstance(raw_args, Mapping):
+                return {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "error": {"code": -32602, "message": "Invalid params: 'arguments' must be an object"},
+                }
+            arguments = dict(raw_args)
             call_id = str(uuid.uuid4())
 
             try:
@@ -362,11 +434,13 @@ class MCPHarnessBridge:
                         text += str(item)
                 if not text and result.metadata:
                     text = json.dumps(result.metadata)
+
+                sanitized_text = sanitize_output(text)
                 return {
                     "jsonrpc": "2.0",
                     "id": req_id,
                     "result": {
-                        "content": [{"type": "text", "text": text}],
+                        "content": [{"type": "text", "text": sanitized_text}],
                         "isError": is_error,
                     },
                 }
@@ -391,3 +465,54 @@ class MCPHarnessBridge:
             "id": req_id,
             "error": {"code": -32601, "message": f"Method not found: {method}"},
         }
+
+
+def run_mcp_stdio_server(
+    bridge: MCPHarnessBridge,
+    in_stream: Any = None,
+    out_stream: Any = None,
+) -> int:
+    """Run production-grade JSON-RPC line-delimited stdio server for MCP clients."""
+    import sys
+
+    reader = in_stream if in_stream is not None else sys.stdin
+    writer = out_stream if out_stream is not None else sys.stdout
+
+    try:
+        for line in reader:
+            if not line:
+                break
+            line_str = line.strip() if isinstance(line, str) else line.decode("utf-8", errors="replace").strip()
+            if not line_str:
+                continue
+
+            try:
+                request_payload = json.loads(line_str)
+            except Exception as parse_err:
+                err_resp = {
+                    "jsonrpc": "2.0",
+                    "id": None,
+                    "error": {"code": -32700, "message": f"Parse error: {parse_err}"},
+                }
+                writer.write(json.dumps(err_resp) + "\n")
+                writer.flush()
+                continue
+
+            resp = bridge.handle_request(request_payload)
+            if resp is not None:
+                writer.write(json.dumps(resp) + "\n")
+                writer.flush()
+    except (BrokenPipeError, KeyboardInterrupt):
+        return 0
+    except Exception as server_err:
+        err_envelope = {
+            "jsonrpc": "2.0",
+            "id": None,
+            "error": {"code": -32603, "message": f"Stdio server fatal error: {server_err}"},
+        }
+        writer.write(json.dumps(err_envelope) + "\n")
+        writer.flush()
+        return 1
+
+    return 0
+

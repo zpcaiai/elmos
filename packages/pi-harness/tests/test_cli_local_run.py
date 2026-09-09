@@ -44,6 +44,39 @@ class TestCliLocalRun(unittest.TestCase):
         self.assertIn("COMPLETED", output)
         self.assertIn("NOT_CERTIFIED", output)
 
+    def test_cli_doctor(self) -> None:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = main(["doctor", "--json"])
+        self.assertEqual(code, 0)
+        data = json.loads(buf.getvalue())
+        self.assertEqual(data["status"], "HEALTHY")
+        self.assertTrue(data["python_supported"])
+        self.assertTrue(data["sqlite3"])
+        self.assertTrue(data["cas_writable"])
+
+        buf_human = io.StringIO()
+        with redirect_stdout(buf_human):
+            code = main(["doctor"])
+        self.assertEqual(code, 0)
+        self.assertIn("Elmos Pi-Harness Doctor: HEALTHY", buf_human.getvalue())
+        self.assertIn("Python:", buf_human.getvalue())
+        self.assertIn("SQLite:", buf_human.getvalue())
+
+    def test_cli_serve_mcp(self) -> None:
+        import unittest.mock
+        req = '{"jsonrpc": "2.0", "id": 101, "method": "ping"}\n'
+        in_buf = io.StringIO(req)
+        out_buf = io.StringIO()
+        with redirect_stdout(out_buf):
+            with unittest.mock.patch("sys.stdin", in_buf):
+                code = main(["serve-mcp"])
+        self.assertEqual(code, 0)
+        lines = [json.loads(line) for line in out_buf.getvalue().strip().split("\n") if line.strip()]
+        self.assertEqual(len(lines), 1)
+        self.assertEqual(lines[0]["id"], 101)
+        self.assertEqual(lines[0]["result"], {})
+
 
 if __name__ == "__main__":
     unittest.main()

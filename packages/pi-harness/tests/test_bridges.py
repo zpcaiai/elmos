@@ -172,6 +172,60 @@ class TestHarnessBridges(unittest.TestCase):
         self.assertFalse(call_resp["result"]["isError"])
         self.assertEqual(call_resp["result"]["content"][0]["text"], "echo: mcp-call")
 
+    def test_mcp_harness_bridge_sanitize_and_validation(self) -> None:
+        from elmos_pi_harness.bridges import sanitize_output
+        import io
+
+        # 1. Output sanitization
+        leak = "Api key sk-ant-api03-abcdefghijklmnopqrstuvwxyz123456 and token ghp_123456789012345678901234567890123456"
+        clean = sanitize_output(leak)
+        self.assertNotIn("sk-ant-api03", clean)
+        self.assertNotIn("ghp_1234567890", clean)
+        self.assertIn("[REDACTED_SECRET]", clean)
+
+        # Truncation
+        huge_str = "x" * 70000
+        truncated = sanitize_output(huge_str, max_bytes=1000)
+        self.assertIn("[TRUNCATED: payload exceeded 1000 bytes safety limit]", truncated)
+
+        bridge = MCPHarnessBridge(
+            self.tenant,
+            self.task,
+            self.env_id,
+            self.snapshot_id,
+            self.executor,
+            self.authority,
+            self.runtime,
+        )
+
+        # 2. Ping
+        ping_resp = bridge.handle_request({"jsonrpc": "2.0", "id": "p1", "method": "ping"})
+        self.assertEqual(ping_resp["result"], {})
+
+        # 3. Notification (no id)
+        notif_resp = bridge.handle_request({"jsonrpc": "2.0", "method": "notifications/initialized"})
+        self.assertIsNone(notif_resp)
+
+        # 4. Parameter validation failure (-32602)
+        err_resp = bridge.handle_request({"jsonrpc": "2.0", "id": "err1", "method": "tools/call", "params": {}})
+        self.assertEqual(err_resp["error"]["code"], -32602)
+
+        # 5. stdio server streaming loop
+        from elmos_pi_harness.bridges import run_mcp_stdio_server
+        input_data = (
+            '{"jsonrpc": "2.0", "id": 1, "method": "ping"}\n'
+            '{"jsonrpc": "2.0", "method": "notifications/initialized"}\n'
+            '{"jsonrpc": "2.0", "id": 2, "method": "tools/list"}\n'
+        )
+        in_stream = io.StringIO(input_data)
+        out_stream = io.StringIO()
+        run_mcp_stdio_server(bridge, in_stream, out_stream)
+
+        output_lines = [json.loads(line) for line in out_stream.getvalue().strip().split("\n") if line.strip()]
+        self.assertEqual(len(output_lines), 2)
+        self.assertEqual(output_lines[0]["id"], 1)
+        self.assertEqual(output_lines[1]["id"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

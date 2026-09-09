@@ -194,7 +194,17 @@ def build_parser() -> argparse.ArgumentParser:
     local_run.add_argument("--actor-id", default="local-operator", help="actor ID")
     local_run.add_argument("--json", action="store_true", help="output JSON format")
 
+    serve_mcp = sub.add_parser("serve-mcp", help="serve Model Context Protocol (MCP) over stdio")
+    serve_mcp.add_argument("--workspace", default=".", help="workspace directory path")
+    serve_mcp.add_argument("--allowed-tools", default="repo.read,tool.echo", help="comma-separated allowed tools")
+    serve_mcp.add_argument("--server-name", default="elmos-pi-mcp", help="server name")
+    serve_mcp.add_argument("--server-version", default="5.1.0", help="server version")
+
+    doctor = sub.add_parser("doctor", help="system diagnostic and environment health check")
+    doctor.add_argument("--json", action="store_true", help="output JSON format")
+
     return parser
+
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -216,7 +226,139 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 print(json.dumps({"status": "ok", "task": result}, ensure_ascii=False))
         return 0
+
+
+    if args.command == "doctor":
+
+        import sqlite3
+
+        report = {
+            "python_version": sys.version.split()[0],
+            "python_supported": sys.version_info >= (3, 10),
+            "sqlite3": hasattr(sqlite3, "sqlite_version") and bool(sqlite3.sqlite_version),
+            "sqlite_version": getattr(sqlite3, "sqlite_version", "unknown"),
+            "system": sys.platform,
+            "status": "HEALTHY",
+        }
+        with tempfile.TemporaryDirectory(prefix="elmos-doctor-") as tmp:
+            test_file = os.path.join(tmp, "probe.txt")
+            with open(test_file, "w") as f:
+                f.write("ok")
+            report["cas_writable"] = os.path.exists(test_file)
+
+        if not report["python_supported"] or not report["sqlite3"] or not report["cas_writable"]:
+            report["status"] = "UNHEALTHY"
+
+        if getattr(args, "json", False):
+            print(json.dumps(report, indent=2, ensure_ascii=False))
+        else:
+            print(f"Elmos Pi-Harness Doctor: {report['status']}")
+            print(f"  Python: {report['python_version']} (Supported: {report['python_supported']})")
+            print(f"  SQLite: {report['sqlite_version']} (Available: {report['sqlite3']})")
+            print(f"  Storage Writable: {report['cas_writable']}")
+        return 0 if report["status"] == "HEALTHY" else 1
+
+    if args.command == "serve-mcp":
+        from .bridges import MCPHarnessBridge, run_mcp_stdio_server
+        from .models import AuthoritySnapshot, ExecutorIdentity, TextContent, ToolInvocation, ToolResult
+        from .runtime import ExecutionRuntime
+        from .tool_runtime import ToolRegistry
+
+        workspace_path = os.path.abspath(args.workspace)
+        allowed_caps = {c.strip() for c in args.allowed_tools.split(",") if c.strip()}
+
+        tools = ToolRegistry()
+
+        def repo_read_handler(inv: ToolInvocation, policy: Any) -> ToolResult:
+            rel = inv.args.get("path", "")
+            target = os.path.normpath(os.path.join(workspace_path, rel))
+            if not target.startswith(workspace_path) or not os.path.isfile(target):
+                return ToolResult(
+                    call_id=inv.call_id,
+                    items=(TextContent(f"File not found or outside workspace: {rel}"),),
+                    status="failed",
+                    metadata={"path": rel, "error": "file_not_found"},
+                )
+            try:
+                with open(target, "r", encoding="utf-8", errors="replace") as f:
+                    content = f.read(100_000)
+                return ToolResult(
+                    call_id=inv.call_id,
+                    items=(TextContent(content),),
+                    status="completed",
+                    metadata={"path": rel, "bytes": len(content)},
+                )
+            except Exception as ex:
+                return ToolResult(
+                    call_id=inv.call_id,
+                    items=(TextContent(str(ex)),),
+                    status="failed",
+                    metadata={"error": str(ex)},
+                )
+
+        def echo_handler(inv: ToolInvocation, policy: Any) -> ToolResult:
+            msg = str(inv.args.get("message") or inv.args.get("msg", ""))
+            return ToolResult(
+                call_id=inv.call_id,
+                items=(TextContent(f"echo: {msg}"),),
+                status="completed",
+                metadata={"echo": msg},
+            )
+
+        if "repo.read" in allowed_caps:
+            tools.register("repo.read", repo_read_handler, required_capabilities={"repo.read"})
+        if "tool.echo" in allowed_caps:
+            tools.register("tool.echo", echo_handler, required_capabilities={"tool.echo"})
+
+        with tempfile.TemporaryDirectory(prefix="elmos-pi-mcp-") as temp_dir:
+            db_path = os.path.join(temp_dir, "mcp.db")
+            artifact_dir = os.path.join(temp_dir, "artifacts")
+            tenant_id = str(uuid.uuid4())
+            project_id = str(uuid.uuid4())
+            task_id = str(uuid.uuid4())
+
+            with DurableStore(db_path, artifact_root=artifact_dir) as store:
+                store.create_task(
+                    tenant_id,
+                    project_id,
+                    "mcp stdio session",
+                    idempotency_key=f"mcp-{task_id}",
+                    task_id=task_id,
+                    actor_id="mcp-client",
+                )
+                runtime = ExecutionRuntime(store, tools)
+                bound = runtime.bind_environment(
+                    tenant_id,
+                    task_id,
+                    environment_type="local",
+                    config={"workspace": workspace_path},
+                    authority_owner_id=str(uuid.uuid4()),
+                    permission_profile_version="ephemeral-v1",
+                    allowed_capabilities=allowed_caps,
+                    denied_capabilities={"host.exec", "network.egress"},
+                )
+                env_id = bound["environment"]["environment_id"]
+                auth_id = bound["authority"]["authority_snapshot_id"]
+                executor = ExecutorIdentity("mcp-agent", 1, "mcp-registry")
+                runtime.register_executor(tenant_id, env_id, executor)
+                authority = store.get_authority_snapshot(tenant_id, auth_id)
+
+                bridge = MCPHarnessBridge(
+                    tenant_id=tenant_id,
+                    task_id=task_id,
+                    environment_id=env_id,
+                    authority_snapshot_id=auth_id,
+                    executor_identity=executor,
+                    authority=authority,
+                    tool_runtime=runtime.tool_runtime,
+                    server_name=args.server_name,
+                    server_version=args.server_version,
+                )
+                return run_mcp_stdio_server(bridge)
+
+
     if args.command == "local-run":
+
         from .models import AuthoritySnapshot, ExecutorIdentity, TextContent, ToolInvocation, ToolResult
         from .runtime import ExecutionRuntime
         from .tool_runtime import ToolRegistry

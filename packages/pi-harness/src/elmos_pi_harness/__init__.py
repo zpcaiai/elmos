@@ -16,7 +16,7 @@ from .models import (
     ToolResult,
     WorkspaceLease,
 )
-from .bridges import ClaudeHarnessBridge, CodexHarnessBridge, MCPHarnessBridge
+from .bridges import ClaudeHarnessBridge, CodexHarnessBridge, MCPHarnessBridge, run_mcp_stdio_server, sanitize_output
 from .external_gates import ExternalGateLedger, GateExecution, ReleaseCandidate
 from .immutable_evidence import (
     S3ImmutableEvidenceArchive,
@@ -27,19 +27,26 @@ from .postgres import PostgresConfig, PostgresMigrator, PostgresStore
 from .qualification import implementation_inventory
 from .repair import (
     CounterexampleShrinker,
+    DeterministicRepairStrategy,
     FailureClassification,
     FailureClassifier,
+    OscillationDetector,
     RepairProposal,
+    RepairStrategy,
+    RollbackAdvisor,
+    RollbackRecommendation,
     SelfHealingController,
     admit_repair,
 )
 from .runtime import ExecutionRuntime
+
 
 __all__ = [
     "AuthoritySnapshot",
     "ClaudeHarnessBridge",
     "CodexHarnessBridge",
     "CounterexampleShrinker",
+    "DeterministicRepairStrategy",
     "DurableStore",
     "EnvironmentRef",
     "ExecutionRuntime",
@@ -50,12 +57,16 @@ __all__ = [
     "GateExecution",
     "InstructionEnvelope",
     "MCPHarnessBridge",
+    "OscillationDetector",
     "PostgresConfig",
     "PostgresMigrator",
     "PostgresStore",
     "ProtocolCapabilities",
     "ReleaseCandidate",
     "RepairProposal",
+    "RepairStrategy",
+    "RollbackAdvisor",
+    "RollbackRecommendation",
     "S3ImmutableEvidenceArchive",
     "S3ImmutableEvidenceConfig",
     "SelfHealingController",
@@ -64,4 +75,7 @@ __all__ = [
     "WorkspaceLease",
     "admit_repair",
     "implementation_inventory",
+    "run_mcp_stdio_server",
+    "sanitize_output",
 ]
+

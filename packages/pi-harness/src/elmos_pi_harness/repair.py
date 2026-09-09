@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
+
 
 
 @dataclass(frozen=True)
@@ -177,6 +180,117 @@ class CounterexampleShrinker:
         return "\n".join(result)
 
 
+@dataclass(frozen=True)
+class RepairStrategy:
+    action: str
+    repair_recipe: str
+    confidence: float
+    requires_human_approval: bool
+
+
+class DeterministicRepairStrategy:
+    """Derives bounded deterministic repair actions based on failure classification."""
+
+    @staticmethod
+    def recommend(classification: FailureClassification) -> RepairStrategy:
+        fclass = classification.failure_class
+        if fclass == "POLICY_DENIAL":
+            return RepairStrategy(
+                action="VERIFY_UPPER_POLICY_PERMISSION",
+                repair_recipe="Check upper_policy allowed capabilities or remove unauthorized tool invocation from execution plan.",
+                confidence=0.95,
+                requires_human_approval=True,
+            )
+        elif fclass == "STALE_GENERATION":
+            return RepairStrategy(
+                action="SYNC_EXECUTOR_GENERATION_AND_LEASE",
+                repair_recipe="Refresh authority snapshot, synchronize executor generation, and acquire a new capability lease.",
+                confidence=0.98,
+                requires_human_approval=False,
+            )
+        elif fclass == "SYNTAX_ERROR":
+            return RepairStrategy(
+                action="APPLY_AST_PARSER_AUTODETECTION",
+                repair_recipe="Pinpoint precise syntax defect line/col from diagnostic and apply targeted formatting or syntax patch.",
+                confidence=0.90,
+                requires_human_approval=False,
+            )
+        elif fclass == "TEST_FAILURE":
+            return RepairStrategy(
+                action="COUNTEREXAMPLE_DRIVEN_TEST_FIX",
+                repair_recipe="Isolate failing assertion delta, check input domain assumptions, and adjust implementation without altering test semantics.",
+                confidence=0.85,
+                requires_human_approval=False,
+            )
+        elif fclass == "TIMEOUT":
+            return RepairStrategy(
+                action="EXPONENTIAL_TIMEOUT_BACKOFF_OR_SHARD",
+                repair_recipe="Increase task timeout by 1.5x backoff factor or shard input batch into smaller granular units.",
+                confidence=0.80,
+                requires_human_approval=False,
+            )
+        return RepairStrategy(
+            action="DIAGNOSTIC_LOG_INSPECTION",
+            repair_recipe="Inspect runtime diagnostic traces and review suspect source files.",
+            confidence=0.60,
+            requires_human_approval=True,
+        )
+
+
+class OscillationDetector:
+    """Detects repeating error cycles (doom loops) across repair generations."""
+
+    def __init__(self, history_window: int = 5) -> None:
+        self.history_window = history_window
+        self.signatures: list[str] = []
+
+    @staticmethod
+    def compute_signature(classification: FailureClassification) -> str:
+        norm_summary = re.sub(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", "<UUID>", classification.summary)
+        norm_summary = re.sub(r"0x[0-9a-fA-F]+", "<ADDR>", norm_summary)
+        norm_summary = re.sub(r"\d+", "<NUM>", norm_summary)
+        payload = f"{classification.failure_class}:{norm_summary}:{sorted(classification.suspect_files)}"
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+    def record_and_check(self, classification: FailureClassification) -> tuple[bool, str]:
+        sig = self.compute_signature(classification)
+        if sig in self.signatures:
+            idx = self.signatures.index(sig)
+            cycle_length = len(self.signatures) - idx
+            self.signatures.append(sig)
+            return True, f"Oscillation detected: repeated failure signature {sig} with period {cycle_length}"
+        self.signatures.append(sig)
+        if len(self.signatures) > self.history_window:
+            self.signatures.pop(0)
+        return False, ""
+
+
+@dataclass(frozen=True)
+class RollbackRecommendation:
+    should_rollback: bool
+    recommended_generation: int
+    reason: str
+
+
+class RollbackAdvisor:
+    """Advises on rolling back when subsequent generations introduce regressions."""
+
+    @staticmethod
+    def evaluate(attempts: Sequence[SelfHealingAttempt]) -> RollbackRecommendation:
+        if len(attempts) < 2:
+            return RollbackRecommendation(False, 0, "Insufficient generation history")
+        curr = attempts[-1].failure
+        prev = attempts[-2].failure
+        severity = {"POLICY_DENIAL": 5, "STALE_GENERATION": 4, "SYNTAX_ERROR": 3, "TEST_FAILURE": 2, "TIMEOUT": 2, "UNHANDLED_ERROR": 1}
+        if severity.get(curr.failure_class, 1) > severity.get(prev.failure_class, 1):
+            return RollbackRecommendation(
+                should_rollback=True,
+                recommended_generation=attempts[-2].executor_generation,
+                reason=f"Degradation detected: severity rose from {prev.failure_class} to {curr.failure_class}",
+            )
+        return RollbackRecommendation(False, attempts[-1].executor_generation, "No severe degradation detected")
+
+
 @dataclass
 class SelfHealingAttempt:
     attempt_number: int
@@ -184,17 +298,28 @@ class SelfHealingAttempt:
     failure: FailureClassification
     shrunk_counterexample: str
     repair_prompt: str
+    strategy: RepairStrategy | None = None
+    signature: str = ""
+    cycle_detected: bool = False
 
 
 class SelfHealingController:
-    """Coordinates failure attribution, generation bumping, and bounded auto-repair."""
+    """Coordinates failure attribution, generation bumping, doom-loop prevention, and bounded auto-repair."""
 
-    def __init__(self, *, max_attempts: int = 3, initial_generation: int = 0) -> None:
+    def __init__(
+        self,
+        *,
+        max_attempts: int = 3,
+        initial_generation: int = 0,
+        oscillation_detector: OscillationDetector | None = None,
+    ) -> None:
         if max_attempts < 1:
             raise ValueError("max_attempts must be at least 1")
         self.max_attempts = max_attempts
         self.current_generation = initial_generation
         self.attempts: list[SelfHealingAttempt] = []
+        self.detector = oscillation_detector or OscillationDetector()
+        self.cycle_detected: bool = False
 
     @property
     def remaining_budget(self) -> int:
@@ -202,7 +327,7 @@ class SelfHealingController:
 
     @property
     def can_repair(self) -> bool:
-        return self.remaining_budget > 0
+        return self.remaining_budget > 0 and not self.cycle_detected
 
     def record_failure(
         self,
@@ -212,20 +337,28 @@ class SelfHealingController:
     ) -> SelfHealingAttempt:
         classification = FailureClassifier.classify(raw_output, exit_code=exit_code)
         shrunk = CounterexampleShrinker.shrink(raw_output)
-        attempt_num = len(self.attempts) + 1
+        strategy = DeterministicRepairStrategy.recommend(classification)
+        is_cycle, cycle_reason = self.detector.record_and_check(classification)
+        if is_cycle:
+            self.cycle_detected = True
 
+        attempt_num = len(self.attempts) + 1
         self.current_generation += 1
+        sig = OscillationDetector.compute_signature(classification)
 
         suspect_note = (
             f"\nSuspected files: {', '.join(classification.suspect_files)}"
             if classification.suspect_files
             else ""
         )
+        cycle_note = f"\nWARNING: {cycle_reason}\n" if is_cycle else ""
+
         repair_prompt = (
             f"=== Auto-Repair Attempt {attempt_num}/{self.max_attempts} (Gen {self.current_generation}) ===\n"
             f"Objective: {objective}\n"
             f"Failure Class: {classification.failure_class}\n"
-            f"Summary: {classification.summary}{suspect_note}\n\n"
+            f"Summary: {classification.summary}{suspect_note}\n"
+            f"Recommended Strategy: {strategy.action} ({strategy.repair_recipe}){cycle_note}\n\n"
             f"Minimal Shrunk Counterexample:\n```\n{shrunk}\n```\n"
             f"Please address this specific root cause without modifying unaffected behavior."
         )
@@ -236,7 +369,38 @@ class SelfHealingController:
             failure=classification,
             shrunk_counterexample=shrunk,
             repair_prompt=repair_prompt,
+            strategy=strategy,
+            signature=sig,
+            cycle_detected=is_cycle,
         )
         self.attempts.append(attempt)
         return attempt
+
+    def suggest_rollback(self) -> RollbackRecommendation:
+        return RollbackAdvisor.evaluate(self.attempts)
+
+    def export_repair_evidence(self, final_status: str) -> dict[str, Any]:
+        records = []
+        for att in self.attempts:
+            records.append({
+                "attempt": att.attempt_number,
+                "generation": att.executor_generation,
+                "failure_class": att.failure.failure_class,
+                "summary": att.failure.summary,
+                "signature": att.signature,
+                "strategy": att.strategy.action if att.strategy else None,
+                "cycle_detected": att.cycle_detected,
+            })
+        data = {
+            "schema_version": "1.0.0",
+            "total_attempts": len(self.attempts),
+            "max_attempts": self.max_attempts,
+            "final_status": final_status,
+            "cycle_detected": self.cycle_detected,
+            "attempts": records,
+        }
+        digest = f"sha256:{hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()}"
+        data["evidence_digest"] = digest
+        return data
+
 
