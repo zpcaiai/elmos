@@ -39,11 +39,11 @@
     {
       "name": "secretLeaks",
       "evaluated": true,
-      "observed": 11,
+      "observed": 0,
       "evidenceRefs": [
         "b40-secret-scan"
       ],
-      "note": "11 actionable findings await triage across 33 scanned roots; working tree only, git history not examined"
+      "note": "0 actionable findings await triage across 32 scanned roots; working tree only, git history not examined"
     },
     {
       "name": "tamperedArtifactsAccepted",
@@ -54,17 +54,22 @@
     },
     {
       "name": "testIntegrityViolations",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to continue-on-error enforcement in the exact CI workflow; independent corpus and signed evidence integrity remain NOT_RUN"
     },
     {
       "name": "unresolvedLicenseBlocks",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 427,
+      "evidenceRefs": [
+        "b40-dependency-inventory",
+        "b40-repository-controls"
+      ],
+      "note": "427 external direct components have no approved license decision; 26 also lack observed license metadata. Metadata never implies legal approval, and unknown decision state fails closed"
     },
     {
       "name": "unsignedProductionArtifacts",

@@ -1,0 +1,11 @@
+# Batch 40 supply-chain and compliance controls. GitHub branch protection must
+# still require these owners externally; this file alone is not an approval.
+/.github/workflows/ @giftfuture
+/Makefile.batch40 @giftfuture
+/config/batch40-* @giftfuture
+/docs/batch40/ @giftfuture
+/engines/security-compliance-engine/ @giftfuture
+/mature-product-packs/batch40/ @giftfuture
+/schemas/batch40/ @giftfuture
+/scripts/batch40_* @giftfuture
+/tests/batch40/ @giftfuture

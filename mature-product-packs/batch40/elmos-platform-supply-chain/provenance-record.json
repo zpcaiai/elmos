@@ -4,9 +4,198 @@
   "batch": 40,
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
+  "status": "draft",
+  "evidenceRefs": [
+    "b40-dependency-inventory",
+    "b40-secret-scan",
+    "b40-dependabot-alerts",
+    "b40-local-assurance",
+    "b40-repository-controls"
+  ],
+  "records": [
+    {
+      "recordType": "provenance",
+      "schemaVersion": 1,
+      "id": "b40-dependency-inventory-provenance",
+      "batch": 40,
+      "packKey": "elmos-platform-supply-chain",
+      "evidenceId": "b40-dependency-inventory",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
+      "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
+      "runReport": {
+        "path": "evidence/execution/b40-dependency-inventory.json",
+        "sha256": "sha256:8f4ae9efabda9ce6c2f5044cdd17967463e5f759362ccdc29ea45e6a7e4c5e12",
+        "bytes": 409919
+      },
+      "analyzer": {
+        "path": "scripts/batch40_dependency_inventory.py",
+        "sha256": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4",
+        "reportedDigest": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4"
+      },
+      "environment": {
+        "capturedAt": "2026-09-07T04:48:44.018957Z",
+        "pythonVersion": "3.14.6",
+        "system": "Darwin",
+        "machine": "arm64"
+      },
+      "limitations": [
+        "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
+        "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
+        "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
+        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure.",
+        "License metadata is copied only from exact npm lock entries and exact direct component POM bytes already present in the selected local Maven repository; missing declarations remain explicit.",
+        "Observed license metadata is not SPDX normalization, legal approval, risk acceptance, or certification."
+      ],
+      "externalOperationExecuted": false,
+      "independentVerification": "NOT_RUN"
+    },
+    {
+      "recordType": "provenance",
+      "schemaVersion": 1,
+      "id": "b40-secret-scan-provenance",
+      "batch": 40,
+      "packKey": "elmos-platform-supply-chain",
+      "evidenceId": "b40-secret-scan",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
+      "replayCommand": "python3 scripts/batch40_secret_scan.py --scope config/batch40-secret-scan-scope.json --allowlist config/secret-scan-allowlist.json",
+      "runReport": {
+        "path": "evidence/execution/b40-secret-scan.json",
+        "sha256": "sha256:bda0fd99144a4ea2ea58295f6cfbba0f7e56d1dea1c30d47843df9d586e268a8",
+        "bytes": 939048
+      },
+      "analyzer": {
+        "path": "scripts/batch40_secret_scan.py",
+        "sha256": "sha256:45d7e59ce22c9371c8f61153dd2241a2b14ee6fa0c38bfb515b791f5117f9182",
+        "reportedDigest": "sha256:45d7e59ce22c9371c8f61153dd2241a2b14ee6fa0c38bfb515b791f5117f9182"
+      },
+      "environment": {
+        "capturedAt": "2026-09-06T19:49:22.280026Z",
+        "pythonVersion": "3.14.6",
+        "system": "Darwin",
+        "machine": "arm64"
+      },
+      "limitations": [
+        "secretLeakCount counts actionable findings only. High-entropy strings are reported as advisory because on a large front-end and code-generation surface they are overwhelmingly hashes, ids and encoded assets; they still require triage but do not gate.",
+        "Scans the working tree only; git history is not examined, so a credential removed in a later commit is not detected.",
+        "Detection is rule and entropy based, so a credential that matches no rule and has low entropy is not found. A zero result bounds risk, it does not eliminate it.",
+        "Binary, undecodable and oversized files are skipped, and the pruned directory names and scanned roots are listed under coverage; anything outside those roots was not examined.",
+        "No secret is validated against its provider, so a finding may be an already-revoked credential."
+      ],
+      "externalOperationExecuted": false,
+      "independentVerification": "NOT_RUN"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "batch40-dependabot-alerts-provenance",
+      "batch": 40,
+      "packKey": "elmos-platform-supply-chain",
+      "evidenceId": "b40-dependabot-alerts",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "owner": "elmos-platform-maintainers",
+      "source": {
+        "repository": "zpcaiai/elmos",
+        "commit": "6299f7dabcd162fbe0904df59dace6e53e7cb08c",
+        "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
+        "queriedAt": "2026-09-06T18:55:03Z",
+        "rawSnapshot": {
+          "path": "evidence/execution/b40-dependabot-alerts.raw.json",
+          "sha256": "sha256:3f9f28842d7c21a89a17f0e8120ed0d621d4821b7767f3c2da0a45b426afbdea",
+          "bytes": 1269668
+        }
+      },
+      "runReport": {
+        "path": "evidence/execution/b40-dependabot-alerts.json",
+        "sha256": "sha256:9cdd8404e1dbca980fe87fe78af760ebf2043aa62c697d223c7c0e9036945ee9",
+        "bytes": 65564
+      },
+      "analyzer": {
+        "path": "scripts/batch40_dependabot_alerts.py",
+        "sha256": "sha256:10c89ff8061c4d8fdf8777d1abec7816f1bd0ca9f56cab79445f2c6193e15858"
+      },
+      "limitations": [
+        "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
+        "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
+        "The snapshot is self-attested evidence until an independently authorized verifier signs it.",
+        "The patch-SLA metric covers fixed Dependabot alerts only; dismissed and auto-dismissed alerts require separate risk-acceptance review and are excluded rather than counted as compliant."
+      ],
+      "externalOperationExecuted": true,
+      "independentVerification": "NOT_RUN"
+    },
+    {
+      "recordType": "provenance",
+      "schemaVersion": 1,
+      "id": "b40-local-assurance-provenance",
+      "batch": 40,
+      "packKey": "elmos-platform-supply-chain",
+      "evidenceId": "b40-local-assurance",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
+      "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+      "runReport": {
+        "path": "evidence/execution/b40-local-assurance.json",
+        "sha256": "sha256:1fbf14a8407ccf925d1b4c984c385d198decc91990e1a6d76274c3bb8a9bf2ee",
+        "bytes": 13016
+      },
+      "analyzer": {
+        "path": "scripts/batch40_local_assurance.py",
+        "sha256": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7",
+        "reportedDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7"
+      },
+      "environment": {
+        "capturedAt": "2026-09-07T04:48:45.381172Z",
+        "pythonVersion": "3.14.6",
+        "system": "Darwin",
+        "machine": "arm64"
+      },
+      "limitations": [
+        "The measurement covers the exact CI workflow and claims currently declared by this pack; it is not whole-product or whole-supply-chain coverage.",
+        "Repository-local checks are self-attested and do not replace an independent assessor, independent corpus, accountable approval, or external signature.",
+        "The action-pin audit proves immutable references in the workflow text; it does not independently attest GitHub runner images or action publisher provenance.",
+        "Freshness means evidence timestamps fall inside the configured local window; it does not establish that an external verifier reproduced the evidence.",
+        "The checker excludes its own claim from evidence-graph metrics to avoid a recursive digest; the exact non-recursive claim and narrative sets are content-addressed in inputs."
+      ],
+      "externalOperationExecuted": false,
+      "independentVerification": "NOT_RUN"
+    },
+    {
+      "recordType": "provenance",
+      "schemaVersion": 1,
+      "id": "b40-repository-controls-provenance",
+      "batch": 40,
+      "packKey": "elmos-platform-supply-chain",
+      "evidenceId": "b40-repository-controls",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
+      "replayCommand": "uv run --quiet python scripts/batch40_repository_controls.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+      "runReport": {
+        "path": "evidence/execution/b40-repository-controls.json",
+        "sha256": "sha256:28a55bb12893749cc74db1c9076382de53a889d826d79030d73ece429f3d6d57",
+        "bytes": 492097
+      },
+      "analyzer": {
+        "path": "scripts/batch40_repository_controls.py",
+        "sha256": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3",
+        "reportedDigest": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3"
+      },
+      "environment": {
+        "capturedAt": "2026-09-07T04:49:27.631708Z",
+        "pythonVersion": "3.14.6",
+        "system": "Darwin",
+        "machine": "arm64"
+      },
+      "limitations": [
+        "This is bounded repository-owned engineering evidence, not a provider scan, production signature, isolated-builder attestation, independent assessment, approval, or certification.",
+        "SAST, DAST/IAST, container, IaC, signing, and isolated-builder adapters remain NOT_CONFIGURED or NOT_RUN; the local result proves their typed fail-closed boundary only.",
+        "The model registry covers tracked deployable files with the configured extensions; remote registries, runtime downloads, and embedded model services are not enumerated.",
+        "Draft VEX records preserve dismissed and open alerts as UNDER_INVESTIGATION and do not establish deployment reachability or NOT_AFFECTED status.",
+        "CODEOWNERS expresses review ownership but branch protection and actual review approvals remain external evidence."
+      ],
+      "externalOperationExecuted": false,
+      "independentVerification": "NOT_RUN"
+    }
+  ],
   "metadata": {},
   "packKey": "elmos-platform-supply-chain"
 }

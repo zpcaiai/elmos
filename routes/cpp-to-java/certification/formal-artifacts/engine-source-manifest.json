@@ -3722,10 +3722,10 @@
       "sha256": "sha256:5e18f050035342e431b073e621bc98b6dd7c535654e2a5a200735a3925e03c2c"
     },
     {
-      "bytes": 535730,
+      "bytes": 535576,
       "captured_path": "certification/formal-artifacts/engine-sources/scripts/batch29/validate_route.py",
       "repository_path": "scripts/batch29/validate_route.py",
-      "sha256": "sha256:148d93016d59b955db824282260726e04ce20d989c9db7ee0940eb0be72f42cf"
+      "sha256": "sha256:c9de011a77ba905b211104a90d6bf113c534ba18a9662ec9c6084dfda5e97a91"
     },
     {
       "bytes": 57333,

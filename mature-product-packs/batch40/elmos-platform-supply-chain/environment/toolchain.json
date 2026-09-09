@@ -1,13 +1,10 @@
 {
-  "capturedAt": "2026-08-06T11:27:26.315541Z",
-  "os": "Linux 6.8.0-124-generic",
-  "machine": "aarch64",
-  "pythonVersion": "3.10.12",
+  "capturedAt": "2026-09-07T04:49:27.653317Z",
+  "os": "Darwin 25.6.0",
+  "machine": "arm64",
+  "pythonVersion": "3.14.6",
   "pythonImplementation": "CPython",
-  "gitVersion": "git version 2.34.1",
-  "opensslVersion": "OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)",
-  "repositoryRevision": "2c9c668fd559011da3016e939c73fa7359cec44e",
-  "artifactRootsClean": true,
-  "uncommittedTrackedPathCount": 0,
-  "cleanlinessNote": "no tracked file under ['pom.xml', 'contracts'] differs from HEAD (untracked files were not enumerated)"
+  "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
+  "evidenceBoundary": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "independentVerification": "NOT_RUN"
 }

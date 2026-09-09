@@ -4,9 +4,272 @@
   "batch": 40,
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
+  "status": "draft",
+  "evidenceRefs": [
+    "b40-local-assurance",
+    "b40-repository-controls"
+  ],
+  "records": [
+    {
+      "controlId": "B40-CI-LEAST-PRIVILEGE",
+      "statement": "The CI workflow grants only repository-content read permission.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-ACTION-PINS",
+      "statement": "Every external GitHub Action is pinned to an immutable commit.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-CHECKOUT-CREDENTIALS",
+      "statement": "Every checkout removes the workflow token from local Git configuration.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-BOUNDED-JOBS",
+      "statement": "Every CI job has an explicit positive timeout.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-STATIC-RUNNERS",
+      "statement": "Every CI job selects a literal, non-floating runner label.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-TRUSTED-EVENTS",
+      "statement": "The CI workflow does not execute through pull_request_target.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-NO-SOFT-FAILURES",
+      "statement": "No job or step in the exact CI workflow weakens failure propagation with continue-on-error.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-THREAT-MODEL-COVERAGE",
+      "statement": "Every expected supply-chain threat has assets, boundaries, controls, evidence requirements, ownership, and residual risk.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EVIDENCE-REFS",
+      "statement": "Every claim evidence reference resolves.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-PROVENANCE-REFS",
+      "statement": "Every claim has resolvable provenance.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EXTERNAL-AUTHORITY",
+      "statement": "Every recorded external operation has authorization.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CLAIM-BOUNDARIES",
+      "statement": "Every passing claim states its limitations.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EVIDENCE-FRESHNESS",
+      "statement": "Referenced execution evidence is current.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-REPOSITORY-CONTROL-SCOPE",
+      "statement": "The local control scope and external NOT_RUN boundary are exact.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-ai-model-supply-chain",
+        "b40-artifact-container-signing",
+        "b40-container-kubernetes-iac-scanning",
+        "b40-dast-iast-integration",
+        "b40-independent-security-assessment",
+        "b40-isolated-trusted-builder",
+        "b40-psirt-security-incident",
+        "b40-sast-integration",
+        "b40-secure-code-review-approval",
+        "b40-slsa-provenance",
+        "b40-vex-applicability"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-SECURE-REVIEW-OWNERSHIP",
+      "statement": "Every sensitive Batch 40 path has an explicit reviewer owner and a private reporting policy.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-secure-code-review-approval"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-PSIRT-LIFECYCLE",
+      "statement": "The PSIRT lifecycle is owned, bounded, non-automatic, and closure requires verification evidence.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-psirt-security-incident"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-LICENSE-DECISION-QUEUE",
+      "statement": "Every external direct component is retained in a fail-closed legal review queue; no approval is inferred.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-STATIC-AND-IAC-ADAPTER-BOUNDARY",
+      "statement": "SAST, container, and IaC adapter contracts fail closed until an approved provider is configured.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-sast-integration",
+        "b40-container-kubernetes-iac-scanning"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-ACTIVE-TEST-AUTHORIZATION",
+      "statement": "Active application-security tests require target authorization and remain unconfigured.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-dast-iast-integration"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-ISOLATED-BUILDER-POLICY",
+      "statement": "Critical builds require independent assessment and deny automatic production authorization.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-isolated-trusted-builder"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CONTENT-ADDRESSED-PROVENANCE",
+      "statement": "Local evidence provenance is content-addressed and the verifier rejects digest tampering.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-slsa-provenance",
+        "b40-artifact-container-signing"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-INDEPENDENT-ASSESSMENT-BOUNDARY",
+      "statement": "Independent assessment requires a distinct verifier; no repository check can self-promote it.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-independent-security-assessment"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-AI-MODEL-ARTIFACT-REGISTRY",
+      "statement": "Every tracked deployable model artifact must have an owner, digest, and provenance reference.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-ai-model-supply-chain"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-VEX-SAFE-MAPPING",
+      "statement": "Dependabot state is mapped to draft VEX without inferring NOT_AFFECTED from dismissal.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-vex-applicability"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    }
+  ],
   "metadata": {},
   "packKey": "elmos-platform-supply-chain"
 }

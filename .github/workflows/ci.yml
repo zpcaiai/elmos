@@ -280,7 +280,9 @@ jobs:
           python3.11 -m pip install --disable-pip-version-check
           'jsonschema==4.25.1' 'uv==0.11.16'
       - name: Install locked dependencies
-        run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+        run: |
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          pnpm --dir apps/web-console install --frozen-lockfile
       - name: Bind locked Z3 solver
         run: |
           chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3

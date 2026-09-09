@@ -42,6 +42,18 @@ def _source_unary(tmp_path: Path, body: str) -> Path:
     return path
 
 
+def test_php_missing_function_uses_cross_language_failure_contract(
+    tmp_path: Path,
+) -> None:
+    source = _source(tmp_path, "    return $price + $tax;")
+
+    with pytest.raises(
+        RouteError,
+        match=r"FUNCTION_NOT_FOUND:__elmos_missing_function__$",
+    ):
+        analyze(source, "php", "__elmos_missing_function__")
+
+
 def test_php_local_binding_lifts_to_let(tmp_path: Path) -> None:
     source = _source(
         tmp_path,

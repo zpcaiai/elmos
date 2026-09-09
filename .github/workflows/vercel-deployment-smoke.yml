@@ -33,6 +33,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.ELMOS_DEPLOYMENT_SHA }}
+
+      - name: Bind checkout to deployment source
+        shell: bash
+        run: |
+          checkout_sha="$(git rev-parse HEAD)"
+          if [[ "$checkout_sha" != "$ELMOS_DEPLOYMENT_SHA" ]]; then
+            echo "::error::checkout SHA $checkout_sha does not match deployment SHA $ELMOS_DEPLOYMENT_SHA"
+            exit 1
+          fi
 
       - name: Resolve exact successful Vercel deployment
         if: ${{ !inputs.deployment_url }}

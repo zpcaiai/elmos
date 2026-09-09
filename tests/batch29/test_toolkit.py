@@ -2550,7 +2550,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 38)
+        self.assertEqual(len(swift_definition_names), 40)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},

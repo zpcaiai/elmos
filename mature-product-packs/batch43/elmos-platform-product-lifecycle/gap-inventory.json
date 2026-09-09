@@ -24,226 +24,274 @@
   "skillCount": 20,
   "blockingCount": 23,
   "openCount": 21,
+  "repositoryBlockingCount": 17,
+  "repositoryOpenCount": 20,
+  "externalGateBlockingCount": 6,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "evidence-manifest.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.sig has not been produced"
     },
     {
       "category": "provenance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "pack.json artifactDigest is still the zero digest"
     },
     {
       "category": "provenance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "pack.json environmentDigest is still the zero digest"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-automated-upgrade-tooling is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-compatibility-test-matrix is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-customer-upgrade-readiness is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-database-migration-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-deprecation-removal is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-event-schema-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-feature-flag-progressive-enable is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-product-lifecycle-factory is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-product-lifecycle-gate is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-psp-uir-schema-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-public-api-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-recipe-pack-extension-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-release-channel-governance is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-release-documentation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-rolling-mixed-version-upgrade is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-runner-protocol-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-sdk-compatibility is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-security-fix-backport is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-support-eol-policy is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b43-version-specification is only experimental in the support matrix"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "backportValidationRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "compatibilityMatrixPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "deprecationOwnerCoverage has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "migrationGuideAccuracyRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "mixedVersionPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "rollbackPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "upgradePassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unsupportedVersionPromotions has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "irreversibleUpgradeWithoutApproval has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "runnerProtocolSafetyRegressions has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "schemaDataLoss has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "expiredFeatureFlags has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unpatchedSupportedCriticalVulnerabilities has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "testIntegrityViolations has not been evaluated"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "holdout corpus is empty"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "representative corpus is empty"
     },
     {
       "category": "approval",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "no accountable approver is recorded on the certification"
     },
     {
       "category": "status",
       "severity": "open",
+      "responsibility": "external-gate",
       "detail": "certification status is NOT_RUN"
     }
   ]

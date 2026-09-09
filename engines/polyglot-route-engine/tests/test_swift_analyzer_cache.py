@@ -632,6 +632,52 @@ def test_swift_build_step_preserves_process_io_environment_and_cwd(tmp_path: Pat
     }
 
 
+def test_swift_build_step_drains_success_at_poll_boundary(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class BoundaryProcess:
+        pid = 41_099
+        returncode: int | None = None
+        calls = 0
+
+        def communicate(self, **_kwargs: object) -> tuple[str, str]:
+            self.calls += 1
+            if self.calls == 1:
+                self.returncode = 0
+                raise subprocess.TimeoutExpired(["boundary-process"], 1)
+            return "boundary-stdout", "boundary-stderr"
+
+        def poll(self) -> int | None:
+            return self.returncode
+
+    process = BoundaryProcess()
+    monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        native,
+        "_wait_for_swift_build_session_exit",
+        lambda *_args, **_kwargs: True,
+    )
+    monkeypatch.setattr(
+        native,
+        "_attempt_swift_build_session_cleanup",
+        lambda *_args, **_kwargs: pytest.fail("successful boundary exit must not be cleaned"),
+    )
+
+    completed = native._run_swift_build_step(
+        ["boundary-process"],
+        cwd=tmp_path,
+        environment=dict(os.environ),
+        timeout=10,
+        failure="SWIFT_BUILD_BOUNDARY",
+    )
+
+    assert process.calls == 2
+    assert completed.returncode == 0
+    assert completed.stdout == "boundary-stdout"
+    assert completed.stderr == "boundary-stderr"
+
+
 def test_swift_build_libproc_process_count_is_bounded(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -127,6 +127,50 @@
       "evidenceRefs": [
         "b40-dependabot-alerts"
       ]
+    },
+    {
+      "claimId": "b40-local-assurance-controls",
+      "statement": "The repository-owned Batch 40 assurance run evaluated 13 exact CI and evidence-graph controls; 0 controls failed.",
+      "scope": {
+        "workflow": ".github/workflows/ci.yml",
+        "threatModel": "config/batch40-supply-chain-threat-model.json",
+        "pack": "mature-product-packs/batch40/elmos-platform-supply-chain",
+        "claimCount": 4,
+        "controlCount": 13,
+        "freshnessWindowDays": 30
+      },
+      "limitations": [
+        "This run covers the exact CI workflow and current Batch 40 pack; it does not cover the whole product or supply chain.",
+        "Repository-owned self-attested evidence does not replace an independent assessor, independent corpus, approval or signature.",
+        "The action pin audit checks immutable references; it does not attest runner images or action-publisher provenance.",
+        "Freshness checks prove local artifact recency, not external reproduction.",
+        "The checker excludes this claim from the evidence claim-count comparison to avoid a recursive evidence digest."
+      ],
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ]
+    },
+    {
+      "claimId": "b40-repository-control-contracts",
+      "statement": "The repository-owned Batch 40 control run evaluated 11 fail-closed controls across 11 capabilities; 11 capabilities have bounded local implementation evidence and 0 controls failed.",
+      "scope": {
+        "capabilityCount": 11,
+        "controlCount": 11,
+        "sourceTargetCount": 11031,
+        "containerIacTargetCount": 60,
+        "modelArtifactCount": 0,
+        "dependabotAlertCount": 290
+      },
+      "limitations": [
+        "This is bounded repository engineering evidence, not provider execution, an external scan, a signature, provenance attestation or independent verification.",
+        "SAST, DAST, IAST, RASP and multiple provider controls remain NOT_CONFIGURED or NOT_RUN where the pack records them as such.",
+        "The model registry reports no governed model artifacts and therefore does not establish model supply-chain assurance.",
+        "The draft VEX preserves dismissed and open findings as UNDER_INVESTIGATION; it is not an authorized risk acceptance.",
+        "CODEOWNERS presence is repository evidence only; branch-protection enforcement remains an external repository setting."
+      ],
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ]
     }
   ],
   "packKey": "elmos-platform-supply-chain"

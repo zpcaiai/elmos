@@ -190,11 +190,13 @@ class DependabotGovernanceTest(unittest.TestCase):
             "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/"
             "examples/project-output-example/project/package.json",
         )
-        with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaisesRegex(ValueError, "manifest is unavailable"):
-                MODULE.build_registry(
-                    "zpcaiai/elmos", [value], repo_root=Path(directory)
-                )
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            self.assertRaisesRegex(ValueError, "manifest is unavailable"),
+        ):
+            MODULE.build_registry(
+                "zpcaiai/elmos", [value], repo_root=Path(directory)
+            )
 
     def test_apply_resume_skips_an_already_closed_alert(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
