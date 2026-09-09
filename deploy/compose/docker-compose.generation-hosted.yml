@@ -1,0 +1,38 @@
+# Hosted generation dependencies for closed local drills.
+# This file does not certify a cloud provider, a public IdP, or production DR.
+services:
+  generation-hosted-postgres:
+    image: postgres:17.5
+    environment:
+      POSTGRES_USER: elmos_hosted
+      POSTGRES_PASSWORD: elmos_hosted_drill
+      POSTGRES_DB: generation_hosted
+    ports:
+      - "55432:5432"
+    command:
+      - postgres
+      - -c
+      - ssl=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elmos_hosted -d generation_hosted"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  generation-hosted-postgres-restore:
+    image: postgres:17.5
+    environment:
+      POSTGRES_USER: elmos_hosted
+      POSTGRES_PASSWORD: elmos_hosted_drill
+      POSTGRES_DB: generation_restore
+    ports:
+      - "55433:5432"
+    command:
+      - postgres
+      - -c
+      - ssl=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elmos_hosted -d generation_restore"]
+      interval: 5s
+      timeout: 3s
+      retries: 10

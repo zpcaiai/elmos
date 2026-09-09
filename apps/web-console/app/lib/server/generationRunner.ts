@@ -56,6 +56,8 @@ import {
   LocalRunnerCredentialError,
   verifyLocalRunnerServiceCredential,
 } from "./localRunnerServiceCredential";
+import { rejectLocalRunnerInProduction } from "./hostedJobToken";
+import { authorizeGeneration, OrganizationError } from "./organizationSelfService";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -626,6 +628,16 @@ export function authorize(
   if (hasAccountCookie) {
     try {
       const account = accountSessionFromRequest(request, permission);
+      if (process.env.ELMOS_HOSTED_RUNNER_ENABLED === "true") {
+        try {
+          authorizeGeneration(account.principal.organizationId, account.principal.actorId);
+        } catch (organizationError) {
+          if (organizationError instanceof OrganizationError) {
+            throw new GenerationRunnerError(organizationError.status, organizationError.code);
+          }
+          throw organizationError;
+        }
+      }
       return {
         tenantId: account.principal.organizationId,
         actor: account.principal.actorId,
@@ -640,6 +652,14 @@ export function authorize(
   }
   if (process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true") {
     throw new GenerationRunnerError(401, "ACCOUNT_SESSION_REQUIRED");
+  }
+  try {
+    rejectLocalRunnerInProduction();
+  } catch (error) {
+    if (error instanceof Error && "code" in error) {
+      throw new GenerationRunnerError(503, String((error as { code: string }).code));
+    }
+    throw error;
   }
   if (process.env.NODE_ENV === "production") {
     try {

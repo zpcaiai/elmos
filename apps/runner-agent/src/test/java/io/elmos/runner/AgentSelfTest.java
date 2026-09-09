@@ -26,6 +26,7 @@ public final class AgentSelfTest {
         try {
             jsonRoundTrips();
             jsonRejectsHostileInput();
+            jobTokenRejectsReplayAndCrossTenant(scratch);
             configFailsClosed();
             imagePinningIsEnforced();
             containerFlagsAreComplete();
@@ -86,6 +87,62 @@ public final class AgentSelfTest {
         check("json rejects unterminated string", throwsJson("{\"a\":\"b"));
         check("json rejects bad escape", throwsJson("{\"a\":\"\\x\"}"));
         check("json rejects deep nesting", throwsJson("[".repeat(200) + "]".repeat(200)));
+    }
+
+    static void jobTokenRejectsReplayAndCrossTenant(Path scratch) throws Exception {
+        var pair = java.security.KeyPairGenerator.getInstance("Ed25519").generateKeyPair();
+        Path publicPem = scratch.resolve("job-token.ed25519.public.pem");
+        String encoded = java.util.Base64.getEncoder().encodeToString(pair.getPublic().getEncoded());
+        Files.writeString(publicPem, "-----BEGIN PUBLIC KEY-----\n" + encoded + "\n-----END PUBLIC KEY-----\n");
+        JobTokenVerifier verifier = new JobTokenVerifier(publicPem, "dispatcher-1");
+        String token = mintJobToken(pair.getPrivate(), "tenant-a");
+        Map<String, Object> claims = verifier.verify(token, "generate", "tenant-a");
+        check("job token tenant bound", "tenant-a".equals(claims.get("tenant")));
+        check("job token replay rejected", throwsToken(() -> verifier.verify(token, "generate", "tenant-a")));
+        String other = mintJobToken(pair.getPrivate(), "tenant-b");
+        check("job token cross-tenant rejected", throwsToken(() -> verifier.verify(other, "generate", "tenant-a")));
+        check("job token mutable image rejected", throwsToken(() -> {
+            JobTokenVerifier hostile = new JobTokenVerifier(publicPem, "dispatcher-1");
+            hostile.verify(mintJobToken(pair.getPrivate(), "tenant-a", "busybox:latest"), "generate", "tenant-a");
+        }));
+    }
+
+    private static String mintJobToken(java.security.PrivateKey privateKey, String tenant) throws Exception {
+        return mintJobToken(privateKey, tenant,
+                "ghcr.io/elmos/generation-runner@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    }
+
+    private static String mintJobToken(java.security.PrivateKey privateKey, String tenant, String image) throws Exception {
+        String header = b64Job("{\"alg\":\"EdDSA\",\"kid\":\"dispatcher-1\",\"typ\":\"ELMOS-JOB\"}");
+        String payload = b64Job("{\"actor\":\"actor-one\",\"aud\":\"elmos-runner-agent\",\"exp\":4102444800,"
+                + "\"iat\":1700000000,\"image\":\"" + image + "\",\"iss\":\"elmos-job-dispatcher\","
+                + "\"job\":\"job-0123456789abcdef\",\"jti\":\"jti-" + java.util.UUID.randomUUID()
+                + "\",\"scope\":[\"generate\"],\"tenant\":\"" + tenant + "\",\"v\":1}");
+        java.security.Signature signer = java.security.Signature.getInstance("Ed25519");
+        signer.initSign(privateKey);
+        signer.update((header + "." + payload).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return header + "." + payload + "." + java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(signer.sign());
+    }
+
+    private static String b64Job(String json) {
+        return java.util.Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    private static boolean throwsToken(Checked tokenCall) {
+        try {
+            tokenCall.run();
+            return false;
+        } catch (IllegalArgumentException ignored) {
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @FunctionalInterface
+    private interface Checked {
+        void run() throws Exception;
     }
 
     static void configFailsClosed() {

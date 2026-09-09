@@ -32,12 +32,12 @@
 |---|---|---|
 | Java 21 / Spring Boot | ✅ 支持 | PostgreSQL 17.5 + JWT/OIDC |
 | Python 3.12 / FastAPI | ✅ 支持 | PostgreSQL 17.5 + JWT/OIDC |
-| C# / .NET 10 / ASP.NET Core | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| TypeScript / NestJS-Fastify | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Go / net-http | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Kotlin / Ktor | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| Rust / Axum | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
-| PHP | ⚠️ **单实体** | PostgreSQL 17.5 + JWT/OIDC |
+| C# / .NET 10 / ASP.NET Core | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
+| TypeScript / NestJS-Fastify | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
+| Go / net-http | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
+| Kotlin / Ktor | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
+| Rust / Axum | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
+| PHP | ✅ 请求契约支持；需当前 SHA 矩阵回执 | PostgreSQL 17.5 + JWT/OIDC |
 
 验证覆盖：8 目标 × JWT/OIDC 共 16 个生产 Profile，含真实 PostgreSQL 起库、
 迁移、鉴权负向路径（错签名 / 错 audience / 错 issuer / 缺租户声明被拒）、
@@ -45,10 +45,9 @@ CRUD、以及 RLS 跨租户读被阻断。
 
 **必须同时说明的边界**：
 
-- 六个目标是**单实体精确边界**，多实体请求会**失败关闭**而不是静默降级——
-  这是刻意设计，但客户必须在售前就知道
+- 八个目标的请求契约都接受多实体；2026-07-28 固化矩阵只对 Java/Python 跑了多实体，其余六语言的当前 SHA 多实体回执在重放完成前不得对外称为已测
 - 生成的 starter 在未选择生产 Profile 时默认使用内存存储且不带身份（RISK-SYNTHESIS-001）
-- 外部托管 PostgreSQL、真实 IdP、云部署、恢复/DR、独立用户验收保持 `NOT_RUN`
+- 外部托管 PostgreSQL、公开 IdP、云部署、恢复/DR、独立用户验收保持 `NOT_RUN`
 
 **售卖方式**：自助订阅（免费体验 / 月付 / 年付）。
 
@@ -104,8 +103,9 @@ CRUD、以及 RLS 跨租户读被阻断。
 ## 4. 常见问法的标准答案
 
 **Q：你们支持多少种语言？**
-A：项目生成支持 8 个目标技术栈，其中 Java 和 Python 支持多实体与关系，
-另外六个当前是单实体边界。跨语言整库转换在路线图上，目前不对外承诺。
+A：项目生成支持 8 个目标技术栈，请求契约均接受多实体与关系。
+Java/Python 有已固化的多实体生产矩阵回执；其余六语言需当前 SHA 重放后才能
+按已测对外陈述。跨语言整库转换在路线图上，目前不对外承诺。
 
 **Q：能把我们的老系统整体迁移到新语言吗？**
 A：现在不能。整库跨语言转换只在纯函数与受限管线上有验证证据，
