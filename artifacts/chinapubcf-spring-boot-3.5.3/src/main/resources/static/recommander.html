@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChinaPub 推荐图书</title>
+  <link rel="stylesheet" href="style/app.css">
+  <script src="script/app.js" defer></script>
+</head>
+<body data-page="recommendations">
+<header><div><p class="eyebrow">ChinaPub</p><h1>你的图书与推荐</h1></div><nav><a href="index.html">返回书库</a><button id="logout" class="ghost">退出</button></nav></header>
+<main>
+  <section class="panel"><h2>已评分图书</h2><div id="purchased" class="book-grid" aria-live="polite"></div></section>
+  <section class="panel"><h2>综合推荐</h2><div id="recommended" class="book-grid" aria-live="polite"></div></section>
+  <p id="recommendation-message" role="status"></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "requestedTarget": "spring-boot-3.5.3",
+  "detectedSource": "java-ee-servlet-2.5-jsp",
+  "requestedRoute": "java-ee-servlet-2.5-jsp-to-spring-boot-3.5.3",
+  "existingElmosExactRoute": false,
+  "existingSpringUpgradePackApplicable": false,
+  "reason": "The source contains no Spring or Spring Boot application and has no reproducible build definition.",
+  "repositorySpecificTargetImplemented": true,
+  "repositorySpecificLocalTests": "PASS",
+  "genericReusableRoute": "NOT_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED"
+}

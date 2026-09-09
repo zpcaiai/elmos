@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChinaPub 图书推荐</title>
+  <link rel="stylesheet" href="style/app.css">
+  <script src="script/app.js" defer></script>
+</head>
+<body data-page="home">
+<header>
+  <div>
+    <p class="eyebrow">Spring Boot 3.5.3</p>
+    <h1>互动出版社图书推荐引擎</h1>
+  </div>
+  <nav><a href="register.html">注册</a><button id="logout" class="ghost" hidden>退出</button></nav>
+</header>
+
+<main>
+  <section class="panel" id="login-panel">
+    <h2>登录</h2>
+    <form id="login-form">
+      <label>电邮或用户名<input name="email" autocomplete="username" required></label>
+      <label>密码<input name="usrpwd" type="password" autocomplete="current-password" required></label>
+      <button type="submit">登录</button>
+    </form>
+    <p id="login-message" role="status"></p>
+  </section>
+
+  <section class="panel">
+    <div class="section-heading">
+      <div><h2>图书信息</h2><p id="account">未登录</p></div>
+      <a id="recommend-link" class="button-link" href="recommander.html" hidden>查看已购及推荐图书</a>
+    </div>
+    <form id="rating-form">
+      <div id="books" class="book-grid" aria-live="polite"></div>
+      <button id="save-ratings" type="submit" hidden>保存评分</button>
+    </form>
+    <p id="rating-message" role="status"></p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-09-09T07:42:00+08:00",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "target": {
+    "springBoot": "3.5.3",
+    "java": "21.0.11",
+    "maven": "3.9.11",
+    "embeddedTomcat": "10.1.42"
+  },
+  "build": {
+    "command": "JAVA_HOME=<jdk-21> mvn -B --no-transfer-progress clean verify",
+    "result": "PASS",
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "jarSha256": "9fef94195dd693b0a6215bf6d543c8a3fbb8ce5453f47fe380b9042031926ffd"
+  },
+  "runtime": {
+    "result": "PASS",
+    "health": "UP",
+    "contextPath": "/chinapubcf",
+    "bookPageCount": 10,
+    "legacyLogin": "matrix",
+    "newUserId": 22,
+    "ratingRecordsWritten": 2,
+    "purchasedCount": 2,
+    "recommendationCount": 3,
+    "exercised": ["register", "legacy and new login", "session", "catalog", "ratings", "recommendations", "health", "graceful shutdown"]
+  },
+  "browser": {
+    "result": "PASS_ON_PRE_FINAL_BUILD",
+    "journey": "register/login -> rate two books -> save -> view purchased and recommended books",
+    "browser": "Codex in-app browser",
+    "finalArtifactRerun": "BLOCKED_WORKSTATION_LOCKED",
+    "note": "The final artifact is covered by integration and live HTTP evidence; the earlier visible journey is not represented as final-artifact browser evidence."
+  },
+  "elmosBusinessLine": {
+    "command": "mvn -pl apps/java-engine-worker -Dtest=SpringCapabilityFingerprintTest,SpringRouteCatalogTest test",
+    "result": "PASS",
+    "tests": 44,
+    "requestedSourceRoute": "java-ee-servlet-2.5-jsp-to-spring-boot-3.5.3",
+    "catalogDecision": "UNSUPPORTED_EXACT_ROUTE",
+    "genericRouteImplementation": "NOT_IMPLEMENTED"
+  },
+  "notRun": [
+    "source Java 6/Tomcat 7 baseline",
+    "real MySQL 8 runtime and migration",
+    "independent holdout corpus",
+    "load and performance",
+    "external security testing",
+    "deployment and rollback",
+    "final-artifact visible browser rerun",
+    "independent verification"
+  ],
+  "certification": "NOT_CERTIFIED"
+}
