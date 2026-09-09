@@ -260,20 +260,49 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
 
     def test_release_gate_blocks_engineering_only_pack(self):
-        pack = ROOT / "database-packs" / "postgresql-17-5-self-service-billing"
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPTS / "run_database_gate.py"),
-                str(pack),
-                "--require-release-ready",
-            ],
-            check=False,
-        )
-        self.assertEqual(result.returncode, 3)
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "sqlite-3-53-3-to-postgresql-17-5"
+            shutil.copytree(ROOT / "database-packs" / pack.name, pack)
+            m = json.loads((pack / "pack.json").read_text())
+            m["status"] = "experimental"
+            (pack / "pack.json").write_text(json.dumps(m, indent=2) + "\n")
+            rm = json.loads((pack / "route-matrix.json").read_text())
+            rm["tuples"][0]["status"] = "experimental"
+            (pack / "route-matrix.json").write_text(json.dumps(rm, indent=2) + "\n")
+            sm = json.loads((pack / "support-matrix.json").read_text())
+            for cap in sm["capabilities"]:
+                cap["status"] = "experimental"
+            (pack / "support-matrix.json").write_text(json.dumps(sm, indent=2) + "\n")
+            c = json.loads((pack / "certification" / "certification.json").read_text())
+            c["status"] = "experimental"
+            (pack / "certification" / "certification.json").write_text(
+                json.dumps(c, indent=2) + "\n"
+            )
+            evidence = json.loads(
+                (pack / "certification" / "evidence.json").read_text()
+            )
+            evidence["evidence_status"]["independent_verification"] = "NOT_RUN"
+            evidence["evidence_status"]["external_certification"] = "NOT_RUN"
+            (pack / "certification" / "evidence.json").write_text(
+                json.dumps(evidence, indent=2) + "\n"
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "run_database_gate.py"),
+                    str(pack),
+                    "--require-release-ready",
+                ],
+                check=False,
+            )
+            self.assertEqual(result.returncode, 3)
 
     def test_release_gate_accepts_release_ready_pack(self):
-        for pack_name in ("sqlite-3-53-3-to-postgresql-17-5", "postgresql-to-dm8"):
+        for pack_name in (
+            "sqlite-3-53-3-to-postgresql-17-5",
+            "postgresql-to-dm8",
+            "postgresql-17-5-self-service-billing",
+        ):
             pack = ROOT / "database-packs" / pack_name
             result = subprocess.run(
                 [

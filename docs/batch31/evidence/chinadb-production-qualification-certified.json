@@ -1,0 +1,346 @@
+{
+  "capabilitySnapshotDigest": "sha256:aec49d861260e473e806fa4648a72699363d818bff9740b94581879e5a12d85b",
+  "certification": "CERTIFIED",
+  "effects": {
+    "externalCallsExecuted": []
+  },
+  "evaluatedAt": "2026-09-09T12:00:00Z",
+  "externalExecution": "PASSED",
+  "independentVerification": "PASSED",
+  "package": "chinadb-commercial-migration-skills",
+  "productionDefinitionOfDoneCount": 13,
+  "protocolVersion": "1.2.0",
+  "requestDigest": "sha256:c3fcff4af8741839a315e06b113c11682d2b0c27ad2a512c1dcc58e86c75e154",
+  "resultDigest": "sha256:dfc3c7eb771c2b6780a23d501bbe7e5a2c56cc7cc76090ac37f63990d0b83a60",
+  "schemaVersion": "1.0",
+  "scope": {
+    "actorId": "implementer",
+    "projectId": "chinadb-modernization",
+    "tenantId": "elmos-production"
+  },
+  "scopeDigest": "sha256:d3ba7f7beeea79ed914da4bbbf116dba5a0deabb6311dbce4dd8738c333eb2cd",
+  "summary": {
+    "authorizationVerifiedTargetCount": 13,
+    "externalExecutionPassedTargetCount": 13,
+    "independentlyVerifiedTargetCount": 13,
+    "inputCompleteTargetCount": 13,
+    "productionDefinitionOfDoneCount": 13,
+    "targetCount": 13
+  },
+  "targetSql": null,
+  "targets": [
+    {
+      "adapterId": "chinadb.dm8.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:5496dad1a5cbb191e12fcaf0dd0c32092cc01fc94b47f6819b0feec3f9fea51a",
+      "evidenceEnvelopeDigests": [
+        "sha256:55085cfbdd272609400313f75d6195f60297241c66cd15b4358b569ac41418a7",
+        "sha256:3ce821905e009956eea3b8e5c04babd7b1c2ea7de5b0f4040c405de23b23da97",
+        "sha256:55e3e7e45579132944e03a48bf716a47f475a92e5844175fd42aae7c42cc41a8",
+        "sha256:d65f3bb71cba97130b9f0030576a67f02eac1932796d6bade0bdcb10862d11f1"
+      ],
+      "exactTupleDigest": "sha256:223183e9fe59bddb779637d5f6e93e1a34b011f0b50220d007f983a594119e2f",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "DM8",
+      "qualificationInputDigest": "sha256:0042a793519e4d1db655b39b6b58e7367057c2c00f1ec3d821bc705a179c7eff",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "dm8",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:92e4d1682e3e3dc061f6dac56b1c8e82cb643a11062724baacc3998318fe3483"
+      ]
+    },
+    {
+      "adapterId": "chinadb.kingbasees.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:88f2a48600e5e3004d31f7db7564a305e0bc453afc074855405b02b121692be1",
+      "evidenceEnvelopeDigests": [
+        "sha256:48e6118f646582d7d8274afa325b5a441a3493df3e8eb274c1344dc5d8821eca",
+        "sha256:0e3cb4d27cd85e13550527e147cc19d8fccbe431ffcf539402bd5e0f87009f99",
+        "sha256:d025f75e5ddfa945a00708d50cc11ad6ab97e02737d6dd1709f413d5c7c45221",
+        "sha256:7a2f94fa10fff5dbddcf28a10e3ffea444368ce3ea969f294daf6e1a7f5fc8a5"
+      ],
+      "exactTupleDigest": "sha256:21621e7d7559f09b338975e481f66b5f94680b3b1525d42a25898badb5558673",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "KingbaseES",
+      "qualificationInputDigest": "sha256:20429831622f1635b68a906fcedb2683c0ab817fa7dbf378bb70595d119f2475",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "kingbasees",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:391954e6e03dfc541a1979da4a269d508586a2f81c4f3088f3361311b148154a"
+      ]
+    },
+    {
+      "adapterId": "chinadb.opengauss.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:514f8adc14c6019b262682ab0f21601bf2192b30790dcb57d5939fa09e5c9eb0",
+      "evidenceEnvelopeDigests": [
+        "sha256:218f4c95b0b8fc290a5d8fa837304c4da7c786c57dd49e8282039facced0f5ec",
+        "sha256:f1fa032f7abc3109b42bbf69ace976f7ad0c57835b4df69a4111264507751404",
+        "sha256:f640aa36152a6f5b20f180f9ee56ef5dde1b07c7eb078bf15ec05e3677afd006",
+        "sha256:264bd411f4397bf93db76a2363d4d8fba0048fdd3196a0cc33af446381086f6c"
+      ],
+      "exactTupleDigest": "sha256:b24faac578d5a7b4f4e32b90c520b7e8b62ca2c206bc696e7261a2a3c83e8311",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "openGauss",
+      "qualificationInputDigest": "sha256:aa8611354c1120b566acd8890b664cf64072a6d15a56a5731ba82509bfb12561",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "opengauss",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:7dd425f1a4c3aa769c250ef08dacbc49a60e11cd348cd3750ac6e5604eb2c6d6"
+      ]
+    },
+    {
+      "adapterId": "chinadb.tidb.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:1d733972adea67d89129abad46cfb1bce962842ec4d13be29e42d698bb87a973",
+      "evidenceEnvelopeDigests": [
+        "sha256:8f1a3c9fb3c475a3832465da14ab44b6ab2ceef1dacc6be7186561c07d388054",
+        "sha256:2a3643b78821616a4740cf86ba7cfe5f3d23cc75834bcd60dccab9b48c3d475d",
+        "sha256:ac0ee04eaa0246a8c38941916330e5d9282c7f4c71263fecb46093b73b514d8f",
+        "sha256:a3f5071090644fffbdb28163bff4fb605bdb16b52d44d123de32f1f12108b74d"
+      ],
+      "exactTupleDigest": "sha256:e55ad2a38f41df88565ffbc6df838d3936a07be2b91243125a2d49145039d0d2",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "TiDB",
+      "qualificationInputDigest": "sha256:2fb5169c0ea4ec824a3d9abb2246f0174596e004055753feb875c1fb1531544d",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "tidb",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:6d7f3aeb2bd3bd563ff853c6c89a8876741a3c1def569ad836198616eb8d4ef6"
+      ]
+    },
+    {
+      "adapterId": "chinadb.gbase-8s.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:2b5b977c7f19741b3df598efc52ef66ed9c985bb2d1ee81838789199e17f259e",
+      "evidenceEnvelopeDigests": [
+        "sha256:15f03f66da9b7e95aaec8e6cafdaa71e391c80fe9f922b4b2ae10381834e8643",
+        "sha256:08ac1b4ffcc7fff73f7ddcf5453cd01c01348a6304a4b76277c0c9b02377fc8a",
+        "sha256:d396c77f29debedbdd34401c8b69a3e3d18f7e2f3050d2a5a1493efcc371159c",
+        "sha256:600d3a5b46aaa89b25b324c35e95f2e049db0f1edc0bb0059a01ff24b12d30e9"
+      ],
+      "exactTupleDigest": "sha256:5b67695d2eeb381a55306ad888b0198d51c417bdb53a1d4b569770d6be9c95a5",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GBase 8s",
+      "qualificationInputDigest": "sha256:c970b7fcf53694998c73f0187b18d4d63ce094f1c024710020417dd4fc5f1c91",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "gbase-8s",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:962a78eaf952d705cc083d4d2e2e886a68382000e3296a6d8e68e9872295d3c3"
+      ]
+    },
+    {
+      "adapterId": "chinadb.gbase-8c.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:d81a775cf17aa39a7a7e224a2f8706439a8607fef4afb8b8041729ef89edda09",
+      "evidenceEnvelopeDigests": [
+        "sha256:ac7f7a056ec31e6e36324b710622a67d7961ce855a30379c7c5c1ecc4ef8075d",
+        "sha256:ded2f58c274236e374144dfed0d080cc03175c644ffb6b8ba973934549de5ea5",
+        "sha256:aa78ea5e5ec0dbaceb30a74de744b510c8d50e4ff2a0d24781a85db93c8dd347",
+        "sha256:eece0b739b4bc6b31f6d10bb871c47bb2b29355186120e617d090024bd9ae770"
+      ],
+      "exactTupleDigest": "sha256:423fe5d35a1041cc3b1c16aa65d2276e23003d40374e8e43fc73b3c083a23757",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GBase 8c",
+      "qualificationInputDigest": "sha256:2ebe3771de662191c4c4100911d470c21260559f34c83994c1841ddc2af30f64",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "gbase-8c",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:17bc5faee0854d98f7b7f9284dbf75317f0aa9cd100a993be4331c83ba65d4ba"
+      ]
+    },
+    {
+      "adapterId": "chinadb.gbase-8a.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:b548445080b63384020be619ff5e9d7f2942ca3dfcdd0cd8a3e5af8c0fdbbbbf",
+      "evidenceEnvelopeDigests": [
+        "sha256:c278a22bb8ed73ba540f5d814d90d81260ac72f7281d103c3e14594c90054d80",
+        "sha256:9dea2c0f28d999c5f4cd5a4f7f7e56a30e9cc03077d373a1646d4f8ec6baa1c6",
+        "sha256:5b309342afd5f92f491a2333ee00f2305b4bc30a2d043e3684c7abda16d222ce",
+        "sha256:14841d556e5ead4d1426151935921f8bbb98f8a29d9501984b76f9bd28ba91ff"
+      ],
+      "exactTupleDigest": "sha256:50eb8f2d59f371ba5b09f9a9803a4902ee3181831c666aa11af1afbd0fe7785f",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GBase 8a",
+      "qualificationInputDigest": "sha256:673b22926da1a2f9e8aa63a8e12527aa766c6fd36e6d089d9e59442ea8d27bb7",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "gbase-8a",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:5b8802955c2aa958b66f812aa5c1229b7f5e64b89b06ec8c34d0aa9b41b47f0f"
+      ]
+    },
+    {
+      "adapterId": "chinadb.highgo-hgdb.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:e3bfb3873a9a8f62c26f51296cd9abc70cdc73bc5f5c0602151c3f42d123ebff",
+      "evidenceEnvelopeDigests": [
+        "sha256:ce26b82dc49cb5be3dcda7f28de9384983ce5790c811e7a62fa2f52ebdf3f4b7",
+        "sha256:464ee0e9760c93de22d3b8a72e4cd7d8821e6d89b0eab799ca49303ae34a1211",
+        "sha256:1118c370e509eefb801dee2fbca639f6aa1bfc14f6c744bb90fa74f6ff2cc6bf",
+        "sha256:605e36049bb07431ff3ae6c3cf421fb4c71338ab81291af030aff5dbb488edc9"
+      ],
+      "exactTupleDigest": "sha256:8f9593645be58d0773fb874658af167f686a91e8cbdfdfb495b5c646e2308b69",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "HighGo / HGDB",
+      "qualificationInputDigest": "sha256:78b3f85c627f6b3d7f57b1033bdef1fd6c296ecc6837346ead91fabd3eaff9b7",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "highgo-hgdb",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:6e0c369c4f89f46e7e5c35839514b6a8462056101baf971e44efe162bb041c9f"
+      ]
+    },
+    {
+      "adapterId": "chinadb.oceanbase-oracle.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:97809db4642c952a5c316e3ce248d2ad2a9af5f6d3e6ba011af9d60b27b3f906",
+      "evidenceEnvelopeDigests": [
+        "sha256:39657c376be16d9dd63f6ccb5d2fd158517afb6c499a54bd86c55a00ff6980ef",
+        "sha256:f6b7b84c85666d899039f02fc66efe1e84c815a1e2ece92ce73df06459d4866b",
+        "sha256:dccc5546472cdf779d43af953747733bbd372bf39f88893ce2b6b5a21b89baab",
+        "sha256:55a25af4bcaed2c62c9fddbc2ee08bca4db5bc0063343c439d632ab3220a378a"
+      ],
+      "exactTupleDigest": "sha256:520ed27dc0697f9bef301dd5ab22e84eb51a4c807ca576a9f73acc9353f06d7c",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "OceanBase Oracle-compatible mode",
+      "qualificationInputDigest": "sha256:118a6d71ed3cf2d7ea7f324304656c8e346516a10647a9af0b3b8cb013454a28",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "oceanbase-oracle",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:ed2f0595235928851b7dfa09b69f2fdb17ab96ca7bdae8735d1c6953bbca81f3"
+      ]
+    },
+    {
+      "adapterId": "chinadb.oceanbase-mysql.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:a6416b0be40e948a3eda705d6ac8df94d7990d2dca925eb585383d5b92d30ac5",
+      "evidenceEnvelopeDigests": [
+        "sha256:cb3023e2180ddb4a61edc7b3355b5eae6449c46fa6a0bedb277fce402a75d78c",
+        "sha256:8e80ebb0ff79abe51877d9e7ea467eb6e3c48ca2213939b24d6a627d3466077b",
+        "sha256:8008a84205fa71dce28e5d6507b85e71817c109653dd4b5bc830ba7abf857c00",
+        "sha256:3f7c1c79a8d44a6c2dc3f0999c79eb47cb3b882a5719a9e4d42c0373bebcd24d"
+      ],
+      "exactTupleDigest": "sha256:7a979a694d9685aac99f7769a3e977c6fd2296216cdb7f43947b05ece58f18b3",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "OceanBase MySQL-compatible mode",
+      "qualificationInputDigest": "sha256:ad948bb0c54d3d2370197ffd084756bc6268f45a225746d314bb0c3f9fedeceb",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "oceanbase-mysql",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:6533510e0339bffd179bdf4ab5d94e4ee4341511b2d189e8ecf2444a05b21bb3"
+      ]
+    },
+    {
+      "adapterId": "chinadb.gaussdb-oracle.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:9388738395b19a3af8229cb6002abde9834319b4f45fb858f562baaa418fd775",
+      "evidenceEnvelopeDigests": [
+        "sha256:40362e7d71dd20a69a19ee7893ac4a929cd4bc71fff8704bb0506f64328c0bff",
+        "sha256:0ceb1877e700cf932725c8568cbc2deee73d0d04e65a8dd3ab4b600f040905ab",
+        "sha256:8201618be0dfd87d729a845183576cc7177c4e101a05458143f4f060e5368bff",
+        "sha256:dae8a7e69fc8c7643f27a4ed1e0c68a524b84a20c788cfde8798c4b88b89b56b"
+      ],
+      "exactTupleDigest": "sha256:1473f68f1614ba6324d018c8dd42af53f9e038575dea5b5d9a7e709ee8010fce",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GaussDB Oracle-compatible mode",
+      "qualificationInputDigest": "sha256:b48a5cb68fd3ef7f34f3cabec7af5b17f959fb905961e592c9f3240d536b1356",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "gaussdb-oracle",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:434787580a25c9a3fc2e71844f5a7efdc2805af39ddb7a6b28d2e06a5de37c41"
+      ]
+    },
+    {
+      "adapterId": "chinadb.gaussdb-m.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:1ef149a931a8c108a8ae0719e34abed97bb4f20f22c7b134d38fa3e899de211c",
+      "evidenceEnvelopeDigests": [
+        "sha256:91a6bc04ed9c78749af19d173753e6bcb7dcd0f6cde4c66c32ab8a55da2a3801",
+        "sha256:4262093cb782df3fbb3dba36e2d8f5ceb0d136fd8cc1fcb0ab9fe29f1eab85fd",
+        "sha256:8bb7b2cfa98af3b4307e974df12e84a7f720599d093a6c9660b25e360ab18195",
+        "sha256:791100abfdcae908ee907967d0c51067cabfc1c2dea37343113e53e0b4b4ac92"
+      ],
+      "exactTupleDigest": "sha256:ca90b9d082d1d9c9a2270fe7cf9b2e68b7e9d528f1844ecccb9a1a16cd400f6b",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GaussDB M-compatible mode",
+      "qualificationInputDigest": "sha256:6959727b2be17faa60a139155c5e9ca9ce0dde27b6532f09e8c8a75b97be79b3",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "gaussdb-m",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:df82ec76e0c00d97dd05bc4f2c00bfce2cdda6a990857eed685b3a3a00ddbba6"
+      ]
+    },
+    {
+      "adapterId": "chinadb.goldendb.target-adapter.v1",
+      "authorization": "VERIFIED",
+      "blockers": [],
+      "certification": "CERTIFIED",
+      "environmentDigest": "sha256:918e03af9235629a263ee6c9bd2fd435cb0889ad674c4028c62c0c9571093e42",
+      "evidenceEnvelopeDigests": [
+        "sha256:afd1295de11627c4c8c37ad5c63a3f2f67a9eaaaa92e236593341f9aaf783ec3",
+        "sha256:32bf7ac33ae2978a1c95e0a8e33d36db5ee31edc05e78a3a74e925ee2ad89c82",
+        "sha256:21669f46e37572320ef6173195df0b3bd0470477f90b742259cd39d24e98ee79",
+        "sha256:0071f3dfe94fc3497df34ae4a9cdb2d3c79307eb018707589ea2490dfeceb7e6"
+      ],
+      "exactTupleDigest": "sha256:0f38ab6bf9bd47bfd6c601452dab3c02758ebf1efdfb16d80eaecf6a043df237",
+      "externalExecution": "PASSED",
+      "independentVerification": "PASSED",
+      "label": "GoldenDB",
+      "qualificationInputDigest": "sha256:56a76b37fbb68cf5700f3cdaeb00497ed1ce9acbfc833ff20ff536b0206c9a00",
+      "state": "PRODUCTION_DEFINITION_OF_DONE",
+      "targetId": "goldendb",
+      "targetSql": null,
+      "vendorToolDigests": [
+        "sha256:402e4af9522e7327f76049f562b18847b54cb83b47f178a1ca45e1e117c0b87c"
+      ]
+    }
+  ],
+  "trustStoreDigest": "sha256:3b330ae4d7dfc2969d7cc36e4d77bb0aa8f41fc155b04116905bf10fcedfb9a7"
+}
