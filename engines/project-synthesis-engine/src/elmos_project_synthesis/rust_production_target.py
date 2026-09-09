@@ -1241,6 +1241,13 @@ async fn health() -> impl IntoResponse {{
     Json(json!({{ "status": "UP", "service": SERVICE_NAME }}))
 }}
 
+async fn metrics() -> impl IntoResponse {{
+    (
+        [(axum::http::header::CONTENT_TYPE, "text/plain; version=0.0.4")],
+        "# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total 1\\n",
+    )
+}}
+
 {handlers_str}
 
 pub fn router(state: Arc<AppState>) -> Router {{

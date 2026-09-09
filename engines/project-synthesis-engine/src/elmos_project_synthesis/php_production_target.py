@@ -849,7 +849,7 @@ function respond(int $status, array $body): void
     header('Content-Type: application/json');
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
-    header('Content-Security-Policy: default-src \'self\'');
+    header("Content-Security-Policy: default-src 'self'");
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

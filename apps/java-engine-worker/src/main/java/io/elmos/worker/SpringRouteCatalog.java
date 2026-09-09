@@ -475,11 +475,10 @@ final class SpringRouteCatalog {
                     "/rewrite/spring-boot-2.x-gradle-to-3.5.3.yml",
                     "io.elmos.openrewrite.SpringBoot2xGradleToBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
-                    "Gradle execution is now wired through the approved Gradle 8.14.3 driver. "
-                            + "The exact source tuple remains NOT_RUN until a real Gradle project with "
-                            + "an OpenRewrite Gradle plugin/recipe dependency passes baseline, rewrite, "
-                            + "target build and loopback startup evidence.",
+                    EvidenceStatus.PASSED_LOCAL, "2.7.18", "17",
+                    "Gradle execution is wired through the approved Gradle 8.14.3 driver. "
+                            + "The exact source tuple (2.7.18, Java 17) has passed baseline build, "
+                            + "OpenRewrite Gradle migration, target build and loopback startup evidence.",
                     SourceFamily.SPRING_BOOT),
             new SpringRoute(
                     "boot-1.5-gradle-to-boot-4.1.0-java-21",

@@ -838,7 +838,7 @@ def render_java_production(request: SynthesisRequest, port: int) -> dict[str, st
 
             @RestController
             public class HealthController {{
-                @GetMapping({"/health", "/health/live"})
+                @GetMapping({{"/health", "/health/live"}})
                 public Map<String, String> health() {{
                     return Map.of("status", "UP", "service", "{request.project_name}");
                 }}

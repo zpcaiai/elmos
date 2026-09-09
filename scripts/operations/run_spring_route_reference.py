@@ -65,6 +65,7 @@ from pathlib import Path
 from typing import Any
 
 REWRITE_PLUGIN = "6.44.0"
+GRADLE_REWRITE_PLUGIN = "7.37.0"
 REWRITE_SPRING = "6.35.0"
 TARGET_BOOT = "3.5.3"
 TARGET_JAVA = "21"
@@ -1098,11 +1099,11 @@ def start_and_probe(
 
 GRADLE_REWRITE_INIT_SCRIPT = """initscript {
     repositories {
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
     dependencies {
-        classpath "org.openrewrite:plugin:{rewrite_plugin}"
+        classpath "org.openrewrite.rewrite:org.openrewrite.rewrite.gradle.plugin:{rewrite_plugin}"
     }
 }
 allprojects {
@@ -1139,14 +1140,16 @@ def transform(source: Path, target: Path, recipe: Path, route: Route, driver: st
     shutil.copy2(recipe, installed)
     if route.build_tool == "gradle":
         init_script = target / ".elmos/openrewrite.init.gradle"
-        init_script.write_text(
-            GRADLE_REWRITE_INIT_SCRIPT.format(
-                rewrite_plugin=REWRITE_PLUGIN, rewrite_spring=REWRITE_SPRING
-            ),
-            encoding="utf-8",
+        content = (
+            GRADLE_REWRITE_INIT_SCRIPT
+            .replace("{rewrite_plugin}", GRADLE_REWRITE_PLUGIN)
+            .replace("{rewrite_spring}", REWRITE_SPRING)
         )
+        init_script.write_text(content, encoding="utf-8")
         result = run(
-            [driver, "--no-daemon", "rewriteRun",
+            [driver, "--no-daemon",
+             "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
+             "rewriteRun",
              "--init-script", ".elmos/openrewrite.init.gradle",
              f"-Drewrite.activeRecipe={route.recipe_id}"],
             cwd=target, home=home, timeout=3_600,
@@ -1219,7 +1222,11 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             line for line in version_output.stdout.splitlines()
             if REQUIRED_GRADLE in line
         ).strip()
-        build_argv = [driver, "--no-daemon", "--console=plain", "build"]
+        build_argv = [
+            driver, "--no-daemon", "--console=plain",
+            "-Djava.net.useSystemProxies=false", "-Dhttp.proxyHost=", "-Dhttps.proxyHost=",
+            "build",
+        ]
         driver_key = "gradle"
     else:
         version_line = run([driver, "-version"], cwd=repo, home=target_home,
@@ -1320,7 +1327,9 @@ def execute(repo: Path, route: Route, workspace: Path) -> dict[str, Any]:
             "recipe_id": route.recipe_id,
             "recipe_path": str(recipe.relative_to(repo)),
             "recipe_sha256": hashlib.sha256(recipe.read_bytes()).hexdigest(),
-            "rewrite_plugin": REWRITE_PLUGIN,
+            "rewrite_plugin": (
+                GRADLE_REWRITE_PLUGIN if route.build_tool == "gradle" else REWRITE_PLUGIN
+            ),
             "rewrite_spring": REWRITE_SPRING,
             "output_tail": transformation.stdout[-2_000:],
             driver_key: driver_version,

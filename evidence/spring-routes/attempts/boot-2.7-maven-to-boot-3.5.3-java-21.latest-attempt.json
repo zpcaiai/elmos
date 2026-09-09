@@ -1,0 +1,19 @@
+{
+  "attempted_at": "2026-09-09T17:11:17Z",
+  "authorized_customer_repository": "NOT_RUN",
+  "canonical_evidence": {
+    "execution_status_at_attempt": "PASSED_LOCAL",
+    "path": "evidence/spring-routes/boot-2.7-maven-to-boot-3.5.3-java-21.json",
+    "updated": false
+  },
+  "certification_eligible": false,
+  "certification_status": "NOT_CERTIFIED",
+  "evidence_scope": "LOCAL_ATTEMPT_AUDIT_ONLY",
+  "execution_status": "FAILED",
+  "external_evidence_status": "NOT_RUN",
+  "failure": "OPENREWRITE_TARGET_BOOT_BINDING_FAILED",
+  "independent_verification": "NOT_RUN",
+  "record_type": "NON_CERTIFYING_ROUTE_ATTEMPT",
+  "route_id": "boot-2.7-maven-to-boot-3.5.3-java-21",
+  "schema_version": 1
+}

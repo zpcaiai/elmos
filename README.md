@@ -65,9 +65,7 @@ PHP 工具链以 `--disable-all` 编译，因此生产 Emitter 只能使用脚�
 
 安装脚本修复了四处缺陷：`--without-pear` 缺行尾续行符，使 `./configure` 提前结束、`--with-pdo-pgsql` 从未进入命令行；libpq 与 openssl 前缀不再写死，改为分别按 `bin/pg_config` 和 `lib/pkgconfig/openssl.pc` 依次探测；ext/openssl 经 pkg-config 定位，故前缀通过 `PKG_CONFIG_PATH` 传入而非 `--with` 参数值；短路守卫原本只比对版本，导致缺扩展的旧安装被当成"已装好"而静默跳过重建，现在逐一校验 `PHP_REQUIRED_EXTENSIONS`，不满足即以退出码 3 列出缺失项并给出重建指引。
 
-Go、TypeScript、C#、Kotlin、Rust、PHP 的生产 Emitter 另有单实体边界，多实体请求显式失败关闭而非静默丢弃实体。
-
-Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、Kotlin、Rust、PHP 当前生产 Emitter 采用单实体精确边界，多实体请求会失败关闭而不会静默丢弃。八语言本地矩阵仍只是工程证据；真实托管 PostgreSQL、真实 IdP、rootless 生产 Runner、云部署、恢复/DR、独立用户验收和外部认证继续保持 `NOT_RUN`。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
+八种语言（Java、Python、Go、TypeScript、C#、Kotlin、Rust、PHP）的生产 Emitter 均已支持多实体与关系（外键、级联与 RLS 租户隔离）架构，并通过统一前后端多实体共同契约进行生成。八语言本地矩阵仍是工程证据；真实托管 PostgreSQL、真实 IdP、rootless 生产 Runner、云部署、恢复/DR、独立用户验收和外部认证继续保持 `NOT_RUN`。详见 [`docs/project-synthesis-batch46-95-verification.md`](docs/project-synthesis-batch46-95-verification.md)。
 
 完整的 Draft → Review/Approve → Generate → Verify 操作说明见 [`engines/project-synthesis-engine/README.md`](engines/project-synthesis-engine/README.md)。Web Console `/generation` 页生成的 CLI 命令与引擎的命名空间、目标版本及端口保持一致；页面本身不会绕过审批或直接执行生成器。
 

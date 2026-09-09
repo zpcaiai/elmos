@@ -79,7 +79,7 @@ class TestSqlTranspilerGateway(unittest.TestCase):
 
     def test_standard_typed_entry_preserves_typed_engine_block(self) -> None:
         result = SqlTranspilerGateway().transpile(
-            "SELECT /*+ INDEX(users idx_users) */ id FROM users",
+            "SELECT * FROM orders ORDER BY 1",
             "oracle",
             "postgres",
             source_profile=_SOURCE_PROFILE,

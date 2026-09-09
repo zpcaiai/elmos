@@ -373,6 +373,7 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
         import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
         import io.ktor.server.request.receive
         import io.ktor.server.response.respond
+        import io.ktor.server.response.respondText
         import io.ktor.server.routing.delete
         import io.ktor.server.routing.get
         import io.ktor.server.routing.put
