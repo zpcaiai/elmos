@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta, timezone
@@ -69,30 +70,21 @@ def digest(value: Any) -> str:
 
 
 def alert_snapshot_digest(alerts: Sequence[Mapping[str, Any]]) -> str:
-    return normalized_alert_snapshot_digest([alert_key(alert) for alert in alerts])
+    return alert_key_snapshot_digest([alert_key(alert) for alert in alerts])
 
 
-def normalized_alert_snapshot_digest(
-    snapshot: Sequence[Mapping[str, Any]],
-) -> str:
+def alert_key_snapshot_digest(keys: Sequence[Mapping[str, Any]]) -> str:
     normalized: list[dict[str, Any]] = []
-    for item in snapshot:
-        if not isinstance(item, Mapping) or set(item) != ALERT_KEY_FIELDS:
-            raise ValueError("Dependabot normalized alert snapshot shape is not exact")
-        normalized.append(
-            {
-                "alert_number": int(item["alert_number"]),
-                **{
-                    field: str(item[field])
-                    for field in ALERT_KEY_FIELDS
-                    if field != "alert_number"
-                },
-            }
-        )
-    numbers = [item["alert_number"] for item in normalized]
-    if len(numbers) != len(set(numbers)):
-        raise ValueError("Dependabot normalized alert snapshot contains duplicates")
-    return digest(sorted(normalized, key=lambda item: item["alert_number"]))
+    seen: set[int] = set()
+    for key in keys:
+        if set(key) != ALERT_KEY_FIELDS:
+            raise ValueError("Dependabot source alert snapshot shape is not exact")
+        number = int(key["alert_number"])
+        if number <= 0 or number in seen:
+            raise ValueError("Dependabot source alert snapshot identity is invalid")
+        seen.add(number)
+        normalized.append(dict(key))
+    return digest(sorted(normalized, key=lambda item: int(item["alert_number"])))
 
 
 def alert_key(alert: Mapping[str, Any]) -> dict[str, Any]:
@@ -232,7 +224,7 @@ def validate_registry(
     *,
     now: datetime | None = None,
     repo_root: Path | None = None,
-    source_snapshot_digest: str | None = None,
+    source_alert_keys: Sequence[Mapping[str, Any]] | None = None,
 ) -> None:
     if set(registry) != {
         "schema_version",
@@ -253,7 +245,11 @@ def validate_registry(
     by_number = {int(alert["number"]): alert for alert in alerts}
     if len(by_number) != len(alerts):
         raise ValueError("Dependabot snapshot contains duplicate alert numbers")
-    expected_snapshot = source_snapshot_digest or alert_snapshot_digest(alerts)
+    expected_snapshot = (
+        alert_key_snapshot_digest(source_alert_keys)
+        if source_alert_keys is not None
+        else alert_snapshot_digest(alerts)
+    )
     if registry["source_alert_snapshot_digest"] != expected_snapshot:
         raise ValueError(
             "Dependabot exception registry is bound to a different alert snapshot"
@@ -408,15 +404,19 @@ def build_provenance_record(
     }
 
 
-def fetch_open_alerts(repo: str) -> list[dict[str, Any]]:
+def _fetch_alert_inventory(repo: str, *, state: str | None = None) -> list[dict[str, Any]]:
+    query = f"repos/{repo}/dependabot/alerts?per_page=100"
+    if state is not None:
+        query += f"&state={state}"
     result = subprocess.run(
         [
             "gh",
             "api",
             "--paginate",
+            "--slurp",
             "-H",
             "Accept: application/vnd.github+json",
-            f"repos/{repo}/dependabot/alerts?state=open&per_page=100",
+            query,
         ],
         stdin=subprocess.DEVNULL,
         capture_output=True,
@@ -424,33 +424,24 @@ def fetch_open_alerts(repo: str) -> list[dict[str, Any]]:
         check=False,
     )
     if result.returncode != 0:
-        raise RuntimeError("GitHub Dependabot inventory failed")
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"GitHub Dependabot inventory failed: {detail}")
     value = json.loads(result.stdout)
-    if not isinstance(value, list):
-        raise TypeError("GitHub Dependabot response is not a list")
-    return [dict(item) for item in value if isinstance(item, Mapping)]
+    if not isinstance(value, list) or not all(isinstance(page, list) for page in value):
+        raise TypeError("GitHub Dependabot paginated response is not a list of pages")
+    alerts = [dict(item) for page in value for item in page if isinstance(item, Mapping)]
+    numbers = [int(item["number"]) for item in alerts]
+    if len(numbers) != len(set(numbers)):
+        raise ValueError("GitHub Dependabot inventory contains duplicate alert numbers")
+    return alerts
 
 
-def fetch_alert(repo: str, number: int) -> dict[str, Any]:
-    result = subprocess.run(
-        [
-            "gh",
-            "api",
-            "-H",
-            "Accept: application/vnd.github+json",
-            f"repos/{repo}/dependabot/alerts/{number}",
-        ],
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        timeout=60,
-        check=False,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(f"GitHub Dependabot alert lookup failed for alert {number}")
-    value = json.loads(result.stdout)
-    if not isinstance(value, Mapping):
-        raise TypeError(f"GitHub Dependabot alert {number} is not an object")
-    return dict(value)
+def fetch_open_alerts(repo: str) -> list[dict[str, Any]]:
+    return _fetch_alert_inventory(repo, state="open")
+
+
+def fetch_all_alerts(repo: str) -> list[dict[str, Any]]:
+    return _fetch_alert_inventory(repo)
 
 
 def dismissal_comment(exception: Mapping[str, Any]) -> str:
@@ -468,25 +459,81 @@ def dismissal_comment(exception: Mapping[str, Any]) -> str:
     return comment
 
 
+def reconcile_dismissed_exception(
+    exception: dict[str, Any], alert: Mapping[str, Any]
+) -> bool:
+    if alert.get("state") != "dismissed":
+        raise ValueError(
+            f"Dependabot alert {exception['alert_number']} has an unexpected closed state"
+        )
+    if alert.get("dismissed_reason") != "tolerable_risk":
+        raise ValueError(
+            f"Dependabot alert {exception['alert_number']} has an unexpected dismissal reason"
+        )
+    expected_prefix = (
+        "VEX not_affected; not fixed; "
+        + str(exception["classification"])
+        + "; manifest "
+        + str(exception["manifest"]["sha256"])
+        + "; expires "
+    )
+    expected_suffix = "; evidence b40-dependabot-vex"
+    comment = alert.get("dismissed_comment")
+    if (
+        not isinstance(comment, str)
+        or not comment.startswith(expected_prefix)
+        or not comment.endswith(expected_suffix)
+    ):
+        raise ValueError(
+            f"Dependabot alert {exception['alert_number']} dismissal evidence is invalid"
+        )
+    expiry = comment[len(expected_prefix) : -len(expected_suffix)]
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", expiry):
+        raise ValueError(
+            f"Dependabot alert {exception['alert_number']} dismissal expiry is invalid"
+        )
+    _parse_time(expiry)
+    changed = exception.get("expires_at") != expiry
+    exception["expires_at"] = expiry
+    return changed
+
+
+def reconcile_dismissed_exceptions(
+    registry: Mapping[str, Any], alerts: Sequence[Mapping[str, Any]]
+) -> int:
+    by_number = {int(alert["number"]): alert for alert in alerts}
+    changed = 0
+    for raw_exception in registry["exceptions"]:
+        exception = raw_exception
+        number = int(exception["alert_number"])
+        alert = by_number[number]
+        if alert.get("state") == "open":
+            continue
+        if reconcile_dismissed_exception(exception, alert):
+            changed += 1
+    return changed
+
+
 def dismiss_eligible(
     repo: str,
     registry: Mapping[str, Any],
     alerts: Sequence[Mapping[str, Any]],
     *,
     repo_root: Path | None = None,
-    source_snapshot_digest: str | None = None,
+    source_alert_keys: Sequence[Mapping[str, Any]] | None = None,
 ) -> int:
     validate_registry(
         registry,
         alerts,
         repo_root=repo_root,
-        source_snapshot_digest=source_snapshot_digest,
+        source_alert_keys=source_alert_keys,
     )
     by_number = {int(alert["number"]): alert for alert in alerts}
     count = 0
     for exception in registry["exceptions"]:
         number = int(exception["alert_number"])
         if by_number[number].get("state") != "open":
+            reconcile_dismissed_exception(exception, by_number[number])
             continue
         comment = dismissal_comment(exception)
         result = subprocess.run(
@@ -551,16 +598,23 @@ def main() -> int:
         help="replace the registry with the current open-alert inventory before applying",
     )
     args = parser.parse_args()
-    open_alerts = fetch_open_alerts(args.repo)
     snapshot_path = Path(args.snapshot)
     registry_path = Path(args.registry)
-    source_snapshot_digest: str | None = None
+    source_alert_keys: list[dict[str, Any]] | None = None
+    if not args.refresh and registry_path.exists():
+        if not snapshot_path.is_file():
+            raise ValueError("Dependabot source alert snapshot is unavailable")
+        stored_snapshot = json.loads(snapshot_path.read_bytes())
+        if not isinstance(stored_snapshot, list) or not all(
+            isinstance(item, Mapping) for item in stored_snapshot
+        ):
+            raise ValueError("Dependabot source alert snapshot is invalid")
+        source_alert_keys = [dict(item) for item in stored_snapshot]
+    open_alerts = fetch_open_alerts(args.repo)
     if args.refresh:
         alerts = open_alerts
         registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
         validate_registry(registry, alerts, repo_root=args.repo_root)
-        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-        snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
             json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
@@ -568,16 +622,6 @@ def main() -> int:
         )
     elif registry_path.exists():
         registry = json.loads(registry_path.read_bytes())
-        if not snapshot_path.is_file():
-            raise ValueError("Dependabot source alert snapshot is unavailable")
-        stored_snapshot = json.loads(snapshot_path.read_bytes())
-        if not isinstance(stored_snapshot, list):
-            raise TypeError("Dependabot source alert snapshot must be a list")
-        source_snapshot_digest = normalized_alert_snapshot_digest(stored_snapshot)
-        if source_snapshot_digest != registry.get("source_alert_snapshot_digest"):
-            raise ValueError(
-                "Dependabot exception registry is bound to a different source snapshot"
-            )
         registered_numbers = {
             int(exception["alert_number"]) for exception in registry.get("exceptions", [])
         }
@@ -591,14 +635,17 @@ def main() -> int:
                 "Dependabot registry does not cover open alerts: "
                 + ", ".join(str(number) for number in unexpected_open)
             )
-        alerts = [
-            fetch_alert(args.repo, number) for number in sorted(registered_numbers)
-        ]
+        all_alerts = {int(alert["number"]): alert for alert in fetch_all_alerts(args.repo)}
+        missing_registered = sorted(registered_numbers - set(all_alerts))
+        if missing_registered:
+            raise ValueError(
+                "Dependabot registry alerts are unavailable: "
+                + ", ".join(str(number) for number in missing_registered)
+            )
+        alerts = [all_alerts[number] for number in sorted(registered_numbers)]
     else:
         alerts = open_alerts
         registry = build_registry(args.repo, alerts, repo_root=args.repo_root)
-        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
-        snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         registry_path.write_text(
             json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
@@ -608,7 +655,7 @@ def main() -> int:
         registry,
         alerts,
         repo_root=args.repo_root,
-        source_snapshot_digest=source_snapshot_digest,
+        source_alert_keys=source_alert_keys,
     )
     eligible = len(registry["exceptions"])
     print(
@@ -623,19 +670,34 @@ def main() -> int:
         )
     )
     dismissed_count = 0
+    reconciled_count = 0
     if args.apply:
+        reconciled_count = reconcile_dismissed_exceptions(registry, alerts)
+        validate_registry(
+            registry,
+            alerts,
+            repo_root=args.repo_root,
+            source_alert_keys=source_alert_keys,
+        )
         dismissed_count = dismiss_eligible(
             args.repo,
             registry,
             alerts,
             repo_root=args.repo_root,
-            source_snapshot_digest=source_snapshot_digest,
+            source_alert_keys=source_alert_keys,
         )
         print(
             json.dumps(
-                {"dismissed": dismissed_count},
+                {
+                    "dismissed": dismissed_count,
+                    "reconciled_dismissed_evidence": reconciled_count,
+                },
                 sort_keys=True,
             )
+        )
+        registry_path.write_text(
+            json.dumps(registry, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
         )
     if args.vex_record is not None:
         args.vex_record.parent.mkdir(parents=True, exist_ok=True)
@@ -667,6 +729,8 @@ def main() -> int:
             + "\n",
             encoding="utf-8",
         )
+    snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+    snapshot_path.write_bytes(canonical([alert_key(alert) for alert in open_alerts]))
     return 0
 
 
