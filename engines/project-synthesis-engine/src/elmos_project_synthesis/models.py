@@ -91,14 +91,18 @@ SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # durable, identity-aware vertical slice opens per target only after that
 # target has produced its own integration evidence through the shared runtime
 # harness; a target with an emitter but no evidence stays closed here.
+# SQLite and MySQL are evidenced only for Python. The other seven production
+# emitters still require postgresql://, so opening those stores for them
+# would emit a workspace that cannot talk to the selected database.
+# Unauthenticated sqlite/mysql is also closed: production runtimes always
+# emit JWT or OIDC material.
+_PYTHON_RELATIONAL_TARGETS = frozenset({"python"})
 SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("in-memory", "none"): frozenset(SUPPORTED_LANGUAGES),
-    ("sqlite", "none"): frozenset(SUPPORTED_LANGUAGES),
-    ("sqlite", "jwt"): frozenset(SUPPORTED_LANGUAGES),
-    ("sqlite", "oidc"): frozenset(SUPPORTED_LANGUAGES),
-    ("mysql", "none"): frozenset(SUPPORTED_LANGUAGES),
-    ("mysql", "jwt"): frozenset(SUPPORTED_LANGUAGES),
-    ("mysql", "oidc"): frozenset(SUPPORTED_LANGUAGES),
+    ("sqlite", "jwt"): _PYTHON_RELATIONAL_TARGETS,
+    ("sqlite", "oidc"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "jwt"): _PYTHON_RELATIONAL_TARGETS,
+    ("mysql", "oidc"): _PYTHON_RELATIONAL_TARGETS,
     ("postgresql", "jwt"): frozenset(
         {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
     ),

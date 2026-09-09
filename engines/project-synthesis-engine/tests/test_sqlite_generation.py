@@ -160,9 +160,25 @@ def test_python_sqlite_target_code_and_ast() -> None:
             ast.parse(content, filename=path)
 
 
-@pytest.mark.parametrize("lang", ["python", "typescript", "go", "java", "csharp", "kotlin", "php", "rust"])
-def test_sqlite_across_all_target_languages(lang: str) -> None:
-    request = _sqlite_request(language=lang)
+_UNEVIDENCED_RELATIONAL_LANGUAGES = (
+    "typescript",
+    "go",
+    "java",
+    "csharp",
+    "kotlin",
+    "php",
+    "rust",
+)
+
+
+@pytest.mark.parametrize("lang", _UNEVIDENCED_RELATIONAL_LANGUAGES)
+def test_sqlite_rejects_unevidenced_target_languages(lang: str) -> None:
+    with pytest.raises(ValueError, match="PROFILE_TARGET_COMBINATION_UNSUPPORTED"):
+        _sqlite_request(language=lang)
+
+
+def test_sqlite_python_renders_shared_assets() -> None:
+    request = _sqlite_request(language="python")
     files = render_workspace(request)
 
     assert "database/migrations/001_initial.sql" in files

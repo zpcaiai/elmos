@@ -135,6 +135,12 @@ def test_python_mysql_target_code_and_ast() -> None:
     assert "def ready() -> bool:" in repository
     assert "WHERE `tenant_id` = %s" in repository
     assert "ON DUPLICATE KEY UPDATE" in repository
+    assert "AS new_row" in repository
+    assert "new_row.`name`" in repository
+    assert "new_row.`email`" in repository
+    assert "VALUES(`" not in repository
+    assert "return float(value)" not in repository
+    assert "value.isoformat()" not in repository
     assert "psycopg" not in repository
 
     # Verify integration test path
@@ -164,9 +170,37 @@ def test_python_mysql_target_code_and_ast() -> None:
             ast.parse(content, filename=path)
 
 
-@pytest.mark.parametrize("lang", ["python", "typescript", "go", "java", "csharp", "kotlin", "php", "rust"])
-def test_mysql_across_all_target_languages(lang: str) -> None:
-    request = _mysql_request(language=lang)
+_UNEVIDENCED_RELATIONAL_LANGUAGES = (
+    "typescript",
+    "go",
+    "java",
+    "csharp",
+    "kotlin",
+    "php",
+    "rust",
+)
+
+
+@pytest.mark.parametrize("lang", _UNEVIDENCED_RELATIONAL_LANGUAGES)
+def test_mysql_rejects_unevidenced_target_languages(lang: str) -> None:
+    with pytest.raises(ValueError, match="PROFILE_TARGET_COMBINATION_UNSUPPORTED"):
+        _mysql_request(language=lang)
+
+
+def test_mysql_rejects_unauthenticated_profile() -> None:
+    with pytest.raises(ValueError, match="PROFILE_COMBINATION_UNSUPPORTED"):
+        create_draft(
+            name="store-mysql",
+            description="MySQL production store API",
+            entity="customer",
+            languages=("python",),
+            persistence="mysql",
+            auth_mode="none",
+        )
+
+
+def test_mysql_python_profile_renders_shared_assets() -> None:
+    request = _mysql_request(language="python")
     files = render_workspace(request)
 
     assert "database/migrations/001_initial.sql" in files
@@ -185,6 +219,19 @@ def test_mysql_across_all_target_languages(lang: str) -> None:
     assert "MySQL 8.0" in docs
 
 
+def _mysql_listening() -> bool:
+    import socket
+
+    try:
+        with socket.socket() as probe:
+            probe.settimeout(0.5)
+            probe.connect(("127.0.0.1", 3306))
+    except OSError:
+        return False
+    return True
+
+
+@pytest.mark.skipif(not _mysql_listening(), reason="MySQL is not listening on 127.0.0.1:3306")
 def test_python_mysql_generate_and_verify(tmp_path: Path) -> None:
     request = _mysql_request(language="python", auth_mode="jwt")
     workspace = tmp_path / "workspace"

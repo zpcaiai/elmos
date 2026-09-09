@@ -193,7 +193,9 @@ def _security_source(request: SynthesisRequest) -> str:
                     .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/health", "/actuator/health").permitAll()
+                        .requestMatchers(
+                            "/health", "/health/live", "/health/ready", "/metrics", "/actuator/**"
+                        ).permitAll()
                         .anyRequest().authenticated())
                     .oauth2ResourceServer(server -> server.jwt(jwt -> {{ }}));
                 return http.build();
@@ -836,9 +838,21 @@ def render_java_production(request: SynthesisRequest, port: int) -> dict[str, st
 
             @RestController
             public class HealthController {{
-                @GetMapping("/health")
+                @GetMapping({"/health", "/health/live"})
                 public Map<String, String> health() {{
                     return Map.of("status", "UP", "service", "{request.project_name}");
+                }}
+
+                @GetMapping("/health/ready")
+                public Map<String, String> readiness() {{
+                    return Map.of("status", "UP", "service", "{request.project_name}");
+                }}
+
+                @GetMapping(value = "/metrics", produces = "text/plain; version=0.0.4")
+                public String metrics() {{
+                    return "# HELP http_requests_total Total HTTP requests\\n"
+                        + "# TYPE http_requests_total counter\\n"
+                        + "http_requests_total 1\\n";
                 }}
             }}
             """

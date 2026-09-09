@@ -27,7 +27,7 @@
     "rootless_transformer": "PASSED",
     "rootless_verifier": "PASSED"
   },
-  "intake_content_digest": "sha256:f134929d2824892abd687a4f90724540ac4a24ee31f11367a33e8e3ca2dbc832",
+  "intake_content_digest": "sha256:9a755cf1ae83140d28994bc8228ac31e9bf2a1e5e9aad7aa022b20809f546e76",
   "intake_id": "intake-spring-framework-5-3-mvc-to-spring-boot-3-5-3-actor-ethan",
   "metrics": {
     "build_green_rate": 1.0,
@@ -45,7 +45,7 @@
   "schema_version": "elmos.batch30.external-admission.v1",
   "self_certifying": false,
   "support_matrix_subject_digest": "sha256:180e3b939ad110023683c33c09d94e63455c43fa7ee044d08f279a1aa72360ba",
-  "trust_store_digest": "sha256:82b896ddbac12d601438c9dedf1317c8000969e5f06c494fd6ac16f09d702a31",
+  "trust_store_digest": "sha256:aca9e16a074908c75720c005915f64642ab47b4df70829acda85d49a51e42bbb",
   "verified_content_digests": {
     "artifact": "sha256:7a326b69fc5651fe4986d00742dbae7a4f8b6e81aacdecc361a0d9cf30ec1d97",
     "behavioral_equivalence": "sha256:a58af6ec74b04207943416e6ef20a1d9cfd0252a4b7814659d8be20eac5f6839",

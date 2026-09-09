@@ -487,6 +487,13 @@ async fn health() -> impl IntoResponse {
     Json(json!({ "status": "UP", "service": SERVICE_NAME }))
 }
 
+async fn metrics() -> impl IntoResponse {
+    (
+        [(axum::http::header::CONTENT_TYPE, "text/plain; version=0.0.4")],
+        "# HELP http_requests_total Total HTTP requests\n# TYPE http_requests_total counter\nhttp_requests_total 1\n",
+    )
+}
+
 async fn list_records(
     State(state): State<Arc<AppState>>,
     headers: HeaderMap,
@@ -536,6 +543,9 @@ async fn delete_record(
 pub fn router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/health", get(health))
+        .route("/health/live", get(health))
+        .route("/health/ready", get(health))
+        .route("/metrics", get(metrics))
         .route(COLLECTION_PATH, get(list_records))
         .route(ITEM_PATH, get(get_record).put(put_record).delete(delete_record))
         .with_state(state)
@@ -1073,7 +1083,12 @@ def _application_source(request: SynthesisRequest) -> str:
     )
     path_consts = [_string_const("SERVICE_NAME", json.dumps(request.project_name))]
     handlers: list[str] = []
-    routes = ['.route("/health", get(health))']
+    routes = [
+        '.route("/health", get(health))',
+        '.route("/health/live", get(health))',
+        '.route("/health/ready", get(health))',
+        '.route("/metrics", get(metrics))',
+    ]
     build_fields = ["authenticator: TenantAuthenticator::from_environment()?,"]
     for entity in request.entities:
         entity_type = pascal(entity.singular)

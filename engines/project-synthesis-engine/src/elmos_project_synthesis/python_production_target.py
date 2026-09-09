@@ -758,9 +758,7 @@ def _local_runtime_source(
                     )
                     conn.close()
                 except Exception as exc:
-                    print(f"Skipping MySQL integration tests: database unreachable ({{exc}})", file=sys.stderr)
-                    stop_children()
-                    return 0
+                    raise RuntimeError(f"MYSQL_DATABASE_UNREACHABLE:{{exc}}") from exc
                 result = subprocess.run(
                     [sys.executable, "-m", "pytest", "-m", "integration"],
                     check=False,
@@ -1249,9 +1247,9 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             placeholders = ", ".join(["%s"] * len(columns))
             val_placeholders = f"%s, %s, {placeholders}" if columns else "%s, %s"
             mysql_assignments = (
-                ", ".join(f"`{column}` = VALUES(`{column}`)" for column in columns)
+                ", ".join(f"`{column}` = new_row.`{column}`" for column in columns)
                 if columns
-                else "`id` = VALUES(`id`)"
+                else "`id` = new_row.`id`"
             )
             list_query = (
                 f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s ORDER BY `id`"
@@ -1260,7 +1258,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
             )
             save_query = (
-                f"INSERT INTO {table_ref} ({insert_cols}) VALUES ({val_placeholders}) "
+                f"INSERT INTO {table_ref} ({insert_cols}) VALUES ({val_placeholders}) AS new_row "
                 f"ON DUPLICATE KEY UPDATE {mysql_assignments}"
             )
             delete_query = (
@@ -1740,9 +1738,9 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 if isinstance(value, UUID):
                     return str(value)
                 if isinstance(value, datetime):
-                    return value.isoformat()
+                    return value
                 if isinstance(value, Decimal):
-                    return float(value)
+                    return value
                 return value
 
 
@@ -2014,6 +2012,10 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                     response = await call_next(request)
                     status_code = response.status_code
                     response.headers["x-request-id"] = request_id
+                    response.headers["X-Content-Type-Options"] = "nosniff"
+                    response.headers["X-Frame-Options"] = "DENY"
+                    response.headers["Content-Security-Policy"] = "default-src 'self'"
+                    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
                     return response
                 finally:
                     route = request.scope.get("route")

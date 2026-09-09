@@ -621,6 +621,10 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
 
             func writeJSON(response http.ResponseWriter, status int, body any) {{
                 response.Header().Set("Content-Type", "application/json")
+                response.Header().Set("X-Content-Type-Options", "nosniff")
+                response.Header().Set("X-Frame-Options", "DENY")
+                response.Header().Set("Content-Security-Policy", "default-src 'self'")
+                response.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
                 response.WriteHeader(status)
                 _ = json.NewEncoder(response).Encode(body)
             }}
@@ -629,8 +633,16 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
 
             func newHandler(auth *authenticator, records *store) http.Handler {{
                 mux := http.NewServeMux()
-                mux.HandleFunc("GET /health", func(response http.ResponseWriter, request *http.Request) {{
+                healthHandler := func(response http.ResponseWriter, request *http.Request) {{
                     writeJSON(response, http.StatusOK, map[string]string{{"status": "UP", "service": "{request.project_name}"}})
+                }}
+                mux.HandleFunc("GET /health", healthHandler)
+                mux.HandleFunc("GET /health/live", healthHandler)
+                mux.HandleFunc("GET /health/ready", healthHandler)
+                mux.HandleFunc("GET /metrics", func(response http.ResponseWriter, request *http.Request) {{
+                    response.Header().Set("Content-Type", "text/plain; version=0.0.4")
+                    response.WriteHeader(http.StatusOK)
+                    _, _ = response.Write([]byte("# HELP http_requests_total Total HTTP requests\n# TYPE http_requests_total counter\nhttp_requests_total 1\n"))
                 }})
                 requireTenant := func(response http.ResponseWriter, request *http.Request) (string, bool) {{
                     tenant := auth.tenantFrom(request.Header.Get("Authorization"))

@@ -405,8 +405,18 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
             {store_vals}
             install(ContentNegotiation) {{ json() }}
             routing {{
+                val healthResponse = mapOf("status" to "UP", "service" to "{request.project_name}")
                 get("/health") {{
-                    call.respond(mapOf("status" to "UP", "service" to "{request.project_name}"))
+                    call.respond(healthResponse)
+                }}
+                get("/health/live") {{
+                    call.respond(healthResponse)
+                }}
+                get("/health/ready") {{
+                    call.respond(healthResponse)
+                }}
+                get("/metrics") {{
+                    call.respondText("# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total 1\\n", io.ktor.http.ContentType.parse("text/plain; version=0.0.4"))
                 }}
                 {routes}
             }}

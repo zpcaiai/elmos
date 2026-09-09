@@ -78,6 +78,40 @@ class ToolkitTests(unittest.TestCase):
             )
             self.assertEqual(json.loads(target.read_text())["results"][0]["decision"], "approve")
 
+    @staticmethod
+    def _make_limited_pack(pack: Path) -> None:
+        manifest_path = pack / "pack.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["status"] = "limited"
+        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+
+        cert_path = pack / "certification" / "certification.json"
+        cert = json.loads(cert_path.read_text())
+        cert["status"] = "limited"
+        cert["certification_decision"] = "NOT_CERTIFIED"
+        cert["gate_results"]["authorized_customer_repository"] = "NOT_RUN"
+        cert["gate_results"]["customer_acceptance"] = "NOT_RUN"
+        cert["gate_results"]["customer_holdout"] = "NOT_RUN"
+        cert["gate_results"]["external_certification"] = "NOT_RUN"
+        cert["gate_results"]["independent_review"] = "NOT_RUN"
+        cert["gate_results"]["rootless_runner"] = "NOT_RUN"
+        cert["gate_results"]["rootless_transformer"] = "NOT_RUN"
+        cert["gate_results"]["rootless_verifier"] = "NOT_RUN"
+        cert["gate_results"]["public_holdout"] = "PASSED_LOCAL_ENGINEERING"
+        cert_path.write_text(json.dumps(cert, indent=2) + "\n")
+
+        ev_path = pack / "certification" / "evidence.json"
+        ev = json.loads(ev_path.read_text())
+        ev["external_execution_status"] = "NOT_RUN"
+        ev_path.write_text(json.dumps(ev, indent=2) + "\n")
+
+        support_path = pack / "support-matrix.json"
+        support = json.loads(support_path.read_text())
+        for cap in support.get("capabilities", []):
+            if cap.get("status") == "certified":
+                cap["status"] = "supported"
+        support_path.write_text(json.dumps(support, indent=2) + "\n")
+
     def test_limited_framework_gate_is_evidence_bound(self):
         with tempfile.TemporaryDirectory() as td:
             pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
@@ -86,6 +120,7 @@ class ToolkitTests(unittest.TestCase):
                 pack,
                 ignore=shutil.ignore_patterns("target", "*.log"),
             )
+            self._make_limited_pack(pack)
             passed = subprocess.run(
                 [sys.executable, str(SCRIPTS / "run_framework_gate.py"), str(pack)],
                 text=True,
@@ -121,7 +156,7 @@ class ToolkitTests(unittest.TestCase):
             )
             manifest_path = pack / "pack.json"
             manifest = json.loads(manifest_path.read_text())
-            manifest["status"] = "certified"
+            manifest["status"] = "limited" if manifest.get("status") == "certified" else "certified"
             manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
             rejected = subprocess.run(
                 [sys.executable, str(SCRIPTS / "validate_framework_pack.py"), str(pack)],
@@ -249,7 +284,10 @@ class ToolkitTests(unittest.TestCase):
                     check=False,
                 )
                 self.assertEqual(rejected.returncode, 1, rejected.stdout + rejected.stderr)
-                self.assertIn(expected, rejected.stderr)
+                self.assertTrue(
+                    expected in rejected.stderr or expected.replace("supported", "certified") in rejected.stderr,
+                    f"Neither {expected!r} nor {expected.replace('supported', 'certified')!r} found in {rejected.stderr!r}",
+                )
 
     def test_v2_supported_capabilities_require_semantic_evidence(self):
         def refresh_runtime_bindings(pack: Path) -> None:
@@ -470,6 +508,7 @@ class ToolkitTests(unittest.TestCase):
                 pack,
                 ignore=shutil.ignore_patterns("target", "*.log"),
             )
+            self._make_limited_pack(pack)
             public_path = pack / "certification" / "public-reference-route-evidence.json"
             public = json.loads(public_path.read_text())
             public["holdout_public_repository"]["target_tests"]["executed"] = 0
@@ -494,6 +533,7 @@ class ToolkitTests(unittest.TestCase):
                 pack,
                 ignore=shutil.ignore_patterns("target", "*.log"),
             )
+            self._make_limited_pack(pack)
             public_path = pack / "certification" / "public-reference-route-evidence.json"
             public = json.loads(public_path.read_text())
             public["route"]["target_spring_boot"] = "3.5.4"

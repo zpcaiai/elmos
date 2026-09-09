@@ -65,9 +65,9 @@ class HttpChinaDbSqlPreflightGatewayTest {
         HttpServer server = HttpServer.create(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
         AtomicReference<byte[]> receivedBody = new AtomicReference<>();
+        byte[] payload = json.writeValueAsBytes(localEmitted());
         server.createContext("/engine/v1/sql-preflight/assess", exchange -> {
             receivedBody.set(exchange.getRequestBody().readAllBytes());
-            byte[] payload = json.writeValueAsBytes(localEmitted());
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, payload.length);
             try (var output = exchange.getResponseBody()) {

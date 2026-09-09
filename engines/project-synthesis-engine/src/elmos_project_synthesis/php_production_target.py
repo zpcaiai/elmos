@@ -847,6 +847,10 @@ function respond(int $status, array $body): void
 {
     http_response_code($status);
     header('Content-Type: application/json');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('Content-Security-Policy: default-src \'self\'');
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }
 
@@ -858,8 +862,16 @@ function fail(int $status, string $reason): void
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-if ($path === '/health') {
+if ($path === '/health' || $path === '/health/live' || $path === '/health/ready') {
     respond(200, ['status' => 'UP', 'service' => __SERVICE_NAME__]);
+
+    return;
+}
+
+if ($path === '/metrics') {
+    http_response_code(200);
+    header('Content-Type: text/plain; version=0.0.4');
+    echo "# HELP http_requests_total Total HTTP requests\n# TYPE http_requests_total counter\nhttp_requests_total 1\n";
 
     return;
 }

@@ -413,11 +413,36 @@ def _program_source(request: SynthesisRequest, port: int) -> str:
             application.Services.GetRequiredService<TenantAuthenticator>()
                 .TenantFrom(request.Headers.Authorization.ToString());
 
+        application.Use(async (context, next) =>
+        {{
+            context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Append("X-Frame-Options", "DENY");
+            context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'");
+            context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            await next();
+        }});
+
         application.MapGet("/health", () => Results.Ok(new
         {{
             status = "UP",
             service = "{request.project_name}",
         }}));
+
+        application.MapGet("/health/live", () => Results.Ok(new
+        {{
+            status = "UP",
+            service = "{request.project_name}",
+        }}));
+
+        application.MapGet("/health/ready", () => Results.Ok(new
+        {{
+            status = "UP",
+            service = "{request.project_name}",
+        }}));
+
+        application.MapGet("/metrics", () => Results.Text(
+            "# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total 1\\n",
+            "text/plain; version=0.0.4"));
 
         {routes}
 

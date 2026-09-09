@@ -1390,6 +1390,19 @@ def verify_workspace(
             provider_ready["mysql"] = True
         except OSError:
             provider_ready["mysql"] = False
+            # Skipping the production probe without a result would leave unit
+            # tests as the only outcomes and report PASSED for a MySQL target
+            # that never talked to MySQL.
+            results.append(
+                _result(
+                    language="mysql",
+                    kind="provider",
+                    command=["mysql", "127.0.0.1:3306"],
+                    status="NOT_RUN",
+                    exit_code=None,
+                    output="REQUIRED_PROVIDER_NOT_REACHABLE:mysql:127.0.0.1:3306",
+                )
+            )
     for language in sorted(selected):
         exact_toolchains[language], checks = _check_exact_toolchain(
             language,

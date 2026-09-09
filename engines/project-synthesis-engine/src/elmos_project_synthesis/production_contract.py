@@ -95,16 +95,27 @@ def entity_sql(
     # noqa: S608 below - every identifier here is produced by the strict entity
     # and field validators, and every value is bound as a parameter.
     if is_mysql:
-        assignments = ", ".join(f"`{column}` = VALUES(`{column}`)" for column in columns)
+        # MySQL 8.0.20 deprecated VALUES(col) in ON DUPLICATE KEY UPDATE.
+        # The 8.0.19+ row alias is the replacement the 8.0.41 image accepts.
+        if columns:
+            assignments = ", ".join(f"`{column}` = new_row.`{column}`" for column in columns)
+            insert_columns = f"`tenant_id`, `id`, {quoted}"
+            insert_row = f"{mark(1)}, {mark(2)}, {insert_values}"
+            select_columns = f"`id`, {quoted}"
+        else:
+            assignments = "`id` = new_row.`id`"
+            insert_columns = "`tenant_id`, `id`"
+            insert_row = f"{mark(1)}, {mark(2)}"
+            select_columns = "`id`"
         return EntitySql(
             entity=entity.singular,
             plural=entity.plural,
             columns=columns,
-            list_sql=f'SELECT `id`, {quoted} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`',  # noqa: S608
-            get_sql=f'SELECT `id`, {quoted} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
+            list_sql=f'SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`',  # noqa: S608
+            get_sql=f'SELECT {select_columns} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
             upsert_sql=(
-                f"INSERT INTO {table} (`tenant_id`, `id`, {quoted}) "  # noqa: S608
-                f"VALUES ({mark(1)}, {mark(2)}, {insert_values}) "
+                f"INSERT INTO {table} ({insert_columns}) "  # noqa: S608
+                f"VALUES ({insert_row}) AS new_row "
                 f"ON DUPLICATE KEY UPDATE {assignments}"
             ),
             delete_sql=f'DELETE FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
@@ -214,6 +225,9 @@ def routes(entity: EntitySpec) -> list[RouteSpec]:
 
 
 HEALTH_ROUTE = RouteSpec("GET", "/health", False, "Unauthenticated liveness and readiness probe")
+LIVENESS_ROUTE = RouteSpec("GET", "/health/live", False, "Unauthenticated liveness probe")
+READINESS_ROUTE = RouteSpec("GET", "/health/ready", False, "Unauthenticated readiness probe")
+METRICS_ROUTE = RouteSpec("GET", "/metrics", False, "Unauthenticated Prometheus metrics probe")
 
 
 @dataclass(frozen=True)
@@ -293,8 +307,34 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
             for entity in request.entities
             for route in routes(entity)
         ]
-        + [{"method": HEALTH_ROUTE.method, "path": HEALTH_ROUTE.path, "authenticated": False}],
+        + [
+            {"method": HEALTH_ROUTE.method, "path": HEALTH_ROUTE.path, "authenticated": False},
+            {"method": LIVENESS_ROUTE.method, "path": LIVENESS_ROUTE.path, "authenticated": False},
+            {"method": READINESS_ROUTE.method, "path": READINESS_ROUTE.path, "authenticated": False},
+            {"method": METRICS_ROUTE.method, "path": METRICS_ROUTE.path, "authenticated": False},
+        ],
         "http_status": http_status_contract(),
+        "production_nfrs": {
+            "observability": {
+                "metrics_endpoint": "/metrics",
+                "tracing_headers": ["traceparent", "x-request-id", "x-tenant-id"],
+            },
+            "probes": {
+                "health": "/health",
+                "liveness": "/health/live",
+                "readiness": "/health/ready",
+            },
+            "security_headers": {
+                "X-Content-Type-Options": "nosniff",
+                "X-Frame-Options": "DENY",
+                "Content-Security-Policy": "default-src 'self'",
+                "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            },
+            "lifecycle": {
+                "graceful_shutdown": True,
+                "shutdown_signals": ["SIGTERM", "SIGINT"],
+            },
+        },
         "integration_scenario": [
             {"id": step.id, "description": step.description} for step in INTEGRATION_SCENARIO
         ],
