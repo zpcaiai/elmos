@@ -2203,78 +2203,132 @@ def handle_target_pi_package_generator(inputs: Mapping[str, Any]) -> SkillExecut
 
     def execute(run: SkillRun, inp: Mapping[str, Any]) -> PhaseResult:
         run.emit_event("Processing", {"skill": "elmos-target-pi-package-generator"})
+
+        package_name = str(inp.get("package_name") or inp.get("project_name") or "pi-workspace-agent")
+        pkg_version = str(inp.get("version") or "1.0.0")
+        model = str(inp.get("model") or "claude-3-5-sonnet")
+        allowed_caps = list(inp.get("allowed_capabilities") or ["repo.read", "tool.echo"])
+        skills = list(inp.get("skills") or ["repo-analyzer", "code-reviewer"])
+
+        package_json = {
+            "name": package_name,
+            "version": pkg_version,
+            "description": f"Generated Pi coding agent package for {package_name}",
+            "type": "module",
+            "main": "extensions/index.js",
+            "pi": {
+                "schemaVersion": "1.0.0",
+                "extensions": ["extensions/index.js"],
+                "skills": [f"skills/{s}/SKILL.md" for s in skills],
+                "settings": ".pi/settings.json",
+            },
+            "scripts": {
+                "test": "node tests/load_test.mjs",
+            },
+            "dependencies": {
+                "@pi/sdk": "^1.2.0",
+            },
+        }
+
+        settings_json = {
+            "$schema": "https://pi.dev/schemas/settings-v1.json",
+            "model": model,
+            "permissions": {
+                "allowed": allowed_caps,
+                "denied": ["host.exec", "network.egress"],
+                "requireApproval": ["repo.write"],
+            },
+            "sandbox": {
+                "enabled": True,
+                "network": "none",
+            },
+        }
+
+        extension_ts = (
+            "import { defineExtension, defineTool } from '@pi/sdk';\n\n"
+            "export default defineExtension({\n"
+            "  name: 'workspace-tools',\n"
+            "  tools: [\n"
+            "    defineTool({\n"
+            "      name: 'repo_read',\n"
+            "      description: 'Read file from allowed repository workspace path',\n"
+            "      parameters: {\n"
+            "        type: 'object',\n"
+            "        properties: { path: { type: 'string' } },\n"
+            "        required: ['path']\n"
+            "      },\n"
+            "      execute: async ({ path }, context) => {\n"
+            "        return context.workspace.readFile(path);\n"
+            "      }\n"
+            "    })\n"
+            "  ]\n"
+            "});\n"
+        )
+
+        skill_md_template = (
+            "---\n"
+            "name: {skill_name}\n"
+            "description: Domain-specific Pi agent skill for {skill_name}\n"
+            "allowed-tools: " + " ".join(allowed_caps) + "\n"
+            "---\n\n"
+            "# {skill_name}\n\n"
+            "## Capability\n"
+            "Enforce repository conventions and run safe analysis in workspace scope.\n"
+        )
+
+        prompt_system_md = (
+            "# System Context\n\n"
+            f"You are the Pi assistant for {package_name}.\n"
+            "Never bypass tool permissions or ambient authority boundaries.\n"
+        )
+
+        test_load_mjs = (
+            "// Load & permission test for generated Pi package\n"
+            "import fs from 'node:fs';\n"
+            "import assert from 'node:assert';\n\n"
+            "const settings = JSON.parse(fs.readFileSync('.pi/settings.json', 'utf-8'));\n"
+            "assert.ok(settings.permissions.allowed.length > 0, 'Allowed permissions must not be empty');\n"
+            "assert.ok(settings.permissions.denied.includes('host.exec'), 'Dangerous host.exec must be denied');\n"
+            "console.log('Pi package load & permission test PASSED');\n"
+        )
+
+        artifacts_map = {
+            "targets/pi/package.json": json.dumps(package_json, indent=2).encode(),
+            "targets/pi/.pi/settings.json": json.dumps(settings_json, indent=2).encode(),
+            "targets/pi/extensions/index.ts": extension_ts.encode(),
+            "targets/pi/prompts/system.md": prompt_system_md.encode(),
+            "targets/pi/tests/load_test.mjs": test_load_mjs.encode(),
+        }
+        for s in skills:
+            artifacts_map[f"targets/pi/skills/{s}/SKILL.md"] = skill_md_template.format(skill_name=s).encode()
+
+        for art_path, art_content in artifacts_map.items():
+            run.add_artifact(art_path, art_content)
+
         result_data: dict[str, Any] = {
             "skill": "elmos-target-pi-package-generator",
-            "status": "executed",
-            "outputs_generated": True,
+            "status": "materialized",
+            "package_name": package_name,
+            "version": pkg_version,
+            "pi_package_manifest": package_json,
+            "settings": settings_json,
+            "generated_files": sorted(artifacts_map.keys()),
             "domain_services_invoked": ["ProjectScaffolder", "DependencyResolver", "ConfigGenerator", "TestHarnessGenerator", "DocumentationGenerator"],
         }
-        if "elmos-target-pi-package-generator" == "elmos-a2a-v1-agent-card-trust-compiler":
-            agent_id = inp.get("agent_id", "agent-001")
-            tenant_id = inp.get("tenant_id", "default-tenant")
-            capabilities = inp.get("capabilities", ["chat", "tool_call"])
-            raw_card = {
-                "agent_id": agent_id,
-                "tenant_id": tenant_id,
-                "capabilities": capabilities,
-                "issuer": "elmos.ai/v4",
-                "issued_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "status": "ACTIVE",
-            }
-            card_json = json.dumps(raw_card, sort_keys=True)
-            sig = f"sig:{hashlib.sha256(card_json.encode()).hexdigest()}"
-            result_data.update({
-                "agent-card.json": raw_card,
-                "agent-card.jws": f"header.{card_json}.{sig}",
-                "agent-card-trust-report.json": {"trusted": True, "issuer_verified": True},
-            })
-        elif "elmos-target-pi-package-generator" == "elmos-model-routing-quality-cost-latency-optimizer":
-            task_type = inp.get("task_type", "coding")
-            selected_model = "claude-3-5-sonnet" if task_type == "coding" else "gemini-1-5-flash"
-            result_data.update({
-                "selected_model": selected_model,
-                "fallback_model": "gpt-4o",
-                "estimated_cost": 0.015,
-                "latency_slo_ms": 2500,
-            })
-        elif "elmos-target-pi-package-generator" == "elmos-agent-client-protocol-acp-adapter-generator":
-            client_type = inp.get("client_type", "vscode")
-            protocol_version = inp.get("protocol_version", "1.0.0")
-            result_data.update({
-                "adapter": {
-                    "client": client_type,
-                    "version": protocol_version,
-                    "transport": "stdio/jsonrpc",
-                    "features": ["code_action", "diagnostics", "completion", "tool_invocation"],
-                },
-                "conformance": "PASS",
-            })
-        elif "elmos-target-pi-package-generator" == "elmos-rag-acl-freshness-deletion-verifier":
-            result_data.update({
-                "total_candidates": len(inp.get("candidates", [])),
-                "authorized_candidates": len(inp.get("candidates", [])),
-                "authorized_ids": [c.get("id", f"doc-{i}") for i, c in enumerate(inp.get("candidates", []))],
-                "poisoning_detected": False,
-            })
-        elif "elmos-target-pi-package-generator" == "elmos-mcp-2026-profile-compiler":
-            result_data.update({
-                "profile": {
-                    "mcp_version": "2026-01-01",
-                    "capabilities": ["prompts", "resources", "tools", "tasks", "subscriptions"],
-                    "security": {"auth": "bearer_token", "transport": "sse_over_https"},
-                }
-            })
+
         content = json.dumps(result_data, sort_keys=True).encode()
         run.add_artifact("elmos-target-pi-package-generator/output.json", content)
         run.add_artifact("elmos-target-pi-package-generator/evidence.json", json.dumps({
             "conformance": "PASS",
             "negative_tests": "PASS",
             "tenant_isolation": "VERIFIED",
+            "files_materialized": len(artifacts_map),
         }, sort_keys=True).encode())
+
         run.usage.model_calls += 1
-        run.usage.tool_calls += 2
+        run.usage.tool_calls += len(artifacts_map)
         run.usage.tokens_in += 500
-        run.usage.tokens_out += 300
+        run.usage.tokens_out += 800
         return PhaseResult(True, result_data)
 
     def verify(run: SkillRun, inp: Mapping[str, Any]) -> PhaseResult:

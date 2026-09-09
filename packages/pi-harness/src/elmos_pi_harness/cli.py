@@ -185,6 +185,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("demo", help="run a disposable local lifecycle smoke")
 
+    local_run = sub.add_parser("local-run", help="run an ephemeral agent task locally without cloud dependencies")
+    local_run.add_argument("--objective", required=True, help="task objective to execute")
+    local_run.add_argument("--workspace", default=".", help="workspace directory path")
+    local_run.add_argument("--allowed-tools", default="repo.read,tool.echo", help="comma-separated allowed tools")
+    local_run.add_argument("--denied-tools", default="network.egress,host.exec", help="comma-separated denied tools")
+    local_run.add_argument("--max-turns", type=int, default=3, help="maximum turns")
+    local_run.add_argument("--actor-id", default="local-operator", help="actor ID")
+    local_run.add_argument("--json", action="store_true", help="output JSON format")
+
     return parser
 
 
@@ -206,6 +215,143 @@ def main(argv: list[str] | None = None) -> int:
                     actor_id="demo",
                 )
                 print(json.dumps({"status": "ok", "task": result}, ensure_ascii=False))
+        return 0
+    if args.command == "local-run":
+        from .models import AuthoritySnapshot, ExecutorIdentity, TextContent, ToolInvocation, ToolResult
+        from .runtime import ExecutionRuntime
+        from .tool_runtime import ToolRegistry
+
+        workspace_path = os.path.abspath(args.workspace)
+        allowed_caps = {c.strip() for c in args.allowed_tools.split(",") if c.strip()}
+        denied_caps = {c.strip() for c in args.denied_tools.split(",") if c.strip()}
+
+        with tempfile.TemporaryDirectory(prefix="elmos-pi-local-") as temp_dir:
+            db_path = os.path.join(temp_dir, "ephemeral.db")
+            artifact_dir = os.path.join(temp_dir, "artifacts")
+            tenant_id = str(uuid.uuid4())
+            project_id = str(uuid.uuid4())
+            task_id = str(uuid.uuid4())
+
+            tools = ToolRegistry()
+
+            def repo_read_handler(inv: ToolInvocation, policy: Any) -> ToolResult:
+                rel = inv.args.get("path", "")
+                target = os.path.normpath(os.path.join(workspace_path, rel))
+                if not target.startswith(workspace_path) or not os.path.isfile(target):
+                    return ToolResult(
+                        call_id=inv.call_id,
+                        items=(TextContent(f"File not found or outside workspace: {rel}"),),
+                        status="failed",
+                        metadata={"path": rel, "error": "file_not_found"},
+                    )
+                try:
+                    with open(target, "r", encoding="utf-8", errors="replace") as f:
+                        content = f.read(100_000)
+                    return ToolResult(
+                        call_id=inv.call_id,
+                        items=(TextContent(content),),
+                        status="completed",
+                        metadata={"path": rel, "bytes": len(content)},
+                    )
+                except Exception as ex:
+                    return ToolResult(
+                        call_id=inv.call_id,
+                        items=(TextContent(str(ex)),),
+                        status="failed",
+                        metadata={"error": str(ex)},
+                    )
+
+            def echo_handler(inv: ToolInvocation, policy: Any) -> ToolResult:
+                msg = str(inv.args.get("message") or inv.args.get("msg", ""))
+                return ToolResult(
+                    call_id=inv.call_id,
+                    items=(TextContent(f"echo: {msg}"),),
+                    status="completed",
+                    metadata={"echo": msg},
+                )
+
+            if "repo.read" in allowed_caps:
+                tools.register("repo.read", repo_read_handler, required_capabilities={"repo.read"})
+            if "tool.echo" in allowed_caps:
+                tools.register("tool.echo", echo_handler, required_capabilities={"tool.echo"})
+
+            with DurableStore(db_path, artifact_root=artifact_dir) as store:
+                store.create_task(
+                    tenant_id,
+                    project_id,
+                    args.objective,
+                    idempotency_key=f"local-{task_id}",
+                    task_id=task_id,
+                    actor_id=args.actor_id,
+                )
+                runtime = ExecutionRuntime(store, tools)
+                bound = runtime.bind_environment(
+                    tenant_id,
+                    task_id,
+                    environment_type="local",
+                    config={"workspace": workspace_path},
+                    authority_owner_id=str(uuid.uuid4()),
+                    permission_profile_version="ephemeral-v1",
+                    allowed_capabilities=allowed_caps,
+                    denied_capabilities=denied_caps,
+                )
+                env_id = bound["environment"]["environment_id"]
+                auth_id = bound["authority"]["authority_snapshot_id"]
+                snapshot_digest = bound["authority"]["snapshot_digest"]
+
+                executor = ExecutorIdentity("local-agent", 0, "ephemeral-registry")
+                runtime.register_executor(tenant_id, env_id, executor)
+
+                executed_tools: list[dict[str, Any]] = []
+                if "tool.echo" in allowed_caps:
+                    call_id = str(uuid.uuid4())
+                    inv = ToolInvocation(
+                        call_id=call_id,
+                        task_id=task_id,
+                        environment_id=env_id,
+                        authority_snapshot_id=auth_id,
+                        capability="tool.echo",
+                        args={"msg": f"objective: {args.objective}"},
+                        idempotency_key=f"local-echo-{call_id}",
+                        timeout_ms=5000,
+                        sandbox_profile="default",
+                        required_capabilities=frozenset({"tool.echo"}),
+                    )
+                    t_res = runtime.execute_tool(
+                        tenant_id,
+                        inv,
+                        executor,
+                        upper_policy={"allowed": sorted(allowed_caps)},
+                    )
+                    executed_tools.append(t_res.to_dict())
+
+                summary = {
+                    "status": "COMPLETED",
+                    "mode": "ephemeral-local",
+                    "tenant_id": tenant_id,
+                    "task_id": task_id,
+                    "objective": args.objective,
+                    "workspace": workspace_path,
+                    "allowed_capabilities": sorted(allowed_caps),
+                    "denied_capabilities": sorted(denied_caps),
+                    "executed_tools": executed_tools,
+                    "authority_snapshot_digest": snapshot_digest,
+                    "external_evidence": "NOT_RUN",
+                    "certification": "NOT_CERTIFIED",
+                }
+
+                if getattr(args, "json", False):
+                    print(json.dumps(summary, indent=2, ensure_ascii=False))
+                else:
+                    print("=== Elmos PI Harness Ephemeral Local Run ===")
+                    print(f"Task ID:     {task_id}")
+                    print(f"Objective:   {args.objective}")
+                    print(f"Workspace:   {workspace_path}")
+                    print(f"Status:      {summary['status']}")
+                    print(f"Authority:   {summary['authority_snapshot_digest'][:16]}...")
+                    print(f"Tools Run:   {len(executed_tools)}")
+                    print(f"Evidence:    {summary['external_evidence']}")
+                    print(f"Certified:   {summary['certification']}")
         return 0
     if args.command.startswith("qualification-"):
         try:
