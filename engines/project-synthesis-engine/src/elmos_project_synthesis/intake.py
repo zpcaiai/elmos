@@ -627,6 +627,34 @@ def create_draft(
         ]
     )
 
+    if project_kind == "worker":
+        worker_req_id = "REQ-WORKER-001"
+        requirements.append(
+            {
+                "id": worker_req_id,
+                "kind": "functional",
+                "statement": (
+                    "The background worker service executes scheduled or continuous processing cycles, "
+                    "tracks cycle state and errors, and exposes status and trigger controls."
+                ),
+                "status": "approved",
+                "priority": "must",
+                "risk": "medium",
+                "source_refs": [{"source_id": "PG240", "location": "background-worker"}],
+            }
+        )
+        criteria.append(
+            {
+                "id": "AC-WORKER-001",
+                "requirement_ids": [worker_req_id],
+                "statement": (
+                    "GET /api/v1/worker/status returns cycle counters and worker status; "
+                    "POST /api/v1/worker/trigger executes an on-demand cycle deterministically."
+                ),
+                "verification_type": "test",
+            }
+        )
+
     draft: dict[str, Any] = {
         "schema_version": "1.1.0",
         "project": {

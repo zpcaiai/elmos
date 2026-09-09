@@ -33,6 +33,114 @@ def _python_docstring(description: str) -> str:
     return f"__doc__ = (\n{literals}\n)\n"
 
 
+def _worker_source(package_name: str, service_name: str) -> str:
+    return clean(
+        f"""
+        from __future__ import annotations
+
+        import asyncio
+        import logging
+        import time
+        from dataclasses import dataclass, field
+        from typing import Any
+        from uuid import uuid4
+
+        logger = logging.getLogger("{package_name}.worker")
+
+
+        @dataclass
+        class WorkerStatus:
+            service: str
+            status: str = "stopped"
+            cycles_completed: int = 0
+            jobs_processed: int = 0
+            failed_jobs: int = 0
+            last_run_timestamp: float | None = None
+            last_cycle_duration_seconds: float = 0.0
+            started_at: float = field(default_factory=time.time)
+            errors: list[str] = field(default_factory=list)
+
+            @property
+            def uptime_seconds(self) -> float:
+                return round(time.time() - self.started_at, 2)
+
+            def to_dict(self) -> dict[str, Any]:
+                return {{
+                    "service": self.service,
+                    "kind": "worker",
+                    "status": self.status,
+                    "cycles_completed": self.cycles_completed,
+                    "jobs_processed": self.jobs_processed,
+                    "failed_jobs": self.failed_jobs,
+                    "last_run_timestamp": self.last_run_timestamp,
+                    "last_cycle_duration_seconds": self.last_cycle_duration_seconds,
+                    "uptime_seconds": self.uptime_seconds,
+                    "errors": self.errors[-10:],
+                }}
+
+
+        class BackgroundWorker:
+            def __init__(self, service_name: str, interval_seconds: float = 1.0) -> None:
+                self.service_name = service_name
+                self.interval_seconds = interval_seconds
+                self.status = WorkerStatus(service=service_name)
+                self._stop_event = asyncio.Event()
+                self._lock = asyncio.Lock()
+
+            async def execute_cycle(self) -> dict[str, Any]:
+                async with self._lock:
+                    cycle_id = str(uuid4())
+                    started = time.perf_counter()
+                    self.status.status = "running"
+                    outcome = "success"
+                    items_processed = 0
+                    try:
+                        items_processed = 1
+                        self.status.jobs_processed += items_processed
+                        self.status.cycles_completed += 1
+                        self.status.last_run_timestamp = time.time()
+                    except Exception as exc:
+                        outcome = "error"
+                        self.status.failed_jobs += 1
+                        self.status.errors.append(f"{{type(exc).__name__}}: {{exc}}")
+                        logger.error("Worker cycle failed: %s", exc)
+                        raise
+                    finally:
+                        duration = time.perf_counter() - started
+                        self.status.last_cycle_duration_seconds = round(duration, 4)
+                        self.status.status = "idle" if not self._stop_event.is_set() else "stopped"
+                    return {{
+                        "cycle_id": cycle_id,
+                        "outcome": outcome,
+                        "items_processed": items_processed,
+                        "duration_seconds": round(duration, 4),
+                    }}
+
+            async def run_loop(self) -> None:
+                self.status.status = "idle"
+                self._stop_event.clear()
+                logger.info("Background worker started for %s", self.service_name)
+                try:
+                    while not self._stop_event.is_set():
+                        try:
+                            await self.execute_cycle()
+                        except Exception as exc:
+                            logger.debug("Worker cycle error: %s", exc)
+                        try:
+                            await asyncio.wait_for(self._stop_event.wait(), timeout=self.interval_seconds)
+                        except asyncio.TimeoutError:
+                            continue
+                finally:
+                    self.status.status = "stopped"
+                    logger.info("Background worker stopped for %s", self.service_name)
+
+            async def stop(self) -> None:
+                self.status.status = "stopping"
+                self._stop_event.set()
+        """
+    )
+
+
 def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
     if request.requires_database or request.requires_authentication:
         return render_python_production(request, port)
@@ -223,13 +331,47 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
             "import os\n"
             "from uuid import uuid4\n\n"
             "from fastapi import FastAPI, HTTPException, Response, status\n\n"
-            "from .models import (\n" + "".join(f"    {model},\n" for model in sorted(app_imports)) + ")\n\n"
-            f'app = FastAPI(title="{request.project_name}", version="1.0.0")\n'
-            f"{chr(10).join(store_blocks)}\n\n\n"
-            '@app.get("/health")\n'
-            "def health() -> dict[str, str]:\n"
-            f'    return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}")}}\n\n\n'
-            f"{chr(10).join(route_blocks)}\n"
+            + (
+                "import asyncio\n"
+                "from collections.abc import AsyncIterator\n"
+                "from contextlib import asynccontextmanager\n\n"
+                "from .worker import BackgroundWorker\n\n"
+                if request.is_worker
+                else ""
+            )
+            + "from .models import (\n"
+            + "".join(f"    {model},\n" for model in sorted(app_imports))
+            + ")\n\n"
+            + (
+                f'worker = BackgroundWorker(service_name=os.getenv("APP_NAME", "{request.project_name}"))\n\n\n'
+                "@asynccontextmanager\n"
+                "async def lifespan(app: FastAPI) -> AsyncIterator[None]:\n"
+                "    worker_task = asyncio.create_task(worker.run_loop())\n"
+                "    yield\n"
+                "    await worker.stop()\n"
+                "    try:\n"
+                "        await asyncio.wait_for(worker_task, timeout=2.0)\n"
+                "    except (asyncio.TimeoutError, asyncio.CancelledError):\n"
+                "        pass\n\n\n"
+                f'app = FastAPI(title="{request.project_name}", version="1.0.0", lifespan=lifespan)\n'
+                if request.is_worker
+                else f'app = FastAPI(title="{request.project_name}", version="1.0.0")\n'
+            )
+            + f"{chr(10).join(store_blocks)}\n\n\n"
+            + '@app.get("/health")\n'
+            + "def health() -> dict[str, str]:\n"
+            + f'    return {{"status": "UP", "service": os.getenv("APP_NAME", "{request.project_name}"), "kind": "{request.project_kind}"}}\n\n\n'
+            + f"{chr(10).join(route_blocks)}\n"
+            + (
+                '\n\n@app.get("/api/v1/worker/status")\n'
+                "def worker_status() -> dict[str, object]:\n"
+                "    return worker.status.to_dict()\n\n\n"
+                '@app.post("/api/v1/worker/trigger")\n'
+                "async def trigger_worker() -> dict[str, object]:\n"
+                "    return await worker.execute_cycle()\n"
+                if request.is_worker
+                else ""
+            )
         ),
         f"src/{package_name}/__main__.py": clean(
             f"""
@@ -255,6 +397,19 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
             "    assert health.status_code == 200\n"
             '    assert health.json()["status"] == "UP"\n\n\n'
             f"{chr(10).join(test_blocks)}\n"
+            + (
+                "\n\ndef test_worker_status_and_trigger() -> None:\n"
+                '    status_resp = client.get("/api/v1/worker/status")\n'
+                "    assert status_resp.status_code == 200\n"
+                '    assert status_resp.json()["kind"] == "worker"\n'
+                f'    assert status_resp.json()["service"] == "{request.project_name}"\n\n'
+                '    trigger_resp = client.post("/api/v1/worker/trigger")\n'
+                "    assert trigger_resp.status_code == 200\n"
+                '    assert trigger_resp.json()["outcome"] == "success"\n'
+                '    assert trigger_resp.json()["items_processed"] >= 1\n'
+                if request.is_worker
+                else ""
+            )
         ),
         "openapi.yaml": openapi_yaml(request, server_port=port),
         "Dockerfile": clean(
@@ -316,4 +471,6 @@ def render_python(request: SynthesisRequest, port: int) -> dict[str, str]:
             commands=f"uv sync --locked --python 3.12\nuv run pytest\nPORT={port} uv run python -m {package_name}",
         ),
     }
+    if request.is_worker:
+        files[f"src/{package_name}/worker.py"] = _worker_source(package_name, request.project_name)
     return files

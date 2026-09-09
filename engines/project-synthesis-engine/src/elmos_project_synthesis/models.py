@@ -84,7 +84,7 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
-SUPPORTED_PROJECT_KINDS = ("api",)
+SUPPORTED_PROJECT_KINDS = ("api", "worker")
 SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
@@ -776,3 +776,11 @@ class SynthesisRequest:
     @property
     def requires_authentication(self) -> bool:
         return self.auth_mode in {"jwt", "oidc"}
+
+    @property
+    def is_worker(self) -> bool:
+        return self.project_kind == "worker"
+
+    @property
+    def is_api(self) -> bool:
+        return self.project_kind == "api"

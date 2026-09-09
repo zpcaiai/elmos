@@ -592,7 +592,7 @@ def test_cli_draft_accepts_namespace_and_writes_atomically(tmp_path: Path) -> No
 @pytest.mark.parametrize(
     ("argument", "value", "reason"),
     [
-        ("project_kind", "worker", "PROJECT_KIND_INVALID"),
+        ("project_kind", "cli", "PROJECT_KIND_INVALID"),
         ("persistence", "oracle", "PERSISTENCE_INVALID"),
         ("auth_mode", "session-cookie", "AUTH_MODE_INVALID"),
     ],

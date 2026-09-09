@@ -820,6 +820,129 @@ def _local_runtime_source(package_name: str, auth_mode: str, *, is_sqlite: bool 
     )
 
 
+def _worker_source(package_name: str, service_name: str) -> str:
+    return clean(
+        f"""
+        from __future__ import annotations
+
+        import asyncio
+        import logging
+        import time
+        from dataclasses import dataclass, field
+        from typing import Any
+        from uuid import uuid4
+
+        from .telemetry import (
+            WORKER_ACTIVE,
+            WORKER_CYCLES,
+            WORKER_CYCLE_DURATION,
+            WORKER_JOBS_PROCESSED,
+        )
+
+        logger = logging.getLogger("{package_name}.worker")
+
+
+        @dataclass
+        class WorkerStatus:
+            service: str
+            status: str = "stopped"
+            cycles_completed: int = 0
+            jobs_processed: int = 0
+            failed_jobs: int = 0
+            last_run_timestamp: float | None = None
+            last_cycle_duration_seconds: float = 0.0
+            started_at: float = field(default_factory=time.time)
+            errors: list[str] = field(default_factory=list)
+
+            @property
+            def uptime_seconds(self) -> float:
+                return round(time.time() - self.started_at, 2)
+
+            def to_dict(self) -> dict[str, Any]:
+                return {{
+                    "service": self.service,
+                    "kind": "worker",
+                    "status": self.status,
+                    "cycles_completed": self.cycles_completed,
+                    "jobs_processed": self.jobs_processed,
+                    "failed_jobs": self.failed_jobs,
+                    "last_run_timestamp": self.last_run_timestamp,
+                    "last_cycle_duration_seconds": self.last_cycle_duration_seconds,
+                    "uptime_seconds": self.uptime_seconds,
+                    "errors": self.errors[-10:],
+                }}
+
+
+        class BackgroundWorker:
+            def __init__(self, service_name: str, interval_seconds: float = 1.0) -> None:
+                self.service_name = service_name
+                self.interval_seconds = interval_seconds
+                self.status = WorkerStatus(service=service_name)
+                self._stop_event = asyncio.Event()
+                self._lock = asyncio.Lock()
+
+            async def execute_cycle(self) -> dict[str, Any]:
+                async with self._lock:
+                    cycle_id = str(uuid4())
+                    started = time.perf_counter()
+                    self.status.status = "running"
+                    WORKER_ACTIVE.set(1)
+                    outcome = "success"
+                    items_processed = 0
+                    try:
+                        items_processed = 1
+                        self.status.jobs_processed += items_processed
+                        self.status.cycles_completed += 1
+                        self.status.last_run_timestamp = time.time()
+                        WORKER_JOBS_PROCESSED.inc(items_processed)
+                    except Exception as exc:
+                        outcome = "error"
+                        self.status.failed_jobs += 1
+                        self.status.errors.append(f"{{type(exc).__name__}}: {{exc}}")
+                        logger.error("Worker cycle failed: %s", exc)
+                        raise
+                    finally:
+                        duration = time.perf_counter() - started
+                        WORKER_CYCLES.labels(outcome=outcome).inc()
+                        WORKER_CYCLE_DURATION.observe(duration)
+                        self.status.last_cycle_duration_seconds = round(duration, 4)
+                        self.status.status = "idle" if not self._stop_event.is_set() else "stopped"
+                        if self.status.status == "stopped":
+                            WORKER_ACTIVE.set(0)
+                    return {{
+                        "cycle_id": cycle_id,
+                        "outcome": outcome,
+                        "items_processed": items_processed,
+                        "duration_seconds": round(duration, 4),
+                    }}
+
+            async def run_loop(self) -> None:
+                self.status.status = "idle"
+                WORKER_ACTIVE.set(1)
+                self._stop_event.clear()
+                logger.info("Background worker started for %s", self.service_name)
+                try:
+                    while not self._stop_event.is_set():
+                        try:
+                            await self.execute_cycle()
+                        except Exception as exc:
+                            logger.debug("Worker cycle error: %s", exc)
+                        try:
+                            await asyncio.wait_for(self._stop_event.wait(), timeout=self.interval_seconds)
+                        except asyncio.TimeoutError:
+                            continue
+                finally:
+                    self.status.status = "stopped"
+                    WORKER_ACTIVE.set(0)
+                    logger.info("Background worker stopped for %s", self.service_name)
+
+            async def stop(self) -> None:
+                self.status.status = "stopping"
+                self._stop_event.set()
+        """
+    )
+
+
 def render_python_production(request: SynthesisRequest, port: int) -> dict[str, str]:
     package_name = request.project_name.replace("-", "_")
     model_blocks: list[str] = []
@@ -1339,7 +1462,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         + "\n",
         f"src/{package_name}/telemetry.py": clean(
             """
-            from prometheus_client import Counter, Histogram
+            from prometheus_client import Counter, Gauge, Histogram
 
             HTTP_REQUESTS = Counter(
                 "http_server_requests_total",
@@ -1364,6 +1487,23 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                 "database_operation_duration_seconds",
                 "Tenant-scoped database connection duration by outcome.",
                 ("outcome",),
+            )
+            WORKER_CYCLES = Counter(
+                "worker_cycles_total",
+                "Worker execution cycles by outcome.",
+                ("outcome",),
+            )
+            WORKER_CYCLE_DURATION = Histogram(
+                "worker_cycle_duration_seconds",
+                "Worker cycle duration in seconds.",
+            )
+            WORKER_JOBS_PROCESSED = Counter(
+                "worker_jobs_processed_total",
+                "Worker jobs or entities processed.",
+            )
+            WORKER_ACTIVE = Gauge(
+                "worker_active",
+                "Whether background worker is currently active (1 or 0).",
             )
             """
         ),

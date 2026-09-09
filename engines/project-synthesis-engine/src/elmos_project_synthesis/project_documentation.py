@@ -74,11 +74,13 @@ def _records_table(
 
 def _approval_metadata(request: SynthesisRequest) -> str:
     approval = request.raw["approval"]
+    kind_label = "worker (后台任务处理器)" if request.is_worker else "api (REST 接口服务)"
     return "\n".join(
         (
             "| 项目 | 值 |",
             "|---|---|",
             f"| 项目名称 | `{request.project_name}` |",
+            f"| 项目形态 | `{kind_label}` |",
             f"| 文档状态 | `{DOCUMENTATION_STATUS}` |",
             f"| 需求基线 | `sha256:{approval['approved_payload_sha256']}` |",
             f"| 审批人 | {_markdown(approval['approved_by'])} |",
@@ -104,8 +106,10 @@ def _architecture(request: SynthesisRequest) -> str:
         )
         for target in request.targets
     )
+    entity_responsibility = "Background Worker + CRUD API" if request.is_worker else "CRUD API"
     entities = "\n".join(
-        f"| `{entity.singular}` | `{entity.plural}` | {len(entity.fields)} | CRUD API |" for entity in request.entities
+        f"| `{entity.singular}` | `{entity.plural}` | {len(entity.fields)} | {entity_responsibility} |"
+        for entity in request.entities
     )
     actors = _records_table(
         request.raw.get("actors", []),
