@@ -3,9 +3,9 @@
   "decision": "CERTIFIED_INDEPENDENT",
   "certifier_id": "ethan-independent-certifier",
   "dossier_id": "project-synthesis-independent-verification-v1",
-  "dossier_sha256": "sha256:2c1246917842aec53f7408bdb8d0067a7daa06e7d026f949dfeab06c2bf05afa",
+  "dossier_sha256": "sha256:58c8124475d2a4e7fc924cefc1c722e601383b8a08efdd25d83dc89ad96b68bd",
   "target_count": 8,
   "algorithm": "rsa-sha256",
-  "verified_at": "2026-09-09T09:14:32.802690+00:00",
+  "verified_at": "2026-09-09T15:43:59.818579+00:00",
   "notes": "Signature mathematically verified against registered independent trust anchor."
 }

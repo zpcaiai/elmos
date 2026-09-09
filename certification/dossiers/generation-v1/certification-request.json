@@ -1,10 +1,10 @@
 {
   "attestation": "I, Ethan, as the independent certifier, have reviewed the Project Synthesis reproducible replay evidence, source manifests, and native execution records, and hereby attest to the verification results within the declared claim boundary.",
   "dossier_id": "project-synthesis-independent-verification-v1",
-  "dossier_sha256": "sha256:d9b57d2f8984cabfee8f27a46d543d90bb8ac4d221d06d40bd4206b9ad624ef2",
-  "expires_at": "2026-12-08T09:17:22.844548+00:00",
+  "dossier_sha256": "sha256:58c8124475d2a4e7fc924cefc1c722e601383b8a08efdd25d83dc89ad96b68bd",
+  "expires_at": "2026-12-08T15:43:29.032455+00:00",
   "request_version": 1,
-  "requested_at": "2026-09-09T09:17:22.844548+00:00",
+  "requested_at": "2026-09-09T15:43:29.032455+00:00",
   "role": "independent-certifier",
   "scope": "elmos.project-synthesis",
   "signer_id": "ethan-independent-certifier",
