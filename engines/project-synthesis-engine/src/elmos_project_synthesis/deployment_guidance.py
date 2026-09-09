@@ -185,6 +185,11 @@ def _cloud_markdown(request: SynthesisRequest, profiles: list[dict[str, Any]]) -
             "7. SQLite 配置使用持久化存储卷或本地受保护路径；注意单进程写锁，"
             "Secret 文件配置绝对路径，并先执行迁移/备份重放。"
         )
+    elif request.is_mysql:
+        database_step = (
+            "7. MySQL 配置优先使用同区域 Cloud SQL for MySQL / RDS for MySQL 8.0+；"
+            "设置连接池上限与字符集 utf8mb4，Secret 通过挂载文件读取，并先执行迁移/备份演练。"
+        )
     elif request.is_postgresql:
         database_step = (
             "7. PostgreSQL 配置优先使用同区域 Cloud SQL for PostgreSQL；设置连接池和实例上限，"

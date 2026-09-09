@@ -29,6 +29,13 @@ _SQLITE_TYPES = {
     "boolean": "INTEGER",
     "datetime": "TEXT",
 }
+_MYSQL_TYPES = {
+    "string": "VARCHAR(255)",
+    "integer": "BIGINT",
+    "number": "DECIMAL(20,6)",
+    "boolean": "TINYINT(1)",
+    "datetime": "DATETIME(6)",
+}
 
 
 def _markdown(value: object) -> str:
@@ -265,8 +272,13 @@ def _relationship_field_type(
         for relation in request.relations
     )
     if is_foreign_identifier:
-        return "TEXT" if request.is_sqlite else "uuid"
-    types = _SQLITE_TYPES if request.is_sqlite else _SQL_TYPES
+        return "TEXT" if request.is_sqlite else ("VARCHAR(36)" if request.is_mysql else "uuid")
+    if request.is_sqlite:
+        types = _SQLITE_TYPES
+    elif request.is_mysql:
+        types = _MYSQL_TYPES
+    else:
+        types = _SQL_TYPES
     return types[field.type]
 
 
@@ -308,8 +320,8 @@ def _entity_sections(request: SynthesisRequest) -> str:
     sections: list[str] = []
     for entity in request.entities:
         if request.requires_database:
-            id_type = "TEXT" if request.is_sqlite else "uuid"
-            tenant_type = "TEXT" if request.is_sqlite else "text"
+            id_type = "TEXT" if request.is_sqlite else ("VARCHAR(36)" if request.is_mysql else "uuid")
+            tenant_type = "TEXT" if request.is_sqlite else ("VARCHAR(64)" if request.is_mysql else "text")
             system_rows = [
                 f"| `tenant_id` | tenant boundary | `{tenant_type}` | 否 | 复合主键；非空检查 |",
                 f"| `id` | entity identifier | `{id_type}` | 否 | 复合主键 |",
@@ -342,7 +354,7 @@ def _entity_sections(request: SynthesisRequest) -> str:
             ]
         rows = "\n".join((*system_rows, *field_rows))
         if request.requires_database:
-            physical_name = f"`{entity.plural}`" if request.is_sqlite else f"`app.{entity.plural}`"
+            physical_name = f"`{entity.plural}`" if (request.is_sqlite or request.is_mysql) else f"`app.{entity.plural}`"
         else:
             physical_name = "`NOT_APPLICABLE`"
         sections.append(
@@ -401,6 +413,24 @@ def _database_design(request: SynthesisRequest) -> str:
             所有关系外键都包含 `tenant_id`，启用 `PRAGMA foreign_keys = ON`，删除策略为 `RESTRICT`。
             """
         )
+    elif request.is_mysql:
+        physical = clean(
+            """
+            - MySQL 8.0 版本配置：`8.0`
+            - 存储引擎：`InnoDB`，默认字符集：`utf8mb4`，排序规则：`utf8mb4_unicode_ci`
+            - 初始迁移：`database/migrations/001_initial.sql`
+            - 迁移清单：`database/migrations/manifest.json`
+            - 执行入口：`database/apply-migrations.sh`
+            - 策略：仅向前迁移（forward-only）
+            """
+        )
+        isolation = clean(
+            """
+            每张业务表使用复合主键 `(tenant_id, id)`，并为 `tenant_id` 建索引。
+            MySQL 租户隔离通过应用层显式参数绑定 `WHERE `tenant_id` = %s` 严格限定。
+            所有关系外键都包含 `tenant_id`，启用外键检查，删除策略为 `RESTRICT`。
+            """
+        )
     elif request.is_postgresql:
         physical = clean(
             """
@@ -435,7 +465,7 @@ def _database_design(request: SynthesisRequest) -> str:
         if request.requires_database
         else "当前任务不需要数据库连接；不得为内存配置生成或保存占位数据库凭据。"
     )
-    verification_db_name = "SQLite" if request.is_sqlite else "PostgreSQL"
+    verification_db_name = "SQLite" if request.is_sqlite else ("MySQL" if request.is_mysql else "PostgreSQL")
     return clean(
         f"""
         # 数据库设计文档
@@ -503,6 +533,20 @@ def _migration_guide(request: SynthesisRequest) -> str:
             1. 确认 SQLite 3.45 运行环境与目标数据库路径。
             2. 执行前备份现有数据库文件并记录摘要，不覆盖现有数据库。
             3. 通过 `ELMOS_DATABASE_URL_FILE` 或配置提供数据库路径。
+            4. 执行 `database/apply-migrations.sh`，失败即停止。
+            5. 核对 `schema_migrations` 中的 `001_initial`、表结构、约束和索引。
+            6. 运行逐实体 CRUD、跨租户拒绝、行数/字段值对账和恢复演练。
+            """
+        )
+        database_artifacts = (
+            "`database/migrations/001_initial.sql`、`database/migrations/manifest.json`、`database/apply-migrations.sh`"
+        )
+    elif request.is_mysql:
+        database_steps = clean(
+            """
+            1. 确认 MySQL 8.0 运行环境与字符集 utf8mb4 配置。
+            2. 执行前使用 mysqldump 备份现有数据库并记录摘要，不覆盖现有数据库。
+            3. 通过 `ELMOS_DATABASE_URL_FILE` 或配置提供最小权限迁移身份。
             4. 执行 `database/apply-migrations.sh`，失败即停止。
             5. 核对 `schema_migrations` 中的 `001_initial`、表结构、约束和索引。
             6. 运行逐实体 CRUD、跨租户拒绝、行数/字段值对账和恢复演练。

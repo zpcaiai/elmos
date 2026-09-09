@@ -85,7 +85,7 @@ STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
 SUPPORTED_PROJECT_KINDS = ("api", "worker")
-SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite")
+SUPPORTED_PERSISTENCE = ("in-memory", "postgresql", "sqlite", "mysql")
 SUPPORTED_AUTH_MODES = ("none", "jwt", "oidc")
 # The broad starter profile remains portable across all eight emitters. The
 # durable, identity-aware vertical slice opens per target only after that
@@ -96,6 +96,9 @@ SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
     ("sqlite", "none"): frozenset(SUPPORTED_LANGUAGES),
     ("sqlite", "jwt"): frozenset(SUPPORTED_LANGUAGES),
     ("sqlite", "oidc"): frozenset(SUPPORTED_LANGUAGES),
+    ("mysql", "none"): frozenset(SUPPORTED_LANGUAGES),
+    ("mysql", "jwt"): frozenset(SUPPORTED_LANGUAGES),
+    ("mysql", "oidc"): frozenset(SUPPORTED_LANGUAGES),
     ("postgresql", "jwt"): frozenset(
         {"python", "java", "go", "typescript", "csharp", "kotlin", "rust", "php"}
     ),
@@ -763,7 +766,7 @@ class SynthesisRequest:
 
     @property
     def requires_database(self) -> bool:
-        return self.persistence in {"postgresql", "sqlite"}
+        return self.persistence in {"postgresql", "sqlite", "mysql"}
 
     @property
     def is_postgresql(self) -> bool:
@@ -772,6 +775,10 @@ class SynthesisRequest:
     @property
     def is_sqlite(self) -> bool:
         return self.persistence == "sqlite"
+
+    @property
+    def is_mysql(self) -> bool:
+        return self.persistence == "mysql"
 
     @property
     def requires_authentication(self) -> bool:

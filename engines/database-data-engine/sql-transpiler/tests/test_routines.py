@@ -137,3 +137,27 @@ def test_oracle_function_command_is_typed_not_left_opaque() -> None:
     assert result.target_sql is not None
     assert "CREATE FUNCTION add_one" in result.target_sql
     assert "LANGUAGE SQL" in result.target_sql
+
+
+def test_create_or_replace_function_stays_fail_closed() -> None:
+    result = _transpile(
+        "postgresql-17.5",
+        "mysql-8.4.10-lts",
+        "CREATE OR REPLACE FUNCTION add_one(x INTEGER) RETURNS INTEGER "
+        "LANGUAGE SQL AS $$ SELECT x + 1 $$",
+    )
+    assert result.state == "BLOCKED"
+    assert result.target_sql is None
+    assert "ROUTINE_REPLACE_UNSUPPORTED" in {item.code for item in result.diagnostics}
+
+
+def test_strict_and_security_context_stay_fail_closed() -> None:
+    result = _transpile(
+        "postgresql-17.5",
+        "mysql-8.4.10-lts",
+        "CREATE FUNCTION add_one(x INTEGER) RETURNS INTEGER LANGUAGE SQL "
+        "STRICT AS $$ SELECT x + 1 $$",
+    )
+    assert result.state == "BLOCKED"
+    assert result.target_sql is None
+    assert "ROUTINE_SECURITY_CONTEXT_UNSUPPORTED" in {item.code for item in result.diagnostics}

@@ -65,4 +65,28 @@ assert.equal(result.verification.externalExecution, "NOT_RUN");
 assert.ok(typeof result.targetSql === "string" && result.targetSql.length > 0);
 console.log("  ✓ assessChinaDbSqlLocally: state =", result.state, ", targetSql =", result.targetSql.trim());
 
+const blockedRequest = parseChinaDbSqlPreflightRequest({
+  schemaVersion: "1.0",
+  queryId: "test-query-blocked",
+  sourceProfile: "sqlserver-2022-cu26",
+  targetId: "dm8",
+  targetVersion: "8.1.3.140",
+  targetEdition: "enterprise",
+  compatibilityMode: "oracle-compatible-explicit",
+  targetDriver: "dmjdbc-8.1.3.140",
+  targetCharset: "UTF-8",
+  targetCollation: "BINARY",
+  targetTimeZone: "Asia/Shanghai",
+  capabilitySnapshotDigest: capabilities.capabilitySnapshotDigest,
+  sql: "SELECT id FROM orders WITH (NOLOCK);\n",
+  parameters: [],
+});
+const blockedDigest = "sha256:" + createHash("sha256").update(blockedRequest.sql).digest("hex");
+const blocked = await assessChinaDbSqlLocally(blockedRequest, capabilities, blockedDigest);
+assert.equal(blocked.state, "BLOCKED");
+assert.equal(blocked.targetSql, null);
+assert.equal(blocked.certification, "NOT_CERTIFIED");
+assert.ok(blocked.blockers.some((item) => item.code === "LOCKING_HINT_NOT_PORTABLE"));
+console.log("  ✓ assessChinaDbSqlLocally BLOCKED: locking hint stays fail-closed");
+
 console.log("All ChinaDB SQL local tests passed successfully!");

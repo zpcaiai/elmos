@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 
-from .container_images import POSTGRES_IMAGE, PYTHON_IMAGE
+from .container_images import MYSQL_IMAGE, POSTGRES_IMAGE, PYTHON_IMAGE
 from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
 from .rendering import (
     clean,
@@ -361,7 +361,12 @@ def _test_identity_source(auth_mode: str) -> str:
     )
 
 
-def _ci_workflow(auth_mode: str, *, is_sqlite: bool = False) -> str:
+def _ci_workflow(
+    auth_mode: str,
+    *,
+    is_sqlite: bool = False,
+    is_mysql: bool = False,
+) -> str:
     auth_environment = (
         "ELMOS_JWT_HMAC_SECRET_FILE: /tmp/elmos-test-identity/jwt-hmac"
         if auth_mode == "jwt"
@@ -394,6 +399,63 @@ def _ci_workflow(auth_mode: str, *, is_sqlite: bool = False) -> str:
                       umask 077
                       printf '%s' 'sqlite:///tmp/generated.db' > /tmp/database-url
                       ELMOS_DATABASE_URL_FILE=/tmp/database-url ../database/apply-migrations.sh
+                  - run: uv run pytest -m integration
+                    env:
+                      ELMOS_DATABASE_URL_FILE: /tmp/database-url
+                      {auth_environment}
+                      ELMOS_AUTH_ISSUER: https://identity.test.invalid/
+                      ELMOS_AUTH_AUDIENCE: generated-api
+                  - run: uv run pytest -m "not integration"
+                  - run: uv run ruff check src tests scripts
+                  - run: uv run mypy src
+            """
+        )
+    if is_mysql:
+        write_admin_url = (
+            "printf '%s' 'mysql://root:integration-only@127.0.0.1:3306/generated' > /tmp/admin-database-url"
+        )
+        create_runtime_user = (
+            'mysql --host=127.0.0.1 --port=3306 --user=root --password=integration-only -e '
+            '"CREATE USER IF NOT EXISTS \'app_runtime\'@\'%\' IDENTIFIED BY \'integration-runtime-only\'; '
+            'GRANT ALL PRIVILEGES ON generated.* TO \'app_runtime\'@\'%\'; FLUSH PRIVILEGES;"'
+        )
+        write_runtime_url = (
+            "printf '%s' 'mysql://app_runtime:integration-runtime-only@127.0.0.1:3306/generated' > /tmp/database-url"
+        )
+        return clean(
+            f"""
+            name: python-production-profile
+            on: [push, pull_request]
+            permissions:
+              contents: read
+            jobs:
+              test:
+                runs-on: ubuntu-latest
+                defaults:
+                  run:
+                    working-directory: python
+                services:
+                  mysql:
+                    image: {MYSQL_IMAGE}
+                    env:
+                      MYSQL_ROOT_PASSWORD: integration-only
+                      MYSQL_DATABASE: generated
+                    ports: ["3306:3306"]
+                    options: >-
+                      --health-cmd "mysqladmin ping -h 127.0.0.1 -u root --password=integration-only"
+                      --health-interval 5s --health-timeout 3s --health-retries 20
+                steps:
+                  - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+                  - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+                  - run: uv lock --check
+                  - run: uv sync --locked --python 3.12
+                  - run: uv run python scripts/create-test-identity.py /tmp/elmos-test-identity
+                  - run: |
+                      umask 077
+                      {write_admin_url}
+                      ELMOS_DATABASE_URL_FILE=/tmp/admin-database-url ../database/apply-migrations.sh
+                      {create_runtime_user}
+                      {write_runtime_url}
                   - run: uv run pytest -m integration
                     env:
                       ELMOS_DATABASE_URL_FILE: /tmp/database-url
@@ -469,7 +531,13 @@ def _ci_workflow(auth_mode: str, *, is_sqlite: bool = False) -> str:
     )
 
 
-def _local_runtime_source(package_name: str, auth_mode: str, *, is_sqlite: bool = False) -> str:
+def _local_runtime_source(
+    package_name: str,
+    auth_mode: str,
+    *,
+    is_sqlite: bool = False,
+    is_mysql: bool = False,
+) -> str:
     if auth_mode == "jwt":
         runtime_auth_imports = "import secrets"
         runtime_auth_setup = clean(
@@ -593,6 +661,106 @@ def _local_runtime_source(package_name: str, auth_mode: str, *, is_sqlite: bool 
             environment["ELMOS_AUTH_AUDIENCE"] = "generated-api"
             {runtime_auth_setup}
             if sys.argv[1:] == ["--verify"]:
+                result = subprocess.run(
+                    [sys.executable, "-m", "pytest", "-m", "integration"],
+                    check=False,
+                    env=environment,
+                )
+                stop_children()
+                return result.returncode
+            if sys.argv[1:]:
+                raise RuntimeError("LOCAL_RUNTIME_ARGUMENT_INVALID")
+            app = subprocess.Popen([sys.executable, "-m", "{package_name}"], env=environment)
+            children.append(app)
+            return_code = app.wait()
+            stop_children()
+            return return_code
+
+
+        if __name__ == "__main__":
+            raise SystemExit(main())
+        """
+        )
+    if is_mysql:
+        return clean(
+            f"""
+        from __future__ import annotations
+
+        import atexit
+        import os
+        {runtime_auth_imports}
+        import signal
+        import subprocess
+        import sys
+        import time
+        from pathlib import Path
+        from urllib.parse import unquote, urlsplit
+
+        children: list[subprocess.Popen[bytes]] = []
+        stopping = False
+
+
+        def stop_children(*_: object) -> None:
+            global stopping
+            if stopping:
+                return
+            stopping = True
+            for child in reversed(children):
+                if child.poll() is None:
+                    child.terminate()
+            deadline = time.monotonic() + 8
+            for child in reversed(children):
+                try:
+                    child.wait(timeout=max(0.1, deadline - time.monotonic()))
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    child.wait(timeout=2)
+
+
+        def main() -> int:
+            atexit.register(stop_children)
+            signal.signal(signal.SIGTERM, stop_children)
+            signal.signal(signal.SIGINT, stop_children)
+            workspace = Path.cwd().resolve()
+            state = Path(os.getenv("ELMOS_RUNTIME_STATE_DIR", ".elmos-runtime")).resolve()
+            if state == workspace or workspace not in state.parents or state.is_symlink():
+                raise RuntimeError("RUNTIME_STATE_DIRECTORY_MUST_BE_WORKSPACE_CONFINED")
+            state.mkdir(parents=True, exist_ok=True, mode=0o700)
+
+            database_url_file = state / "database-url"
+            if not database_url_file.exists():
+                ambient_url = os.getenv("ELMOS_DATABASE_URL", "")
+                target_url = (
+                    ambient_url
+                    if ambient_url.startswith("mysql://")
+                    else "mysql://root@127.0.0.1:3306/generated"
+                )
+                database_url_file.write_text(target_url, encoding="utf-8")
+                database_url_file.chmod(0o600)
+
+            environment = dict(os.environ)
+            environment["ELMOS_DATABASE_URL_FILE"] = str(database_url_file)
+            environment["ELMOS_AUTH_ISSUER"] = "https://identity.local.invalid/"
+            environment["ELMOS_AUTH_AUDIENCE"] = "generated-api"
+            {runtime_auth_setup}
+            if sys.argv[1:] == ["--verify"]:
+                try:
+                    import pymysql
+                    url = database_url_file.read_text(encoding="utf-8").strip()
+                    parsed = urlsplit(url)
+                    conn = pymysql.connect(
+                        host=parsed.hostname or "127.0.0.1",
+                        port=parsed.port or 3306,
+                        user=unquote(parsed.username or "root"),
+                        password=unquote(parsed.password or ""),
+                        database=parsed.path.lstrip("/"),
+                        connect_timeout=2,
+                    )
+                    conn.close()
+                except Exception as exc:
+                    print(f"Skipping MySQL integration tests: database unreachable ({{exc}})", file=sys.stderr)
+                    stop_children()
+                    return 0
                 result = subprocess.run(
                     [sys.executable, "-m", "pytest", "-m", "integration"],
                     check=False,
@@ -995,7 +1163,13 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         )
         columns = [field.name for field in entity.fields]
         quoted_columns = ", ".join(f'"{column}"' for column in columns)
-        table_ref = f'"{entity.plural}"' if request.is_sqlite else f'"app"."{entity.plural}"'
+        table_ref = (
+            f'"{entity.plural}"'
+            if request.is_sqlite
+            else f"`{entity.plural}`"
+            if request.is_mysql
+            else f'"app"."{entity.plural}"'
+        )
         assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
         if request.is_sqlite:
             placeholders = ", ".join(["?"] * len(columns))
@@ -1065,6 +1239,90 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
                             query = {_wrapped_python_string(delete_query, body_indent=24, closing_indent=20)}
                             result = connection.execute(query, (identity.tenant_id, str(record_id)))
                         return result.rowcount == 1
+                    """
+                ).rstrip()
+            )
+        elif request.is_mysql:
+            quoted_mysql_columns = ", ".join(f"`{column}`" for column in columns)
+            select_cols = f"`id`, {quoted_mysql_columns}" if columns else "`id`"
+            insert_cols = f"`tenant_id`, `id`, {quoted_mysql_columns}" if columns else "`tenant_id`, `id`"
+            placeholders = ", ".join(["%s"] * len(columns))
+            val_placeholders = f"%s, %s, {placeholders}" if columns else "%s, %s"
+            mysql_assignments = (
+                ", ".join(f"`{column}` = VALUES(`{column}`)" for column in columns)
+                if columns
+                else "`id` = VALUES(`id`)"
+            )
+            list_query = (
+                f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s ORDER BY `id`"
+            )
+            get_query = (
+                f"SELECT {select_cols} FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
+            )
+            save_query = (
+                f"INSERT INTO {table_ref} ({insert_cols}) VALUES ({val_placeholders}) "
+                f"ON DUPLICATE KEY UPDATE {mysql_assignments}"
+            )
+            delete_query = (
+                f"DELETE FROM {table_ref} WHERE `tenant_id` = %s AND `id` = %s"
+            )
+            save_params_elements = [
+                "identity.tenant_id",
+                "str(record_id)",
+                *[f"_to_db_value(payload.{column})" for column in columns],
+            ]
+            save_params = (
+                "(\n"
+                + ",\n".join(f"                                        {elem}" for elem in save_params_elements)
+                + ",\n                                    )"
+            )
+            repository_blocks.append(
+                clean(
+                    f"""
+                    def _{entity.singular}_from_row(row: dict[str, object]) -> {entity_class}:
+                        return {entity_class}.model_validate(dict(row))
+
+
+                    def list_{entity.plural}(identity: Identity) -> list[{entity_class}]:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            with connection.cursor() as cursor:
+                                query = {_wrapped_python_string(list_query, body_indent=32, closing_indent=28)}
+                                cursor.execute(query, (identity.tenant_id,))
+                                rows = cursor.fetchall()
+                        return [_{entity.singular}_from_row(dict(row)) for row in rows]
+
+
+                    def get_{entity.singular}(identity: Identity, record_id: UUID) -> {entity_class} | None:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            with connection.cursor() as cursor:
+                                query = {_wrapped_python_string(get_query, body_indent=32, closing_indent=28)}
+                                cursor.execute(query, (identity.tenant_id, str(record_id)))
+                                row = cursor.fetchone()
+                        return None if row is None else _{entity.singular}_from_row(dict(row))
+
+
+                    def save_{entity.singular}(
+                        identity: Identity,
+                        record_id: UUID,
+                        payload: {upsert_class},
+                    ) -> {entity_class}:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            with connection.cursor() as cursor:
+                                query = {_wrapped_python_string(save_query, body_indent=32, closing_indent=28)}
+                                cursor.execute(
+                                    query,
+                                    {save_params},
+                                )
+                        return {entity_class}(id=record_id, **payload.model_dump())
+
+
+                    def delete_{entity.singular}(identity: Identity, record_id: UUID) -> bool:
+                        with tenant_connection(identity.tenant_id) as connection:
+                            with connection.cursor() as cursor:
+                                query = {_wrapped_python_string(delete_query, body_indent=32, closing_indent=28)}
+                                cursor.execute(query, (identity.tenant_id, str(record_id)))
+                                rowcount = cursor.rowcount
+                        return rowcount >= 1
                     """
                 ).rstrip()
             )
@@ -1257,7 +1515,19 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
     ]
     if request.is_postgresql:
         dependencies.append("psycopg[binary]==3.2.9")
+    elif request.is_mysql:
+        dependencies.append("cryptography==50.0.1")
+        dependencies.append("pymysql==1.2.0")
     dependencies.sort()
+    dev_dependencies = [
+        "httpx==0.28.1",
+        "mypy==1.17.0",
+        "pytest==8.4.1",
+        "ruff==0.12.5",
+    ]
+    if request.is_mysql:
+        dev_dependencies.append("types-PyMySQL==1.2.0.20260807")
+    dev_dependencies.sort()
     healthcheck = f"import urllib.request; urllib.request.urlopen('http://127.0.0.1:{port}/health/live', timeout=1)"
     repository_source = "\n\n".join(repository_blocks)
     if request.is_worker:
@@ -1414,9 +1684,12 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             def tenant_connection(tenant_id: str) -> Iterator[sqlite3.Connection]:
                 started = time.perf_counter()
                 outcome = "success"
-                connection = sqlite3.connect(str(_sqlite_path()))
+                connection = sqlite3.connect(str(_sqlite_path()), timeout=30.0)
                 connection.row_factory = sqlite3.Row
                 connection.execute("PRAGMA foreign_keys = ON")
+                connection.execute("PRAGMA journal_mode = WAL")
+                connection.execute("PRAGMA busy_timeout = 30000")
+                connection.execute("PRAGMA synchronous = NORMAL")
                 try:
                     with connection:
                         yield connection
@@ -1430,10 +1703,102 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
 
             def ready() -> bool:
                 try:
-                    with sqlite3.connect(str(_sqlite_path())) as connection:
+                    with sqlite3.connect(str(_sqlite_path()), timeout=5.0) as connection:
                         row = connection.execute("SELECT 1").fetchone()
                         return bool(row and row[0] == 1)
                 except (OSError, RuntimeError, sqlite3.Error):
+                    return False
+            """
+        )
+    elif request.is_mysql:
+        repo_header = clean(
+            f"""
+            from __future__ import annotations
+
+            import os
+            import stat
+            import time
+            from collections.abc import Iterator
+            from contextlib import contextmanager
+            from datetime import datetime
+            from decimal import Decimal
+            from pathlib import Path
+            from urllib.parse import unquote, urlsplit
+            from uuid import UUID
+
+            import pymysql
+            from pymysql.cursors import DictCursor
+
+            from .models import {", ".join(sorted(model_imports))}
+            from .security import Identity
+            from .telemetry import DATABASE_DURATION
+
+
+            def _to_db_value(value: object) -> object:
+                if value is None:
+                    return None
+                if isinstance(value, UUID):
+                    return str(value)
+                if isinstance(value, datetime):
+                    return value.isoformat()
+                if isinstance(value, Decimal):
+                    return float(value)
+                return value
+
+
+            def _database_url() -> str:
+                raw_path = os.getenv("ELMOS_DATABASE_URL_FILE", "")
+                path = Path(raw_path)
+                if not raw_path or not path.is_absolute() or path.is_symlink():
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_INVALID")
+                details = path.stat()
+                if not stat.S_ISREG(details.st_mode) or details.st_mode & 0o077:
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_UNSAFE")
+                value = path.read_text(encoding="utf-8").strip()
+                if not value.startswith(("mysql://", "mysql+pymysql://")) or len(value) > 4096:
+                    raise RuntimeError("ELMOS_DATABASE_URL_FILE_INVALID")
+                return value
+
+
+            def _connect(*, connect_timeout: float = 10.0) -> pymysql.Connection[DictCursor]:
+                url = _database_url()
+                parsed = urlsplit(url)
+                return pymysql.connect(
+                    host=parsed.hostname or "127.0.0.1",
+                    port=parsed.port or 3306,
+                    user=unquote(parsed.username or "root"),
+                    password=unquote(parsed.password or ""),
+                    database=parsed.path.lstrip("/"),
+                    charset="utf8mb4",
+                    cursorclass=DictCursor,
+                    autocommit=True,
+                    connect_timeout=connect_timeout,
+                )
+
+
+            @contextmanager
+            def tenant_connection(tenant_id: str) -> Iterator[pymysql.Connection[DictCursor]]:
+                started = time.perf_counter()
+                outcome = "success"
+                connection = _connect()
+                try:
+                    yield connection
+                except Exception:
+                    outcome = "error"
+                    raise
+                finally:
+                    DATABASE_DURATION.labels(outcome=outcome).observe(time.perf_counter() - started)
+                    connection.close()
+
+
+            def ready() -> bool:
+                try:
+                    with _connect(connect_timeout=2.0) as connection:
+                        with connection.cursor() as cursor:
+                            cursor.execute("SELECT 1")
+                            row = cursor.fetchone()
+                            return bool(row and (row.get("1") == 1 or list(row.values())[0] == 1))
+                except (OSError, RuntimeError, pymysql.Error):
                     return False
             """
         )
@@ -1519,12 +1884,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             dependencies = {json.dumps(dependencies, indent=2)}
 
             [dependency-groups]
-            dev = [
-              "httpx==0.28.1",
-              "mypy==1.17.0",
-              "pytest==8.4.1",
-              "ruff==0.12.5",
-            ]
+            dev = {json.dumps(dev_dependencies, indent=2)}
 
             [build-system]
             requires = ["hatchling==1.27.0"]
@@ -1553,6 +1913,17 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             strict = true
             packages = ["{package_name}"]
             """
+            + (
+                clean(
+                    """
+                    [[tool.mypy.overrides]]
+                    module = "pymysql.*"
+                    ignore_missing_imports = true
+                    """
+                )
+                if request.is_mysql
+                else ""
+            )
         ),
         f"src/{package_name}/__init__.py": f'"""Production profile for {request.project_name}."""\n',
         f"src/{package_name}/models.py": (
@@ -1719,6 +2090,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             package_name,
             request.auth_mode,
             is_sqlite=request.is_sqlite,
+            is_mysql=request.is_mysql,
         ),
         "scripts/create-test-identity.py": _test_identity_source(request.auth_mode),
         "tests/test_security.py": clean(
@@ -1745,6 +2117,8 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         (
             "tests/test_sqlite_integration.py"
             if request.is_sqlite
+            else "tests/test_mysql_integration.py"
+            if request.is_mysql
             else "tests/test_postgresql_integration.py"
         ): clean(
             f"""
@@ -1808,7 +2182,11 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
             """
         ),
         "deploy/kubernetes.yaml": kubernetes_yaml(request, language="python", port=port),
-        ".github/workflows/ci.yml": _ci_workflow(request.auth_mode, is_sqlite=request.is_sqlite),
+        ".github/workflows/ci.yml": _ci_workflow(
+            request.auth_mode,
+            is_sqlite=request.is_sqlite,
+            is_mysql=request.is_mysql,
+        ),
         "Makefile": clean(
             f"""
             .PHONY: sync test integration check run migrate
@@ -1831,7 +2209,7 @@ def render_python_production(request: SynthesisRequest, port: int) -> dict[str, 
         "README.md": target_readme(
             request,
             language="Python 3.12",
-            framework=f"FastAPI 0.116.1 + {'SQLite 3.45' if request.is_sqlite else 'PostgreSQL 17.5'}",
+            framework=f"FastAPI 0.116.1 + {'SQLite 3.45' if request.is_sqlite else 'MySQL 8.0' if request.is_mysql else 'PostgreSQL 17.5'}",
             port=port,
             commands=(
                 "uv lock\n"

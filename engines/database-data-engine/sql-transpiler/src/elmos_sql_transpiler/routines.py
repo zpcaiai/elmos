@@ -122,6 +122,12 @@ def is_end_statement(statement: exp.Expression) -> bool:
     return isinstance(statement, exp.EndStatement)
 
 
+def _require_expression(node: object, *, code: str, message: str) -> exp.Expression:
+    if not isinstance(node, exp.Expression):
+        raise RoutineBlocked(code, message)
+    return node
+
+
 def is_routine_command(statement: exp.Expression) -> bool:
     if not isinstance(statement, exp.Command):
         return False
@@ -140,9 +146,11 @@ def convert(
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind") or "").upper()
         if kind == "FUNCTION":
-            return _emit_function(_parse_create_function(statement, source_dialect), target_dialect)
+            parsed = _parse_create_function(statement, source_dialect)
+            return _emit_function(parsed, target_dialect)
         if kind == "PROCEDURE":
-            return _emit_procedure(_parse_create_procedure(statement, source_dialect), target_dialect)
+            parsed_proc = _parse_create_procedure(statement, source_dialect)
+            return _emit_procedure(parsed_proc, target_dialect)
         if kind == "TRIGGER":
             return _emit_trigger(_parse_create_trigger(statement), target_dialect)
         if kind in {"MACRO", "AGGREGATE"}:
@@ -156,7 +164,8 @@ def convert(
         # Oracle/T-SQL/SQLite parse CREATE FUNCTION/TRIGGER as Command plus a
         # trailing EndStatement. The conversion is of the Command; the END
         # token must be skipped regardless of which target we emit toward.
-        return replace(_convert_command(statement, source_dialect, target_dialect), skip_following_end=True)
+        converted = _convert_command(statement, source_dialect, target_dialect)
+        return replace(converted, skip_following_end=True)
     return None
 
 
@@ -169,13 +178,19 @@ def reparse_routine_sql(sql: str, dialect: str, name: str) -> tuple[exp.Expressi
         parsed = sqlglot.parse(sql, read=dialect, error_level=ErrorLevel.RAISE)
     except (ParseError, TokenError) as error:
         raise UnsupportedError("routine target SQL failed exact-dialect reparsing") from error
-    statements = [item for item in parsed if not is_end_statement(item)]
+    statements: list[exp.Expression] = []
+    for item in parsed:
+        if not isinstance(item, exp.Expression):
+            raise UnsupportedError("routine target re-parse produced an empty statement")
+        if not is_end_statement(item):
+            statements.append(item)
     if len(statements) != 1:
         raise UnsupportedError("routine target re-parse did not yield one statement")
     target = statements[0]
     if isinstance(target, exp.Create):
         return target, False
-    if isinstance(target, exp.Command) and name.casefold() in str(target.args.get("expression") or "").casefold():
+    payload = str(target.args.get("expression") or "")
+    if isinstance(target, exp.Command) and name.casefold() in payload.casefold():
         return target, True
     raise UnsupportedError("routine target re-parse did not preserve the emitted identity")
 
@@ -371,7 +386,10 @@ def _allowed_expression(node: exp.Expression, parameters: frozenset[str]) -> Non
         return
     if isinstance(node, exp.Concat):
         if len(node.expressions) < 2:
-            raise RoutineBlocked("ROUTINE_BODY_UNSUPPORTED", "CONCAT requires at least two arguments")
+            raise RoutineBlocked(
+                "ROUTINE_BODY_UNSUPPORTED",
+                "CONCAT requires at least two arguments",
+            )
         for item in node.expressions:
             _allowed_expression(item, parameters)
         return
@@ -403,21 +421,26 @@ def _allowed_expression(node: exp.Expression, parameters: frozenset[str]) -> Non
 
 
 def _unwrap_return_expression(node: exp.Expression) -> exp.Expression:
-    current = node
-    if isinstance(current, exp.Return) and current.this is not None:
+    current: exp.Expression = node
+    if isinstance(current, exp.Return) and isinstance(current.this, exp.Expression):
         current = current.this
     if (
         isinstance(current, exp.Alias)
         and isinstance(current.args.get("alias"), exp.Identifier)
         and str(current.args["alias"].this).upper() == "END"
+        and isinstance(current.this, exp.Expression)
     ):
         current = current.this
-    if isinstance(current, exp.Paren) and current.this is not None:
+    if isinstance(current, exp.Paren) and isinstance(current.this, exp.Expression):
         current = current.this
     return current
 
 
-def _expression_from_body(body: exp.Expression, source_dialect: str, parameters: frozenset[str]) -> exp.Expression:
+def _expression_from_body(
+    body: exp.Expression,
+    source_dialect: str,
+    parameters: frozenset[str],
+) -> exp.Expression:
     if isinstance(body, exp.Heredoc):
         inner_sql = str(body.this)
         parsed = sqlglot.parse(inner_sql, read=source_dialect, error_level=ErrorLevel.RAISE)
@@ -434,7 +457,15 @@ def _expression_from_body(body: exp.Expression, source_dialect: str, parameters:
                 "ROUTINE_BODY_UNSUPPORTED",
                 "SQL function bodies must be a single SELECT of one expression",
             )
-        return _expression_from_body(parsed[0], source_dialect, parameters)
+        return _expression_from_body(
+            _require_expression(
+                parsed[0],
+                code="ROUTINE_BODY_UNSUPPORTED",
+                message="SQL function bodies must be a single SELECT of one expression",
+            ),
+            source_dialect,
+            parameters,
+        )
     if isinstance(body, exp.Select):
         if any(
             body.args.get(key) is not None
@@ -449,9 +480,13 @@ def _expression_from_body(body: exp.Expression, source_dialect: str, parameters:
                 "ROUTINE_BODY_UNSUPPORTED",
                 "SQL function bodies must select exactly one expression",
             )
-        expression = body.expressions[0]
+        expression: exp.Expression = body.expressions[0]
         if isinstance(expression, exp.Alias):
-            expression = expression.this
+            expression = _require_expression(
+                expression.this,
+                code="ROUTINE_BODY_UNSUPPORTED",
+                message="SQL function bodies must select exactly one expression",
+            )
         _allowed_expression(expression, parameters)
         return expression
     if isinstance(body, (exp.Return, exp.Paren)):
@@ -490,7 +525,10 @@ def _language_and_return(statement: exp.Create) -> tuple[str, bool]:
                 # retained as an obligation rather than mapped to a weaker
                 # target declaration.
                 stability_dropped = True
-            elif isinstance(prop, (exp.StrictProperty, exp.SqlSecurityProperty, exp.SetConfigProperty)):
+            elif isinstance(
+                prop,
+                (exp.StrictProperty, exp.SqlSecurityProperty, exp.SetConfigProperty),
+            ):
                 raise RoutineBlocked(
                     "ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
                     "STRICT, SECURITY DEFINER and SET search_path stay fail-closed",
@@ -566,12 +604,17 @@ def _parse_function_text(sql: str, source_dialect: str) -> ScalarFunction:
             )
     names = frozenset(item.name.casefold() for item in parameters)
     try:
-        expression = sqlglot.parse_one(match.group("body"), read=source_dialect)
+        parsed_body = sqlglot.parse_one(match.group("body"), read=source_dialect)
     except (ParseError, TokenError) as error:
         raise RoutineBlocked(
             "ROUTINE_BODY_UNSUPPORTED",
             "opaque function RETURN expression did not parse as a typed scalar",
         ) from error
+    expression = _require_expression(
+        parsed_body,
+        code="ROUTINE_BODY_UNSUPPORTED",
+        message="opaque function RETURN expression did not parse as a typed scalar",
+    )
     _allowed_expression(expression, names)
     return ScalarFunction(
         name=_require_identifier(match.group("name"), "routine name"),
@@ -590,7 +633,11 @@ def _single_dml(body: exp.Expression, source_dialect: str) -> exp.Expression:
                 "ROUTINE_PROCEDURE_UNSUPPORTED",
                 "SQL procedures must contain exactly one DML statement",
             )
-        current = parsed[0]
+        current = _require_expression(
+            parsed[0],
+            code="ROUTINE_PROCEDURE_UNSUPPORTED",
+            message="SQL procedures must contain exactly one DML statement",
+        )
     if isinstance(current, exp.Block):
         statements = [item for item in current.expressions if not is_end_statement(item)]
         if len(statements) != 1:
@@ -663,7 +710,14 @@ def _parse_procedure_text(sql: str, source_dialect: str) -> SqlProcedure:
         )
     return SqlProcedure(
         name=_require_identifier(match.group("name"), "routine name"),
-        body=_single_dml(parsed[0], source_dialect),
+        body=_single_dml(
+            _require_expression(
+                parsed[0],
+                code="ROUTINE_PROCEDURE_UNSUPPORTED",
+                message="SQL procedures must contain exactly one DML statement",
+            ),
+            source_dialect,
+        ),
     )
 
 
@@ -687,10 +741,16 @@ def _parse_create_trigger(statement: exp.Create) -> SqlTrigger:
         raise RoutineBlocked("ROUTINE_TRIGGER_UNSUPPORTED", "trigger metadata is unavailable")
     timing = str(trigger_properties.args.get("timing") or "").upper()
     if timing not in {"BEFORE", "AFTER"}:
-        raise RoutineBlocked("ROUTINE_TRIGGER_UNSUPPORTED", "only BEFORE/AFTER row triggers are admitted")
+        raise RoutineBlocked(
+            "ROUTINE_TRIGGER_UNSUPPORTED",
+            "only BEFORE/AFTER row triggers are admitted",
+        )
     events = tuple(trigger_properties.args.get("events") or [])
     if len(events) != 1:
-        raise RoutineBlocked("ROUTINE_TRIGGER_UNSUPPORTED", "triggers must declare exactly one event")
+        raise RoutineBlocked(
+            "ROUTINE_TRIGGER_UNSUPPORTED",
+            "triggers must declare exactly one event",
+        )
     event = str(events[0].this).upper() if isinstance(events[0], exp.TriggerEvent) else ""
     if event not in {"INSERT", "UPDATE", "DELETE"}:
         raise RoutineBlocked("ROUTINE_TRIGGER_UNSUPPORTED", "trigger event is unsupported")
@@ -780,7 +840,11 @@ def _expression_sql(
     target_dialect: str,
 ) -> str:
     retargeted = _retarget_expression(expression, parameters, target_dialect)
-    rendered = retargeted.sql(dialect=target_dialect, pretty=False, unsupported_level=ErrorLevel.RAISE)
+    rendered = retargeted.sql(
+        dialect=target_dialect,
+        pretty=False,
+        unsupported_level=ErrorLevel.RAISE,
+    )
     return f"({rendered})"
 
 
@@ -829,16 +893,34 @@ def _emit_function(function: ScalarFunction, target_dialect: str) -> RoutineConv
             f"CREATE FUNCTION {function.name}({params}) RETURNS {returns} "
             f"LANGUAGE SQL AS $$ SELECT {value} $$"
         )
-        return _conversion(sql, "FUNCTION", function.name, _function_obligations(function), (FUNCTION_RULE,))
+        return _conversion(
+            sql,
+            "FUNCTION",
+            function.name,
+            _function_obligations(function),
+            (FUNCTION_RULE,),
+        )
     if target_dialect == "mysql":
         sql = f"CREATE FUNCTION {function.name}({params}) RETURNS {returns} RETURN {value}"
-        return _conversion(sql, "FUNCTION", function.name, _function_obligations(function), (FUNCTION_RULE,))
+        return _conversion(
+            sql,
+            "FUNCTION",
+            function.name,
+            _function_obligations(function),
+            (FUNCTION_RULE,),
+        )
     if target_dialect == "tsql":
         sql = (
             f"CREATE FUNCTION {function.name}({params}) RETURNS {returns} "
             f"AS BEGIN RETURN {value} END"
         )
-        return _conversion(sql, "FUNCTION", function.name, _function_obligations(function), (FUNCTION_RULE,))
+        return _conversion(
+            sql,
+            "FUNCTION",
+            function.name,
+            _function_obligations(function),
+            (FUNCTION_RULE,),
+        )
     if target_dialect == "oracle":
         sql = (
             f"CREATE FUNCTION {function.name}({params}) RETURN {returns} "
@@ -870,20 +952,42 @@ def _emit_function(function: ScalarFunction, target_dialect: str) -> RoutineConv
 
 
 def _dml_sql(body: exp.Expression, target_dialect: str) -> str:
-    return body.sql(dialect=target_dialect, pretty=False, unsupported_level=ErrorLevel.RAISE).rstrip(";")
+    return body.sql(
+        dialect=target_dialect,
+        pretty=False,
+        unsupported_level=ErrorLevel.RAISE,
+    ).rstrip(";")
 
 
 def _emit_procedure(procedure: SqlProcedure, target_dialect: str) -> RoutineConversion:
     body = _dml_sql(procedure.body, target_dialect)
     if target_dialect in {"postgres", "postgresql"}:
         sql = f"CREATE PROCEDURE {procedure.name}() LANGUAGE SQL AS $$ {body} $$"
-        return _conversion(sql, "PROCEDURE", procedure.name, (ROUTINE_SQL_PROCEDURE,), (PROCEDURE_RULE,))
+        return _conversion(
+            sql,
+            "PROCEDURE",
+            procedure.name,
+            (ROUTINE_SQL_PROCEDURE,),
+            (PROCEDURE_RULE,),
+        )
     if target_dialect == "mysql":
         sql = f"CREATE PROCEDURE {procedure.name}() BEGIN {body}; END"
-        return _conversion(sql, "PROCEDURE", procedure.name, (ROUTINE_SQL_PROCEDURE,), (PROCEDURE_RULE,))
+        return _conversion(
+            sql,
+            "PROCEDURE",
+            procedure.name,
+            (ROUTINE_SQL_PROCEDURE,),
+            (PROCEDURE_RULE,),
+        )
     if target_dialect == "oracle":
         sql = f"CREATE PROCEDURE {procedure.name} AS BEGIN {body}; END;"
-        return _conversion(sql, "PROCEDURE", procedure.name, (ROUTINE_SQL_PROCEDURE,), (PROCEDURE_RULE,))
+        return _conversion(
+            sql,
+            "PROCEDURE",
+            procedure.name,
+            (ROUTINE_SQL_PROCEDURE,),
+            (PROCEDURE_RULE,),
+        )
     if target_dialect == "tsql":
         sql = f"CREATE PROCEDURE {procedure.name} AS BEGIN {body} END"
         return _conversion(
@@ -914,7 +1018,13 @@ def _emit_trigger(trigger: SqlTrigger, target_dialect: str) -> RoutineConversion
             f"FOR EACH ROW BEGIN CALL {trigger.function_name}(); END"
         )
         return _conversion(
-            sql, "TRIGGER", trigger.name, (ROUTINE_ROW_TRIGGER,), (TRIGGER_RULE,), skip_end=True, opaque=True
+            sql,
+            "TRIGGER",
+            trigger.name,
+            (ROUTINE_ROW_TRIGGER,),
+            (TRIGGER_RULE,),
+            skip_end=True,
+            opaque=True,
         )
     if target_dialect == "oracle":
         sql = (
@@ -922,7 +1032,13 @@ def _emit_trigger(trigger: SqlTrigger, target_dialect: str) -> RoutineConversion
             f"ON {trigger.table} FOR EACH ROW BEGIN {trigger.function_name}(); END;"
         )
         return _conversion(
-            sql, "TRIGGER", trigger.name, (ROUTINE_ROW_TRIGGER,), (TRIGGER_RULE,), skip_end=True, opaque=True
+            sql,
+            "TRIGGER",
+            trigger.name,
+            (ROUTINE_ROW_TRIGGER,),
+            (TRIGGER_RULE,),
+            skip_end=True,
+            opaque=True,
         )
     if target_dialect == "tsql":
         sql = (
@@ -930,7 +1046,13 @@ def _emit_trigger(trigger: SqlTrigger, target_dialect: str) -> RoutineConversion
             f"AS BEGIN EXEC {trigger.function_name}; END"
         )
         return _conversion(
-            sql, "TRIGGER", trigger.name, (ROUTINE_ROW_TRIGGER,), (TRIGGER_RULE,), skip_end=True, opaque=True
+            sql,
+            "TRIGGER",
+            trigger.name,
+            (ROUTINE_ROW_TRIGGER,),
+            (TRIGGER_RULE,),
+            skip_end=True,
+            opaque=True,
         )
     if target_dialect == "sqlite":
         sql = (
@@ -938,7 +1060,13 @@ def _emit_trigger(trigger: SqlTrigger, target_dialect: str) -> RoutineConversion
             f"BEGIN SELECT {trigger.function_name}(); END"
         )
         return _conversion(
-            sql, "TRIGGER", trigger.name, (ROUTINE_ROW_TRIGGER,), (TRIGGER_RULE,), skip_end=True, opaque=True
+            sql,
+            "TRIGGER",
+            trigger.name,
+            (ROUTINE_ROW_TRIGGER,),
+            (TRIGGER_RULE,),
+            skip_end=True,
+            opaque=True,
         )
     raise RoutineBlocked(
         "ROUTINE_TARGET_UNSUPPORTED",

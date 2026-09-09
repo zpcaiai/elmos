@@ -1179,7 +1179,7 @@ def runtime_commands(
                 state = root / "python" / ".elmos-runtime"
                 runtime_arguments = (
                     ["run", "--no-sync", "python", "scripts/local_runtime.py"]
-                    if storage in {"postgresql", "sqlite"}
+                    if storage in {"postgresql", "sqlite", "mysql"}
                     else ["run", "--no-sync", "python", "-m", packages[0].parent.name]
                 )
                 plan: dict[str, Any] = {
@@ -1191,11 +1191,11 @@ def runtime_commands(
                         "HOST": "127.0.0.1",
                         "ELMOS_RUNTIME_STATE_DIR": str(state),
                     },
-                    "providers": [storage] if storage in {"postgresql", "sqlite"} else [],
+                    "providers": [storage] if storage in {"postgresql", "sqlite", "mysql"} else [],
                     "port": port,
                     **execution,
                 }
-                if storage in {"postgresql", "sqlite"}:
+                if storage in {"postgresql", "sqlite", "mysql"}:
                     integration_environment = {
                         "ELMOS_DATABASE_URL_FILE": str(state / "database-url"),
                         "ELMOS_AUTH_ISSUER": "https://identity.local.invalid/",
@@ -1382,6 +1382,14 @@ def verify_workspace(
         results.extend(provider_checks)
     if any(isinstance(item, dict) and item.get("storage") == "sqlite" for item in applications):
         provider_ready["sqlite"] = True
+    if any(isinstance(item, dict) and item.get("storage") == "mysql" for item in applications):
+        try:
+            with socket.socket() as probe_sock:
+                probe_sock.settimeout(0.5)
+                probe_sock.connect(("127.0.0.1", 3306))
+            provider_ready["mysql"] = True
+        except OSError:
+            provider_ready["mysql"] = False
     for language in sorted(selected):
         exact_toolchains[language], checks = _check_exact_toolchain(
             language,

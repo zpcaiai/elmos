@@ -499,18 +499,19 @@ def assess_commercial(
         if not obligations:
             obligations.add("TARGET_SEMANTICS_REVIEW_REQUIRED")
         routine_command = routines.is_routine_command(statement)
-        if routines.is_end_statement(statement) and not routine_command:
+        opaque_source = not routine_command and (
+            routines.is_end_statement(statement) or isinstance(statement, exp.Command)
+        )
+        if opaque_source:
             obligations.add("OPAQUE_COMMAND_SEMANTICS")
             if first_opaque_statement is None:
                 first_opaque_statement = index
-        elif isinstance(statement, exp.Command) and not routine_command:
-            obligations.add("OPAQUE_COMMAND_SEMANTICS")
-            if first_opaque_statement is None:
-                first_opaque_statement = index
-        if routine_command or (
-            isinstance(statement, exp.Create)
-            and str(statement.args.get("kind") or "").upper() in {"FUNCTION", "PROCEDURE", "TRIGGER"}
-        ):
+        create_kind = (
+            str(statement.args.get("kind") or "").upper()
+            if isinstance(statement, exp.Create)
+            else ""
+        )
+        if routine_command or create_kind in {"FUNCTION", "PROCEDURE", "TRIGGER"}:
             skip_following_end = True
         parameter_tokens = _parameter_nodes(statement, source.dialect)
         observed_parameter_tokens.extend(parameter_tokens)

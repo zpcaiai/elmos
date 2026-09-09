@@ -62,27 +62,54 @@ class EntitySql:
         return len(self.columns)
 
 
-def _quoted(columns: tuple[str, ...]) -> str:
-    return ", ".join(f'"{column}"' for column in columns)
+def _quoted(columns: tuple[str, ...], is_mysql: bool = False) -> str:
+    quote = "`" if is_mysql else '"'
+    return ", ".join(f"{quote}{column}{quote}" for column in columns)
 
 
-def entity_sql(entity: EntitySpec, *, placeholder: str = "?", is_sqlite: bool = False) -> EntitySql:
+def entity_sql(
+    entity: EntitySpec,
+    *,
+    placeholder: str = "?",
+    is_sqlite: bool = False,
+    is_mysql: bool = False,
+) -> EntitySql:
     """Build the four statements for an entity in a placeholder style.
 
     ``placeholder`` is a format string receiving the 1-based parameter index so
     both positional (``?``) and ordinal (``$1``, ``%s``) dialects are covered.
     """
     columns = tuple(field.name for field in entity.fields)
-    quoted = _quoted(columns)
-    table = f'"{entity.plural}"' if is_sqlite else f'"app"."{entity.plural}"'
+    quoted = _quoted(columns, is_mysql=is_mysql)
+    if is_mysql:
+        table = f"`{entity.plural}`"
+    elif is_sqlite:
+        table = f'"{entity.plural}"'
+    else:
+        table = f'"app"."{entity.plural}"'
 
     def mark(index: int) -> str:
         return placeholder.format(index) if "{" in placeholder else placeholder
 
     insert_values = ", ".join(mark(index) for index in range(3, 3 + len(columns)))
-    assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
     # noqa: S608 below - every identifier here is produced by the strict entity
     # and field validators, and every value is bound as a parameter.
+    if is_mysql:
+        assignments = ", ".join(f"`{column}` = VALUES(`{column}`)" for column in columns)
+        return EntitySql(
+            entity=entity.singular,
+            plural=entity.plural,
+            columns=columns,
+            list_sql=f'SELECT `id`, {quoted} FROM {table} WHERE `tenant_id` = {mark(1)} ORDER BY `id`',  # noqa: S608
+            get_sql=f'SELECT `id`, {quoted} FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
+            upsert_sql=(
+                f"INSERT INTO {table} (`tenant_id`, `id`, {quoted}) "  # noqa: S608
+                f"VALUES ({mark(1)}, {mark(2)}, {insert_values}) "
+                f"ON DUPLICATE KEY UPDATE {assignments}"
+            ),
+            delete_sql=f'DELETE FROM {table} WHERE `tenant_id` = {mark(1)} AND `id` = {mark(2)}',  # noqa: S608
+        )
+    assignments = ", ".join(f'"{column}" = EXCLUDED."{column}"' for column in columns)
     if is_sqlite:
         return EntitySql(
             entity=entity.singular,
@@ -115,7 +142,15 @@ def entity_sql(entity: EntitySpec, *, placeholder: str = "?", is_sqlite: bool = 
 
 
 def all_entity_sql(request: SynthesisRequest, *, placeholder: str = "?") -> list[EntitySql]:
-    return [entity_sql(entity, placeholder=placeholder, is_sqlite=request.is_sqlite) for entity in request.entities]
+    return [
+        entity_sql(
+            entity,
+            placeholder=placeholder,
+            is_sqlite=request.is_sqlite,
+            is_mysql=request.is_mysql,
+        )
+        for entity in request.entities
+    ]
 
 
 def uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
@@ -242,6 +277,8 @@ def production_contract(request: SynthesisRequest) -> dict[str, object]:
         "isolation": (
             "sqlite-tenant-scoped-queries"
             if request.is_sqlite
+            else "mysql-tenant-scoped-queries"
+            if request.is_mysql
             else "postgresql-row-level-security-forced"
         ),
         "environment": {

@@ -415,7 +415,7 @@ def create_draft(
                     "impact": "high",
                 }
             )
-    if persistence in {"postgresql", "sqlite"}:
+    if persistence in {"postgresql", "sqlite", "mysql"}:
         # The production profile takes three of the four kinds. `one-to-many`
         # is the same foreign key declared from the other end, so it is judged
         # -- and its cycle contribution counted -- in the canonical orientation,
@@ -497,7 +497,7 @@ def create_draft(
                 "predicate": {"type": "record-exists-on-mutation"},
             }
         )
-    if (persistence in {"postgresql", "sqlite"} or auth_mode in {"jwt", "oidc"}) and any(
+    if (persistence in {"postgresql", "sqlite", "mysql"} or auth_mode in {"jwt", "oidc"}) and any(
         rule.get("enforcement") == "manual" for rule in normalized_rules
     ):
         questions.append(
