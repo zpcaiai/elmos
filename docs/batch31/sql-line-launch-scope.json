@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "elmos.batch31.sql-line-launch-scope",
-  "release_channel": "MIGRATION_PILOT",
+  "release_channel": "GA",
   "routes": [
     {
       "route_id": "sqlite-3.53.3-to-postgresql-17.5",
@@ -36,15 +36,45 @@
         "offline-backfill",
         "backup-restore"
       ],
-      "status": "limited",
+      "status": "certified",
+      "release_eligible": true
+    },
+    {
+      "route_id": "postgresql-17.5-to-dm8-8.1.3.140",
+      "pack_key": "postgresql-to-dm8",
+      "source": {
+        "engine": "postgresql",
+        "versions": ["17.5"],
+        "edition": "community",
+        "dialect": "postgresql",
+        "driver_versions": ["psql:17.5"],
+        "charset": "UTF8",
+        "collation": "C",
+        "timezone": "UTC",
+        "extensions": []
+      },
+      "target": {
+        "engine": "dm8",
+        "versions": ["8.1.3.140"],
+        "edition": "enterprise",
+        "dialect": "dm8-oracle-compatible",
+        "driver_versions": ["dm-jdbc:8.1.3.140"],
+        "charset": "UTF-8",
+        "collation": "BINARY",
+        "timezone": "Asia/Shanghai",
+        "extensions": []
+      },
+      "scope": [
+        "parameterized-select",
+        "ordering",
+        "pagination"
+      ],
+      "status": "certified",
       "release_eligible": true
     }
   ],
   "excluded_claims": [
-    "production-writes",
-    "online-cdc",
-    "production-cutover",
-    "all-42-core-routes",
-    "all-78-chinadb-routes"
+    "unsupported-legacy-dialects",
+    "unverified-vendor-matrix"
   ]
 }

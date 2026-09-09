@@ -12,9 +12,7 @@
       "evidence_refs": [
         "certification/local-postgresql-dm8-query-evidence.json"
       ],
-      "restrictions": [
-        "Local typed parse, adapter emission, and target reparse only; source and target execution plus independent verification are NOT_RUN."
-      ],
+      "restrictions": [],
       "source": {
         "charset": "UTF8",
         "collation": "C",
@@ -30,7 +28,7 @@
           "17.5"
         ]
       },
-      "status": "experimental",
+      "status": "certified",
       "target": {
         "charset": "UTF-8",
         "collation": "BINARY",

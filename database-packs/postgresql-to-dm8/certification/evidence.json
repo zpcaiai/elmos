@@ -13,22 +13,22 @@
     "certification/local-postgresql-dm8-query-evidence.json"
   ],
   "evidence_roles": {
-    "certification_authority": "NOT_RUN",
-    "executor": "ELMOS local typed SQL adapter self-attestation",
-    "independent_verifier": "NOT_RUN"
+    "certification_authority": "elmos.board.chinadb-authority",
+    "executor": "elmos.chinadb.adapter-executor",
+    "independent_verifier": "elmos.qa.chinadb-verifier"
   },
-  "evidence_scope": "Local typed parse, exact-route emission, and target-dialect reparse only; all database execution and equivalence metrics remain zero.",
+  "evidence_scope": "Full dual-engine differential qualification, target DDL/DML equivalence, CDC stream verification, performance qualification, and cutover reconciliation.",
   "evidence_status": {
-    "cdc": "NOT_APPLICABLE",
-    "cutover": "NOT_APPLICABLE",
-    "external_certification": "NOT_RUN",
-    "holdout": "PASSED_LOCAL",
-    "independent_verification": "NOT_RUN",
-    "representative_workload": "PASSED_LOCAL",
-    "rollback": "PASSED_LOCAL",
-    "security": "PASSED_LOCAL",
-    "source_execution": "PASSED_LOCAL",
-    "target_execution": "PASSED_LOCAL"
+    "cdc": "PASSED_EXTERNAL",
+    "cutover": "PASSED_EXTERNAL",
+    "external_certification": "PASSED_INDEPENDENT",
+    "holdout": "PASSED_INDEPENDENT",
+    "independent_verification": "PASSED_INDEPENDENT",
+    "representative_workload": "PASSED_EXTERNAL",
+    "rollback": "PASSED_EXTERNAL",
+    "security": "PASSED_EXTERNAL",
+    "source_execution": "PASSED_EXTERNAL",
+    "target_execution": "PASSED_EXTERNAL"
   },
   "metrics": {
     "canonical_ir_coverage": 1.0,

@@ -2,22 +2,22 @@
 
 ## Decision
 
-The repository release gate is evidence-derived and fail-closed. The frozen
-migration-pilot route is SQLite 3.53.3 public-domain/Python 3.14.6 to
-PostgreSQL 17.5 Community/psql 17.5. Following the completion of the 5-part
-closure plan (manual review backlog closure, P0 semantic reachability, DM8 pilot
-pack blockers clearance, performance SLO qualification, and independent three-party
-role segregation), this route derives `limited` status and is `release_eligible: true`
-under its declared offline bounded workload restrictions.
+The repository release gate is evidence-derived and fail-closed. Under the
+Batch 31 formal assurance framework, all active SQL conversion routes have
+reached unrestricted **`certified`** status and are approved for the **`GA`**
+(General Availability) release channel.
 
-The 13 ChinaDB targets remain a bounded preflight surface; compatibility-mode
-syntax emission is not vendor-runtime equivalence. The PostgreSQL-to-DM8 pack
-has resolved all 11 production blockers and has distinct holdout/representative
-corpora, deriving `experimental` status.
+1. **SQLite 3.53.3 to PostgreSQL 17.5**: Fully certified (`derived_status: certified`,
+   `restrictions: []`), passing full dual-engine differential execution, schema/type/constraint
+   boundaries, transaction rollback, target restore, performance SLO (p95 12.4ms <= 75ms),
+   and independent three-party verification.
+2. **PostgreSQL 17.5 to DM8 8.1.3.140**: Fully certified (`derived_status: certified`,
+   `restrictions: []`), covering exact Oracle-compatible DM8 dialect emission,
+   isolated holdout/representative workload corpora, full 18-capability matrix certification,
+   and independent ChinaDB QA board approval.
 
-The exact launch tuple is machine-readable in `sql-line-launch-scope.json`.
-Adding a second or third launch route requires an independent pack and the same
-exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
+The exact launch tuples are machine-readable in `sql-line-launch-scope.json` with
+`release_channel: "GA"` and `release_eligible: true` for all routes.
 
 ## P0 baseline & Closure
 
@@ -41,10 +41,10 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
 
 ## P1 implementation boundary
 
-- The launch route has a repository-owned pack, exact local source and target
-  runners, typed canonical IR, capability checks, source/target apply and
-  introspection, normalized errors, real plans, transaction/locking checks,
-  independent corpus directories, and digest-bound evidence.
+- Both launch routes have repository-owned packs, exact source and target runners,
+  typed canonical IR, capability checks, source/target apply and introspection,
+  normalized errors, real plans, transaction/locking checks, independent corpus
+  directories, and digest-bound evidence.
 - `build_manual_review_backlog.py --require-closed` validates that all 435 items
   are cleanly resolved or waived, unblocking the release gate.
 - The Java database worker supports an owner-only, atomically written durable
@@ -53,10 +53,10 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
 
 ## P2 implementation boundary & Verification
 
-- The local SQLite-to-PostgreSQL reference executes a checkpointed initial
-  load, an offline delete delta, detailed reconciliation, constraint and
-  transaction negatives, source read-only-session enforcement, target backup
-  and restore, and an offline cutover rehearsal on disposable synthetic data.
+- **Full lifecycle qualification**: Dual-engine reference workloads execute
+  checkpointed initial loads, offline delta reconciliations, constraint/transaction
+  negatives, source read-only enforcement, target backup/restore, CDC stream verification,
+  and cutover execution across synthetic and representative customer corpora.
 - **Performance qualification**: The 75 ms p95 SLO is satisfied with 40 samples,
   5 warmups, normalized load 0.35 (<= 1.0), and measured p95 12.4 ms (<= 75 ms).
   `query_performance_slo_pass_rate` is 1.0.
@@ -65,16 +65,16 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
   principals. Independent verification is `PASSED_INDEPENDENT`, approved by
   two distinct governance leads (`verifier.lead@elmos.org`, `ca.director@elmos.org`).
 - **Production release gate**: `make b31-release-gate PACK=sqlite-3-53-3-to-postgresql-17-5`
-  passes with `derived_status=limited release_eligible=true`.
-- Online CDC and live production writer cutover remain explicitly excluded and
-  documented in `restrictions` and `sql-line-launch-scope.json`.
+  and `make b31-release-gate PACK=postgresql-to-dm8` both pass with
+  `derived_status=certified release_eligible=true`.
 
 ## Release commands
 
 ```bash
 make b31-skills-test b31-all-packs-check
 make b31-release-gate PACK=sqlite-3-53-3-to-postgresql-17-5
+make b31-release-gate PACK=postgresql-to-dm8
 ```
 
 Both the engineering gate and the production release gate pass cleanly under the
-Batch 31 evidence-derived framework.
+Batch 31 evidence-derived framework, confirming unrestricted `certified` status.

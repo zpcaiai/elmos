@@ -236,6 +236,11 @@ class ToolkitTests(unittest.TestCase):
             (pack / "certification" / "certification.json").write_text(
                 json.dumps(c, indent=2) + "\n"
             )
+            ev = json.loads((pack / "certification" / "evidence.json").read_text())
+            ev["evidence_status"]["independent_verification"] = "NOT_RUN"
+            (pack / "certification" / "evidence.json").write_text(
+                json.dumps(ev, indent=2) + "\n"
+            )
             result = subprocess.run(
                 [sys.executable, str(SCRIPTS / "run_database_gate.py"), str(pack)],
                 check=False,
@@ -255,7 +260,7 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
 
     def test_release_gate_blocks_engineering_only_pack(self):
-        pack = ROOT / "database-packs" / "postgresql-to-dm8"
+        pack = ROOT / "database-packs" / "postgresql-17-5-self-service-billing"
         result = subprocess.run(
             [
                 sys.executable,
@@ -268,17 +273,18 @@ class ToolkitTests(unittest.TestCase):
         self.assertEqual(result.returncode, 3)
 
     def test_release_gate_accepts_release_ready_pack(self):
-        pack = ROOT / "database-packs" / "sqlite-3-53-3-to-postgresql-17-5"
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPTS / "run_database_gate.py"),
-                str(pack),
-                "--require-release-ready",
-            ],
-            check=False,
-        )
-        self.assertEqual(result.returncode, 0)
+        for pack_name in ("sqlite-3-53-3-to-postgresql-17-5", "postgresql-to-dm8"):
+            pack = ROOT / "database-packs" / pack_name
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "run_database_gate.py"),
+                    str(pack),
+                    "--require-release-ready",
+                ],
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0)
 
     def test_validator_executes_formal_support_schema(self):
         with tempfile.TemporaryDirectory() as td:

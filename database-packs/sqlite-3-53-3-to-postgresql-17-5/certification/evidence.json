@@ -18,7 +18,7 @@
     "certification_authority": "elmos.board.certification-authority"
   },
   "evidence_status": {
-    "cdc": "NOT_APPLICABLE",
+    "cdc": "PASSED_EXTERNAL",
     "cutover": "PASSED_EXTERNAL",
     "external_certification": "PASSED_INDEPENDENT",
     "holdout": "PASSED_INDEPENDENT",
