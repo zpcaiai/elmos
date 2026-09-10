@@ -69,6 +69,7 @@ class AssuranceOrchestrator:
             "scope_digest": scope.digest(),
             "mandatory_claims_count": len(scope.mandatory_claims),
             "k8_signer_boundary": repo_map["k8_signer"]["signer_boundary"],
+            "gap_analysis": gap_md,
         }
 
         # -------------------------------------------------------------
@@ -97,6 +98,12 @@ class AssuranceOrchestrator:
             run_id=run_id,
         )
         session = DurableExecutionSession(tenant_id, run_id, sec_ctx)
+        session.commit_idempotent_step(
+            step_id="step-orchestrator-init",
+            idempotency_key=f"idemp:{run_id}:b01",
+            fencing_generation=1,
+            result_payload={"initialized": True},
+        )
         budget = ResourceBudget(max_tokens=500_000, max_cost_cents=2000)
         budget.consume(tokens=1500, cost_cents=5, wall_seconds=0.5)
 
@@ -104,8 +111,8 @@ class AssuranceOrchestrator:
             "title": "契约、安全执行与证据基础",
             "status": "PASS",
             "revision_set_digest": rev_set.digest(),
-            "fencing_generation": sec_ctx.fencing_generation,
-            "budget_consumed_tokens": budget.consumed_tokens,
+            "run_id": session.run_id,
+            "budget_tokens_remaining": budget.tokens_remaining,
         }
 
         # -------------------------------------------------------------
@@ -117,11 +124,11 @@ class AssuranceOrchestrator:
 
         # Run smoke gate
         smoke_results = [{"case_id": f"smoke:{o.obligation_id}", "status": "PASSED"} for o in smoke_obls]
-        smoke_dec, smoke_reasons = SmokeGateEvaluator.evaluate(smoke_results)
+        smoke_dec, _smoke_reasons = SmokeGateEvaluator.evaluate(smoke_results)
 
         # Run full regression
         reg_results = [{"case_id": f"reg:{o.obligation_id}", "status": "PASSED"} for o in reg_obls]
-        reg_dec, reg_reasons = RegressionRunner.evaluate(reg_results, expected_test_count=len(reg_obls))
+        reg_dec, _reg_reasons = RegressionRunner.evaluate(reg_results, expected_test_count=len(reg_obls))
 
         b02_status = "PASS" if (smoke_dec == GateDecision.PASS and reg_dec == GateDecision.PASS) else "FAIL"
         report["batches"]["B02"] = {
@@ -136,7 +143,7 @@ class AssuranceOrchestrator:
         # B03: 差分、变异与第一条native交付 (Differential, Mutation, Golden Route)
         # -------------------------------------------------------------
         # Differential check
-        diff_dec, diff_reasons = TypedDifferentialComparator.compare_rows(
+        diff_dec, _diff_reasons = TypedDifferentialComparator.compare_rows(
             left_rows=[{"id": "1", "val": "alpha"}],
             right_rows=[{"id": "1", "val": "alpha"}],
             key_column="id",

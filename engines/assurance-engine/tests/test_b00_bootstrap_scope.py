@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 from elmos_assurance_engine.bootstrap import RepositoryBootstrap
 from elmos_assurance_engine.contracts import GateDecision
 from elmos_assurance_engine.scope import AssuranceScope, ScopeCompiler

@@ -50,6 +50,14 @@ class ResourceBudget:
                 f"WALL_CLOCK_BUDGET_EXHAUSTED: {self.consumed_wall_seconds:.1f}s > {self.max_wall_seconds:.1f}s"
             )
 
+    @property
+    def tokens_remaining(self) -> int:
+        return max(0, self.max_tokens - self.consumed_tokens)
+
+    @property
+    def cost_cents_remaining(self) -> int:
+        return max(0, self.max_cost_cents - self.consumed_cost_cents)
+
     def check_status(self) -> tuple[GateDecision, str]:
         if self.consumed_tokens > self.max_tokens or \
            self.consumed_cost_cents > self.max_cost_cents or \
