@@ -82,8 +82,8 @@ export class WebSSREvaluator {
   ): DOMNode | DOMNode[] | null {
     switch (astNode.kind) {
       case 'text': {
-        const textVal = (astNode.text || '').trim();
-        if (!textVal) return null;
+        const textVal = (astNode.text || '').replace(/\s+/g, ' ');
+        if (!textVal || !textVal.trim()) return null;
         return new DOMNode('text', undefined, textVal);
       }
 

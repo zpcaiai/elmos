@@ -156,6 +156,26 @@ export class L5VisualInteractionOracle {
         };
         rootBox.children.push(box);
         elements.push(box);
+      } else if (node.nodeType === "text") {
+        const txt = (node.nodeValue || "").trim();
+        const parentTag = (node.parent?.tagName || "").toLowerCase();
+        if (txt && parentTag !== "text" && node.parent && node.parent.children.some((c) => c.nodeType === "element")) {
+          const rect = node.computedLayout?.rect || { x: 0, y: 0, width: 0, height: 0 };
+          const box: LayoutBox = {
+            id: `box-${boxIndex++}`,
+            tag: "text",
+            text: txt.slice(0, 100),
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+            bgColor: 0,
+            textColor: parentTag === "button" ? 0xffffffff : 0x172033ff,
+            children: [],
+          };
+          rootBox.children.push(box);
+          elements.push(box);
+        }
       }
       for (const child of node.children) {
         traverse(child);

@@ -220,7 +220,35 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, sev, line_no, col_no, msg, cat))
                 continue
 
-            # 2. Javac format: file:line: error: message
+            # 2. Rustc error format: error[E0412]: message or error: message
+            match_rust = re.match(r'error(?:\[[A-Za-z0-9]+\])?:\s*(.+)', line_str)
+            if match_rust:
+                msg = match_rust.group(1)
+                line_no, col_no = 1, 1
+                raw_lines = raw.splitlines()
+                idx_in_raw = raw_lines.index(line) if line in raw_lines else -1
+                if idx_in_raw != -1:
+                    for n_i in range(idx_in_raw + 1, min(idx_in_raw + 4, len(raw_lines))):
+                        loc_m = re.search(r'-->\s*[^:]+:(\d+):(\d+)', raw_lines[n_i])
+                        if loc_m:
+                            line_no = int(loc_m.group(1))
+                            col_no = int(loc_m.group(2))
+                            break
+                cat = cls._categorize_message(msg)
+                diags.append(NativeCompilerDiagnostic(lang, "error", line_no, col_no, msg, cat))
+                continue
+
+            # 3. Go vet format: [vet: ]file:line:col: message
+            match_go = re.search(r'(?:vet:\s*)?[^:\s]+:(\d+):(\d+):\s*(.+)', line_str)
+            if match_go and not line_str.startswith("#"):
+                line_no = int(match_go.group(1))
+                col_no = int(match_go.group(2))
+                msg = match_go.group(3)
+                cat = cls._categorize_message(msg)
+                diags.append(NativeCompilerDiagnostic(lang, "error", line_no, col_no, msg, cat))
+                continue
+
+            # 4. Javac format: file:line: error: message
             match2 = re.search(r':(\d+):\s*(error|warning):\s*(.+)', line_str)
             if match2:
                 line_no = int(match2.group(1))
@@ -238,7 +266,7 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, sev, line_no, 1, msg, cat))
                 continue
 
-            # 3. Roslyn C# csc format: file(line,col): error CODE: message
+            # 5. Roslyn C# csc format: file(line,col): error CODE: message
             match3 = re.search(r'\((\d+),(\d+)\):\s*(error|warning)\s+[A-Za-z0-9]+:\s*(.+)', line_str)
             if match3:
                 line_no = int(match3.group(1))
@@ -249,7 +277,7 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, sev, line_no, col_no, msg, cat))
                 continue
 
-            # 4. Dart analyze format: error • message • file:line:col
+            # 6. Dart analyze format: error • message • file:line:col
             match4 = re.search(r'(error|warning)\s*•\s*(.+?)\s*•\s*[^:]+:(\d+):(\d+)', line_str)
             if match4:
                 sev = match4.group(1)
@@ -260,7 +288,7 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, sev, line_no, col_no, msg, cat))
                 continue
 
-            # 5. PHP lint format: Parse error: message in file on line X
+            # 7. PHP lint format: Parse error: message in file on line X
             match5 = re.search(r'Parse error:\s*(.+?)\s*in\s+.+?\s+on line\s*(\d+)', line_str)
             if match5:
                 msg = match5.group(1)
@@ -269,12 +297,25 @@ class CompilerDiagnosticParser:
                 diags.append(NativeCompilerDiagnostic(lang, "error", line_no, 1, msg, cat))
                 continue
 
+        # Fallback for unparsed error output
+        if not diags and raw.strip():
+            for line in raw.splitlines():
+                l_s = line.strip()
+                if not l_s or l_s.startswith("#") or l_s.startswith("-->") or l_s.startswith("|"):
+                    continue
+                cat = cls._categorize_message(l_s)
+                diags.append(NativeCompilerDiagnostic(lang, "error", 1, 1, l_s, cat))
+                break
+            if not diags:
+                cat = cls._categorize_message(raw)
+                diags.append(NativeCompilerDiagnostic(lang, "error", 1, 1, raw.strip()[:300], cat))
+
         return diags
 
     @classmethod
     def _categorize_message(cls, msg: str) -> str:
         low = msg.lower()
-        if "unknown type" in low or "not found" in low or "undeclared" in low or "no member named" in low or "cannot find symbol" in low:
+        if "unknown type" in low or "not found" in low or "undeclared" in low or "no member named" in low or "cannot find symbol" in low or "cannot find type" in low or "undefined" in low:
             return "undefined_symbol"
         elif "cannot convert" in low or "mismatched types" in low or "type mismatch" in low or "incompatible types" in low:
             return "type_mismatch"
@@ -283,3 +324,4 @@ class CompilerDiagnosticParser:
         elif "expected" in low or "syntax error" in low or "semicolon" in low:
             return "syntax_error"
         return "general"
+
