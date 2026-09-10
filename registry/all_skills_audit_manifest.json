@@ -1,23 +1,19 @@
 {
   "metadata": {
     "total_skills": 4353,
-    "audited_at": "2026-09-10T15:24:19Z",
-    "scan_duration_seconds": 7.3,
+    "audited_at": "2026-09-10T15:58:24Z",
+    "scan_duration_seconds": 8.38,
     "status_summary": {
-      "DECLARED": 2248,
+      "DECLARED": 2170,
       "SPECIFICATION_IMPORTED": 196,
-      "is": 6,
+      "is": 5,
       "downgrade": 1,
-      "requires": 4,
+      "requires": 2,
       "changes": 1,
-      "VERIFIED": 711,
-      "checks": 4,
-      "or": 1,
-      "supported": 198,
-      "-": 2,
-      "to": 1,
-      "beyond": 1,
+      "VERIFIED": 823,
+      "supported": 196,
       "field": 1,
+      "checks": 2,
       "and": 3,
       "cannot": 1,
       "transaction": 1,
@@ -45,12 +41,12 @@
       "in": 1,
       "matches": 1,
       "APIs": 1,
-      "alone": 23,
       "STATIC_VALIDATED": 1,
       "vocabulary": 44,
       "experimental": 1,
       "directly": 51,
-      "test-ready-not-run": 35
+      "test-ready-not-run": 35,
+      "-": 1
     },
     "category_summary": {
       "affected": 1,
@@ -2571,8 +2567,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7358
+      "status": "VERIFIED",
+      "size_bytes": 7476
     },
     {
       "name": "b32-angularjs-modernization",
@@ -2590,8 +2586,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7050
+      "status": "VERIFIED",
+      "size_bytes": 7168
     },
     {
       "name": "b32-api-client-data-cache",
@@ -2609,8 +2605,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7078
+      "status": "VERIFIED",
+      "size_bytes": 7196
     },
     {
       "name": "b32-client-certification-gate",
@@ -2628,8 +2624,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "is",
-      "size_bytes": 7243
+      "status": "VERIFIED",
+      "size_bytes": 7361
     },
     {
       "name": "b32-client-estate-discovery",
@@ -2647,8 +2643,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7348
+      "status": "VERIFIED",
+      "size_bytes": 7466
     },
     {
       "name": "b32-client-identity-permission-flags",
@@ -2666,8 +2662,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7227
+      "status": "VERIFIED",
+      "size_bytes": 7345
     },
     {
       "name": "b32-client-modernization-factory",
@@ -2685,8 +2681,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "requires",
-      "size_bytes": 8060
+      "status": "VERIFIED",
+      "size_bytes": 8178
     },
     {
       "name": "b32-component-template-view-migration",
@@ -2704,8 +2700,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6972
+      "status": "VERIFIED",
+      "size_bytes": 7090
     },
     {
       "name": "b32-design-token-theme-extraction",
@@ -2723,8 +2719,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7032
+      "status": "VERIFIED",
+      "size_bytes": 7150
     },
     {
       "name": "b32-desktop-web-crossplatform",
@@ -2742,8 +2738,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7337
+      "status": "VERIFIED",
+      "size_bytes": 7455
     },
     {
       "name": "b32-dotnet-ui-modernization",
@@ -2761,8 +2757,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7134
+      "status": "VERIFIED",
+      "size_bytes": 7252
     },
     {
       "name": "b32-form-binding-validation",
@@ -2780,8 +2776,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7033
+      "status": "VERIFIED",
+      "size_bytes": 7151
     },
     {
       "name": "b32-java-server-ui-modernization",
@@ -2799,8 +2795,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7310
+      "status": "VERIFIED",
+      "size_bytes": 7428
     },
     {
       "name": "b32-javascript-typescript-strengthening",
@@ -2818,8 +2814,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7031
+      "status": "VERIFIED",
+      "size_bytes": 7149
     },
     {
       "name": "b32-mobile-crossplatform",
@@ -2837,8 +2833,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7393
+      "status": "VERIFIED",
+      "size_bytes": 7511
     },
     {
       "name": "b32-react-angular-vue-target-profile",
@@ -2856,8 +2852,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7032
+      "status": "VERIFIED",
+      "size_bytes": 7150
     },
     {
       "name": "b32-rendering-ssr-csr-hydration",
@@ -2875,8 +2871,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7106
+      "status": "VERIFIED",
+      "size_bytes": 7224
     },
     {
       "name": "b32-route-navigation-deeplink",
@@ -2894,8 +2890,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6793
+      "status": "VERIFIED",
+      "size_bytes": 6911
     },
     {
       "name": "b32-state-management-lifecycle",
@@ -2913,8 +2909,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "requires",
-      "size_bytes": 7219
+      "status": "VERIFIED",
+      "size_bytes": 7337
     },
     {
       "name": "b32-ui-interaction-ir",
@@ -2932,8 +2928,8 @@
         "../../../docs/batch32/VERSION_LIFECYCLE.md",
         "../../../docs/batch32/ACCESSIBILITY_VISUAL_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 7394
+      "status": "VERIFIED",
+      "size_bytes": 7512
     },
     {
       "name": "b33-api-gateway-ingress-traffic",
@@ -2951,8 +2947,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6442
+      "status": "VERIFIED",
+      "size_bytes": 6560
     },
     {
       "name": "b33-cicd-pipeline-migration",
@@ -2970,8 +2966,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "checks",
-      "size_bytes": 6789
+      "status": "VERIFIED",
+      "size_bytes": 6907
     },
     {
       "name": "b33-cloud-certification-gate",
@@ -2989,8 +2985,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "or",
-      "size_bytes": 6796
+      "status": "VERIFIED",
+      "size_bytes": 6914
     },
     {
       "name": "b33-cloud-cost-capacity-optimizer",
@@ -3008,8 +3004,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6401
+      "status": "VERIFIED",
+      "size_bytes": 6519
     },
     {
       "name": "b33-cloud-iac-devops-factory",
@@ -3027,8 +3023,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "supported",
-      "size_bytes": 8171
+      "status": "VERIFIED",
+      "size_bytes": 8289
     },
     {
       "name": "b33-cloud-native-iac-migration",
@@ -3046,8 +3042,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6497
+      "status": "VERIFIED",
+      "size_bytes": 6615
     },
     {
       "name": "b33-cloud-security-guardrails",
@@ -3065,8 +3061,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6392
+      "status": "VERIFIED",
+      "size_bytes": 6510
     },
     {
       "name": "b33-cloud-service-capability-map",
@@ -3084,8 +3080,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "-",
-      "size_bytes": 6679
+      "status": "VERIFIED",
+      "size_bytes": 6797
     },
     {
       "name": "b33-container-build-migration",
@@ -3103,8 +3099,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6719
+      "status": "VERIFIED",
+      "size_bytes": 6837
     },
     {
       "name": "b33-helm-chart-migration",
@@ -3122,8 +3118,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6423
+      "status": "VERIFIED",
+      "size_bytes": 6541
     },
     {
       "name": "b33-identity-network-dns-mesh",
@@ -3141,8 +3137,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6580
+      "status": "VERIFIED",
+      "size_bytes": 6698
     },
     {
       "name": "b33-infrastructure-drift-validator",
@@ -3160,8 +3156,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6400
+      "status": "VERIFIED",
+      "size_bytes": 6518
     },
     {
       "name": "b33-kubernetes-manifest-migration",
@@ -3179,8 +3175,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6775
+      "status": "VERIFIED",
+      "size_bytes": 6893
     },
     {
       "name": "b33-managed-service-mapping",
@@ -3198,8 +3194,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6623
+      "status": "VERIFIED",
+      "size_bytes": 6741
     },
     {
       "name": "b33-observability-alert-dashboard",
@@ -3217,8 +3213,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6362
+      "status": "VERIFIED",
+      "size_bytes": 6480
     },
     {
       "name": "b33-provider-neutral-iac-ir",
@@ -3236,8 +3232,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6674
+      "status": "VERIFIED",
+      "size_bytes": 6792
     },
     {
       "name": "b33-runtime-architecture-contract",
@@ -3255,8 +3251,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6860
+      "status": "VERIFIED",
+      "size_bytes": 6978
     },
     {
       "name": "b33-secret-config-environment",
@@ -3274,8 +3270,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6519
+      "status": "VERIFIED",
+      "size_bytes": 6637
     },
     {
       "name": "b33-serverless-event-runtime",
@@ -3293,8 +3289,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6631
+      "status": "VERIFIED",
+      "size_bytes": 6749
     },
     {
       "name": "b33-terraform-module-migration",
@@ -3312,8 +3308,8 @@
         "../../../docs/batch33/VERSION_LIFECYCLE.md",
         "../../../docs/batch33/SECURITY_POLICY.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6564
+      "status": "VERIFIED",
+      "size_bytes": 6682
     },
     {
       "name": "b34-content-addressed-cache-artifact-reuse",
@@ -3331,8 +3327,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5857
+      "status": "VERIFIED",
+      "size_bytes": 5975
     },
     {
       "name": "b34-cross-repo-dependency-graph",
@@ -3350,8 +3346,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6040
+      "status": "VERIFIED",
+      "size_bytes": 6158
     },
     {
       "name": "b34-distributed-semantic-index",
@@ -3369,8 +3365,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6002
+      "status": "VERIFIED",
+      "size_bytes": 6120
     },
     {
       "name": "b34-distributed-workflow-sharding",
@@ -3388,8 +3384,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5728
+      "status": "VERIFIED",
+      "size_bytes": 5846
     },
     {
       "name": "b34-failure-isolation-checkpoint-recovery",
@@ -3407,8 +3403,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5677
+      "status": "VERIFIED",
+      "size_bytes": 5795
     },
     {
       "name": "b34-fair-scheduling-priority-noisy-neighbor",
@@ -3426,8 +3422,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5723
+      "status": "VERIFIED",
+      "size_bytes": 5841
     },
     {
       "name": "b34-incremental-graph-impact",
@@ -3445,8 +3441,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5718
+      "status": "VERIFIED",
+      "size_bytes": 5836
     },
     {
       "name": "b34-large-artifact-regional-transfer",
@@ -3464,8 +3460,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5804
+      "status": "VERIFIED",
+      "size_bytes": 5922
     },
     {
       "name": "b34-monorepo-partition-work-units",
@@ -3483,8 +3479,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6219
+      "status": "VERIFIED",
+      "size_bytes": 6337
     },
     {
       "name": "b34-multilanguage-workspace-build-graph",
@@ -3502,8 +3498,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5763
+      "status": "VERIFIED",
+      "size_bytes": 5881
     },
     {
       "name": "b34-multirepo-pr-merge-order",
@@ -3521,8 +3517,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "checks",
-      "size_bytes": 5672
+      "status": "VERIFIED",
+      "size_bytes": 5790
     },
     {
       "name": "b34-portfolio-budget-cost-guardrails",
@@ -3540,8 +3536,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5761
+      "status": "VERIFIED",
+      "size_bytes": 5879
     },
     {
       "name": "b34-portfolio-capacity-duration-forecast",
@@ -3559,8 +3555,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5779
+      "status": "VERIFIED",
+      "size_bytes": 5897
     },
     {
       "name": "b34-portfolio-control-tower",
@@ -3578,8 +3574,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "to",
-      "size_bytes": 5827
+      "status": "VERIFIED",
+      "size_bytes": 5945
     },
     {
       "name": "b34-portfolio-dr-replay",
@@ -3597,8 +3593,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5983
+      "status": "VERIFIED",
+      "size_bytes": 6101
     },
     {
       "name": "b34-portfolio-scale-certification-gate",
@@ -3616,8 +3612,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "beyond",
-      "size_bytes": 6077
+      "status": "VERIFIED",
+      "size_bytes": 6195
     },
     {
       "name": "b34-portfolio-scale-factory",
@@ -3635,8 +3631,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "supported",
-      "size_bytes": 7636
+      "status": "VERIFIED",
+      "size_bytes": 7754
     },
     {
       "name": "b34-recipe-campaign-orchestrator",
@@ -3654,8 +3650,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5727
+      "status": "VERIFIED",
+      "size_bytes": 5845
     },
     {
       "name": "b34-repository-portfolio-discovery",
@@ -3673,8 +3669,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 6437
+      "status": "VERIFIED",
+      "size_bytes": 6555
     },
     {
       "name": "b34-runner-fleet-scale-scheduler",
@@ -3692,8 +3688,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5788
+      "status": "VERIFIED",
+      "size_bytes": 5906
     },
     {
       "name": "b34-scale-benchmark-suite",
@@ -3711,8 +3707,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5953
+      "status": "VERIFIED",
+      "size_bytes": 6071
     },
     {
       "name": "b34-shared-library-bom-platform-dependency",
@@ -3730,8 +3726,8 @@
         "../../../docs/batch34/SHARDING_AND_IDEMPOTENCY.md",
         "../../../docs/batch34/SCHEDULING_FAIRNESS.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 5845
+      "status": "VERIFIED",
+      "size_bytes": 5963
     },
     {
       "name": "b35-api-schema-contract-verification",
@@ -42265,8 +42261,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4711
+      "status": "VERIFIED",
+      "size_bytes": 4953
     },
     {
       "name": "etgb-ai-runtime-model-routing-validation",
@@ -42279,8 +42275,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4678
+      "status": "VERIFIED",
+      "size_bytes": 4920
     },
     {
       "name": "etgb-ai-solution-factory-validation",
@@ -42293,8 +42289,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4903
+      "status": "VERIFIED",
+      "size_bytes": 5145
     },
     {
       "name": "etgb-analytics-admin-support-validation",
@@ -42307,8 +42303,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4771
+      "status": "VERIFIED",
+      "size_bytes": 5013
     },
     {
       "name": "etgb-api-sdk-webhook-validation",
@@ -42321,8 +42317,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4614
+      "status": "VERIFIED",
+      "size_bytes": 4856
     },
     {
       "name": "etgb-artifact-document-diagram-validation",
@@ -42335,8 +42331,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4707
+      "status": "VERIFIED",
+      "size_bytes": 4949
     },
     {
       "name": "etgb-benchmark-integrity-hidden-tests",
@@ -42345,8 +42341,8 @@
       "description": "Prevent memorization, leakage, self-authored Oracles, cherry-picking and temporal contamination in ETGB evaluations. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 3591
+      "status": "VERIFIED",
+      "size_bytes": 3833
     },
     {
       "name": "etgb-billing-entitlements-validation",
@@ -42359,8 +42355,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4744
+      "status": "VERIFIED",
+      "size_bytes": 4986
     },
     {
       "name": "etgb-budget-cost-eta-governance",
@@ -42371,8 +42367,8 @@
       "dependencies": [
         "etgb/budget.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3531
+      "status": "VERIFIED",
+      "size_bytes": 3773
     },
     {
       "name": "etgb-checkpoint-resume-recovery",
@@ -42384,8 +42380,8 @@
         "etgb/checkpoint.py",
         "etgb/state.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3820
+      "status": "VERIFIED",
+      "size_bytes": 4062
     },
     {
       "name": "etgb-collaboration-integrations-validation",
@@ -42398,8 +42394,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4789
+      "status": "VERIFIED",
+      "size_bytes": 5031
     },
     {
       "name": "etgb-commercial-delivery-certification-validation",
@@ -42412,8 +42408,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4871
+      "status": "VERIFIED",
+      "size_bytes": 5113
     },
     {
       "name": "etgb-corpus-governance",
@@ -42424,8 +42420,8 @@
       "dependencies": [
         "scripts/fetch_corpora.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3677
+      "status": "VERIFIED",
+      "size_bytes": 3919
     },
     {
       "name": "etgb-data-bigdata-solution-validation",
@@ -42438,8 +42434,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4786
+      "status": "VERIFIED",
+      "size_bytes": 5028
     },
     {
       "name": "etgb-deployment-operations-validation",
@@ -42452,8 +42448,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4741
+      "status": "VERIFIED",
+      "size_bytes": 4983
     },
     {
       "name": "etgb-differential-oracle-engine",
@@ -42462,8 +42458,8 @@
       "description": "Capture, normalize, compare and explain source/target behavior, state, side effects, traces, security and performance. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 3994
+      "status": "VERIFIED",
+      "size_bytes": 4236
     },
     {
       "name": "etgb-environment-authority-sandbox",
@@ -42475,8 +42471,8 @@
         "schemas/environment-authority.schema.json",
         "etgb/policy.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4034
+      "status": "VERIFIED",
+      "size_bytes": 4276
     },
     {
       "name": "etgb-evidence-provenance-ledger",
@@ -42488,8 +42484,8 @@
         "etgb/evidence.py",
         "schemas/evidence-manifest.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3625
+      "status": "VERIFIED",
+      "size_bytes": 3867
     },
     {
       "name": "etgb-full-product-coverage-governance",
@@ -42500,8 +42496,8 @@
       "dependencies": [
         "matrices/feature-registry.yaml"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3611
+      "status": "VERIFIED",
+      "size_bytes": 3853
     },
     {
       "name": "etgb-identity-access-tenant-validation",
@@ -42514,8 +42510,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4653
+      "status": "VERIFIED",
+      "size_bytes": 4895
     },
     {
       "name": "etgb-incident-regression-learning",
@@ -42524,8 +42520,8 @@
       "description": "Convert every production defect and near miss into minimal, realistic, hidden, mutant and planner regressions. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 3238
+      "status": "VERIFIED",
+      "size_bytes": 3480
     },
     {
       "name": "etgb-metamorphic-fuzz-mutation",
@@ -42534,8 +42530,8 @@
       "description": "Generate property, metamorphic, grammar fuzz, mutation and fault-injection campaigns with minimized reproductions. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 3912
+      "status": "VERIFIED",
+      "size_bytes": 4154
     },
     {
       "name": "etgb-multi-tenant-scheduling-isolation",
@@ -42546,8 +42542,8 @@
       "dependencies": [
         "etgb/planner.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3504
+      "status": "VERIFIED",
+      "size_bytes": 3746
     },
     {
       "name": "etgb-multimodal-document-processing-validation",
@@ -42560,8 +42556,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4710
+      "status": "VERIFIED",
+      "size_bytes": 4952
     },
     {
       "name": "etgb-notifications-scheduler-validation",
@@ -42574,8 +42570,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4732
+      "status": "VERIFIED",
+      "size_bytes": 4974
     },
     {
       "name": "etgb-observability-failure-triage",
@@ -42587,8 +42583,8 @@
         "integrations/otel/semantic-conventions.yaml",
         "etgb/triage.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3490
+      "status": "VERIFIED",
+      "size_bytes": 3732
     },
     {
       "name": "etgb-online-ide-debug-validation",
@@ -42601,8 +42597,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4659
+      "status": "VERIFIED",
+      "size_bytes": 4901
     },
     {
       "name": "etgb-orchestrator",
@@ -42611,8 +42607,8 @@
       "description": "Plan, execute, pause, resume, aggregate and certify full-product ETGB runs across all Elmos business, platform and assurance domains. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 6132
+      "status": "VERIFIED",
+      "size_bytes": 6374
     },
     {
       "name": "etgb-payment-finance-validation",
@@ -42625,8 +42621,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4730
+      "status": "VERIFIED",
+      "size_bytes": 4972
     },
     {
       "name": "etgb-performance-scale-certification",
@@ -42637,8 +42633,8 @@
       "dependencies": [
         "etgb/performance.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3490
+      "status": "VERIFIED",
+      "size_bytes": 3732
     },
     {
       "name": "etgb-platform-control-plane-validation",
@@ -42651,8 +42647,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4728
+      "status": "VERIFIED",
+      "size_bytes": 4970
     },
     {
       "name": "etgb-product-journey-validation",
@@ -42663,8 +42659,8 @@
       "dependencies": [
         "matrices/product-journeys.yaml"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3302
+      "status": "VERIFIED",
+      "size_bytes": 3544
     },
     {
       "name": "etgb-production-harness-integration",
@@ -42680,8 +42676,8 @@
         "integrations/events/etgb-events.asyncapi.yaml",
         "integrations/temporal/WORKFLOW_PSEUDOCODE.md"
       ],
-      "status": "DECLARED",
-      "size_bytes": 4896
+      "status": "VERIFIED",
+      "size_bytes": 5138
     },
     {
       "name": "etgb-project-generation-validation",
@@ -42690,8 +42686,8 @@
       "description": "Validate multilingual greenfield and evolutionary project generation from executable requirement contracts. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4227
+      "status": "VERIFIED",
+      "size_bytes": 4469
     },
     {
       "name": "etgb-project-intelligence-validation",
@@ -42704,8 +42700,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4770
+      "status": "VERIFIED",
+      "size_bytes": 5012
     },
     {
       "name": "etgb-rag-memory-knowledge-validation",
@@ -42718,8 +42714,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4649
+      "status": "VERIFIED",
+      "size_bytes": 4891
     },
     {
       "name": "etgb-release-candidate-integrity",
@@ -42731,8 +42727,8 @@
         "etgb/candidate.py",
         "schemas/release-candidate.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 2925
+      "status": "VERIFIED",
+      "size_bytes": 3167
     },
     {
       "name": "etgb-release-certification",
@@ -42743,8 +42739,8 @@
       "dependencies": [
         "matrices/release-gates.yaml"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3608
+      "status": "VERIFIED",
+      "size_bytes": 3850
     },
     {
       "name": "etgb-repository-ingestion-context-validation",
@@ -42757,8 +42753,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4655
+      "status": "VERIFIED",
+      "size_bytes": 4897
     },
     {
       "name": "etgb-repository-translation-validation",
@@ -42767,8 +42763,8 @@
       "description": "Validate whole-repository cross-language conversion, architecture adaptation, dependency handling and hidden semantics. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4630
+      "status": "VERIFIED",
+      "size_bytes": 4872
     },
     {
       "name": "etgb-risk-based-test-selection",
@@ -42781,8 +42777,8 @@
         "etgb/planner.py",
         "schemas/run-plan.schema.json"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3443
+      "status": "VERIFIED",
+      "size_bytes": 3685
     },
     {
       "name": "etgb-security-privacy-compliance-validation",
@@ -42795,8 +42791,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4744
+      "status": "VERIFIED",
+      "size_bytes": 4986
     },
     {
       "name": "etgb-spring-modernization-validation",
@@ -42805,8 +42801,8 @@
       "description": "Validate repository-level Servlet, JSP, Struts, Spring Framework and Spring Boot modernization to Spring Boot 4. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4898
+      "status": "VERIFIED",
+      "size_bytes": 5140
     },
     {
       "name": "etgb-sql-dialect-routine-validation",
@@ -42815,8 +42811,8 @@
       "description": "Validate SQL dialect, DDL, DML, routine, trigger, transaction and analytics conversion by dual execution. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4254
+      "status": "VERIFIED",
+      "size_bytes": 4496
     },
     {
       "name": "etgb-standards-assurance-validation",
@@ -42827,8 +42823,8 @@
       "dependencies": [
         "matrices/standards-controls.yaml"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3185
+      "status": "VERIFIED",
+      "size_bytes": 3427
     },
     {
       "name": "etgb-statistical-validity-reproducibility",
@@ -42839,8 +42835,8 @@
       "dependencies": [
         "etgb/statistics.py"
       ],
-      "status": "DECLARED",
-      "size_bytes": 3398
+      "status": "VERIFIED",
+      "size_bytes": 3640
     },
     {
       "name": "etgb-storage-search-cache-validation",
@@ -42853,8 +42849,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4707
+      "status": "VERIFIED",
+      "size_bytes": 4949
     },
     {
       "name": "etgb-supply-chain-artifact-security",
@@ -42863,8 +42859,8 @@
       "description": "Safely ingest untrusted repositories and verify dependencies, SBOM, provenance, signatures and artifacts. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 3329
+      "status": "VERIFIED",
+      "size_bytes": 3571
     },
     {
       "name": "etgb-test-case-authoring",
@@ -42873,8 +42869,8 @@
       "description": "Create, review, materialize and maintain executable ETGB cases, capability matrices and independent Oracles. Repository-owned ETGB execution is available through the local runtime; external production evidence remains explicit.",
       "tasks": [],
       "dependencies": [],
-      "status": "DECLARED",
-      "size_bytes": 4276
+      "status": "VERIFIED",
+      "size_bytes": 4518
     },
     {
       "name": "etgb-ui-accessibility-localization-validation",
@@ -42887,8 +42883,8 @@
         "matrices/full-product.yaml",
         "integrations/harness/full-product-adapters.yaml"
       ],
-      "status": "alone",
-      "size_bytes": 4790
+      "status": "VERIFIED",
+      "size_bytes": 5032
     },
     {
       "name": "evidence-gate-orchestrator",

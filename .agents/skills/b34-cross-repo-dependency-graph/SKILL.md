@@ -1,5 +1,8 @@
 ---
 name: b34-cross-repo-dependency-graph
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Build and validate a versioned cross-repository dependency call data event release and runtime graph with stable nodes evidence confidence criticality and consumer relationships for portfolio impact and ordering.
 ---
 

@@ -1,6 +1,9 @@
 ---
 name: b34-portfolio-scale-certification-gate
-description: "Run the conservative Batch 34 portfolio-scale certification gate and emit certified limited experimental or blocked status from inventory graph work units index workflows fleet cache transfer campaigns pull requests recovery fairness budgets benchmarks forecasts disaster replay holdout and evidence."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Run the conservative Batch 34 portfolio-scale certification gate and emit certified limited experimental or blocked status from inventory graph work units index workflows fleet cache transfer campaigns pull requests recovery fairness budgets benchmarks forecasts disaster replay holdout and evidence.
 ---
 
 ## Operating mode

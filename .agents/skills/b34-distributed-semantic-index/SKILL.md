@@ -1,5 +1,8 @@
 ---
 name: b34-distributed-semantic-index
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement a tenant-isolated distributed semantic index for repositories symbols types calls contracts diagnostics recipes and evidence with stable document identities versioning sharding freshness access control compaction and reproducible queries.
 ---
 

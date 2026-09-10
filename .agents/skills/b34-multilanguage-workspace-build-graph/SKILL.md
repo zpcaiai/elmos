@@ -1,5 +1,8 @@
 ---
 name: b34-multilanguage-workspace-build-graph
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Model and execute multi-language workspaces and mixed build graphs across Maven Gradle MSBuild Python npm pnpm yarn Bazel and generated code with exact toolchains dependency order and reproducible outputs.
 ---
 

@@ -3,18 +3,18 @@
 ## 1. 审计统计概览
 
 - **技能总数**：`4353` 个标准技能规范 (`SKILL.md`)
-- **审计耗时**：`7.53` 秒
+- **审计耗时**：`8.66` 秒
 - **Frontmatter 格式合规率**：`100.0%` (4,352 / 4,352 均合法具备 YAML Frontmatter)
 
 ### 状态分布
 
 | 声明实现状态 | 技能数量 | 占比 |
 | :--- | :---: | :---: |
-| `DECLARED` | 2248 | 51.6% |
-| `VERIFIED` | 711 | 16.3% |
+| `DECLARED` | 2170 | 49.9% |
+| `VERIFIED` | 823 | 18.9% |
 | `production-contract` | 473 | 10.9% |
-| `supported` | 198 | 4.5% |
 | `SPECIFICATION_IMPORTED` | 196 | 4.5% |
+| `supported` | 196 | 4.5% |
 | `BLUEPRINT_IMPORTED` | 100 | 2.3% |
 | `IMPLEMENTED` | 72 | 1.7% |
 | `PRODUCTION_CODE_COMPLETE` | 60 | 1.4% |
@@ -23,8 +23,8 @@
 | `test-ready-not-run` | 35 | 0.8% |
 | `PARTIAL_LOCAL_IMPLEMENTED` | 26 | 0.6% |
 | `only` | 24 | 0.6% |
-| `alone` | 23 | 0.5% |
 | `BOUNDED_LOCAL_IMPLEMENTED` | 19 | 0.4% |
+| `LOCAL_EXECUTED_SELF_ATTESTED` | 13 | 0.3% |
 
 ### 核心批次与类别分布
 
