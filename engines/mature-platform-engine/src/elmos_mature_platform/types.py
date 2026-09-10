@@ -3355,3 +3355,248 @@ class ReplayVerification:
     steps_diverged: int = 0
     divergence_points: List[int] = field(default_factory=list)  # step indices
     fully_deterministic: bool = False
+
+# ─── Rolling Mixed Version Models ──────────────────────────────────
+
+class MixedVersionState(str, Enum):
+    HOMOGENEOUS = "homogeneous"
+    MIXED = "mixed"
+    ROLLING = "rolling"
+    PAUSED = "paused"
+    ROLLBACK = "rollback"
+    COMPLETED = "completed"
+
+@dataclass
+class ClusterNode:
+    node_id: str
+    cluster_id: str
+    current_version: str
+    target_version: str = ""
+    healthy: bool = True
+    upgraded: bool = False
+    upgraded_at: str = ""
+    drain_status: str = ""  # draining, drained, active
+
+@dataclass
+class MixedVersionCluster:
+    cluster_id: str
+    name: str
+    state: MixedVersionState = MixedVersionState.HOMOGENEOUS
+    source_version: str = ""
+    target_version: str = ""
+    total_nodes: int = 0
+    upgraded_nodes: int = 0
+    max_unavailable: int = 1
+    max_surge: int = 0
+    compatibility_verified: bool = False
+    started_at: str = ""
+    completed_at: str = ""
+
+@dataclass
+class VersionCompatibilityCheck:
+    check_id: str
+    cluster_id: str
+    source_version: str
+    target_version: str
+    api_compatible: bool = False
+    schema_compatible: bool = False
+    wire_compatible: bool = False
+    overall_compatible: bool = False
+    issues: List[str] = field(default_factory=list)
+
+# ─── Functional Depth Certification Models ──────────────────────────
+
+class FunctionalArea(str, Enum):
+    DATA_INGESTION = "data_ingestion"
+    TRANSFORMATION = "transformation"
+    VALIDATION = "validation"
+    ROUTING = "routing"
+    STORAGE = "storage"
+    QUERYING = "querying"
+    REPORTING = "reporting"
+    NOTIFICATION = "notification"
+
+class DepthLevel(str, Enum):
+    BASIC = "basic"      # Happy path only
+    STANDARD = "standard" # + error handling + edge cases
+    ADVANCED = "advanced"  # + performance + concurrency
+    COMPLETE = "complete"  # + fault tolerance + recovery
+
+@dataclass
+class FunctionalRequirement:
+    req_id: str
+    area: FunctionalArea
+    description: str
+    depth: DepthLevel = DepthLevel.BASIC
+    test_count: int = 0
+    pass_count: int = 0
+    implemented: bool = False
+    certified: bool = False
+
+@dataclass
+class DepthCertification:
+    cert_id: str
+    product_name: str
+    area: FunctionalArea
+    target_depth: DepthLevel
+    achieved_depth: DepthLevel = DepthLevel.BASIC
+    requirements_total: int = 0
+    requirements_met: int = 0
+    coverage_pct: float = 0.0
+    certified: bool = False
+    certified_at: str = ""
+    certifier: str = ""
+
+@dataclass
+class DepthGap:
+    area: FunctionalArea
+    target_depth: DepthLevel
+    current_depth: DepthLevel
+    missing_requirements: List[str] = field(default_factory=list)
+    effort_estimate_hours: float = 0.0
+
+# ─── Agent Eval Benchmark Models ────────────────────────────────────
+
+class BenchmarkDifficulty(str, Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+    EXPERT = "expert"
+
+class EvalMetricType(str, Enum):
+    ACCURACY = "accuracy"
+    LATENCY = "latency"
+    COST = "cost"
+    SAFETY = "safety"
+    TOOL_USE = "tool_use"
+    REASONING = "reasoning"
+
+@dataclass
+class BenchmarkTask:
+    task_id: str
+    name: str
+    difficulty: BenchmarkDifficulty
+    category: str  # coding, research, debugging, planning
+    expected_output: str = ""
+    max_steps: int = 50
+    max_cost_usd: float = 1.0
+    timeout_seconds: int = 300
+
+@dataclass
+class AgentEvalRun:
+    run_id: str
+    agent_id: str
+    task_id: str
+    actual_output: str = ""
+    steps_taken: int = 0
+    cost_usd: float = 0.0
+    latency_seconds: float = 0.0
+    success: bool = False
+    safety_violations: int = 0
+    tool_calls: int = 0
+    started_at: str = ""
+    completed_at: str = ""
+
+@dataclass
+class BenchmarkSuite:
+    suite_id: str
+    name: str
+    task_ids: List[str] = field(default_factory=list)
+    version: str = "1.0"
+    created_at: str = ""
+
+# ─── Secret Credential Scanning Models ──────────────────────────────
+
+class SecretType(str, Enum):
+    API_KEY = "api_key"
+    PASSWORD = "password"
+    PRIVATE_KEY = "private_key"
+    TOKEN = "token"
+    CONNECTION_STRING = "connection_string"
+    CERTIFICATE = "certificate"
+    CLOUD_CREDENTIAL = "cloud_credential"
+    GENERIC = "generic"
+
+class SecretFindingStatus(str, Enum):
+    ACTIVE = "active"
+    ROTATED = "rotated"
+    REVOKED = "revoked"
+    FALSE_POSITIVE = "false_positive"
+    ACKNOWLEDGED = "acknowledged"
+
+@dataclass
+class SecretScanFinding:
+    finding_id: str
+    secret_type: SecretType
+    file_path: str
+    line_number: int = 0
+    commit_sha: str = ""
+    author: str = ""
+    status: SecretFindingStatus = SecretFindingStatus.ACTIVE
+    severity: str = "high"  # critical, high, medium, low
+    entropy: float = 0.0  # Shannon entropy
+    verified: bool = False  # Was the secret tested against the service?
+    rotated_at: str = ""
+    detected_at: str = ""
+
+@dataclass
+class SecretScanPolicy:
+    policy_id: str
+    block_on_active_secrets: bool = True
+    max_allowed_findings: int = 0
+    require_rotation_within_hours: int = 24
+    excluded_paths: List[str] = field(default_factory=list)  # paths to skip
+    excluded_types: List[str] = field(default_factory=list)  # secret types to skip
+
+# ─── Packaging & Pricing Models ─────────────────────────────────────
+
+class PricingModel(str, Enum):
+    FLAT_RATE = "flat_rate"
+    PER_SEAT = "per_seat"
+    USAGE_BASED = "usage_based"
+    TIERED = "tiered"
+    FREEMIUM = "freemium"
+    HYBRID = "hybrid"
+
+class PackageTier(str, Enum):
+    FREE = "free"
+    STARTER = "starter"
+    PROFESSIONAL = "professional"
+    ENTERPRISE = "enterprise"
+    CUSTOM = "custom"
+
+@dataclass
+class PricingPlan:
+    plan_id: str
+    name: str
+    tier: PackageTier
+    pricing_model: PricingModel
+    base_price_monthly: float = 0.0
+    per_seat_price: float = 0.0
+    included_units: int = 0  # included usage units
+    overage_price_per_unit: float = 0.0
+    max_seats: int = 0  # 0 = unlimited
+    features: List[str] = field(default_factory=list)
+    active: bool = True
+
+@dataclass
+class PricingSubscription:
+    subscription_id: str
+    customer_id: str
+    plan_id: str
+    seats: int = 1
+    usage_units: int = 0
+    monthly_total: float = 0.0
+    started_at: str = ""
+    billing_cycle_start: str = ""
+    discount_pct: float = 0.0
+
+@dataclass
+class PricingSimulation:
+    simulation_id: str
+    plan_id: str
+    seats: int = 1
+    projected_usage: int = 0
+    monthly_cost: float = 0.0
+    annual_cost: float = 0.0
+    cost_per_seat: float = 0.0
