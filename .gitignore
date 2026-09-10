@@ -20,6 +20,8 @@ obj/
 **/obj/
 TestResults/
 **/TestResults/
+*.dll
+**/*.dll
 .vs/
 **/.vs/
 .venv/
