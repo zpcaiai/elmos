@@ -1,8 +1,5 @@
 ---
 name: conv-migration-design-studio
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 为架构师提供源/目标架构、映射、Wave、风险、成本和Cutover的可视化决策空间。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

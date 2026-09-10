@@ -1,8 +1,5 @@
 ---
 name: conv-design-partner-pilot
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 用两个独立客户项目验证标准系统和复杂Legacy系统的产品可用性。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

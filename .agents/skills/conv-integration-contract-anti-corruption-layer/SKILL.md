@@ -1,13 +1,7 @@
 ---
 name: conv-integration-contract-anti-corruption-layer
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 为旧Pack、旧状态机和旧API建立适配器，避免重写和双内核长期并存。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1529'
   source_name: b46-integration-contract-anti-corruption-layer

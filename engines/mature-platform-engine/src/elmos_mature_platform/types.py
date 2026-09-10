@@ -4585,3 +4585,215 @@ class CurationPolicy:
     min_reviewers: int = 1
     max_age_days: int = 90
     created_at: str = ""
+
+# ─── Platform Version Compatibility Models ───────────────────────────
+
+class CompatibilityStatus(str, Enum):
+    COMPATIBLE = "compatible"
+    INCOMPATIBLE = "incompatible"
+    DEPRECATED = "deprecated"
+    UNTESTED = "untested"
+    CONDITIONAL = "conditional"
+
+class PlatformComponent(str, Enum):
+    RUNNER = "runner"
+    CONTROL_PLANE = "control_plane"
+    DATABASE = "database"
+    SDK = "sdk"
+    CLI = "cli"
+    AGENT = "agent"
+    PLUGIN = "plugin"
+    API = "api"
+
+@dataclass
+class VersionEntry:
+    component: PlatformComponent
+    version: str
+    release_date: str = ""
+    eol_date: str = ""
+    supported: bool = True
+    breaking_changes: List[str] = field(default_factory=list)
+    min_compatible_versions: Dict[str, str] = field(default_factory=dict)  # component->min_version
+
+@dataclass
+class CompatibilityRecord:
+    record_id: str
+    component_a: PlatformComponent
+    version_a: str
+    component_b: PlatformComponent
+    version_b: str
+    status: CompatibilityStatus = CompatibilityStatus.UNTESTED
+    notes: str = ""
+    tested_at: str = ""
+    conditions: List[str] = field(default_factory=list)
+
+# ─── Chaos Resilience Fault Injection Models ──────────────────────────
+
+class ChaosFaultType(str, Enum):
+    LATENCY = "latency"
+    ERROR = "error"
+    PARTITION = "partition"
+    CPU_STRESS = "cpu_stress"
+    MEMORY_PRESSURE = "memory_pressure"
+    DISK_FILL = "disk_fill"
+    DNS_FAILURE = "dns_failure"
+    PROCESS_KILL = "process_kill"
+    CLOCK_SKEW = "clock_skew"
+
+class ExperimentStatus(str, Enum):
+    DRAFT = "draft"
+    APPROVED = "approved"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    ABORTED = "aborted"
+    ROLLED_BACK = "rolled_back"
+
+@dataclass
+class FaultInjectionRule:
+    rule_id: str
+    fault_type: ChaosFaultType
+    target_service: str
+    target_instance: str = ""  # empty = all instances
+    parameters: Dict[str, str] = field(default_factory=dict)  # e.g. latency_ms=500
+    probability: float = 1.0  # 0-1 injection probability
+    duration_seconds: int = 60
+
+@dataclass
+class ChaosExperiment:
+    experiment_id: str
+    name: str
+    hypothesis: str  # what we expect to happen
+    rules: List[str] = field(default_factory=list)  # rule_ids
+    status: ExperimentStatus = ExperimentStatus.DRAFT
+    steady_state_checks: List[str] = field(default_factory=list)  # health checks
+    abort_conditions: List[str] = field(default_factory=list)
+    blast_radius: str = "single_service"  # single_service, zone, region
+    approved_by: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    result_summary: str = ""
+    hypothesis_confirmed: bool = False
+
+# ─── Event Schema Compatibility Models ───────────────────────────────
+
+class EventSchemaChangeType(str, Enum):
+    FIELD_ADDED = "field_added"
+    FIELD_REMOVED = "field_removed"
+    FIELD_RENAMED = "field_renamed"
+    TYPE_CHANGED = "type_changed"
+    REQUIRED_ADDED = "required_added"
+    REQUIRED_REMOVED = "required_removed"
+    ENUM_VALUE_ADDED = "enum_value_added"
+    ENUM_VALUE_REMOVED = "enum_value_removed"
+
+class SchemaCompatResult(str, Enum):
+    FULLY_COMPATIBLE = "fully_compatible"
+    BACKWARD_COMPATIBLE = "backward_compatible"
+    FORWARD_COMPATIBLE = "forward_compatible"
+    BREAKING = "breaking"
+    UNKNOWN = "unknown"
+
+@dataclass
+class EventSchemaVersion:
+    schema_id: str
+    event_type: str
+    version: str
+    fields: Dict[str, str] = field(default_factory=dict)  # field_name -> type
+    required_fields: List[str] = field(default_factory=list)
+    enum_fields: Dict[str, List[str]] = field(default_factory=dict)  # field_name -> values
+    registered_at: str = ""
+    deprecated: bool = False
+
+@dataclass
+class EvolutionSchemaChange:
+    change_id: str
+    schema_id: str
+    change_type: EventSchemaChangeType
+    field_name: str
+    old_value: str = ""
+    new_value: str = ""
+    breaking: bool = False
+
+# ─── Knowledge Isolation Models ──────────────────────────────────────
+
+class KnowledgeBoundary(str, Enum):
+    TENANT = "tenant"
+    PROJECT = "project"
+    TEAM = "team"
+    PUBLIC = "public"
+    SHARED = "shared"
+
+class KnowledgeAccessLevel(str, Enum):
+    NONE = "none"
+    READ = "read"
+    WRITE = "write"
+    ADMIN = "admin"
+
+@dataclass
+class KnowledgePartition:
+    partition_id: str
+    name: str
+    boundary: KnowledgeBoundary
+    owner: str = ""  # tenant_id, project_id, team_id
+    item_count: int = 0
+    size_bytes: int = 0
+    created_at: str = ""
+    encrypted: bool = False
+    retention_days: int = 365
+
+@dataclass
+class KnowledgeAccessGrant:
+    grant_id: str
+    partition_id: str
+    principal: str  # user_id, team_id, service_account
+    access_level: KnowledgeAccessLevel
+    granted_by: str = ""
+    granted_at: str = ""
+    expires_at: str = ""
+    revoked: bool = False
+
+# ─── Feature Flag Progressive Enable Models ──────────────────────────
+
+class FlagRolloutStrategy(str, Enum):
+    PERCENTAGE = "percentage"
+    USER_LIST = "user_list"
+    REGION = "region"
+    TENANT = "tenant"
+    CANARY = "canary"
+    ALL = "all"
+    NONE = "none"
+
+class ProgressiveFlagStatus(str, Enum):
+    DISABLED = "disabled"
+    CANARY = "canary"
+    ROLLING = "rolling"
+    FULLY_ENABLED = "fully_enabled"
+    PAUSED = "paused"
+    ROLLED_BACK = "rolled_back"
+
+@dataclass
+class ProgressiveFlag:
+    flag_id: str
+    name: str
+    description: str = ""
+    status: ProgressiveFlagStatus = ProgressiveFlagStatus.DISABLED
+    strategy: FlagRolloutStrategy = FlagRolloutStrategy.NONE
+    percentage: float = 0.0  # 0-100
+    target_users: List[str] = field(default_factory=list)
+    target_regions: List[str] = field(default_factory=list)
+    target_tenants: List[str] = field(default_factory=list)
+    error_rate_threshold: float = 5.0  # auto-rollback if error_rate > threshold
+    current_error_rate: float = 0.0
+    created_at: str = ""
+    last_updated: str = ""
+    rollout_history: List[str] = field(default_factory=list)  # status transitions
+
+@dataclass
+class RolloutStep:
+    step_id: str
+    flag_id: str
+    from_percentage: float = 0.0
+    to_percentage: float = 0.0
+    executed_at: str = ""
+    success: bool = True
+    error_rate_at_execution: float = 0.0

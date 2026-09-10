@@ -1,8 +1,5 @@
 ---
 name: conv-verified-migrated-workload-metrics
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 用经过验证的业务工作负载替代代码行数和生成文件数作为核心成果。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

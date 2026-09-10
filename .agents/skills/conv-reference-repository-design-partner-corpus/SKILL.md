@@ -1,13 +1,7 @@
 ---
 name: conv-reference-repository-design-partner-corpus
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 建立10万–50万行真实中型仓库、独立Holdout及两家Design Partner的代表性Corpus。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1520'
   source_name: b46-reference-repository-corpus-design-partner

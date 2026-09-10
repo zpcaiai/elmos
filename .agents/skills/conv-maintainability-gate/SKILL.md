@@ -1,8 +1,5 @@
 ---
 name: conv-maintainability-gate
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 在Build、Behavior、Security、Production之外增加可维护性独立门禁。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

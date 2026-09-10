@@ -1,8 +1,5 @@
 ---
 name: conv-edition-commercial-package-simplification
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 早期只维护SaaS、Enterprise Private Runner、Self-hosted/Air-gap三类Edition和五类标准套餐。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

@@ -1,8 +1,5 @@
 ---
 name: conv-reference-route-acceptance-profile
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 为Java/Spring到C#/ASP.NET定义唯一、精确、不可漂移的首条产品路线验收范围。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

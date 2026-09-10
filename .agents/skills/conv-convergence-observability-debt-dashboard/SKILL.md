@@ -1,13 +1,7 @@
 ---
 name: conv-convergence-observability-debt-dashboard
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 监控平行内核、重复Skill、未映射Pack、过期Evidence、手工Patch和Convergence Debt。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1531'
   source_name: b46-convergence-observability-debt-dashboard

@@ -1,8 +1,5 @@
 ---
 name: conv-product-information-architecture
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 让客户围绕Assess、Plan、Migrate、Validate、Release、Operate、Retire使用产品，而非面对Batch和Skill。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

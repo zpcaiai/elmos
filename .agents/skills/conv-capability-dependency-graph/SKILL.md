@@ -1,8 +1,5 @@
 ---
 name: conv-capability-dependency-graph
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 把前置、运行、认证、商业和可选依赖做成可计算的有向图。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

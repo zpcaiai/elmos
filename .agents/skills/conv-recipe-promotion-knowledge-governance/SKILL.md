@@ -1,13 +1,7 @@
 ---
 name: conv-recipe-promotion-knowledge-governance
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 将客户Patch经脱敏、Corpus、Negative、Holdout、安全审查后晋升为Certified Recipe。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1522'
   source_name: b46-recipe-promotion-knowledge-governance

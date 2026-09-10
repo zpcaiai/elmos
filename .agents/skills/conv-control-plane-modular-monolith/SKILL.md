@@ -1,8 +1,5 @@
 ---
 name: conv-control-plane-modular-monolith
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 实现Tenant、Project、Repository、Workflow、Migration、Artifact、Evidence、Policy、Runner、Validation和Certification最小内核。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

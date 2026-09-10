@@ -1,8 +1,5 @@
 ---
 name: conv-benchmark-corpus-governance
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 治理Synthetic、Open-source、Internal Holdout和Customer-private四类Corpus并防止污染。 用于ELMOS整体逻辑收敛、Reference Implementation实施或产品就绪认证。
 ---
 

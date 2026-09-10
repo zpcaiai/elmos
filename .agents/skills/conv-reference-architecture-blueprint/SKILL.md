@@ -1,14 +1,8 @@
 ---
 name: conv-reference-architecture-blueprint
-implementation_state: "VERIFIED"
-external_evidence_status: "LOCAL_EXECUTED"
-production_certification: "NOT_CERTIFIED"
 description: 固化Customer Experience、Control Plane Kernel、Execution Plane和Extension
   Layer边界及数据流。
 metadata:
-  implementation_state: "VERIFIED"
-  external_evidence_status: "LOCAL_EXECUTED"
-  production_certification: "NOT_CERTIFIED"
   source_package: batch46-product-convergence-complete-skills
   source_id: '1527'
   source_name: b46-reference-architecture-blueprint
