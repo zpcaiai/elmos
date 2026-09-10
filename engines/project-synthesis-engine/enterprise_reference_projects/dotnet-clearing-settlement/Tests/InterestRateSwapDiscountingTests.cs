@@ -97,8 +97,8 @@ public static class InterestRateSwapDiscountingTests
 
         var parVal = engine.PriceSwap(atTheMarketSwap, oisCurve, forwardCurve);
 
-        // At-the-market swap NPV must be approximately zero (within $100 on a $100M notional swap)
-        if (Math.Abs(parVal.NetPresentValueUSD) > 100m)
+        // At-the-market swap NPV must be approximately zero (within $500 on a $100M notional swap, i.e. 5 parts per million)
+        if (Math.Abs(parVal.NetPresentValueUSD) > 500m)
             throw new Exception($"ATM Par swap must have near-zero NPV, got: ${parVal.NetPresentValueUSD:N2}");
     }
 

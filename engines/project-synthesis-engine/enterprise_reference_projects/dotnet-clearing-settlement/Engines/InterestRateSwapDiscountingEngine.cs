@@ -221,7 +221,7 @@ public sealed class InterestRateSwapDiscountingEngine
             PresentValueFixedLegUSD = Math.Round(pvFixedLeg, 2),
             PresentValueFloatingLegUSD = Math.Round(pvFloatingLeg, 2),
             NetPresentValueUSD = Math.Round(netPayerPV, 2),
-            ParSwapRate = Math.Round(parRate, 6),
+            ParSwapRate = parRate,
             DV01USD = Math.Round(dv01, 2),
             AnnuityFactor = Math.Round(cumulativeDiscountedAnnuity, 6)
         };

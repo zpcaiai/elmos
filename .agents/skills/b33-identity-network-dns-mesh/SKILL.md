@@ -1,5 +1,8 @@
 ---
 name: b33-identity-network-dns-mesh
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify human workload and service identity network segmentation routing DNS certificates private connectivity egress ingress firewall load balancing and service mesh policies.
 ---
 

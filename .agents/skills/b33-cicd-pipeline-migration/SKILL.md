@@ -1,5 +1,8 @@
 ---
 name: b33-cicd-pipeline-migration
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify Jenkins GitHub Actions GitLab CI Azure DevOps and other CI CD pipelines including triggers permissions environments artifacts caches approvals deployment provenance rollback and secret boundaries.
 ---
 

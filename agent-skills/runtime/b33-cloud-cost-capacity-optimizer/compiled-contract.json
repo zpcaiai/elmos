@@ -1,0 +1,21 @@
+{
+  "schema_version": "elmos.batch33.compiled-skill-contract.v1",
+  "package_id": "elmos.batch33.cloud-iac-devops",
+  "package_version": "1.0.0",
+  "installed_alias": "b33-cloud-cost-capacity-optimizer",
+  "namespace": "batch33-cloud-iac-devops-v1",
+  "repository_owned_wrapper": true,
+  "maximum_local_claim": "LOCAL_EXECUTED_VERIFIED",
+  "installed_dependencies": [],
+  "declared_external_effects": [],
+  "runtime_binding": {
+    "binding_state": "VERIFIED",
+    "dispatcher": "dispatch",
+    "skill_name": "b33-cloud-cost-capacity-optimizer",
+    "module_path": "scripts/batch33/b33_skill_runtime.py",
+    "runtime_class": "B33SkillRuntime",
+    "local_handler_status": "PASSED",
+    "external_evidence_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  }
+}

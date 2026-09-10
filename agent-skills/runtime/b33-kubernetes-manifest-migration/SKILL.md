@@ -1,6 +1,9 @@
 ---
 name: b33-kubernetes-manifest-migration
-description: "Migrate and certify Kubernetes workloads services configuration identity policy storage autoscaling rollout disruption health scheduling and lifecycle from exact source cluster versions to target profiles."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify Kubernetes workloads services configuration identity policy storage autoscaling rollout disruption health scheduling and lifecycle from exact source cluster versions to target profiles.
 ---
 
 ## Operating mode

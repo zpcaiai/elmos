@@ -1,6 +1,9 @@
 ---
 name: b33-cloud-security-guardrails
-description: "Migrate and certify cloud security policies IAM boundaries network controls encryption keys admission policies compliance guardrails detective controls exceptions and remediation without privilege expansion."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify cloud security policies IAM boundaries network controls encryption keys admission policies compliance guardrails detective controls exceptions and remediation without privilege expansion.
 ---
 
 ## Operating mode

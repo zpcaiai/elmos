@@ -1,5 +1,8 @@
 ---
 name: b33-provider-neutral-iac-ir
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Implement or extend a provider-neutral typed IaC IR for resources modules variables outputs policies dependencies lifecycle identity data classification state ownership and source mapping before infrastructure generation.
 ---
 

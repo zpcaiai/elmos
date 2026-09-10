@@ -1,5 +1,8 @@
 ---
 name: b33-observability-alert-dashboard
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
 description: Migrate and certify metrics logs traces profiles business telemetry alerts dashboards retention sampling correlation SLO and incident evidence across cloud and runtime targets.
 ---
 

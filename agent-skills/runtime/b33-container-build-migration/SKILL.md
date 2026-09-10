@@ -1,6 +1,9 @@
 ---
 name: b33-container-build-migration
-description: "Migrate and certify Dockerfiles container build graphs base images multi-stage builds package sources users files health checks entrypoints architectures SBOM signing provenance and runtime contracts."
+implementation_state: "VERIFIED"
+external_evidence_status: "LOCAL_EXECUTED"
+production_certification: "NOT_CERTIFIED"
+description: Migrate and certify Dockerfiles container build graphs base images multi-stage builds package sources users files health checks entrypoints architectures SBOM signing provenance and runtime contracts.
 ---
 
 ## Operating mode
