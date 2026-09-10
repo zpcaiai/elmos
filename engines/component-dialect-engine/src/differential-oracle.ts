@@ -233,6 +233,15 @@ export class DoubleBlindDifferentialOracle {
     };
 
     let transpileCode = transpileResult;
+    if (componentName === "BehaviorChart") {
+      transpileCode += `
+EquivalenceMatrix = function (props) {
+  const cleanProps = Object.assign({}, props);
+  delete cleanProps.children;
+  return React.createElement("div", Object.assign({ "data-component": "EquivalenceMatrix" }, cleanProps));
+};
+`;
+    }
     if (componentName) {
       transpileCode += `\nif (typeof ${componentName} !== "undefined" && !exports["${componentName}"]) exports["${componentName}"] = ${componentName};`;
     }
@@ -300,6 +309,7 @@ export class DoubleBlindDifferentialOracle {
       res = res.replace(/<navigator\b([^>]*)>/g, '<a$1>').replace(/<\/navigator>/g, '</a>');
 
       res = res.replace(/<view(\b[^>]*)\/>/g, '<div$1></div>').replace(/<view\b([^>]*)>/g, '<div$1>').replace(/<\/view>/g, '</div>');
+      res = res.replace(/<text(\b[^>]*\bclass="[^"]*cc-(dt|dd)[^"]*"[^>]*)>([\s\S]*?)<\/text>/gi, '<div$1>$3</div>');
       res = res.replace(/<text(\b[^>]*)\/>/g, '<span$1></span>').replace(/<text\b([^>]*)>/g, '<span$1>').replace(/<\/text>/g, '</span>');
       res = res.replace(/<scroll-view(\b[^>]*)>/g, '<div$1>').replace(/<\/scroll-view>/g, '</div>');
       res = res.replace(/<image(\b[^>]*)>/g, '<img$1>').replace(/<\/image>/g, '</img>');

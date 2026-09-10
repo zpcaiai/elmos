@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T06:06:44.296Z",
+  "timestamp": "2026-09-10T06:21:44.093Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
     "l3FirstScreenZeroErrorsCount": 71,
     "l3MountPassRatePercent": 100,
-    "l4DifferentialEquivalentCount": 29,
-    "l4DifferentialPassRatePercent": 40.8,
+    "l4DifferentialEquivalentCount": 32,
+    "l4DifferentialPassRatePercent": 45.1,
     "dispositionBreakdown": {
       "automatic": {
         "total": 32,
         "l3Passed": 32,
-        "l4Passed": 29,
-        "l4PassRatePercent": 90.6
+        "l4Passed": 32,
+        "l4PassRatePercent": 100
       },
       "handPorted": {
         "total": 39,
@@ -24,10 +24,10 @@
     },
     "dualTrackDelivery": {
       "totalDelivered": 71,
-      "automaticL4Passed": 29,
+      "automaticL4Passed": 32,
       "handPortedGoldenPassed": 39,
-      "compositeCertifiedCount": 68,
-      "compositeCertifiedRatePercent": 95.8
+      "compositeCertifiedCount": 71,
+      "compositeCertifiedRatePercent": 100
     }
   },
   "components": [
@@ -268,13 +268,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.505,
-      "textSimilarity": 0.3902439024390244,
-      "structuralSimilarity": 0.6774193548387096,
-      "diagnostics": [
-        "Consistency 51% fell below 95.0% threshold (text: 39%, structure: 68%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
     },
     {
       "componentName": "CoverageMeter",
@@ -342,11 +340,11 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": false,
-      "consistencyScore": 0.342,
-      "textSimilarity": 0.07407407407407407,
-      "structuralSimilarity": 0.7428571428571429,
+      "consistencyScore": 0.286,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.7142857142857143,
       "diagnostics": [
-        "Consistency 34% fell below 95.0% threshold (text: 7%, structure: 74%)"
+        "Consistency 29% fell below 95.0% threshold (text: 0%, structure: 71%)"
       ]
     },
     {
@@ -356,13 +354,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.904,
-      "textSimilarity": 0.8947368421052632,
-      "structuralSimilarity": 0.918918918918919,
-      "diagnostics": [
-        "Consistency 90% fell below 95.0% threshold (text: 89%, structure: 92%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
     },
     {
       "componentName": "StatusMark",
@@ -384,13 +380,11 @@
       "disposition": "AUTOMATIC",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.855,
-      "textSimilarity": 0.9365079365079365,
-      "structuralSimilarity": 0.7333333333333333,
-      "diagnostics": [
-        "Consistency 86% fell below 95.0% threshold (text: 94%, structure: 73%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 1,
+      "textSimilarity": 1,
+      "structuralSimilarity": 1,
+      "diagnostics": []
     },
     {
       "componentName": "RuntimeDeploymentGuide",
@@ -848,11 +842,11 @@
       "l3Mounted": true,
       "l3Errors": [],
       "l4Equivalent": false,
-      "consistencyScore": 0.301,
-      "textSimilarity": 0.05714285714285714,
-      "structuralSimilarity": 0.6666666666666666,
+      "consistencyScore": 0.338,
+      "textSimilarity": 0,
+      "structuralSimilarity": 0.8461538461538461,
       "diagnostics": [
-        "Consistency 30% fell below 95.0% threshold (text: 6%, structure: 67%)"
+        "Consistency 34% fell below 95.0% threshold (text: 0%, structure: 85%)"
       ]
     },
     {

@@ -381,6 +381,64 @@ function evalTextWithExprs(text: string, scope: Record<string, unknown>): string
   });
 }
 
+function renderAstNodeList(nodes: any[], scope: Record<string, unknown>, compDir: string | undefined, depth: number = 0): string {
+  let output = "";
+  let lastConditionMatched = false;
+
+  for (const node of (nodes || [])) {
+    if (!node) continue;
+    if (node.type === "WXElement") {
+      const attrs = node.startTag?.attributes || [];
+      const ifAttr = attrs.find((a: any) => a.key === "wx:if");
+      const elifAttr = attrs.find((a: any) => a.key === "wx:elif");
+      const elseAttr = attrs.find((a: any) => a.key === "wx:else");
+
+      if (ifAttr) {
+        const cond = Boolean(evalExpr(ifAttr.value.replace(/^\{\{\s*|\s*\}\}$/g, ""), scope));
+        lastConditionMatched = cond;
+        if (!cond) continue;
+      } else if (elifAttr) {
+        if (lastConditionMatched) continue;
+        const cond = Boolean(evalExpr(elifAttr.value.replace(/^\{\{\s*|\s*\}\}$/g, ""), scope));
+        lastConditionMatched = cond;
+        if (!cond) continue;
+      } else if (elseAttr) {
+        if (lastConditionMatched) continue;
+        lastConditionMatched = true;
+      } else {
+        lastConditionMatched = false;
+      }
+
+      const forAttr = attrs.find((a: any) => a.key === "wx:for");
+      if (forAttr) {
+        const listVal = evalExpr(forAttr.value.replace(/^\{\{\s*|\s*\}\}$/g, ""), scope);
+        const list = Array.isArray(listVal) ? listVal : [];
+        const itemKey = attrs.find((a: any) => a.key === "wx:for-item")?.value || "item";
+        const indexKey = attrs.find((a: any) => a.key === "wx:for-index")?.value || "index";
+        const innerAttrs = attrs.filter((a: any) => !a.key.startsWith("wx:"));
+        const rendered = list.map((item, index) => {
+          const itemScope = { ...scope, [itemKey]: item, [indexKey]: index, item, index };
+          return renderAstElement(node.name, innerAttrs, node.children, itemScope, compDir, depth);
+        }).join("\n");
+        output += rendered;
+        continue;
+      }
+
+      const nonWxAttrs = attrs.filter((a: any) => !a.key.startsWith("wx:"));
+      output += renderAstElement(node.name, nonWxAttrs, node.children, scope, compDir, depth);
+    } else {
+      if (node.type === "WXText" && !node.value.trim()) {
+        output += node.value;
+      } else {
+        lastConditionMatched = false;
+        output += renderAstNode(node, scope, compDir, depth);
+      }
+    }
+  }
+
+  return output;
+}
+
 function renderAstNode(node: any, scope: Record<string, unknown>, compDir: string | undefined, depth: number = 0): string {
   if (depth > 12) return "";
   if (node.type === "WXText") return node.value;
@@ -388,29 +446,6 @@ function renderAstNode(node: any, scope: Record<string, unknown>, compDir: strin
     const val = evalExpr(node.value, scope);
     if (val === null || val === undefined) return "";
     return typeof val === "object" ? JSON.stringify(val) : String(val);
-  }
-  if (node.type === "WXElement") {
-    const attrs = node.startTag?.attributes || [];
-    const ifAttr = attrs.find((a: any) => a.key === "wx:if");
-    if (ifAttr) {
-      const condVal = Boolean(evalExpr(ifAttr.value.replace(/^\{\{\s*|\s*\}\}$/g, ""), scope));
-      if (!condVal) return "";
-    }
-    const forAttr = attrs.find((a: any) => a.key === "wx:for");
-    if (forAttr) {
-      const listVal = evalExpr(forAttr.value.replace(/^\{\{\s*|\s*\}\}$/g, ""), scope);
-      const list = Array.isArray(listVal) ? listVal : [];
-      const itemKey = attrs.find((a: any) => a.key === "wx:for-item")?.value || "item";
-      const indexKey = attrs.find((a: any) => a.key === "wx:for-index")?.value || "index";
-      const innerAttrs = attrs.filter((a: any) => !a.key.startsWith("wx:"));
-      return list.map((item, index) => {
-        const itemScope = { ...scope, [itemKey]: item, [indexKey]: index, item, index };
-        return renderAstElement(node.name, innerAttrs, node.children, itemScope, compDir, depth);
-      }).join("\n");
-    }
-
-    const nonWxAttrs = attrs.filter((a: any) => !a.key.startsWith("wx:"));
-    return renderAstElement(node.name, nonWxAttrs, node.children, scope, compDir, depth);
   }
   return "";
 }
@@ -423,7 +458,7 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
     attrMap[a.key] = val;
   }
 
-  if (compDir && name !== "icon" && !compDir.endsWith("Page")) {
+  if (compDir && name !== "icon" && name !== "equivalence-matrix" && !compDir.endsWith("Page")) {
     const jsonPath = path.join(compDir, "index.json");
     let usingComponents: Record<string, string> = {};
     if (fs.existsSync(jsonPath)) {
@@ -436,7 +471,6 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
       let relPath = usingComponents[name];
       if (relPath.startsWith("/")) relPath = relPath.slice(1);
       if (relPath.endsWith("/index")) relPath = path.dirname(relPath);
-      const targetProjectDir = path.resolve(compDir, relPath.startsWith("components/") ? path.relative("components", relPath) : "..");
       const childDir = path.resolve(compDir, "..", path.basename(relPath));
       const childWxml = path.join(childDir, "index.wxml");
       const childJs = path.join(childDir, "index.js");
@@ -445,7 +479,13 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
         if (fs.existsSync(childJs)) {
           try {
             const js = fs.readFileSync(childJs, "utf8");
-            const Component = (d: any) => { childData = { ...(d.data || {}) }; };
+            const Component = (d: any) => {
+              const defaultProps: Record<string, unknown> = {};
+              for (const [pk, pv] of Object.entries(d.properties || {})) {
+                defaultProps[pk] = (pv && typeof pv === "object" && "value" in (pv as any)) ? (pv as any).value : undefined;
+              }
+              childData = { ...defaultProps, ...(d.data || {}) };
+            };
             eval(js);
           } catch {}
         }
@@ -459,12 +499,12 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
           }
         }
         if (childScope.counts && typeof childScope.counts === "object" && Object.keys(childScope.counts as object).length === 0) {
-          delete childScope.counts;
+          childScope.counts = undefined;
         }
         try {
           const { parse } = require("@wxml/parser");
           const childAst = parse(fs.readFileSync(childWxml, "utf8"));
-          return childAst.body.map((n: any) => renderAstNode(n, childScope, childDir, depth + 1)).join("\n");
+          return renderAstNodeList(childAst.body || [], childScope, childDir, depth + 1);
         } catch {}
       }
     }
@@ -474,9 +514,9 @@ function renderAstElement(name: string, attrs: any[], children: any[], scope: Re
   if (renderedAttrs) renderedAttrs = " " + renderedAttrs;
 
   if (name === "block") {
-    return (children || []).map(c => renderAstNode(c, scope, compDir, depth)).join("");
+    return renderAstNodeList(children || [], scope, compDir, depth);
   }
-  const inner = (children || []).map(c => renderAstNode(c, scope, compDir, depth)).join("");
+  const inner = renderAstNodeList(children || [], scope, compDir, depth);
   return `<${name}${renderedAttrs}>${inner}</${name}>`;
 }
 
@@ -487,7 +527,7 @@ export function evaluateWxmlTemplate(wxml: string, data: Record<string, unknown>
   try {
     const { parse } = require("@wxml/parser");
     const ast = parse(wxml);
-    return ast.body.map((n: any) => renderAstNode(n, data, compDir, 0)).join("\n");
+    return renderAstNodeList(ast.body || [], data, compDir, 0);
   } catch {
     // Fallback to expression evaluation if AST parser fails
     return evalTextWithExprs(wxml, data);
