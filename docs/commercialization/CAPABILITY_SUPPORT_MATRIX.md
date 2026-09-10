@@ -93,20 +93,20 @@ CRUD、以及 RLS 跨租户读被阻断。
 **可以说**：
 - 覆盖 10 个现代与跨平台框架（React, Vue 3, Vue 2, Angular, Svelte, React Native, 微信小程序, ArkUI, Flutter, TypeScript），54 条方向对真转写；React/Vue/Svelte 等五端支持真实 SSR 规范化 DOM 比对与行为等价验证。
 - **白盒锁定交付包达成 100.0% 闭环**：实战交付包 `web-console-next16-react19-wechat-v1` 针对完整复杂企业控制台应用（Next.js 16 / React 19），对全部 71/71 组件单元完成双轨闭环处置（32 自动直出 + 39 人工接管移植，0 遗漏，0 扫描错误，297 个目标端文件），微信官方工具链校验全部通过。
-- **真实全量企业应用全自动覆盖率突破 90%+，达成 100.0%**：针对真实全量企业控制台应用（`apps/web-console` 全部 71 个生产组件），系统性实施 Paths 1-5（函数调用下沉、复杂类型降维、Web语义垫片、动态初始值挂载、插槽投影）并分三阶段（Phase 1 至 Phase 3）完成实测落地：
+- **L1 级静态代码生成达成 100.0% (71/71)**：针对真实企业控制台应用（`apps/web-console` 全部 71 个生产组件），系统性实施 Paths 1-5（函数调用下沉、复杂类型降维、Web语义垫片、动态初始值挂载、插槽投影）并分三阶段（Phase 1 至 Phase 3）完成实测落地：
   - 基线（纯白盒规则）：32 / 71 (45.1%)
   - Phase 1（复杂类型 + 动态求值）：47 / 71 (66.2% >= 63.4%)
   - Phase 2（函数调用 + 插槽投影）：66 / 71 (93.0% >= 88.7%)
   - Phase 3（Web语义垫片 + 边缘收敛）：71 / 71 (100.0% >= 94.4%)
-  全部 71 组件无需人工干预即可全自动直出合法微信小程序四文件资产（.json, .js, .wxml, .wxss）。
-- **任意黑盒企业代码全自动覆盖率达成 100.0%**：引入企业级前端转译器（`EnterpriseFrontendTranspiler`）与 `enterprise-client-v1` Profile，全量攻克生命周期钩子（`effect-hook-lifecycle`）、跨平台容器API（`cross-platform-container-apis`）、非基础属性类型（`complex-and-non-primitive-props`）、模块化样式（`modular-styling-and-css-classes`）与三方UI组件库映射（`third-party-ui-component-mappings`）5 大高危企业语义鸿沟，在 10 大企业高危组件审计中达成 100.0% 全自动转译与 AST 级精准降维。
-- 外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`）。
+  全部 71 组件均可静态直出合法微信小程序四文件资产（.json, .js, .wxml, .wxss）。
+- **外部独立验证认证闭环**：外部独立验证人 Ethan（`ethan-independent-certifier`）签署独立认证 Dossier（`certification/dossiers/frontend-client-m32-v1/`）与认证报告 `frontend-client-m32-certification-report.json`（决策 `CERTIFIED`），确认交付包静态合规与双轨工程闭环。
 
-**必须说明的边界**：
+**必须说明的边界（严禁向客户虚假承诺 100% 纯黑盒运行时等价）**：
+- **严禁将“L1 静态启发式语法直出”当成“生产级行为等价”**：未接入微信开发者工具模拟器/无头自动化沙箱（`miniprogram-automator`）运行前，黑盒代码的**严格行为等价纯自动覆盖率客观处于 24.2% ~ 45.1%**。
+- 复杂企业组件（带有表格排版、异步生命周期、动态计算、闭包捕获等）必须通过双轨制“自动生成骨架 + 人工语义移植与调试”进行工程保障。
 - 54 对中非 SSR 运行端（ArkUI、Flutter、小程序物理设备）真机运行时依赖仿真器或真实硬件设备。
-- 售卖交付采用工业级标准化生产交付包，支持纯自动转写与复杂定制化工程接管双轨保障。
 
-**售卖方式**：按项目报价 + 工业级标准化生产交付包。
+**售卖方式**：按项目报价 + 工业级标准化生产交付包（支持自动直出与人工工程接管双轨保障）。
 
 ---
 
