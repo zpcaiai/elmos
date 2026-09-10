@@ -36,6 +36,8 @@ class ModernizationRecipesTest {
         String res = transformed.printAll();
 
         assertFalse(res.contains("extends WebSecurityConfigurerAdapter"));
+        assertFalse(res.contains("@Override"));
+        assertTrue(res.contains("@Bean"));
         assertTrue(res.contains("authorizeHttpRequests"));
         assertTrue(res.contains("requestMatchers"));
     }
@@ -325,6 +327,12 @@ class ModernizationRecipesTest {
 
                 @EnableZuulProxy
                 public class GatewayApp extends ZuulFilter {
+                    public int filterOrder() {
+                        return 1;
+                    }
+                    public Object run() {
+                        return null;
+                    }
                 }
                 """;
         SourceFile source = JavaParser.fromJavaVersion().build().parse(sourceText).findFirst().orElseThrow();
@@ -336,6 +344,9 @@ class ModernizationRecipesTest {
         assertTrue(res.contains("@Configuration"));
         assertFalse(res.contains("extends ZuulFilter"));
         assertTrue(res.contains("GlobalFilter"));
+        assertTrue(res.contains("Ordered"));
+        assertTrue(res.contains("int getOrder()"));
+        assertTrue(res.contains("Mono<Void> filter"));
     }
 
     @Test

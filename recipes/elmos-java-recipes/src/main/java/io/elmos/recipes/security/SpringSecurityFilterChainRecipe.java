@@ -77,9 +77,18 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                         m = m.withReturnTypeExpression(TypeTree.build("SecurityFilterChain"));
                         m = m.withName(m.getName().withSimpleName("filterChain"));
 
-                        // Inject @Bean annotation if not present
-                        boolean hasBean = m.getLeadingAnnotations().stream()
-                                .anyMatch(an -> "Bean".equals(an.getSimpleName()));
+                        // Strip @Override and inject @Bean annotation if not present
+                        java.util.List<J.Annotation> annotations = new java.util.ArrayList<>();
+                        boolean hasBean = false;
+                        for (J.Annotation an : m.getLeadingAnnotations()) {
+                            if ("Override".equals(an.getSimpleName())) {
+                                continue;
+                            }
+                            if ("Bean".equals(an.getSimpleName())) {
+                                hasBean = true;
+                            }
+                            annotations.add(an);
+                        }
                         if (!hasBean) {
                             J.Annotation beanAnn = new J.Annotation(
                                     org.openrewrite.Tree.randomId(),
@@ -88,10 +97,9 @@ public final class SpringSecurityFilterChainRecipe extends Recipe {
                                     TypeTree.build("Bean"),
                                     org.openrewrite.java.tree.JContainer.empty()
                             );
-                            java.util.List<J.Annotation> annotations = new java.util.ArrayList<>(m.getLeadingAnnotations());
                             annotations.add(beanAnn);
-                            m = m.withLeadingAnnotations(annotations);
                         }
+                        m = m.withLeadingAnnotations(annotations);
                     }
                 }
                 return m;

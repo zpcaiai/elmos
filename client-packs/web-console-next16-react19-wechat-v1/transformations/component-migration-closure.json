@@ -61,12 +61,12 @@
   },
   "totals": {
     "discovered": 71,
-    "automatic": 71,
-    "hand_ported": 0,
+    "automatic": 32,
+    "hand_ported": 39,
     "unhandled": 0,
     "scan_errors": 0
   },
-  "automatic_coverage": 1,
+  "automatic_coverage": 0.450704,
   "implementation_coverage": 1,
   "delivery_status": "COMPLETE_WITH_HANDOFF",
   "runtime_evidence": "NOT_RUN",
@@ -77,9 +77,13 @@
       "source_path": "app/account/AccountOrganizationStudio.tsx",
       "component_name": "AccountOrganizationStudio",
       "source_sha256": "sha256:98df93a6ef767e471a1f70f9890a74eab997411ec0f6657c8695d18967e6e76f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:b41764135a0fb4a2539de273f984c1eb5ab94a2a8af2acef5dd3fa4564d8617a",
       "target_path": "target-project/components/AccountOrganizationStudio",
       "target_sha256": "sha256:8cd702483e620990f62198be387fabdf75220b2e531f047e1da54c14f0f62c45",
@@ -89,7 +93,7 @@
         "target-project/components/AccountOrganizationStudio/index.wxml",
         "target-project/components/AccountOrganizationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -98,9 +102,13 @@
       "source_path": "app/account/AccountWalletPanel.tsx",
       "component_name": "AccountWalletPanel",
       "source_sha256": "sha256:200579d81e50f84e976dca0b711d7dfbc01da52b71a34ea99534828b8147a215",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:7a11936e2334fada2c035f94fe8de2fe7cd56976df129252642509ddea86cd65",
       "target_path": "target-project/components/AccountWalletPanel",
       "target_sha256": "sha256:d6f80ab6f26aaa1dc0ab344b434d9c6482a8e5ae07b950251f10e66b831c5756",
@@ -110,7 +118,7 @@
         "target-project/components/AccountWalletPanel/index.wxml",
         "target-project/components/AccountWalletPanel/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -131,7 +139,7 @@
         "target-project/components/AccountPage/index.wxml",
         "target-project/components/AccountPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -152,7 +160,7 @@
         "target-project/components/Empty/index.wxml",
         "target-project/components/Empty/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -161,9 +169,13 @@
       "source_path": "app/admin/OperationsAdmin.tsx",
       "component_name": "EventTable",
       "source_sha256": "sha256:887dfc4ed913566b13192fb8ca4b4a86b6487f501806b3bc31b77183259f390f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+        "reason": "tag \"table\" is outside certified-component-v1",
+        "semantic_category": "platform-semantics"
+      },
       "manual_ir_digest": "sha256:fb5d04447032bd15651065a550eb6777307cb0ca4544b1986840ab9b4db49991",
       "target_path": "target-project/components/EventTable",
       "target_sha256": "sha256:9e9cbb6bf55d590797890fb8d0c5e392a807365e0e980079d2a42a2778da7906",
@@ -173,7 +185,7 @@
         "target-project/components/EventTable/index.wxml",
         "target-project/components/EventTable/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -194,7 +206,7 @@
         "target-project/components/IncidentCard/index.wxml",
         "target-project/components/IncidentCard/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -203,9 +215,13 @@
       "source_path": "app/admin/OperationsAdmin.tsx",
       "component_name": "OperationsAdmin",
       "source_sha256": "sha256:887dfc4ed913566b13192fb8ca4b4a86b6487f501806b3bc31b77183259f390f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:93a85942b0a0df4adb422fc1ecc902f767146210fc3a99ca5197bc90ffd2d8f4",
       "target_path": "target-project/components/OperationsAdmin",
       "target_sha256": "sha256:36cb47f4455d15b3214c5a650491cb2cf3dd878e7ec9374208169e1b966bf6e4",
@@ -215,7 +231,7 @@
         "target-project/components/OperationsAdmin/index.wxml",
         "target-project/components/OperationsAdmin/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -236,7 +252,7 @@
         "target-project/components/RemediationCard/index.wxml",
         "target-project/components/RemediationCard/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -257,7 +273,7 @@
         "target-project/components/AdminPage/index.wxml",
         "target-project/components/AdminPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -266,9 +282,13 @@
       "source_path": "app/admin/PlatformJobsPanel.tsx",
       "component_name": "PlatformJobsPanel",
       "source_sha256": "sha256:3233268915de085f38d5e618a88ad6d47793570299b8bc8116bf950f1f837332",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:98b0fba6ae3ccaeead373b86ace7de1d75d82364ba3ad210fef6847c007f41bc",
       "target_path": "target-project/components/PlatformJobsPanel",
       "target_sha256": "sha256:1c8ee1ffaf40587b021bfd15ee58ecaaf9eb449cc4317f21cac9a4474a0df9fa",
@@ -278,7 +298,7 @@
         "target-project/components/PlatformJobsPanel/index.wxml",
         "target-project/components/PlatformJobsPanel/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -287,9 +307,13 @@
       "source_path": "app/admin/PlatformWalletPanel.tsx",
       "component_name": "PlatformWalletPanel",
       "source_sha256": "sha256:264530e63449713173afb307dd119d8d7d557ef0e6765879579b950df1e79c80",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state wallets element.balanceMinor has unsupported type \"Amount\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:609e94c7a01f496091bf1b14b02288951552cc1d9cb35d65c62a5cbf13bf6f47",
       "target_path": "target-project/components/PlatformWalletPanel",
       "target_sha256": "sha256:faad49e19ec1bb76119e38c53c7a8945a0968dd9df7535d6f65b6857070bb2fa",
@@ -299,7 +323,7 @@
         "target-project/components/PlatformWalletPanel/index.wxml",
         "target-project/components/PlatformWalletPanel/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -308,9 +332,13 @@
       "source_path": "app/commercialization/CommercializationConsole.tsx",
       "component_name": "CommercializationConsole",
       "source_sha256": "sha256:ee51fb034a155dbcd446de5ee5d6cfe9e0b07ff3c400a0858f427edc401e0e64",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:3eb719279ae8dea4f86faa8b530e26c7cf20e6586af44fcadb00cefdeb615f0b",
       "target_path": "target-project/components/CommercializationConsole",
       "target_sha256": "sha256:a1d425624ace74dedfbae96375f40be7aadb196969dcce8641fbae314ca4f6f0",
@@ -320,7 +348,7 @@
         "target-project/components/CommercializationConsole/index.wxml",
         "target-project/components/CommercializationConsole/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -341,7 +369,7 @@
         "target-project/components/CommercializationPage/index.wxml",
         "target-project/components/CommercializationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -350,9 +378,13 @@
       "source_path": "app/components/AccountSessionProvider.tsx",
       "component_name": "AccountSessionProvider",
       "source_sha256": "sha256:5eeb7245de7ee2b85a5fde36819b059a1c2e1e437b5225f1648e2091efec1945",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:ba8119cd660e0b55719ea5b2c5bc2d556c8e177029b6f52ecaa10f43289eefa0",
       "target_path": "target-project/components/AccountSessionProvider",
       "target_sha256": "sha256:4d0e7785157e1f8448ebd9fdf513d864f012b2f15117bd88aec4d45a60486906",
@@ -362,7 +394,7 @@
         "target-project/components/AccountSessionProvider/index.wxml",
         "target-project/components/AccountSessionProvider/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -371,9 +403,13 @@
       "source_path": "app/components/AppShell.tsx",
       "component_name": "AppShell",
       "source_sha256": "sha256:2b3161832ec8413c9a1d2405a5ef48106612c775cc86a677d44f66d1b351762b",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:c734628a6d1b5da16942d07832bb3b5dc50adee2e225e93b093292d390038073",
       "target_path": "target-project/components/AppShell",
       "target_sha256": "sha256:822837a2851bb91f13de355c89e4b09e53e5c4c2f6bcba6d0f5526cf4e3778bf",
@@ -383,7 +419,7 @@
         "target-project/components/AppShell/index.wxml",
         "target-project/components/AppShell/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -392,9 +428,13 @@
       "source_path": "app/components/Icon.tsx",
       "component_name": "Icon",
       "source_sha256": "sha256:1454edb408e7acbf7febd33f67e882f87a9ab3b56666b823f3c7935fcd0cd6fa",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+        "reason": "tag \"svg\" is outside certified-component-v1",
+        "semantic_category": "platform-semantics"
+      },
       "manual_ir_digest": "sha256:fab50b3bd6b3e8c871ed64e999d4593eceadd92a25f765dae95d7f42c901a789",
       "target_path": "target-project/components/Icon",
       "target_sha256": "sha256:21823e9941b5e075780e415b4f0fbc69b615e1df0141e42e4960986371ff181d",
@@ -404,7 +444,7 @@
         "target-project/components/Icon/index.wxml",
         "target-project/components/Icon/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -425,7 +465,7 @@
         "target-project/components/BehaviorChart/index.wxml",
         "target-project/components/BehaviorChart/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -446,7 +486,7 @@
         "target-project/components/CoverageMeter/index.wxml",
         "target-project/components/CoverageMeter/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -467,7 +507,7 @@
         "target-project/components/EmptyEvidence/index.wxml",
         "target-project/components/EmptyEvidence/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -476,9 +516,13 @@
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "EquivalenceMatrix",
       "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:ca75212f87491733a77e44bcf08b7130d0498425eba1d3cf8485845894142c5c",
       "target_path": "target-project/components/EquivalenceMatrix",
       "target_sha256": "sha256:a5142304fa84f4f6095446bcf0a43d7275746861d1b79d8547327aeaa2bf7136",
@@ -488,7 +532,7 @@
         "target-project/components/EquivalenceMatrix/index.wxml",
         "target-project/components/EquivalenceMatrix/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -497,9 +541,13 @@
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "EvidenceGraph",
       "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind NewExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:5c7964c10595935a24db931d62d1b73d3206d4858f829a0079dbab56649921ec",
       "target_path": "target-project/components/EvidenceGraph",
       "target_sha256": "sha256:3bc93c054120eaa67e41b293948a93efe297a70cfa06616386020bb12fecbad7",
@@ -509,7 +557,7 @@
         "target-project/components/EvidenceGraph/index.wxml",
         "target-project/components/EvidenceGraph/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -518,9 +566,13 @@
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "ProjectEvidenceCharts",
       "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:1e4b05ec3ec13926e34ca1f8f4cabf91d7b3b1c14c4783034c16939817db5ff8",
       "target_path": "target-project/components/ProjectEvidenceCharts",
       "target_sha256": "sha256:7e92497c3d96210057a926fee9bda12fcde564f82d2ee9c2cc3e0a5af24bbb71",
@@ -530,7 +582,7 @@
         "target-project/components/ProjectEvidenceCharts/index.wxml",
         "target-project/components/ProjectEvidenceCharts/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -551,7 +603,7 @@
         "target-project/components/SemanticMappingChart/index.wxml",
         "target-project/components/SemanticMappingChart/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -572,7 +624,7 @@
         "target-project/components/StatusMark/index.wxml",
         "target-project/components/StatusMark/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -593,7 +645,7 @@
         "target-project/components/TranslationEvidenceCharts/index.wxml",
         "target-project/components/TranslationEvidenceCharts/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -602,9 +654,13 @@
       "source_path": "app/components/RuntimeDeploymentGuide.tsx",
       "component_name": "RuntimeDeploymentGuide",
       "source_sha256": "sha256:2982aa717205f11ffed88ddc53f5f62ecedf9bf3f1575e4f47455c2daa5a784b",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+        "reason": "tag \"details\" is outside certified-component-v1",
+        "semantic_category": "platform-semantics"
+      },
       "manual_ir_digest": "sha256:fe96224fd474cb784eadef000584e27188e5633c1b5e4d70faadf18e9d666fe6",
       "target_path": "target-project/components/RuntimeDeploymentGuide",
       "target_sha256": "sha256:9af38545bed237b629c9d38178c4e5b203fa12361b1241432db19b04aea72990",
@@ -614,7 +670,7 @@
         "target-project/components/RuntimeDeploymentGuide/index.wxml",
         "target-project/components/RuntimeDeploymentGuide/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -623,9 +679,13 @@
       "source_path": "app/components/SmokeRunButton.tsx",
       "component_name": "SmokeRunButton",
       "source_sha256": "sha256:db3b9af0bb07b114d7fba77f72d2022b8a831fcc5d55c637be7689f0b3f43819",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:8462c13edbd2efe5e3092553c9784c9e251f054e65b748c8c688712b311e59e0",
       "target_path": "target-project/components/SmokeRunButton",
       "target_sha256": "sha256:1a89c0fb07bf9101ddce13b5eb8ea2b9b5dc513e48614df86564a74147cb6559",
@@ -635,7 +695,7 @@
         "target-project/components/SmokeRunButton/index.wxml",
         "target-project/components/SmokeRunButton/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -656,7 +716,7 @@
         "target-project/components/StatusChip/index.wxml",
         "target-project/components/StatusChip/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -665,9 +725,13 @@
       "source_path": "app/components/UiPreferencesProvider.tsx",
       "component_name": "UiPreferencesProvider",
       "source_sha256": "sha256:e42a90912474fce7aa4dafb5a7e0f9f6f574486aecd116d461733b81932b31bf",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state locale has unsupported type \"UiLocale\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:4edbff9b7b9d35799d94b85777466027744f545608f6938e4e8e5057229181ff",
       "target_path": "target-project/components/UiPreferencesProvider",
       "target_sha256": "sha256:a99a6a81b23004fef1474c3c961274a128a9bb8b210d82ceec0b342337df9455",
@@ -677,7 +741,7 @@
         "target-project/components/UiPreferencesProvider/index.wxml",
         "target-project/components/UiPreferencesProvider/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -686,9 +750,13 @@
       "source_path": "app/frontend/FrontendTransformationStudio.tsx",
       "component_name": "FrontendTransformationStudio",
       "source_sha256": "sha256:146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:74963e51052ef1bfcb96a87db1366450932ce2db12d2d73e5613b87df703a255",
       "target_path": "target-project/components/FrontendTransformationStudio",
       "target_sha256": "sha256:c045c3baef69c81384b0bef98a0db63a8bd8bf42ede08afc58b6fbcb75588fab",
@@ -698,7 +766,7 @@
         "target-project/components/FrontendTransformationStudio/index.wxml",
         "target-project/components/FrontendTransformationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -719,7 +787,7 @@
         "target-project/components/FrontendTransformationPage/index.wxml",
         "target-project/components/FrontendTransformationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -740,7 +808,7 @@
         "target-project/components/GenerationPage/index.wxml",
         "target-project/components/GenerationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -749,9 +817,13 @@
       "source_path": "app/generation/ProjectGenerationStudio.tsx",
       "component_name": "ProjectGenerationStudio",
       "source_sha256": "sha256:42160731ba1beea98e4bc4cafe94a3cb9e648b6b944abaa9f084808ef560b751",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:99682a932552f3b96deb4994d6e40867660c1f267826e6922212c63512df3152",
       "target_path": "target-project/components/ProjectGenerationStudio",
       "target_sha256": "sha256:487204e8f45a3952f422dceff7624e55bff57c37831f2cab9b75fa1376700dc2",
@@ -761,7 +833,7 @@
         "target-project/components/ProjectGenerationStudio/index.wxml",
         "target-project/components/ProjectGenerationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -770,9 +842,13 @@
       "source_path": "app/governance/GovernanceWorkspace.tsx",
       "component_name": "GovernanceWorkspace",
       "source_sha256": "sha256:6e4df100ea8494750f34ea97b13567df1002a14e00e44c3f5bf578a961b86e69",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:a3e803c2faca35da6e5a5a7baa001a11e50bfe149bbd6eabfce0d4c2feeb7418",
       "target_path": "target-project/components/GovernanceWorkspace",
       "target_sha256": "sha256:8580602b48530407ca749337cb8a268482fd306cbf54d32428487bc6ad78d314",
@@ -782,7 +858,7 @@
         "target-project/components/GovernanceWorkspace/index.wxml",
         "target-project/components/GovernanceWorkspace/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -803,7 +879,7 @@
         "target-project/components/GovernancePage/index.wxml",
         "target-project/components/GovernancePage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -812,9 +888,13 @@
       "source_path": "app/help/HelpCenter.tsx",
       "component_name": "HelpCenter",
       "source_sha256": "sha256:3de4e8529ce03968e3b25f2be70bdb289440a398a14c535d25638132ad950498",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+        "reason": "expected a `const [x, setX] = useState(...)` declaration",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:cd58276643bcb76cf4ef9fa7295272e74def1f5aa184303097343c0965db4f24",
       "target_path": "target-project/components/HelpCenter",
       "target_sha256": "sha256:c70a7b7fe3b3f21d450da9408dd7d34823ee82df83be44bb5fa53c54329acdc3",
@@ -824,7 +904,7 @@
         "target-project/components/HelpCenter/index.wxml",
         "target-project/components/HelpCenter/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -845,7 +925,7 @@
         "target-project/components/HelpPage/index.wxml",
         "target-project/components/HelpPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -854,9 +934,13 @@
       "source_path": "app/intake/MultimodalIntakeWorkbench.tsx",
       "component_name": "MultimodalIntakeWorkbench",
       "source_sha256": "sha256:2116ac344e8bff9551f28388582ad926d9f4a0f8d8a3a4d6caaa6999c3f1c8ac",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:ea417819e48dc1680b5bdce62da2dc21842731d7f9a8da6a76a79f247992013f",
       "target_path": "target-project/components/MultimodalIntakeWorkbench",
       "target_sha256": "sha256:fc5ac26d4de0cd5c96148c4946e35011863c54d3e13976b9ccdc65c1b159292f",
@@ -866,7 +950,7 @@
         "target-project/components/MultimodalIntakeWorkbench/index.wxml",
         "target-project/components/MultimodalIntakeWorkbench/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -887,7 +971,7 @@
         "target-project/components/MultimodalIntakePage/index.wxml",
         "target-project/components/MultimodalIntakePage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -896,9 +980,13 @@
       "source_path": "app/layout.tsx",
       "component_name": "RootLayout",
       "source_sha256": "sha256:cfb13ad9af43d647ac18d845ad0cae68f8eba9e1db71e673f2ca549fe6be5405",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
+        "reason": "tag \"html\" is outside certified-component-v1",
+        "semantic_category": "platform-semantics"
+      },
       "manual_ir_digest": "sha256:b8b916fe72119a4a4ff08d96b20d8a3bbec86a11ed299e18f72b09c1752af1e7",
       "target_path": "target-project/components/RootLayout",
       "target_sha256": "sha256:14affe580e61a589ec19338381ad3b87dd210b2fb2c4d0ba6598e528cdc1da8d",
@@ -908,7 +996,7 @@
         "target-project/components/RootLayout/index.wxml",
         "target-project/components/RootLayout/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -917,9 +1005,13 @@
       "source_path": "app/login/page.tsx",
       "component_name": "LoginPage",
       "source_sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "prop searchParams.then has no object fields",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:4daa6201239fa52a6355352d1aead7209302bf0b80e989c1a5b3d53bf4c0f092",
       "target_path": "target-project/components/LoginPage",
       "target_sha256": "sha256:858bda7cbaef88ec02a255587068d31989150beeae853c6af619c9d15d1ea949",
@@ -929,7 +1021,7 @@
         "target-project/components/LoginPage/index.wxml",
         "target-project/components/LoginPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -950,7 +1042,7 @@
         "target-project/components/Marketplace/index.wxml",
         "target-project/components/Marketplace/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -959,9 +1051,13 @@
       "source_path": "app/migration/MigrationStudio.tsx",
       "component_name": "MigrationStudio",
       "source_sha256": "sha256:af0df409a9921bec3801daa9e7bce63619141ec81ca514c070476f1b25b80b5f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state view has unsupported type \"StudioView\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:bc6e60abd992258487a258d99d55a81ec78998685ca6261fd5800e44f0d0a4bd",
       "target_path": "target-project/components/MigrationStudio",
       "target_sha256": "sha256:561fb81cfad014b3eedb0306e0c1b333b8a9d6e11a75c17620df19ac4c40224f",
@@ -971,7 +1067,7 @@
         "target-project/components/MigrationStudio/index.wxml",
         "target-project/components/MigrationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -992,7 +1088,7 @@
         "target-project/components/MigrationPage/index.wxml",
         "target-project/components/MigrationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1001,9 +1097,13 @@
       "source_path": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
       "component_name": "ChinaDbSqlPreflightStudio",
       "source_sha256": "sha256:ed319e03c4dfb31ec46e4c713ab04df4d5cb94e101181618299f26ff35fee9c8",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:3e994b4e4b8ffd6ec12f8434e959e7f497d89598569f5a870f123631c4f13c41",
       "target_path": "target-project/components/ChinaDbSqlPreflightStudio",
       "target_sha256": "sha256:c6c19657149b60c62b1b188adb93cead4536d42e15b7eb9a1e51668c3b0f6222",
@@ -1013,7 +1113,7 @@
         "target-project/components/ChinaDbSqlPreflightStudio/index.wxml",
         "target-project/components/ChinaDbSqlPreflightStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1034,7 +1134,7 @@
         "target-project/components/ChinaDbSqlPreflightPage/index.wxml",
         "target-project/components/ChinaDbSqlPreflightPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1043,9 +1143,13 @@
       "source_path": "app/observability/ObservabilityWorkspace.tsx",
       "component_name": "ObservabilityWorkspace",
       "source_sha256": "sha256:09653cd1b9253c7d7d575e1aeac4e5a399e1210fd115e04bdf28ce38b6c1cc20",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+        "reason": "state initializer expression kind ElementAccessExpression is not a closed literal",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:b878b68d0564af9a6991321f7029e023431f185265513fb65e1ade31ac6e04a5",
       "target_path": "target-project/components/ObservabilityWorkspace",
       "target_sha256": "sha256:dcf2084d1d52006b58772cfd35ccfec99b88774e0f4bf2e6abe4ff9b137f8fd7",
@@ -1055,7 +1159,7 @@
         "target-project/components/ObservabilityWorkspace/index.wxml",
         "target-project/components/ObservabilityWorkspace/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1076,7 +1180,7 @@
         "target-project/components/ObservabilityPage/index.wxml",
         "target-project/components/ObservabilityPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1097,7 +1201,7 @@
         "target-project/components/RepositoryOrchestrationPage/index.wxml",
         "target-project/components/RepositoryOrchestrationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1106,9 +1210,13 @@
       "source_path": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
       "component_name": "RepositoryOrchestratorWorkbench",
       "source_sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c",
       "target_path": "target-project/components/RepositoryOrchestratorWorkbench",
       "target_sha256": "sha256:b6088e48058609a3a858c2c0f0c8486c1410b5d3e3b59bd513afdcd0a8bf15f0",
@@ -1118,7 +1226,7 @@
         "target-project/components/RepositoryOrchestratorWorkbench/index.wxml",
         "target-project/components/RepositoryOrchestratorWorkbench/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1139,7 +1247,7 @@
         "target-project/components/Home/index.wxml",
         "target-project/components/Home/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1148,9 +1256,13 @@
       "source_path": "app/playground/page.tsx",
       "component_name": "PlaygroundPage",
       "source_sha256": "sha256:03967bfb8666799e7040efc95c96b53fd79f418e7d98d075ff2bfbca94461b3b",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_SLOT",
+        "reason": "<AppShell> is given children; slot projection is outside certified-component-v1 because each target evaluates it differently",
+        "semantic_category": "slots-and-composition"
+      },
       "manual_ir_digest": "sha256:729409b68f62201e286ff56f8fb014155e1e5f9c370b135ce41f82c3b242984a",
       "target_path": "target-project/components/PlaygroundPage",
       "target_sha256": "sha256:febbc41df1bdbb0a0a7348cf43000ef3b645b3d8877be0f8a837be0ae349c85b",
@@ -1160,7 +1272,7 @@
         "target-project/components/PlaygroundPage/index.wxml",
         "target-project/components/PlaygroundPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1169,9 +1281,13 @@
       "source_path": "app/playground/PlaygroundWorkspace.tsx",
       "component_name": "PlaygroundWorkspace",
       "source_sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+        "reason": "state \"sourceCode\" requires a primitive literal initializer",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:44e638446c0e3da6106bef05a25b75a1b4a2583aa2d8f1a7447be862984ae409",
       "target_path": "target-project/components/PlaygroundWorkspace",
       "target_sha256": "sha256:c46c76fba4875826db0a71f6be25e49dc49791b970af410cb09be91610293dc2",
@@ -1181,7 +1297,7 @@
         "target-project/components/PlaygroundWorkspace/index.wxml",
         "target-project/components/PlaygroundWorkspace/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1190,9 +1306,13 @@
       "source_path": "app/pricing/BillingActions.tsx",
       "component_name": "PlanBillingAction",
       "source_sha256": "sha256:f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:556f5fae22e727a8251d38eddb6c52d5ec584e93cbf5bbf3b1ef121804e22ad8",
       "target_path": "target-project/components/PlanBillingAction",
       "target_sha256": "sha256:0aa1cda50d4a0f25c089bf1b29d0e887165ebaa86df7dcabe0c25c8bc301cb5e",
@@ -1202,7 +1322,7 @@
         "target-project/components/PlanBillingAction/index.wxml",
         "target-project/components/PlanBillingAction/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1211,9 +1331,13 @@
       "source_path": "app/pricing/BillingActions.tsx",
       "component_name": "SubscriptionManager",
       "source_sha256": "sha256:f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:b0af121a8fb782be13f0f14e7b62b3ede280f59bc68aaa16437cb4f0bff12598",
       "target_path": "target-project/components/SubscriptionManager",
       "target_sha256": "sha256:41780f4f2c4bcb94f13f3fd7f79d25c04f91024856ca77372a171b1bc6c7b194",
@@ -1223,7 +1347,7 @@
         "target-project/components/SubscriptionManager/index.wxml",
         "target-project/components/SubscriptionManager/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1232,9 +1356,13 @@
       "source_path": "app/pricing/page.tsx",
       "component_name": "PricingPage",
       "source_sha256": "sha256:89fe2fda31ee4263c106c1011e815e849b27da2831658d3faf97f6c9c14b363d",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:b976458d5c83a83e2a09aea2510478fe06f3730b8c0f86550a3d637beb63363a",
       "target_path": "target-project/components/PricingPage",
       "target_sha256": "sha256:0678f30d859481d071b496b9e6f3e49284870757dc66be5722f7c37f956d776c",
@@ -1244,7 +1372,7 @@
         "target-project/components/PricingPage/index.wxml",
         "target-project/components/PricingPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1253,9 +1381,13 @@
       "source_path": "app/pricing/UsageDashboard.tsx",
       "component_name": "UsageDashboard",
       "source_sha256": "sha256:13a07e674998e609a1dc106fc3cf96562f65fab44c27414a8b9990b98b216533",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
+        "reason": "state initializer expression kind ConditionalExpression is not a closed literal",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:14074f952b6ebd6d830acd06d46d8966720a4ec0945544065593c057017b9bd6",
       "target_path": "target-project/components/UsageDashboard",
       "target_sha256": "sha256:8307468a7c8b79902310823b750d864b76f67502314edc5cba18b3e148c92ad8",
@@ -1265,7 +1397,7 @@
         "target-project/components/UsageDashboard/index.wxml",
         "target-project/components/UsageDashboard/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1286,7 +1418,7 @@
         "target-project/components/UsageMeter/index.wxml",
         "target-project/components/UsageMeter/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1295,9 +1427,13 @@
       "source_path": "app/proof-loop/ModernizationProofStudio.tsx",
       "component_name": "ModernizationProofStudio",
       "source_sha256": "sha256:ad19b406e3b1afff3c4af5c1011eaac4f16e065d2fcc8ab75567a571479d721e",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:68a1e599f4620b1c6776a4b94dc683e9acf13dda52bca6092d25dced2f69432c",
       "target_path": "target-project/components/ModernizationProofStudio",
       "target_sha256": "sha256:14912855f69db9c6a21152951c4a61155235f714739266bcde650f23b3ee8346",
@@ -1307,7 +1443,7 @@
         "target-project/components/ModernizationProofStudio/index.wxml",
         "target-project/components/ModernizationProofStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1328,7 +1464,7 @@
         "target-project/components/ModernizationProofPage/index.wxml",
         "target-project/components/ModernizationProofPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1349,7 +1485,7 @@
         "target-project/components/RepositoriesPage/index.wxml",
         "target-project/components/RepositoriesPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1358,9 +1494,13 @@
       "source_path": "app/repositories/RepositoryWorkspaceStudio.tsx",
       "component_name": "RepositoryWorkspaceStudio",
       "source_sha256": "sha256:98ec19f726b01677cacfc578f28e60afae3a80654f9d4e54b43bbf028eea86a5",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:aceb6f65e51e1b57219e4d804813cebcd38272b6178c9c422dde8079250e7915",
       "target_path": "target-project/components/RepositoryWorkspaceStudio",
       "target_sha256": "sha256:f09aec888a2cb1c578babaee3868d13f8790ab64b081553e2db8a076b75654c6",
@@ -1370,7 +1510,7 @@
         "target-project/components/RepositoryWorkspaceStudio/index.wxml",
         "target-project/components/RepositoryWorkspaceStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1391,7 +1531,7 @@
         "target-project/components/SkillsPage/index.wxml",
         "target-project/components/SkillsPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1400,9 +1540,13 @@
       "source_path": "app/skills/PrecisionMigrationJobs.tsx",
       "component_name": "PrecisionMigrationJobs",
       "source_sha256": "sha256:f02823e4442841704d5832ef16e897dff1906c511ed66d5ccdf0551879bf5e39",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:23a4e5936dc429cad61170eb401c9431bb2461d966a8cb73d50f088ca2f7874f",
       "target_path": "target-project/components/PrecisionMigrationJobs",
       "target_sha256": "sha256:91435369027edbeab28a403d9e02584b4a5521332b501c948b46a5e9e5cf7bed",
@@ -1412,7 +1556,7 @@
         "target-project/components/PrecisionMigrationJobs/index.wxml",
         "target-project/components/PrecisionMigrationJobs/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1421,9 +1565,13 @@
       "source_path": "app/skills/SkillsWorkspace.tsx",
       "component_name": "SkillsWorkspace",
       "source_sha256": "sha256:21249a99cee595a685701e6cf03435d3f4b7acdba5c09d76f90725a5c8bc0db3",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state namespace has unsupported type \"Namespace\"",
+        "semantic_category": "data-contracts"
+      },
       "manual_ir_digest": "sha256:ec480b17b41d8d40808d79619d6b14b92e8eb6b8f9b1796961a89b42331f5cbd",
       "target_path": "target-project/components/SkillsWorkspace",
       "target_sha256": "sha256:302037f6b4dfa9aac7347f9287d34861f7f192c843adcb4eced53ec5ede32609",
@@ -1433,7 +1581,7 @@
         "target-project/components/SkillsWorkspace/index.wxml",
         "target-project/components/SkillsWorkspace/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1454,7 +1602,7 @@
         "target-project/components/SmokePage/index.wxml",
         "target-project/components/SmokePage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1475,7 +1623,7 @@
         "target-project/components/SmokeConsole/index.wxml",
         "target-project/components/SmokeConsole/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1496,7 +1644,7 @@
         "target-project/components/SpringModernizationPage/index.wxml",
         "target-project/components/SpringModernizationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1505,9 +1653,13 @@
       "source_path": "app/spring/SpringModernizationStudio.tsx",
       "component_name": "SpringModernizationStudio",
       "source_sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:70b72c5ebb0b179883470fbf0a3847b6d79755a04645f88aaf0408a9956780f0",
       "target_path": "target-project/components/SpringModernizationStudio",
       "target_sha256": "sha256:c9fe32bd777e077eee255b07cbd81663290547adf861ea39ef5ca30631729824",
@@ -1517,7 +1669,7 @@
         "target-project/components/SpringModernizationStudio/index.wxml",
         "target-project/components/SpringModernizationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1538,7 +1690,7 @@
         "target-project/components/TranslationPage/index.wxml",
         "target-project/components/TranslationPage/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "PASSED",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1547,9 +1699,13 @@
       "source_path": "app/translation/TranslationStudio.tsx",
       "component_name": "TranslationStudio",
       "source_sha256": "sha256:a3e4f64b8aab2060dc23ffd3ece9772eb0512c61f28ba35175bda4092fe87124",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
+      },
       "manual_ir_digest": "sha256:7e2dea0e31ff3e08f1519acf8670f42d28d7287412232a6cd87958722b2fe582",
       "target_path": "target-project/components/TranslationStudio",
       "target_sha256": "sha256:603065b87137b7b7f414c311f4da050907c76d105565d0409759df67e015fbb5",
@@ -1559,7 +1715,7 @@
         "target-project/components/TranslationStudio/index.wxml",
         "target-project/components/TranslationStudio/index.wxss"
       ],
-      "syntax_evidence": "LOCAL_WXML_PARSE_PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"

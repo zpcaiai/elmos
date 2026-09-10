@@ -44,13 +44,36 @@ public final class SpringCloudZuulToGatewayRecipe extends Recipe {
                 J.ClassDeclaration cd = super.visitClassDeclaration(classDecl, ctx);
                 if (cd.getExtends() != null && "ZuulFilter".equals(cd.getExtends().printTrimmed())) {
                     maybeRemoveImport("com.netflix.zuul.ZuulFilter");
+                    maybeRemoveImport("com.netflix.zuul.context.RequestContext");
+                    maybeRemoveImport("com.netflix.zuul.exception.ZuulException");
                     maybeAddImport("org.springframework.cloud.gateway.filter.GlobalFilter");
+                    maybeAddImport("org.springframework.core.Ordered");
                     cd = cd.withExtends(null);
-                    // Add GlobalFilter to implements list if not already present
-                    TypeTree globalFilterType = TypeTree.build("GlobalFilter");
-                    cd = cd.withImplements(java.util.Collections.singletonList(globalFilterType));
+                    
+                    java.util.List<TypeTree> impls = new java.util.ArrayList<>();
+                    if (cd.getImplements() != null) {
+                        impls.addAll(cd.getImplements());
+                    }
+                    impls.add(TypeTree.build("GlobalFilter"));
+                    impls.add(TypeTree.build("Ordered"));
+                    cd = cd.withImplements(impls);
                 }
                 return cd;
+            }
+
+            @Override
+            public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext ctx) {
+                J.MethodDeclaration md = super.visitMethodDeclaration(method, ctx);
+                if ("filterOrder".equals(md.getSimpleName())) {
+                    md = md.withName(md.getName().withSimpleName("getOrder"));
+                } else if ("run".equals(md.getSimpleName())) {
+                    maybeAddImport("org.springframework.cloud.gateway.filter.GatewayFilterChain");
+                    maybeAddImport("org.springframework.web.server.ServerWebExchange");
+                    maybeAddImport("reactor.core.publisher.Mono");
+                    md = md.withName(md.getName().withSimpleName("filter"));
+                    md = md.withReturnTypeExpression(TypeTree.build("Mono<Void>"));
+                }
+                return md;
             }
         };
     }

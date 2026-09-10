@@ -1,7 +1,11 @@
 <view class="evidence-empty" role="status">
-  <StatusMark status="NOT_RUN" compact="true" />
+  <status-mark status="{{ &quot;NOT_RUN&quot; }}" compact="{{ true }}" />
   <text>
-    <text>{{title}}</text>
-    <text>{{detail}}</text>
+    <text class="cc-strong">
+      {{ title }}
+    </text>
+    <text class="cc-small">
+      {{ detail }}
+    </text>
   </text>
 </view>
