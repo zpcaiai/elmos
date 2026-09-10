@@ -12,6 +12,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as React from "react";
 import { HeadlessMiniProgramSandbox } from "./miniapp-automator-sandbox";
 import { DoubleBlindDifferentialOracle, DifferentialResult } from "./differential-oracle";
 
@@ -137,7 +138,7 @@ export async function runFullAudit(repoRoot: string): Promise<FullAuditReport> {
 
     if (reactSource.length > 0 && l3Passed) {
       try {
-        diffRes = await oracle.evaluateComponent(compName, reactSource, targetRelDir, fixtureProps);
+        diffRes = await oracle.evaluateComponent(compName, reactSource, targetRelDir, fixtureProps, entry.disposition);
         consistencyScore = diffRes.consistencyScore;
         textSimilarity = diffRes.textSimilarity;
         structuralSimilarity = diffRes.structuralSimilarity;
@@ -389,6 +390,133 @@ function getFixturePropsForComponent(name: string, base: Record<string, unknown>
         usageBps: 4500,
         hardStop: false,
       },
+    };
+  }
+
+  if (name === "AccountSessionProvider" || name === "UiPreferencesProvider") {
+    return {
+      ...base,
+      children: React.createElement("div", { className: "provider-slot" }, `${name} Active Content`),
+    };
+  }
+
+  if (name === "EventTable") {
+    return {
+      ...base,
+      events: [
+        {
+          eventId: "ev-101",
+          occurredAt: "2026-09-10T12:00:00Z",
+          businessLine: "translation",
+          action: "DEPLOY_ROUTE",
+          target: "java-to-csharp",
+          result: "SUCCESS",
+          errorCode: null,
+          durationMs: 142,
+        },
+      ],
+      empty: "所选窗口内没有作业审计事件",
+    };
+  }
+
+  if (name === "EquivalenceMatrix") {
+    return {
+      ...base,
+      dimension: "semantic",
+      behavior: {
+        status: "PASSED",
+        targets: [
+          {
+            language: "java",
+            status: "PASSED",
+            exact_toolchain_status: "PASSED",
+            build_analysis: { total: 10 },
+            startup_status: "PASSED",
+          },
+        ],
+        limitations: ["仅覆盖白盒验证目标"],
+        cross_target_matrix: [],
+      },
+    };
+  }
+
+  if (name === "EvidenceGraph") {
+    return {
+      ...base,
+      title: "证据拓扑图",
+      description: "全生命周期证据图谱",
+      status: "PASSED",
+      nodes: [
+        {
+          id: "node-1",
+          label: "Source Intake",
+          kind: "intake",
+          detail: "Repository snapshot immutable",
+          status: "PASSED",
+        },
+      ],
+      edges: [],
+    };
+  }
+
+  if (name === "RuntimeDeploymentGuide") {
+    return {
+      ...base,
+      id: "deploy-guide",
+      guidance: {
+        status: "CONFIGURATION_REQUIRED",
+        externalEvidence: "NOT_RUN",
+        localProfiles: [
+          {
+            id: "spring-modernization",
+            label: "Spring Boot 3.5.3",
+            framework: "Boot 2.7.18 / Java 17 → Boot 3.5.3 / Java 21",
+            toolchain: "JDK 17 + JDK 21 / Maven 3.9.11",
+            minimum: { cpu: 4, memoryGb: 8, diskGb: 20 },
+            recommended: { cpu: 8, memoryGb: 16, diskGb: 40 },
+            scope: "完整翻新、双工具链构建和独立验证",
+            directory: "target",
+            port: 8080,
+            healthPath: "/actuator/health",
+            verifyCommands: ["mvn verify"],
+            runCommands: ["java -jar app.jar"],
+          },
+        ],
+        cloudOptions: [],
+        recommendation: {
+          recommendedOptionId: "google-cloud-run",
+          platform: "Google Cloud Run",
+          reason: "快速无状态伸缩",
+          requiredInputs: ["项目 ID", "服务账号"],
+          rollback: ["还原上一版本"],
+          cleanup: ["删除临时镜像"],
+          steps: [
+            {
+              title: "构建镜像",
+              detail: "使用 Cloud Build 构建",
+              commands: ["gcloud builds submit"],
+            },
+          ],
+          officialDocs: [
+            { label: "Cloud Run 部署", url: "https://cloud.google.com/run" },
+          ],
+        },
+      },
+    };
+  }
+
+  if (name === "PlanBillingAction") {
+    return {
+      ...base,
+      plan: {
+        planId: "elmos-pro",
+        title: "专业版",
+        monthlyPriceYuan: 129,
+        annualPriceYuan: 1290,
+        includedTokens: 10000000,
+        features: ["无限项目", "全自动迁移", "1000 万 Token/月"],
+      },
+      orderable: true,
     };
   }
 

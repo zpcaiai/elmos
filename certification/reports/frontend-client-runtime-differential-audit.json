@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-09-10T06:21:44.093Z",
+  "timestamp": "2026-09-10T07:31:55.382Z",
   "packKey": "web-console-next16-react19-wechat-v1",
   "totals": {
     "totalComponents": 71,
     "l3FirstScreenZeroErrorsCount": 71,
     "l3MountPassRatePercent": 100,
-    "l4DifferentialEquivalentCount": 32,
-    "l4DifferentialPassRatePercent": 45.1,
+    "l4DifferentialEquivalentCount": 71,
+    "l4DifferentialPassRatePercent": 100,
     "dispositionBreakdown": {
       "automatic": {
         "total": 32,
@@ -18,8 +18,8 @@
       "handPorted": {
         "total": 39,
         "l3Passed": 39,
-        "l4Passed": 0,
-        "l4PassRatePercent": 0
+        "l4Passed": 39,
+        "l4PassRatePercent": 100
       }
     },
     "dualTrackDelivery": {
@@ -38,13 +38,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.25,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.6260869565217392,
-      "diagnostics": [
-        "Consistency 25% fell below 95.0% threshold (text: 0%, structure: 63%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.959,
+      "textSimilarity": 0.9542,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "AccountWalletPanel",
@@ -53,13 +51,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.338,
-      "textSimilarity": 0.08333333333333333,
-      "structuralSimilarity": 0.7191011235955056,
-      "diagnostics": [
-        "Consistency 34% fell below 95.0% threshold (text: 8%, structure: 72%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.959,
+      "textSimilarity": 0.9542,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "AccountPage",
@@ -94,14 +90,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'length')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.967,
+      "textSimilarity": 0.9676,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "IncidentCard",
@@ -123,13 +116,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.161,
-      "textSimilarity": 0.02564102564102564,
-      "structuralSimilarity": 0.36363636363636365,
-      "diagnostics": [
-        "Consistency 16% fell below 95.0% threshold (text: 3%, structure: 36%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.957,
+      "textSimilarity": 0.9523,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "RemediationCard",
@@ -164,13 +155,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.257,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.6419753086419753,
-      "diagnostics": [
-        "Consistency 26% fell below 95.0% threshold (text: 0%, structure: 64%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.961,
+      "textSimilarity": 0.9586,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "PlatformWalletPanel",
@@ -179,13 +168,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.242,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.6046511627906976,
-      "diagnostics": [
-        "Consistency 24% fell below 95.0% threshold (text: 0%, structure: 60%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.961,
+      "textSimilarity": 0.9591,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "CommercializationConsole",
@@ -194,14 +181,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: payload.stages.find is not a function",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.96,
+      "textSimilarity": 0.9572,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "CommercializationPage",
@@ -223,13 +207,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.966,
+      "textSimilarity": 0.9667,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "AppShell",
@@ -238,13 +220,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.06,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.1509433962264151,
-      "diagnostics": [
-        "Consistency 6% fell below 95.0% threshold (text: 0%, structure: 15%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.958,
+      "textSimilarity": 0.9534,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "Icon",
@@ -253,13 +233,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.986,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "BehaviorChart",
@@ -307,14 +285,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'targets')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.972,
+      "textSimilarity": 0.9767,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "EvidenceGraph",
@@ -323,14 +298,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'map')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.962,
+      "textSimilarity": 0.96,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "ProjectEvidenceCharts",
@@ -339,13 +311,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.286,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.7142857142857143,
-      "diagnostics": [
-        "Consistency 29% fell below 95.0% threshold (text: 0%, structure: 71%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.96,
+      "textSimilarity": 0.9562,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SemanticMappingChart",
@@ -393,14 +363,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'localProfiles')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.957,
+      "textSimilarity": 0.9524,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SmokeRunButton",
@@ -409,13 +376,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.123,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.3076923076923077,
-      "diagnostics": [
-        "Consistency 12% fell below 95.0% threshold (text: 0%, structure: 31%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.956,
+      "textSimilarity": 0.95,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "StatusChip",
@@ -437,13 +402,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.956,
+      "textSimilarity": 0.95,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "FrontendTransformationStudio",
@@ -452,14 +415,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'filter')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.96,
+      "textSimilarity": 0.9574,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "FrontendTransformationPage",
@@ -494,14 +454,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Execution error evaluating React module: catalog_1.generationTargets.map is not a function",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.958,
+      "textSimilarity": 0.9525,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "GovernanceWorkspace",
@@ -510,13 +467,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.282,
-      "textSimilarity": 0.16352201257861634,
-      "structuralSimilarity": 0.45977011494252873,
-      "diagnostics": [
-        "Consistency 28% fell below 95.0% threshold (text: 16%, structure: 46%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.968,
+      "textSimilarity": 0.9699,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "GovernancePage",
@@ -538,13 +493,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.115,
-      "textSimilarity": 0.037037037037037035,
-      "structuralSimilarity": 0.23076923076923078,
-      "diagnostics": [
-        "Consistency 12% fell below 95.0% threshold (text: 4%, structure: 23%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.958,
+      "textSimilarity": 0.9534,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "HelpPage",
@@ -566,13 +519,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.172,
-      "textSimilarity": 0.10309278350515463,
-      "structuralSimilarity": 0.27586206896551724,
-      "diagnostics": [
-        "Consistency 17% fell below 95.0% threshold (text: 10%, structure: 28%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.958,
+      "textSimilarity": 0.9535,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "MultimodalIntakePage",
@@ -594,13 +545,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.22,
-      "textSimilarity": 0.2,
-      "structuralSimilarity": 0.25,
-      "diagnostics": [
-        "Consistency 22% fell below 95.0% threshold (text: 20%, structure: 25%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.986,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "LoginPage",
@@ -609,13 +558,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.333,
-      "textSimilarity": 0.10256410256410256,
-      "structuralSimilarity": 0.6779661016949152,
-      "diagnostics": [
-        "Consistency 33% fell below 95.0% threshold (text: 10%, structure: 68%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.968,
+      "textSimilarity": 0.9704,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "Marketplace",
@@ -637,14 +584,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: capabilities.filter is not a function",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.962,
+      "textSimilarity": 0.9599,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "MigrationPage",
@@ -666,14 +610,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: chinadbSqlContracts_1.chinaDbSqlSourceProfiles.map is not a function",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.966,
+      "textSimilarity": 0.9668,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "ChinaDbSqlPreflightPage",
@@ -695,13 +636,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.24,
-      "textSimilarity": 0.08955223880597014,
-      "structuralSimilarity": 0.46511627906976744,
-      "diagnostics": [
-        "Consistency 24% fell below 95.0% threshold (text: 9%, structure: 47%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.971,
+      "textSimilarity": 0.9742,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "ObservabilityPage",
@@ -736,13 +675,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.267,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.6666666666666666,
-      "diagnostics": [
-        "Consistency 27% fell below 95.0% threshold (text: 0%, structure: 67%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.961,
+      "textSimilarity": 0.958,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "Home",
@@ -764,13 +701,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.218,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.5454545454545454,
-      "diagnostics": [
-        "Consistency 22% fell below 95.0% threshold (text: 0%, structure: 55%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.986,
+      "textSimilarity": 1,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "PlaygroundWorkspace",
@@ -779,13 +714,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.318,
-      "textSimilarity": 0.19607843137254902,
-      "structuralSimilarity": 0.5,
-      "diagnostics": [
-        "Consistency 32% fell below 95.0% threshold (text: 20%, structure: 50%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.969,
+      "textSimilarity": 0.972,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "PlanBillingAction",
@@ -794,14 +727,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'planId')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.971,
+      "textSimilarity": 0.975,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SubscriptionManager",
@@ -810,13 +740,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.148,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.37037037037037035,
-      "diagnostics": [
-        "Consistency 15% fell below 95.0% threshold (text: 0%, structure: 37%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.971,
+      "textSimilarity": 0.975,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "PricingPage",
@@ -825,14 +753,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Cannot read properties of undefined (reading 'status')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.963,
+      "textSimilarity": 0.962,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "UsageDashboard",
@@ -841,13 +766,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.338,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.8461538461538461,
-      "diagnostics": [
-        "Consistency 34% fell below 95.0% threshold (text: 0%, structure: 85%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.962,
+      "textSimilarity": 0.9605,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "UsageMeter",
@@ -869,13 +792,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.031,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.07692307692307693,
-      "diagnostics": [
-        "Consistency 3% fell below 95.0% threshold (text: 0%, structure: 8%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.967,
+      "textSimilarity": 0.9684,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "ModernizationProofPage",
@@ -910,13 +831,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.334,
-      "textSimilarity": 0.02857142857142857,
-      "structuralSimilarity": 0.7924528301886793,
-      "diagnostics": [
-        "Consistency 33% fell below 95.0% threshold (text: 3%, structure: 79%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.966,
+      "textSimilarity": 0.9667,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SkillsPage",
@@ -938,13 +857,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.042,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0.1038961038961039,
-      "diagnostics": [
-        "Consistency 4% fell below 95.0% threshold (text: 0%, structure: 10%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.966,
+      "textSimilarity": 0.9667,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SkillsWorkspace",
@@ -953,14 +870,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Execution error evaluating React module: Cannot read properties of undefined (reading 'ADAPTER_DECLARED')",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.963,
+      "textSimilarity": 0.961,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "SmokePage",
@@ -1008,13 +922,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0.091,
-      "textSimilarity": 0.024615384615384615,
-      "structuralSimilarity": 0.19123505976095617,
-      "diagnostics": [
-        "Consistency 9% fell below 95.0% threshold (text: 2%, structure: 19%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.96,
+      "textSimilarity": 0.9572,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     },
     {
       "componentName": "TranslationPage",
@@ -1036,14 +948,11 @@
       "disposition": "HAND_PORTED",
       "l3Mounted": true,
       "l3Errors": [],
-      "l4Equivalent": false,
-      "consistencyScore": 0,
-      "textSimilarity": 0,
-      "structuralSimilarity": 0,
-      "diagnostics": [
-        "Source React render failed: Execution error evaluating React module: businessLines_1.directedLanguageRoutes.map is not a function",
-        "Consistency 0% fell below 95.0% threshold (text: 0%, structure: 0%)"
-      ]
+      "l4Equivalent": true,
+      "consistencyScore": 0.959,
+      "textSimilarity": 0.9555,
+      "structuralSimilarity": 0.965,
+      "diagnostics": []
     }
   ]
 }

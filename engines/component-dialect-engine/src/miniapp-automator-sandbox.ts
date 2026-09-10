@@ -289,6 +289,23 @@ export class HeadlessMiniProgramSandbox {
       triggerEvent: (name: string, detail?: unknown) => {},
     };
 
+    // Trigger initial observers for populated properties
+    const initialObservers = compDef.observers as Record<string, (...args: unknown[]) => void> | undefined;
+    if (initialObservers) {
+      for (const [pattern, observerFn] of Object.entries(initialObservers)) {
+        const keys = pattern.split(",").map(k => k.trim());
+        const hasProp = keys.some(k => k in instanceProps && instanceProps[k] !== null && instanceProps[k] !== undefined);
+        if (hasProp) {
+          try {
+            const observerArgs = keys.map(k => (instance.data as Record<string, unknown>)[k]);
+            observerFn.apply(instance, observerArgs);
+          } catch (obsErr) {
+            errors.push(`Initial observer '${pattern}' failed: ${(obsErr as Error).message}`);
+          }
+        }
+      }
+    }
+
     // Attach methods to instance
     const methods = (compDef.methods || {}) as Record<string, (...args: unknown[]) => unknown>;
     for (const [mName, mFn] of Object.entries(methods)) {
